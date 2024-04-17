@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Temu paketu že sledite v Chromiumu.</translation>
 <translation id="1707458603865303524">Chromium lahko uporabljate, kadar koli se dotaknete povezav v sporočilih ali drugih aplikacijah.</translation>
 <translation id="1722370509450468186">Geslo bo shranjeno v računu (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Podatki Chromiuma so izbrisani</translation>
 <translation id="1791845338122684020">Odpre stran z zgodovino v Chromiumu.</translation>
 <translation id="1838412507805038478">Chromium je preveril, ali je izdajatelj <ph name="ISSUER" /> izdal potrdilo tega spletnega mesta.</translation>
 <translation id="1843424232666537147">Chromium ima funkcije, s katerimi lažje upravljate internetne podatke in hitrost nalaganja spletnih strani.
@@ -85,7 +84,6 @@
 <translation id="3472200483164753384">Ni podprto v Chromiumu Canary</translation>
 <translation id="347967311580159871">Če želite več nastavitev, ki zaradi izboljšanja izkušnje v Chromiumu uporabljajo podatke, odprite <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Geslo ni bilo deljeno. Preverite internetno povezavo in se prepričajte, ali ste prijavljeni v Chromium. Nato poskusite znova.</translation>
-<translation id="3554027294407525061">Brisanje podatkov brskanja v Chromiumu.</translation>
 <translation id="3567399274263440288">Če želite kar najbolje izkoristiti Chromium, se prijavite vanj z računom Google.</translation>
 <translation id="3634039384458740619">Odprite nastavitve za Chromium</translation>
 <translation id="3639997914391704523">Chromium lahko preveri vaša gesla, ko se prijavite z računom Google.</translation>
@@ -136,7 +134,6 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="5042011327527167688">Dotaknite se možnosti »View with Google Maps on Chromium« (Ogled z Google Zemljevidi v Chromiumu).</translation>
 <translation id="5044871537677053278">Chromium zaznava naslove ter z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne informacije.</translation>
 <translation id="5048795749726991615">Če želite preprosto do shranjenih gesel v drugih aplikacijah, uporabite Chromium za samodejno izpolnjevanje.</translation>
-<translation id="5076601183701536878">Brisanje podatkov brskanja v Chromiumu</translation>
 <translation id="5124429847818367226">Zdaj lahko uporabljate Chromium, kadar koli brskate po povezavah ali se jih dotaknete v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="5131565040785979529">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega ste prijavljeni, in način uporabe Chromiuma.</translation>
 <translation id="5146749061471423558">Dodajanje zaznamkov v Chromium</translation>

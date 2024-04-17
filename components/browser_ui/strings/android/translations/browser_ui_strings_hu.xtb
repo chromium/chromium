@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Engedélyek visszavonása</translation>
 <translation id="301521992641321250">Automatikusan letiltva</translation>
 <translation id="3069226013421428034">Engedélyezheti a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Holnap jár le}other{# napon belül lejár}}</translation>
 <translation id="310297983047869047">Előző dia</translation>
 <translation id="3109724472072898302">Összecsukott</translation>
 <translation id="3114012059975132928">Videólejátszó</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Engedélyezve</translation>
 <translation id="429312253194641664">Az egyik webhely médiatartalmat játszik le</translation>
 <translation id="42981349822642051">Kibontás</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Holnap jár le}other{# nap múlva jár le}}</translation>
 <translation id="4336566011000459927">A Chrome ma ismét korlátozza a cookie-kat</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> A legutóbbi lap</translation>
 <translation id="4338831206024587507">Minden <ph name="DOMAIN" /> alatti webhely</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Mindig</translation>
 <translation id="757524316907819857">Védett tartalom lejátszásának letiltása a webhelyeken</translation>
 <translation id="7594634374516752650">Bluetooth-eszközhöz csatlakoztatva</translation>
-<translation id="7641339528570811325">Böngészési adatok törlése…</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7667547420449112975">Óz, a csodák csodája</translation>

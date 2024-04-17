@@ -136,6 +136,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Alumínio</translation>
 <translation id="1252209483516427155">Roupas</translation>
+<translation id="1253096324252841344">Pagar com <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1255086252236620440">Centrífugas de alimentos</translation>
 <translation id="1256368399071562588">&lt;p&gt;Se você tentar visitar um site e ele não abrir, primeiro tente corrigir o erro com estas etapas de solução de problemas:&lt;/p&gt;
@@ -340,6 +341,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="160851722280695521">Iniciar o jogo do Dinossauro do Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611101756749861742">Segundo rolo</translation>
+<translation id="1611854593425834707">Fechar lista de dispositivos para transmissão</translation>
 <translation id="1612199629998703524">Gerenciar temas</translation>
 <translation id="1615178538289490617">Revogue o acesso à porta <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">A captura da tela é desativada pela política do administrador quando há conteúdo protegido visível</translation>
@@ -452,7 +454,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1810391395243432441">Proteger senhas com o bloqueio de tela</translation>
 <translation id="1812527064848182527">paisagem</translation>
 <translation id="1812975699435941848">Educação em saúde e treinamento médico</translation>
-<translation id="1813414402673211292">Remover dados de navegação</translation>
 <translation id="1816436748874040213">Pode pedir para rolar a tela e aplicar zoom em guias compartilhadas</translation>
 <translation id="1818522458013171885">Desbloquear</translation>
 <translation id="1818585559878922121">Documentários</translation>
@@ -875,7 +876,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2647086987482648627">Tecido (semibrilho)</translation>
 <translation id="264810637653812429">Nenhum dispositivo compatível encontrado.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para limpar o histórico de navegação, cookies, cache e muito mais nas configurações do Chrome</translation>
 <translation id="2650446666397867134">O acesso ao arquivo foi negado</translation>
 <translation id="2651465929321991146">Histórico e guias</translation>
 <translation id="2653659639078652383">Enviar</translation>
@@ -1205,7 +1205,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="33073482541490531">A senha que você usou foi encontrada em uma violação de dados. O Gerenciador de senhas recomenda que você a mude imediatamente.</translation>
 <translation id="3307649904964670439">Botão "Personalizar o Chrome". Ative para personalizar a aparência do navegador</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
-<translation id="3310047144791481950">Confira informações que ajudam você a escolher com qual cartão pagar. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Conheça os benefícios do cartão<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Programas de TV de comédia</translation>
 <translation id="3324687287337751929">4 x 6 pol.</translation>
 <translation id="3324983252691184275">Carmim</translation>
@@ -1374,7 +1373,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="3615309852743236517">Manicure e pedicure</translation>
 <translation id="3620239073311576716">Uniformes e roupas de trabalho</translation>
-<translation id="36224234498066874">Remover dados de navegação...</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
 <translation id="3623041590998910684">Para usar a câmera, permita o acesso ao Chrome em <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Filmes românticos</translation>
@@ -1513,6 +1511,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="385489333361351399">Equipamento de foto e vídeo</translation>
 <translation id="3858027520442213535">Atualizar data e hora</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3865339060090354361">Confira aqui os termos do cartão <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Ciência</translation>
 <translation id="3875783148670536197">Me ajude a fazer isso</translation>
 <translation id="3880456882942693779">Artes e entretenimento</translation>
@@ -1919,6 +1918,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4691093235373904540">Serviços de telhadista</translation>
 <translation id="4692623383562244444">Mecanismos de pesquisa</translation>
 <translation id="4698692901173737941">Lutas</translation>
+<translation id="4701307090948589984">Transmitir para…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
 <translation id="4702656508969495934">Legenda instantânea visível. Use o seletor de janelas para definir o foco</translation>
@@ -2055,7 +2055,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4936134414789135531">Não foi possível localizar o valor de <ph name="VALUE_NAME" /> inserido.</translation>
 <translation id="4936675324097895694">Finanças</translation>
 <translation id="4940163644868678279">Navegação anônima no Chrome</translation>
-<translation id="494111439860963024">Botão "Limpar dados de navegação". Ative para limpar o histórico de navegação, cookies, cache e muito mais nas configurações do Chrome</translation>
 <translation id="4943620199112228840">Usar os microfones</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
 <translation id="4950898438188848926">Botão de alternância de guia. Pressione Enter para mudar para a guia aberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2168,6 +2167,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5161334686036120870">Assunto:</translation>
 <translation id="5161506081086828129">Empilhador 9</translation>
 <translation id="5164798890604758545">Um texto é inserido</translation>
+<translation id="5164928537947209380">Esta ferramenta experimental de IA nem sempre acerta. Para melhorar as respostas, seu conteúdo é enviado ao Google.
+    <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Informe o CVC do <ph name="CREDIT_CARD" />. Depois da confirmação, os detalhes do cartão da sua Conta do Google serão compartilhados com este site.</translation>
 <translation id="5169827969064885044">Você pode perder o acesso à conta da sua organização ou sofrer roubo de identidade. O Chrome recomenda que você altere sua senha agora.</translation>
 <translation id="5171045022955879922">Pesquisar ou digitar URL</translation>
@@ -2290,7 +2291,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="541416427766103491">Empilhador 4</translation>
 <translation id="5414446060143308245">Revise antes de transferir os arquivos</translation>
 <translation id="5414511064953050917">Mover mesmo assim</translation>
-<translation id="5421136146218899937">Remover dados de navegação...</translation>
 <translation id="5421408724705443535">Rock</translation>
 <translation id="5423269318075950257">Monitorar preço</translation>
 <translation id="5425082381151187189">Decoração de casas e interiores</translation>
@@ -2349,6 +2349,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="553377674408670169">Empregos na área de educação</translation>
 <translation id="5536214594743852365">Mostrar a seção "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
+<translation id="5538270463355278784">tela cheia automática</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">Não foi possível encontrar o artigo solicitado.</translation>
 <translation id="5540969246441091044">Hipismo</translation>
@@ -2713,6 +2714,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar arquivos baixados no Chrome</translation>
 <translation id="6254436959401408446">Não há memória suficiente para abrir essa página</translation>
 <translation id="625463612687472648">Parar de permitir</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Ao fazer compras no Chrome, acesse <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opção}one{Ao fazer compras no Chrome, acesse <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opção}other{Ao fazer compras no Chrome, acesse <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opções}}</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenar</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Fazer o download mesmo assim</translation>
@@ -3654,7 +3656,6 @@ Mais detalhes:
 <translation id="8022542098135319050">Agências e serviços de viagem</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para definir o Chrome como navegador padrão do sistema.</translation>
 <translation id="8025119109950072390">Invasores nesse site podem induzir você a fazer algo perigoso, como instalar um software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito).</translation>
-<translation id="8026334261755873520">Remover dados de navegação</translation>
 <translation id="8027077570865220386">Bandeja 15</translation>
 <translation id="8027585818882015174">Botão "Executar a confirmação de segurança do Chrome". Ative para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Formulários Google</translation>
@@ -3849,6 +3850,7 @@ Mais detalhes:
 <translation id="8378714024927312812">Gerenciado pela sua organização</translation>
 <translation id="8380941800586852976">Perigoso</translation>
 <translation id="8381674639488873545">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Tela cheia automática</translation>
 <translation id="838307841291975086">Peruas</translation>
 <translation id="8389532092404711541">Normalmente: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Veículos personalizados e de alta performance</translation>
@@ -3925,7 +3927,6 @@ Mais detalhes:
 <translation id="8527228059738193856">Alto-falantes</translation>
 <translation id="8527681393107582734">Agricultura e silvicultura</translation>
 <translation id="8528149813106025610">Roupas infantis</translation>
-<translation id="8530813470445476232">Limpe o histórico de navegação, os cookies, o cache e muito mais nas configurações do Chrome</translation>
 <translation id="853246364274116957">Broadway e musicais</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visite &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista de URLs bloqueados e outras políticas aplicadas pelo administrador do seu sistema.</translation>
@@ -4066,6 +4067,7 @@ Mais detalhes:
 <translation id="8807160976559152894">Cortar depois de cada página</translation>
 <translation id="8809203544698246977">Os temas bloqueados aparecem aqui</translation>
 <translation id="8811470563853401328">Salvar endereço na conta?</translation>
+<translation id="8811725516933141693">Digite @gemini para conversar com o Gemini</translation>
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para atualizar o Chrome pelas configurações dele</translation>

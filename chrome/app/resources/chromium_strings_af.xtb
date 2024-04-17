@@ -72,7 +72,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2329088755516916767">Wanneer dit aan is, laai Chromium bladsye vooraf wat blaai en soek vinniger maak.</translation>
 <translation id="2343156876103232566">Meld op albei toestelle by Chromium aan om 'n nommer van hier af na jou Android-foon te stuur.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
-<translation id="2359920621792549529"><ph name="BEGIN_LINK" />Meld af uit Chromium<ph name="END_LINK" /> om blaaierdata net van hierdie toestel af uit te vee terwyl jy dit in jou Google-rekening hou.</translation>
 <translation id="2384373936468275798">Chromium-bedryfstelsel kon nie jou data sinkroniseer nie omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Een of meer Chromium-uitbreidings het toegang tot 1 MKT-toestel gehad}=1{Een of meer Chromium-uitbreidings het tans toegang tot 1 MKT-toestel}other{Een of meer Chromium-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="2401032172288869980">Chromium het kamera- en mikrofoontoestemming vir hierdie werf nodig</translation>
@@ -252,6 +251,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Wys Chromium in hierdie taal</translation>
 <translation id="569897634095159764">Kon nie aan die internet koppel nie. Instaanbediener vereis stawing.</translation>
+<translation id="5800158606660203929">Pasmaak en beheer Chromium. Stel Chromium as jou verstek.</translation>
 <translation id="5809516625706423866">Kon nie aan die internet koppel nie. HTTP 401 ongemagtig. Gaan asseblief jou proxy-opstelling na.</translation>
 <translation id="5862307444128926510">Welkom by Chromium</translation>
 <translation id="5883558403894052917">Chromium het bevind dat hierdie items wanware bevat:</translation>

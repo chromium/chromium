@@ -65,7 +65,6 @@
 <translation id="1273937721055267968"><ph name="DOMAIN" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="1283039547216852943">ವಿಸ್ತರಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1289059016768036948">ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮನ್ನು ಕೇಳಲಾಗುತ್ತದೆ</translation>
-<translation id="1291207594882862231">ಇತಿಹಾಸ, ಕುಕೀಗಳು, ಸೈಟ್‌ ಡೇಟಾ, ಕ್ಯಾಷ್ ಅನ್ನು ತೆರವುಗೊಳಿಸಿ…</translation>
 <translation id="129553762522093515">ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಲಾಗಿರುವುದು</translation>
 <translation id="1298077576058087471">ಶೇಕಡಾ 60 ರಷ್ಟು ಡೇಟಾವನ್ನು ಉಳಿಸಿ, ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ</translation>
 <translation id="1303339473099049190">ಆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಬರೆದಿರುವುದು ಸರಿ ಇದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -382,7 +381,6 @@
 <translation id="2992473221983447149">ಚಿತ್ರದ ವಿವರಣೆಗಳು</translation>
 <translation id="2996291259634659425">ಪಾಸ್‌ಫ್ರೇಸ್ ರಚಿಸಿ</translation>
 <translation id="2996809686854298943">URL ಅಗತ್ಯವಿದೆ</translation>
-<translation id="2996932914629936323">ಎಲ್ಲಾ ಸಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳಿಂದ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="2997081575621687554">ತಮ್ಮ ಪುಟದಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಖಾಸಗಿಯಾಗಿ, ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಲು Google ಸೈಟ್ ವಿನಂತಿಸಿದಾಗ, ಕುಕೀಗಳನ್ನು ಬಳಸದೆ Google ಸರ್ವರ್‌ಗಳ ಮೂಲಕ Chrome, ಪುಟಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡುತ್ತದೆ ಮತ್ತು ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡುತ್ತದೆ. ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಲಾದ ಸೈಟ್‌ನಿಂದ ಇದು ನಿಮ್ಮ ಗುರುತನ್ನು ಮರೆಮಾಡುತ್ತದೆ.</translation>
 <translation id="3003253259757197230">ನೀವು ಮುಂದೆ ಯಾವ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಬಹುದು ಎಂಬುದನ್ನು ಊಹಿಸಲು ಮತ್ತು ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟದ ಕುರಿತಾದ ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿಯನ್ನು ನಿಮಗೆ ತೋರಿಸಲು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3026955690410463085">ಲಿಂಕ್ ಸೇರಿಸಿ</translation>
@@ -545,7 +543,6 @@
 <translation id="3932390316856284148">ಸೈನ್ ಇನ್ ಮಾಡುವ ಕೆಳಭಾಗದ ಶೀಟ್ ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆದಿದೆ.</translation>
 <translation id="393697183122708255">ಯಾವುದೇ ಸಕ್ರಿಯಗೊಳಿಸಿದ ಧ್ವನಿ ಹುಡುಕಾಟ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="395377504920307820">ಖಾತೆಯಿಲ್ಲದೆ ಬಳಸಿ</translation>
-<translation id="3958287878205277013">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಅಜ್ಞಾತ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{ಸಿದ್ಧವಾದಾಗ, ನಿಮ್ಮ ಪುಟವನ್ನು Chrome ಲೋಡ್ ಮಾಡುತ್ತದೆ}one{ಸಿದ್ಧವಾದಾಗ, ನಿಮ್ಮ ಪುಟಗಳನ್ನು Chrome ಲೋಡ್ ಮಾಡುತ್ತದೆ}other{ಸಿದ್ಧವಾದಾಗ, ನಿಮ್ಮ ಪುಟಗಳನ್ನು Chrome ಲೋಡ್ ಮಾಡುತ್ತದೆ}}</translation>
 <translation id="3962119236270174787">ಅಪಾಯಕಾರಿ ಎಂದು ತಿಳಿದಿರುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆ</translation>
 <translation id="3969142555815019568">Chrome ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
@@ -852,7 +849,6 @@
 <translation id="5468068603361015296">ಹೇಗಿದ್ದರೂ <ph name="FILE_NAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="548278423535722844">ನಕ್ಷೆಗಳ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="5486841595534124508">ನನ್ನ ಚಟುವಟಿಕೆ ಪುಟಕ್ಕೆ ರೀಡೈರೆಕ್ಟ್ ಮಾಡುವ ಪುಟದ ಒಳನೋಟಗಳ ಹಬ್‌ಗೆ ಗೌಪ್ಯತೆ ಸೂಚನೆಯ ಲೋಗೋ.</translation>
-<translation id="5487521232677179737">ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="5492637351392383067">ಸಾಧನದಲ್ಲಿನ ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
 <translation id="5514904542973294328">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರಿಂದ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5515439363601853141">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ವೀಕ್ಷಿಸಲು ಅನ್‌ಲಾಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
@@ -891,7 +887,6 @@
 <translation id="5683547024293500885">ಅಪ್‌ಡೇಟ್‌ಗಳಿವೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5686790454216892815">ಫೈಲ್‌ನ ಹೆಸರು ತುಂಬಾ ಉದ್ದವಾಗಿದೆ</translation>
 <translation id="5687606994963670306">Chrome 30 ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಸೈಟ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಳಿಸುತ್ತದೆ. ನೀವು ಪುನಃ ಭೇಟಿ ನೀಡುವ ಸೈಟ್, ಪಟ್ಟಿಯಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳಬಹುದು. ಅಥವಾ ನಿಮಗಾಗಿ ಜಾಹೀರಾತುಗಳನ್ನು ಸೂಚಿಸದಂತೆ ನೀವು ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಬಹುದು. <ph name="BEGIN_LINK" />Chrome ನಲ್ಲಿ ನಿಮ್ಮ ಜಾಹೀರಾತು ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸುವ<ph name="END_LINK" /> ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
-<translation id="569435661099256888">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ನೋಡಬಹುದು ಅಥವಾ ನಿಮ್ಮ ಇತಿಹಾಸದಿಂದ ಅವುಗಳನ್ನು ತೆರವುಗೊಳಿಸಬಹುದು</translation>
 <translation id="569536719314091526">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು ಬಟನ್ ಮೂಲಕ ಈ ಪುಟವನ್ನು ಯಾವ ಭಾಷೆಗಾದರೂ ಅನುವಾದಿಸಿ</translation>
 <translation id="5696597120588531049">ಡೇಟಾ ಉಲ್ಲಂಘನೆಗಳು, ಸುರಕ್ಷಿತವಲ್ಲದ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು Chrome ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
 <translation id="5698878456427040674">ಆಯ್ಕೆಮಾಡಿದ ಖಾತೆಯು ಬೆಂಬಲಿತವಾಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
@@ -918,7 +913,6 @@
 <translation id="5780792035410621042">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಕಲಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಅನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> ಯಲ್ಲಿ <ph name="SPACE_USED" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5795872532621730126">ಹುಡುಕಿ ಮತ್ತು ಬ್ರೌಸ್ ಮಾಡಿ</translation>
-<translation id="5797521893972859201">ಹುಡುಕಾಟ ಪೆಟ್ಟಿಗೆಯು ಸೇರಿದಂತೆ, ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="5797949256525811424">ನಿರ್ಬಂಧಿಸಲಾದ ವಿಷಯ</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ಗಂಟೆಯ ಹಿಂದೆ}one{# ಗಂಟೆಗಳ ಹಿಂದೆ}other{# ಗಂಟೆಗಳ ಹಿಂದೆ}}</translation>
 <translation id="5810288467834065221">ಕೃತಿಸ್ವಾಮ್ಯ <ph name="YEAR" /> Google LLC. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
@@ -1057,6 +1051,7 @@
 <translation id="6477928892249167417">ಈ ಸೈಟ್‌ಗಳು ನಿಮಗೆ ಪ್ರಮುಖವಾದವು:</translation>
 <translation id="6481963882741794338">ವೈಯಕ್ತೀಕರಣ ಮತ್ತು ಇತರ ಉದ್ದೇಶಗಳಿಗಾಗಿ Chrome ಮತ್ತು ಇತರ Google ಸೇವೆಗಳನ್ನು ಲಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="6482749332252372425">ಸಂಗ್ರಹಣೆ ಸ್ಥಳದ ಕೊರತೆಯ ಕಾರಣದಿಂದ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
+<translation id="6495590690749880440">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ತೆರಯಬೇಕೆ?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ಫೈಲ್ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ}}</translation>
 <translation id="6508722015517270189">Chrome ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="6518133107902771759">ಪರಿಶೀಲಿಸಿ</translation>
@@ -1092,7 +1087,6 @@
 <translation id="6637100877383020115">ಆ್ಯಪ್ ಅನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, Chrome ಬಳಕೆ ಮತ್ತು ಕ್ರ್ಯಾಶ್ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ. <ph name="BEGIN_UMA_LINK" />ನಿರ್ವಹಿಸಿ<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">ಎಲ್ಲಾ ಸಮಯದಲ್ಲಿ ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
-<translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6645629752388991326">ಯಾವ ಸಾಧನಗಳು ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಲು ಈ ಸಾಧನವನ್ನು ಭದ್ರತಾ ಕೀಯಾಗಿ ಬಳಸಿ.</translation>
 <translation id="6646696210740573446">ನಿಮ್ಮ IP ವಿಳಾಸವನ್ನು ಮರೆಮಾಡುವ ಗೌಪ್ಯತೆ ಸರ್ವರ್ ಮೂಲಕ URL ನ ಮಬ್ಬುಗೊಳಿಸಿದ ಭಾಗವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ. ಯಾವುದಾದರೂ ಸೈಟ್ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕದಿಯಲು ಪ್ರಯತ್ನಿಸಿದರೆ ಅಥವಾ ನೀವು ಹಾನಿಕಾರಕ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದಾಗ, Chrome ಪುಟದ ಕಂಟೆಂಟ್‌ನ ಬಿಟ್‌ಗಳು ಸೇರಿದಂತೆ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ.</translation>
 <translation id="6647441008198474441">ನೀವು ಮುಂದೆ ಯಾವ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಬಹುದು ಎಂಬುದನ್ನು ಊಹಿಸಲು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
@@ -1291,8 +1285,6 @@
 <translation id="752220631458524187">ನೀವು ಪೂರ್ಣಗೊಳಿಸಿದ ನಂತರ ಕನೆಕ್ಷನ್ ರದ್ದುಮಾಡಿ</translation>
 <translation id="7523960634226602883">Google Lens ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಕ್ಯಾಮರಾದ ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="752731652852882757">ಅಜ್ಞಾತ ಮೋಡ್ ಬಳಸುವಾಗ ನಿರ್ಬಂಧಿಸಿ</translation>
-<translation id="7562080006725997899">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
-<translation id="756809126120519699">Chrome ಡೇಟಾ ತೆರವುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7577900504646297215">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ಫೈಲ್ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}one{<ph name="FILES_DOWNLOADED_MANY" /> ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}other{<ph name="FILES_DOWNLOADED_MANY" /> ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7581273696622423628">ಸಮೀಕ್ಷೆಯನ್ನು ಕೈಗೊಳ್ಳಿ</translation>
@@ -1325,14 +1317,12 @@
 <translation id="7697383401610880082">ಹ್ಯಾಂಡಲ್ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> ನಲ್ಲಿ ಇಮೇಲ್ ರಚಿಸಿ</translation>
 <translation id="7702029078562412515">ಪ್ರಶ್ನೆ ಟೈಲ್‌ಗಳು</translation>
-<translation id="7702388902581909985">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸುವುದರಿಂದ ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಲಾಗ್ ಔಟ್ ಆಗುವುದಿಲ್ಲ. ಇದನ್ನು ಮಾಡಲು, <ph name="BEGIN_LINK1" />Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">ಮೊಬೈಲ್‌ ಡೇಟಾ ಬಳಸಿ</translation>
 <translation id="7709918231054955894">ನಿಮ್ಮ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="7733878270780732638">ಸಾಧನದಲ್ಲಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ.</translation>
 <translation id="7759809451544302770">ಐಚ್ಛಿಕ</translation>
 <translation id="7762668264895820836">ಎಸ್‌ಡಿ ಕಾರ್ಡ್ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ವಿಳಾಸ ಸೇರಿಸಿ</translation>
-<translation id="7766587497031415281">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲು ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="7772032839648071052">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1391,7 +1381,6 @@
 <translation id="8013372441983637696">ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ Chrome ಡೇಟಾವನ್ನು ಸಹ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="8015452622527143194">ಪುಟದಲ್ಲಿರುವ ಪ್ರತಿಯೊಂದನ್ನೂ ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಕ್ಕೆ ಹಿಂತಿರುಗಿಸಿ</translation>
 <translation id="8026238112629815203">ಈ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹೇಗೆ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ ಎಂಬುದನ್ನು ನಾವು ಬದಲಾಯಿಸಿದ್ದೇವೆ</translation>
-<translation id="8026334261755873520">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="8027863900915310177">ಎಲ್ಲಿಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8030852056903932865">ಅನುಮೋದಿಸಿ</translation>
 <translation id="8032569120109842252">ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -1488,6 +1477,7 @@
 <translation id="84594714173170813">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾ ಬಳಕೆಯನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="8460448946170646641">ಪ್ರಮುಖ ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತಾ ನಿಯಂತ್ರಣಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="8473863474539038330">ವಿಳಾಸಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
+<translation id="8477178913400731244">ಡೇಟಾ ಅಳಿಸಿ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ಇತಿಹಾಸ ಪುಟ ತೆರೆಯಿರಿ</translation>
 <translation id="8493948351860045254">ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>
@@ -1526,7 +1516,6 @@
 <translation id="8636825310635137004">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ.</translation>
 <translation id="864544049772947936">ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">ಅಪಾಯಕಾರಿ ಘಟನೆಗಳು ಸಂಭವಿಸುವ ಮೊದಲೇ, ಅವುಗಳನ್ನು ಪತ್ತೆಹಚ್ಚುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ</translation>
-<translation id="8655129584991699539">ನೀವು ಡೇಟಾವನ್ನು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ತೆರವುಗೊಳಿಸಬಹುದು</translation>
 <translation id="8664215986015753476">ನಿಮ್ಮದೇ ಆದ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="8664979001105139458">ಫೈಲ್ ಹೆಸರು ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆಗೆ <ph name="SITE_ETLD_PLUS_ONE" /> ಗೆ ಸೈನ್ ಅಪ್ ಮಾಡಿ</translation>

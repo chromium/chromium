@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
 <translation id="3069226013421428034">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইনৰ অনুমতি দিয়ক।</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{কাইলৈ ম্যাদ উকলিব}one{# দিনত ম্যাদ উকলিব}other{# দিনত ম্যাদ উকলিব}}</translation>
 <translation id="310297983047869047">পূৰ্বৱৰ্তী শ্লাইড</translation>
 <translation id="3109724472072898302">সংকুচিত কৰা আছে</translation>
 <translation id="3114012059975132928">ভিডিঅ’ প্লে’য়াৰ</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">অনুমতি দিয়া হৈছে</translation>
 <translation id="429312253194641664">ছাইটটোৱে মিডিয়া প্লে’ কৰি আছে</translation>
 <translation id="42981349822642051">বিস্তাৰ কৰক</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{কাইলৈ ম্যাদ উকলিব}one{# দিনত ম্যাদ উকলিব}other{# দিনত ম্যাদ উকলিব}}</translation>
 <translation id="4336566011000459927">Chromeএ আজি পুনৰ কুকি সীমিত কৰিব</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> আপোনাৰ অন্তিম টেব</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />ৰ অধীনত থকা আটাইবোৰ ছাইট</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="757524316907819857">সুৰক্ষিত সমল প্লে’ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
 <translation id="7594634374516752650">এটা ব্লুটুথ ডিভাইচৰ সৈতে সংযুক্ত হৈছে</translation>
-<translation id="7641339528570811325">ব্ৰাউজ কৰা ডেটা মচক…</translation>
 <translation id="7649070708921625228">সহায়</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7667547420449112975">অষ্ট্ৰেলিয়াৰ বিস্ময়কৰ যাদুকৰ</translation>

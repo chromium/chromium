@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Ja s'ha fet el seguiment d'aquest paquet a Chromium.</translation>
 <translation id="1707458603865303524">Utilitza Chromium cada vegada que toquis enllaços en missatges o en altres aplicacions.</translation>
 <translation id="1722370509450468186">La contrasenya es desarà al teu compte (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Dades de Chromium esborrades</translation>
 <translation id="1791845338122684020">Obre la pàgina de l'historial de Chromium.</translation>
 <translation id="1838412507805038478">Chromium ha verificat que <ph name="ISSUER" /> ha emès el certificat d'aquest lloc web.</translation>
 <translation id="1843424232666537147">Chromium té funcions que t'ajuden a gestionar les teves dades d'Internet i la rapidesa amb què es carreguen les pàgines web.
@@ -85,7 +84,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
 <translation id="347967311580159871">Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chromium, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">La contrasenya no s'ha compartit. Comprova la connexió a Internet i assegura't que tens la sessió iniciada a Chromium. Després, torna-ho a provar.</translation>
-<translation id="3554027294407525061">Esborra les dades de navegació a Chromium.</translation>
 <translation id="3567399274263440288">Per treure el màxim profit de Chromium, inicia-hi la sessió amb el teu Compte de Google.</translation>
 <translation id="3634039384458740619">Obre la configuració de Chromium</translation>
 <translation id="3639997914391704523">Chromium pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
@@ -136,7 +134,6 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="5042011327527167688">Toca Mostra amb Google Maps a Chromium.</translation>
 <translation id="5044871537677053278">Chromium detecta les adreces i utilitza Google Maps per oferir-te indicacions i informació local.</translation>
 <translation id="5048795749726991615">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, utilitza Chromium per a Emplenament automàtic</translation>
-<translation id="5076601183701536878">Esborra les dades de navegació a Chromium</translation>
 <translation id="5124429847818367226">Ara pots utilitzar Chromium cada vegada que naveguis o toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="5131565040785979529">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què tens la sessió iniciada i com s'utilitza Chromium.</translation>
 <translation id="5146749061471423558">Afegeix adreces d'interès a Chromium</translation>

@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Chrome 아이콘을 길게 누른 후 'Edit Home Screen'(홈 화면 편집) 클릭</translation>
 <translation id="1066101356081285416">Chrome은 사용자가 방문한 사이트에서 운송장 번호를 감지하여 새 탭 페이지에 배송 현황을 표시합니다. 이 기능을 제공하고 모든 사용자를 위해 Google 쇼핑 기능을 개선하기 위해 운송장 번호와 웹사이트 이름이 Google로 전송됩니다. <ph name="BEGIN_LINK" />배송 추적 설정<ph name="END_LINK" />에서 언제든지 업데이트할 수 있습니다.</translation>
 <translation id="1085696779717592361">Chrome을 기본 브라우저로 사용</translation>
-<translation id="1105362920864247682">Chrome에서 인터넷 사용 기록을 삭제합니다.</translation>
 <translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="1177414119866731261">Chrome 메뉴 열기</translation>
 <translation id="1180362651362502943">Google 계정의 Chrome 데이터를 계속 사용하세요.</translation>
@@ -77,7 +76,6 @@
 <translation id="2750626042242931740">Chrome 설정에서 언제든지 선택사항을 업데이트할 수 있습니다</translation>
 <translation id="2767464022270041271">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Google 비밀번호 관리자에서 확인할 수 있습니다.</translation>
 <translation id="2789947168960170215">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
-<translation id="2868822340714096138">Chrome에서 인터넷 사용 기록 삭제</translation>
 <translation id="2869959624320573933">Chrome에 로그인</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="2952581218264071393">1. Chrome 설정 열기</translation>
@@ -225,7 +223,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7466693328838535498">검색 위젯 상자에 Chrome을 입력합니다.</translation>
 <translation id="746684838091935575">3. Chrome 선택하기</translation>
 <translation id="7492574581995589075">조직에서 Google 계정에 Chrome 데이터를 사용하고 저장하는 기능을 사용 중지했습니다. 새 북마크, 비밀번호 등이 이 기기에만 저장됩니다.</translation>
-<translation id="756809126120519699">Chrome 데이터 삭제됨</translation>
 <translation id="7581063337314642333">Chrome에서 탭 그리드로 이동</translation>
 <translation id="7662994914830945754">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="7669869107155339016">Chrome 설정으로 이동합니다.</translation>

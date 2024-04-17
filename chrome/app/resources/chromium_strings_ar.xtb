@@ -68,7 +68,6 @@
 <translation id="2329088755516916767">‏عند تفعيل هذا الإعداد، يحمِّل Chromium الصفحات مسبقًا لزيادة سرعة التصفّح والبحث.</translation>
 <translation id="2343156876103232566">‏لإرسال رقم من هذا الجهاز إلى جهازك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى Chromium على الجهازَين.</translation>
 <translation id="2359808026110333948">متابعة</translation>
-<translation id="2359920621792549529">‏لمحو بيانات التصفُّح من هذا الجهاز فقط والاحتفاظ بها في حسابك على Google، يُرجى <ph name="BEGIN_LINK" />تسجيل الخروج من Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">‏تعذّر على نظام التشغيل Chromium مزامنة بياناتك لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏كانت إضافة واحدة أو أكثر من إضافات Chromium تصل إلى جهاز HID واحد}=1{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى جهاز HID واحد}two{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى جهازَي HID}few{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # أجهزة HID}many{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # جهاز HID}other{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # جهاز HID}}</translation>
 <translation id="2401032172288869980">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا والميكروفون من أجل هذا الموقع الإلكتروني.</translation>
@@ -248,6 +247,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏عرض Chromium بهذه اللغة</translation>
 <translation id="569897634095159764">يتعذّر الاتصال بالإنترنت. يتطلب الخادم الوكيل المصادقة.</translation>
+<translation id="5800158606660203929">‏يمكنك تخصيص Chromium والتحكّم فيه وضبطه كمتصفِّح تلقائي.</translation>
 <translation id="5809516625706423866">‏تعذر الاتصال بالإنترنت. بروتوكول HTTP 401 محظور. يُرجى التحقق من إعدادات الخادم الوكيل.</translation>
 <translation id="5862307444128926510">‏مرحبًا بك في Chromium</translation>
 <translation id="5883558403894052917">‏رصد Chromium أنّ هذه العناصر تحتوي على برامج ضارة:</translation>

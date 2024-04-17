@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">ආපසු සාදරයෙන් පිළිගනිමු, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">කාඩ්පත් හිමිකරුගේ නම</translation>
 <translation id="1809939268435598390">ෆෝල්ඩරය මකන්න</translation>
-<translation id="1813414402673211292">බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්නෙ</translation>
 <translation id="1815941218935345331">මුරකේතය</translation>
 <translation id="1820259098641718022">කියවීම් ලැයිස්තුවට එක් කරන ලදී</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">වෙබ් පිටුව පූරණය කරන ලදී</translation>
 <translation id="223356358902285214">වෙබ් සහ යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="2234827758954819389">පෞද්ගලිකත්ව මාර්ගෝපදේශය</translation>
-<translation id="2239626343334228536">බ්‍රවුස් කිරීමේ දත්ත හිස් කිරීම...</translation>
 <translation id="2251686759395008410">මෙනුව → ඉතිහාසය</translation>
 <translation id="2252674110805316998">වෙබ් සෙවීම</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> සඳහා Drive තුළ සුරැකීම.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">නව අප්‍රසිද්ධ කවුළුව</translation>
 <translation id="3488501490964659223">පටිති වසා ඇති අතර බ්‍රවුස් කිරීමේ දත්ත මකා දමන ලදි. ඔබ වරනු ලැබ ඇත</translation>
 <translation id="3493531032208478708">යෝජිත අන්තර්ගතය ගැන <ph name="BEGIN_LINK" />තවත් දැනගන්න<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">බ්‍රවුස් කිරීමේ දත්ත හිස් කිරීම තහවුරු කරන්න</translation>
 <translation id="35083190962747987">${url} විවෘත කරන්න</translation>
 <translation id="3519193562722059437">වෙබය බ්‍රවුස් කිරීමට පටිත්තක් විවෘත කරන්න.</translation>
 <translation id="3519905498307021260">{count,plural, =1{පටිත්ත විවෘත කරන්න}one{පටිති {count} විවෘත කරන්න}other{පටිති {count} විවෘත කරන්න}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">පිටුසන් වෙත එක් කරන්න</translation>
 <translation id="355101282835380364">ගිණුම තුළ සුරකින්න…</translation>
 <translation id="3551320343578183772">ටැබය වසන්න</translation>
-<translation id="3565207542107370586">බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්න…</translation>
 <translation id="3565930036634619844">පටිත්ත. <ph name="NUMBER_OF_TABS" />න් <ph name="TAB_INDEX" />.</translation>
 <translation id="3570693105179140209">තවත් මුරපද සඳහා දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="3575234738189584619">Lens සමග සොයන්න</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438">ඔබ අදහස් කළේ <ph name="WEBSITE" /> ද?</translation>
 <translation id="6032845897905314562">නව විශේෂාංගය</translation>
 <translation id="6033598293589037429">ලබා ගැනීමට සූදානම්</translation>
-<translation id="6036215966221662377">බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්න</translation>
 <translation id="6036514205982097558">ඔබගේ සියලු ටැබ එක් බ්‍රව්සරයක</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">වසන්න</translation>
@@ -1152,7 +1147,6 @@
 <translation id="6859944681507688231">QR කේතයක් හෝ ණය කාඩ්පත ස්කෑන් කිරීමට සැකසීම් වෙතින් කැමරාව සබල කරන්න.</translation>
 <translation id="6867369562105931222">මුරපදය</translation>
 <translation id="686899695320434745">ලිපින ඔබේ මුර වැකිකඩ සමග සංකේතන නොකෙරේ. මෙය ඔබට අනෙකුත් Google සේවා තුළ ඒවා භාවිත කිරීමට ඉඩ දෙයි.</translation>
-<translation id="6869389390665537774">ඔබට ඔබ පිවිස ඇති පිටු බැලීමට හෝ ඒවා ඔබේ ඉතිහාසයෙන් හිස් කිරීමට හැකිය</translation>
 <translation id="687135068089457384">සැකසීම් පෙන්වන්න</translation>
 <translation id="6873263987691478642">විභෙදුම් දසුන</translation>
 <translation id="6882836635272038266">අනතුරුදායක බවට දන්නා වෙබ් අඩවිවලට, බාගැනීම්වලට, සහ දිගුවලට එරෙහි සම්මත ආරක්‍ෂාව.</translation>
@@ -1300,7 +1294,6 @@
 <translation id="7719038820139380048">ඔබේ රුචිකත්වයන් මත පදනම්ව අන්තර්ගතය ලබා ගැනීමට පුරන්න.</translation>
 <translation id="7720410380936703141">නැවත උත්සාහ කරන්න</translation>
 <translation id="7724085059277147439">{count,plural, =1{ඔබේ Google ගිණුමේ, {email} අයිතමය සුරැකිණි}one{ඔබේ Google ගිණුමේ, {email} අයිතම සුරැකිණි}other{ඔබේ Google ගිණුමේ, {email} අයිතම සුරැකිණි}}</translation>
-<translation id="7726702057919861819">මෙනුව → ඉතිහාසය → බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්න</translation>
 <translation id="7729458878441927652">ඔබේ අනෙකුත් උපාංගවලින් පටිති බැලීම සඳහා, ඔබේ පටිති සහ ඉතිහාසය සමමුහුර්ත කරන්න.</translation>
 <translation id="7730973429297233609">ඔබට <ph name="FILENAME" /> - <ph name="FILESIZE" /> සුරැකීමට භාවිතා කිරීමට අවශ්‍ය ගිණුම තෝරන්න</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. මෙම උපාංගය මත පමණි.</translation>
@@ -1545,7 +1538,6 @@
 <translation id="8870413625673593573">මෑතකදී වසන ලද</translation>
 <translation id="8876882697946675716">ඔබගේ උපාංග සමමුහුර්තව තබා ගන්න</translation>
 <translation id="8879604564928138696">උත්සාහ කිරීමට දෙවරක් තට්ටු කරන්න</translation>
-<translation id="8879984884633913185">බ්‍රවුස් කිරීමේ දත්ත හිස් කිරීම සඟවන්න</translation>
 <translation id="8881801611828450202">මෙම රූපය සඳහා <ph name="SEARCH_ENGINE" /> සොයන්න</translation>
 <translation id="8898822736010347272">වෙබය මත නව තර්ජන සොයා ගෙන සියලු දෙනා ආරක්ෂා කිරීමට උදවු කිරීමට Google වෙත ඔබ පැමිණෙන සමහර පිටුවල URL, සීමිත පද්ධති තොරතුරු, සහ යම් පිටු අන්තර්ගතය යවයි.</translation>
 <translation id="890565330728586731">ආපසු</translation>

@@ -341,6 +341,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="160851722280695521">Spill Dino Run-spillet i Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Andre rull</translation>
+<translation id="1611854593425834707">Lukk enhetslisten for casting</translation>
 <translation id="1612199629998703524">Administrer emner</translation>
 <translation id="1615178538289490617">Opphev tilgangen for <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">På grunn av en administratorregel er skjermdumper deaktivert når konfidensielt innhold er synlig</translation>
@@ -453,7 +454,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1810391395243432441">Beskytt passord med skjermlåsen</translation>
 <translation id="1812527064848182527">liggende</translation>
 <translation id="1812975699435941848">Helseutdanning og medisinsk opplæring</translation>
-<translation id="1813414402673211292">Slett nettlesingsdata</translation>
 <translation id="1816436748874040213">Kan be om å få rulle og zoome på delte faner</translation>
 <translation id="1818522458013171885">Opphev blokkering</translation>
 <translation id="1818585559878922121">Dokumentarfilmer</translation>
@@ -876,7 +876,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2647086987482648627">Stoff (halvglans)</translation>
 <translation id="264810637653812429">Fant ingen kompatible enheter.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å tømme nettleserloggen, slette informasjonskapsler, tømme bufferen med mer i Chrome-innstillingene</translation>
 <translation id="2650446666397867134">Tilgang til filen ble nektet</translation>
 <translation id="2651465929321991146">Logg og faner</translation>
 <translation id="2653659639078652383">Send inn</translation>
@@ -1206,7 +1205,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="33073482541490531">Passordet du nettopp brukte, er funnet i et databrudd. Passordlagring anbefaler at du endrer dette passordet nå.</translation>
 <translation id="3307649904964670439">Knappen «Tilpass Chrome» – aktiver for å tilpasse nettleserens utseende</translation>
 <translation id="3308006649705061278">Organisasjonsenhet (OU)</translation>
-<translation id="3310047144791481950">Se informasjon som gjør det enklere å velge hvilket kort du vil betale med. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Finn ut mer om kortfordeler<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV-komedier</translation>
 <translation id="3324687287337751929">4 x 6 tommer</translation>
 <translation id="3324983252691184275">Karmosinrød</translation>
@@ -1375,7 +1373,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å kjøre en sikkerhetssjekk i Chrome-innstillingene</translation>
 <translation id="3615309852743236517">Manikyr og pedikyr</translation>
 <translation id="3620239073311576716">Uniformer og arbeidstøy</translation>
-<translation id="36224234498066874">Slett alle nettlesingsdata</translation>
 <translation id="362276910939193118">Vis fullstendig logg</translation>
 <translation id="3623041590998910684">For å bruke kameraet må du gi Chrome tilgang i <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Romantiske filmer</translation>
@@ -1921,6 +1918,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4691093235373904540">Taktekking</translation>
 <translation id="4692623383562244444">Søkemotorer</translation>
 <translation id="4698692901173737941">Kampsport</translation>
+<translation id="4701307090948589984">Cast til</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Side</translation>
 <translation id="4702656508969495934">Direkteteksting er synlig – bruk vindusbytteren for å fokusere</translation>
@@ -2057,7 +2055,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4936134414789135531">Fant ikke angitt <ph name="VALUE_NAME" />.</translation>
 <translation id="4936675324097895694">Finans</translation>
 <translation id="4940163644868678279">Inkognito i Chrome</translation>
-<translation id="494111439860963024">Knappen «Slett nettlesingsdata» – aktiver for å tømme nettleserloggen, slette informasjonskapsler, tømme bufferen med mer i Chrome-innstillingene</translation>
 <translation id="4943620199112228840">Bruk mikrofonene dine</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
 <translation id="4950898438188848926">Knappen for å bytte fane – trykk på Enter for å bytte til den åpne fanen, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2171,6 +2168,8 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5161334686036120870">Emne:</translation>
 <translation id="5161506081086828129">Hylle 9</translation>
 <translation id="5164798890604758545">Tekst skrives inn</translation>
+<translation id="5164928537947209380">Dette AI-verktøyet på forsøksstadiet kan gjøre feil av og til. Innholdet ditt blir sendt til Google, slik at vi kan gjøre funksjonen bedre.
+    <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Skriv inn verifiseringskoden for <ph name="CREDIT_CARD" />. Etter at du har bekreftet, deles kortopplysningene fra Google-kontoen din med dette nettstedet.</translation>
 <translation id="5169827969064885044">Du kan miste tilgangen til organisasjonskontoen din eller bli utsatt for identitetstyveri. Chrome anbefaler at du endrer passordet ditt nå.</translation>
 <translation id="5171045022955879922">Søk, eller skriv inn en nettadresse</translation>
@@ -2293,7 +2292,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="541416427766103491">Hylle 4</translation>
 <translation id="5414446060143308245">Filene må gjennomgås før de kan overføres</translation>
 <translation id="5414511064953050917">Flytt likevel</translation>
-<translation id="5421136146218899937">Slett nettlesingsdata</translation>
 <translation id="5421408724705443535">Rockemusikk</translation>
 <translation id="5423269318075950257">Spor prisen</translation>
 <translation id="5425082381151187189">Hjemme- og interiørdekor</translation>
@@ -3658,7 +3656,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8022542098135319050">Reisebyråer og -tjenester</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å angi Chrome som systemets standardnettleser</translation>
 <translation id="8025119109950072390">Angripere på dette nettstedet prøver kanskje å lure deg til å gjøre farlige ting som å installere programvare eller avsløre personopplysningene dine (for eksempel passord, telefonnumre eller kredittkortinformasjon).</translation>
-<translation id="8026334261755873520">Slett nettlesingsdata</translation>
 <translation id="8027077570865220386">Skuff 15</translation>
 <translation id="8027585818882015174">Knappen «Kjør Chrome-sikkerhetssjekk» – aktiver for å kjøre en sikkerhetssjekk i Chrome-innstillingene</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt skjema i Google Skjemaer raskt</translation>
@@ -3930,7 +3927,6 @@ Mer informasjon:
 <translation id="8527228059738193856">Høyttalere</translation>
 <translation id="8527681393107582734">Jordbruk og skogbruk</translation>
 <translation id="8528149813106025610">Barneklær</translation>
-<translation id="8530813470445476232">Tøm nettleserloggen, slett informasjonskapsler, tøm bufferen med mer i Chrome-innstillingene</translation>
 <translation id="853246364274116957">Broadway og musikaler</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for å se listen over blokkerte nettadresser og andre regler systemadministratoren din har fastsatt.</translation>
@@ -4070,6 +4066,7 @@ Mer informasjon:
 <translation id="8807160976559152894">Beskjær etter hver side</translation>
 <translation id="8809203544698246977">Blokkerte emner vises her</translation>
 <translation id="8811470563853401328">Vil du lagre adressen i kontoen?</translation>
+<translation id="8811725516933141693">Skriv @gemini for å chatte med Gemini</translation>
 <translation id="8813277370772331957">Påminn meg senere</translation>
 <translation id="8814707942599948500">C8-konvolutt</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>

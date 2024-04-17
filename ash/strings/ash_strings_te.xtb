@@ -161,6 +161,7 @@
 <translation id="1569384531973824928">కెమెరా, మైక్రోఫోన్ అనుమతులతో ఇది అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది. మీరు వెబ్ పేజీని రిఫ్రెష్ చేయాల్సి రావచ్చు లేదా యాప్‌ను రీస్టార్ట్ చేయాల్సి రావచ్చు.</translation>
 <translation id="1571697193564730395">'అంతరాయం కలిగించవద్దు'ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">మ్యాగ్నిఫైయర్ ఆన్‌లో ఉన్నప్పుడు జూమ్ - అవుట్ చేయండి</translation>
+<translation id="1582946770779745370">గేమ్ డ్యాష్‌బోర్డ్ అందుబాటులో ఉంది. <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escapeను, తర్వాత <ph name="LAUNCHER_KEY_NAME" /> + gని ఎప్పుడైనా నొక్కి తెరవండి</translation>
 <translation id="1586324912145647027">1 నుండి 8 డెస్క్‌లకు వెళ్లండి</translation>
 <translation id="158838227375272121">Google Classroom వెబ్‌సైట్</translation>
 <translation id="1589090746204042747">ఈ సెషన్‌లో మీ మొత్తం యాక్టివిటీని యాక్సెస్ చేయండి</translation>
@@ -1819,7 +1820,6 @@
 <translation id="8001755249288974029">కర్సర్ నుండి లైన్ ప్రారంభం వరకు ఉన్న టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="8004512796067398576">పెరుగుదల</translation>
 <translation id="8015361438441228492">టాస్క్‌ను ఎడిట్ చేయడం సాధ్యం కాలేదు.</translation>
-<translation id="8026334261755873520">బ్రౌజింగ్ డేటా క్లియర్ చేయండి</translation>
 <translation id="802782383769312836">మునుపటి డెస్క్: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> డెస్క్‌లలో <ph name="DESK_INDEX" />‌వది.</translation>
 <translation id="8029247720646289474">హాట్‌స్పాట్ కనెక్షన్ విఫలమైంది</translation>
 <translation id="8029629653277878342">మరింత సెక్యూరిటీ కోసం పిన్ లేదా పాస్‌వర్డ్‌ కావాలి</translation>

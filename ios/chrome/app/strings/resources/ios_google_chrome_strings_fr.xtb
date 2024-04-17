@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Appuyez de manière prolongée sur l'icône Chrome, puis cliquez sur "Modifier l'écran d'accueil"</translation>
 <translation id="1066101356081285416">Chrome détectera le numéro de suivi sur les sites que vous consulterez et vous présentera les notifications de colis sur la page "Nouvel onglet". Le numéro de suivi du colis et le nom du site Web seront envoyés à Google afin de fournir cette fonctionnalité et d'améliorer les fonctionnalités de shopping Google pour tous. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
-<translation id="1105362920864247682">Effacer les données de navigation dans Chrome.</translation>
 <translation id="1143896152279775643">Votre mot de passe sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
 <translation id="1177414119866731261">Ouvrez le menu Chrome</translation>
 <translation id="1180362651362502943">Continuez d'utiliser les données Chrome de votre compte Google.</translation>
@@ -77,7 +76,6 @@ Points à prendre en compte :
 <translation id="2750626042242931740">Vous pouvez modifier vos sélections à tout moment dans les paramètres Chrome.</translation>
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
 <translation id="2789947168960170215">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Effacer les données de navigation dans Chrome</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2876628302275096482">Découvrez <ph name="BEGIN_LINK" />comment Chrome protège la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Accédez aux paramètres de Chrome</translation>
@@ -225,7 +223,6 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7466693328838535498">Dans le champ "Rechercher des widgets", saisissez "Chrome"</translation>
 <translation id="746684838091935575">3. Sélectionnez Chrome</translation>
 <translation id="7492574581995589075">Votre organisation a désactivé la possibilité d'utiliser et d'enregistrer les données Chrome dans votre compte Google. Les nouveaux favoris, mots de passe, etc. ne seront enregistrés que sur cet appareil.</translation>
-<translation id="756809126120519699">Données de Chrome effacées</translation>
 <translation id="7581063337314642333">Accéder à la grille d'onglets dans Chrome</translation>
 <translation id="7662994914830945754">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, connectez-vous et activez la synchronisation</translation>
 <translation id="7669869107155339016">Accédez aux paramètres Chrome.</translation>

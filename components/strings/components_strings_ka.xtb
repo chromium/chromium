@@ -341,6 +341,7 @@
 <translation id="160851722280695521">დინოზავრის გარბენის თამაშის თამაში Chrome-ში</translation>
 <translation id="161042844686301425">ციანი</translation>
 <translation id="1611101756749861742">მეორე რულონი</translation>
+<translation id="1611854593425834707">ტრანსლირებისთვის განკუთვნილი მოწყობილობების სიის დახურვა</translation>
 <translation id="1612199629998703524">თემების მართვა</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" />-ის წვდომის გაუქმება</translation>
 <translation id="1615402009686901181">ადმინისტრატორის წესების მიხედვით, ეკრანის აღბეჭდვა გათიშულია, როცა ხილულია კონფიდენციალური კონტენტი</translation>
@@ -453,7 +454,6 @@
 <translation id="1810391395243432441">დაიცავით თქვენი პაროლები ეკრანის დაბლოკვის მეთოდის მეშვეობით</translation>
 <translation id="1812527064848182527">პეიზაჟი</translation>
 <translation id="1812975699435941848">სანიტარიული განათლება და სამედიცინო მომზადება</translation>
-<translation id="1813414402673211292">დათვალიერების მონაცემების გასუფთავება</translation>
 <translation id="1816436748874040213">შეუძლია გაზიარებულ ჩანართებში გადაადგილებისა და ,მათი მასშტაბირების თხოვნა</translation>
 <translation id="1818522458013171885">განბლოკვა</translation>
 <translation id="1818585559878922121">დოკუმენტური ფილმები</translation>
@@ -876,7 +876,6 @@
 <translation id="2647086987482648627">ქსოვილი (ნახევარპრიალა)</translation>
 <translation id="264810637653812429">თავსებადი მოწყობილობები ვერ მოიძებნა.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან თქვენი დათვალიერების ისტორიის, ქუქი-ჩანაწერების, ქეშისა და სხვა კონტენტის გასასუფთავებლად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="2650446666397867134">წვდომა ფაილზე აკრძალულია</translation>
 <translation id="2651465929321991146">ისტორია და ჩანართები</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
@@ -1206,7 +1205,6 @@
 <translation id="33073482541490531">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. პაროლების მმართველი გირჩევთ, ახლავე შეცვალოთ ეს პაროლი.</translation>
 <translation id="3307649904964670439">ღილაკი Chrome-ის პარამეტრების დაყენება, თქვენი ბრაუზერის იერსახის დასაყენებლად გაააქტიურეთ ის</translation>
 <translation id="3308006649705061278">ორგანიზაციული ერთეული (OU)</translation>
-<translation id="3310047144791481950">იხილეთ ინფორმაცია, რომელიც დაგეხმარებათ, გადაწყვიტოთ, რომელი ბარათით გადაიხადოთ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />შეიტყვეთ მეტი ბარათების უპირატესობების შესახებ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">სატელევიზიო კომედიები</translation>
 <translation id="3324687287337751929">4 x 6 დუიმი</translation>
 <translation id="3324983252691184275">ალისფერი</translation>
@@ -1375,7 +1373,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან უსაფრთხოების შემოწმების გასაშვებად დააჭირეთ კლავიშს Tab, შემდეგ Enter-ს</translation>
 <translation id="3615309852743236517">მანიკიური და პედიკიური</translation>
 <translation id="3620239073311576716">უნიფორმები და სპეცტანსაცმელი</translation>
-<translation id="36224234498066874">დათ. მონაცემების გასუფთავება…</translation>
 <translation id="362276910939193118">სრული ისტორიის ნახვა</translation>
 <translation id="3623041590998910684">თქვენი კამერა რომ გამოიყენოთ, გახსენით <ph name="LINK" /> და მიანიჭეთ Chrome-ს წვდომა.</translation>
 <translation id="3623398832322170566">რომანტიკული ფილმები</translation>
@@ -1921,6 +1918,7 @@
 <translation id="4691093235373904540">გადახურვა</translation>
 <translation id="4692623383562244444">საძიებო სისტემები</translation>
 <translation id="4698692901173737941">სპორტის საბრძოლო სახეობები</translation>
+<translation id="4701307090948589984">ტრანსლირება...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">გვერდითი</translation>
 <translation id="4702656508969495934">ნაჩვენებია ავტოსუბტიტრი, ფოკუსირებისთვის გამოიყენეთ ფანჯრების გადამრთველი</translation>
@@ -2057,7 +2055,6 @@
 <translation id="4936134414789135531">ჩასმული <ph name="VALUE_NAME" /> ვერ მოიძებნა.</translation>
 <translation id="4936675324097895694">ფინანსები</translation>
 <translation id="4940163644868678279">ინკოგნიტო რეჟიმი Chrome-ში</translation>
-<translation id="494111439860963024">დათვალიერების მონაცემების გასუფთავების ღილაკი, Chrome-ის პარამეტრებიდან თქვენი დათვალიერების ისტორიის, ქუქი-ჩანაწერების, ქეშისა და სხვა კონტენტის გასასუფთავებლად გაააქტიურეთ ის</translation>
 <translation id="4943620199112228840">თქვენი მიკროფონების გამოყენება</translation>
 <translation id="4943872375798546930">შედეგები არ არის</translation>
 <translation id="4950898438188848926">ჩანართის გადართვის ღილაკი, ამ ჩანართზე გადასართველად დააჭირეთ კლავიშს „Enter“, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2111,6 +2108,7 @@
 <translation id="5040262127954254034">კონფიდენციალურობა</translation>
 <translation id="5043480802608081735">თქვენ მიერ კოპირებული ბმული</translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
+<translation id="5048293684454354469">სარეკლამო თემები არის ერთ-ერთი იმ მრავალი საშუალებიდან, რომლებითაც საიტს შეუძლია რეკლამის პერსონალიზება. საიტებს რეკლამის ჩვენება სარეკლამო თემების გარეშეც შეუძლია, თუმცა ის ნაკლებად პერსონალიზებული იქნება. შეიტყვეთ მეტი <ph name="BEGIN_LINK" />რეკლამის კონფიდენციალურობის მართვის<ph name="LINK_END" /> შესახებ.</translation>
 <translation id="5052517576853118371">აქტიური თემები</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ეს ფაილი მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}other{ეს ფაილები მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}}</translation>
 <translation id="505757197798929356">მიუთითეთ გახსნის მიზეზი (სავალდებულო)</translation>
@@ -2170,6 +2168,8 @@
 <translation id="5161334686036120870">თემა:</translation>
 <translation id="5161506081086828129">სტეკერი 9</translation>
 <translation id="5164798890604758545">ტექსტის შეყვანა</translation>
+<translation id="5164928537947209380">ხელოვნურ ინტელექტზე დაფუძნებული ეს ხელსაწყო ექსპერიმენტულია და ყოველთვის სწორ შედეგს ვერ შემოგთავაზებთ. მისი გაუმჯობესების მიზნით, თქვენი კონტენტი იგზავნება Google-ში.
+    <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">შეიყვანეთ <ph name="CREDIT_CARD" />-ის CVC. დადასტურების შემდეგ ბარათის დეტალები თქვენი Google ანგარიშიდან გაზიარდება ამ საიტთან.</translation>
 <translation id="5169827969064885044">თქვენ შეიძლება მოგპარონ პერსონალური მონაცემები, ან დაკარგოთ წვდომა თქვენი ორგანიზაციის ანგარიშზე. Chrome გირჩევთ, ახლავე შეცვალოთ პაროლი.</translation>
 <translation id="5171045022955879922">მოძებნეთ ან აკრიფეთ URL</translation>
@@ -2292,7 +2292,6 @@
 <translation id="541416427766103491">სტეკერი 4</translation>
 <translation id="5414446060143308245">გადატანამდე საჭიროა შემოწმება</translation>
 <translation id="5414511064953050917">მაინც გადატანა</translation>
-<translation id="5421136146218899937">დათვალიერების მონაცემების გასუფთავება…</translation>
 <translation id="5421408724705443535">როკ-მუსიკა</translation>
 <translation id="5423269318075950257">ფასისთვის თვალის მიდევნება</translation>
 <translation id="5425082381151187189">სახლისა და ინტერიერის გაფორმება</translation>
@@ -2328,6 +2327,7 @@
     <ph name="LINE_BREAK" />
     დაუკავშირდით თქვენი სისტემის ადმინისტრატორს.</translation>
 <translation id="549333378215107354">ზომა 3</translation>
+<translation id="5496804587179176046">უსაფრთხოების კოდების შენახვა, უსაფრთხოების კოდები ამჟამად შენახული არ არის</translation>
 <translation id="550365051221576010">ყველაფრის შევსება</translation>
 <translation id="5508443345185481044">კამერები და ვიდეოკამერები</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3657,7 +3657,6 @@
 <translation id="8022542098135319050">ტურისტული სააგენტოები და მომსახურება</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome სისტემის ნაგულისხმევ ბრაუზერად რომ დააყენოთ, დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8025119109950072390">თავდამსხმელებმა ამ საიტზე შეიძლება მოტყუებით რაიმე სახიფათოს გაკეთება გაიძულონ; მაგალითად, დაგაინსტალირებინონ პროგრამული უზრუნველყოფა ან გაგამჟღავნებინონ პერსონალური ინფორმაცია (როგორიცაა პაროლები, ტელეფონის ნომრები თუ საკრედიტო ბარათის მონაცემები).</translation>
-<translation id="8026334261755873520">დათვალიერების მონაცემების გასუფთავება</translation>
 <translation id="8027077570865220386">ლანგარი 15</translation>
 <translation id="8027585818882015174">Chrome-ის უსაფრთხოების შემოწმების გაშვების ღილაკი, Chrome-ის პარამეტრებიდან უსაფრთხოების შემოწმების გასაშვებად გაააქტიურეთ ის</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-ში ახალი ფორმის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -3929,7 +3928,6 @@
 <translation id="8527228059738193856">დინამიკები</translation>
 <translation id="8527681393107582734">სოფლის და სატყეო მეურნეობა</translation>
 <translation id="8528149813106025610">ბავშვთა ტანსაცმელი</translation>
-<translation id="8530813470445476232">გაასუფთავეთ დათვალიერების ისტორია, ქუქი-ჩანაწერები, ქეში და სხვა კონტენტი Chrome-ის პარამეტრებიდან</translation>
 <translation id="853246364274116957">ბროდვეი და მუსიკალური თეატრი</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ეწვიეთ გვერდს &lt;strong&gt;chrome://policy&lt;/strong&gt; დაბლოკილი URL-ების სანახავად და ადმინისტრატორის მიერ გააქტიურებული სხვა წესების დასათვალიერებლად.</translation>
@@ -4069,6 +4067,7 @@
 <translation id="8807160976559152894">შემოჭრა თითოეული გვერდის შემდეგ</translation>
 <translation id="8809203544698246977">დაბლოკილი თემები აქ გამოჩნდება</translation>
 <translation id="8811470563853401328">გსურთ, შეინახოთ მისამართი ანგარიშში?</translation>
+<translation id="8811725516933141693">აკრიფეთ @gemini Gemini-სთან ჩეთისთვის</translation>
 <translation id="8813277370772331957">მოგვიანებით შეხსენება</translation>
 <translation id="8814707942599948500">კონვერტი C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან Chrome-ის გასაახლებლად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>

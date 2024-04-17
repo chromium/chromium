@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">ಮರಳಿ ಸುಸ್ವಾಗತ, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">ಕಾರ್ಡ್‌ಹೋಲ್ಡರ್ ಹೆಸರು</translation>
 <translation id="1809939268435598390">ಫೋಲ್ಡರ್‌ ಅಳಿಸಿ</translation>
-<translation id="1813414402673211292">ಬ್ರೌಸ್ ಆಗುತ್ತಿರುವ ಡಾಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="1815941218935345331">ಪಾಸ್‌ಕೋಡ್</translation>
 <translation id="1820259098641718022">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">ವೆಬ್‌ಪುಟ ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="223356358902285214">ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ</translation>
 <translation id="2234827758954819389">ಗೌಪ್ಯತೆ ಗೈಡ್</translation>
-<translation id="2239626343334228536">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2251686759395008410">ಮೆನು → ಇತಿಹಾಸ</translation>
 <translation id="2252674110805316998">ವೆಬ್ ಹುಡುಕಾಟ</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> ಗಾಗಿ Drive ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
 <translation id="3488501490964659223">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ. ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3493531032208478708">ಸೂಚಿಸಲಾದ ವಿಷಯದ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="35083190962747987">${url} ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3519193562722059437">ವೆಬ್ ಬ್ರೌಸ್ ಮಾಡಲು ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ}one{{count} ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ}other{{count} ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="355101282835380364">ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ…</translation>
 <translation id="3551320343578183772">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
-<translation id="3565207542107370586">ಬ್ರೌಸಿಂಗ್ ಡಾಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ…</translation>
 <translation id="3565930036634619844">ಟ್ಯಾಬ್. <ph name="NUMBER_OF_TABS" /> ರಲ್ಲಿ <ph name="TAB_INDEX" />.</translation>
 <translation id="3570693105179140209">ಇನ್ನಷ್ಟು ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗಾಗಿ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="3575234738189584619">Lens ಮೂಲಕ ಹುಡುಕಿ</translation>
@@ -847,6 +843,7 @@
 <translation id="5407969256130905701">ಬದಲಾವಣೆಗಳನ್ನು ತ್ಯಜಿಸಿ</translation>
 <translation id="5414763847370083940">ಯಾವುದಾದರೂ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕುಸಿತವಾದರೆ ನೀವು ಎಚ್ಚರಿಕೆ ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="5416022985862681400">ಕಳೆದ 7 ದಿನಗಳಲ್ಲಿ</translation>
+<translation id="5416455648658732408">ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಮೂವ್ ಮಾಡಿ</translation>
 <translation id="5423269318075950257">ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="543338862236136125">ಪಾಸ್‌ವರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5433691172869980887">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
@@ -968,7 +965,6 @@
 <translation id="6027945736510816438">ನೀವು ಹುಡುಕುತ್ತಿರುವುದು <ph name="WEBSITE" /> ತಾನೇ?</translation>
 <translation id="6032845897905314562">ಹೊಸ ಫೀಚರ್</translation>
 <translation id="6033598293589037429">ಪಿಕಪ್‌ ಮಾಡಲು ಸಿದ್ಧವಾಗಿದೆ</translation>
-<translation id="6036215966221662377">ಬ್ರೌಸ್ ಆಗುತ್ತಿರುವ ಡಾಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6036514205982097558">ಒಂದೇ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
@@ -1152,7 +1148,6 @@
 <translation id="6859944681507688231">QR ಕೋಡ್ ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಕ್ಯಾಮರಾವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
 <translation id="6867369562105931222">ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="686899695320434745">ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್‌ನೊಂದಿಗೆ ವಿಳಾಸಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿಲ್ಲ. ಇತರ Google ಸೇವೆಗಳಲ್ಲಿ ಅವುಗಳನ್ನು ಬಳಸಲು ಇದು ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ.</translation>
-<translation id="6869389390665537774">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ನೀವು ನೋಡಬಹುದು ಅಥವಾ ನಿಮ್ಮ ಇತಿಹಾಸದಿಂದ ಅವುಗಳನ್ನು ತೆರವುಗೊಳಿಸಬಹುದು</translation>
 <translation id="687135068089457384">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6873263987691478642">ವಿಭಜಿತ ವೀಕ್ಷಣೆ</translation>
 <translation id="6882836635272038266">ಅಪಾಯಕಾರಿ ಎಂದು ತಿಳಿದಿರುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆ.</translation>
@@ -1300,7 +1295,6 @@
 <translation id="7719038820139380048">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="7720410380936703141">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7724085059277147439">{count,plural, =1{ನಿಮ್ಮ {email} Google ಖಾತೆಯಲ್ಲಿ ಐಟಂ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}one{ನಿಮ್ಮ {email} Google ಖಾತೆಯಲ್ಲಿ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}other{ನಿಮ್ಮ {email} Google ಖಾತೆಯಲ್ಲಿ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}}</translation>
-<translation id="7726702057919861819">ಮೆನು → ಇತಿಹಾಸ → ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="7729458878441927652">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಲು, ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ.</translation>
 <translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> ಸೇವ್ ಮಾಡಲು ನೀವು ಬಳಸಲು ಬಯಸುವ ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ.</translation>
@@ -1334,6 +1328,7 @@
 <translation id="7853202427316060426">ಚಟುವಟಿಕೆ</translation>
 <translation id="7856733331829174190">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="7859704718976024901">ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ</translation>
+<translation id="7860900259978879139">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="7866501058614003444">ಈ ಪ್ಯಾಕೇಜ್‌ನ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನಿಲ್ಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="7866872729285243843">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗಳನ್ನು ಪಡೆಯಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ "ಓದುವ ಪಟ್ಟಿಗಳು" ಆನ್ ಮಾಡಿ.</translation>
 <translation id="7866993391592926595">ಈ ಕಾರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಿದಾಗ ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಆಫ್ ಆಗುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
@@ -1421,9 +1416,11 @@
 <translation id="8273982424131314219">ನೀವು <ph name="URL" /> ರಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿ ಮಾಡುತ್ತೀರಿ</translation>
 <translation id="8281781826761538115">ಡಿಫಾಲ್ಟ್ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ಸ್ಕಿಪ್‌ ಮಾಡಿ</translation>
+<translation id="8282657446819506217">ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="828291969289324795">{count,plural, =1{ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="8283172974887967105">ಸೆಟ್ ಮಾಡಿ…</translation>
 <translation id="8286036467436129157">ಸೈನ್ ಇನ್</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8292843446079898078">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಉತ್ಪನ್ನಗಳ ಬೆಲೆ ಕುಸಿತದ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಸ್ವೀಕರಿಸಿ.</translation>
 <translation id="8299417921174340354">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ಕೋಡ್ ಅನ್ನು ಹೊಂದಿಸಬೇಕು.</translation>
 <translation id="8299613349954694191">ವೆಬ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ.</translation>
@@ -1431,6 +1428,7 @@
 <translation id="8313645224014086262">ಫೈಲ್ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="8319076807703933069">ಹೊಸ ಹುಡುಕಾಟ</translation>
 <translation id="8328777765163860529">ಎಲ್ಲವನ್ನು ಮುಚ್ಚಿರಿ</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" /> ಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="8343993175958086504">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ ಹಾಗೂ ಅದನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಿ.</translation>
 <translation id="834783239627985533">ಹೆಚ್ಚು ಭೇಟಿ ನೀಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
 <translation id="8358401059263985056">ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -1545,7 +1543,6 @@
 <translation id="8870413625673593573">ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಿರುವುದು</translation>
 <translation id="8876882697946675716">ನಿಮ್ಮ ಸಾಧನಗಳನ್ನು ಸಿಂಕ್‌ನಲ್ಲಿ ಇರಿಸಿ</translation>
 <translation id="8879604564928138696">ಪ್ರಯತ್ನಿಸಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
-<translation id="8879984884633913185">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8881801611828450202">ಈ ಚಿತ್ರಕ್ಕಾಗಿ <ph name="SEARCH_ENGINE" /> ನಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="8898822736010347272">ಹೊಸ ಅಪಾಯಗಳನ್ನು ಕಂಡುಹಿಡಿಯಲು ಮತ್ತು ವೆಬ್‌ನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರನ್ನು ರಕ್ಷಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳ URL ಗಳು, ಸೀಮಿತ ಸಿಸ್ಟಂ ಮಾಹಿತಿ ಮತ್ತು ಪುಟಗಳಲ್ಲಿನ ಕೆಲವು ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ.</translation>
 <translation id="890565330728586731">ಹಿಂದಕ್ಕೆ</translation>

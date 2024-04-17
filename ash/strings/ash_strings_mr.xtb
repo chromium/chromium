@@ -160,6 +160,7 @@
 <translation id="1569384531973824928">हे कॅमेरा आणि मायक्रोफोन वापरण्याच्या परवानग्यांसह सर्व अ‍ॅप्स आणि वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते. तुम्हाला वेब पेज रिफ्रेश करावे लागू शकते किंवा ॲप रीस्टार्ट करावे लागू शकते.</translation>
 <translation id="1571697193564730395">व्यत्यय आणू नका टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">मॅग्निफायर सुरू असताना झूम आउट करा</translation>
+<translation id="1582946770779745370">गेम डॅशबोर्ड उपलब्ध आहे. कधीही उघडण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, त्यानंतर <ph name="LAUNCHER_KEY_NAME" /> + g प्रेस करा</translation>
 <translation id="1586324912145647027">एक ते आठ डेस्कवर जा</translation>
 <translation id="158838227375272121">Google Classroom वेबसाइट</translation>
 <translation id="1589090746204042747">या सेशनमध्ये तुमची सर्व अ‍ॅक्टिव्हिटी अ‍ॅक्सेस करा</translation>
@@ -1815,7 +1816,6 @@
 <translation id="8001755249288974029">कर्सरपासून ओळीच्या सुरुवातीपर्यंत मजकूर निवडा</translation>
 <translation id="8004512796067398576">बढती</translation>
 <translation id="8015361438441228492">टास्क संपादित करता आली नाही.</translation>
-<translation id="8026334261755873520">ब्राउझिंग डेटा साफ करा</translation>
 <translation id="802782383769312836">मागील डेस्‍क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
 <translation id="8029247720646289474">हॉटस्पॉट कनेक्ट करता आले नाही</translation>
 <translation id="8029629653277878342">आणखी सुरक्षिततेसाठी पिन किंवा पासवर्ड आवश्यक आहे</translation>

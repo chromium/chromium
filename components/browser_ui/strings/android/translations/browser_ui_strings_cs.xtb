@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
 <translation id="301521992641321250">Automaticky blokováno</translation>
 <translation id="3069226013421428034">Povolení přihlášení třetích stran na konkrétní web.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Platnost vyprší zítra}few{Platnost vyprší za # dny}many{Platnost vyprší za # dne}other{Platnost vyprší za # dní}}</translation>
 <translation id="310297983047869047">Předchozí snímek</translation>
 <translation id="3109724472072898302">Sbaleno</translation>
 <translation id="3114012059975132928">Přehrávač videa</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Povoleno</translation>
 <translation id="429312253194641664">Web přehrává média</translation>
 <translation id="42981349822642051">Rozbalit</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Platnost vyprší zítra}few{Platnost vyprší za # dny}many{Platnost vyprší za # dne}other{Platnost vyprší za # dní}}</translation>
 <translation id="4336566011000459927">Chrome dnes soubory cookie opět omezí</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Vaše poslední karta</translation>
 <translation id="4338831206024587507">Všechny weby v doméně <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="757524316907819857">Bránit webům v přehrávání chráněného obsahu</translation>
 <translation id="7594634374516752650">Telefon je připojen k zařízení Bluetooth</translation>
-<translation id="7641339528570811325">Vymazat údaje o prohlížení…</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7667547420449112975">Čaroděj ze země Oz</translation>

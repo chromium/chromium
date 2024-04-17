@@ -84,7 +84,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2258103955319320201">I gael mynediad at eich holl bethau porwr Chrome ar draws eich holl ddyfeisiau, mewngofnodwch, yna trowch gysoni ymlaen</translation>
 <translation id="2290014774651636340">Mae allweddi API Google ar goll. Bydd rhywfaint o swyddogaeth Google Chrome wedi'i hanalluogi.</translation>
 <translation id="2290095356545025170">Ydych chi'n siŵr eich bod eisiau dadosod Google Chrome?</translation>
-<translation id="2298849085402457754">I glirio data pori o'r ddyfais hon yn unig, tra'n eu cadw yn eich Cyfrif Google, <ph name="BEGIN_LINK" />allgofnodwch o Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Mae hwn yn osodiad eilaidd o Google Chrome, ac ni ellir ei wneud eich porwr diofyn.</translation>
 <translation id="2345992953227471816">Gwnaeth Chrome ganfod bod yr estyniadau hyn yn cynnwys drwgwedd:</translation>
 <translation id="2348335408836342058">Mae angen caniatâd ar Chrome i gael mynediad at eich camera a'ch meicroffon ar gyfer y wefan hon</translation>
@@ -114,7 +113,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2649768380733403658">Mae Chrome yn gwirio i sicrhau bod gan eich porwr y gosodiadau mwyaf diogel yn rheolaidd. Byddwn yn rhoi gwybod i chi os oes angen i chi adolygu unrhyw beth.</translation>
 <translation id="2652691236519827073">Agor Dolen mewn Tab Chrome Newydd</translation>
 <translation id="2665296953892887393">Helpwch i wneud Google Chrome yn well drwy anfon adroddiadau toriadau a <ph name="UMA_LINK" /> at Google</translation>
-<translation id="2712234843277364121">Ail-lansiwch i ddiweddaru - bydd eich tabiau'n ailagor</translation>
 <translation id="2738871930057338499">Methu â chysylltu â'r Rhyngrwyd. HTTP 403 Gwaharddedig. Gwiriwch ffurfweddiad eich dirprwy weinydd.</translation>
 <translation id="2742320827292110288">Rhybudd: Ni all Google Chrome atal estyniadau rhag cofnodi eich hanes pori. I ddiffodd yr estyniad hwn yn y modd Anhysbys, dad-ddewiswch yr opsiwn hwn.</translation>
 <translation id="2765403129283291972">Mae angen caniatâd ar Chrome i gael mynediad at eich meicroffon ar gyfer y wefan hon</translation>
@@ -329,6 +327,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6251759518630934363">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chrome.</translation>
 <translation id="6273793429163604305">Ar eich marciau...</translation>
 <translation id="6277547788421725101">Mae dy riant wedi diffodd "Caniatâd ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chrome</translation>
+<translation id="627882678981830918">Personoleiddio a rheoli Chrome. Gosod Chrome fel porwr diofyn.</translation>
 <translation id="6291089322031436445">Apiau Chrome Dev</translation>
 <translation id="6291549208091401781">Mae Google Chrome eisoes wedi'i osod ar gyfer pob defnyddiwr ar eich cyfrifiadur.</translation>
 <translation id="6326175484149238433">Tynnu o Chrome</translation>
@@ -492,7 +491,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8999117580775242387">Pan nad yw HTTPS ar gael, bydd Chrome yn defnyddio cysylltiad anniogel heb eich rhybuddio</translation>
 <translation id="8999208279178790196">{0,plural, =0{Mae diweddariad Chrome ar gael}=1{Mae diweddariad Chrome ar gael}two{Mae diweddariad Chrome wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}}</translation>
 <translation id="9053892488859122171">System ChromeOS Flex</translation>
-<translation id="9054037008353851982">Ail-lansiwch i Ddiweddaru - Bydd eich tabiau'n ailagor</translation>
 <translation id="9090566250983691233">Dysgu pam fod Chrome yn rhwystro rhai ffeiliau</translation>
 <translation id="911206726377975832">Dileu eich data pori hefyd?</translation>
 <translation id="9138603949443464873">Er mwyn gweithredu eich newidiadau, ail-lansiwch Chrome</translation>

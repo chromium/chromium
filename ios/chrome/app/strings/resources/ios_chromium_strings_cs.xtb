@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Tento balíček již byl v prohlížeči Chromium sledován.</translation>
 <translation id="1707458603865303524">Používejte Chromium, kdykoli klepnete na odkazy ve zprávách nebo jiných aplikacích.</translation>
 <translation id="1722370509450468186">Heslo bude uloženo do vašeho účtu (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Data prohlížeče Chromium byla vymazána</translation>
 <translation id="1791845338122684020">Otevře stránku Historie prohlížeče Chromium.</translation>
 <translation id="1838412507805038478">Prohlížeč Chromium ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -84,7 +83,6 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="3472200483164753384">V Chromium Canary není podporováno</translation>
 <translation id="347967311580159871">Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chromium najdete v sekci <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Vaše heslo nebylo sdíleno. Zkontrolujte připojení k internetu a ujistěte se, že jste do prohlížeče Chromium přihlášeni. Poté to zkuste znovu.</translation>
-<translation id="3554027294407525061">Vymazat údaje o prohlížení v Chromiu.</translation>
 <translation id="3567399274263440288">Pokud z prohlížeče Chromium chcete získat maximum, přihlaste se do něj pomocí účtu Google.</translation>
 <translation id="3634039384458740619">Otevřít nastavení prohlížeče Chromium</translation>
 <translation id="3639997914391704523">Když se přihlásíte pomocí účtu Google, může vám Chromium kontrolovat hesla.</translation>
@@ -135,7 +133,6 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="5042011327527167688">Klepněte na Zobrazit v Mapách Google v prohlížeči Chromium.</translation>
 <translation id="5044871537677053278">Chromium zjišťuje pomocí Map Google adresy, aby vám mohl poskytovat trasy a místní informace.</translation>
 <translation id="5048795749726991615">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, používejte Chromium k automatickému vyplňování</translation>
-<translation id="5076601183701536878">Vymazat údaje o prohlížení v Chromiu</translation>
 <translation id="5124429847818367226">Nyní můžete Chromium použít při každém procházení a pokaždé, když klepnete na odkazy ve zprávách, dokumentech a jiných aplikacích.</translation>
 <translation id="5131565040785979529">Účet, ke kterému jste přihlášeni, a způsob používání prohlížeče Chromium spravuje doména <ph name="DOMAIN" />.</translation>
 <translation id="5146749061471423558">Přidat záložky do prohlížeče Chromium</translation>

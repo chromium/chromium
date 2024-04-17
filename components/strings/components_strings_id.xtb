@@ -340,6 +340,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="160851722280695521">Mainkan game Dino Run di Chrome</translation>
 <translation id="161042844686301425">Sian</translation>
 <translation id="1611101756749861742">Rol Kedua</translation>
+<translation id="1611854593425834707">Tutup daftar perangkat untuk transmisi</translation>
 <translation id="1612199629998703524">Kelola topik</translation>
 <translation id="1615178538289490617">Cabut akses untuk <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Kebijakan administrator akan menonaktifkan tangkapan layar saat konten rahasia terlihat</translation>
@@ -453,7 +454,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1810391395243432441">Lindungi sandi dengan kunci layar</translation>
 <translation id="1812527064848182527">lanskap</translation>
 <translation id="1812975699435941848">Pendidikan Kesehatan &amp; Pelatihan Medis</translation>
-<translation id="1813414402673211292">Hapus Data Penjelajahan</translation>
 <translation id="1816436748874040213">Dapat meminta untuk men-scroll dan memperbesar/memperkecil tab yang dibagikan</translation>
 <translation id="1818522458013171885">Berhenti memblokir</translation>
 <translation id="1818585559878922121">Film Dokumenter</translation>
@@ -619,7 +619,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2126374524350484896">Pembuat PDF:</translation>
 <translation id="2130448033692577677">Template yang telah Anda tentukan mungkin tidak diterapkan karena kebijakan DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Data ini ditampilkan dalam urutan acak. Anda dapat mengubah mesin telusur default kapan saja.</translation>
+<translation id="2132825047782982803">Diurutkan acak. Pilihan default dapat diubah kapan saja.</translation>
 <translation id="2137891579555018930">Menunggu izin ...</translation>
 <translation id="213826338245044447">Bookmark Seluler</translation>
 <translation id="2141000681034340397">Edit input Anda</translation>
@@ -876,7 +876,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2647086987482648627">Kain (Semi-Kilap)</translation>
 <translation id="264810637653812429">Tidak ditemukan perangkat yang kompatibel.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menghapus histori penjelajahan, cookie, cache, dan lainnya di setelan Chrome</translation>
 <translation id="2650446666397867134">Akses ke file ditolak</translation>
 <translation id="2651465929321991146">Histori dan Tab</translation>
 <translation id="2653659639078652383">Kirim</translation>
@@ -1206,7 +1205,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="33073482541490531">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Pengelola Sandi merekomendasikan untuk mengubah sandi ini sekarang.</translation>
 <translation id="3307649904964670439">Tombol Sesuaikan Chrome, aktifkan untuk menyesuaikan tampilan browser Anda</translation>
 <translation id="3308006649705061278">Unit Organisasi (OU)</translation>
-<translation id="3310047144791481950">Lihat info yang dapat membantu Anda memilih kartu pembayaran. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Pelajari manfaat kartu<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Komedi TV</translation>
 <translation id="3324687287337751929">4 x 6 inci (10 x 15 cm)</translation>
 <translation id="3324983252691184275">Merah Lembayung</translation>
@@ -1374,7 +1372,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menjalankan pemeriksaan keamanan di setelan Chrome</translation>
 <translation id="3615309852743236517">Perawatan Kuku Tangan &amp; Kaki</translation>
 <translation id="3620239073311576716">Seragam &amp; Pakaian Kerja</translation>
-<translation id="36224234498066874">Hapus Data Penjelajahan...</translation>
 <translation id="362276910939193118">Tampilkan Histori Lengkap</translation>
 <translation id="3623041590998910684">Untuk menggunakan kamera, beri Chrome akses di <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Film Romantis</translation>
@@ -1919,6 +1916,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4691093235373904540">Pembuatan Atap</translation>
 <translation id="4692623383562244444">Mesin telusur</translation>
 <translation id="4698692901173737941">Olahraga Bertarung</translation>
+<translation id="4701307090948589984">Transmisikan ke...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Sisi</translation>
 <translation id="4702656508969495934">Teks Otomatis akan terlihat, gunakan pengalih jendela untuk memfokuskan</translation>
@@ -2055,7 +2053,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> yang dimasukkan tidak dapat ditemukan.</translation>
 <translation id="4936675324097895694">Keuangan</translation>
 <translation id="4940163644868678279">Mode Samaran di Chrome</translation>
-<translation id="494111439860963024">Tombol Hapus data penjelajahan, aktifkan untuk menghapus histori penjelajahan, cookie, cache, dan lainnya di setelan Chrome</translation>
 <translation id="4943620199112228840">Menggunakan mikrofon Anda</translation>
 <translation id="4943872375798546930">Tidak ada hasil</translation>
 <translation id="4950898438188848926">Tombol beralih tab, tekan Enter untuk beralih ke tab yang terbuka, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2168,6 +2165,8 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5161334686036120870">Subjek:</translation>
 <translation id="5161506081086828129">Tempat kertas 9</translation>
 <translation id="5164798890604758545">Teks dimasukkan</translation>
+<translation id="5164928537947209380">Alat AI eksperimental ini tidak selalu benar. Untuk meningkatkan kualitasnya, konten Anda dikirim ke Google.
+    <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Masukkan CVC untuk <ph name="CREDIT_CARD" />. Setelah mengonfirmasi, detail kartu dari Akun Google Anda akan dibagikan dengan situs ini.</translation>
 <translation id="5169827969064885044">Anda dapat kehilangan akses ke akun organisasi atau mengalami pencurian identitas. Chrome menyarankan Anda untuk mengubah sandi sekarang.</translation>
 <translation id="5171045022955879922">Telusuri atau ketik URL</translation>
@@ -2290,7 +2289,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="541416427766103491">Tempat kertas 4</translation>
 <translation id="5414446060143308245">Peninjauan diperlukan sebelum mentransfer</translation>
 <translation id="5414511064953050917">Tetap pindahkan</translation>
-<translation id="5421136146218899937">Hapus data penjelajahan...</translation>
 <translation id="5421408724705443535">Musik Rock</translation>
 <translation id="5423269318075950257">Pantau Harga</translation>
 <translation id="5425082381151187189">Dekorasi Rumah &amp; Interior</translation>
@@ -3651,7 +3649,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8022542098135319050">Layanan &amp; Agen Perjalanan</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab lalu Enter untuk menyetel Chrome sebagai browser default sistem</translation>
 <translation id="8025119109950072390">Penyerang di situs ini dapat mengelabui Anda agar melakukan hal yang berbahaya seperti memasang software atau mengungkap informasi pribadi Anda (misalnya sandi, nomor telepon, atau kartu kredit).</translation>
-<translation id="8026334261755873520">Hapus data penjelajahan</translation>
 <translation id="8027077570865220386">Baki 15</translation>
 <translation id="8027585818882015174">Tombol Jalankan pemeriksaan keamanan Chrome, aktifkan untuk menjalankan pemeriksaan keamanan di setelan Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat formulir baru di Google Formulir dengan cepat</translation>
@@ -3920,7 +3917,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8527228059738193856">Speaker</translation>
 <translation id="8527681393107582734">Pertanian &amp; Kehutanan</translation>
 <translation id="8528149813106025610">Pakaian Anak</translation>
-<translation id="8530813470445476232">Hapus histori penjelajahan, cookie, cache, dan lainnya di setelan Chrome</translation>
 <translation id="853246364274116957">Teater Broadway &amp; Musik</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Buka &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat daftar URL yang diblokir dan kebijakan lainnya yang diterapkan oleh administrator sistem Anda.</translation>
@@ -4060,6 +4056,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8807160976559152894">Trim setelah setiap halaman tercetak</translation>
 <translation id="8809203544698246977">Topik yang diblokir akan muncul di sini</translation>
 <translation id="8811470563853401328">Simpan alamat di akun?</translation>
+<translation id="8811725516933141693">Ketik @gemini untuk Memulai percakapan dengan Gemini</translation>
 <translation id="8813277370772331957">Ingatkan saya nanti</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengupdate Chrome dari setelan Chrome</translation>

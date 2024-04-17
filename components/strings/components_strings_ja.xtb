@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chrome で Dino Run ゲームをプレイします</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611101756749861742">ロール 2</translation>
+<translation id="1611854593425834707">キャストするデバイスリストを閉じる</translation>
 <translation id="1612199629998703524">トピックの管理</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> へのアクセス権を取り消します</translation>
 <translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">画面ロックを使用したパスワードの保護</translation>
 <translation id="1812527064848182527">横向き</translation>
 <translation id="1812975699435941848">健康教育、医療トレーニング</translation>
-<translation id="1813414402673211292">閲覧履歴データを削除</translation>
 <translation id="1816436748874040213">共有タブのスクロールとズームを要求できる</translation>
 <translation id="1818522458013171885">ブロックを解除</translation>
 <translation id="1818585559878922121">ドキュメンタリー映画</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">布（半光沢）</translation>
 <translation id="264810637653812429">対応デバイスが見つかりませんでした。</translation>
 <translation id="2649204054376361687"><ph name="COUNTRY" /> <ph name="CITY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2650446666397867134">ファイルへのアクセスが拒否されました</translation>
 <translation id="2651465929321991146">履歴とタブ</translation>
 <translation id="2653659639078652383">送信</translation>
@@ -1205,7 +1204,6 @@
 <translation id="33073482541490531">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="3307649904964670439">[Chrome をカスタマイズ] ボタンです。実行すると、ブラウザのデザインをカスタマイズできます</translation>
 <translation id="3308006649705061278">組織単位（OU）</translation>
-<translation id="3310047144791481950">お支払いに使用するカードの選択に役立つ情報を確認できます。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />カードのメリットについて<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">お笑い番組</translation>
 <translation id="3324687287337751929">4x6 インチ</translation>
 <translation id="3324983252691184275">クリムゾン</translation>
@@ -1374,7 +1372,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定で安全チェックを実行できます</translation>
 <translation id="3615309852743236517">マニキュア、ペディキュア</translation>
 <translation id="3620239073311576716">ユニフォーム、制服</translation>
-<translation id="36224234498066874">閲覧履歴データを削除...</translation>
 <translation id="362276910939193118">全履歴を表示</translation>
 <translation id="3623041590998910684">カメラを使用するには、<ph name="LINK" /> で Chrome にアクセスを許可してください。</translation>
 <translation id="3623398832322170566">恋愛映画</translation>
@@ -1919,6 +1916,7 @@
 <translation id="4691093235373904540">屋根材、ルーフ修理</translation>
 <translation id="4692623383562244444">検索エンジン</translation>
 <translation id="4698692901173737941">格闘技</translation>
+<translation id="4701307090948589984">キャスト先...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">側面</translation>
 <translation id="4702656508969495934">自動字幕起こしが表示されています。画面切り替えボタンでフォーカスできます</translation>
@@ -2055,7 +2053,6 @@
 <translation id="4936134414789135531">挿入された <ph name="VALUE_NAME" /> が見つかりませんでした。</translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4940163644868678279">Chrome のシークレット モード</translation>
-<translation id="494111439860963024">[閲覧履歴データを削除] ボタンです。実行すると、Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除できます</translation>
 <translation id="4943620199112228840">マイクの使用</translation>
 <translation id="4943872375798546930">結果はありません</translation>
 <translation id="4950898438188848926">タブの切り替えボタンです。Enter キーを押すと開いているタブ「<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />」に切り替わります</translation>
@@ -2109,6 +2106,7 @@
 <translation id="5040262127954254034">プライバシー</translation>
 <translation id="5043480802608081735">コピーしたリンク</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
+<translation id="5048293684454354469">広告のトピックは、サイトが広告をパーソナライズするために使用できることの 1 つにすぎません。広告のトピックをオフにしても、サイトでは引き続き広告が表示されますが、パーソナライズされたものでない可能性があります。<ph name="BEGIN_LINK" />広告のプライバシー管理について<ph name="LINK_END" /></translation>
 <translation id="5052517576853118371">アクティブなトピック</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
 <translation id="505757197798929356">開く理由をお知らせください（必須）</translation>
@@ -2168,6 +2166,8 @@
 <translation id="5161334686036120870">主題:</translation>
 <translation id="5161506081086828129">スタッカー 9</translation>
 <translation id="5164798890604758545">テキストが入力された</translation>
+<translation id="5164928537947209380">この試験運用中の AI ツールは、常に正しく動作するとは限りません。改善のため、お客様のコンテンツは Google に送信されます。
+    <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> の CVC を入力します。確認後、Google アカウントのカード情報がこのサイトと共有されます。</translation>
 <translation id="5169827969064885044">組織のアカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
@@ -2290,7 +2290,6 @@
 <translation id="541416427766103491">スタッカー 4</translation>
 <translation id="5414446060143308245">移行する前に確認が必要です</translation>
 <translation id="5414511064953050917">このまま移動</translation>
-<translation id="5421136146218899937">閲覧履歴データを削除...</translation>
 <translation id="5421408724705443535">ロック ミュージック</translation>
 <translation id="5423269318075950257">価格のトラッキング</translation>
 <translation id="5425082381151187189">室内装飾、インテリア</translation>
@@ -2326,6 +2325,7 @@
     <ph name="LINE_BREAK" />
     システム管理者にお問い合わせください。</translation>
 <translation id="549333378215107354">サイズ 3</translation>
+<translation id="5496804587179176046">セキュリティ コードを保存します、現在保存されているセキュリティ コードはありません</translation>
 <translation id="550365051221576010">すべて入力</translation>
 <translation id="5508443345185481044">カメラ、ビデオカメラ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3654,7 +3654,6 @@
 <translation id="8022542098135319050">旅行代理店、旅行サービス</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome をシステムの既定のブラウザとして設定できます</translation>
 <translation id="8025119109950072390">このサイトを利用すると、悪意のあるユーザーによって、ソフトウェアのインストールや個人情報（例: パスワード、電話番号、クレジット カード番号）の入力などの危険な操作を行うよう誘導される可能性があります。</translation>
-<translation id="8026334261755873520">閲覧履歴データの削除</translation>
 <translation id="8027077570865220386">トレイ 15</translation>
 <translation id="8027585818882015174">[Chrome の安全チェックを実行] ボタンです。実行すると、Chrome の設定で安全チェックを行うことができます</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google フォームで新しいフォームをすばやく作成します</translation>
@@ -3925,7 +3924,6 @@
 <translation id="8527228059738193856">スピーカー</translation>
 <translation id="8527681393107582734">農業、林業</translation>
 <translation id="8528149813106025610">子供服</translation>
-<translation id="8530813470445476232">Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="853246364274116957">ブロードウェイ、ミュージカル</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">&lt;strong&gt;chrome://policy&lt;/strong&gt; で、ブロックされた URL のリストとシステム管理者が設定した他のポリシーを確認できます。</translation>
@@ -4066,6 +4064,7 @@
 <translation id="8807160976559152894">トリミング（ページ単位）</translation>
 <translation id="8809203544698246977">ブロックしたトピックがここに表示されます</translation>
 <translation id="8811470563853401328">アカウントに住所を保存しますか？</translation>
+<translation id="8811725516933141693">Gemini とチャットするには「@gemini」と入力します</translation>
 <translation id="8813277370772331957">後で通知</translation>
 <translation id="8814707942599948500">C8 封筒</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>

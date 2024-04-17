@@ -65,7 +65,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1273937721055267968">Bloquer <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Appuyer pour développer</translation>
 <translation id="1289059016768036948">Vous serez invité à vous connecter à votre compte Google</translation>
-<translation id="1291207594882862231">Effacer l'historique, vider le cache, supprimer les cookies et les données des sites…</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1298077576058087471">Économisez jusqu'à 60 % de données mobiles, découvrez les actualités du jour</translation>
 <translation id="1303339473099049190">Ce mot de passe est introuvable. Vérifiez l'orthographe, puis réessayez.</translation>
@@ -380,7 +379,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2992473221983447149">Descriptions d'images</translation>
 <translation id="2996291259634659425">Créer une phrase secrète</translation>
 <translation id="2996809686854298943">Veuillez saisir une URL.</translation>
-<translation id="2996932914629936323">Efface l'historique de tous les appareils synchronisés</translation>
 <translation id="2997081575621687554">Quand un site Google demande de précharger en mode privé des liens sur sa page, Chrome chiffre et précharge les pages via les serveurs de Google sans cookies. Le site préchargé ne sait alors rien de votre identité.</translation>
 <translation id="3003253259757197230">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard et vous fournir des informations supplémentaires sur la page que vous consultez</translation>
 <translation id="3026955690410463085">Inclure le lien</translation>
@@ -542,7 +540,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="3932390316856284148">Bottom sheet de connexion ouverte à pleine hauteur.</translation>
 <translation id="393697183122708255">Aucune recherche vocale activée dispo.</translation>
 <translation id="395377504920307820">Utiliser l'appli sans compte</translation>
-<translation id="3958287878205277013">Pour effacer l'historique de navigation privée sur votre appareil, fermez tous les onglets de navigation privée.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome chargera votre page dès qu'elle sera prête}one{Chrome chargera votre page dès qu'elle sera prête}other{Chrome chargera vos pages dès qu'elles seront prêtes}}</translation>
 <translation id="3962119236270174787">Protection standard contre les téléchargements, les extensions et les sites Web connus pour être dangereux</translation>
 <translation id="3969142555815019568">Chrome ne parvient pas à vérifier vos mots de passe</translation>
@@ -848,7 +845,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5468068603361015296">Voulez-vous quand même télécharger <ph name="FILE_NAME" /> ?</translation>
 <translation id="548278423535722844">Ouvrir dans une application de plans</translation>
 <translation id="5486841595534124508">Logo de l'avis de confidentialité pour le centre des insights sur la page qui redirige vers la page "Mon activité".</translation>
-<translation id="5487521232677179737">Effacer les données</translation>
 <translation id="5492637351392383067">Chiffrement sur l'appareil</translation>
 <translation id="5514904542973294328">Désactivé par l'administrateur de cet appareil</translation>
 <translation id="5515439363601853141">Déverrouillez pour afficher votre mot de passe</translation>
@@ -887,7 +883,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="5683547024293500885">Chrome ne parvient pas à rechercher les mises à jour</translation>
 <translation id="5686790454216892815">Nom de fichier trop long</translation>
 <translation id="5687606994963670306">Chrome supprime automatiquement les sites datant de plus de 30 jours. Un site peut réapparaître dans la liste si vous le consultez à nouveau. Vous pouvez aussi empêcher un site de vous suggérer des annonces. Découvrez comment <ph name="BEGIN_LINK" />gérer la confidentialité de vos annonces dans Chrome<ph name="END_LINK" />.</translation>
-<translation id="569435661099256888">Vous pouvez voir les pages que vous avez consultées ou les supprimer de votre historique</translation>
 <translation id="569536719314091526">Traduire cette page dans n'importe quelle langue à partir du bouton "Plus d'options"</translation>
 <translation id="5696597120588531049">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux</translation>
 <translation id="5698878456427040674">Vérifiez si le compte sélectionné est compatible.</translation>
@@ -914,7 +909,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="5780792035410621042">Pour copier les mots de passe, définissez d'abord un verrouillage d'écran sur votre appareil</translation>
 <translation id="5793665092639000975">Utilisation de <ph name="SPACE_USED" /> sur <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Rechercher et parcourir</translation>
-<translation id="5797521893972859201">Efface l'historique, y compris dans le champ de recherche</translation>
 <translation id="5797949256525811424">Thème bloqué</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Il y a # heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
@@ -1087,7 +1081,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6637100877383020115">Pour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Toujours bloquer</translation>
 <translation id="6641780377503683465">Supprimer <ph name="INTEREST" /></translation>
-<translation id="6643016212128521049">Effacer</translation>
 <translation id="6645629752388991326">Contrôlez quels appareils peuvent se connecter en utilisant ce téléphone comme clé de sécurité.</translation>
 <translation id="6646696210740573446">Envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu des pages, à Google.</translation>
 <translation id="6647441008198474441">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard</translation>
@@ -1283,8 +1276,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="752220631458524187">Déconnectez l'appareil lorsque vous avez terminé</translation>
 <translation id="7523960634226602883">Faites une recherche avec votre appareil photo via Google Lens</translation>
 <translation id="752731652852882757">Bloquer en mode navigation privée</translation>
-<translation id="7562080006725997899">Effacement des données de navigation en cours</translation>
-<translation id="756809126120519699">Données de Chrome effacées</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fichier téléchargé}one{<ph name="FILES_DOWNLOADED_MANY" /> fichier téléchargé}other{<ph name="FILES_DOWNLOADED_MANY" /> fichiers téléchargés}}</translation>
 <translation id="7581273696622423628">Participer à l'enquête</translation>
@@ -1317,14 +1308,12 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un e-mail dans <ph name="APP_NAME" /></translation>
 <translation id="7702029078562412515">Vignettes de requête</translation>
-<translation id="7702388902581909985">Supprimer vos données de navigation ne vous déconnecte pas de votre compte Google. Pour ce faire, <ph name="BEGIN_LINK1" />déconnectez-vous de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Utilisera les données mobiles</translation>
 <translation id="7709918231054955894">Accédez à tous vos onglets</translation>
 <translation id="7733878270780732638">Espace insuffisant sur l'appareil.</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7762668264895820836">Carte SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
-<translation id="7766587497031415281">Plus d'options pour effacer les données de navigation</translation>
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772375229873196092">Fermer <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}}</translation>
@@ -1383,7 +1372,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8013372441983637696">Supprimer également vos données Chrome sur cet appareil</translation>
 <translation id="8015452622527143194">Rétablir taille par défaut des éléments de la page</translation>
 <translation id="8026238112629815203">Nous avons modifié la manière dont les mots de passe sont enregistrés sur cet appareil</translation>
-<translation id="8026334261755873520">Effacer les données de navigation</translation>
 <translation id="8027863900915310177">Choisir l'emplacement du téléchargement</translation>
 <translation id="8030852056903932865">Approuver</translation>
 <translation id="8032569120109842252">Suivi</translation>
@@ -1480,6 +1468,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="84594714173170813">Continuez d'utiliser les données Chrome de votre compte Google</translation>
 <translation id="8460448946170646641">Examiner les paramètres clés de confidentialité et de sécurité</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
+<translation id="8477178913400731244">Supprimer les données</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Ouvrir la page "Historique"</translation>
 <translation id="8493948351860045254">Libérer de l'espace</translation>
@@ -1517,7 +1506,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8636825310635137004">Activez la synchronisation pour accéder à vos onglets sur vos autres appareils.</translation>
 <translation id="864544049772947936">Gérer les fenêtres (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Prédit les événements dangereux et vous en informe avant qu'ils ne surviennent</translation>
-<translation id="8655129584991699539">Vous pouvez effacer les données dans les paramètres Chrome</translation>
 <translation id="8664215986015753476">Utilisez Chrome comme vous le souhaitez</translation>
 <translation id="8664979001105139458">Nom de fichier déjà attribué</translation>
 <translation id="8676276370198826499">Inscrivez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

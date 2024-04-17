@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Velkommen tilbage, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Kortindehaverens navn</translation>
 <translation id="1809939268435598390">Slet mappe</translation>
-<translation id="1813414402673211292">Ryd browserdata</translation>
 <translation id="1815941218935345331">Adgangskode</translation>
 <translation id="1820259098641718022">Føjet til læseliste</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Websiden er indlæst</translation>
 <translation id="223356358902285214">Web- og appaktivitet</translation>
 <translation id="2234827758954819389">Privatlivsguide</translation>
-<translation id="2239626343334228536">Browserdata ryddes...</translation>
 <translation id="2251686759395008410">Menu → Historik</translation>
 <translation id="2252674110805316998">Websøgning</translation>
 <translation id="2252749852083403809">Gemmer i Drev for <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3485558910355485767">Nyt inkognitovindue</translation>
 <translation id="3488501490964659223">Fanerne er blevet lukket, og browserdataene er blevet slettet. Du er blevet logget ud</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om anbefalet indhold</translation>
-<translation id="3494788280727468875">Bekræft rydning af browserdata</translation>
 <translation id="35083190962747987">Åbn ${url}</translation>
 <translation id="3519193562722059437">Åbn en fane for at søge på nettet.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Åbn fanen}one{Åbn {count} fane}other{Åbn {count} faner}}</translation>
@@ -492,7 +489,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3540141921715814660">Føj til Bogmærker</translation>
 <translation id="355101282835380364">Gem på din konto…</translation>
 <translation id="3551320343578183772">Luk fanen</translation>
-<translation id="3565207542107370586">Ryd browserdata…</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Tryk to gange for at se flere adgangskoder.</translation>
 <translation id="3575234738189584619">Søg med Lens</translation>
@@ -968,7 +964,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6027945736510816438">Mente du <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">ny funktion</translation>
 <translation id="6033598293589037429">Klar til afhentning</translation>
-<translation id="6036215966221662377">Ryd browserdata</translation>
 <translation id="6036514205982097558">Alle dine faner i én browser</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Luk</translation>
@@ -1151,7 +1146,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6859944681507688231">Aktivér kameraet i Indstillinger for at scanne en QR-kode eller et kreditkort.</translation>
 <translation id="6867369562105931222">adgangskode</translation>
 <translation id="686899695320434745">Adresser krypteres ikke med din adgangssætning. Dette giver dig mulighed for at bruge dem i andre Google-tjenester.</translation>
-<translation id="6869389390665537774">Du kan se de sider, du har besøgt, eller rydde dem fra din historik</translation>
 <translation id="687135068089457384">Vis indstillingerne</translation>
 <translation id="6873263987691478642">Opdelt visning</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mod websites, downloads og udvidelser, som er registreret som skadelige.</translation>
@@ -1297,7 +1291,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7719038820139380048">Log ind for at få indhold baseret på dine interesser.</translation>
 <translation id="7720410380936703141">PRØV IGEN</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elementet er gemt på din Google-konto, {email}}one{Elementet er gemt på din Google-konto, {email}}other{Elementerne er gemt på din Google-konto, {email}}}</translation>
-<translation id="7726702057919861819">Menu → Historik → Ryd browserdata</translation>
 <translation id="7729458878441927652">Hvis du vil se faner fra dine andre enheder, skal du synkronisere dine faner og din historik.</translation>
 <translation id="7730973429297233609">Vælg den konto, du vil bruge til at gemme <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Kun på denne enhed.</translation>
@@ -1542,7 +1535,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8870413625673593573">Senest lukkede</translation>
 <translation id="8876882697946675716">Bevar synkroniseringen af dine enheder</translation>
 <translation id="8879604564928138696">Tryk to gange for at prøve</translation>
-<translation id="8879984884633913185">Skjul Ryd browserdata</translation>
 <translation id="8881801611828450202">Søg på <ph name="SEARCH_ENGINE" /> efter dette billede</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="890565330728586731">Tilbage</translation>

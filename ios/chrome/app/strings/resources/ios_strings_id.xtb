@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Selamat Datang Kembali, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nama Pemegang Kartu</translation>
 <translation id="1809939268435598390">Hapus Folder</translation>
-<translation id="1813414402673211292">Hapus Data Penjelajahan</translation>
 <translation id="1815941218935345331">Kode sandi</translation>
 <translation id="1820259098641718022">Ditambahkan ke Daftar Baca</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Halaman web dimuat</translation>
 <translation id="223356358902285214">Aktivitas Web &amp; Aplikasi</translation>
 <translation id="2234827758954819389">Panduan Privasi</translation>
-<translation id="2239626343334228536">Menghapus data browsing...</translation>
 <translation id="2251686759395008410">Menu → Histori</translation>
 <translation id="2252674110805316998">Penelusuran Web</translation>
 <translation id="2252749852083403809">Menyimpan di Drive untuk <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3485558910355485767">Jendela Samaran Baru</translation>
 <translation id="3488501490964659223">Tab ditutup dan data penjelajahan dihapus. Anda telah logout</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> konten yang disarankan</translation>
-<translation id="3494788280727468875">Konfirmasi Hapus Data Penjelajahan</translation>
 <translation id="35083190962747987">Buka ${url}</translation>
 <translation id="3519193562722059437">Buka tab untuk menjelajahi web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Buka tab}other{Buka {count} tab}}</translation>
@@ -492,7 +489,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3540141921715814660">Tambahkan ke Bookmark</translation>
 <translation id="355101282835380364">Simpan di Akun…</translation>
 <translation id="3551320343578183772">Tutup Tab</translation>
-<translation id="3565207542107370586">Hapus Data Penjelajahan …</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> dari <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Ketuk dua kali untuk melihat sandi lainnya.</translation>
 <translation id="3575234738189584619">Telusuri dengan Lens</translation>
@@ -968,7 +964,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6027945736510816438">Mungkin maksud Anda <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">fitur baru</translation>
 <translation id="6033598293589037429">Siap Diambil</translation>
-<translation id="6036215966221662377">Hapus Data Penjelajahan</translation>
 <translation id="6036514205982097558">Semua Tab Anda dalam Satu Browser</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -1151,7 +1146,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6859944681507688231">Untuk memindai kode QR code atau kartu kredit, aktifkan kamera dari setelan.</translation>
 <translation id="6867369562105931222">sandi</translation>
 <translation id="686899695320434745">Alamat tidak dienkripsi dengan frasa sandi. Dengan begitu, Anda dapat menggunakannya di layanan Google lainnya.</translation>
-<translation id="6869389390665537774">Anda dapat melihat halaman yang pernah Anda kunjungi atau menghapusnya dari histori</translation>
 <translation id="687135068089457384">Tampilkan Setelan</translation>
 <translation id="6873263987691478642">Layar Terpisah</translation>
 <translation id="6882836635272038266">Perlindungan standar terhadap situs, download, dan ekstensi yang bereputasi berbahaya.</translation>
@@ -1297,7 +1291,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7719038820139380048">Login untuk mendapatkan konten berdasarkan minat Anda.</translation>
 <translation id="7720410380936703141">COBA LAGI</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item disimpan di Akun Google Anda, {email}}other{Item disimpan di Akun Google Anda, {email}}}</translation>
-<translation id="7726702057919861819">Menu → Histori → Hapus Data Penjelajahan</translation>
 <translation id="7729458878441927652">Untuk melihat tab dari perangkat Anda yang lain, sinkronkan tab dan histori.</translation>
 <translation id="7730973429297233609">Pilih akun yang ingin Anda gunakan untuk menyimpan <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Hanya di perangkat ini.</translation>
@@ -1542,7 +1535,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8870413625673593573">Baru Saja Ditutup</translation>
 <translation id="8876882697946675716">Jaga Perangkat Anda Tetap Sinkron</translation>
 <translation id="8879604564928138696">Ketuk dua kali untuk mencoba</translation>
-<translation id="8879984884633913185">Sembunyikan Hapus Data Penjelajahan</translation>
 <translation id="8881801611828450202">Telusuri Gambar Ini di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>
 <translation id="890565330728586731">Kembali</translation>

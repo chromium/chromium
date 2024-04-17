@@ -70,7 +70,6 @@
 <translation id="2329088755516916767">Quan aquesta opció està activada, Chromium precarrega les pàgines perquè la navegació i la cerca siguin més ràpides.</translation>
 <translation id="2343156876103232566">Per enviar un número d'aquí al teu telèfon Android, inicia la sessió a Chromium en tots dos dispositius.</translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2359920621792549529">Per esborrar les dades de navegació només d'aquest dispositiu i conservar-les al Compte de Google, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">Chromium OS no ha pogut sincronitzar les teves dades perquè la informació d'inici de sessió del teu compte no està actualitzada.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o més extensions de Chromium estaven accedint a 1 dispositiu d'interfície humana}=1{Una o més extensions de Chromium estan accedint a 1 dispositiu d'interfície humana}other{Una o més extensions de Chromium estan accedint a # dispositius d'interfície humana}}</translation>
 <translation id="2401032172288869980">Chromium necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
@@ -250,6 +249,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostra Chromium en aquest idioma</translation>
 <translation id="569897634095159764">No es pot connectar a Internet. El servidor intermediari necessita autenticació.</translation>
+<translation id="5800158606660203929">Personalitza i controla Chromium. Defineix Chromium com a navegador predeterminat.</translation>
 <translation id="5809516625706423866">No es pot connectar a Internet. Error d'HTTP "401 Unauthorized". Comprova la configuració del servidor intermediari.</translation>
 <translation id="5862307444128926510">Us donem la benvinguda a Chromium</translation>
 <translation id="5883558403894052917">Chromium ha detectat que aquests elements contenen programari maliciós:</translation>

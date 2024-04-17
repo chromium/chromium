@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">ຜູ້ຂຽນ:</translation>
 <translation id="1247030632403369975">ອະລູມິນຽມ</translation>
 <translation id="1252209483516427155">ເຄື່ອງນຸ່ງຊັ້ນນອກ</translation>
+<translation id="1253096324252841344">ຈ່າຍດ້ວຍ <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ຊິ້ງຂໍ້ມູນແລ້ວ)</translation>
 <translation id="1255086252236620440">ເຄື່ອງປະສົມອາຫານ</translation>
 <translation id="1256368399071562588">&lt;p&gt;ຖ້າທ່ານພະຍາຍາເຂົ້າເບິ່ງເວັບໄຊ ແລະ ມັນບໍ່ເປີດຂຶ້ນມາ, ກ່ອນອື່ນກະລຸນາລອງແກ້ໄຂຂໍ້ຜິດພາດດ້ວຍຂັ້ນຕອນແກ້ໄຂບັນຫາເຫຼົ່ານີ້:&lt;/p&gt;
@@ -453,7 +454,6 @@
 <translation id="1810391395243432441">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍການລັອກໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="1812527064848182527">ແນວນອນ</translation>
 <translation id="1812975699435941848">ການສຶກສາດ້ານສຸຂະພາບ ແລະ ການເຝິກອົບຮົມການແພດ</translation>
-<translation id="1813414402673211292">ລຶບ​ຂໍ້​ມູນ​ການ​ທ່ອງ​ເນັດ</translation>
 <translation id="1816436748874040213">ສາມາດຂໍໃຫ້ເລື່ອນ ແລະ ຊູມແຖບທີ່ແບ່ງປັນແລ້ວໄດ້</translation>
 <translation id="1818522458013171885">ຍົກເລີກການບລັອກ</translation>
 <translation id="1818585559878922121">ໜັງສາລະຄະດີ</translation>
@@ -876,7 +876,6 @@
 <translation id="2647086987482648627">ຜ້າ (ເຄິ່ງມັນວາວ)</translation>
 <translation id="264810637653812429">ບໍ່ພົບອຸປະກອນທີ່ເຂົ້າກັນໄດ້.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນກົດ Enter ເພື່ອລຶບປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆອີກໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2650446666397867134">ການ​ເຂົ້າ​ຫາໄຟລ​໌​ຖືກ​ປະ​ຕິ​ເສດ</translation>
 <translation id="2651465929321991146">ປະຫວັດ ແລະ ແຖບ</translation>
 <translation id="2653659639078652383">ສົ່ງ</translation>
@@ -1206,7 +1205,6 @@
 <translation id="33073482541490531">ພົບລະຫັດຜ່ານທີ່ທ່ານຫາກໍໃຊ້ນັ້ນໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ຕົວຈັດການລະຫັດຜ່ານແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານນີ້ດຽວນີ້.</translation>
 <translation id="3307649904964670439">ປຸ່ມປັບແຕ່ງ Chrome, ເປີດນຳໃຊ້ເພື່ອປັບແຕ່ງຮູບລັກຂອງໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="3308006649705061278">ໜ່ວຍງານການຈັດຕັ້ງ (OU)</translation>
-<translation id="3310047144791481950">ເບິ່ງຂໍ້ມູນທີ່ຊ່ວຍທ່ານເລືອກວ່າຈະຈ່າຍດ້ວຍບັດໃດ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບສິດທິປະໂຫຍດບັດ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">ລາຍການຕະຫຼົກທາງໂທລະທັດ</translation>
 <translation id="3324687287337751929">4 x 6 ນິ້ວ</translation>
 <translation id="3324983252691184275">ສີ​ແດງ​</translation>
@@ -1375,7 +1373,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພືີ່ອເປີດໃຊ້ການກວດສອບຄວາມປອດໄພໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="3615309852743236517">ເຮັດເລັບມື ແລະ ເລັບຕີນ</translation>
 <translation id="3620239073311576716">ຊຸດເຄື່ອງແບບ ແລະ ຊຸດເຮັດວຽກ</translation>
-<translation id="36224234498066874">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="362276910939193118">ສະ​ແດງ​ປະຫວັດທັງໝົດ</translation>
 <translation id="3623041590998910684">ເພື່ອໃຊ້ກ້ອງຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ໃນ <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">ໜັງໂຣແມນຕິກ</translation>
@@ -1514,6 +1511,7 @@
 <translation id="385489333361351399">ອຸປະກອນກ້ອງຖ່າຍຮູບ ແລະ ຮູບພາບ</translation>
 <translation id="3858027520442213535">ອັບ​ເດດ​ວັນ​ທີ ແລະ​ເວ​ລາ</translation>
 <translation id="3858860766373142691">ຊື່</translation>
+<translation id="3865339060090354361">ເບິ່ງຂໍ້ກຳນົດກ່ຽວກັບ <ph name="CREDIT_CARD_NAME" /> ຢູ່ບ່ອນນີ້</translation>
 <translation id="3872834068356954457">ວິທະຍາສາດ</translation>
 <translation id="3875783148670536197">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
 <translation id="3880456882942693779">ສິນລະປະ ແລະ ຄວາມບັນເທີງ</translation>
@@ -2057,7 +2055,6 @@
 <translation id="4936134414789135531">ບໍ່ພົບ <ph name="VALUE_NAME" /> ທີ່ແຊກໃສ່.</translation>
 <translation id="4936675324097895694">ການເງິນ</translation>
 <translation id="4940163644868678279">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໃນ Chrome</translation>
-<translation id="494111439860963024">ປຸ່ມລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ, ເປີດນຳໃຊ້ເພື່ອລຶບລ້າງປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="4943620199112228840">ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="4943872375798546930">ບໍ່​ມີ​ຜົນ​ໄດ້​ຮັບ</translation>
 <translation id="4950898438188848926">ແຕະປຸ່ມສະຫຼັບ, ກົດ Enter ເພື່ອປ່ຽນເປັນແຖບທີ່ເປີດຢູ່, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2295,7 +2292,6 @@
 <translation id="541416427766103491">ສະແຕັກເກີ້ 4</translation>
 <translation id="5414446060143308245">ຕ້ອງກວດສອບກ່ອນທີ່ຈະໂອນຍ້າຍ</translation>
 <translation id="5414511064953050917">ຢືນຢັນການຍ້າຍ</translation>
-<translation id="5421136146218899937">ລຶບຂໍ້ມູນການທ່ອງເນັດ...</translation>
 <translation id="5421408724705443535">ເພງຣັອກ</translation>
 <translation id="5423269318075950257">ຕິດຕາມລາຄາ</translation>
 <translation id="5425082381151187189">ການຈັດເຮືອນ ແລະ ຕົບແຕ່ງພາຍໃນ</translation>
@@ -2355,6 +2351,7 @@
 <translation id="553377674408670169">ວຽກການສຶກສາ</translation>
 <translation id="5536214594743852365">ສະແດງຂໍ້ "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
+<translation id="5538270463355278784">ເຕັມຈໍອັດຕະໂນມັດ</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">ບໍ່ສາມາດຊອກຫາບົດຄວາມທີ່ຂໍໄດ້.</translation>
 <translation id="5540969246441091044">ຄົນຂີ່ມ້າ</translation>
@@ -2719,6 +2716,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການໄຟລ໌ທີ່ທ່ານດາວໂຫຼດໄວ້ໃນ Chrome</translation>
 <translation id="6254436959401408446">ບໍ່ມີຄວາມຈຳພຽງພໍເພື່ອເປີດໜ້ານີ້</translation>
 <translation id="625463612687472648">ຢຸດການອະນຸຍາດ</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{ເມື່ອທ່ານດຳເນີນການຊື້ໃນ Chrome, ທ່ານຈະເຫັນ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ເປັນຕົວເລືອກ}other{ເມື່ອທ່ານດຳເນີນການຊື້ໃນ Chrome, ທ່ານຈະເຫັນ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ເປັນຕົວເລືອກ}}</translation>
 <translation id="6259156558325130047">ເຮັດຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="6263376278284652872">ບຸກມາກສ໌ <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">ຢືນຢັນການດາວໂຫຼດ</translation>
@@ -3659,7 +3657,6 @@
 <translation id="8022542098135319050">ຕົວແທນ ແລະ ບໍລິການທ່ອງທ່ຽວ</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນກົດ Enter ເພື່ອຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບ</translation>
 <translation id="8025119109950072390">ຜູ້ໂຈມຕີໃນເວັບໄຊນີ້ອາດຈະຫຼອກໃຫ້ທ່ານເຮັດບາງຢ່າງທີ່ອັນຕະລາຍ ເຊັ່ນ ການຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວຂອງທ່ານ (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ບັດເຄຣດິດ).</translation>
-<translation id="8026334261755873520">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="8027077570865220386">ຖາດ 15</translation>
 <translation id="8027585818882015174">ປຸ່ມເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພຂອງ Chrome, ເປີດນຳໃຊ້ເພື່ອເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງແບບຟອມໃໝ່ໃນ Google Forms ໄດ້ຢ່າງວ່ອງໄວ</translation>
@@ -3854,6 +3851,7 @@
 <translation id="8378714024927312812">ຈັດການໂດຍອົງການຂອງທ່ານ</translation>
 <translation id="8380941800586852976">ອັນຕະລາຍ</translation>
 <translation id="8381674639488873545">ການຮຽກເກັບເງິນເຫຼົ່ານີ້ອາດຈະເກັບຄັ້ງດຽວ ຫຼື ເປັນປະຈຳຫຼາຍຄັ້ງ ແລະ ອາດຈະບໍ່ເຫັນໄດ້ຈະແຈ້ງ. <ph name="BEGIN_LINK" />ຢືນຢັນໃຫ້ສະແດງ<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">ເຕັມຈໍອັດຕະໂນມັດ</translation>
 <translation id="838307841291975086">ລົດສະເຕຊັນແວກອນ</translation>
 <translation id="8389532092404711541">ປົກກະຕິ <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">ລົດຍົນສັ່ງຜະລິດ ແລະ ປະສິດທິພາບສູງ</translation>
@@ -3930,7 +3928,6 @@
 <translation id="8527228059738193856">ລຳໂພງ</translation>
 <translation id="8527681393107582734">ກະສິກໍາ ແລະ ປ່າໄມ້</translation>
 <translation id="8528149813106025610">ເສື້ອຜ້າເດັກນ້ອຍ</translation>
-<translation id="8530813470445476232">ລຶບລ້າງປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆອີກໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="853246364274116957">ໂຮງລະຄອນໂບຣດເວ ແລະ ດົນຕີ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ເຂົ້າຫາ &lt;strong&gt;chrome://policy&lt;/strong&gt; ເພື່ອເບິ່ງລາຍຊື່ຂອງ URL ທີ່ຖືກບລັອກໄວ້ ແລະ ນະໂຍບາຍອື່ນທີ່ຜູ້ຄວບຄຸມລະບົບຂອງທ່ານບັງຄັບໃຊ້.</translation>

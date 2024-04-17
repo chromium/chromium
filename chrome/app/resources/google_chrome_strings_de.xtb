@@ -80,7 +80,6 @@
 <translation id="2258103955319320201">Wenn du auf allen deinen Geräten auf deine Chrome-Browserinhalte zugreifen möchtest, melde dich an und aktiviere die Synchronisierung</translation>
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchtest du Google Chrome wirklich deinstallieren?</translation>
-<translation id="2298849085402457754">Wenn du Browserdaten nur von diesem Gerät, aber nicht aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich in Chrome ab<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Dies ist eine Zweitinstallation, daher kann Google Chrome nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="2345992953227471816">Chrome hat festgestellt, dass diese Erweiterungen Malware enthalten:</translation>
 <translation id="2348335408836342058">Chrome benötigt für diese Website die Berechtigung, auf deine Kamera und dein Mikrofon zuzugreifen</translation>
@@ -110,7 +109,6 @@
 <translation id="2649768380733403658">Chrome prüft regelmäßig, ob dein Browser die sichersten Einstellungen hat. Solltest du etwas überprüfen müssen, informieren wir dich.</translation>
 <translation id="2652691236519827073">Link in neuem Chrome-Tab öffnen</translation>
 <translation id="2665296953892887393">Absturzberichte und <ph name="UMA_LINK" /> zur Verbesserung von Google Chrome an Google senden</translation>
-<translation id="2712234843277364121">Zum Aktualisieren neu starten – Tabs werden wieder geöffnet</translation>
 <translation id="2738871930057338499">Internetverbindung kann nicht hergestellt werden. HTTP 403 Forbidden. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="2742320827292110288">Achtung: Google Chrome kann nicht verhindern, dass dein Browser-Verlauf von Erweiterungen aufgezeichnet wird. Schalte diese Option aus, um die Erweiterung im Inkognitomodus zu deaktivieren.</translation>
 <translation id="2765403129283291972">Chrome benötigt für diese Website die Berechtigung, auf dein Mikrofon zuzugreifen</translation>
@@ -321,6 +319,7 @@
 <translation id="6251759518630934363">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst festlegen, dass Warnungen von Chrome übersprungen werden.</translation>
 <translation id="6273793429163604305">Auf die Plätze…</translation>
 <translation id="6277547788421725101">Deine Eltern haben „Berechtigungen für Websites, Apps und Erweiterungen“ für Chrome deaktiviert</translation>
+<translation id="627882678981830918">Chrome anpassen und verwalten. Chrome als Standardbrowser festlegen.</translation>
 <translation id="6291089322031436445">Chrome Dev-Apps</translation>
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf deinem Computer installiert.</translation>
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
@@ -484,7 +483,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8999117580775242387">Wenn HTTPS nicht verfügbar ist, verwendet Chrome eine unsichere Verbindung ohne Warnung</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ein Chrome-Update ist verfügbar}=1{Ein Chrome-Update ist verfügbar}other{Ein Chrome-Update ist seit # Tagen verfügbar}}</translation>
 <translation id="9053892488859122171">Chrome OS Flex-System</translation>
-<translation id="9054037008353851982">Zum Aktualisieren neu starten – Tabs werden wieder geöffnet</translation>
 <translation id="9090566250983691233">Gründe, warum Chrome einige Dateien blockiert</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>
 <translation id="9138603949443464873">Starte Chrome neu, um die Änderungen zu übernehmen</translation>

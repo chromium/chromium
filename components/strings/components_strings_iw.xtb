@@ -340,6 +340,7 @@
 <translation id="160851722280695521">‏הפעלת המשחק Dino Run ב-Chrome</translation>
 <translation id="161042844686301425">ציאן</translation>
 <translation id="1611101756749861742">גליל שני</translation>
+<translation id="1611854593425834707">סגירה של רשימת המכשירים הזמינים להעברה</translation>
 <translation id="1612199629998703524">עריכת ההגדרות של הנושאים</translation>
 <translation id="1615178538289490617">ביטול הגישה אל <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">הגנה על סיסמאות באמצעות נעילת המסך</translation>
 <translation id="1812527064848182527">לרוחב</translation>
 <translation id="1812975699435941848">לימודי בריאות והכשרה רפואית</translation>
-<translation id="1813414402673211292">ניקוי נתוני גלישה</translation>
 <translation id="1816436748874040213">האתר יכול לבקש הרשאה לגלול ולשנות את מרחק התצוגה של הכרטיסיות המשותפות</translation>
 <translation id="1818522458013171885">ביטול החסימה</translation>
 <translation id="1818585559878922121">סרטים תיעודיים</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">Fabric (Semi-Gloss)</translation>
 <translation id="264810637653812429">לא נמצאו מכשירים תואמים.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לנקות את נתוני היסטוריית הגלישה, קובצי ה-cookie, המטמון ועוד בהגדרות Chrome</translation>
 <translation id="2650446666397867134">לא ניתן לגשת לקובץ</translation>
 <translation id="2651465929321991146">היסטוריה וכרטיסיות</translation>
 <translation id="2653659639078652383">שליחה</translation>
@@ -1205,7 +1204,6 @@
 <translation id="33073482541490531">הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. לפי מנהל הסיסמאות, מומלץ לשנות את הסיסמה הזו עכשיו.</translation>
 <translation id="3307649904964670439">‏הלחצן להתאמה אישית של Chrome, מפעילים אותו כדי להתאים אישית את מראה הדפדפן</translation>
 <translation id="3308006649705061278">‏יחידה ארגונית (OU)</translation>
-<translation id="3310047144791481950">מוצג מידע שעוזר לבחור עם איזה כרטיס לשלם. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />מידע על ההטבות בכרטיס<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">תוכניות קומיות בטלוויזיה</translation>
 <translation id="3324687287337751929">‏4x6 אינץ'</translation>
 <translation id="3324983252691184275">ארגמן</translation>
@@ -1374,7 +1372,6 @@
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
 <translation id="3615309852743236517">מניקור ופדיקור</translation>
 <translation id="3620239073311576716">מדים ובגדי עבודה</translation>
-<translation id="36224234498066874">ניקוי נתוני גלישה…</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
 <translation id="3623041590998910684">‏כדי להשתמש במצלמה, צריך לתת ל-Chrome גישה ל<ph name="LINK" />.</translation>
 <translation id="3623398832322170566">סרטים רומנטיים</translation>
@@ -1919,6 +1916,7 @@
 <translation id="4691093235373904540">טיפול בגגות</translation>
 <translation id="4692623383562244444">מנועי חיפוש</translation>
 <translation id="4698692901173737941">אומנויות לחימה</translation>
+<translation id="4701307090948589984">העברה אל...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">צד</translation>
 <translation id="4702656508969495934">מוצגות כתוביות מיידיות, ניתן להשתמש במעבר בין החלונות כדי להתמקד</translation>
@@ -2059,7 +2057,6 @@ Del</translation>
 <translation id="4936134414789135531">הערך <ph name="VALUE_NAME" /> שהוזן לא נמצא.</translation>
 <translation id="4936675324097895694">פיננסים</translation>
 <translation id="4940163644868678279">‏מצב פרטי ב-Chrome</translation>
-<translation id="494111439860963024">‏הלחצן לניקוי נתוני הגלישה, מפעילים אותו כדי לנקות את היסטוריית הגלישה, קובצי ה-cookie, המטמון ועוד בהגדרות Chrome</translation>
 <translation id="4943620199112228840">שימוש במיקרופונים</translation>
 <translation id="4943872375798546930">אין תוצאות</translation>
 <translation id="4950898438188848926">‏לחצן החלפת כרטיסיות, יש להקיש על Enter כדי לעבור לכרטיסייה הפתוחה, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2172,6 +2169,8 @@ Del</translation>
 <translation id="5161334686036120870">נושא:</translation>
 <translation id="5161506081086828129">מערים 9</translation>
 <translation id="5164798890604758545">מתבצעת הזנת טקסט</translation>
+<translation id="5164928537947209380">‏כלי ה-AI הניסיוני הזה לא תמיד מתאים. כדי לשפר אותו, התוכן שלך נשלח אל Google.
+    <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">‏יש להזין את קוד האימות של <ph name="CREDIT_CARD" />. אחרי שנקבל ממך אישור, נשתף עם האתר הזה את פרטי הכרטיס מחשבון Google.</translation>
 <translation id="5169827969064885044">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chrome, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="5171045022955879922">טקסט או כתובת אתר לחיפוש</translation>
@@ -2294,7 +2293,6 @@ Del</translation>
 <translation id="541416427766103491">מערים 4</translation>
 <translation id="5414446060143308245">נדרשת בדיקה לפני ההעברה</translation>
 <translation id="5414511064953050917">אעביר בכל זאת</translation>
-<translation id="5421136146218899937">ניקוי נתוני גלישה...</translation>
 <translation id="5421408724705443535">מוזיקת רוק</translation>
 <translation id="5423269318075950257">מעקב אחר המחיר</translation>
 <translation id="5425082381151187189">עיצוב הבית ועיצוב פנים</translation>
@@ -3658,7 +3656,6 @@ Del</translation>
 <translation id="8022542098135319050">סוכני נסיעות ושירותים לנסיעות</translation>
 <translation id="8023231537967344568">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת</translation>
 <translation id="8025119109950072390">תוקפים באתר הזה עשויים לגרום לך, בדרכי מרמה, לבצע פעולות מסוכנות כמו התקנת תוכנה או חשיפה של מידע אישי (לדוגמה: סיסמאות, מספרי טלפון או פרטי כרטיסי אשראי).</translation>
-<translation id="8026334261755873520">ניקוי נתוני גלישה</translation>
 <translation id="8027077570865220386">מגש 15</translation>
 <translation id="8027585818882015174">‏הלחצן להרצת בדיקת אבטחה ב-Chrome, מפעילים אותו כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
 <translation id="8028698320761417183">‏<ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות טופס חדש ב-Google Forms</translation>
@@ -3929,7 +3926,6 @@ Del</translation>
 <translation id="8527228059738193856">רמקולים</translation>
 <translation id="8527681393107582734">חקלאות ויערנות</translation>
 <translation id="8528149813106025610">בגדי ילדים</translation>
-<translation id="8530813470445476232">‏בהגדרות Chrome, ניתן לנקות את היסטוריית הגלישה, את קובצי ה-cookie, את המטמון ועוד</translation>
 <translation id="853246364274116957">ברודווי ומחזות זמר</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏בכתובת &lt;strong&gt;chrome://policy&lt;/strong&gt; מוצגת רשימה של כתובות אתרים שנחסמו ותקנונים אחרים שנאכפים על ידי מנהל המערכת.</translation>
@@ -4069,6 +4065,7 @@ Del</translation>
 <translation id="8807160976559152894">חיתוך אחרי כל עמוד</translation>
 <translation id="8809203544698246977">כאן יופיעו נושאים חסומים</translation>
 <translation id="8811470563853401328">לשמור את הכתובת בחשבון?</translation>
+<translation id="8811725516933141693">‏אפשר להקליד ‎@gemini כדי להתכתב עם Gemini</translation>
 <translation id="8813277370772331957">אני רוצה לקבל תזכורת אחר כך</translation>
 <translation id="8814707942599948500">‏מעטפה – C8</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לעדכן את דפדפן Chrome בהגדרות Chrome</translation>

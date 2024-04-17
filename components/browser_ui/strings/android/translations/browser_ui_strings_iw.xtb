@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
 <translation id="310297983047869047">לשקף הקודם</translation>
 <translation id="3109724472072898302">מכווץ</translation>
 <translation id="3114012059975132928">נגן וידאו</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">מותר</translation>
 <translation id="429312253194641664">אתר מסוים מפעיל מדיה</translation>
 <translation id="42981349822642051">הרחבה</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
 <translation id="4336566011000459927">‏קובצי Cookie יוגבלו היום שוב ב-Chrome</translation>
 <translation id="4336836404251800362">‫<ph name="RECENCY" /> <ph name="SEPARATOR" /> הכרטיסייה האחרונה שלך</translation>
 <translation id="4338831206024587507">כל האתרים בדומיין <ph name="DOMAIN" /></translation>
@@ -401,7 +401,6 @@
 <translation id="7561196759112975576">תמיד</translation>
 <translation id="757524316907819857">חסימה של הפעלת תוכן מוגן על-ידי אתרים</translation>
 <translation id="7594634374516752650">‏האתר מחובר למכשיר Bluetooth</translation>
-<translation id="7641339528570811325">מחיקת נתוני הגלישה...</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7667547420449112975">הקוסם המופלא מארץ עוץ</translation>

@@ -70,7 +70,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="2329088755516916767">Quando questa impostazione è attiva, Chromium precarica le pagine per velocizzare la navigazione e la ricerca.</translation>
 <translation id="2343156876103232566">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chromium su entrambi i dispositivi.</translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2359920621792549529">Per cancellare i dati di navigazione solo da questo dispositivo e conservarli nel tuo Account Google, <ph name="BEGIN_LINK" />esci da Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">Impossibile sincronizzare i dati in Chromium OS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o più estensioni di Chromium stavano accedendo a 1 dispositivo HID}=1{Una o più estensioni di Chromium stanno accedendo a 1 dispositivo HID}other{Una o più estensioni di Chromium stanno accedendo a # dispositivi HID}}</translation>
 <translation id="2401032172288869980">Chromium deve avere le autorizzazioni di accesso al microfono e alla fotocamera per questo sito</translation>

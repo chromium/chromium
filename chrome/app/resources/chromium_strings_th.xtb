@@ -70,7 +70,6 @@
 <translation id="2329088755516916767">เมื่อเปิดอยู่ Chromium จะโหลดหน้าเว็บล่วงหน้าซึ่งทำให้ท่องเว็บและค้นหาได้เร็วขึ้น</translation>
 <translation id="2343156876103232566">หากต้องการส่งหมายเลขจากที่นี่ไปยังโทรศัพท์ Android ให้ลงชื่อเข้าใช้ Chromium ในอุปกรณ์ทั้งสองเครื่อง</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
-<translation id="2359920621792549529">หากต้องการล้างข้อมูลการท่องเว็บในอุปกรณ์นี้เท่านั้น แต่ยังเก็บข้อมูลดังกล่าวไว้ในบัญชี Google ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chromium<ph name="END_LINK" /></translation>
 <translation id="2384373936468275798">Chromium OS ซิงค์ข้อมูลไม่ได้เนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีไม่ใช่ข้อมูลปัจจุบัน</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{มีส่วนขยาย Chromium อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}=1{มีส่วนขยาย Chromium อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}other{มีส่วนขยาย Chromium อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID # เครื่อง}}</translation>
 <translation id="2401032172288869980">Chromium ต้องการสิทธิ์เข้าถึงกล้องและไมโครโฟนสำหรับเว็บไซต์นี้</translation>
@@ -250,6 +249,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">แสดง Chromium ในภาษานี้</translation>
 <translation id="569897634095159764">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ พร็อกซีเซิร์ฟเวอร์ต้องมีการตรวจสอบสิทธิ์</translation>
+<translation id="5800158606660203929">ปรับแต่งและควบคุม Chromium ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="5809516625706423866">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ HTTP 401 Unauthorized โปรดตรวจสอบการกำหนดค่าพร็อกซีของคุณ</translation>
 <translation id="5862307444128926510">ยินดีต้อนรับสู่ Chromium</translation>
 <translation id="5883558403894052917">Chromium พบว่ารายการเหล่านี้มีมัลแวร์</translation>

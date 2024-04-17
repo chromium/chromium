@@ -80,7 +80,6 @@
 <translation id="2258103955319320201">A fin de ver el contenido de tu navegador Chrome en todos tus dispositivos, accede a tu cuenta y activa la sincronización</translation>
 <translation id="2290014774651636340">Faltan las claves de la API de Google. Se inhabilitarán algunas funciones de Google Chrome.</translation>
 <translation id="2290095356545025170">¿Estás seguro de que deseas desinstalar Google Chrome?</translation>
-<translation id="2298849085402457754">Para borrar los datos de navegación solo en este dispositivo y conservarlos en tu Cuenta de Google, <ph name="BEGIN_LINK" />sal de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Como esta es una instalación secundaria de Google Chrome, no puede establecerse como tu navegador predeterminado.</translation>
 <translation id="2345992953227471816">Chrome detectó que las siguientes extensiones contienen software malicioso:</translation>
 <translation id="2348335408836342058">Chrome necesita permiso para acceder a tu cámara y micrófono para este sitio</translation>
@@ -110,7 +109,6 @@
 <translation id="2649768380733403658">Chrome verifica con regularidad que el navegador tenga la configuración más segura. Te avisaremos si hay algo que debas revisar.</translation>
 <translation id="2652691236519827073">Abrir vínculo en una pes&amp;taña nueva de Chrome</translation>
 <translation id="2665296953892887393">Envía a Google informes de fallos y <ph name="UMA_LINK" /> para ayudar a mejorar Google Chrome.</translation>
-<translation id="2712234843277364121">Reiniciar para actualizar: las pestañas se volverán a abrir</translation>
 <translation id="2738871930057338499">No se puede conectar a Internet. HTTP 403 no permitido. Comprueba la configuración del proxy.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome no puede impedir que las extensiones guarden tu historial de navegación. Para inhabilitar esta extensión en modo Incógnito, anula la selección de esta opción.</translation>
 <translation id="2765403129283291972">Chrome necesita permiso para acceder a tu micrófono para este sitio</translation>
@@ -321,6 +319,7 @@
 <translation id="6251759518630934363">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chrome.</translation>
 <translation id="6273793429163604305">En sus marcas…</translation>
 <translation id="6277547788421725101">Tu madre o padre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chrome</translation>
+<translation id="627882678981830918">Personaliza y controla Chrome. Establece Chrome como tu navegador predeterminado.</translation>
 <translation id="6291089322031436445">Apps de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome ya está instalado para todos los usuarios en tu computadora.</translation>
 <translation id="6326175484149238433">Quitar de Chrome</translation>
@@ -484,7 +483,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8999117580775242387">Cuando HTTPS no esté disponible, Chrome usará una conexión no segura sin advertirte</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible hace # días}}</translation>
 <translation id="9053892488859122171">Sistema de ChromeOS Flex</translation>
-<translation id="9054037008353851982">Reiniciar para actualizar: las pestañas se volverán a abrir</translation>
 <translation id="9090566250983691233">Descubre por qué Chrome bloquea algunos archivos</translation>
 <translation id="911206726377975832">¿También eliminar datos de navegación?</translation>
 <translation id="9138603949443464873">Para aplicar los cambios, vuelve a ejecutar Chrome</translation>

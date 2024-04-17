@@ -341,6 +341,7 @@
 <translation id="160851722280695521">‏Chrome میں Dino Run گیم کھیلیں</translation>
 <translation id="161042844686301425">سیان</translation>
 <translation id="1611101756749861742">دوسرا رول</translation>
+<translation id="1611854593425834707">کاسٹ کرنے کے لیے آلے کی فہرست بند کریں</translation>
 <translation id="1612199629998703524">موضوعات کا نظم کریں</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> تک رسائی منسوخ کریں</translation>
 <translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
@@ -453,7 +454,6 @@
 <translation id="1810391395243432441">اپنے اسکرین لاک سے پاس ورڈز کی حفاظت کریں</translation>
 <translation id="1812527064848182527">لینڈ اسکیپ</translation>
 <translation id="1812975699435941848">تعلیمِ صحت اور طبی تربیت</translation>
-<translation id="1813414402673211292">براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="1816436748874040213">مشترکہ ٹیبز کو اسکرول اور زوم کرنے کے لیے کہہ سکتے ہیں</translation>
 <translation id="1818522458013171885">غیر مسدود کریں</translation>
 <translation id="1818585559878922121">دستاویزی موویز</translation>
@@ -876,7 +876,6 @@
 <translation id="2647086987482648627">فیبرک (سیمی گلوس)</translation>
 <translation id="264810637653812429">کوئی مطابقت پذیر آلہ نہیں ملا۔</translation>
 <translation id="2649204054376361687"><ph name="CITY" />، <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome ترتیبات میں اپنے براؤزنگ کی سرگزشت، کوکیز، کیش اور بہت کچھ کو صاف کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="2650446666397867134">فائل تک رسائی مسترد کر دی گئی</translation>
 <translation id="2651465929321991146">سرگزشت اور ٹیبز</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
@@ -1207,7 +1206,6 @@
 <translation id="33073482541490531">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ پاس ورڈ مینیجر اس پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="3307649904964670439">‏Chrome کو حسب ضرورت بنائیں بٹن، اپنے براؤزر کی شکل کو حسب ضرورت بنانے کے لیے فعال کریں</translation>
 <translation id="3308006649705061278">‏تنظیمی اکائی (OU)</translation>
-<translation id="3310047144791481950">وہ معلومات دیکھیں جو آپ کو منتخب کرنے میں مدد کرتی ہے کہ کس کارڈ سے ادائیگی کرنی ہے۔ <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />کارڈ کے فوائد کے بارے میں جانیں<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">‏TV کامیڈیز</translation>
 <translation id="3324687287337751929">‏‎4 x 6 انچ</translation>
 <translation id="3324983252691184275">قرمزی</translation>
@@ -1376,7 +1374,6 @@
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود سیفٹی چیک چلانے کے لئے ٹیب پھر Enter دبائیں</translation>
 <translation id="3615309852743236517">مینی کیورز اور پیڈیکیورز</translation>
 <translation id="3620239073311576716">یونیفارم اور کام پر پہننے کا لباس</translation>
-<translation id="36224234498066874">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="362276910939193118">پوری سرگزشت دکھائیں</translation>
 <translation id="3623041590998910684">‏اپنے کیمرے کا استعمال کرنے کے لیے، <ph name="LINK" /> میں جا کر Chrome کو رسائی فراہم کریں۔</translation>
 <translation id="3623398832322170566">رومانوی موویز</translation>
@@ -1921,6 +1918,7 @@
 <translation id="4691093235373904540">چھت سازی</translation>
 <translation id="4692623383562244444">سرچ انجنز</translation>
 <translation id="4698692901173737941">مقابلہ آرائی کے کھیل کود</translation>
+<translation id="4701307090948589984">اس میں کاسٹ کریں...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">سائیڈ</translation>
 <translation id="4702656508969495934">لائیو کیپشن دکھائی دے رہا ہے، فوکس کرنے کیلئے ونڈو سوئچر استعمال کریں</translation>
@@ -2057,7 +2055,6 @@
 <translation id="4936134414789135531">داخل کردہ <ph name="VALUE_NAME" /> نہیں مل سکا۔</translation>
 <translation id="4936675324097895694">فائنانس</translation>
 <translation id="4940163644868678279">‏Chrome میں پوشیدگی وضع</translation>
-<translation id="494111439860963024">‏براؤزنگ ڈیٹا صاف کریں بٹن، Chrome کی ترتیبات میں اپنی براؤزنگ کی سرگزشت، کوکیز، کیش وغیرہ کو صاف کرنے کے لیے فعال کریں</translation>
 <translation id="4943620199112228840">اپنے مائیکروفون کا استعمال کریں</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
 <translation id="4950898438188848926">‏ٹیب پر سوئچ کرنے کا بٹن، کھلے ہوئے ٹیب پر سوئچ کرنے کے لیے Enter دبائیں، <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2171,6 +2168,8 @@
 <translation id="5161334686036120870">موضوع:</translation>
 <translation id="5161506081086828129">اسٹیکر 9</translation>
 <translation id="5164798890604758545">ٹیکسٹ درج کیا جاتا ہے</translation>
+<translation id="5164928537947209380">‏یہ تجرباتی AI ٹول ہمیشہ درست نہیں ہوگا۔ اسے بہتر بنانے کے لیے، آپ کا مواد Google کو بھیجا جاتا ہے۔
+    <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">‏<ph name="CREDIT_CARD" /> کا CVC درج کریں۔ آپ کے توثیق کرنے کے بعد، آپ کے Google اکاؤنٹ سے کارڈ کی تفصیلات کا اس سائٹ کے ساتھ اشتراک کر دیا جائے گا۔</translation>
 <translation id="5169827969064885044">‏آپ اپنی تنظیم کے اکاؤنٹ تک رسائی سے محروم ہو سکتے ہیں یا شناخت کی چوری ہو سکتی ہے۔ Chrome آپ کو ابھی اپنا پاس ورڈ تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="5171045022955879922">‏تلاش کریں یا URL ٹائپ کریں</translation>
@@ -2293,7 +2292,6 @@
 <translation id="541416427766103491">اسٹیکر 4</translation>
 <translation id="5414446060143308245">منتقلی سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="5414511064953050917">بہرحال منتقل کریں</translation>
-<translation id="5421136146218899937">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="5421408724705443535">راک موسیقی</translation>
 <translation id="5423269318075950257">قیمت ٹریک کریں</translation>
 <translation id="5425082381151187189">گھر اور داخلی سجاوٹ</translation>
@@ -3658,7 +3656,6 @@
 <translation id="8022542098135319050">ٹریول ایجنسیاں اور سروسز</translation>
 <translation id="8023231537967344568">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے ٹیب پھر Enter دبائیں</translation>
 <translation id="8025119109950072390">اس سائٹ پر موجود حملہ آور کوئی خطرناک کام انجام دینے جیسے سافٹ ویئر انسٹال کرنے یا آپ کی ذاتی معلومات (مثلاً، پاس ورڈز، فون نمبرز یا کریڈٹ کارڈز) کا افشاء کرنے کے جال میں آپ کو پھنسا سکتے ہیں۔</translation>
-<translation id="8026334261755873520">براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="8027077570865220386">ٹرے 15</translation>
 <translation id="8027585818882015174">‏Chrome سیفٹی چیک چلائیں بٹن، Chrome کی ترتیبات میں سیفٹی چیک چلانے کے لیے فعال کریں</translation>
 <translation id="8028698320761417183">‏<ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google Forms میں تیزی سے ایک نیا فارم تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
@@ -3929,7 +3926,6 @@
 <translation id="8527228059738193856">اسپیکرز</translation>
 <translation id="8527681393107582734">زراعت اور علم جنگلات</translation>
 <translation id="8528149813106025610">بچوں کے لباس</translation>
-<translation id="8530813470445476232">‏Chrome ترتیبات میں اپنے براؤزنگ کی سرگزشت، کوکیز، کیش اور بہت کچھ کو صاف کریں</translation>
 <translation id="853246364274116957">براڈوے اور میوزیکل تھیئٹر</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏مسدود کردہ URLs کی فہرست اور اپنے سسٹم کے منتظم کے ذریعے نافذ کردہ دیگر پالیسیاں دیکھنے کے لیے &lt;strong&gt;chrome://policy&lt;/strong&gt; ملاحظہ کریں۔</translation>
@@ -4069,6 +4065,7 @@
 <translation id="8807160976559152894">ہر صفحہ کے بعد تراشیں</translation>
 <translation id="8809203544698246977">مسدود کردہ موضوعات یہاں دکھائی دیں گی</translation>
 <translation id="8811470563853401328">اکاؤنٹ میں پتہ محفوظ کریں؟</translation>
+<translation id="8811725516933141693">‏Gemini کے ساتھ چیٹ کرنے کے لیے gemini@ ٹائپ کریں</translation>
 <translation id="8813277370772331957">مجھے بعد میں یاد دلائیں</translation>
 <translation id="8814707942599948500">‏C8 لفافہ</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنی Chrome کی ترتیبات سے Chrome اپ ڈیٹ کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>

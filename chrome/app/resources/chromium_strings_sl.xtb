@@ -72,7 +72,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="2329088755516916767">Če je vklopljena ta nastavitev, Chromium vnaprej naloži strani, kar omogoča hitrejše brskanje in iskanje.</translation>
 <translation id="2343156876103232566">Če želite poslati telefonsko številko od tukaj v telefon Android, se prijavite v Chromium v obeh napravah.</translation>
 <translation id="2359808026110333948">Naprej</translation>
-<translation id="2359920621792549529">Če želite izbrisati podatke brskanja samo iz te naprave, v računu Google pa jih želite ohraniti, <ph name="BEGIN_LINK" />se odjavite iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">Chromium OS ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Najmanj ena razširitev za Chromium je dostopala do 1 naprave HID}=1{Najmanj ena razširitev za Chromium dostopa do 1 naprave HID}one{Najmanj ena razširitev za Chromium dostopa do # naprave HID}two{Najmanj ena razširitev za Chromium dostopa do # naprav HID}few{Najmanj ena razširitev za Chromium dostopa do # naprav HID}other{Najmanj ena razširitev za Chromium dostopa do # naprav HID}}</translation>
 <translation id="2401032172288869980">Chromium potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
@@ -252,6 +251,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium v tem jeziku</translation>
 <translation id="569897634095159764">Internetne povezave ni mogoče vzpostaviti. Strežnik proxy zahteva preverjanje pristnosti.</translation>
+<translation id="5800158606660203929">Prilagajanje in nadziranje Chromiuma. Nastavite Chromium kot privzeto možnost.</translation>
 <translation id="5809516625706423866">Internetne povezave ni mogoče vzpostaviti. Koda napake HTTP je »401 Unauthorized«. Preverite konfiguracijo strežnika proxy.</translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5883558403894052917">Chromium je ugotovil, da ti elementi vsebujejo zlonamerno programsko opremo:</translation>

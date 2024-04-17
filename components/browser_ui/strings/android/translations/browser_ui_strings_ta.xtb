@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">அனுமதிகளை மீட்டமை</translation>
 <translation id="301521992641321250">தானாகத் தடுக்கப்பட்டது</translation>
 <translation id="3069226013421428034">குறிப்பிட்ட தளத்திற்கு மூன்றாம் தரப்பு உள்நுழைவை அனுமதிக்கும்.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{நாளை காலாவதியாகிறது}other{# நாட்களில் காலாவதியாகிறது}}</translation>
 <translation id="310297983047869047">முந்தைய ஸ்லைடிற்குச் செல்லும்</translation>
 <translation id="3109724472072898302">சுருக்கப்பட்டது</translation>
 <translation id="3114012059975132928">வீடியோ பிளேயர்</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">அனுமதிக்கப்பட்டது</translation>
 <translation id="429312253194641664">ஒரு தளம் மீடியாவை இயக்குகிறது</translation>
 <translation id="42981349822642051">விரி</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{நாளை காலாவதியாகிறது}other{# நாட்களில் காலாவதியாகிறது}}</translation>
 <translation id="4336566011000459927">Chrome இன்று குக்கீகளை மீண்டும் கட்டுப்படுத்தும்</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> உங்கள் கடைசிப் பக்கம்</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> டொமைனின் கீழே உள்ள அனைத்துத் தளங்கள்</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">எப்போதும்</translation>
 <translation id="757524316907819857">பாதுகாக்கப்பட்ட உள்ளடக்கத்தைத் தளங்கள் இயக்குவதைத் தடுக்கும்</translation>
 <translation id="7594634374516752650">புளூடூத் சாதனத்தோடு இணைக்கப்பட்டுள்ளது</translation>
-<translation id="7641339528570811325">உலாவிய தரவை அழி…</translation>
 <translation id="7649070708921625228">உதவி</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7667547420449112975">ஓஸ் நகரின் அற்புத மாயாவி</translation>

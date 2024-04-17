@@ -80,7 +80,6 @@
 <translation id="2258103955319320201">Da biste mogli pristupiti svojim sadržajima u pregledniku Chrome na svim svojim uređajima, prijavite se i zatim uključite sinkronizaciju.</translation>
 <translation id="2290014774651636340">Nedostaju ključevi Google API-ja. Neke funkcije Google Chromea bit će onemogućene.</translation>
 <translation id="2290095356545025170">Jeste li sigurni da želite deinstalirati Google Chrome?</translation>
-<translation id="2298849085402457754">Da biste podatke o pregledavanju izbrisali samo s ovog uređaja, a zadržali ih na svojem Google računu, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Ovo je sekundarna instalacija Google Chromea, pa on ne može biti vaš zadani preglednik.</translation>
 <translation id="2345992953227471816">Chrome je otkrio da ova proširenja sadrže zlonamjerni softver:</translation>
 <translation id="2348335408836342058">Chrome treba dopuštenje za pristup kameri i mikrofonu za ovu web-lokaciju</translation>
@@ -110,7 +109,6 @@
 <translation id="2649768380733403658">Chrome redovito provjerava jesu li postavke preglednika najsigurnije. Obavijestit ćemo vas ako bilo što treba pregledati.</translation>
 <translation id="2652691236519827073">Otvori vezu na novoj &amp;kartici Chromea</translation>
 <translation id="2665296953892887393">Pomognite nam poboljšati Google Chrome šaljući izvješća o rušenju programa i <ph name="UMA_LINK" /> Googleu</translation>
-<translation id="2712234843277364121">Ponovno pokrenite da biste ažurirali – kartice će se ponovno otvoriti</translation>
 <translation id="2738871930057338499">Povezivanje s internetom nije moguće. HTTP 403 Zabranjeno je. Provjerite konfiguraciju proxyja.</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može onemogućiti proširenjima da bilježe vašu povijest pregledavanja. Da biste onemogućili to proširenje u anonimnom načinu, poništite odabir te opcije.</translation>
 <translation id="2765403129283291972">Chrome treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>
@@ -323,6 +321,7 @@
 <translation id="6251759518630934363">Upozorava vas na opasne web-lokacije, čak i one za koje Google još nije znao, analiziranjem više podataka s web-lokacija od standardne zaštite. Možete preskočiti Chromeova upozorenja.</translation>
 <translation id="6273793429163604305">Priprema...</translation>
 <translation id="6277547788421725101">Tvoj je roditelj isključio postavku "Dopuštenja za web-lokacije, aplikacije i proširenja" za Chrome</translation>
+<translation id="627882678981830918">Prilagodite Chrome i upravljajte njime. Postavite Chrome kao zadani preglednik.</translation>
 <translation id="6291089322031436445">Aplikacije preglednika Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome već je instaliran za sve korisnike na računalu.</translation>
 <translation id="6326175484149238433">Ukloni iz programa Chrome</translation>
@@ -491,7 +490,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8999117580775242387">Kad HTTPS nije dostupan, Chrome će upotrebljavati nesigurnu vezu bez upozorenja</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostupno je ažuriranje Chromea}=1{Dostupno je ažuriranje Chromea}one{Ažuriranje Chromea dostupno je # dana}few{Ažuriranje Chromea dostupno je # dana}other{Ažuriranje Chromea dostupno je # dana}}</translation>
 <translation id="9053892488859122171">Sustav ChromeOS Flex</translation>
-<translation id="9054037008353851982">Ponovno pokrenite da biste ažurirali – kartice će se ponovno otvoriti</translation>
 <translation id="9090566250983691233">Saznajte zašto Chrome blokira neke datoteke</translation>
 <translation id="911206726377975832">Izbrisati i podatke o pregledavanju?</translation>
 <translation id="9138603949443464873">Da bi se vaše promjene primijenile, ponovo pokrenite Chrome</translation>

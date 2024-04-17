@@ -72,7 +72,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2329088755516916767">When on, Chromium preloads pages, which makes browsing and searching faster.</translation>
 <translation id="2343156876103232566">To send a number from here to your Android phone, sign in to Chromium on both devices.</translation>
 <translation id="2359808026110333948">Continue</translation>
-<translation id="2359920621792549529">To clear browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK" />sign out of Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">Chromium OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{1 HID device is being accessed by one or more Chromium extensions}other{# HID devices are being accessed by one or more Chromium extensions}}</translation>
 <translation id="2401032172288869980">Chromium needs camera and microphone permissions for this site</translation>

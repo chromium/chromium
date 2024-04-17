@@ -72,7 +72,6 @@
 <translation id="2329088755516916767">‏آن ہونے پر، Chromium صفحات کو پہلے سے لوڈ کرتا ہے جو براؤزنگ اور تلاش کو تیز تر بناتا ہے۔</translation>
 <translation id="2343156876103232566">‏یہاں سے اپنے Android فون پر نمبر بھیجنے کے لیے، دونوں آلات پر Chromium میں سائن ان کریں۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
-<translation id="2359920621792549529">‏براؤزنگ ڈیٹا کو اپنے Google اکاؤنٹ میں رکھتے ہوئے، صرف اس آلہ سے اسے صاف کرنے کیلئے، <ph name="BEGIN_LINK" />Chromium سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
 <translation id="2384373936468275798">‏ChromeOS آپ کے اکاؤنٹ کی سائن ان تفصیلات پرانی ہونے کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chromium ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی تھی}=1{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chromium ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}other{‏# HID آلات تک ایک یا ایک سے زیادہ Chromium ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}}</translation>
 <translation id="2401032172288869980">‏Chromium کو اس سائٹ کے لیے کیمرے اور مائیکروفون کی اجازتیں درکار ہیں</translation>
@@ -253,6 +252,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏Chromium کو اس زبان میں ڈسپلے کریں</translation>
 <translation id="569897634095159764">انٹرنیٹ سے منسلک ہونے سے قاصر۔ پراکسی سرور کیلئے تصدیق درکار ہے۔</translation>
+<translation id="5800158606660203929">‏Chromium کو حسب ضرورت بنائیں اور کنٹرول کریں۔ Chromium کو بطور ڈیفالٹ براؤزر سیٹ کریں۔</translation>
 <translation id="5809516625706423866">‏انٹرنیٹ سے منسلک ہونے سے قاصر ہے۔ HTTP 401 غیر مجاز ہے۔ براہ کرم اپنی پراکسی کنفیگریشن چیک کریں۔</translation>
 <translation id="5862307444128926510">‏Chromium میں خوش آمدید</translation>
 <translation id="5883558403894052917">‏Chromium کو پتا چلا ہے کہ یہ آئٹمز میلوئیر پر مشتمل ہیں:</translation>

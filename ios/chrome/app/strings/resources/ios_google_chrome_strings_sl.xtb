@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Pridržite ikono Chroma in kliknite »Uredi začetni zaslon«</translation>
 <translation id="1066101356081285416">Chrome zazna številke za sledenje na spletnih mestih, ki jih obiščete, in vam na novem zavihku s povezavami prikaže obvestila o paketu. Številka za sledenje paketu in ime spletnega mesta se pošljeta Googlu zaradi zagotavljanja te funkcije in izboljšanja funkcij nakupovanja v Googlu za vse. To lahko kadar koli posodobite v <ph name="BEGIN_LINK" />nastavitvah sledenja paketu<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Privzeto uporabljajte Chrome</translation>
-<translation id="1105362920864247682">Brisanje podatkov brskanja v Chromu.</translation>
 <translation id="1143896152279775643">Geslo bo shranjeno v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Odprite Chromov meni</translation>
 <translation id="1180362651362502943">Še naprej uporabljajte podatke v Chromu v računu Google.</translation>
@@ -77,7 +76,6 @@ Kaj je treba upoštevati:
 <translation id="2750626042242931740">Izbire lahko kadar koli posodobite v nastavitvah za Chrome.</translation>
 <translation id="2767464022270041271">Ni shranjenih gesel. Googlov upravitelj gesel lahko preveri gesla, če jih shranite.</translation>
 <translation id="2789947168960170215">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Brisanje podatkov brskanja v Chromu</translation>
 <translation id="2869959624320573933">Prijava v Chrome</translation>
 <translation id="2876628302275096482">Preberite več o tem, <ph name="BEGIN_LINK" />kako Chrome zagotavlja zasebnost vaših podatkov<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Odprite nastavitve brskalnika Chrome.</translation>
@@ -225,7 +223,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7466693328838535498">V polje »Pripomočki za iskanje« vnesite Chrome</translation>
 <translation id="746684838091935575">3. Izberite Chrome.</translation>
 <translation id="7492574581995589075">Vaša organizacija je izklopila možnost uporabe in shranjevanja podatkov v Chromu v računu Google. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>
-<translation id="756809126120519699">Chromovi podatki so izbrisani.</translation>
 <translation id="7581063337314642333">Odpiranje mreže zavihkov v Chromu</translation>
 <translation id="7662994914830945754">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="7669869107155339016">Odprite nastavitve Chroma.</translation>

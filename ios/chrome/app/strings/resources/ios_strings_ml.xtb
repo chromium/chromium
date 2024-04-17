@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">വീണ്ടും സ്വാഗതം, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">കാർഡ് ഉടമയുടെ പേര്</translation>
 <translation id="1809939268435598390">ഫോൾഡർ ഇല്ലാതാക്കുക</translation>
-<translation id="1813414402673211292">ബ്രൌസിംഗ് ഡാറ്റാ മായ്ക്കുക...</translation>
 <translation id="1815941218935345331">പാസ്‌കോഡ്</translation>
 <translation id="1820259098641718022">വായനാ ലിസ്റ്റിൽ ചേർത്തു</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">വെബ്‌പേജ് ലോഡ് ചെയ്‌തു</translation>
 <translation id="223356358902285214">വെബ്, ആപ്പ് ആക്റ്റിവിറ്റി</translation>
 <translation id="2234827758954819389">സ്വകാര്യതാ ഗൈഡ്</translation>
-<translation id="2239626343334228536">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുന്നു...</translation>
 <translation id="2251686759395008410">മെനു → ചരിത്രം</translation>
 <translation id="2252674110805316998">വെബ് തിരയൽ</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> എന്നതിനായി Drive-ൽ സംരക്ഷിക്കുന്നു.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">പുതിയ അദൃശ്യ വിൻഡോ</translation>
 <translation id="3488501490964659223">ടാബുകൾ അടയ്ക്കും, ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കും. നിങ്ങൾ സൈൻ ഔട്ട് ആയി</translation>
 <translation id="3493531032208478708">നിർദ്ദേശിച്ച ഉള്ളടക്കത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുന്നത് സ്ഥിരീകരിക്കുക</translation>
 <translation id="35083190962747987">${url} തുറക്കുക</translation>
 <translation id="3519193562722059437">വെബ് ബ്രൗസ് ചെയ്യാൻ ഒരു ടാബ് തുറക്കുക.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ടാബ് തുറക്കുക}other{{count} ടാബുകൾ തുറക്കുക}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">ബുക്ക്‌മാർക്കുകളിൽ ചേർക്കുക</translation>
 <translation id="355101282835380364">Account-ൽ സംരക്ഷിക്കുക…</translation>
 <translation id="3551320343578183772">ടാബ് അടയ്‌ക്കുക</translation>
-<translation id="3565207542107370586">ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കുക…</translation>
 <translation id="3565930036634619844">ടാബ്. <ph name="NUMBER_OF_TABS" />-ൽ <ph name="TAB_INDEX" />-ാമത്തേത്.</translation>
 <translation id="3570693105179140209">കൂടുതൽ പാസ്‌വേഡുകൾക്ക് ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="3575234738189584619">Lens ഉപയോഗിച്ച് തിരയുക</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438"><ph name="WEBSITE" /> ആണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="6032845897905314562">പുതിയ ഫീച്ചർ</translation>
 <translation id="6033598293589037429">പിക്കപ്പിന് തയ്യാറാണ്</translation>
-<translation id="6036215966221662377">ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കുക</translation>
 <translation id="6036514205982097558">നിങ്ങളുടെ എല്ലാ ടാബുകളും ഒരു ബ്രൗസറിൽ</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
@@ -1151,7 +1146,6 @@
 <translation id="6859944681507688231">QR കോഡോ ക്രെഡിറ്റ് കാര്‍ഡോ സ്‌കാൻ ചെയ്യാൻ, ക്രമീകരണത്തിൽ ക്യാമറ പ്രവർത്തനക്ഷമമാക്കുക.</translation>
 <translation id="6867369562105931222">പാസ്‌വേഡ്</translation>
 <translation id="686899695320434745">വിലാസങ്ങൾ നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്തിട്ടില്ല. അതിനാൽ നിങ്ങൾക്ക് അവ മറ്റ് Google സേവനങ്ങളിൽ ഉപയോഗിക്കാം.</translation>
-<translation id="6869389390665537774">നിങ്ങൾ സന്ദർശിച്ച പേജുകൾ കാണാനോ അവ നിങ്ങളുടെ ചരിത്രത്തിൽ നിന്ന് മായ്ക്കാനോ കഴിയും</translation>
 <translation id="687135068089457384">ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="6873263987691478642">വിഭജിത കാഴ്‌ച</translation>
 <translation id="6882836635272038266">അപകടകരമെന്ന് അറിയപ്പെടുന്ന വെബ്സൈറ്റുകൾ, ഡൗൺലോഡുകള്‍, വിപുലീകരണങ്ങൾ എന്നിവയ്ക്ക് എതിരായ സ്‌റ്റാൻഡേർഡ് സുരക്ഷ.</translation>
@@ -1297,7 +1291,6 @@
 <translation id="7719038820139380048">നിങ്ങളുടെ താൽപ്പര്യങ്ങളെ അടിസ്ഥാനമാക്കിയുള്ള ഉള്ളടക്കം നേടാൻ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="7720410380936703141">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7724085059277147439">{count,plural, =1{{email} എന്ന Google Account-ൽ ഇനം സംരക്ഷിച്ചു}other{{email} എന്ന Google Account-ൽ ഇനങ്ങൾ സംരക്ഷിച്ചു}}</translation>
-<translation id="7726702057919861819">മെനു → ചരിത്രം → ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കുക</translation>
 <translation id="7729458878441927652">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ കാണാൻ, ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കുക.</translation>
 <translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> സംരക്ഷിക്കാൻ നിങ്ങൾ ഉപയോഗിക്കാൻ ആഗ്രഹിക്കുന്ന അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ഈ ഉപകരണത്തിൽ മാത്രം.</translation>
@@ -1542,7 +1535,6 @@
 <translation id="8870413625673593573">സമീപകാലത്ത് അടച്ചവ</translation>
 <translation id="8876882697946675716">നിങ്ങളുടെ ഉപകരണങ്ങൾ സമന്വയിപ്പിച്ച് നിലനിർത്തുക</translation>
 <translation id="8879604564928138696">ഉപയോഗിച്ചുനോക്കാൻ ഡബിൾ ടാപ്പ് ചെയ്യുക</translation>
-<translation id="8879984884633913185">'ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കുക' മറയ്ക്കുക</translation>
 <translation id="8881801611828450202">ഈ ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="8898822736010347272">വെബിലെ പുതിയ ഭീഷണികൾ കണ്ടെത്തി എല്ലാവരെയും പരിരക്ഷിക്കാൻ സഹായിക്കുന്നതിന് നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകളുടെ URL-കൾ, പരിമിത സിസ്‌റ്റം വിവരങ്ങൾ, ചില പേജുകളുടെ ഉള്ളടക്കം എന്നിവ Google-ലേക്ക് അയയ്ക്കുന്നു.</translation>
 <translation id="890565330728586731">മടങ്ങുക</translation>

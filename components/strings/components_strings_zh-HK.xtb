@@ -340,6 +340,7 @@
 <translation id="160851722280695521">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611101756749861742">第二卷</translation>
+<translation id="1611854593425834707">關閉投放裝置清單</translation>
 <translation id="1612199629998703524">管理主題</translation>
 <translation id="1615178538289490617">撤銷 <ph name="PORT_NAME" /> 的存取權</translation>
 <translation id="1615402009686901181">當畫面上出現機密內容時，管理員政策就會停用螢幕截圖擷取功能</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">使用螢幕鎖定功能保護密碼</translation>
 <translation id="1812527064848182527">橫向</translation>
 <translation id="1812975699435941848">健康教育和醫療培訓</translation>
-<translation id="1813414402673211292">清除瀏覽資料</translation>
 <translation id="1816436748874040213">可要求捲動和縮放已分享的分頁</translation>
 <translation id="1818522458013171885">解除封鎖</translation>
 <translation id="1818585559878922121">紀錄片</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">布料 (半光面)</translation>
 <translation id="264810637653812429">找不到任何兼容的裝置。</translation>
 <translation id="2649204054376361687"><ph name="COUNTRY" />，<ph name="CITY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度清除瀏覽記錄、Cookie、快取同更多資料</translation>
 <translation id="2650446666397867134">存取檔案被拒</translation>
 <translation id="2651465929321991146">記錄和分頁</translation>
 <translation id="2653659639078652383">提交</translation>
@@ -1205,7 +1204,6 @@
 <translation id="33073482541490531">系統發現您剛才使用的密碼因資料外洩而被洩露。「密碼管理工具」建議您立即變更密碼。</translation>
 <translation id="3307649904964670439">自訂 Chrome 按鈕，啟動之後就可以自訂瀏覽器嘅風格</translation>
 <translation id="3308006649705061278">機構單位 (OU)</translation>
-<translation id="3310047144791481950">查看可助你選取付款卡的資料。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />瞭解付款卡禮遇<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">電視喜劇</translation>
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">棕紅色</translation>
@@ -1373,7 +1371,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
 <translation id="3615309852743236517">修甲服務</translation>
 <translation id="3620239073311576716">制服及工作服</translation>
-<translation id="36224234498066874">清除瀏覽資料…</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
 <translation id="3623041590998910684">如要使用攝錄機，請在<ph name="LINK" />向 Chrome 授予存取權。</translation>
 <translation id="3623398832322170566">愛情電影</translation>
@@ -1918,6 +1915,7 @@
 <translation id="4691093235373904540">屋頂工程</translation>
 <translation id="4692623383562244444">搜尋引擎</translation>
 <translation id="4698692901173737941">格鬥運動</translation>
+<translation id="4701307090948589984">投放去…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">側邊</translation>
 <translation id="4702656508969495934">顯示咗即時字幕，用視窗切換選項將焦點移去即時字幕</translation>
@@ -2054,7 +2052,6 @@
 <translation id="4936134414789135531">找不到已插入的<ph name="VALUE_NAME" />。</translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4940163644868678279">Chrome 無痕模式</translation>
-<translation id="494111439860963024">清除瀏覽資料按鈕，啟動之後就可以喺 Chrome 設定度清除您嘅瀏覽紀錄、Cookie、快取同更多資料</translation>
 <translation id="4943620199112228840">使用麥克風</translation>
 <translation id="4943872375798546930">搵唔到結果</translation>
 <translation id="4950898438188848926">分頁切換按鈕，㩒一下 Enter 鍵就可以轉去開以下嘅分頁：<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2167,6 +2164,8 @@
 <translation id="5161334686036120870">標題：</translation>
 <translation id="5161506081086828129">堆疊器 9</translation>
 <translation id="5164798890604758545">已輸入文字</translation>
+<translation id="5164928537947209380">此實驗版 AI 工具提供的內容可能不完全正確。為改善此工具，系統會將你的內容傳送至 Google。
+    <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼 (CVC)。確認後，您的 Google 帳戶會與這個網站共用您的信用卡資料。</translation>
 <translation id="5169827969064885044">您有可能會失去機構帳戶存取權，或會遭身份盜用。Chrome 建議您立即變更密碼。</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
@@ -2289,7 +2288,6 @@
 <translation id="541416427766103491">堆疊器 4</translation>
 <translation id="5414446060143308245">轉移檔案前請務必確認</translation>
 <translation id="5414511064953050917">仍要移動</translation>
-<translation id="5421136146218899937">清除瀏覽數據…</translation>
 <translation id="5421408724705443535">搖滾音樂</translation>
 <translation id="5423269318075950257">追蹤價格</translation>
 <translation id="5425082381151187189">家居和室內設計</translation>
@@ -3652,7 +3650,6 @@
 <translation id="8022542098135319050">旅行社及旅遊服務</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵同 Enter 鍵就可以將 Chrome 設定做系統嘅預設瀏覽器</translation>
 <translation id="8025119109950072390">攻擊者可能會透過此網站誘使您採取一些危險的行動，例如安裝軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。</translation>
-<translation id="8026334261755873520">清除瀏覽數據</translation>
 <translation id="8027077570865220386">紙匣 15</translation>
 <translation id="8027585818882015174">執行 Chrome 安全檢查按鈕，啟動之後就可以喺 Chrome 設定度執行安全檢查</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google 表格度快速建立新表格</translation>
@@ -3923,7 +3920,6 @@
 <translation id="8527228059738193856">喇叭</translation>
 <translation id="8527681393107582734">農林業</translation>
 <translation id="8528149813106025610">童裝</translation>
-<translation id="8530813470445476232">清除您的瀏覽記錄、Cookie、快取以及其他 Chrome 設定</translation>
 <translation id="853246364274116957">百老匯及音樂劇場</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>
@@ -4063,6 +4059,7 @@
 <translation id="8807160976559152894">完成每頁後修剪</translation>
 <translation id="8809203544698246977">已封鎖的主題會在此顯示</translation>
 <translation id="8811470563853401328">要將地址儲存在帳戶中嗎？</translation>
+<translation id="8811725516933141693">輸入 @gemini 即可與 Gemini 對話</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8814707942599948500">C8 信封</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以透過 Chrome 設定更新 Chrome</translation>

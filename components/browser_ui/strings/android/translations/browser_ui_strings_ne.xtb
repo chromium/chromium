@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">अनुमतिहरू रिसेट गर्नुहोस्</translation>
 <translation id="301521992641321250">स्वतः रोक लगाइयो</translation>
 <translation id="3069226013421428034">निश्चित साइटमा तेस्रो पक्षको खातामार्फत साइन इन गर्न दिनुहोस्।</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{भोलि म्याद सकिन्छ}other{# दिनमा म्याद सकिन्छ}}</translation>
 <translation id="310297983047869047">अघिल्लो स्लाइड</translation>
 <translation id="3109724472072898302">ध्वस्त भएको</translation>
 <translation id="3114012059975132928">भिडियो प्लेयर</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">अनुमति प्राप्त</translation>
 <translation id="429312253194641664">कुनै साइटले मिडियो प्ले गरिरहेको छ</translation>
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{भोलि म्याद सकिन्छ}other{# दिनमा म्याद सकिन्छ}}</translation>
 <translation id="4336566011000459927">Chrome ले आज फेरि कुकीहरू सीमित पार्ने छ</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> तपाईंको अन्तिम ट्याब</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> अन्तर्गतका सबै साइटहरू</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="757524316907819857">साइटहरूलाई संरक्षित सामग्री प्ले गर्न रोक लगाउनुहोस्</translation>
 <translation id="7594634374516752650">कुनै ब्लुटुथ डिभाइसमा कनेक्ट गरिएको छ</translation>
-<translation id="7641339528570811325">ब्राउजिङको डेटा मेटाउनुहोस्…</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>

@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Ya se está haciendo un seguimiento de este paquete en Chromium.</translation>
 <translation id="1707458603865303524">Usa Chromium siempre que toques enlaces en mensajes u otras aplicaciones.</translation>
 <translation id="1722370509450468186">Tu contraseña se guardará en tu cuenta (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Datos de Chromium borrados</translation>
 <translation id="1791845338122684020">Abre la página del historial de Chromium.</translation>
 <translation id="1838412507805038478">Chromium ha verificado que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="1843424232666537147">Chromium incluye funciones que te permiten gestionar tus datos de Internet y la velocidad a la que se cargan las páginas web.
@@ -85,7 +84,6 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="3472200483164753384">No compatible con Chromium Canary</translation>
 <translation id="347967311580159871">Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chromium, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">No se ha compartido tu contraseña. Comprueba tu conexión a Internet y asegúrate de haber iniciado sesión en Chromium. Después, inténtalo de nuevo.</translation>
-<translation id="3554027294407525061">Borra datos de navegación en Chromium.</translation>
 <translation id="3567399274263440288">Para sacarle el máximo partido a Chromium, inicia sesión en Chromium con tu cuenta de Google.</translation>
 <translation id="3634039384458740619">Abrir configuración de Chromium</translation>
 <translation id="3639997914391704523">Chromium puede comprobar tus contraseñas cuando inicias sesión con tu cuenta de Google.</translation>
@@ -136,7 +134,6 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 <translation id="5042011327527167688">Toca Ver con Google Maps en Chromium.</translation>
 <translation id="5044871537677053278">Chromium detecta direcciones y usa Google Maps para ofrecerte indicaciones e información local.</translation>
 <translation id="5048795749726991615">Para obtener fácilmente tus contraseñas guardadas en tus otras aplicaciones, usa Autocompletar en Chromium</translation>
-<translation id="5076601183701536878">Borrar datos de navegación en Chromium</translation>
 <translation id="5124429847818367226">Ahora puedes usar Chromium cada vez que navegues o toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="5131565040785979529">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en que se usa Chromium.</translation>
 <translation id="5146749061471423558">Añadir marcadores a Chromium</translation>

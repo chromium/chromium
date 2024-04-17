@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Dobro došli natrag, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Ime vlasnika kartice</translation>
 <translation id="1809939268435598390">Izbriši mapu</translation>
-<translation id="1813414402673211292">Brisanje podataka o pregledavanju</translation>
 <translation id="1815941218935345331">Šifra</translation>
 <translation id="1820259098641718022">Dodano na popis za čitanje</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Web-stranica učitana</translation>
 <translation id="223356358902285214">Aktivnost na webu i u aplikacijama</translation>
 <translation id="2234827758954819389">Vodič za privatnost</translation>
-<translation id="2239626343334228536">Brisanje podataka o pregledavanju...</translation>
 <translation id="2251686759395008410">Izbornik → Povijest</translation>
 <translation id="2252674110805316998">Pretraživanje weba</translation>
 <translation id="2252749852083403809">Spremanje na Disk za <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3485558910355485767">Novi anonimni prozor</translation>
 <translation id="3488501490964659223">Kartice su zatvorene i izbrisani su podaci o pregledavanju. Odjavljeni ste</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
-<translation id="3494788280727468875">Potvrdi brisanje podataka o pregledavanju</translation>
 <translation id="35083190962747987">Otvori ${url}</translation>
 <translation id="3519193562722059437">Otvorite karticu da biste pregledavali web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Otvori karticu}one{Otvori {count} karticu}few{Otvori {count} kartice}other{Otvori {count} kartica}}</translation>
@@ -492,7 +489,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3540141921715814660">Dodaj u Oznake</translation>
 <translation id="355101282835380364">Spremi na račun…</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
-<translation id="3565207542107370586">Brisanje podataka o pregledavanju…</translation>
 <translation id="3565930036634619844">Kartica. <ph name="TAB_INDEX" /> od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Dodirnite dvaput za više zaporki.</translation>
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
@@ -968,7 +964,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6027945736510816438">Jeste li mislili <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nova značajka</translation>
 <translation id="6033598293589037429">Spremno za prihvat</translation>
-<translation id="6036215966221662377">Brisanje podataka o pregledavanju</translation>
 <translation id="6036514205982097558">Sve vaše kartice u jednom pregledniku</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zatvori</translation>
@@ -1152,7 +1147,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6859944681507688231">Da biste skenirali QR kôd ili kreditnu karticu, omogućite kameru u postavkama.</translation>
 <translation id="6867369562105931222">zaporka</translation>
 <translation id="686899695320434745">Adrese se ne šifriraju vašom šifrom. To vam omogućuje da ih upotrebljavate na drugim Googleovim uslugama.</translation>
-<translation id="6869389390665537774">Možete pogledati stranice koje ste posjetili ili ih izbrisati iz povijesti</translation>
 <translation id="687135068089457384">Prikaži postavke</translation>
 <translation id="6873263987691478642">Podijeljeni prikaz</translation>
 <translation id="6882836635272038266">Standardna zaštita od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasna.</translation>
@@ -1300,7 +1294,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7719038820139380048">Prijavite se da biste dobivali sadržaj na temelju svojih interesa.</translation>
 <translation id="7720410380936703141">PONOVI</translation>
 <translation id="7724085059277147439">{count,plural, =1{Stavka je spremljena na vaš Google račun, {email}}one{Stavke su spremljene na vaš Google račun, {email}}few{Stavke su spremljene na vaš Google račun, {email}}other{Stavke su spremljene na vaš Google račun, {email}}}</translation>
-<translation id="7726702057919861819">Izbornik → Povijest → Brisanje podataka o pregledavanju</translation>
 <translation id="7729458878441927652">Kako biste vidjeli kartice s drugih uređaja, sinkronizirajte kartice i povijest.</translation>
 <translation id="7730973429297233609">Odaberite račun koji želite upotrijebiti za spremanje datoteke <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo na ovom uređaju.</translation>
@@ -1545,7 +1538,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8870413625673593573">Nedavno zatvoreno</translation>
 <translation id="8876882697946675716">Sinkronizacija uređaja</translation>
 <translation id="8879604564928138696">Dodirnite dvaput da biste isprobali</translation>
-<translation id="8879984884633913185">Sakrij stavku Izbrišite podatke o pregledavanju</translation>
 <translation id="8881801611828450202">Potraži sliku na usluzi <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Šalje URL-ove određenih stranica koje posjećujete, ograničene podatke o sustavu i sadržaj određenih stranica Googleu kako bi se pomoglo pri otkrivanju novih prijetnji i kako bi se zaštitili svi korisnici na webu.</translation>
 <translation id="890565330728586731">Natrag</translation>

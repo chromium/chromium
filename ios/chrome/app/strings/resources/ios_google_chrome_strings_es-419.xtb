@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Mantén presionado el ícono de Chrome y haz clic en "Edita la pantalla de inicio"</translation>
 <translation id="1066101356081285416">Chrome detectará los números de seguimiento en los sitios que visites y te mostrará actualizaciones de paquetes en la página Nueva pestaña. El número de seguimiento del paquete y el nombre del sitio web se enviarán a Chrome para proporcionar esta función y mejorar las funciones de Google Shopping para todos los usuarios. Puedes actualizar esta opción en cualquier momento en la <ph name="BEGIN_LINK" />configuración de seguimiento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usa Chrome de forma predeterminada</translation>
-<translation id="1105362920864247682">Borrar los datos de navegación en Chrome.</translation>
 <translation id="1143896152279775643">La contraseña se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Abre el Menú de Chrome.</translation>
 <translation id="1180362651362502943">Sigue usando los datos de Chrome en tu Cuenta de Google.</translation>
@@ -77,7 +76,6 @@ Aspectos que debes tener en cuenta:
 <translation id="2750626042242931740">Puedes actualizar tus selecciones en cualquier momento en la configuración de Chrome.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
 <translation id="2789947168960170215">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Borrar los datos de navegación en Chrome</translation>
 <translation id="2869959624320573933">Acceder a Chrome</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo Chrome mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Abre la configuración de Chrome.</translation>
@@ -225,7 +223,6 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="7466693328838535498">En el cuadro Widgets de la Búsqueda, ingresa "Chrome"</translation>
 <translation id="746684838091935575">3. Selecciona Chrome.</translation>
 <translation id="7492574581995589075">Tu organización desactivó la función para usar y guardar datos de Chrome en tu Cuenta de Google. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
-<translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7581063337314642333">Visitar la cuadrícula de pestañas en Chrome</translation>
 <translation id="7662994914830945754">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta y activa la sincronización</translation>
 <translation id="7669869107155339016">Ve a la configuración de Chrome.</translation>

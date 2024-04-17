@@ -65,7 +65,6 @@
 <translation id="1273937721055267968"><ph name="DOMAIN" />ને બ્લૉક કરો</translation>
 <translation id="1283039547216852943">વિસ્તૃત કરવા માટે ટૅપ કરો</translation>
 <translation id="1289059016768036948">તમને તમારા Google એકાઉન્ટમાં સાઇન ઇન કરવાનું કહેવામાં આવશે</translation>
-<translation id="1291207594882862231">ઇતિહાસ, કુકી, સાઇટ ડેટા, કૅશ સાફ કરો…</translation>
 <translation id="129553762522093515">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="1298077576058087471">60% જેટલો ડેટા બચાવો, આજના સમાચાર વાંચો</translation>
 <translation id="1303339473099049190">તે પાસવર્ડ શોધી શકતા નથી. તમારી જોડણી ચેક કરો અને ફરીથી પ્રયાસ કરો.</translation>
@@ -380,7 +379,6 @@
 <translation id="2992473221983447149">છબીના વર્ણનો</translation>
 <translation id="2996291259634659425">પાસફ્રેઝ બનાવો</translation>
 <translation id="2996809686854298943">URL આવશ્યક છે</translation>
-<translation id="2996932914629936323">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ સાફ કરે છે</translation>
 <translation id="2997081575621687554">જ્યારે Google site દ્વારા તેમના પેજ પર લિંકને ખાનગી રીતે પહેલેથી લોડ કરવાનું કહેવામાં આવે, ત્યારે Chrome, કુકી વિના Googleના સર્વર મારફતે પેજને એન્ક્રિપ્ટ અને પહેલેથી લોડ કરે છે. આ પહેલેથી લોડ કરેલી સાઇટથી તમારી ઓળખ છુપાવે છે.</translation>
 <translation id="3003253259757197230">તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે તેમજ તમે જેની મુલાકાત લઈ રહ્યાં હો તે પેજ વિશે વધારાની માહિતી તમને બતાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="3026955690410463085">લિંકનો સમાવેશ કરો</translation>
@@ -542,7 +540,6 @@
 <translation id="3932390316856284148">સાઇન ઇન કરવા માટેની બોટમ શીટ પૂરી ઊંચાઈ સુધી ખોલી.</translation>
 <translation id="393697183122708255">કોઈ ચાલુ વૉઇસ શોધ ઉપલબ્ધ નથી</translation>
 <translation id="395377504920307820">કોઈ એકાઉન્ટ વગર ઉપયોગ કરો</translation>
-<translation id="3958287878205277013">તમારા ડિવાઇસમાંથી છૂપા મોડનો બ્રાઉઝિંગ ઇતિહાસ સાફ કરવા માટે, બધી છૂપી ટૅબ બંધ કરો.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{તૈયાર હશે ત્યારે Chrome તમારું પેજ લોડ કરશે}one{તૈયાર હશે ત્યારે Chrome તમારાં પેજ લોડ કરશે}other{તૈયાર હશે ત્યારે Chrome તમારાં પેજ લોડ કરશે}}</translation>
 <translation id="3962119236270174787">જોખમકારક જણાતી હોય એવી વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે માનક સંરક્ષણ</translation>
 <translation id="3969142555815019568">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
@@ -848,7 +845,6 @@
 <translation id="5468068603361015296">શું તમે તેમ છતાં <ph name="FILE_NAME" /> ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="548278423535722844">નકશા અ‍ૅપ્લિકેશનમાં ખોલો</translation>
 <translation id="5486841595534124508">પેજની જાણકારીવાળા હબની પ્રાઇવસી નોટિસનો લોગો, જે મારી પ્રવૃત્તિના પેજ પર રીડાયરેક્ટ કરે છે.</translation>
-<translation id="5487521232677179737">ડેટા સાફ કરો</translation>
 <translation id="5492637351392383067">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
 <translation id="5514904542973294328">આ ઉપકરણના વ્યવસ્થાપકે અક્ષમ કરેલ છે</translation>
 <translation id="5515439363601853141">તમારો પાસવર્ડ જોવા માટે અનલૉક કરો</translation>
@@ -887,7 +883,6 @@
 <translation id="5683547024293500885">Chrome અપડેટ ચેક કરી શકતું નથી</translation>
 <translation id="5686790454216892815">ફાઇલનું નામ ખૂબ લાંબું છે</translation>
 <translation id="5687606994963670306">30 દિવસથી જૂની સાઇટ Chrome ઑટોમૅટિક રીતે ડિલીટ કરે છે. તમે ફરીથી મુલાકાત લીધેલી કોઈ સાઇટ સૂચિમાં ફરીથી દેખાઈ શકે છે. અથવા તમે કોઈ સાઇટને તમારા માટે જાહેરાતોનું સૂચન કરવાથી બ્લૉક કરી શકો છો. <ph name="BEGIN_LINK" />Chromeમાં તમારી જાહેરાત સંબંધિત પ્રાઇવસી મેનેજ કરવા<ph name="END_LINK" /> વિશે વધુ જાણો.</translation>
-<translation id="569435661099256888">તમે જેની મુલાકાત લીધી હોય તેવા પેજને તમે તમારા ઇતિહાસમાં જોઈ શકો છો અથવા તેમાંથી તેને સાફ કરી શકો છો</translation>
 <translation id="569536719314091526">વધુ વિકલ્પો બટનમાંથી આ પેજનો અનુવાદ કોઈપણ ભાષામાં કરો</translation>
 <translation id="5696597120588531049">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chrome તમારી સહાય કરી શકે છે</translation>
 <translation id="5698878456427040674">ચેક કરો કે પસંદ કરેલા એકાઉન્ટને સપોર્ટ આપવામાં આવે છે કે નહીં.</translation>
@@ -914,7 +909,6 @@
 <translation id="5780792035410621042">પાસવર્ડ કૉપિ કરવા માટે, પહેલાં તમારા ડિવાઇસ પર સ્ક્રીન લૉક સેટ કરો</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />માંથી <ph name="SPACE_USED" />નો વપરાશ કરી રહ્યાં છીએ</translation>
 <translation id="5795872532621730126">શોધો અને બ્રાઉઝ કરો</translation>
-<translation id="5797521893972859201">શોધ બૉક્સમાંના ઇતિહાસ સહિતનો ઇતિહાસ સાફ કરે છે</translation>
 <translation id="5797949256525811424">બ્લૉક કરેલો વિષય</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# કલાક પહેલાં}one{# કલાક પહેલાં}other{# કલાક પહેલાં}}</translation>
 <translation id="5810288467834065221">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
@@ -1087,7 +1081,6 @@
 <translation id="6637100877383020115">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_UMA_LINK" />મેનેજ કરો<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">હંમેશાં બ્લૉક કરો</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" />ને કાઢી નાખો</translation>
-<translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6645629752388991326">કયા ડિવાઇસ સિક્યુરિટી કી તરીકે આ ડિવાઇસનો ઉપયોગ કરીને સાઇન ઇન કરી શકે તે નિયંત્રિત કરો.</translation>
 <translation id="6646696210740573446">પ્રાઇવસી સર્વર મારફતે Googleને URLનો વાંચવામાં મુશ્કેલ બનાવેલો ભાગ મોકલે છે, જે તમારા IP ઍડ્રેસને છુપાવે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટ સહિત URLs પણ Googleને મોકલી શકે છે.</translation>
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
@@ -1283,8 +1276,6 @@
 <translation id="752220631458524187">તમારું કામ પૂર્ણ થાય ત્યારે એટલે ડિસ્કનેક્ટ કરો</translation>
 <translation id="7523960634226602883">Google Lensનો ઉપયોગ કરીને તમારા કૅમેરા વડે શોધો</translation>
 <translation id="752731652852882757">છૂપા મોડનો ઉપયોગ કરતી વખતે બ્લૉક કરો</translation>
-<translation id="7562080006725997899">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
-<translation id="756809126120519699">Chrome ડેટા સાફ કર્યો</translation>
 <translation id="7577900504646297215">રુચિઓ મેનેજ કરો</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ફાઇલ ડાઉનલોડ કરી}one{<ph name="FILES_DOWNLOADED_MANY" /> ફાઇલ ડાઉનલોડ કરી}other{<ph name="FILES_DOWNLOADED_MANY" /> ફાઇલ ડાઉનલોડ કરી}}</translation>
 <translation id="7581273696622423628">સર્વેક્ષણમાં ભાગ લો</translation>
@@ -1317,14 +1308,12 @@
 <translation id="7697383401610880082">ઑબ્જેક્ટ ખેંચવાનું હૅન્ડલ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> માં ઇમેઇલ બનાવો</translation>
 <translation id="7702029078562412515">ક્વેરી ટાઇલ</translation>
-<translation id="7702388902581909985">તમારો બ્રાઉઝિંગ ડેટા સાફ કરવાથી તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થઈ જશો નહીં. આમ કરવા માટે, <ph name="BEGIN_LINK1" />Chromeમાંથી સાઇન આઉટ કરો<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">મોબાઇલ ડેટાનો ઉપયોગ કરો</translation>
 <translation id="7709918231054955894">તમારી બધી ટૅબ મેળવો</translation>
 <translation id="7733878270780732638">ડિવાઇસ પર પર્યાપ્ત સ્પેસ નથી.</translation>
 <translation id="7759809451544302770">વૈકલ્પિક</translation>
 <translation id="7762668264895820836">SD કાર્ડ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">સરનામું ઉમેરો</translation>
-<translation id="7766587497031415281">બ્રાઉઝિંગ ડેટા સાફ કરવા માટેના વધુ વિકલ્પો</translation>
 <translation id="7772032839648071052">પાસફ્રેઝની પુષ્ટિ કરો</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ને બંધ કરો</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1383,7 +1372,6 @@
 <translation id="8013372441983637696">આ ડિવાઇસમાંથી તમારો Chrome ડેટા પણ સાફ કરો</translation>
 <translation id="8015452622527143194">પેજ પરનું બધું કન્ટેન્ટ પાછું ડિફૉલ્ટ કદમાં બદલો</translation>
 <translation id="8026238112629815203">અમે આ ડિવાઇસ પર પાસવર્ડ સાચવવાની રીત બદલી છે</translation>
-<translation id="8026334261755873520">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="8027863900915310177">ડાઉનલોડ કરવાની જગ્યા પસંદ કરો</translation>
 <translation id="8030852056903932865">મંજૂર કરો</translation>
 <translation id="8032569120109842252">ફૉલો કરી રહ્યાં છો</translation>
@@ -1480,6 +1468,7 @@
 <translation id="84594714173170813">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="8460448946170646641">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોનો રિવ્યૂ કરો</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
+<translation id="8477178913400731244">ડેટા ડિલીટ કરો</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ઇતિહાસ પેજ ખોલો</translation>
 <translation id="8493948351860045254">સ્થાન ખાલી કરો</translation>
@@ -1517,7 +1506,6 @@
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="864544049772947936">વિન્ડો મેનેજ કરો (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">જોખમકારક ઇવેન્ટ થાય તે પહેલાં તેનું અનુમાન લગાવીને તેના વિશે તમને ચેતવણી આપે છે</translation>
-<translation id="8655129584991699539">Chrome સેટિંગમાં તમે ડેટા સાફ કરી શકો છો</translation>
 <translation id="8664215986015753476">Chromeનો તમારી રીતે ઉપયોગ કરો</translation>
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" /> માટે સાઇન અપ કરો</translation>

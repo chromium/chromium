@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">З поверненням, <ph name="USER_NAME" />!</translation>
 <translation id="1803264062614276815">Ім’я і прізвище власника картки</translation>
 <translation id="1809939268435598390">Видалити папку</translation>
-<translation id="1813414402673211292">Очистити історію</translation>
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Додано в список читання</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Веб-сторінку завантажено</translation>
 <translation id="223356358902285214">Історія додатків і веб-пошуку</translation>
 <translation id="2234827758954819389">Посібник із конфіденційності</translation>
-<translation id="2239626343334228536">Очищення даних веб-перегляду…</translation>
 <translation id="2251686759395008410">Меню → Історія</translation>
 <translation id="2252674110805316998">Пошук в Інтернеті</translation>
 <translation id="2252749852083403809">Зберігання на Диску для облікового запису <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">Нове вікно в режимі анонімного перегляду</translation>
 <translation id="3488501490964659223">Ви вийшли з облікового запису, вкладки було закрито, а дані веб-перегляду – видалено.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про рекомендований контент</translation>
-<translation id="3494788280727468875">Підтвердити очищення даних веб-перегляду</translation>
 <translation id="35083190962747987">Відкрити ${url}</translation>
 <translation id="3519193562722059437">Щоб переглядати веб-сторінки, відкрийте вкладку.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Відкрити вкладку}one{Відкрити {count} вкладку}few{Відкрити {count} вкладки}many{Відкрити {count} вкладок}other{Відкрити {count} вкладки}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">Додати в закладки</translation>
 <translation id="355101282835380364">Зберегти в обліковому записі…</translation>
 <translation id="3551320343578183772">Закрити вкладку</translation>
-<translation id="3565207542107370586">Очистити дані вебперегляду</translation>
 <translation id="3565930036634619844">Вкладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Двічі торкніться, щоб переглянути інші паролі.</translation>
 <translation id="3575234738189584619">Шукати через Об’єктив</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438">Можливо, ви мали на увазі <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">нова функція</translation>
 <translation id="6033598293589037429">Можна забрати</translation>
-<translation id="6036215966221662377">Очистити дані веб-перегляду</translation>
 <translation id="6036514205982097558">Усі ваші вкладки в одному веб-переглядачі</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -1151,7 +1146,6 @@
 <translation id="6859944681507688231">Щоб відсканувати QR-код або кредитну картку, увімкніть камеру в налаштуваннях.</translation>
 <translation id="6867369562105931222">пароль</translation>
 <translation id="686899695320434745">Адреси не шифруються за допомогою парольної фрази. Це дає змогу використовувати їх в інших сервісах Google.</translation>
-<translation id="6869389390665537774">Ви можете переглядати або видаляти з історії сторінки, які відвідували</translation>
 <translation id="687135068089457384">Показати налаштування</translation>
 <translation id="6873263987691478642">Режим розділеного екрана</translation>
 <translation id="6882836635272038266">Стандартний захист від відомих небезпечних веб-сайтів, завантажень і розширень.</translation>
@@ -1297,7 +1291,6 @@
 <translation id="7719038820139380048">Увійдіть, щоб отримувати контент на основі ваших інтересів.</translation>
 <translation id="7720410380936703141">ПОВТОРИТИ</translation>
 <translation id="7724085059277147439">{count,plural, =1{Об’єкт збережено у вашому обліковому записі Google ({email})}one{Об’єкти збережено у вашому обліковому записі Google ({email})}few{Об’єкти збережено у вашому обліковому записі Google ({email})}many{Об’єкти збережено у вашому обліковому записі Google ({email})}other{Об’єкти збережено у вашому обліковому записі Google ({email})}}</translation>
-<translation id="7726702057919861819">Меню → Історія → Очистити історію</translation>
 <translation id="7729458878441927652">Увімкніть синхронізацію вкладок і історії, щоб переглядати вкладки з інших ваших пристроїв.</translation>
 <translation id="7730973429297233609">Виберіть обліковий запис, у якому ви хочете зберегти файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Лише на цьому пристрої.</translation>
@@ -1542,7 +1535,6 @@
 <translation id="8870413625673593573">Нещодавно закриті</translation>
 <translation id="8876882697946675716">Синхронізуйте свої пристрої</translation>
 <translation id="8879604564928138696">Двічі торкніться, щоб спробувати</translation>
-<translation id="8879984884633913185">Сховати опцію "Очистити історію"</translation>
 <translation id="8881801611828450202">Пошук цього зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Надсилає в Google URL-адреси відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок, щоб виявляти нові загрози та захищати всіх користувачів в Інтернеті.</translation>
 <translation id="890565330728586731">Назад</translation>

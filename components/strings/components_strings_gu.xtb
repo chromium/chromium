@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chromeમાં Dino Run ગેમ રમો</translation>
 <translation id="161042844686301425">સ્યાન</translation>
 <translation id="1611101756749861742">બીજો રોલ</translation>
+<translation id="1611854593425834707">કાસ્ટ કરવા માટેની ડિવાઇસની સૂચિ બંધ કરો</translation>
 <translation id="1612199629998703524">વિષયોને મેનેજ કરો</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> માટેનો ઍક્સેસ રદ કરો</translation>
 <translation id="1615402009686901181">ગોપનીય કન્ટેન્ટ દેખાય ત્યારે વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન કૅપ્ચરની સુવિધા બંધ કરવામાં આવે છે</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">તમારા સ્ક્રીન લૉક વડે પાસવર્ડને સુરક્ષિત કરો</translation>
 <translation id="1812527064848182527">લૅન્ડસ્કેપ</translation>
 <translation id="1812975699435941848">આરોગ્ય શિક્ષણ અને તબીબી પ્રશિક્ષણ</translation>
-<translation id="1813414402673211292">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="1816436748874040213">શેર કરેલા ટૅબને સ્ક્રોલ અને નાનું-મોટું કરવા માટે કહી શકાય છે</translation>
 <translation id="1818522458013171885">અનબ્લૉક કરો</translation>
 <translation id="1818585559878922121">ડૉક્યુમેન્ટરી મૂવી</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">કાપડ (સેમી-ગ્લોસ)</translation>
 <translation id="264810637653812429">કોઈ સુસંગત ઉપકરણો મળ્યાં નથી.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome સેટિંગમાં તમારો બ્રાઉઝિંગ ઇતિહાસ, કુકી, કૅશ મેમરી અને બીજું ઘણું સાફ કરવા માટે Tab પછી Enter દબાવો</translation>
 <translation id="2650446666397867134">ફાઇલની ઍક્સેસ નકારવામાં આવી હતી</translation>
 <translation id="2651465929321991146">ઇતિહાસ અને ટૅબ</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
@@ -1205,7 +1204,6 @@
 <translation id="33073482541490531">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. Password Manager હમણાં જ આ પાસવર્ડ બદલવાનો સુઝાવ આપે છે.</translation>
 <translation id="3307649904964670439">'Chromeને કસ્ટમાઇઝ કરો' બટન, તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરવા માટે સક્રિય કરો</translation>
 <translation id="3308006649705061278">ઑર્ગેનાઇઝેશનલ યૂનિટ (OU)</translation>
-<translation id="3310047144791481950">કયા કાર્ડ વડે ચુકવણી કરવી તે પસંદ કરવામાં તમને સહાય કરે તેવી માહિતી જુઓ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />કાર્ડના લાભ વિશે જાણો<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">ટીવી કૉમેડી</translation>
 <translation id="3324687287337751929">4 x 6 ઇંચ</translation>
 <translation id="3324983252691184275">કિરમજી</translation>
@@ -1374,7 +1372,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3615309852743236517">મૅનિક્યોર અને પેડિક્યોર</translation>
 <translation id="3620239073311576716">ગણવેશ અને કામ પર પહેરવાના કપડા</translation>
-<translation id="36224234498066874">બ્રાઉઝિંગ ડેટા સાફ કરો...</translation>
 <translation id="362276910939193118">પૂર્ણ ઇતિહાસ બતાવો</translation>
 <translation id="3623041590998910684">તમારા કૅમેરાનો ઉપયોગ કરવા માટે Chromeને <ph name="LINK" />માં ઍક્સેસ આપો.</translation>
 <translation id="3623398832322170566">રોમાન્ટિક મૂવી</translation>
@@ -1919,6 +1916,7 @@
 <translation id="4691093235373904540">છતને લગતું કામ</translation>
 <translation id="4692623383562244444">શોધ એન્જિન</translation>
 <translation id="4698692901173737941">લડાઈની રમતો</translation>
+<translation id="4701307090948589984">આના પર કાસ્ટ કરો...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">બાજુ</translation>
 <translation id="4702656508969495934">લાઇવ કૅપ્શન જોઈ શકાય છે, ફોકસ કરવા માટે વિન્ડો સ્વિચરનો ઉપયોગ કરો</translation>
@@ -2055,7 +2053,6 @@
 <translation id="4936134414789135531">શામેલ કરેલું <ph name="VALUE_NAME" /> શોધી શકાયું નથી.</translation>
 <translation id="4936675324097895694">નાણાકીય</translation>
 <translation id="4940163644868678279">Chromeમાં છૂપો મોડ</translation>
-<translation id="494111439860963024">'બ્રાઉઝિંગ ડેટા સાફ કરો' બટન, Chrome સેટિંગમાં તમારો બ્રાઉઝિંગ ઇતિહાસ, કુકી, કૅશ મેમરી અને બીજું ઘણું સાફ કરવા માટે સક્રિય કરો</translation>
 <translation id="4943620199112228840">તમારા માઇક્રોફોનનોઉપયોગ કરો</translation>
 <translation id="4943872375798546930">પરિણામો નથી</translation>
 <translation id="4950898438188848926">ટૅબ, સ્વિચ બટન, ખુલ્લા ટૅબ, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> પર સ્વિચ કરવા માટે Enter દબાવો</translation>
@@ -2168,6 +2165,8 @@
 <translation id="5161334686036120870">વિષય:</translation>
 <translation id="5161506081086828129">સ્ટૅકર 9</translation>
 <translation id="5164798890604758545">ટેક્સ્ટ દાખલ કરવામાં આવે ત્યારે</translation>
+<translation id="5164928537947209380">આ પ્રાયોગિક AI ટૂલના પરિણામો હંમેશાં સાચા નહીં હોય. તેને બહેતર બનાવવા માટે, તમારું કન્ટેન્ટ Googleને મોકલવામાં આવે છે.
+    <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> માટે CVC દાખલ કરો. તમે ખાતરી કરી લો, પછી આ સાઇટ સાથે તમારા Google એકાઉન્ટમાંથી કાર્ડની વિગતો શેર કરવામાં આવશે.</translation>
 <translation id="5169827969064885044">તમે તમારી સંસ્થાના એકાઉન્ટ માટે ઍક્સેસ ગુમાવી શકો છો અથવા તમને ઓળખ ચોરીનો અનુભવ થઈ શકે છે. Chrome તમને હમણાં જ તમારો પાસવર્ડ બદલવાની ભલામણ કરે છે.</translation>
 <translation id="5171045022955879922">URL શોધો અથવા લખો</translation>
@@ -2290,7 +2289,6 @@
 <translation id="541416427766103491">સ્ટૅકર 4</translation>
 <translation id="5414446060143308245">ટ્રાન્સફર કરતા પહેલાં રિવ્યૂ કરવો આવશ્યક છે</translation>
 <translation id="5414511064953050917">કોઈપણ રીતે ખસેડો</translation>
-<translation id="5421136146218899937">બ્રાઉઝિંગ ડેટા સાફ કરો...</translation>
 <translation id="5421408724705443535">રૉક મ્યુઝિક</translation>
 <translation id="5423269318075950257">કિંમત ટ્રૅક કરો</translation>
 <translation id="5425082381151187189">ઘર અને તેને સંબંધિત ઇન્ટિરિયર ડેકોરેશન</translation>
@@ -3653,7 +3651,6 @@
 <translation id="8022542098135319050">ટ્રાવેલ એજન્સી અને સેવાઓ</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે, પહેલા ટૅબ અને પછી Enter કી દબાવો</translation>
 <translation id="8025119109950072390">આ સાઇટ પરના હુમલાખોરો તમારી વ્યક્તિગત માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ, ફોન નંબર અથવા ક્રેડિટ કાર્ડ)ને દર્શાવવા અથવા સોફ્ટવેર ઇન્સ્ટૉલ કરવા જેવી જોખમી વસ્તુઓને કરવા માટે તમને છેતરવાનો પ્રયાસ કરી શકે છે.</translation>
-<translation id="8026334261755873520">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="8027077570865220386">ટ્રે 15</translation>
 <translation id="8027585818882015174">'Chromeની સલામતી માટે તપાસ ચલાવો' બટન, Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવવા માટે સક્રિય કરો</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsમાં ઝડપથી કોઈ નવું ફોર્મ બનાવવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
@@ -3924,7 +3921,6 @@
 <translation id="8527228059738193856">સ્પીકર</translation>
 <translation id="8527681393107582734">કૃષિ અને વનસંવર્ધન</translation>
 <translation id="8528149813106025610">બાળકોના કપડાં</translation>
-<translation id="8530813470445476232">તમારો બ્રાઉઝિંગ ઇતિહાસ, કુકી, કૅશ મેમરી અને બીજું ઘણું Chromeના સેટિંગમાંથી સાફ કરો</translation>
 <translation id="853246364274116957">બ્રોડવે અને મ્યુઝિકલ થિયેટર</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">બ્લૉક કરેલા URLsની સૂચિ અને તમારા સિસ્ટમ વ્યવસ્થાપક દ્વારા લાગુ કરવામાં આવેલી અન્ય પૉલિસીઓ જોવા માટે &lt;strong&gt;chrome://policy&lt;/strong&gt;ની મુલાકાત લો.</translation>
@@ -4064,6 +4060,7 @@
 <translation id="8807160976559152894">પ્રત્યેક પેજ પછી ટ્રિમ કરો</translation>
 <translation id="8809203544698246977">બ્લૉક કરેલા વિષયો અહીં દેખાશે</translation>
 <translation id="8811470563853401328">એકાઉન્ટમાં ઍડ્રેસ સાચવીએ?</translation>
+<translation id="8811725516933141693">Gemini સાથે ચૅટ કરવા માટે, @gemini ટાઇપ કરો</translation>
 <translation id="8813277370772331957">મને પછીથી યાદ કરાવો</translation>
 <translation id="8814707942599948500">એન્વલપ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા Chrome સેટિંગમાંથી Chrome અપડેટ કરવા માટે Tab પછી Enter દબાવો</translation>

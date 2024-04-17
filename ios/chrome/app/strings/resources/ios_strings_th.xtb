@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">ยินดีต้อนรับกลับมาคุณ <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">ชื่อผู้ถือบัตร</translation>
 <translation id="1809939268435598390">ลบโฟลเดอร์</translation>
-<translation id="1813414402673211292">นำออกข้อมูลที่เรียกดู</translation>
 <translation id="1815941218935345331">รหัสผ่าน</translation>
 <translation id="1820259098641718022">เพิ่มไปยังเรื่องรออ่านแล้ว</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">หน้าเว็บโหลดแล้ว</translation>
 <translation id="223356358902285214">กิจกรรมบนเว็บและแอป</translation>
 <translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
-<translation id="2239626343334228536">กำลังล้างข้อมูลการท่องเว็บ...</translation>
 <translation id="2251686759395008410">เมนู → ประวัติการเข้าชม</translation>
 <translation id="2252674110805316998">ค้นเว็บ</translation>
 <translation id="2252749852083403809">กำลังบันทึกในไดรฟ์สำหรับ <ph name="USER_EMAIL" /></translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">หน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3488501490964659223">ปิดแท็บและลบข้อมูลการท่องเว็บแล้ว คุณออกจากระบบแล้ว</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับเนื้อหาที่แนะนำ</translation>
-<translation id="3494788280727468875">ยืนยันการล้างข้อมูลการท่องเว็บ</translation>
 <translation id="35083190962747987">เปิด ${url}</translation>
 <translation id="3519193562722059437">เปิดแท็บเพื่อท่องเว็บ</translation>
 <translation id="3519905498307021260">{count,plural, =1{เปิดแท็บ}other{เปิด {count} แท็บ}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">เพิ่มไปยังบุ๊กมาร์ก</translation>
 <translation id="355101282835380364">บันทึกในบัญชี…</translation>
 <translation id="3551320343578183772">ปิดแท็บ</translation>
-<translation id="3565207542107370586">ล้างข้อมูลการท่องเว็บ…</translation>
 <translation id="3565930036634619844">แท็บ <ph name="TAB_INDEX" /> จาก <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3570693105179140209">แตะสองครั้งเพื่อดูรหัสผ่านเพิ่มเติม</translation>
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438">คุณหมายถึง <ph name="WEBSITE" /> ใช่ไหม</translation>
 <translation id="6032845897905314562">ฟีเจอร์ใหม่</translation>
 <translation id="6033598293589037429">พร้อมสำหรับการรับสินค้า</translation>
-<translation id="6036215966221662377">ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="6036514205982097558">แท็บทั้งหมดของคุณในเบราว์เซอร์เดียว</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -1151,7 +1146,6 @@
 <translation id="6859944681507688231">หากต้องการสแกนคิวอาร์โค้ดหรือบัตรเครดิต ให้เปิดใช้กล้องถ่ายรูปจากการตั้งค่า</translation>
 <translation id="6867369562105931222">รหัสผ่าน</translation>
 <translation id="686899695320434745">ที่อยู่ไม่ได้เข้ารหัสด้วยรหัสผ่าน คุณจึงนำไปใช้ในบริการอื่นๆ ของ Google ได้</translation>
-<translation id="6869389390665537774">คุณดูหน้าที่เคยเข้าชมหรือล้างหน้าออกจากประวัติการเข้าชมได้</translation>
 <translation id="687135068089457384">แสดงการตั้งค่า</translation>
 <translation id="6873263987691478642">Split View</translation>
 <translation id="6882836635272038266">การปกป้องแบบมาตรฐานจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย</translation>
@@ -1297,7 +1291,6 @@
 <translation id="7719038820139380048">ลงชื่อเข้าใช้เพื่อรับเนื้อหาตามความสนใจของคุณ</translation>
 <translation id="7720410380936703141">ลองอีกครั้ง</translation>
 <translation id="7724085059277147439">{count,plural, =1{บันทึกรายการไว้ในบัญชี Google {email} แล้ว}other{บันทึกรายการไว้ในบัญชี Google {email} แล้ว}}</translation>
-<translation id="7726702057919861819">เมนู → ประวัติการเข้าชม → ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="7729458878441927652">หากต้องการดูแท็บจากอุปกรณ์อื่นๆ ให้ซิงค์แท็บและประวัติการเข้าชม</translation>
 <translation id="7730973429297233609">เลือกบัญชีที่ต้องการใช้เพื่อบันทึก <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" /> เฉพาะในอุปกรณ์นี้</translation>
@@ -1542,7 +1535,6 @@
 <translation id="8870413625673593573">เพิ่งปิด</translation>
 <translation id="8876882697946675716">ซิงค์อุปกรณ์อยู่เสมอ</translation>
 <translation id="8879604564928138696">แตะสองครั้งเพื่อลองใช้</translation>
-<translation id="8879984884633913185">ซ่อน "ล้างข้อมูลการท่องเว็บ"</translation>
 <translation id="8881801611828450202">ค้นหาภาพนี้ใน <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">ส่ง URL ของหน้าบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้าไปให้ Google เพื่อช่วยตรวจหาภัยคุกคามใหม่ๆ และปกป้องทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="890565330728586731">กลับ</translation>

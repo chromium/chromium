@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chrome ನಲ್ಲಿ Dino Run ಆಟವನ್ನು ಆಡಿ</translation>
 <translation id="161042844686301425">ಹಸಿರುನೀಲಿ</translation>
 <translation id="1611101756749861742">ಎರಡನೇ ರೋಲ್</translation>
+<translation id="1611854593425834707">ಬಿತ್ತರಿಸುವುದಕ್ಕಾಗಿ ಸಾಧನದ ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="1612199629998703524">ವಿಷಯಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> ಗೆ ಇರುವ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="1615402009686901181">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಕಂಟೆಂಟ್‌ ವಿಷಯ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಮೂಲಕ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಕ್ಷಿಸಿ</translation>
 <translation id="1812527064848182527">ಲ್ಯಾಂಡ್‌ಸ್ಕೇಪ್</translation>
 <translation id="1812975699435941848">ಆರೋಗ್ಯ ಶಿಕ್ಷಣ ಮತ್ತು ವೈದ್ಯಕೀಯ ತರಬೇತಿ</translation>
-<translation id="1813414402673211292">ಬ್ರೌಸ್ ಆಗುತ್ತಿರುವ ಡಾಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="1816436748874040213">ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮಾಡಲು ಮತ್ತು ಝೂಮ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="1818522458013171885">ನಿರ್ಬಂಧವನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1818585559878922121">ಸಾಕ್ಷ್ಯಚಿತ್ರಗಳು</translation>
@@ -618,7 +618,7 @@
 <translation id="2126374524350484896">PDF ನಿರ್ಮಿಸಿದವರು:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ಕಾರ್ಯನೀತಿಯನ್ನು ಹೊಂದಿಸದೇ ಇರುವ ಕಾರಣದಿಂದಾಗಿ ನೀವು ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ಟೆಂಪ್ಲೆಟ್‌ಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">ಇವುಗಳನ್ನು ರ‍್ಯಾಂಡಮ್ ಆರ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್‌ಗೆ ಬದಲಾಗಬಹುದು.</translation>
+<translation id="2132825047782982803">ಇವುಗಳನ್ನು ರ‍್ಯಾಂಡಮ್ ಆರ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಆಯ್ಕೆಯನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="2137891579555018930">ಅನುಮತಿಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="213826338245044447">ಮೊಬೈಲ್ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="2141000681034340397">ನಿಮ್ಮ ಇನ್‌ಪುಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -876,7 +876,6 @@
 <translation id="2647086987482648627">ಬಟ್ಟೆ (ಅರೆ ಹೊಳಪು)</translation>
 <translation id="264810637653812429">ಯಾವುದೇ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕೀಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ತೆರವುಗೊಳಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="2650446666397867134">ಫೈಲ್‌ಗೆ ಪ್ರವೇಶವನ್ನು ನಿರಾಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="2651465929321991146">ಇತಿಹಾಸ ಮತ್ತು ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
@@ -1204,7 +1203,6 @@
 <translation id="33073482541490531">ನೀವು ಈಗಷ್ಟೇ ಬಳಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ. ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕವು ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈಗಲೇ ಬದಲಾಯಿಸುವಂತೆ ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="3307649904964670439">Chrome ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಬಟನ್, ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನ ನೋಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3308006649705061278">ಸಂಸ್ಥೆ ಘಟಕ (OU)</translation>
-<translation id="3310047144791481950">ಯಾವ ಕಾರ್ಡ್‌ ಮೂಲಕ ಪಾವತಿಸಬೇಕೆಂದು ಆಯ್ಕೆ ಮಾಡಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುವ ಮಾಹಿತಿಯನ್ನು ನೋಡಿ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ಕಾರ್ಡ್ ಪ್ರಯೋಜನಗಳ ಕುರಿತು ತಿಳಿಯಿರಿ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV ಹಾಸ್ಯಗಳು</translation>
 <translation id="3324687287337751929">4 x 6 ಇಂಚು</translation>
 <translation id="3324983252691184275">ಕಡುಗೆಂಪು</translation>
@@ -1373,7 +1371,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆಯನ್ನು ರನ್ ಮಾಡಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
 <translation id="3615309852743236517">ಮೆನಿಕ್ಯೂರ್‌ಗಳು ಮತ್ತು ಪೆಡಿಕ್ಯೂರ್‌ಗಳು</translation>
 <translation id="3620239073311576716">ಸಮವಸ್ತ್ರ ಮತ್ತು ಕೆಲಸದ ಉಡುಪು</translation>
-<translation id="36224234498066874">ಬ್ರೌಸ್ ಆಗುತ್ತಿರುವ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ...</translation>
 <translation id="362276910939193118">ಪೂರ್ಣ ಇತಿಹಾಸ ತೋರಿಸಿ</translation>
 <translation id="3623041590998910684">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು, Chrome ಗೆ <ph name="LINK" /> ನಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ನೀಡಿ.</translation>
 <translation id="3623398832322170566">ರೋಮ್ಯಾನ್ಟಿಕ್ ಚಲನಚಿತ್ರಗಳು</translation>
@@ -1918,6 +1915,7 @@
 <translation id="4691093235373904540">ಮೇಲ್ಛಾವಣಿ ದುರಸ್ತಿ</translation>
 <translation id="4692623383562244444">ಹುಡುಕಾಟ ಇಂಜಿನ್‌ಗಳು</translation>
 <translation id="4698692901173737941">ಕಾಳಗ ಸ್ಪರ್ಧೆಗಳು</translation>
+<translation id="4701307090948589984">ಇದಕ್ಕೆ ಬಿತ್ತರಿಸಿ...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ಅಂಚು</translation>
 <translation id="4702656508969495934">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಗೋಚರಿಸುತ್ತಿದೆ, ಫೋಕಸ್ ಮಾಡಲು ವಿಂಡೋ ಬದಲಾಯಿಸುವಿಕೆಯನ್ನು ಬಳಸಿ</translation>
@@ -2054,7 +2052,6 @@
 <translation id="4936134414789135531">ಸೇರಿಸಲಾದ <ph name="VALUE_NAME" /> ಅನ್ನು ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="4936675324097895694">ಹಣಕಾಸು</translation>
 <translation id="4940163644868678279">Chrome ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್</translation>
-<translation id="494111439860963024">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ ಬಟನ್, ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕಿಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಮುಂತಾದವುಗಳನ್ನು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ತೆರವುಗೊಳಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4943620199112228840">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="4943872375798546930">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4950898438188848926">ಟ್ಯಾಬ್ ಬದಲಿಸುವ ಬಟನ್, ತೆರೆದಿರುವ ಟ್ಯಾಬ್, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> ಗೆ ಬದಲಾಯಿಸಲು Enter ಒತ್ತಿರಿ</translation>
@@ -2108,6 +2105,7 @@
 <translation id="5040262127954254034">ಗೌಪ್ಯತೆ</translation>
 <translation id="5043480802608081735">ನೀವು ನಕಲಿಸಿದ ಲಿಂಕ್</translation>
 <translation id="5045550434625856497">ತಪ್ಪು ಪಾಸ್‌ವರ್ಡ್</translation>
+<translation id="5048293684454354469">ಆ್ಯಡ್ ವಿಷಯಗಳು ಆ್ಯಡ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಸೈಟ್ ಬಳಸಬಹುದಾದ ಹಲವು ವಿಷಯಗಳಲ್ಲಿ ಒಂದಾಗಿದೆ. ಆ್ಯಡ್ ವಿಷಯಗಳು ಇಲ್ಲದಿದ್ದರೂ ಸಹ, ಸೈಟ್‌ಗಳು ನಿಮಗೆ ಆ್ಯಡ್‌ಗಳನ್ನು ತೋರಿಸಬಹುದು ಆದರೆ ಅವುಗಳನ್ನು ಕಡಿಮೆ ವೈಯಕ್ತೀಕರಿಸಲಾಗಿರುತ್ತದೆ. <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಆ್ಯಡ್ ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸುವ<ph name="LINK_END" /> ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="5052517576853118371">ಸಕ್ರಿಯ ವಿಷಯಗಳು</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby ಶೇರ್ ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್ ಅನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು (<ph name="DISK_SPACE_SIZE" />) ಮುಕ್ತಗೊಳಿಸಿ}one{Nearby ಶೇರ್ ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು (<ph name="DISK_SPACE_SIZE" />) ಮುಕ್ತಗೊಳಿಸಿ}other{Nearby ಶೇರ್ ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು (<ph name="DISK_SPACE_SIZE" />) ಮುಕ್ತಗೊಳಿಸಿ}}</translation>
 <translation id="505757197798929356">ತೆರೆಯಲು ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
@@ -2167,6 +2165,8 @@
 <translation id="5161334686036120870">ವಿಷಯ:</translation>
 <translation id="5161506081086828129">ಸ್ಟ್ಯಾಕರ್ 9</translation>
 <translation id="5164798890604758545">ಪಠ್ಯ ನಮೂದಿಸಿದಾಗ</translation>
+<translation id="5164928537947209380">ಈ ಪ್ರಾಯೋಗಿಕ AI ಟೂಲ್ ಯಾವಾಗಲೂ ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ. ಅದನ್ನು ಸುಧಾರಿಸಲು, ನಿಮ್ಮ ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.
+    <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> ಗೆ ಸಂಬಂಧಿಸಿದ CVC ಅನ್ನು ನಮೂದಿಸಿ. ನೀವು ಖಚಿತಪಡಿಸಿದ ನಂತರ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿನ ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ಈ ಸೈಟ್ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="5169827969064885044">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಖಾತೆಗೆ ನೀವು ಪ್ರವೇಶವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು ಅಥವಾ ಗುರುತು ಕಳ್ಳತನಕ್ಕೆ ಒಳಗಾಗಬಹುದು. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಇದೀಗ ಬದಲಾಯಿಸುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="5171045022955879922">ಹುಡುಕಾಟ ನಡೆಸಿ ಅಥವಾ URL ಅನ್ನು ಟೈಪ್‌ ಮಾಡಿ</translation>
@@ -2289,7 +2289,6 @@
 <translation id="541416427766103491">ಸ್ಟ್ಯಾಕರ್ 4</translation>
 <translation id="5414446060143308245">ವರ್ಗಾವಣೆ ಮಾಡುವ ಮೊದಲು ಪರಿಶೀಲನೆಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5414511064953050917">ಹೇಗಿದ್ದರೂ ಸರಿಸಿ</translation>
-<translation id="5421136146218899937">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ...</translation>
 <translation id="5421408724705443535">ರಾಕ್ ಸಂಗೀತ</translation>
 <translation id="5423269318075950257">ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="5425082381151187189">ಮನೆ ಮತ್ತು ಒಳಾಂಗಣ ಅಲಂಕಾರ</translation>
@@ -2325,6 +2324,7 @@
     <ph name="LINE_BREAK" />
     ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="549333378215107354">ಗಾತ್ರ 3</translation>
+<translation id="5496804587179176046">ಭದ್ರತಾ ಕೋಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿ, ಪ್ರಸ್ತುತ ಯಾವುದೇ ಭದ್ರತಾ ಕೋಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="550365051221576010">ಪ್ರತಿಯೊಂದನ್ನು ಭರ್ತಿ ಮಾಡಿ</translation>
 <translation id="5508443345185481044">ಕ್ಯಾಮರಾಗಳು ಮತ್ತು ಕ್ಯಾಮ್‌ಕಾರ್ಡರ್‌ಗಳು</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3653,7 +3653,6 @@
 <translation id="8022542098135319050">ಪ್ರಯಾಣದ ಏಜೆನ್ಸಿಗಳು ಮತ್ತು ಸೇವೆಗಳು</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಅನ್ನು ಸಿಸ್ಟಂನ ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಸೆಟ್ ಮಾಡಲು ಟ್ಯಾಬ್ ಒತ್ತಿ ನಂತರ Enter ಬಟನ್ ಒತ್ತಿರಿ</translation>
 <translation id="8025119109950072390">ಈ ಸೈಟ್‌ನಲ್ಲಿನ ಆಕ್ರಮಣಕಾರರು ಸಾಫ್ಟ್‌ವೇರ್ ಸ್ಥಾಪಿಸುವಿಕೆ ಅಥವಾ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಬಹಿರಂಗ ಪಡಿಸುವಂತಹ ಅಪಾಯಕಾರಿಯಾಗಿ ಏನಾದರೂ ಮಾಡುವಂತಹ ಮೋಸವನ್ನು ಮಾಡಬಹುದು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಫೋನ್‌ ಸಂಖ್ಯೆಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು).</translation>
-<translation id="8026334261755873520">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="8027077570865220386">ಟ್ರೇ 15</translation>
 <translation id="8027585818882015174">Chrome ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ರನ್ ಮಾಡಿ ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆಯನ್ನು ರನ್‌ ಮಾಡಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms ನಲ್ಲಿ ಹೊಸ ಫಾರ್ಮ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
@@ -3925,7 +3924,6 @@
 <translation id="8527228059738193856">ಸ್ಪೀಕರ್‌ಗಳು</translation>
 <translation id="8527681393107582734">ಕೃಷಿ ಮತ್ತು ಅರಣ್ಯ ಶಾಸ್ತ್ರ</translation>
 <translation id="8528149813106025610">ಮಕ್ಕಳ ಉಡುಪು</translation>
-<translation id="8530813470445476232">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕೀಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಇನ್ನಷ್ಟವುಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="853246364274116957">ಬ್ರಾಡ್‌ವೇ ಮತ್ತು ಸಂಗೀತ ನಾಟಕ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ನಿಮ್ಮ ಸಿಸ್ಟಮ್ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿರುವ URLಗಳ ಪಟ್ಟಿ ಮತ್ತು ಜಾರಿಗೊಳಿಸಿರುವ ಇತರ ನೀತಿಗಳನ್ನು ವೀಕ್ಷಿಸಲು &lt;strong&gt;chrome://policy&lt;/strong&gt; ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
@@ -4066,6 +4064,7 @@
 <translation id="8807160976559152894">ಪ್ರತಿ ಪುಟದ ನಂತರ ಟ್ರಿಮ್ ಮಾಡಿ</translation>
 <translation id="8809203544698246977">ನಿರ್ಬಂಧಿಸಲಾದ ವಿಷಯಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="8811470563853401328">ಖಾತೆಯಲ್ಲಿ ವಿಳಾಸವನ್ನು ಉಳಿಸಬೇಕೇ?</translation>
+<translation id="8811725516933141693">Gemini ಜೊತೆ ಚಾಟ್ ಮಾಡಲು @gemini ಎಂದು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="8813277370772331957">ನಂತರ ನನಗೆ ಜ್ಞಾಪಿಸಿ</translation>
 <translation id="8814707942599948500">ಎನ್ವಲಪ್ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>

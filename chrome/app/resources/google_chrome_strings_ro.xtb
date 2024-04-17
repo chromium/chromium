@@ -79,7 +79,6 @@
 <translation id="2258103955319320201">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te, apoi activează sincronizarea</translation>
 <translation id="2290014774651636340">Lipsesc chei pentru API-ul Google. Unele funcționalități Google Chrome vor fi dezactivate.</translation>
 <translation id="2290095356545025170">Sigur vrei să dezinstalezi Google Chrome?</translation>
-<translation id="2298849085402457754">Pentru a șterge datele de navigare doar de pe acest dispozitiv, dar nu și din Contul Google, <ph name="BEGIN_LINK" />deconectează-te de la Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Aceasta este o instalare secundară a browserului Google Chrome și nu poate fi setat ca browser prestabilit.</translation>
 <translation id="2345992953227471816">Chrome a descoperit că următoarele extensii conțin programe malware:</translation>
 <translation id="2348335408836342058">Chrome are nevoie de permisiune ca să acceseze camera foto și microfonul pentru acest site</translation>
@@ -109,7 +108,6 @@
 <translation id="2649768380733403658">Chrome verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
 <translation id="2652691236519827073">Deschide linkul într-o &amp;filă Chrome nouă</translation>
 <translation id="2665296953892887393">Contribuie la îmbunătățirea browserului Google Chrome trimițând rapoarte de blocare și <ph name="UMA_LINK" /> la Google</translation>
-<translation id="2712234843277364121">Relansează pentru a actualiza. Filele se vor redeschide.</translation>
 <translation id="2738871930057338499">Nu se poate realiza conexiunea la internet. HTTP Eroare 403 – Acces interzis. Verifică-ți configurația de proxy.</translation>
 <translation id="2742320827292110288">Avertisment: Google Chrome nu poate împiedica extensiile să înregistreze istoricul navigării. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="2765403129283291972">Chrome are nevoie de permisiune ca să acceseze microfonul pentru acest site</translation>
@@ -320,6 +318,7 @@
 <translation id="6251759518630934363">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți să omiți avertismentele din Chrome.</translation>
 <translation id="6273793429163604305">Pe locuri…</translation>
 <translation id="6277547788421725101">Părintele tău a dezactivat opțiunea Permisiuni pentru site-uri, aplicații și extensii în Chrome</translation>
+<translation id="627882678981830918">Personalizează și controlează Chrome. Setează Chrome ca prestabilit.</translation>
 <translation id="6291089322031436445">Aplicații Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome este instalat deja pentru toți utilizatorii de pe computerul tău.</translation>
 <translation id="6326175484149238433">Eliminați din Chrome</translation>
@@ -483,7 +482,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8999117580775242387">Când HTTPS nu este disponibil, Chrome va folosi o conexiune nesecurizată fără să te avertizeze</translation>
 <translation id="8999208279178790196">{0,plural, =0{Este disponibilă o actualizare Chrome}=1{Este disponibilă o actualizare Chrome}few{O actualizare Chrome este disponibilă de # zile}other{O actualizare Chrome este disponibilă de # de zile}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex</translation>
-<translation id="9054037008353851982">Relansează pentru a actualiza. Filele se vor redeschide.</translation>
 <translation id="9090566250983691233">Află de ce Chrome blochează unele fișiere</translation>
 <translation id="911206726377975832">Ștergi și datele de navigare?</translation>
 <translation id="9138603949443464873">Pentru a aplica modificările, relansează Chrome</translation>

@@ -341,6 +341,7 @@
 <translation id="160851722280695521">Играјте игру Диносаурус у Chrome-у</translation>
 <translation id="161042844686301425">Плавозелена</translation>
 <translation id="1611101756749861742">Други котур</translation>
+<translation id="1611854593425834707">Затворите листу уређаја за пребацивање</translation>
 <translation id="1612199629998703524">Управљајте темама</translation>
 <translation id="1615178538289490617">Опозовите приступ за <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Смернице администратора онемогућавају снимање екрана када је видљив поверљив садржај</translation>
@@ -453,7 +454,6 @@
 <translation id="1810391395243432441">Заштитите лозинке помоћу закључавања екрана</translation>
 <translation id="1812527064848182527">водоравно</translation>
 <translation id="1812975699435941848">Здравствено образовање и медицинска обука</translation>
-<translation id="1813414402673211292">Брисање података прегледања</translation>
 <translation id="1816436748874040213">Може да тражи да скролује и зумира дељене картице</translation>
 <translation id="1818522458013171885">Одблокирај</translation>
 <translation id="1818585559878922121">Документарни филмови</translation>
@@ -876,7 +876,6 @@
 <translation id="2647086987482648627">Тканина (полусјајна)</translation>
 <translation id="264810637653812429">Није пронађен ниједан компатибилан уређај.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте обрисали историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
 <translation id="2650446666397867134">Приступ датотеци је одбијен</translation>
 <translation id="2651465929321991146">Историја и картице</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
@@ -1206,7 +1205,6 @@
 <translation id="33073482541490531">Лозинка коју сте управо користили је пронађена при повреди података. Менаџер лозинки препоручује да одмах промените ову лозинку.</translation>
 <translation id="3307649904964670439">Дугме Прилагоди Chrome, активирајте га да бисте прилагодили изглед прегледача</translation>
 <translation id="3308006649705061278">Организациона јединица (OU)</translation>
-<translation id="3310047144791481950">Прегледајте информације које вам помажу да изаберете картицу помоћу које ћете плаћати. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Сазнајте више о предностима картица<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">ТВ комедије</translation>
 <translation id="3324687287337751929">4×6 in</translation>
 <translation id="3324983252691184275">Јаркоцрвена</translation>
@@ -1375,7 +1373,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте покренули проверу безбедности у Chrome подешавањима</translation>
 <translation id="3615309852743236517">Маникири и педикири</translation>
 <translation id="3620239073311576716">Униформе и радна одећа</translation>
-<translation id="36224234498066874">Обриши податке прегледања...</translation>
 <translation id="362276910939193118">Прикажи комплетну историју</translation>
 <translation id="3623041590998910684">Да бисте користили камеру, одобрите Chrome-у приступ у: <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Љубавни филмови</translation>
@@ -1921,6 +1918,7 @@
 <translation id="4691093235373904540">Кровни радови</translation>
 <translation id="4692623383562244444">Претраживачи</translation>
 <translation id="4698692901173737941">Борилачки спортови</translation>
+<translation id="4701307090948589984">Пребаци на...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Страна</translation>
 <translation id="4702656508969495934">Види се титл уживо. Користите дугме за промену прозора да бисте фокусирали</translation>
@@ -2057,7 +2055,6 @@
 <translation id="4936134414789135531">Уметнута вредност <ph name="VALUE_NAME" /> није пронађена.</translation>
 <translation id="4936675324097895694">Финансије</translation>
 <translation id="4940163644868678279">Без архивирања у Chrome-у</translation>
-<translation id="494111439860963024">Дугме Обриши податке прегледања, активирајте га да бисте обрисали историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
 <translation id="4943620199112228840">Користите микрофоне</translation>
 <translation id="4943872375798546930">Нема резултата</translation>
 <translation id="4950898438188848926">Дугме за промену картице, притисните Enter да бисте прешли на отворену картицу, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2111,6 +2108,7 @@
 <translation id="5040262127954254034">Приватност</translation>
 <translation id="5043480802608081735">Линк који сте копирали</translation>
 <translation id="5045550434625856497">Неисправна лозинка</translation>
+<translation id="5048293684454354469">Теме огласа су само једна од многих ствари које сајт може да користи за персонализацију огласа. Чак и без тема огласа, сајтови и даље могу да вам приказују огласе, али они могу да буду мање персонализовани. Сазнајте више о <ph name="BEGIN_LINK" />управљању приватношћу са огласима<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Активне теме</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Да бисте послали овај фајл помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}one{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}few{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}other{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}}</translation>
 <translation id="505757197798929356">Наведите разлог за отварање (обавезно)</translation>
@@ -2170,6 +2168,8 @@
 <translation id="5161334686036120870">Тема:</translation>
 <translation id="5161506081086828129">9. преграда за слагање</translation>
 <translation id="5164798890604758545">Текст је унет</translation>
+<translation id="5164928537947209380">Ова експериментална алатка вештачке интелигенције неће увек бити тачна. Да бисмо је побољшали, садржај се шаље Google-у.
+    <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Унесите CVC за картицу <ph name="CREDIT_CARD" />. Када будете потврдили, подаци о картици са Google налога ће се делити са овим сајтом.</translation>
 <translation id="5169827969064885044">Могли бисте да изгубите приступ налогу за организацију или би могло да дође до крађе идентитета. Chrome вам препоручује да одмах промените лозинку.</translation>
 <translation id="5171045022955879922">Претражите или унесите URL адресу</translation>
@@ -2292,7 +2292,6 @@
 <translation id="541416427766103491">4. преграда за слагање</translation>
 <translation id="5414446060143308245">Потребан је преглед пре преношења</translation>
 <translation id="5414511064953050917">Ипак премести</translation>
-<translation id="5421136146218899937">Обриши податке прегледања...</translation>
 <translation id="5421408724705443535">Рок музика</translation>
 <translation id="5423269318075950257">Пратите цену</translation>
 <translation id="5425082381151187189">Декорација куће и ентеријера</translation>
@@ -2328,6 +2327,7 @@
     <ph name="LINE_BREAK" />
     Покушајте да се обратите администратору система.</translation>
 <translation id="549333378215107354">Величина 3</translation>
+<translation id="5496804587179176046">Чувај безбедносне кодове, тренутно нема сачуваних безбедносних кодова</translation>
 <translation id="550365051221576010">Попуни све</translation>
 <translation id="5508443345185481044">Фото-апарати и камкордери</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3656,7 +3656,6 @@
 <translation id="8022542098135319050">Путничке агенције и услуге</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте подесили Chrome као подразумевани прегледач система</translation>
 <translation id="8025119109950072390">Нападачи на овом сајту могу да вас преваре да бисте урадили нешто опасно, на пример, да инсталирате софтвер или откријете личне податке (попут лозинки, бројева телефона или бројева кредитних картица).</translation>
-<translation id="8026334261755873520">Обришите податке прегледања</translation>
 <translation id="8027077570865220386">15. фиока</translation>
 <translation id="8027585818882015174">Дугме Покрени Chrome проверу безбедности, активирајте га да бисте покренули проверу безбедности у подешавањима Chrome-а</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нов упитник у Google упитницима</translation>
@@ -3928,7 +3927,6 @@
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527681393107582734">Пољопривреда и шумарство</translation>
 <translation id="8528149813106025610">Дечја одећа</translation>
-<translation id="8530813470445476232">Обришите историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
 <translation id="853246364274116957">Бродвеј и музичка позоришта</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је одредио администратор система.</translation>
@@ -4069,6 +4067,7 @@
 <translation id="8807160976559152894">Скраћивање после сваке странице</translation>
 <translation id="8809203544698246977">Блокиране теме се приказују овде</translation>
 <translation id="8811470563853401328">Желите да сачувате адресу на налогу?</translation>
+<translation id="8811725516933141693">Унесите @gemini да бисте ћаскали са Gemini-јем</translation>
 <translation id="8813277370772331957">Подсети ме касније</translation>
 <translation id="8814707942599948500">Коверта C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте ажурирали Chrome из подешавања Chrome-а</translation>

@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
 <translation id="301521992641321250">به‌طور خودکار مسدود‌شده</translation>
 <translation id="3069226013421428034">ورود به سیستم شخص ثالث برای سایت خاصی مجاز می‌شود.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
 <translation id="310297983047869047">اسلاید قبلی</translation>
 <translation id="3109724472072898302">جمع شده</translation>
 <translation id="3114012059975132928">پخش‌کننده ویدیو</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">مجاز است</translation>
 <translation id="429312253194641664">سایتی درحال پخش رسانه است</translation>
 <translation id="42981349822642051">بزرگ کردن</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
 <translation id="4336566011000459927">‏‫Chrome کوکی‌ها را امروز دوباره محدود خواهد کرد</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> آخرین برگه شما</translation>
 <translation id="4338831206024587507">همه سایت‌های تحت <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="757524316907819857">مسدود کردن سایت‌ها برای پخش محتوای محافظت‌شده</translation>
 <translation id="7594634374516752650">به دستگاه بلوتوث متصل است</translation>
-<translation id="7641339528570811325">پاک کردن داده‌های مرور…</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7667547420449112975">جادوگر شهر اُز</translation>

@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">ਇਜਾਜ਼ਤਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="301521992641321250">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲੌਕ ਕੀਤੀ ਗਈ</translation>
 <translation id="3069226013421428034">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੇ ਸਾਈਨ-ਇਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{ਮਿਆਦ ਕੱਲ੍ਹ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}one{ਮਿਆਦ # ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="310297983047869047">ਪਿਛਲੀ ਸਲਾਈਡ</translation>
 <translation id="3109724472072898302">ਨਸ਼ਟ ਹੋਇਆ</translation>
 <translation id="3114012059975132928">ਵੀਡੀਓ ਪਲੇਅਰ</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">ਆਗਿਆ ਦਿੱਤੀ</translation>
 <translation id="429312253194641664">ਕੋਈ ਸਾਈਟ ਮੀਡੀਆ ਫ਼ਾਈਲ ਨੂੰ ਚਲਾ ਰਹੀ ਹੈ</translation>
 <translation id="42981349822642051">ਵਿਸਤਾਰ ਕਰੋ</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{ਮਿਆਦ ਕੱਲ੍ਹ ਨੂੰ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}one{ਮਿਆਦ # ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="4336566011000459927">Chrome ਕੁਕੀਜ਼ ਨੂੰ ਅੱਜ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> ਤੁਹਾਡਾ ਪਿਛਲਾ ਟੈਬ</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> ਅਧੀਨ ਸਾਰੀਆਂ ਸਾਈਟਾਂ</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">ਹਮੇਸ਼ਾਂ</translation>
 <translation id="757524316907819857">ਸਾਈਟਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="7594634374516752650">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤੀ ਗਈ</translation>
-<translation id="7641339528570811325">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ...</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7667547420449112975">ਔਜ਼ ਦਾ ਨਿਰਾਲਾ ਵਿਜ਼ਾਰਡ</translation>

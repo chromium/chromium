@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Mirë se u ktheve, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Emri i mbajtësit të kartës</translation>
 <translation id="1809939268435598390">Fshi dosjen</translation>
-<translation id="1813414402673211292">Pastro të dhënat e shfletimit</translation>
 <translation id="1815941218935345331">Kodi i kalimit</translation>
 <translation id="1820259098641718022">U shtua te lista e leximit</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
 <translation id="223356358902285214">Aktiviteti i uebit dhe i aplikacioneve</translation>
 <translation id="2234827758954819389">Udhëzuesi i privatësisë</translation>
-<translation id="2239626343334228536">Të dhënat e shfletimit po pastrohen...</translation>
 <translation id="2251686759395008410">Menyja → Historiku</translation>
 <translation id="2252674110805316998">Kërkimi në ueb</translation>
 <translation id="2252749852083403809">Po ruhet te "Disku" për <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3485558910355485767">Dritare e re "e fshehtë"</translation>
 <translation id="3488501490964659223">Skedat janë mbyllur dhe të dhënat e shfletimit janë fshirë. Ke dalë nga llogaria</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> mbi përmbajtjen e sugjeruar</translation>
-<translation id="3494788280727468875">Konfirmo pastrimin e të dhënave të shfletimit</translation>
 <translation id="35083190962747987">Hap ${url}</translation>
 <translation id="3519193562722059437">Hap një skedë për të shfletuar uebin.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Hap skedën}other{Hap {count} skeda}}</translation>
@@ -492,7 +489,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3540141921715814660">Shto te faqeshënuesit</translation>
 <translation id="355101282835380364">Ruaj te llogaria…</translation>
 <translation id="3551320343578183772">Mbylle skedën</translation>
-<translation id="3565207542107370586">Pastro të dhënat e shfletimit…</translation>
 <translation id="3565930036634619844">Skeda. <ph name="TAB_INDEX" /> nga <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Trokit dy herë për më shumë fjalëkalime.</translation>
 <translation id="3575234738189584619">Kërko me "Lenten"</translation>
@@ -968,7 +964,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6027945736510816438">Mos dëshiron të thuash <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">veçori e re</translation>
 <translation id="6033598293589037429">Gati për t'u marrë</translation>
-<translation id="6036215966221662377">Pastro të dhënat e shfletimit</translation>
 <translation id="6036514205982097558">Të gjitha skedat e tua në një shfletues të vetëm</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Mbyll</translation>
@@ -1151,7 +1146,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6859944681507688231">Për të skanuar një kod QR ose kartë krediti, aktivizo kamerën nga cilësimet.</translation>
 <translation id="6867369562105931222">fjalëkalimi</translation>
 <translation id="686899695320434745">Adresat nuk janë të enkriptuara me frazën tënde të kalimit. Kjo të lejon që t'i përdorësh në shërbimet e tjera të Google.</translation>
-<translation id="6869389390665537774">Mund të shikosh faqet që ke vizituar ose pastroji ato nga historiku yt</translation>
 <translation id="687135068089457384">Shfaq cilësimet</translation>
 <translation id="6873263987691478642">Pamja e ndarë</translation>
 <translation id="6882836635272038266">Mbrojtje standarde kundër faqeve të internetit, shkarkimeve dhe shtesave që njihen si të rrezikshme.</translation>
@@ -1297,7 +1291,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7719038820139380048">Identifikohu për të marrë përmbajtje bazuar në interesat e tu.</translation>
 <translation id="7720410380936703141">PROVO SËRISH</translation>
 <translation id="7724085059277147439">{count,plural, =1{Artikulli i ruajtur në "Llogarinë tënde të Google", {email}}other{Artikujt e ruajtur në "Llogarinë tënde të Google", {email}}}</translation>
-<translation id="7726702057919861819">"Menyja → Historiku → Pastro të dhënat e shfletimit"</translation>
 <translation id="7729458878441927652">Për të parë skedat nga pajisjet e tua të tjera, sinkronizo skedat dhe historikun.</translation>
 <translation id="7730973429297233609">Zgjidh llogarinë që dëshiron të përdorësh për të ruajtur skedarin <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Vetëm në këtë pajisje.</translation>
@@ -1542,7 +1535,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8870413625673593573">Të mbyllura së fundi</translation>
 <translation id="8876882697946675716">Mbaji pajisjet e tua të sinkronizuara</translation>
 <translation id="8879604564928138696">Trokit dy herë për të provuar</translation>
-<translation id="8879984884633913185">Fshih "Pastro të dhënat e shfletimit"</translation>
 <translation id="8881801611828450202">Kërko në <ph name="SEARCH_ENGINE" /> për këtë imazh</translation>
 <translation id="8898822736010347272">Dërgon te Google URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit, si dhe disa përmbajtje faqeje për të ndihmuar në zbulimin e kërcënimeve të reja dhe për t'i mbrojtur të gjithë në ueb.</translation>
 <translation id="890565330728586731">Pas</translation>

@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Witamy z powrotem, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Imię i nazwisko posiadacza karty</translation>
 <translation id="1809939268435598390">Usuń folder</translation>
-<translation id="1813414402673211292">Wyczyść dane przeglądania</translation>
 <translation id="1815941218935345331">Kod dostępu</translation>
 <translation id="1820259098641718022">Dodano do listy Do przeczytania</translation>
 <translation id="1822994441903263130">FedEx</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
 <translation id="223356358902285214">Aktywność w internecie i aplikacjach</translation>
 <translation id="2234827758954819389">Przewodnik po prywatności</translation>
-<translation id="2239626343334228536">Czyszczę dane przeglądania…</translation>
 <translation id="2251686759395008410">Menu → Historia</translation>
 <translation id="2252674110805316998">Wyszukiwarka Google</translation>
 <translation id="2252749852083403809">Zapisuję na Dysku użytkownika <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3485558910355485767">Nowe okno incognito</translation>
 <translation id="3488501490964659223">Karty zostały zamknięte, a dane przeglądania usunięte. Nastąpiło wylogowanie</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o proponowanej treści</translation>
-<translation id="3494788280727468875">Potwierdź czyszczenie danych przeglądania</translation>
 <translation id="35083190962747987">Otwórz ${url}</translation>
 <translation id="3519193562722059437">Otwórz kartę, by przeglądać strony.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Otwórz kartę}few{Otwórz {count} karty}many{Otwórz {count} kart}other{Otwórz {count} karty}}</translation>
@@ -492,7 +489,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3540141921715814660">Dodaj do zakładek</translation>
 <translation id="355101282835380364">Zapisz na koncie…</translation>
 <translation id="3551320343578183772">Zamknij kartę</translation>
-<translation id="3565207542107370586">Wyczyść dane przeglądania…</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Kliknij dwukrotnie, aby wyświetlić więcej haseł.</translation>
 <translation id="3575234738189584619">Szukaj za pomocą Obiektywu</translation>
@@ -969,7 +965,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6027945736510816438">Czy chodziło Ci o <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nowa funkcja</translation>
 <translation id="6033598293589037429">Gotowa do odbioru</translation>
-<translation id="6036215966221662377">Wyczyść dane przeglądania</translation>
 <translation id="6036514205982097558">Wszystkie Twoje karty w jednej przeglądarce</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zamknij</translation>
@@ -1112,6 +1107,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="6647441008198474441">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić</translation>
 <translation id="6656103420185847513">Folder edytora</translation>
 <translation id="6657585470893396449">Hasło</translation>
+<translation id="6659660757330712663">Aby przełączać się między kartami, możesz przesuwać palcem po pasku narzędzi.</translation>
 <translation id="6668619169535738264">Edytuj zakładkę</translation>
 <translation id="6672241253012342409">Witryny mogą używać plików cookie dla Twojej wygody – na przykład aby nie wylogowywać Cię z konta lub zapamiętywać zawartość koszyka.
 
@@ -1152,7 +1148,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6859944681507688231">Aby zeskanować kod QR lub kartę kredytową, włącz aparat w ustawieniach.</translation>
 <translation id="6867369562105931222">hasło</translation>
 <translation id="686899695320434745">Adresy nie zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Pozwoli Ci to korzystać z nich w innych usługach Google.</translation>
-<translation id="6869389390665537774">Możesz przejrzeć odwiedzone strony lub usunąć je z historii</translation>
 <translation id="687135068089457384">Pokaż ustawienia</translation>
 <translation id="6873263987691478642">Widok dzielony</translation>
 <translation id="6882836635272038266">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne.</translation>
@@ -1298,7 +1293,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7719038820139380048">Zaloguj się, aby otrzymywać treści dostosowane do swoich zainteresowań.</translation>
 <translation id="7720410380936703141">SPRÓBUJ PONOWNIE</translation>
 <translation id="7724085059277147439">{count,plural, =1{Element został zapisany na Twoim koncie Google {email}}few{Elementy zostały zapisane na Twoim koncie Google {email}}many{Elementy zostały zapisane na Twoim koncie Google {email}}other{Elementy zostały zapisane na Twoim koncie Google {email}}}</translation>
-<translation id="7726702057919861819">Menu → Historia → Wyczyść dane przeglądania</translation>
 <translation id="7729458878441927652">Aby zobaczyć karty z innych urządzeń, zsynchronizuj karty i historię.</translation>
 <translation id="7730973429297233609">Wybierz konto, którego chcesz użyć do zapisania pliku <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Tylko na tym urządzeniu.</translation>
@@ -1547,7 +1541,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8870413625673593573">Ostatnio zamknięte</translation>
 <translation id="8876882697946675716">Synchronizacja urządzeń</translation>
 <translation id="8879604564928138696">Kliknij dwukrotnie, aby spróbować</translation>
-<translation id="8879984884633913185">Ukryj opcję Wyczyść dane przeglądania</translation>
 <translation id="8881801611828450202">Szukaj tego obrazu w: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Wysyła do Google adresy URL niektórych odwiedzanych przez Ciebie stron, niektóre informacje o systemie i niektóre treści ze stron, by pomóc w wykrywaniu nowych zagrożeń i chronić wszystkich użytkowników internetu.</translation>
 <translation id="890565330728586731">Wstecz</translation>

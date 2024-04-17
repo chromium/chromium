@@ -70,7 +70,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2329088755516916767">Ja šis iestatījums ir ieslēgts, pārlūkā Chromium tiek iepriekš ielādētas lapas, tādējādi paātrinot pārlūkošanu un meklēšanu.</translation>
 <translation id="2343156876103232566">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chromium.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
-<translation id="2359920621792549529">Lai notīrītu pārlūkošanas datus tikai no šīs ierīces un paturētu tos Google kontā, <ph name="BEGIN_LINK" />izrakstieties no Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Vismaz viens Chromium paplašinājums piekļuva 1 HID ierīcei}=1{Vismaz viens Chromium paplašinājums piekļūst 1 HID ierīcei}zero{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcēm}one{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcei}other{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcēm}}</translation>
 <translation id="2401032172288869980">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru un mikrofonu šajā vietnē.</translation>
@@ -250,6 +249,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Rādīt Chromium šajā valodā</translation>
 <translation id="569897634095159764">Nevar izveidot savienojumu ar internetu. Starpniekserverī ir nepieciešama autentifikācija.</translation>
+<translation id="5800158606660203929">Pielāgojiet un kontrolējiet pārlūku Chromium. Iestatiet Chromium kā noklusējuma pārlūku.</translation>
 <translation id="5809516625706423866">Nevar izveidot savienojumu ar internetu. HTTP 401 — neatļauts. Lūdzu, pārbaudiet starpniekservera konfigurāciju.</translation>
 <translation id="5862307444128926510">Laipni lūdzam pārlūkā Chromium!</translation>
 <translation id="5883558403894052917">Pārlūkā Chromium tika konstatēts, ka tālāk norādītie vienumi satur ļaunprātīgu programmatūru:</translation>

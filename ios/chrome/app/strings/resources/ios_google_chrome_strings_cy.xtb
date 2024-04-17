@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Pwyswch a daliwch yr eicon Chrome a chliciwch ar 'Golygu'r Sgrîn Hafan'</translation>
 <translation id="1066101356081285416">Bydd Chrome yn canfod rhifau olrhain ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar dudalen y Tab Newydd. Bydd y rhif olrhain pecyn ac enw'r wefan yn cael eu hanfon i Google i ddarparu'r nodwedd hon ac i wella nodweddion siopa Google i bawb. Gallwch ddiweddaru hyn yn y <ph name="BEGIN_LINK" />Gosodiadau Olrhain Pecyn<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Defnyddiwch Chrome yn Ddiofyn</translation>
-<translation id="1105362920864247682">Clirio Data Pori yn Chrome.</translation>
 <translation id="1143896152279775643">Bydd eich cyfrinair yn cael ei gadw i Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Agorwch y ddewislen Chrome</translation>
 <translation id="1180362651362502943">Parhewch i ddefnyddio'r data Chrome yn eich Cyfrif Google.</translation>
@@ -77,7 +76,6 @@ Pethau i'w hystyried:
 <translation id="2750626042242931740">Gallwch ddiweddaru'ch dewisiadau unrhyw bryd yn y Gosodiadau Chrome.</translation>
 <translation id="2767464022270041271">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="2789947168960170215">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Clirio Data Pori yn Chrome</translation>
 <translation id="2869959624320573933">Mewngofnodi i Chrome</translation>
 <translation id="2876628302275096482">Dysgu rhagor am <ph name="BEGIN_LINK" />sut mae Chrome yn cadw eich data yn breifat<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Agorwch Osodiadau Chrome</translation>
@@ -225,7 +223,6 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="7466693328838535498">Yn y blwch Chwilio Celfi, ewch i Chrome</translation>
 <translation id="746684838091935575">3. Dewiswch Chrome</translation>
 <translation id="7492574581995589075">Diffoddodd eich sefydliad y gallu i ddefnyddio a chadw data Chrome yn eich Cyfrif Google. Dim ond i'r ddyfais hon y bydd nodau tudalen, cyfrineiriau a rhagor sy'n newydd yn cael eu cadw.</translation>
-<translation id="756809126120519699">Wedi clirio data Chrome</translation>
 <translation id="7581063337314642333">Mynd i'r Grid Tabiau yn Chrome</translation>
 <translation id="7662994914830945754">Er mwyn gweld eich tabiau o ble bynnag rydych yn defnyddio Chrome, mewngofnodwch a throwch gysoni ymlaen</translation>
 <translation id="7669869107155339016">Mynd i Osodiadau Chrome.</translation>

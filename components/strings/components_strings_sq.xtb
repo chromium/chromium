@@ -452,7 +452,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1810391395243432441">Mbroji fjalëkalimet me kyçjen e ekranit</translation>
 <translation id="1812527064848182527">peizazh</translation>
 <translation id="1812975699435941848">Arsim dhe trajnime në fushën e mjekësisë</translation>
-<translation id="1813414402673211292">Pastro të dhënat e shfletimit</translation>
 <translation id="1816436748874040213">Mund të kërkojë që të lëvizë dhe zmadhojë skedat e ndara</translation>
 <translation id="1818522458013171885">Zhblloko</translation>
 <translation id="1818585559878922121">Filma dokumentarë</translation>
@@ -875,7 +874,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2647086987482648627">Pëlhurë (me gjysmë shkëlqim)</translation>
 <translation id="264810637653812429">Nuk u gjetën pajisje të përputhshme.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të pastruar historikun e shfletimit, kukit, memorien specifike etj. te cilësimet e Chrome</translation>
 <translation id="2650446666397867134">Qasja te skedari u refuzua</translation>
 <translation id="2651465929321991146">Historiku dhe skedat</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
@@ -1205,7 +1203,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="33073482541490531">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve" rekomandon që ta ndryshosh këtë fjalëkalim tani.</translation>
 <translation id="3307649904964670439">Butoni "Personalizo Chrome". Aktivizoje për të personalizuar pamjen e shfletuesit tënd</translation>
 <translation id="3308006649705061278">Njësia organizative (OU)</translation>
-<translation id="3310047144791481950">Shiko informacionet që të ndihmojnë të zgjedhësh se me cilën kartë do të paguash. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Mëso për përfitimet e kartës<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Komedi televizive</translation>
 <translation id="3324687287337751929">4 x 6 inç</translation>
 <translation id="3324983252691184275">E kuqe e fortë</translation>
@@ -1374,7 +1371,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të ekzekutuar një kontroll sigurie te cilësimet e Chrome</translation>
 <translation id="3615309852743236517">Manikyre dhe pedikyre</translation>
 <translation id="3620239073311576716">Uniforma dhe veshje pune</translation>
-<translation id="36224234498066874">Pastro të dhënat e shfletimit...</translation>
 <translation id="362276910939193118">Shfaq historikun e plotë</translation>
 <translation id="3623041590998910684">Për të përdorur kamerën, jepi qasje Chrome te <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Filma romantikë</translation>
@@ -2055,7 +2051,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> që është futur nuk mund të gjendej.</translation>
 <translation id="4936675324097895694">Financa</translation>
 <translation id="4940163644868678279">Modaliteti "I fshehtë" në Chrome</translation>
-<translation id="494111439860963024">Butoni "Pastro të dhënat e shfletimit". Aktivizoje për të pastruar historikun tënd të shfletimit, kukit, memorien specifike etj. te cilësimet e Chrome</translation>
 <translation id="4943620199112228840">Të përdorë mikrofonat e tu</translation>
 <translation id="4943872375798546930">Asnjë rezultat</translation>
 <translation id="4950898438188848926">Butoni i ndërrimit të skedës. Shtyp "Enter" për të kaluar te skeda e hapur, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2290,7 +2285,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="541416427766103491">Stivuesi 4</translation>
 <translation id="5414446060143308245">Kërkohet rishikimi përpara transferimit</translation>
 <translation id="5414511064953050917">Zhvendos gjithsesi</translation>
-<translation id="5421136146218899937">Pastro të dhënat e shfletimit...</translation>
 <translation id="5421408724705443535">Muzikë rok</translation>
 <translation id="5423269318075950257">Monitoro çmimin</translation>
 <translation id="5425082381151187189">Shtëpia dhe dekori i brendshëm</translation>
@@ -3652,7 +3646,6 @@ Detaje shtesë:
 <translation id="8022542098135319050">Agjenci udhëtimesh dhe shërbimi</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab" dhe më pas "Enter" për të caktuar Chrome si shfletuesin e parazgjedhur të sistemit</translation>
 <translation id="8025119109950072390">Sulmuesit në këtë sajt mund të të mashtrojnë që të bësh diçka të rrezikshme si të instalosh softuerë ose të zbulosh informacione personal (për shembull, fjalëkalime, numra telefoni ose karta krediti).</translation>
-<translation id="8026334261755873520">Pastro të dhënat e shfletimit</translation>
 <translation id="8027077570865220386">Tabakaja 15</translation>
 <translation id="8027585818882015174">Butoni "Ekzekuto kontrollin e sigurisë të Chrome". Aktivizoje për të ekzekutuar një kontroll sigurie te cilësimet e Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një formular të ri te "Formulari i Google"</translation>
@@ -3923,7 +3916,6 @@ Detaje shtesë:
 <translation id="8527228059738193856">Altoparlantët</translation>
 <translation id="8527681393107582734">Agrikultura dhe pylltaria</translation>
 <translation id="8528149813106025610">Rroba për fëmijë</translation>
-<translation id="8530813470445476232">Pastro historikun e shfletimit, kukit, memorien specifike etj. te cilësimet e Chrome</translation>
 <translation id="853246364274116957">Shfaqje teatrale muzikore</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Vizito &lt;strong&gt;chrome://policy&lt;/strong&gt; për të parë listën e URL-ve të bllokuara dhe politika të tjera të detyruara nga administratori i sistemit tënd.</translation>

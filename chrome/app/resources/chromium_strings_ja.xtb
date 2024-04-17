@@ -70,7 +70,6 @@
 <translation id="2329088755516916767">オンにするとページがプリロードされ、閲覧と検索をすばやく行えるようになります。</translation>
 <translation id="2343156876103232566">Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>
 <translation id="2359808026110333948">続行</translation>
-<translation id="2359920621792549529">閲覧データをこのデバイスからのみ削除して、Google アカウントに残すには、<ph name="BEGIN_LINK" />Chromium からログアウト<ph name="END_LINK" />します。</translation>
 <translation id="2384373936468275798">アカウントのログイン情報が最新でないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしていました}=1{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしています}other{1 つ以上の Chromium 拡張機能が # 台の HID デバイスにアクセスしています}}</translation>
 <translation id="2401032172288869980">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
@@ -175,6 +174,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="4118474109249235144">Chromium のシークレット モード</translation>
 <translation id="4148957013307229264">インストール中...</translation>
+<translation id="4149336151887611710">あなたの組織は仕事用プロフィールの閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。個人用の Chromium プロフィールの閲覧データを確認することはできません。</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chromium</translation>
 <translation id="421369550622382712">Chromium の優れたアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>
 <translation id="4216212958613226427">この言語が Chromium UI の表示に使用されます</translation>
@@ -250,6 +250,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium をこの言語で表示</translation>
 <translation id="569897634095159764">インターネットに接続できません。プロキシ サーバーにより認証を求められています。</translation>
+<translation id="5800158606660203929">Chromium をカスタマイズ、管理します。Chromium をデフォルトに設定します。</translation>
 <translation id="5809516625706423866">インターネットに接続できません。HTTP 401 認証エラーが発生しました。プロキシ設定をご確認ください。</translation>
 <translation id="5862307444128926510">Chromium へようこそ</translation>
 <translation id="5883558403894052917">Chromium で次のアイテムに不正なソフトウェアが含まれていることが検出されました。</translation>
@@ -395,6 +396,7 @@
 <translation id="7867198900892795913">Chromium を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
 <translation id="7872446069773932638">ダウンロードしています... 残り <ph name="SECONDS" /> 秒です</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するため、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。閲覧を続けていると、興味 / 関心がリストに再度表示される場合もあります。Chromium に認識してほしくない興味 / 関心は削除できます。</translation>
+<translation id="7888981273428720788">Chromium を既定として設定</translation>
 <translation id="7937630085815544518">Chromium に <ph name="USER_EMAIL_ADDRESS" /> としてログインしていました。再度ログインするには同じアカウントを使用してください。</translation>
 <translation id="7975919845073681630">この Chromium はセカンダリ インストールのため、既定のブラウザには設定できません。</translation>
 <translation id="7997934263947464652">提供元不明の拡張機能、アプリ、テーマはデバイスに危害を及ぼす可能性があります。<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> で公開されているアイテムのみをインストールすることをおすすめします</translation>

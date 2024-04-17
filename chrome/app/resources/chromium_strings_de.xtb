@@ -70,7 +70,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2329088755516916767">Wenn diese Option aktiviert ist, lädt Chromium Seiten vorab, um das Surfen und die Suche zu beschleunigen.</translation>
 <translation id="2343156876103232566">Wenn du eine Nummer von diesem Gerät an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chromium anmelden.</translation>
 <translation id="2359808026110333948">Weiter</translation>
-<translation id="2359920621792549529">Wenn du Browserdaten nur von diesem Gerät, aber nicht aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich in Chromium ab<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">Chromium OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Auf 1 HID-Gerät wurde von mindestens einer Chromium-Erweiterung zugegriffen}=1{Auf 1 HID-Gerät wird von mindestens einer Chromium-Erweiterung zugegriffen}other{Auf # HID-Geräte wird von mindestens einer Chromium-Erweiterung zugegriffen}}</translation>
 <translation id="2401032172288869980">Chromium benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
@@ -250,6 +249,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium in dieser Sprache anzeigen</translation>
 <translation id="569897634095159764">Internetverbindung kann nicht hergestellt werden. Für den Proxyserver ist eine Authentifizierung erforderlich.</translation>
+<translation id="5800158606660203929">Chromium anpassen und verwalten. Chromium als Standardbrowser festlegen.</translation>
 <translation id="5809516625706423866">Internetverbindung kann nicht hergestellt werden. HTTP 401 Unauthorized. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
 <translation id="5883558403894052917">Chromium hat festgestellt, dass diese Elemente Malware enthalten:</translation>

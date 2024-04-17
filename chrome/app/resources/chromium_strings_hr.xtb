@@ -70,7 +70,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="2329088755516916767">Kad je to uključeno, Chromium predučitava stranice, što ubrzava pregledavanje i pretraživanje.</translation>
 <translation id="2343156876103232566">Da biste poslali broj s ovog uređaja na svoj Android telefon, prijavite se na Chromium na oba uređaja.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
-<translation id="2359920621792549529">Da biste podatke o pregledavanju izbrisali samo s ovog uređaja, a zadržali ih na svojem Google računu, <ph name="BEGIN_LINK" />odjavite se iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">Chromium OS nije mogao sinkronizirati podatke vašeg računa jer su podaci prijave na račun zastarjeli.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Jedno ili više Chromiumovih proširenja pristupalo je jednom HID uređaju}=1{Jedno ili više Chromiumovih proširenja pristupa jednom HID uređaju}one{Jedno ili više Chromiumovih proširenja pristupa # HID uređaju}few{Jedno ili više Chromiumovih proširenja pristupa # HID uređaja}other{Jedno ili više Chromiumovih proširenja pristupa # HID uređaja}}</translation>
 <translation id="2401032172288869980">Chromium treba dopuštenje za fotoaparat i mikrofon za ovu web-lokaciju</translation>
@@ -252,6 +251,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium na tom jeziku</translation>
 <translation id="569897634095159764">Povezivanje s internetom nije moguće. Proxy poslužitelj zahtijeva autentifikaciju.</translation>
+<translation id="5800158606660203929">Prilagodite Chromium i upravljajte njime. Postavite Chromium kao zadani preglednik.</translation>
 <translation id="5809516625706423866">Povezivanje s internetom nije moguće. HTTP 401 Nije ovlašteno. Provjerite konfiguraciju proxyja.</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5883558403894052917">Chromium je otkrio da ove stavke sadrže zlonamjerni softver:</translation>

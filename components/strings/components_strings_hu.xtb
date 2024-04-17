@@ -340,6 +340,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="160851722280695521">A Dino Run játék elindítása a Chrome-ban</translation>
 <translation id="161042844686301425">Cián</translation>
 <translation id="1611101756749861742">2. tekercs</translation>
+<translation id="1611854593425834707">Az átküldéshez használható eszközök listájának bezárása</translation>
 <translation id="1612199629998703524">Témák kezelése</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> hozzáférésének visszavonása</translation>
 <translation id="1615402009686901181">Rendszergazdai házirend tiltja képernyőfelvétel készítését, ha bizalmas tartalom látható a képernyőn.</translation>
@@ -452,7 +453,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1810391395243432441">Megvédheti jelszavait a képernyőzár segítségével</translation>
 <translation id="1812527064848182527">fekvő</translation>
 <translation id="1812975699435941848">Egészségügyi oktatás és orvosképzés</translation>
-<translation id="1813414402673211292">Böngészési adatok törlése</translation>
 <translation id="1816436748874040213">Engedélyt kérhet a megosztott lapok görgetésére és nagyítására</translation>
 <translation id="1818522458013171885">Letiltás feloldása</translation>
 <translation id="1818585559878922121">Dokumentumfilmek</translation>
@@ -875,7 +875,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2647086987482648627">Szövet (félig fényes)</translation>
 <translation id="264810637653812429">Nem találhatók kompatibilis eszközök.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a böngészési előzményeknek, a cookie-knak, a gyorsítótárnak és egyebeknek a Chrome beállításaiban való törléséhez</translation>
 <translation id="2650446666397867134">A hozzáférés a fájlhoz megtagadva.</translation>
 <translation id="2651465929321991146">Előzmények és lapok</translation>
 <translation id="2653659639078652383">Küldés</translation>
@@ -1203,7 +1202,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="33073482541490531">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. A Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="3307649904964670439">A Chrome személyre szabása gomb. A gombot megnyomva személyre szabhatja a böngésző megjelenését.</translation>
 <translation id="3308006649705061278">Szervezeti egység (OU)</translation>
-<translation id="3310047144791481950">A fizetéshez használni kívánt kártya kiválasztásában segítő információk megjelenítése. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />További információ a kártyák által nyújtott előnyökről.<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Televíziós vígjátékok</translation>
 <translation id="3324687287337751929">4 × 6 hüvelyk</translation>
 <translation id="3324983252691184275">Karmazsinvörös</translation>
@@ -1372,7 +1370,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a biztonsági ellenőrzés futtatásához a Chrome beállításaiban.</translation>
 <translation id="3615309852743236517">Manikűr és pedikűr</translation>
 <translation id="3620239073311576716">Egyenruhák és munkaruhák</translation>
-<translation id="36224234498066874">Böngészési adatok törlése…</translation>
 <translation id="362276910939193118">Az összes előzmény</translation>
 <translation id="3623041590998910684">A kamera használatához adjon hozzáférést a Chrome-nak itt: <ph name="LINK" /></translation>
 <translation id="3623398832322170566">Romantikus filmek</translation>
@@ -1917,6 +1914,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4691093235373904540">Tetőfedés</translation>
 <translation id="4692623383562244444">Keresők</translation>
 <translation id="4698692901173737941">Küzdősportok</translation>
+<translation id="4701307090948589984">Átküldés a következőre…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Oldal</translation>
 <translation id="4702656508969495934">Az Élő feliratozás látható, a fókuszáláshoz használja az ablakváltót</translation>
@@ -2053,7 +2051,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4936134414789135531">A beillesztett <ph name="VALUE_NAME" /> nem található.</translation>
 <translation id="4936675324097895694">Pénzügy</translation>
 <translation id="4940163644868678279">Inkognitó a Chrome-ban</translation>
-<translation id="494111439860963024">Böngészési adatok törlése gomb. A gombot megnyomva törölheti a böngészési előzményeket, a cookie-kat, a gyorsítótárat és egyebeket a Chrome beállításaiban.</translation>
 <translation id="4943620199112228840">Mikrofonok használata</translation>
 <translation id="4943872375798546930">Nincs találat</translation>
 <translation id="4950898438188848926">Lapváltó gomb. Nyomja meg az Entert a következő megnyitott lapra való váltáshoz: <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2166,6 +2163,8 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5161334686036120870">Tárgy:</translation>
 <translation id="5161506081086828129">9. kötegelő</translation>
 <translation id="5164798890604758545">Szövegbevitel történt</translation>
+<translation id="5164928537947209380">Ez a kísérleti AI-eszköz nem mindig ad helyes választ. A szolgáltatás javítása érdekében a tartalmat elküldjük a Google-nak.
+    <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="516920405563544094">Adja meg a(z) <ph name="CREDIT_CARD" /> kártya CVC-kódját. A megerősítést követően a böngésző megosztja majd az Ön Google-fiókjából származó kártyaadatokat ezzel a webhellyel.</translation>
 <translation id="5169827969064885044">Elveszítheti a hozzáférést szervezete fiókjához, vagy visszaélhetnek személyes adataival. A Chrome azt javasolja, hogy azonnal módosítsa jelszavát.</translation>
 <translation id="5171045022955879922">Keressen vagy írjon be egy URL-t</translation>
@@ -2288,7 +2287,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="541416427766103491">4. kötegelő</translation>
 <translation id="5414446060143308245">Az átvitel előtt ellenőrzést kell elvégezni</translation>
 <translation id="5414511064953050917">Áthelyezés mindenképp</translation>
-<translation id="5421136146218899937">Böngészési adatok törlése...</translation>
 <translation id="5421408724705443535">Rockzene</translation>
 <translation id="5423269318075950257">Ár nyomon követése</translation>
 <translation id="5425082381151187189">Lakberendezés és belső dekoráció</translation>
@@ -3651,7 +3649,6 @@ További részletek:
 <translation id="8022542098135319050">Utazási irodák és szolgáltatások</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt, a Chrome-ot szeretné beállítani a rendszer alapértelmezett böngészőjeként.</translation>
 <translation id="8025119109950072390">A támadók ezen a webhelyen megpróbálhatják csellel rávenni Önt, hogy például telepítsen egy veszélyes szoftvert, vagy felfedje személyes adatait (jelszavát, telefonszámát, hitelkártyaszámát stb.).</translation>
-<translation id="8026334261755873520">Böngészési adatok törlése</translation>
 <translation id="8027077570865220386">15. tálca</translation>
 <translation id="8027585818882015174">A Chrome biztonsági ellenőrzését futtató gomb. A gombot megnyomva biztonsági ellenőrzést futtathat a Chrome beállításai között.</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új űrlap gyors létrehozásához a Google Űrlapok szolgáltatással</translation>
@@ -3923,7 +3920,6 @@ További részletek:
 <translation id="8527228059738193856">Hangfalak</translation>
 <translation id="8527681393107582734">Mezőgazdaság és erdészet</translation>
 <translation id="8528149813106025610">Gyermekruházat</translation>
-<translation id="8530813470445476232">A böngészési előzmények, a cookie-k, a gyorsítótár és egyebek törlése a Chrome-beállítások között</translation>
 <translation id="853246364274116957">Broadway és musicalszínház</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">A &lt;strong&gt;chrome://policy&lt;/strong&gt; oldalon láthatja a rendszergazda által letiltott URL-ek és a beállított egyéb kötelező irányelvek listáját.</translation>
@@ -4064,6 +4060,7 @@ További részletek:
 <translation id="8807160976559152894">Vágás minden oldal után</translation>
 <translation id="8809203544698246977">A letiltott témák itt jelennek meg</translation>
 <translation id="8811470563853401328">Menti a címet a fiókba?</translation>
+<translation id="8811725516933141693">A Geminivel való csevegéshez írja be azt, hogy @gemini</translation>
 <translation id="8813277370772331957">Emlékeztessen később</translation>
 <translation id="8814707942599948500">C8 boríték</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a Chrome-nak a Chrome beállításaiban való frissítéséhez</translation>

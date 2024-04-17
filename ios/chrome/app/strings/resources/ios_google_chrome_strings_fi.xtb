@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Paina Chrome-kuvaketta pitkään ja klikkaa "Muokkaa aloitusnäyttöä"</translation>
 <translation id="1066101356081285416">Chrome tunnistaa seurantanumerot avaamillasi sivustoilla ja näyttää pakettien päivitykset Uusi välilehti ‐sivulla. Paketin seurantanumero ja verkkosivuston nimi lähetetään Googlelle tämän ominaisuuden tarjoamista ja Google Shopping ‑ominaisuuksien parantamista varten. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />lähetyksen seuranta-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Chromen käyttö oletuksena</translation>
-<translation id="1105362920864247682">Poista Chromen selausdata.</translation>
 <translation id="1143896152279775643">Salasana tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Avaa Chrome-valikko</translation>
 <translation id="1180362651362502943">Jatka Chrome-datan käyttöä Google-tilillä.</translation>
@@ -77,7 +76,6 @@ Huomioitavaa:
 <translation id="2750626042242931740">Voit muuttaa valintoja milloin tahansa Chromen asetuksista.</translation>
 <translation id="2767464022270041271">Ei tallennettuja salasanoja Google Salasanat voi tarkistaa salasanasi tallennuksen yhteydessä.</translation>
 <translation id="2789947168960170215">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Poista Chromen selausdata</translation>
 <translation id="2869959624320573933">Kirjaudu Chromeen</translation>
 <translation id="2876628302275096482">Lue lisää siitä, <ph name="BEGIN_LINK" />miten Chrome pitää datasi yksityisenä<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Avaa Chromen asetukset</translation>
@@ -225,7 +223,6 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7466693328838535498">Kirjoita widgetien hakukenttään "Chrome"</translation>
 <translation id="746684838091935575">3. Valitse Chrome</translation>
 <translation id="7492574581995589075">Organisaatiosi on laittanut Chrome-datan käyttämisen ja tallentamisen Google-tilillä pois päältä. Uudet kirjanmerkit, salasanat ja muut tiedot tallennetaan vain tälle laitteelle.</translation>
-<translation id="756809126120519699">Chrome-tiedot tyhjennetty</translation>
 <translation id="7581063337314642333">Siirry Chromen älilehtiruudukkoon</translation>
 <translation id="7662994914830945754">Kirjaudu sisään ja laita synkronointi päälle, jotta voit nähdä Chrome-välilehtesi missä tahansa</translation>
 <translation id="7669869107155339016">Siirry Chromen asetuksiin.</translation>

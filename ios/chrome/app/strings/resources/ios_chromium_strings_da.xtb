@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Denne pakke er allerede blevet sporet i Chromium.</translation>
 <translation id="1707458603865303524">Brug Chromium, hver gang du trykker på links i meddelelser eller andre apps.</translation>
 <translation id="1722370509450468186">Din adgangskode gemmes på din konto (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Chromium-data blev ryddet</translation>
 <translation id="1791845338122684020">Åbner siden med din Chromium-historik.</translation>
 <translation id="1838412507805038478">Chromium har verificeret, at <ph name="ISSUER" /> har udstedt certifikatet for dette website.</translation>
 <translation id="1843424232666537147">Chromium har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
@@ -85,7 +84,6 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 <translation id="3472200483164753384">Understøttes ikke i Chromium Canary</translation>
 <translation id="347967311580159871">Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-oplevelse, ved at gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Din adgangskode blev ikke delt. Tjek din internetforbindelse, og sørg for, at du er logget ind i Chromium. Prøv derefter igen.</translation>
-<translation id="3554027294407525061">Ryd browserdata i Chromium.</translation>
 <translation id="3567399274263440288">Log ind i Chromium med din Google-konto for at få mest muligt ud af Chromium.</translation>
 <translation id="3634039384458740619">Åbn Chromium-indstillinger</translation>
 <translation id="3639997914391704523">Chromium kan tjekke dine adgangskoder, når du er logget ind med din Google-konto</translation>
@@ -136,7 +134,6 @@ Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at brug
 <translation id="5042011327527167688">Tryk på "Se med Google Maps i Chromium".</translation>
 <translation id="5044871537677053278">Chromium registrerer adresser og bruger Google Maps til at give dig rutevejledninger og lokale oplysninger.</translation>
 <translation id="5048795749726991615">Du kan nemt få adgang til dine gemte adgangskoder i dine andre apps ved hjælp af Autofyld i Chromium</translation>
-<translation id="5076601183701536878">Ryd browserdata i Chromium</translation>
 <translation id="5124429847818367226">Du kan nu bruge Chromium, hver gang du browser eller trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="5131565040785979529">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du er logget ind på, og hvordan Chromium bruges.</translation>
 <translation id="5146749061471423558">Føj bogmærker til Chromium</translation>

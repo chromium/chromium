@@ -453,7 +453,6 @@
 <translation id="1810391395243432441">Προστασία κωδικών πρόσβασης με το κλείδωμα οθόνης</translation>
 <translation id="1812527064848182527">οριζόντιος προσανατολισμός</translation>
 <translation id="1812975699435941848">Εκπαίδευση υγείας και Ιατρική εκπαίδευση</translation>
-<translation id="1813414402673211292">Διαγραφή δεδ. περιήγ.</translation>
 <translation id="1816436748874040213">Μπορεί να ζητήσει να γίνει κύλιση και εστίαση στις κοινόχρηστες καρτέλες</translation>
 <translation id="1818522458013171885">Κατάργηση αποκλεισμού</translation>
 <translation id="1818585559878922121">Ντοκιμαντέρ</translation>
@@ -876,7 +875,6 @@
 <translation id="2647086987482648627">Ύφασμα (Ημι-γυαλιστερό)</translation>
 <translation id="264810637653812429">Δεν βρέθηκαν συμβατές συσκευές.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για εκκαθάριση του ιστορικού περιήγησης, των cookie, της κρυφής μνήμης κ.α. στις ρυθμίσεις του Chrome.</translation>
 <translation id="2650446666397867134">Η πρόσβαση στο αρχείο απορρίφθηκε</translation>
 <translation id="2651465929321991146">Ιστορικό και καρτέλες</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
@@ -1206,7 +1204,6 @@
 <translation id="33073482541490531">Ο κωδικός πρόσβασης που μόλις χρησιμοποιήσατε εντοπίστηκε σε μια παραβίαση δεδομένων. Ο Διαχειριστής κωδικών πρόσβασης συνιστά την άμεση αλλαγή αυτού του κωδικού πρόσβασης.</translation>
 <translation id="3307649904964670439">Κουμπί Προσαρμογή Chrome, ενεργοποιήστε το για να προσαρμόσετε την εμφάνιση του προγράμματος περιήγησης</translation>
 <translation id="3308006649705061278">Οργανωτική ομάδα (OU)</translation>
-<translation id="3310047144791481950">Δείτε πληροφορίες που θα σας βοηθήσουν να επιλέξετε την κάρτα με την οποία θα πληρώσετε. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Μάθετε για τα οφέλη της κάρτας<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Κωμωδίες στην τηλεόραση</translation>
 <translation id="3324687287337751929">4 x 6 ίντσες</translation>
 <translation id="3324983252691184275">Βαθύ κόκκινο</translation>
@@ -1375,7 +1372,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για εκτέλεση του ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="3615309852743236517">Μανικιούρ και πεντικιούρ</translation>
 <translation id="3620239073311576716">Φόρμες και στολές εργασίας</translation>
-<translation id="36224234498066874">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="362276910939193118">Εμφάνιση πλήρους ιστορικού</translation>
 <translation id="3623041590998910684">Για να χρησιμοποιήσετε την κάμερα, παραχωρήστε πρόσβαση στο Chrome από την ενότητα <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Ρομαντικές ταινίες</translation>
@@ -2058,7 +2054,6 @@
 <translation id="4936134414789135531">Δεν ήταν δυνατή η εύρεση της τιμής <ph name="VALUE_NAME" /> που εισάχθηκε.</translation>
 <translation id="4936675324097895694">Οικονομικά</translation>
 <translation id="4940163644868678279">Ανώνυμη περιήγηση στο Chrome</translation>
-<translation id="494111439860963024">Κουμπί Διαγραφή δεδομένων περιήγησης, ενεργοποιήστε το για να διαγράψετε το ιστορικό περιήγησης, τα cookie, την κρυφή μνήμη και πολλά άλλα από τις ρυθμίσεις του Chrome</translation>
 <translation id="4943620199112228840">Χρήση των μικροφώνων σας</translation>
 <translation id="4943872375798546930">Δεν υπάρχουν αποτελέσματα</translation>
 <translation id="4950898438188848926">Κουμπί εναλλαγής καρτέλας, πατήστε Enter για μετάβαση στην ανοιχτή καρτέλα, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2295,7 +2290,6 @@
 <translation id="541416427766103491">Μονάδα στοίβαξης 4</translation>
 <translation id="5414446060143308245">Απαιτείται έλεγχος πριν από τη μεταφορά</translation>
 <translation id="5414511064953050917">Μετακίνηση ούτως ή άλλως</translation>
-<translation id="5421136146218899937">Διαγραφή δεδομένων περιήγησης...</translation>
 <translation id="5421408724705443535">Ροκ μουσική</translation>
 <translation id="5423269318075950257">Παρακολούθηση τιμής</translation>
 <translation id="5425082381151187189">Διακόσμηση σπιτιού και εσωτερικών χώρων</translation>
@@ -3658,7 +3652,6 @@
 <translation id="8022542098135319050">Γραφεία και υπηρεσίες ταξιδίων</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να ορίσετε το Chrome ως το προεπιλεγμένο πρόγραμμα περιήγησης του συστήματος.</translation>
 <translation id="8025119109950072390">Οι εισβολείς σε αυτόν τον ιστότοπο μπορεί να σας ξεγελάσουν και να κάνετε κάτι επικίνδυνο, όπως να εγκαταστήσετε κάποιο λογισμικό ή να αποκαλύψετε προσωπικά σας στοιχεία (για παράδειγμα, κωδικούς πρόσβασης, αριθμούς τηλεφώνου ή πιστωτικές κάρτες).</translation>
-<translation id="8026334261755873520">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="8027077570865220386">Τροφοδότης χαρτιού 15</translation>
 <translation id="8027585818882015174">Κουμπί Έλεγχος ασφαλείας Chrome, ενεργοποιήστε το για να εκτελέσετε έναν έλεγχο ασφαλείας από τις ρυθμίσεις του Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα μια νέα φόρμα στις Φόρμες Google</translation>
@@ -3929,7 +3922,6 @@
 <translation id="8527228059738193856">Ηχεία</translation>
 <translation id="8527681393107582734">Γεωργία και δασοπονία</translation>
 <translation id="8528149813106025610">Παιδική ένδυση</translation>
-<translation id="8530813470445476232">Διαγράψτε το ιστορικό περιήγησης, τα cookie, την κρυφή μνήμη και άλλα στοιχεία στις ρυθμίσεις του Chrome.</translation>
 <translation id="853246364274116957">Broadway και μουσικό θέατρο</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Μεταβείτε στη διεύθυνση &lt;strong&gt;chrome://policy&lt;/strong&gt; για να δείτε τη λίστα των αποκλεισμένων URL και άλλες πολιτικές που έχουν τεθεί σε εφαρμογή από τον διαχειριστή του συστήματός σας.</translation>

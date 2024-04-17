@@ -136,6 +136,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1243027604378859286">Auteur:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Bovenkleding</translation>
+<translation id="1253096324252841344">Betalen met <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (gesynchroniseerd)</translation>
 <translation id="1255086252236620440">Mixers</translation>
 <translation id="1256368399071562588">&lt;p&gt;Als je een website wilt bezoeken en deze niet wordt geopend, kun je eerst zelf proberen het probleem op te lossen aan de hand van de volgende stappen:&lt;/p&gt;
@@ -340,6 +341,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="160851722280695521">Speel de Dino Run-game in Chrome</translation>
 <translation id="161042844686301425">Cyaan</translation>
 <translation id="1611101756749861742">2e rol</translation>
+<translation id="1611854593425834707">Apparaatlijst voor casten sluiten</translation>
 <translation id="1612199629998703524">Onderwerpen beheren</translation>
 <translation id="1615178538289490617">Toegang voor <ph name="PORT_NAME" /> intrekken</translation>
 <translation id="1615402009686901181">Op basis van het beheerdersbeleid worden schermopnamen uitgezet als er vertrouwelijke content zichtbaar is</translation>
@@ -452,7 +454,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1810391395243432441">Wachtwoorden beveiligen met je schermvergrendeling</translation>
 <translation id="1812527064848182527">liggend</translation>
 <translation id="1812975699435941848">Gezondheidsvoorlichting en medische opleidingen</translation>
-<translation id="1813414402673211292">Browsegegevens wissen</translation>
 <translation id="1816436748874040213">Kan vragen om te scrollen en te zoomen op gedeelde tabbladen</translation>
 <translation id="1818522458013171885">Niet meer blokkeren</translation>
 <translation id="1818585559878922121">Documentaires</translation>
@@ -875,7 +876,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2647086987482648627">Stof (zijdeglans)</translation>
 <translation id="264810637653812429">Geen geschikte apparaten gevonden.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om je browsegeschiedenis, cookies, cache en meer te wissen in de Chrome-instellingen.</translation>
 <translation id="2650446666397867134">Toegang tot het bestand is geweigerd</translation>
 <translation id="2651465929321991146">Geschiedenis en tabbladen</translation>
 <translation id="2653659639078652383">Verzenden</translation>
@@ -1202,7 +1202,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="33073482541490531">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen.</translation>
 <translation id="3307649904964670439">Knop Chrome aanpassen. Activeer deze om het uiterlijk van je browser aan te passen.</translation>
 <translation id="3308006649705061278">Organisatie-eenheid (OU)</translation>
-<translation id="3310047144791481950">Bekijk informatie waarmee je kunt kiezen met welke kaart je wilt betalen. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Meer informatie over kaartvoordelen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Tv-comedy's</translation>
 <translation id="3324687287337751929">4 x 6 inch</translation>
 <translation id="3324983252691184275">Karmozijnrood</translation>
@@ -1370,7 +1369,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om een veiligheidscheck uit te voeren in de Chrome-instellingen</translation>
 <translation id="3615309852743236517">Manicure en pedicure</translation>
 <translation id="3620239073311576716">Uniformen en werkkleding</translation>
-<translation id="36224234498066874">Browsegegevens wissen</translation>
 <translation id="362276910939193118">Volledige geschiedenis bekijken</translation>
 <translation id="3623041590998910684">Geef Chrome toegang via <ph name="LINK" /> om je camera te gebruiken.</translation>
 <translation id="3623398832322170566">Romantische films</translation>
@@ -1508,6 +1506,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="385489333361351399">Camera- en fotoapparatuur</translation>
 <translation id="3858027520442213535">Datum en tijd updaten</translation>
 <translation id="3858860766373142691">Naam</translation>
+<translation id="3865339060090354361">Bekijk hier de voorwaarden voor <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Wetenschap</translation>
 <translation id="3875783148670536197">Laten zien</translation>
 <translation id="3880456882942693779">Kunst en entertainment</translation>
@@ -1914,6 +1913,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4691093235373904540">Dakbedekking</translation>
 <translation id="4692623383562244444">Zoekmachines</translation>
 <translation id="4698692901173737941">Vechtsporten</translation>
+<translation id="4701307090948589984">Casten naar…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Team</translation>
 <translation id="4702656508969495934">Live ondertiteling zichtbaar. Gebruik de knop Vensters schakelen om hier de focus op te plaatsen.</translation>
@@ -2050,7 +2050,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4936134414789135531">De ingevoegde <ph name="VALUE_NAME" /> kan niet worden gevonden.</translation>
 <translation id="4936675324097895694">Financieel</translation>
 <translation id="4940163644868678279">Incognito in Chrome</translation>
-<translation id="494111439860963024">Knop Browsegegevens wissen. Activeer deze om onder andere je browsegeschiedenis, cookies en cachegeheugen te wissen in de Chrome-instellingen.</translation>
 <translation id="4943620199112228840">Je microfoons gebruiken</translation>
 <translation id="4943872375798546930">Geen resultaten</translation>
 <translation id="4950898438188848926">Schakelknop voor tabbladen, druk op Enter om naar het geopende tabblad, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, te schakelen</translation>
@@ -2163,6 +2162,8 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5161334686036120870">Onderwerp:</translation>
 <translation id="5161506081086828129">Stapeleenheid 9</translation>
 <translation id="5164798890604758545">Tekst wordt ingevoerd</translation>
+<translation id="5164928537947209380">Deze experimentele AI-tool kan er soms naast zitten. Je content wordt naar Google gestuurd om de kwaliteit te verbeteren.
+    <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Geef de CVC-code voor <ph name="CREDIT_CARD" /> op. Nadat je hebt bevestigd, worden de creditcardgegevens uit je Google-account gedeeld met deze site.</translation>
 <translation id="5169827969064885044">Je kunt de toegang tot het account van je organisatie kwijtraken of slachtoffer worden van identiteitsdiefstal. Chrome raadt je aan je wachtwoord nu te wijzigen.</translation>
 <translation id="5171045022955879922">Zoek of typ een URL</translation>
@@ -2285,7 +2286,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="541416427766103491">Stapeleenheid 4</translation>
 <translation id="5414446060143308245">Check bestanden voordat je ze overzet</translation>
 <translation id="5414511064953050917">Toch verplaatsen</translation>
-<translation id="5421136146218899937">Browsegegevens wissen</translation>
 <translation id="5421408724705443535">Rock</translation>
 <translation id="5423269318075950257">Prijs volgen</translation>
 <translation id="5425082381151187189">Huisinrichting en interieurdesign</translation>
@@ -2344,6 +2344,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="553377674408670169">Banen in het onderwijs</translation>
 <translation id="5536214594743852365">Gedeelte <ph name="SECTION" /> bekijken</translation>
 <translation id="553782666181800029">Envelop Chou 2</translation>
+<translation id="5538270463355278784">automatisch volledig scherm</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">Kan het gevraagde artikel niet vinden.</translation>
 <translation id="5540969246441091044">Paardensport</translation>
@@ -2707,6 +2708,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om bestanden te beheren die je in Chrome hebt gedownload</translation>
 <translation id="6254436959401408446">Onvoldoende geheugen om deze pagina te openen</translation>
 <translation id="625463612687472648">Niet meer toestaan</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Als je aankopen doet in Chrome, zie je <ph name="FINANCIAL_ACCOUNT_TYPES" /> als optie}other{Als je aankopen doet in Chrome, zie je <ph name="FINANCIAL_ACCOUNT_TYPES" /> als opties}}</translation>
 <translation id="6259156558325130047">&amp;Opnieuw volgorde wijzigen</translation>
 <translation id="6263376278284652872">Bookmarks voor <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
@@ -3647,7 +3649,6 @@ Aanvullende informatie:
 <translation id="8022542098135319050">Reisbureaus en -services</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om Chrome in te stellen als de standaardbrowser van het systeem</translation>
 <translation id="8025119109950072390">Cybercriminelen op deze site proberen je mogelijk te misleiden om iets gevaarlijks te doen, zoals software installeren of je persoonlijke informatie bekendmaken (bijvoorbeeld wachtwoorden, telefoonnummers of creditcards).</translation>
-<translation id="8026334261755873520">Browsegegevens wissen</translation>
 <translation id="8027077570865220386">Lade 15</translation>
 <translation id="8027585818882015174">Knop Chrome-veiligheidscheck uitvoeren. Activeer deze om een veiligheidscheck uit te voeren in de Chrome-instellingen.</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuw formulier in Google Formulieren te maken</translation>
@@ -3842,6 +3843,7 @@ Aanvullende informatie:
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8380941800586852976">Gevaarlijk</translation>
 <translation id="8381674639488873545">Deze kosten kunnen eenmalig of terugkerend zijn en zijn mogelijk niet duidelijk aangegeven. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automatisch volledig scherm</translation>
 <translation id="838307841291975086">Stationcars</translation>
 <translation id="8389532092404711541">Normaal <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Aangepaste en bijzondere voertuigen</translation>
@@ -3918,7 +3920,6 @@ Aanvullende informatie:
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527681393107582734">Landbouw en bosbouw</translation>
 <translation id="8528149813106025610">Kinderkleding</translation>
-<translation id="8530813470445476232">Je browsegeschiedenis, cookies, cache en meer wissen in de Chrome-instellingen</translation>
 <translation id="853246364274116957">Broadway en musicals</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Ga naar &lt;strong&gt;chrome://policy&lt;/strong&gt; om de lijst met geblokkeerde URL's en andere beleidsregels te bekijken die worden afgedwongen door je systeembeheerder.</translation>
@@ -4058,6 +4059,7 @@ Aanvullende informatie:
 <translation id="8807160976559152894">Bijsnijden na elke pagina</translation>
 <translation id="8809203544698246977">Hier staan je geblokkeerde onderwerpen</translation>
 <translation id="8811470563853401328">Adres opslaan in account?</translation>
+<translation id="8811725516933141693">Typ @gemini om te chatten met Gemini</translation>
 <translation id="8813277370772331957">Later herinneren</translation>
 <translation id="8814707942599948500">Envelop C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om Chrome te updaten via je Chrome-instellingen</translation>

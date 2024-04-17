@@ -27,7 +27,6 @@
 <translation id="164952285225495380">ติดตามพัสดุนี้ใน Chromium แล้ว</translation>
 <translation id="1707458603865303524">ใช้ Chromium ทุกครั้งที่คุณแตะลิงก์ในข้อความหรือแอปอื่นๆ</translation>
 <translation id="1722370509450468186">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี (<ph name="EMAIL" />)</translation>
-<translation id="1736662517232558588">ล้างข้อมูล Chromium แล้ว</translation>
 <translation id="1791845338122684020">เปิดหน้าประวัติการเข้าชมใน Chromium</translation>
 <translation id="1838412507805038478">Chromium ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="1843424232666537147">Chromium มีฟีเจอร์ที่ช่วยให้คุณสามารถจัดการข้อมูลอินเทอร์เน็ตและระดับความเร็วที่คุณสามารถใช้ในการโหลดหน้าเว็บ
@@ -85,7 +84,6 @@
 <translation id="3472200483164753384">ไม่รองรับใน Chromium Canary</translation>
 <translation id="347967311580159871">หากต้องการการตั้งค่าเพิ่มเติมที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chromium ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="3512168799938877162">ไม่ได้แชร์รหัสผ่าน ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและดูว่าคุณลงชื่อเข้าใช้ Chromium แล้ว จากนั้นลองอีกครั้ง</translation>
-<translation id="3554027294407525061">ล้างข้อมูลการท่องเว็บใน Chromium</translation>
 <translation id="3567399274263440288">ลงชื่อเข้าใช้ Chromium ด้วยบัญชี Google เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="3634039384458740619">เปิดการตั้งค่า Chromium</translation>
 <translation id="3639997914391704523">Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
@@ -136,7 +134,6 @@
 <translation id="5042011327527167688">แตะ "ดูด้วย Google Maps ใน Chromium"</translation>
 <translation id="5044871537677053278">Chromium ตรวจหาที่อยู่และใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่</translation>
 <translation id="5048795749726991615">หากต้องการเรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปอื่นๆ ได้โดยง่าย ให้ใช้ Chromium สำหรับการป้อนข้อความอัตโนมัติ</translation>
-<translation id="5076601183701536878">ล้างข้อมูลการท่องเว็บใน Chromium</translation>
 <translation id="5124429847818367226">ตอนนี้คุณจะใช้ Chromium ทุกครั้งที่ท่องเว็บหรือแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ ได้</translation>
 <translation id="5131565040785979529">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chromium</translation>
 <translation id="5146749061471423558">เพิ่มบุ๊กมาร์กใน Chromium</translation>

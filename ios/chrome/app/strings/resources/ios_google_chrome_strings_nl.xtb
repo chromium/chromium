@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Houd je vinger op het Chrome-icoon en klik op Startscherm bewerken</translation>
 <translation id="1066101356081285416">Chrome herkent trackingcodes op sites die je bezoekt en toont pakketupdates op de pagina Nieuw tabblad. Het nummer voor pakkettracking en de naam van de website worden naar Google gestuurd om deze functie te bieden en de Shopping-functies voor iedereen te verbeteren. Je kunt dit altijd updaten in de <ph name="BEGIN_LINK" />instellingen voor Verzendstatus bijhouden<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Chrome standaard gebruiken</translation>
-<translation id="1105362920864247682">Wis browsegegevens in Chrome.</translation>
 <translation id="1143896152279775643">Je wachtwoord wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Open het Chrome-menu</translation>
 <translation id="1180362651362502943">Blijf de Chrome-gegevens in je Google-account gebruiken.</translation>
@@ -77,7 +76,6 @@ Aandachtspunten:
 <translation id="2750626042242931740">Je kunt je selecties op elk moment updaten in de Chrome-instellingen.</translation>
 <translation id="2767464022270041271">Geen opgeslagen wachtwoorden. Google Wachtwoordmanager kan je wachtwoorden checken als je deze opslaat.</translation>
 <translation id="2789947168960170215">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Browsegegevens in Chrome wissen</translation>
 <translation id="2869959624320573933">Inloggen bij Chrome</translation>
 <translation id="2876628302275096482">Meer informatie over <ph name="BEGIN_LINK" />hoe Chrome je gegevens privé houdt<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Open de Chrome-instellingen</translation>
@@ -125,6 +123,7 @@ Aandachtspunten:
 <translation id="4633328489441962921">Chrome kan niet checken op updates</translation>
 <translation id="4636900170638246267">Log in bij deze site en Chrome.</translation>
 <translation id="4761869838909035636">Chrome-veiligheidscheck uitvoeren</translation>
+<translation id="4798859546468762093">Als je personalisatie en andere functies wilt krijgen, neem je Chrome op in <ph name="FEATURE_NAME_1" /> en <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Sommige van je Chrome-gegevens zijn nog niet opgeslagen in je Google-account.
 
@@ -181,6 +180,7 @@ Aandachtspunten:
 <translation id="6389317667633680932">Ontdek nieuwe functies waarmee je alles uit Chrome kunt halen.</translation>
 <translation id="6412673304250309937">Controleert URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen.</translation>
 <translation id="6427126399757991875">Je organisatie stelt Chrome in…</translation>
+<translation id="6481963882741794338">Koppel Chrome en andere Google-services voor personalisatie en andere doeleinden</translation>
 <translation id="6484712497741564393">Ingelogd als <ph name="EMAIL" />.
 
 Je gegevens zijn versleuteld met je wachtwoordzin. Geef deze op om Chrome-gegevens te gebruiken en op te slaan in je Google-account.</translation>
@@ -225,7 +225,6 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="7466693328838535498">Typ Chrome in het vak Widgets zoeken</translation>
 <translation id="746684838091935575">3. Selecteer Chrome</translation>
 <translation id="7492574581995589075">Je organisatie heeft de mogelijkheid uitgezet om Chrome-gegevens te gebruiken en op te slaan in je Google-account. Items zoals nieuwe bookmarks en wachtwoorden worden alleen opgeslagen op dit apparaat.</translation>
-<translation id="756809126120519699">Chrome-gegevens gewist</translation>
 <translation id="7581063337314642333">Het tabbladraster in Chrome bezoeken</translation>
 <translation id="7662994914830945754">Log in en zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="7669869107155339016">Ga naar de Chrome-instellingen.</translation>

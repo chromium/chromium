@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Et donem la benvinguda de nou, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nom del titular de la targeta</translation>
 <translation id="1809939268435598390">Suprimeix la carpeta</translation>
-<translation id="1813414402673211292">Esborra dades navegació</translation>
 <translation id="1815941218935345331">Contrasenya</translation>
 <translation id="1820259098641718022">S'ha afegit a la llista de lectura</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
 <translation id="223356358902285214">Activitat al web i en aplicacions</translation>
 <translation id="2234827758954819389">Guia de privadesa</translation>
-<translation id="2239626343334228536">S'estan esborrant les dades de navegació...</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2252674110805316998">Cerca web</translation>
 <translation id="2252749852083403809">S'està desant a Drive per a <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3485558910355485767">Finestra d'incògnit nova</translation>
 <translation id="3488501490964659223">Les pestanyes s'han tancat i les dades de navegació s'han suprimit. S'ha tancat la teva sessió</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre el contingut suggerit</translation>
-<translation id="3494788280727468875">Confirma que vols esborrar les dades de navegació</translation>
 <translation id="35083190962747987">Obre ${url}</translation>
 <translation id="3519193562722059437">Obriu una pestanya per navegar pel web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Obre la pestanya}other{Obre {count} pestanyes}}</translation>
@@ -492,7 +489,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3540141921715814660">Afegeix a Adreces d'interès</translation>
 <translation id="355101282835380364">Desa al compte…</translation>
 <translation id="3551320343578183772">Tanca la pestanya</translation>
-<translation id="3565207542107370586">Esborra les dades de navegació…</translation>
 <translation id="3565930036634619844">Pestanya. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Fes doble toc per obtenir més contrasenyes.</translation>
 <translation id="3575234738189584619">Cerca amb Lens</translation>
@@ -968,7 +964,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6027945736510816438">Volies dir <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">funció nova</translation>
 <translation id="6033598293589037429">Ja es pot recollir</translation>
-<translation id="6036215966221662377">Esborra dades navegació</translation>
 <translation id="6036514205982097558">Totes les pestanyes en un navegador</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Tanca</translation>
@@ -1151,7 +1146,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6859944681507688231">Per escanejar un codi QR o una targeta de crèdit, activa la càmera des de Configuració.</translation>
 <translation id="6867369562105931222">contrasenya</translation>
 <translation id="686899695320434745">Les adreces no s'encripten amb la frase de contrasenya. Això et permetrà utilitzar-les en altres serveis de Google.</translation>
-<translation id="6869389390665537774">Pots veure les pàgines que has visitat o esborrar-les de l'historial</translation>
 <translation id="687135068089457384">Mostra la configuració</translation>
 <translation id="6873263987691478642">Visualització dividida</translation>
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
@@ -1297,7 +1291,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7719038820139380048">Inicia la sessió per obtenir contingut basat en els teus interessos.</translation>
 <translation id="7720410380936703141">TORNA-HO A PROVAR</translation>
 <translation id="7724085059277147439">{count,plural, =1{L'element s'ha desat al teu Compte de Google, {email}}other{Els elements s'han desat al teu Compte de Google, {email}}}</translation>
-<translation id="7726702057919861819">Menú → Historial → Esborra les dades de navegació</translation>
 <translation id="7729458878441927652">Per veure les pestanyes dels altres dispositius, sincronitza les pestanyes i l'historial.</translation>
 <translation id="7730973429297233609">Selecciona el compte que vols utilitzar per desar <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Només en aquest dispositiu.</translation>
@@ -1542,7 +1535,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8870413625673593573">Tancades recentment</translation>
 <translation id="8876882697946675716">Mantén els dispositius sincronitzats</translation>
 <translation id="8879604564928138696">Fes doble toc per provar-ho</translation>
-<translation id="8879984884633913185">Amaga Esborra les dades de navegació</translation>
 <translation id="8881801611828450202">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
 <translation id="890565330728586731">Enrere</translation>

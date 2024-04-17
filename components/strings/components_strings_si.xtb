@@ -341,6 +341,7 @@
 <translation id="160851722280695521">Chrome තුළ Dino Run ක්‍රීඩා කරන්න</translation>
 <translation id="161042844686301425">සියන්</translation>
 <translation id="1611101756749861742">Second Roll</translation>
+<translation id="1611854593425834707">විකාශය කිරීම සඳහා උපාංග ලැයිස්තුව වසන්න</translation>
 <translation id="1612199629998703524">මාතෘකා කළමනාකරණය කරන්න</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> සඳහා ප්‍රවේශය අහෝසි කරන්න</translation>
 <translation id="1615402009686901181">රහසිගත අන්තර්ගතය දෘශ්‍යමාන විට පරිපාලක ප්‍රතිපත්තිය තිර ග්‍රහණය අබල කරයි</translation>
@@ -453,7 +454,6 @@
 <translation id="1810391395243432441">ඔබේ තිර අගුල සමග මුරපද ආරක්ෂා කරන්න</translation>
 <translation id="1812527064848182527">භූ දර්ශනය</translation>
 <translation id="1812975699435941848">සෞඛ්‍ය අධ්‍යාපනය සහ වෛද්‍ය පුහුණුව</translation>
-<translation id="1813414402673211292">බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්නෙ</translation>
 <translation id="1816436748874040213">බෙදා ගත් පටිති අනුචලනය කිරීමට සහ විශාලනය කිරීමට විමසිය හැක</translation>
 <translation id="1818522458013171885">අවහිර නොකරන්න</translation>
 <translation id="1818585559878922121">වාර්තාමය චිත්‍රපට</translation>
@@ -876,7 +876,6 @@
 <translation id="2647086987482648627">රෙදි (අර්ධ දීප්තිය)</translation>
 <translation id="264810637653812429">ගැළපෙන උපාංග හමු නොවිණි.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකි, හැඹිලිය සහ තවත් දේ හිස් කිරීමට, Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="2650446666397867134">ගොනුවට පිවිසුම ප්‍රතික්ශේප විය</translation>
 <translation id="2651465929321991146">ඉතිහාසය සහ පටිති</translation>
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
@@ -1206,7 +1205,6 @@
 <translation id="33073482541490531">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. මුරපද කළමනාකරු මෙම මුරපදය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="3307649904964670439">Chrome අභිරුචිකරණය කරන්න බොත්තම, ඔබේ බ්‍රව්සරයෙහි පෙනුම අභිරුචිකරණය කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="3308006649705061278">සංවිධාන එ්කකය (OU)</translation>
-<translation id="3310047144791481950">ක්‍රීඩ කළ යුත්තේ කුමන කාඩ්පතදැයි තේරීමට ඔබට උපකාර වන තොරතුරු බලන්න. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />කාඩ්පත් ප්‍රතිලාභ ගැන දැන ගන්න<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">රූපවාහිනී විකට කතා</translation>
 <translation id="3324687287337751929">අඟ 4 x 6</translation>
 <translation id="3324983252691184275">ක්‍රිම්සන්</translation>
@@ -1375,7 +1373,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ආරක්ෂක පරීක්ෂාවක් ධාවනය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="3615309852743236517">මැනිකියුර් සහ පෙඩිකියුර්</translation>
 <translation id="3620239073311576716">නිල ඇඳුම් සහ වැඩ කරන ඇඳුම්</translation>
-<translation id="36224234498066874">බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්න...</translation>
 <translation id="362276910939193118">පූර්ණ ඉතිහාසය පෙන්වන්න</translation>
 <translation id="3623041590998910684">ඔබේ කැමරාව භාවිත කිරීමට, <ph name="LINK" /> තුළ Chrome වෙත ප්‍රවේශය ලබා දෙන්න.</translation>
 <translation id="3623398832322170566">ප්‍රේම වෘත්තාන්ත චිත්‍රපට</translation>
@@ -1921,6 +1918,7 @@
 <translation id="4691093235373904540">වහල සැදීම</translation>
 <translation id="4692623383562244444">සෙවුම් යන්ත්‍ර</translation>
 <translation id="4698692901173737941">සටන් ක්‍රීඩා</translation>
+<translation id="4701307090948589984">වෙතට විකාශය කරන්න...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">පැත්ත</translation>
 <translation id="4702656508969495934">සජීවී සිරස්තල දෘශ්‍යමාන වේ, නාභිගත කිරීමට කවුළු මාරු කරන්නා භාවිත කරන්න</translation>
@@ -2057,7 +2055,6 @@
 <translation id="4936134414789135531">ඇතුළත් කළ <ph name="VALUE_NAME" /> සොයා ගත නොහැකි විය.</translation>
 <translation id="4936675324097895694">මූල්‍යය</translation>
 <translation id="4940163644868678279">Chrome තුළ අප්‍රසිද්ධ</translation>
-<translation id="494111439860963024">බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්න බොත්තම, Chrome සැකසීම් තුළ ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකීස්, කෑෂය, සහ තවත් දේ හිස් කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="4943620199112228840">ඔබේ මයික්‍රෆෝන භාවිතා කරන්න</translation>
 <translation id="4943872375798546930">ප්‍රතිඵල නැත</translation>
 <translation id="4950898438188848926">පටිත්ත මාරු වීමේ බොත්තමෙන්, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> විවෘත පටිත්තට මාරු වීමට Enter ඔබන්න</translation>
@@ -2170,6 +2167,8 @@
 <translation id="5161334686036120870">මාතෘකාව:</translation>
 <translation id="5161506081086828129">අට්ටිය 9</translation>
 <translation id="5164798890604758545">පෙළ ඇතුළු කර නැත</translation>
+<translation id="5164928537947209380">මෙම පර්යේෂණාත්මක AI මෙවලම සැම විට ම නිවැරදි නොවනු ඇත. එය වැඩි දියුණු කිරීමට, ඔබේ අන්තර්ගතය Google වෙත යවනු ලැබේ.
+    <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> සඳහා CVC ඇතුළත් කරන්න. ඔබ තහවුරු කළ පසු, ඔබේ Google ගිණුමෙන් කාඩ්පත් විස්තර මෙම අඩවිය සමඟ බෙදා ගනු ලැබේ.</translation>
 <translation id="5169827969064885044">ඔබට ඔබේ සංවිධානයේ ගිණුමට ප්‍රවේශය අහිමි වීමට හෝ අනන්‍යතා සොරකමක් අත්විඳීමට සිදු විය හැකිය. දැන් ඔබේ මුරපදය වෙනස් කිරීම සඳහා Chrome නිර්දේශ කරයි.</translation>
 <translation id="5171045022955879922">සොයන්න හෝ ලිපිනය යොදන්න</translation>
@@ -2292,7 +2291,6 @@
 <translation id="541416427766103491">අට්ටිය 4</translation>
 <translation id="5414446060143308245">මාරු කිරීමට පෙර සමාලෝචනය අවශ්‍යයි</translation>
 <translation id="5414511064953050917">කෙසේ වෙතත් ගෙන යන්න</translation>
-<translation id="5421136146218899937">පිරික්සුම් දත්ත හිස් කරන්න...</translation>
 <translation id="5421408724705443535">රොක් සංගීතය</translation>
 <translation id="5423269318075950257">මිල හඹා යන්න</translation>
 <translation id="5425082381151187189">නිවස සහ අභ්‍යන්තර අලංකරණය</translation>
@@ -3657,7 +3655,6 @@
 <translation id="8022542098135319050">සංචාරක ඒජන්සි සහ සේවා</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, පද්ධතියේ පෙරනිමි බ්‍රව්සරය ලෙස Chrome සැකසීමට පටිත්ත ඔබා Enter ඔබන්න</translation>
 <translation id="8025119109950072390">මෙම අඩවියෙහි ප්‍රහාරකයන් මෘදුකාංගයක් ස්ථාපනය හෝ ඔබේ පුද්ගලික තොරතුරු (උදාහරණ ලෙස, මුරපද, දුරකථන අංක, හෝ ණය කාඩ්පත්) හෙළිදරව් කිරීම වැනි අවදානම් සහගත දේවල්වලට ඔබව පෙළඹවිය හැකිය.</translation>
-<translation id="8026334261755873520">පිරික්සුම් දත්ත හිස් කරන්න</translation>
 <translation id="8027077570865220386">Tray 15</translation>
 <translation id="8027585818882015174">Chrome ආරක්ෂක පරීක්ෂාව බොත්තම ධාවනය කරන්න, Chrome සැකසීම් තුළ ආරක්ෂක පරීක්ෂාවක් ධාවනය කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms හි නව පෝරමයක් ඉක්මනින් තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
@@ -3929,7 +3926,6 @@
 <translation id="8527228059738193856">ස්පීකර්</translation>
 <translation id="8527681393107582734">කෘෂිකර්මය සහ වන විද්‍යාව</translation>
 <translation id="8528149813106025610">ළමා ඇඳුම්</translation>
-<translation id="8530813470445476232">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකි, හැඹිලි සහ තවත් දේ Chrome සැකසීම් තුළ හිස් කරන්න</translation>
 <translation id="853246364274116957">පළල් පාරවල් සහ සංගීත ශාලා</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ඔබේ පද්ධති පරිපාලක විසින් පනවන ලද අවහිර කළ URL සහ වෙනත් ප්‍රතිපත්ති බැලීමට &lt;strong&gt;chrome://policy&lt;/strong&gt; වෙත පිවිසෙන්න.</translation>
@@ -4069,6 +4065,7 @@
 <translation id="8807160976559152894">සෑම පිටුවකටම පසුව කප්පාදු කරන්න</translation>
 <translation id="8809203544698246977">අවහිර කළ මාතෘකා මෙහි දිස් වේ</translation>
 <translation id="8811470563853401328">ගිණුමේ ලිපිනය සුරකින්න ද?</translation>
+<translation id="8811725516933141693">Gemini සමග කතාබස් කිරීමට @gemini ටයිප් කරන්න</translation>
 <translation id="8813277370772331957">මට පසුව සිහිකැඳවන්න</translation>
 <translation id="8814707942599948500">ලියුම් කවරය C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>

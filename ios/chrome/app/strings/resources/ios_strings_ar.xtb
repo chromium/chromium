@@ -150,7 +150,6 @@
 <translation id="1789803444939621101">مرحبًا بك من جديد، <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">اسم حامل البطاقة</translation>
 <translation id="1809939268435598390">حذف مجلد</translation>
-<translation id="1813414402673211292">محو بيانات التصفّح</translation>
 <translation id="1815941218935345331">رمز المرور</translation>
 <translation id="1820259098641718022">تمت الإضافة إلى قائمة القراءة</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -227,7 +226,6 @@
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
 <translation id="223356358902285214">النشاط على الويب وفي التطبيقات</translation>
 <translation id="2234827758954819389">دليل الخصوصية</translation>
-<translation id="2239626343334228536">جارٍ محو بيانات التصفُّح...</translation>
 <translation id="2251686759395008410">القائمة ← السجلّ</translation>
 <translation id="2252674110805316998">بحث الويب</translation>
 <translation id="2252749852083403809">‏يجري حفظ الملف في الحساب <ph name="USER_EMAIL" /> على Google Drive.</translation>
@@ -480,7 +478,6 @@
 <translation id="3485558910355485767">نافذة جديدة للتصفُّح المتخفي</translation>
 <translation id="3488501490964659223">تم إغلاق علامات التبويب وحذف بيانات التصفُّح وتسجيل خروجك</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول المحتوى المقترح</translation>
-<translation id="3494788280727468875">تأكيد محو بيانات التصفّح</translation>
 <translation id="35083190962747987">‏فتح عنوان ${url}</translation>
 <translation id="3519193562722059437">افتح علامة تبويب لتصفح الويب.</translation>
 <translation id="3519905498307021260">{count,plural, =1{فتح علامة التبويب}zero{فتح {count} علامة تبويب}two{فتح علامتَي التبويب ({count})}few{فتح {count} علامات تبويب}many{فتح {count} علامة تبويب}other{فتح {count} علامة تبويب}}</translation>
@@ -493,7 +490,6 @@
 <translation id="3540141921715814660">الإضافة إلى الإشارات المرجعية</translation>
 <translation id="355101282835380364">الحفظ في الحساب…</translation>
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
-<translation id="3565207542107370586">محو بيانات التصفُّح…</translation>
 <translation id="3565930036634619844">علامة التبويب رقم <ph name="TAB_INDEX" /> من <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3570693105179140209">يُرجى النقر مرّتين لعرض المزيد من كلمات المرور.</translation>
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
@@ -969,7 +965,6 @@
 <translation id="6027945736510816438">هل كنت تقصد <ph name="WEBSITE" />؟</translation>
 <translation id="6032845897905314562">ميزة جديدة</translation>
 <translation id="6033598293589037429">جاهز للاستلام</translation>
-<translation id="6036215966221662377">محو بيانات التصفح</translation>
 <translation id="6036514205982097558">جميع علامات التبويب في متصفّح واحد</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />، <ph name="PUBLISHER_INFORMATION" />، <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -1152,7 +1147,6 @@
 <translation id="6859944681507688231">لمسح رمز الاستجابة السريعة أو بطاقة ائتمان ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات.</translation>
 <translation id="6867369562105931222">كلمة المرور</translation>
 <translation id="686899695320434745">‏لا يتم تشفير العناوين باستخدام عبارة المرور. يتيح لك ذلك استخدامها في خدمات Google الأخرى.</translation>
-<translation id="6869389390665537774">يمكنك الاطّلاع على الصفحات التي زرتها أو يمكنك محوها من السجلّ.</translation>
 <translation id="687135068089457384">عرض الإعدادات</translation>
 <translation id="6873263987691478642">وضع تقسيم العرض</translation>
 <translation id="6882836635272038266">يوفّر لك حماية عادية من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة.</translation>
@@ -1298,7 +1292,6 @@
 <translation id="7719038820139380048">سجِّل الدخول للحصول على محتوى استنادًا إلى اهتماماتك.</translation>
 <translation id="7720410380936703141">إعادة المحاولة</translation>
 <translation id="7724085059277147439">{count,plural, =1{‏تم حفظ العنصر في حسابك على Google،‏ {email}.}zero{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}two{‏تم حفظ العنصرين في حسابك على Google،‏ {email}.}few{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}many{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}other{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}}</translation>
-<translation id="7726702057919861819">القائمة ← السجلّ ← محو بيانات التصفُّح</translation>
 <translation id="7729458878441927652">يجب مزامنة علامات التبويب والسجلّ للاطّلاع عليها من أجهزتك الأخرى.</translation>
 <translation id="7730973429297233609">حدِّد الحساب الذي تريد استخدامه لحفظ <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771">حفظ الإشارة المرجعية باسم "<ph name="BOOKMRK_NAME" />" على هذا الجهاز فقط</translation>
@@ -1543,7 +1536,6 @@
 <translation id="8870413625673593573">العناصر المغلقة مؤخرًا</translation>
 <translation id="8876882697946675716">مواصلة مزامنة الأجهزة</translation>
 <translation id="8879604564928138696">انقر مرّتين للتجربة</translation>
-<translation id="8879984884633913185">إخفاء ميزة "محو بيانات التصفّح"</translation>
 <translation id="8881801611828450202">البحث في <ph name="SEARCH_ENGINE" /> عن هذه الصورة</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="890565330728586731">رجوع</translation>

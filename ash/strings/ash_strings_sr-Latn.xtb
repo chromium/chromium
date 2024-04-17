@@ -161,6 +161,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1569384531973824928">Ovo omogućava pristup svim aplikacijama i veb-sajtovima koji imaju dozvole za kameru i mikrofon. Možda ćete morati da osvežite veb-stranicu ili restartujete aplikaciju.</translation>
 <translation id="1571697193564730395">Uključite/isključite režim Ne uznemiravaj. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Umanjite prikaz kada je lupa uključena</translation>
+<translation id="1582946770779745370">Dostupna je kontrolna tabla igre. Pritisnite <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, pa <ph name="LAUNCHER_KEY_NAME" /> + g u bilo kom trenutku da biste otvorili</translation>
 <translation id="1586324912145647027">Idite na radne površine od 1 do 8</translation>
 <translation id="158838227375272121">Veb-sajt Google učionice</translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
@@ -1820,7 +1821,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8001755249288974029">Izaberi tekst od kursora do početka reda</translation>
 <translation id="8004512796067398576">Povećanje</translation>
 <translation id="8015361438441228492">Izmena zadatka nije uspela.</translation>
-<translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
 <translation id="802782383769312836">Prethodna radna površina: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. radna površina od <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Povezivanje sa hotspotom nije uspelo</translation>
 <translation id="8029629653277878342">Treba da unesete PIN ili lozinku radi dodatne bezbednosti</translation>

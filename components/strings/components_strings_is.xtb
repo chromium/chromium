@@ -452,7 +452,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1810391395243432441">Verndaðu aðgangsorðin þín með skjálásnum</translation>
 <translation id="1812527064848182527">langsnið</translation>
 <translation id="1812975699435941848">Heilbrigðismenntun og þjálfun lækna</translation>
-<translation id="1813414402673211292">Hreinsa vafragögn</translation>
 <translation id="1816436748874040213">Getur beðið um að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="1818522458013171885">Taka af bannlista</translation>
 <translation id="1818585559878922121">Heimildarmyndir</translation>
@@ -875,7 +874,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2647086987482648627">Vefnaður (hálfglans)</translation>
 <translation id="264810637653812429">Engin samhæf tæki fundust.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að hreinsa vafraferil, fótspor, skyndiminni og fleira í stillingum Chrome</translation>
 <translation id="2650446666397867134">Aðgangi að skránni var hafnað</translation>
 <translation id="2651465929321991146">Ferill og flipar</translation>
 <translation id="2653659639078652383">Senda</translation>
@@ -1205,7 +1203,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="33073482541490531">Aðgangsorðið sem þú varst að nota fannst í öryggisbroti. Aðgangsorðastjórnun mælir með að þessu aðgangsorði verði breytt núna.</translation>
 <translation id="3307649904964670439">Hnappurinn „Sérsníða Chrome“, virkjaðu til að sérsníða útlit vafrans</translation>
 <translation id="3308006649705061278">Skipulagseining (OU)</translation>
-<translation id="3310047144791481950">Sjáðu upplýsingar sem hjálpa þér að velja hvaða korti þú greiðir með. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Upplýsingar um kortafríðindi<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Gamanþættir</translation>
 <translation id="3324687287337751929">4 x 6 to.</translation>
 <translation id="3324983252691184275">Fagurrauður</translation>
@@ -1374,7 +1371,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo Enter til að keyra öryggisathugun í stillingum Chrome</translation>
 <translation id="3615309852743236517">Hand- og fótsnyrtingar</translation>
 <translation id="3620239073311576716">Einkennisbúningar og vinnuföt</translation>
-<translation id="36224234498066874">Hreinsa vafragögn...</translation>
 <translation id="362276910939193118">Sýna feril í heild</translation>
 <translation id="3623041590998910684">Veittu Chrome aðgang að myndavélinni þinni í <ph name="LINK" /> til að geta notað hana.</translation>
 <translation id="3623398832322170566">Rómantískar myndir</translation>
@@ -2055,7 +2051,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> sem sett var inn fannst ekki.</translation>
 <translation id="4936675324097895694">Fjármál</translation>
 <translation id="4940163644868678279">Huliðsstilling í Chrome</translation>
-<translation id="494111439860963024">Hnappurinn „Hreinsa vafragögn“, virkjaðu til að hreinsa vafraferil, fótspor, skyndiminni og fleira í stillingum Chrome</translation>
 <translation id="4943620199112228840">Notaðu hljóðnemana</translation>
 <translation id="4943872375798546930">Engar niðurstöður</translation>
 <translation id="4950898438188848926">Hnappur til að skipta um flipa; ýttu á færslulykilinn til að skipta yfir í opinn flipa, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2290,7 +2285,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="541416427766103491">Staflari 4</translation>
 <translation id="5414446060143308245">Yfirferðar er krafist fyrir flutning</translation>
 <translation id="5414511064953050917">Flytja samt</translation>
-<translation id="5421136146218899937">Hreinsa vafragögn...</translation>
 <translation id="5421408724705443535">Rokktónlist</translation>
 <translation id="5423269318075950257">Vakta verð</translation>
 <translation id="5425082381151187189">Heimilis- og innanhússhönnun</translation>
@@ -3653,7 +3647,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8022542098135319050">Ferðaskrifstofur og -þjónustur</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo á Enter til að stilla Chrome sem sjálfgefinn vafra kerfisins</translation>
 <translation id="8025119109950072390">Þrjótar á þessu vefsvæði gætu reynt að gabba þig til að gera eitthvað varasamt eins og að setja upp hugbúnað eða gefa upp persónuupplýsingar (til dæmis aðgangsorð, símanúmer eða kreditkortanúmer).</translation>
-<translation id="8026334261755873520">Hreinsa vafragögn</translation>
 <translation id="8027077570865220386">Bakki 15</translation>
 <translation id="8027585818882015174">Hnappurinn „Keyra öryggisathugun í Chrome“, virkjaðu til að keyra öryggisathugun í stillingum Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að búa til nýtt eyðublað í Google eyðublöðum á skjótan hátt</translation>
@@ -3924,7 +3917,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8527228059738193856">Hátalarar</translation>
 <translation id="8527681393107582734">Landbúnaður og skógrækt</translation>
 <translation id="8528149813106025610">Barnafatnaður</translation>
-<translation id="8530813470445476232">Hreinsaðu vafraferilinn þinn, fótspor, skyndiminni og fleira í stillingum Chrome</translation>
 <translation id="853246364274116957">Broadway-sýningar og söngleikir</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Opnaðu &lt;strong&gt;chrome://policy&lt;/strong&gt; til að sjá vefslóðir á bannlista og aðrar reglur sem kerfisstjórinn þinn setur.</translation>

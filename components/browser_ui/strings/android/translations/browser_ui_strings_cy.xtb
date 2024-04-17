@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Ailosod caniatadau</translation>
 <translation id="301521992641321250">Rhwystrwyd yn awtomatig</translation>
 <translation id="3069226013421428034">Caniatáu mewngofnodi trydydd parti ar gyfer gwefan benodol.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Yn darfod yfory}zero{Yn darfod mewn # diwrnod}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
 <translation id="310297983047869047">Sleid flaenorol</translation>
 <translation id="3109724472072898302">Wedi'i grebachu</translation>
 <translation id="3114012059975132928">Chwaraewr fideo</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Caniateir</translation>
 <translation id="429312253194641664">Mae gwefan yn chwarae cyfryngau</translation>
 <translation id="42981349822642051">Ehangu</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Yn darfod yfory}zero{Yn darfod mewn # diwrnod}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
 <translation id="4336566011000459927">Bydd Chrome yn cyfyngu ar gwcis eto heddiw</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Eich tab diwethaf</translation>
 <translation id="4338831206024587507">Pob gwefan o dan <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Bob tro</translation>
 <translation id="757524316907819857">Rhwystro gwefannau rhag chwarae cynnwys gwarchodedig</translation>
 <translation id="7594634374516752650">Wedi cysylltu â dyfais Bluetooth</translation>
-<translation id="7641339528570811325">Clirio data pori…</translation>
 <translation id="7649070708921625228">Cymorth</translation>
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7667547420449112975">Dewin Rhyfeddol Oz</translation>

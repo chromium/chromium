@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">按住 Chrome 圖示，然後點選「編輯主畫面」</translation>
 <translation id="1066101356081285416">造訪網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將包裹追蹤號碼和網站名稱傳送給 Google。這些資料也會用於改善 Google 購物功能，造福所有使用者。你隨時可以前往<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />進行更新。</translation>
 <translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
-<translation id="1105362920864247682">清除 Chrome 中的瀏覽資料。</translation>
 <translation id="1143896152279775643">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中。</translation>
 <translation id="1177414119866731261">開啟 Chrome 選單</translation>
 <translation id="1180362651362502943">請繼續使用 Google 帳戶中的 Chrome 資料。</translation>
@@ -77,7 +76,6 @@
 <translation id="2750626042242931740">你隨時可以在 Chrome 設定中更新所選項目。</translation>
 <translation id="2767464022270041271">尚未儲存任何密碼。你必須先儲存密碼，才能使用 Google 密碼管理工具的檢查功能。</translation>
 <translation id="2789947168960170215">如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
-<translation id="2868822340714096138">清除 Chrome 中的瀏覽資料</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何保護你的資料隱私<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. 開啟 Chrome 設定</translation>
@@ -225,7 +223,6 @@
 <translation id="7466693328838535498">在「搜尋小工具」方塊中輸入「Chrome」</translation>
 <translation id="746684838091935575">3. 選取 [Chrome]</translation>
 <translation id="7492574581995589075">貴機構已關閉在 Google 帳戶中使用及儲存 Chrome 資料的功能。新的書籤、密碼等資訊只會儲存在這部裝置上。</translation>
-<translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7581063337314642333">開啟 Chrome 的分頁方格</translation>
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="7669869107155339016">前往 Chrome 設定。</translation>

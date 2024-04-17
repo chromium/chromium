@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">اجازتیں دوبارہ ترتیب دیں</translation>
 <translation id="301521992641321250">خود کار طور پر مسدود ہو گيا</translation>
 <translation id="3069226013421428034">کسی مخصوص سائٹ کیلئے فریق ثالث سائن ان کی اجازت دیں۔</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{میعاد کل ختم ہو جائے گی}other{# دن میں میعاد ختم ہو جائے گی}}</translation>
 <translation id="310297983047869047">پچھلی سلائیڈ</translation>
 <translation id="3109724472072898302">سکیڑا گیا</translation>
 <translation id="3114012059975132928">ویڈیو پلیئر</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">اجازت یافتہ</translation>
 <translation id="429312253194641664">سائٹ پر میڈیا چل رہا ہے</translation>
 <translation id="42981349822642051">پھیلائیں</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{میعاد کل ختم ہو جائے گی}other{# دن میں میعاد ختم ہو جائے گی}}</translation>
 <translation id="4336566011000459927">‏Chrome آج دوبارہ کوکیز کو محدود کر دے گا</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> آپ کا آخری ٹیب</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> کے ماتحت سبھی سائٹس</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">ہمیشہ</translation>
 <translation id="757524316907819857">محفوظ مواد چلانے سے سائٹس کو مسدود کریں</translation>
 <translation id="7594634374516752650">بلوٹوتھ آلے سے منسلک ہے</translation>
-<translation id="7641339528570811325">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7667547420449112975">اوز کا شاندار جادوگر</translation>

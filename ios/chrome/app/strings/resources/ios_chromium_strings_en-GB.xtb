@@ -27,7 +27,6 @@
 <translation id="164952285225495380">This package has already been tracked on Chromium.</translation>
 <translation id="1707458603865303524">Use Chrome any time that you tap links in messages and other apps.</translation>
 <translation id="1722370509450468186">Your password will be saved in your Account (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Cleared Chromium Data</translation>
 <translation id="1791845338122684020">Opens your Chromium History Page.</translation>
 <translation id="1838412507805038478">Chromium verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
 <translation id="1843424232666537147">Chromium has features that help you manage your Internet data and how quickly you're able to load web pages.
@@ -85,7 +84,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
 <translation id="347967311580159871">For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Your password wasn't shared. Check your Internet connection and make sure that you're signed in to Chromium. Then try again.</translation>
-<translation id="3554027294407525061">Clear browsing data in Chromium.</translation>
 <translation id="3567399274263440288">To get the most out of Chromium, sign in to Chromium with your Google Account.</translation>
 <translation id="3634039384458740619">Open Chromium settings</translation>
 <translation id="3639997914391704523">Chromium can check your passwords when you sign in with your Google Account.</translation>
@@ -136,7 +134,6 @@ Your data is encrypted with your passphrase. Enter it to use and save Chromium d
 <translation id="5042011327527167688">Tap 'View with Google Maps on Chrome'</translation>
 <translation id="5044871537677053278">Chromium detects addresses and uses Google Maps to give you directions and local info.</translation>
 <translation id="5048795749726991615">To get your saved passwords in your other apps easily, use Chromium for auto-fill</translation>
-<translation id="5076601183701536878">Clear browsing data in Chromium</translation>
 <translation id="5124429847818367226">You can now use Chromium any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="5131565040785979529">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chromium is used.</translation>
 <translation id="5146749061471423558">Add bookmarks to Chromium</translation>

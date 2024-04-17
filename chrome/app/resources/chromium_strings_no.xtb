@@ -70,7 +70,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2329088755516916767">Når dette er på, forhåndslaster Chromium sider, slik at det går raskere å surfe og søke.</translation>
 <translation id="2343156876103232566">For å sende numre herfra til Android-telefonen din, logg på Chromium på begge enhetene.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
-<translation id="2359920621792549529">For å slette nettlesingsdata kun på denne enheten, men beholde dataene på Google-kontoen, må du <ph name="BEGIN_LINK" />logge av Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">ChromiumOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID-enhet ble brukt av en eller flere Chromium-utvidelser}=1{1 HID-enhet brukes av en eller flere Chromium-utvidelser}other{# HID-enheter brukes av en eller flere Chromium-utvidelser}}</translation>
 <translation id="2401032172288869980">Chromium trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
@@ -253,6 +252,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Vis Chromium på dette språket</translation>
 <translation id="569897634095159764">Kan ikke koble til internett. Proxy-tjeneren krever autentisering.</translation>
+<translation id="5800158606660203929">Tilpass og kontroller Chromium. Angi Chromium som standard.</translation>
 <translation id="5809516625706423866">Kan ikke koble til internett. HTTP 401 – uautorisert. Kontroller proxy-tjenerkonfigurasjonen.</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5883558403894052917">Chromium har oppdaget at disse elementene inneholder skadelig programvare:</translation>

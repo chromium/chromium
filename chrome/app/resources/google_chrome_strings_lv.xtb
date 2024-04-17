@@ -81,7 +81,6 @@
 <translation id="2258103955319320201">Lai piekļūtu savam Chrome saturam visās savās ierīcēs, pierakstieties un pēc tam ieslēdziet sinhronizāciju.</translation>
 <translation id="2290014774651636340">Trūkst Google API atslēgu. Tiks atspējotas dažas Google Chrome funkcijas.</translation>
 <translation id="2290095356545025170">Vai tiešām vēlaties atinstalēt Google Chrome?</translation>
-<translation id="2298849085402457754">Lai notīrītu pārlūkošanas datus tikai no šīs ierīces un paturētu tos Google kontā, <ph name="BEGIN_LINK" />izrakstieties no Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Šī ir Google Chrome papildu instalācija, un to nevar izmantot kā noklusējuma pārlūku.</translation>
 <translation id="2345992953227471816">Pārlūkā Chrome tika konstatēts, ka tālāk norādītie paplašinājumi satur ļaunprātīgu programmatūru:</translation>
 <translation id="2348335408836342058">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu kamerai un mikrofonam šajā vietnē.</translation>
@@ -111,7 +110,6 @@
 <translation id="2649768380733403658">Chrome regulāri pārbauda, vai jūsu pārlūkā ir atlasīti visdrošākie iestatījumi. Ja kaut kas būs jāpārskata, saņemsiet paziņojumu.</translation>
 <translation id="2652691236519827073">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
 <translation id="2665296953892887393">Palīdzēt uzlabot pārlūku Google Chrome, nosūtot Google serveriem avāriju pārskatus un <ph name="UMA_LINK" /></translation>
-<translation id="2712234843277364121">Palaist atkārtoti, lai atjauninātu; jūsu cilnes tiks atvērtas atkārtoti</translation>
 <translation id="2738871930057338499">Nevar izveidot savienojumu ar internetu. HTTP 403 — aizliegts. Lūdzu, pārbaudiet starpniekservera konfigurāciju.</translation>
 <translation id="2742320827292110288">Brīdinājums! Google Chrome nevar novērst to, ka paplašinājumi ieraksta jūsu pārlūkošanas vēsturi. Lai atspējotu šo paplašinājumu inkognito režīmā, noņemiet šīs opcijas atlasi.</translation>
 <translation id="2765403129283291972">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu mikrofonam šajā vietnē.</translation>
@@ -324,6 +322,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6251759518630934363">Tiek rādīts brīdinājums par bīstamām vietnēm (pat ja Google par tām iepriekš nezināja), analizējot vairāk datu no vietnēm, nekā analizē standarta aizsardzība. Varat izlaist Chrome brīdinājumus.</translation>
 <translation id="6273793429163604305">Lūdzu, uzgaidiet...</translation>
 <translation id="6277547788421725101">Viens no jūsu vecākiem ir izslēdzis iestatījumu “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chrome.</translation>
+<translation id="627882678981830918">Pielāgojiet un kontrolējiet pārlūku Chrome. Iestatiet Chrome kā noklusējuma pārlūku.</translation>
 <translation id="6291089322031436445">Chrome Dev lietotnes</translation>
 <translation id="6291549208091401781">Pārlūks Google Chrome jau ir instalēts visiem jūsu datora lietotājiem.</translation>
 <translation id="6326175484149238433">Noņemt no pārlūka Chrome</translation>
@@ -487,7 +486,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8999117580775242387">Ja HTTPS nav pieejams, pārlūkā Chrome bez brīdinājuma tiks izmantots nedrošs savienojums.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ir pieejams Chrome atjauninājums}=1{Ir pieejams Chrome atjauninājums}zero{Chrome atjauninājums ir pieejams jau # dienu}one{Chrome atjauninājums ir pieejams jau # dienu}other{Chrome atjauninājums ir pieejams jau # dienas}}</translation>
 <translation id="9053892488859122171">Chrome OS Flex sistēma</translation>
-<translation id="9054037008353851982">Palaist atkārtoti, lai atjauninātu; jūsu cilnes tiks atvērtas atkārtoti</translation>
 <translation id="9090566250983691233">Uzzināt, kāpēc pārlūkā Chrome daži faili tiek bloķēti</translation>
 <translation id="911206726377975832">Vai dzēst arī pārlūkošanas datus?</translation>
 <translation id="9138603949443464873">Lai ieviestu veiktās izmaiņas, atkārtoti palaidiet pārlūku Chrome.</translation>

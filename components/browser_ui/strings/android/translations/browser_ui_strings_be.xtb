@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Скінуць дазволы</translation>
 <translation id="301521992641321250">Заблакіравана аўтаматычна</translation>
 <translation id="3069226013421428034">Дазволіць уваход праз староннія сэрвісы для канкрэтнага сайта.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Тэрмін дзеяння заканчваецца заўтра}one{Тэрмін дзеяння заканчваецца праз # дзень}few{Тэрмін дзеяння заканчваецца праз # дні}many{Тэрмін дзеяння заканчваецца праз # дзён}other{Тэрмін дзеяння заканчваецца праз # дня}}</translation>
 <translation id="310297983047869047">Папярэдні слайд</translation>
 <translation id="3109724472072898302">Згорнута</translation>
 <translation id="3114012059975132928">Відэапрайгравальнік</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Дазволена</translation>
 <translation id="429312253194641664">Сайт прайграе мультымедыя</translation>
 <translation id="42981349822642051">Разгарнуць</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Тэрмін дзеяння заканчваецца заўтра}one{Тэрмін дзеяння закончыцца праз # дзень}few{Тэрмін дзеяння закончыцца праз # дні}many{Тэрмін дзеяння закончыцца праз # дзён}other{Тэрмін дзеяння закончыцца праз # дня}}</translation>
 <translation id="4336566011000459927">Сягоння Chrome зноў абмяжуе выкарыстанне файлаў cookie</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Ваша апошняя ўкладка</translation>
 <translation id="4338831206024587507">Усе сайты дамена <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Заўсёды</translation>
 <translation id="757524316907819857">Блакіраваць прайграванне абароненага змесціва на сайтах</translation>
 <translation id="7594634374516752650">Вэб-сайт падключаны да прылады з Bluetooth</translation>
-<translation id="7641339528570811325">Выдаліць даныя пра работу ў браўзеры…</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7667547420449112975">Чараўнік краіны Оз</translation>

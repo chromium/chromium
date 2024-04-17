@@ -27,8 +27,8 @@
 <translation id="164952285225495380">Sinusubaybayan na ang package na ito sa Chromium.</translation>
 <translation id="1707458603865303524">Gamitin ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe o iba pang app.</translation>
 <translation id="1722370509450468186">Ise-save sa iyong Account (<ph name="EMAIL" />) ang password mo.</translation>
-<translation id="1736662517232558588">Na-clear Chromium data</translation>
 <translation id="1791845338122684020">Bubuksan ang iyong Page ng History sa Chromium.</translation>
+<translation id="1811860791247653035">Para makuha ang pag-personalize at iba pang feature, isama ang Chromium sa <ph name="FEATURE_NAME_1" /> at <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Na-verify ng Chromium na ang <ph name="ISSUER" /> ang nag-isyu ng certificate ng website na ito.</translation>
 <translation id="1843424232666537147">Ang Chromium ay may mga feature na nakakatulong sa iyong pamahalaan ang iyong data sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -85,12 +85,12 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="3472200483164753384">Hindi sinusuportahan sa Chromium Canary</translation>
 <translation id="347967311580159871">Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experience sa Chromium, pumunta sa <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Hindi na-share ang password mo. Suriin ang iyong koneksyon sa internet at tiyaking naka-sign in ka sa Chromium. Pagkatapos ay subukan ulit.</translation>
-<translation id="3554027294407525061">I-clear ang Data Mula sa Pagba-browse sa Chromium.</translation>
 <translation id="3567399274263440288">Para masulit ang Chromium, mag-sign in sa Chromium gamit ang iyong Google Account.</translation>
 <translation id="3634039384458740619">Buksan ang Mga Setting ng Chromium</translation>
 <translation id="3639997914391704523">Masusuri ng Chromium ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="3688710892786762883">Made-detect ng Chromium ang mga tracking number ng package sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ishe-share sa Google ang iyong data para maibigay ang feature na ito at mapahusay ang Shopping para sa lahat.</translation>
 <translation id="372658070733623520">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, i-verify na ikaw ito.</translation>
+<translation id="3728124580182886854">I-link ang Chromium at iba pang serbisyo ng Google para sa pag-personalize at iba pang layunin</translation>
 <translation id="3780779443901618967">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chromium.</translation>
 <translation id="3784369638459513223">Magbubukas ng Bagong Tab na Incognito sa Chromium.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
@@ -136,7 +136,6 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="5042011327527167688">I-tap ang “Tingnan gamit ang Google Maps sa Chromium.”</translation>
 <translation id="5044871537677053278">Dine-detect ng Chromium ang mga address at ginagamit nito ang Google Maps para bigyan ka ng mga direksyon at lokal na impormasyon.</translation>
 <translation id="5048795749726991615">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, gamitin ang Chromium para sa AutoFill</translation>
-<translation id="5076601183701536878">I-clear ang Data Mula sa Pagba-browse sa Chromium</translation>
 <translation id="5124429847818367226">Magagamit mo na ngayon ang Chromium sa tuwing magba-browse o magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="5131565040785979529">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka naka-sign in at kung paano ginagamit ang Chromium.</translation>
 <translation id="5146749061471423558">Magdagdag ng Mga Bookmark sa Chromium</translation>

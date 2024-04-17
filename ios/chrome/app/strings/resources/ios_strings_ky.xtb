@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Кайтып келишиңиз менен, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Карта ээсинин аты-жөнү</translation>
 <translation id="1809939268435598390">Куржунду жок кылуу</translation>
-<translation id="1813414402673211292">Серепт дайнд тазлоо</translation>
 <translation id="1815941218935345331">Өткөрүүчү код</translation>
 <translation id="1820259098641718022">Окуу тизмесине кошулду</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Веб баракча жүктөлдү</translation>
 <translation id="223356358902285214">Колдонмолор жана Интернеттеги аракеттер таржымалы</translation>
 <translation id="2234827758954819389">Купуялык жетектемеси</translation>
-<translation id="2239626343334228536">Серептөө дайындары тазаланууда…</translation>
 <translation id="2251686759395008410">Меню → Таржымал</translation>
 <translation id="2252674110805316998">Интернетте издөө</translation>
 <translation id="2252749852083403809">Drive'га <ph name="USER_EMAIL" /> аккаунтуна сакталууда.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">Жаңы жашыруун терезе</translation>
 <translation id="3488501490964659223">Өтмөктөр жабылып, серептөө дайындары өчүрүлдү. Аккаунттан чыгып кеттиңиз</translation>
 <translation id="3493531032208478708">Сунушталган мазмун жөнүндө <ph name="BEGIN_LINK" />көбүрөөк билүү<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">Серепчиден көрүлгөн нерселерди тазалоону ырастоо</translation>
 <translation id="35083190962747987">${url} ачуу</translation>
 <translation id="3519193562722059437">Интернетте серептөө үчүн өтмөк ачыңыз.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Өтмөктү ачуу}other{{count} өтмөктү ачуу}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">Кыстармаларга кошуу</translation>
 <translation id="355101282835380364">Аккаунтта сактоо…</translation>
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
-<translation id="3565207542107370586">Серепчиден көрүлгөн нерселерди өчүрүү…</translation>
 <translation id="3565930036634619844">Өтмөк. <ph name="NUMBER_OF_TABS" /> ичинен <ph name="TAB_INDEX" />.</translation>
 <translation id="3570693105179140209">Көбүрөөк сырсөздөрдү көрүү үчүн эки жолу басыңыз.</translation>
 <translation id="3575234738189584619">Lens менен издөө</translation>
@@ -968,7 +964,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6027945736510816438"><ph name="WEBSITE" /> эмес беле?</translation>
 <translation id="6032845897905314562">жаңы функция</translation>
 <translation id="6033598293589037429">Алып кетүүгө даяр</translation>
-<translation id="6036215966221662377">Серепчиден көрүлгөн нерселерди өчүрүү</translation>
 <translation id="6036514205982097558">Бардык өтмөктөр бир серепчиде</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Жабуу</translation>
@@ -1152,7 +1147,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6859944681507688231">QR кодду же насыя картасын скандоо үчүн жөндөөлөрдөн камераны иштетиңиз.</translation>
 <translation id="6867369562105931222">сырсөз</translation>
 <translation id="686899695320434745">Маалыматыңыз сыр сүйлөм менен шифрленген жок. Аларды башка Google кызматтарында колдоно аласыз.</translation>
-<translation id="6869389390665537774">Баш баккан барактарыңызды көрүп же аларды таржымалдан тазалай аласыз</translation>
 <translation id="687135068089457384">Параметрлерди көрсөтүү</translation>
 <translation id="6873263987691478642">Бөлүп көрүү режими</translation>
 <translation id="6882836635272038266">Кооптуу деп таанылган вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн стандарттуу түрдө коргоо.</translation>
@@ -1300,7 +1294,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7719038820139380048">Кызыккан нерселериңиздин негизинде мазмунду алуу үчүн кириңиз.</translation>
 <translation id="7720410380936703141">КАЙТАЛОО</translation>
 <translation id="7724085059277147439">{count,plural, =1{Объект Google аккаунтуңузга ({email}) сакталды}other{Объекттер Google аккаунтуңузга ({email}) сакталды}}</translation>
-<translation id="7726702057919861819">Меню → Таржымал → Серепчиден көрүлгөн нерселерди өчүрүү</translation>
 <translation id="7729458878441927652">Башка түзмөктөрүңүздөгү өтмөктөрдү көрүү үчүн өтмөктөрүңүздү жана таржымалды шайкештириңиз.</translation>
 <translation id="7730973429297233609"><ph name="FILENAME" /> (<ph name="FILESIZE" />) сактала турган аккаунтту тандаңыз</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Ушул түзмөктө гана.</translation>
@@ -1545,7 +1538,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8870413625673593573">Жакында жабылган</translation>
 <translation id="8876882697946675716">Түзмөктөрүңүздү шайкештириңиз</translation>
 <translation id="8879604564928138696">Кайталап көрүү үчүн эки жолу басыңыз</translation>
-<translation id="8879984884633913185">"Серепчиден көрүлгөн нерселерди тазалоо" дегенди жашыруу</translation>
 <translation id="8881801611828450202">Бул сүрөттү <ph name="SEARCH_ENGINE" /> издөө каражатынан издөө</translation>
 <translation id="8898822736010347272">Сиз баш баккан айрым барактардын URL даректерин, чектелген тутум маалыматын жана айрым барактардын мазмунун бардык колдонуучулар үчүн мүмкүн болгон коркунучтарды аныктап, бөгөттөө үчүн Google'га жөнөтөт.</translation>
 <translation id="890565330728586731">Артка</translation>

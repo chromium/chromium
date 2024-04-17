@@ -84,7 +84,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2258103955319320201">Logga in och aktivera synkronisering om du vill få tillgång till saker i webbläsaren Chrome på olika enheter.</translation>
 <translation id="2290014774651636340">Googles API-nycklar saknas. Vissa funktioner i Google Chrome kommer att vara inaktiverade.</translation>
 <translation id="2290095356545025170">Är du säker på att du vill avinstallera Google Chrome?</translation>
-<translation id="2298849085402457754"><ph name="BEGIN_LINK" />Logga ut från Chrome<ph name="END_LINK" /> om du vill rensa webbinformation från enheten utan att ta bort den från Google-kontot.</translation>
 <translation id="2309047409763057870">Det här är en sekundär installation av Google Chrome. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="2345992953227471816">Chrome har upptäckt att dessa tillägg innehåller skadlig programvara:</translation>
 <translation id="2348335408836342058">Du behöver ge Chrome behörighet att använda kameran och mikrofonen på webbplatsen</translation>
@@ -114,7 +113,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2649768380733403658">Chrome kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>
 <translation id="2652691236519827073">Öppna länkar i en ny flik i Chrome</translation>
 <translation id="2665296953892887393">Hjälp oss att göra Google Chrome bättre genom att skicka felrapporter och <ph name="UMA_LINK" /> till Google.</translation>
-<translation id="2712234843277364121">Starta om för att uppdatera – dina flikar öppnas igen</translation>
 <translation id="2738871930057338499">Det går inte att ansluta till internet. HTTP 403 Förbjuden. Kontrollera proxykonfigurationen.</translation>
 <translation id="2742320827292110288">Varning! Google Chrome kan inte förhindra att tillägg registrerar din webbhistorik. Om du vill inaktivera det här tillägget i inkognitoläge avmarkerar du detta alternativ.</translation>
 <translation id="2765403129283291972">Du behöver ge Chrome behörighet att använda mikrofonen på webbplatsen</translation>
@@ -493,7 +491,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8999117580775242387">När HTTPS inte är tillgängligt använder Chrome en osäker anslutning utan att varna dig</translation>
 <translation id="8999208279178790196">{0,plural, =0{Det finns en uppdatering för Chrome}=1{Det finns en uppdatering för Chrome}other{Det finns en uppdatering för Chrome sedan # dagar}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex-system</translation>
-<translation id="9054037008353851982">Starta om för att uppdatera – dina flikar öppnas igen</translation>
 <translation id="9090566250983691233">Läs mer om varför vissa filer blockeras i Chrome</translation>
 <translation id="911206726377975832">Vill du även ta bort din webbinformation?</translation>
 <translation id="9138603949443464873">Ändringarna tillämpas när du startar om Chrome</translation>

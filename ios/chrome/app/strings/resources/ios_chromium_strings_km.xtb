@@ -27,7 +27,6 @@
 <translation id="164952285225495380">កញ្ចប់​នេះ​ត្រូវ​បាន​តាមដាន​រួច​ហើយ​នៅលើ Chromium។</translation>
 <translation id="1707458603865303524">ប្រើ Chromium រាល់ពេលដែល​អ្នកចុច​តំណ​នៅក្នុងសារ ឬ​កម្មវិធី​ផ្សេងទៀត។</translation>
 <translation id="1722370509450468186">ពាក្យសម្ងាត់របស់អ្នកនឹងត្រូវបានរក្សាទុកនៅក្នុងគណនីរបស់អ្នក (<ph name="EMAIL" />)។</translation>
-<translation id="1736662517232558588">បានសម្អាតទិន្នន័យ Chromium</translation>
 <translation id="1791845338122684020">បើក​ទំព័រ​ប្រវត្តិ Chromium របស់អ្នក។</translation>
 <translation id="1811860791247653035">ដើម្បីទទួលបានការកំណត់​ឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន និងមុខងារផ្សេងទៀត សូមរួមបញ្ចូល Chromium នៅក្នុង<ph name="FEATURE_NAME_1" /> និង<ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium បានបញ្ជាក់ថា <ph name="ISSUER" /> បានចេញផ្សាយវិញ្ញាបនបត្ររបស់គេហទំព័រនេះ។</translation>
@@ -86,7 +85,6 @@
 <translation id="3472200483164753384">មិនអាចប្រើ​នៅលើ Chromium Canary បានទេ</translation>
 <translation id="347967311580159871">សម្រាប់ការកំណត់ច្រើនទៀតដែលប្រើទិន្នន័យដើម្បីកែលម្អបទពិសោធប្រើប្រាស់ Chromium របស់អ្នក សូមចូលទៅកាន់<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" />។</translation>
 <translation id="3512168799938877162">ពាក្យសម្ងាត់​របស់អ្នក​មិន​ត្រូវបាន​ចែករំលែក​ទេ។ សូមពិនិត្យមើល​ការតភ្ជាប់អ៊ីនធឺណិត​របស់អ្នក និង​ប្រាកដ​ថា​អ្នក​បានចូល Chromium។ បន្ទាប់​មក ព្យាយាម​ម្ដង​ទៀត។</translation>
-<translation id="3554027294407525061">សម្អាតទិន្នន័យរុករកនៅក្នុង Chromium។</translation>
 <translation id="3567399274263440288">ដើម្បីទទួលបាន​អត្ថប្រយោជន៍​ច្រើនបំផុត​ពី Chromium សូមចូល Chromium ដោយប្រើ​គណនី Google របស់អ្នក។</translation>
 <translation id="3634039384458740619">បើកការកំណត់ Chromium</translation>
 <translation id="3639997914391704523">Chromium អាចពិនិត្យពាក្យសម្ងាត់របស់អ្នក នៅពេលអ្នកចូល​ដោយប្រើគណនី Google របស់អ្នក។</translation>
@@ -138,7 +136,6 @@
 <translation id="5042011327527167688">ចុច “មើលតាម Google ផែនទីនៅលើ Chromium”។</translation>
 <translation id="5044871537677053278">Chromium រកឃើញអាសយដ្ឋាន និងប្រើប្រាស់ Google ផែនទី ដើម្បីផ្ដល់ឱ្យអ្នកនូវទិសដៅ និងព័ត៌មានក្នុងតំបន់។</translation>
 <translation id="5048795749726991615">ដើម្បីងាយស្រួល​យក​ពាក្យសម្ងាត់​ដែល​បានរក្សាទុករបស់​អ្នក​នៅ​ក្នុង​កម្មវិធីផ្សេងទៀត​របស់​អ្នក សូម​ប្រើ Chromium សម្រាប់​ការបំពេញស្វ័យប្រវត្តិ</translation>
-<translation id="5076601183701536878">សម្អាតទិន្នន័យរុករកនៅក្នុង Chromium</translation>
 <translation id="5124429847818367226">ឥឡូវនេះ អ្នកអាចប្រើ Chromium រាល់ពេលដែល​អ្នករុករក ឬចុចលើតំណ​នៅក្នុងសារ ឯកសារ និងកម្មវិធី​ផ្សេងទៀត។</translation>
 <translation id="5131565040785979529">ស្ថាប័ន​របស់អ្នក <ph name="DOMAIN" /> គ្រប់គ្រង​គណនី​ដែលអ្នក​បានចូល និង​របៀបប្រើ Chromium។</translation>
 <translation id="5146749061471423558">បញ្ចូលចំណាំទៅ Chromium</translation>

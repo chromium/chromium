@@ -70,7 +70,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="2329088755516916767">Saat diaktifkan, Chromium akan melakukan pramuat halaman yang membuat penjelajahan dan penelusuran menjadi lebih cepat.</translation>
 <translation id="2343156876103232566">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
-<translation id="2359920621792549529">Untuk menghapus data penjelajahan dari perangkat ini saja dan tetap menyimpannya di Akun Google Anda, <ph name="BEGIN_LINK" />logout dari Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">ChromiumOS tidak dapat menyinkronkan data karena detail login akun Anda belum diperbarui.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Tidak ada perangkat HID yang diakses oleh ekstensi Chromium}=1{1 perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}other{# perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}}</translation>
 <translation id="2401032172288869980">Chromium memerlukan izin mikrofon dan kamera untuk situs ini</translation>
@@ -250,6 +249,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Tampilkan Chromium dalam bahasa ini</translation>
 <translation id="569897634095159764">Tidak dapat terhubung ke internet. Server proxy memerlukan autentikasi.</translation>
+<translation id="5800158606660203929">Sesuaikan dan kontrol Chromium. Setel Chromium sebagai browser default.</translation>
 <translation id="5809516625706423866">Tidak dapat terhubung ke internet. HTTP 401 Tidak Sah. Periksa konfigurasi proxy Anda.</translation>
 <translation id="5862307444128926510">Selamat Datang di Chromium</translation>
 <translation id="5883558403894052917">Chromium menemukan bahwa item berikut berisi malware:</translation>

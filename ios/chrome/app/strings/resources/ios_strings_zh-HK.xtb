@@ -149,7 +149,6 @@
 <translation id="1789803444939621101"><ph name="USER_NAME" />，歡迎回來！</translation>
 <translation id="1803264062614276815">持卡人姓名</translation>
 <translation id="1809939268435598390">刪除資料夾</translation>
-<translation id="1813414402673211292">清除瀏覽資料</translation>
 <translation id="1815941218935345331">密碼</translation>
 <translation id="1820259098641718022">已加入閣讀清單</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="223356358902285214">網絡和應用程式活動記錄</translation>
 <translation id="2234827758954819389">私隱權指南</translation>
-<translation id="2239626343334228536">正在清除瀏覽資料…</translation>
 <translation id="2251686759395008410">「選單」→「記錄」</translation>
 <translation id="2252674110805316998">網絡搜尋</translation>
 <translation id="2252749852083403809">正在儲存至 <ph name="USER_EMAIL" /> 的「雲端硬碟」。</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">新增無痕式視窗</translation>
 <translation id="3488501490964659223">已關閉分頁並刪除瀏覽資料。系統已將你登出</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
-<translation id="3494788280727468875">確認清除瀏覽資料</translation>
 <translation id="35083190962747987">開啟 ${url}</translation>
 <translation id="3519193562722059437">開啟分頁以瀏覽網頁。</translation>
 <translation id="3519905498307021260">{count,plural, =1{開啟分頁}other{開啟 {count} 個分頁}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">加入書籤</translation>
 <translation id="355101282835380364">儲存在帳戶中…</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
-<translation id="3565207542107370586">清除瀏覽資料…</translation>
 <translation id="3565930036634619844">分頁。<ph name="NUMBER_OF_TABS" /> 個分頁入面嘅第 <ph name="TAB_INDEX" /> 個。</translation>
 <translation id="3570693105179140209">㩒兩下就可以睇多啲密碼。</translation>
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438">您是不是要輸入 <ph name="WEBSITE" />？</translation>
 <translation id="6032845897905314562">新功能</translation>
 <translation id="6033598293589037429">已可取貨</translation>
-<translation id="6036215966221662377">清除瀏覽資料</translation>
 <translation id="6036514205982097558">在同一個瀏覽器集中使用所有分頁</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />，<ph name="PUBLISHER_INFORMATION" />，<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -1151,7 +1146,6 @@
 <translation id="6859944681507688231">如要掃瞄二維條碼或信用卡，請在設定中啟用相機。</translation>
 <translation id="6867369562105931222">密碼</translation>
 <translation id="686899695320434745">系統不會透過密碼短語將地址加密，此選項讓你在其他 Google 服務中使用這些地址。</translation>
-<translation id="6869389390665537774">您可查看瀏覽過的網頁，或從記錄移除網頁</translation>
 <translation id="687135068089457384">顯示設定</translation>
 <translation id="6873263987691478642">分割檢視</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
@@ -1297,7 +1291,6 @@
 <translation id="7719038820139380048">登入即可接收系統根據您興趣提供的內容。</translation>
 <translation id="7720410380936703141">再試一次</translation>
 <translation id="7724085059277147439">{count,plural, =1{這個項目已儲存到 Google 帳戶 ({email})}other{這些項目已儲存到 Google 帳戶 ({email})}}</translation>
-<translation id="7726702057919861819">「選單」→「記錄」→「清除瀏覽資料」</translation>
 <translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步處理分頁和記錄。</translation>
 <translation id="7730973429297233609">選取要用來儲存 <ph name="FILENAME" /> (<ph name="FILESIZE" />) 的帳戶</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。只係喺呢部裝置上面。</translation>
@@ -1542,7 +1535,6 @@
 <translation id="8870413625673593573">最近關閉的分頁</translation>
 <translation id="8876882697946675716">讓您的裝置保持同步</translation>
 <translation id="8879604564928138696">㩒兩下就可以試用</translation>
-<translation id="8879984884633913185">隱藏「清除瀏覽資料」</translation>
 <translation id="8881801611828450202">在 <ph name="SEARCH_ENGINE" /> 中搜尋此圖片</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
 <translation id="890565330728586731">返回</translation>

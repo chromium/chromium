@@ -79,7 +79,6 @@
 <translation id="2258103955319320201">For å få tilgang til Chrome-nettlesertingene dine på alle enhetene dine, logg på og slå på synkronisering</translation>
 <translation id="2290014774651636340">API-nøkler for Google mangler. Noe funksjonalitet i Google Chrome blir deaktivert.</translation>
 <translation id="2290095356545025170">Er du sikker på at du vil avinstallere Google Chrome?</translation>
-<translation id="2298849085402457754">For å slette nettlesingsdata kun på denne enheten, men beholde dataene på Google-kontoen, må du <ph name="BEGIN_LINK" />logge av Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Dette er en sekundær installering av Google Chrome. Den kan ikke brukes som standardnettleser.</translation>
 <translation id="2345992953227471816">Chrome har oppdaget at disse utvidelsene inneholder skadelig programvare:</translation>
 <translation id="2348335408836342058">Chrome trenger tilgang til kameraet ditt og mikrofonen din for dette nettstedet</translation>
@@ -109,7 +108,6 @@
 <translation id="2649768380733403658">Chrome sjekker regelmessig at nettleseren din har de tryggeste innstillingene. Vi gir deg beskjed hvis det er noe du må se nærmere på.</translation>
 <translation id="2652691236519827073">Åpne linken i en ny &amp;fane i Chrome</translation>
 <translation id="2665296953892887393">Bidra til å gjøre Google Chrome bedre ved å sende programstopprapporter og <ph name="UMA_LINK" /> til Google</translation>
-<translation id="2712234843277364121">Start på nytt for å oppdatere – fanene åpnes på nytt</translation>
 <translation id="2738871930057338499">Kan ikke koble til internett. HTTP 403 – forbudt. Kontroller proxy-tjenerkonfigurasjonen.</translation>
 <translation id="2742320827292110288">Advarsel: Google Chrome kan ikke forhindre utvidelser fra å registrere nettleserloggen din. For å deaktivere denne utvidelsen i Inkognitomodus, fjern merkingen for dette alternativet.</translation>
 <translation id="2765403129283291972">Chrome trenger tilgang til mikrofonen din for dette nettstedet</translation>
@@ -323,6 +321,7 @@
 <translation id="6251759518630934363">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chrome-advarsler.</translation>
 <translation id="6273793429163604305">Klar, ferdig …</translation>
 <translation id="6277547788421725101">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome</translation>
+<translation id="627882678981830918">Tilpass og kontroller Chrome. Angi Chrome som standard.</translation>
 <translation id="6291089322031436445">Chrome Dev-apper</translation>
 <translation id="6291549208091401781">Google Chrome er allerede installert for alle brukerne på datamaskinen din.</translation>
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
@@ -492,7 +491,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8999208279178790196">{0,plural, =0{En Chrome-oppdatering er tilgjengelig}=1{En Chrome-oppdatering er tilgjengelig}other{En Chrome-oppdatering har vært tilgjengelig i # dager}}</translation>
 <translation id="9024318700713112071">Angi Chrome som standard</translation>
 <translation id="9053892488859122171">ChromeOS Flex-system</translation>
-<translation id="9054037008353851982">Start på nytt for å oppdatere – fanene åpnes på nytt</translation>
 <translation id="9090566250983691233">Finn ut hvorfor Chrome blokkerer enkelte filer</translation>
 <translation id="911206726377975832">Vil du slette all nettlesingsdata også?</translation>
 <translation id="9138603949443464873">For å bruke endringene dine må du starte Chrome på nytt</translation>

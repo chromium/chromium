@@ -149,7 +149,6 @@
 <translation id="1789803444939621101"><ph name="USER_NAME" />, আপনাকে আবার স্বাগত জানাই</translation>
 <translation id="1803264062614276815">কার্ড হোল্ডারের নাম</translation>
 <translation id="1809939268435598390">ফোল্ডার মুছুন</translation>
-<translation id="1813414402673211292">ব্রাউজ করা ডেটা সাফ করুন</translation>
 <translation id="1815941218935345331">পাসকোড</translation>
 <translation id="1820259098641718022">পড়ার তালিকায় যোগ করা হয়েছে</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Webpage loaded</translation>
 <translation id="223356358902285214">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
 <translation id="2234827758954819389">গোপনীয়তা সংক্রান্ত গাইড</translation>
-<translation id="2239626343334228536">ব্রাউজিং ডেটা মোছা হচ্ছে…</translation>
 <translation id="2251686759395008410">মেনু → ইতিহাস</translation>
 <translation id="2252674110805316998">ওয়েব সার্চ</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" />-এর জন্য Drive-এ সেভ করা হচ্ছে।</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">নতুন ছদ্মবেশী উইন্ডো</translation>
 <translation id="3488501490964659223">ট্যাব বন্ধ করা এবং ব্রাউজ করা ডেটা মুছে দেওয়া হয়েছে। আপনি সাইন-আউট হয়ে গেছেন</translation>
 <translation id="3493531032208478708">প্রস্তাবিত কন্টেন্ট সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">ব্রাউজ করা ডেটা সাফ করার বিষয়টি নিশ্চিত করুন</translation>
 <translation id="35083190962747987">${url} খুলুন</translation>
 <translation id="3519193562722059437">ওয়েব ব্রাউজ করার জন্য একটি ট্যাব খুলুন।</translation>
 <translation id="3519905498307021260">{count,plural, =1{ট্যাব খুলুন}one{{count}টি ট্যাব খুলুন}other{{count}টি ট্যাব খুলুন}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">বুকমার্কে যোগ করুন</translation>
 <translation id="355101282835380364">অ্যাকাউন্টে সেভ করুন…</translation>
 <translation id="3551320343578183772">ট্যাব বন্ধ করুন</translation>
-<translation id="3565207542107370586">ব্রাউজ করা ডেটা মুছে দিন…</translation>
 <translation id="3565930036634619844">ট্যাব। <ph name="NUMBER_OF_TABS" />টির মধ্যে <ph name="TAB_INDEX" /> নম্বর।</translation>
 <translation id="3570693105179140209">আরও পাসওয়ার্ডের জন্য ডবল ট্যাপ করুন।</translation>
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
@@ -969,7 +965,6 @@
 <translation id="6027945736510816438">আপনি কি <ph name="WEBSITE" /> ডোমেনের কথা বলছেন?</translation>
 <translation id="6032845897905314562">নতুন ফিচার</translation>
 <translation id="6033598293589037429">পিক-আপের জন্য প্রস্তুত</translation>
-<translation id="6036215966221662377">ব্রাউজ করা ডেটা মুছে দিন</translation>
 <translation id="6036514205982097558">আপনার সব ট্যাব একটি ব্রাউজারেই</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -1152,7 +1147,6 @@
 <translation id="6859944681507688231">কোনও QR কোড বা ক্রেডিট কার্ড স্ক্যান করতে সেটিংস থেকে ক্যামেরা চালু করুন।</translation>
 <translation id="6867369562105931222">পাসওয়ার্ড</translation>
 <translation id="686899695320434745">আপনার পাসফ্রেজের সাথে অ্যাড্রেস এনক্রিপটেড নয়। এটি আপনাকে অন্যান্য Google পরিষেবায় এগুলি ব্যবহার করতে দেয়।</translation>
-<translation id="6869389390665537774">আপনি যেসব পৃষ্ঠাতে গেছেন, সেগুলি এখানে দেখতে পারেন বা আপনার দেখার ইতিহাস থেকে সেগুলি সরিয়ে দিতে পারেন</translation>
 <translation id="687135068089457384">সেটিংস দেখান</translation>
 <translation id="6873263987691478642">স্প্লিট ভিউ</translation>
 <translation id="6882836635272038266">ঝুঁকিপূর্ণ হিসেবে চিহ্নিত ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য স্ট্যান্ডার্ড নিরাপত্তা।</translation>
@@ -1298,7 +1292,6 @@
 <translation id="7719038820139380048">আপনার আগ্রহ অনুসারে কন্টেন্ট দেখতে সাইন-ইন করুন</translation>
 <translation id="7720410380936703141">আবার চেষ্টা করুন</translation>
 <translation id="7724085059277147439">{count,plural, =1{আপনার Google অ্যাকাউন্ট, {email}-এ আইটেম সেভ করা হয়েছে}one{আপনার Google অ্যাকাউন্ট, {email}-এ আইটেম সেভ করা হয়েছে}other{আপনার Google অ্যাকাউন্ট, {email}-এ আইটেম সেভ করা হয়েছে}}</translation>
-<translation id="7726702057919861819">মেনু → ইতিহাস → ব্রাউজ করা ডেটা মুছুন</translation>
 <translation id="7729458878441927652">আপনার অন্য ডিভাইস থেকে ট্যাব দেখতে নিজের ট্যাব ও ইতিহাস সিঙ্ক করুন।</translation>
 <translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> সেভ করার জন্য যে অ্যাকাউন্ট ব্যবহার করতে চান তা বেছে নিন</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। শুধুমাত্র এই ডিভাইসে।</translation>
@@ -1543,7 +1536,6 @@
 <translation id="8870413625673593573">সম্প্রতি বন্ধ হয়েছে</translation>
 <translation id="8876882697946675716">আপনার ডিভাইস সিঙ্ক করে রাখুন</translation>
 <translation id="8879604564928138696">চেষ্টা করতে ডবল ট্যাপ করুন</translation>
-<translation id="8879984884633913185">'ব্রাউজ করা ডেটা মুছে দিন' বিকল্পটি লুকান</translation>
 <translation id="8881801611828450202">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" />-এ খুঁজুন</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
 <translation id="890565330728586731">ফিরে যান</translation>

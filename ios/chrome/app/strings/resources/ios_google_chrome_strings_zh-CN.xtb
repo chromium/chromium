@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">按住 Chrome 图标，然后点击“修改主屏幕”</translation>
 <translation id="1066101356081285416">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。为实现此功能，系统会将包裹跟踪编号和网站名称发送给 Google。这些信息还将用于完善 Google 购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
-<translation id="1105362920864247682">清除 Chrome 中的浏览数据。</translation>
 <translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理器中。</translation>
 <translation id="1177414119866731261">打开 Chrome 菜单</translation>
 <translation id="1180362651362502943">请继续使用您的 Google 账号中的 Chrome 数据。</translation>
@@ -77,7 +76,6 @@
 <translation id="2750626042242931740">您可以随时在 Chrome 设置中更新您的选择。</translation>
 <translation id="2767464022270041271">尚未保存任何密码。您需要先保存密码，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="2789947168960170215">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />清除账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
-<translation id="2868822340714096138">清除 Chrome 中的浏览数据</translation>
 <translation id="2869959624320573933">登录 Chrome</translation>
 <translation id="2876628302275096482">详细了解 <ph name="BEGIN_LINK" />Chrome 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
@@ -125,6 +123,7 @@
 <translation id="4633328489441962921">Chrome 无法检查是否有更新</translation>
 <translation id="4636900170638246267">登录此网站和 Chrome。</translation>
 <translation id="4761869838909035636">运行 Chrome 安全检查</translation>
+<translation id="4798859546468762093">若要获得个性化体验和其他功能，请在 <ph name="FEATURE_NAME_1" /> 和 <ph name="FEATURE_NAME_2" /> 中包含 Chrome</translation>
 <translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">部分 Chrome 数据尚未保存到您的 Google 账号。
 
@@ -181,6 +180,7 @@
 <translation id="6389317667633680932">探索可帮助您充分利用 Chrome 的新功能。</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="6427126399757991875">贵组织正在设置 Chrome…</translation>
+<translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="6484712497741564393">目前登录的账号是 <ph name="EMAIL" />。您的数据已使用您的口令加密。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="6540120577248033958">不妨访问一个网站并在 Chrome 菜单中点击“关注”</translation>
 <translation id="6545449117344801102">Chrome 会检测地址，并使用 Google 地图为您提供路线和本地信息。</translation>
@@ -223,7 +223,6 @@
 <translation id="7466693328838535498">在“搜索小组件”框中，输入“Chrome”</translation>
 <translation id="746684838091935575">3. 选择“Chrome”</translation>
 <translation id="7492574581995589075">贵组织已关闭在您的 Google 账号中保存 Chrome 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
-<translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7581063337314642333">访问 Chrome 中的标签页网格</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录账号并开启同步功能</translation>
 <translation id="7669869107155339016">前往 Chrome 设置。</translation>

@@ -80,7 +80,6 @@
 <translation id="2258103955319320201">‏כדי לקבל גישה אל הפריטים שלך בדפדפן Chrome בכל המכשירים, צריך להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="2290014774651636340">‏המפתחות של Google API חסרים. פונקציונליות מסוימת של Google Chrome תהיה מושבתת.</translation>
 <translation id="2290095356545025170">‏ברצונך באמת להסיר את Google Chrome?</translation>
-<translation id="2298849085402457754">‏כדי לנקות את נתוני הגלישה מהמכשיר הזה בלבד ועדיין לשמור אותם בחשבון Google שלך, <ph name="BEGIN_LINK" />עליך לצאת מהחשבון ב-Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">‏זוהי התקנה משנית של Google Chrome, ולא ניתן להפוך אותו לדפדפן ברירת המחדל שלך.</translation>
 <translation id="2345992953227471816">‏התוספים האלה שנמצאו ב-Chrome מכילים תכונה זדונית:</translation>
 <translation id="2348335408836342058">‏Chrome זקוק להרשאת גישה אל המצלמה והמיקרופון בשביל האתר הזה</translation>
@@ -110,7 +109,6 @@
 <translation id="2649768380733403658">‏Chrome מוודא בקביעות שלדפדפן שלך יש את ההגדרות הבטוחות ביותר. נודיע לך אם צריך לבדוק משהו.</translation>
 <translation id="2652691236519827073">‏פתיחת הקישור ב&amp;כרטיסיית Chrome חדשה</translation>
 <translation id="2665296953892887393">‏שיפור Google Chrome על ידי שליחת <ph name="UMA_LINK" /> ודוחות קריסה אל Google</translation>
-<translation id="2712234843277364121">צריך להפעיל מחדש כדי לעדכן – הכרטיסיות ייפתחו מחדש</translation>
 <translation id="2738871930057338499">‏לא ניתן להתחבר לאינטרנט. HTTP 403: קוד איסור. צריך לבדוק את ההגדרה של שרת ה-proxy.</translation>
 <translation id="2742320827292110288">‏אזהרה: Google Chrome לא יכול למנוע מתוספים לתעד את היסטוריית הגלישה שלך. כדי להשבית את התוסף הזה במצב אנונימי, יש לבטל את הבחירה באפשרות הזו.</translation>
 <translation id="2765403129283291972">‏Chrome זקוק להרשאת גישה למיקרופון בשביל האתר הזה</translation>
@@ -321,6 +319,7 @@
 <translation id="6251759518630934363">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chrome.</translation>
 <translation id="6273793429163604305">למקומות…</translation>
 <translation id="6277547788421725101">‏ההורה שלך השבית ב-Chrome את ההגדרה 'הרשאות לאתרים, לאפליקציות ולתוספים'</translation>
+<translation id="627882678981830918">‏אפשר להתאים אישית את Chrome ולנהל אותו. הגדרת Chrome כדפדפן ברירת המחדל.</translation>
 <translation id="6291089322031436445">‏אפליקציות לגרסת הפיתוח של Chrome</translation>
 <translation id="6291549208091401781">‏Google Chrome כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
 <translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
@@ -484,7 +483,6 @@
 <translation id="8999117580775242387">‏כש-HTTPS לא יהיה זמין, Chrome ישתמש בחיבור לא מאובטח בלי להציג אזהרה</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏יש עדכון זמין ל-Chrome}=1{‏יש עדכון זמין ל-Chrome}one{‏עדכון ל-Chrome זמין כבר # ימים}two{‏עדכון ל-Chrome זמין כבר # ימים}other{‏עדכון ל-Chrome זמין כבר # ימים}}</translation>
 <translation id="9053892488859122171">‏מערכת ChromeOS Flex</translation>
-<translation id="9054037008353851982">צריך להפעיל מחדש כדי לעדכן – הכרטיסיות ייפתחו מחדש</translation>
 <translation id="9090566250983691233">‏למה קבצים מסוימים נחסמים ב-Chrome</translation>
 <translation id="911206726377975832">למחוק גם את נתוני הגלישה שלך?</translation>
 <translation id="9138603949443464873">‏כדי להחיל את השינויים שביצעת, יש להפעיל מחדש את Chrome</translation>

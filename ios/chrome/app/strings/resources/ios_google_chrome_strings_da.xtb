@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Hold Chrome-ikonet nede, og klik på "Rediger hjemmeskærm"</translation>
 <translation id="1066101356081285416">Chrome registrerer sporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Pakkesporingsnummeret og websitets navn sendes til Google for at levere denne funktion og forbedre Googles shoppingfunktioner for alle. Du kan til enhver tid opdatere dette i <ph name="BEGIN_LINK" />indstillingerne for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Brug Chrome som standard</translation>
-<translation id="1105362920864247682">Ryd browserdata i Chrome.</translation>
 <translation id="1143896152279775643">Din adgangskode gemmes i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Åbn Chrome-menuen</translation>
 <translation id="1180362651362502943">Fortsæt med at bruge Chrome-dataene på din Google-konto.</translation>
@@ -77,7 +76,6 @@ Vær opmærksom på følgende:
 <translation id="2750626042242931740">Du kan til enhver tid opdatere dine valg i Chrome-indstillingerne.</translation>
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangs­kode­admin­istrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2789947168960170215">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Ryd browserdata i Chrome</translation>
 <translation id="2869959624320573933">Log ind i Chrome</translation>
 <translation id="2876628302275096482">Se, <ph name="BEGIN_LINK" />hvordan Chrome beskytter dine data<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Åbn indstillingerne for Chrome</translation>
@@ -225,7 +223,6 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="7466693328838535498">Skriv Chrome i feltet Søgewidgets</translation>
 <translation id="746684838091935575">3. Vælg Chrome</translation>
 <translation id="7492574581995589075">Din organisation har deaktiveret muligheden for at bruge og gemme Chrome-data på din Google-konto. Nye bogmærker, adgangskoder m.m. gemmes kun på denne enhed.</translation>
-<translation id="756809126120519699">Chrome-dataene blev ryddet</translation>
 <translation id="7581063337314642333">Gå til fanegitteret i Chrome</translation>
 <translation id="7662994914830945754">Log ind, og aktivér synkronisering på alle de enheder, hvor du bruger Chrome, for at se dine faner på dem</translation>
 <translation id="7669869107155339016">Gå til Chrome-indstillinger.</translation>

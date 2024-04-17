@@ -340,6 +340,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="160851722280695521">Xogar a Dino Run en Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611101756749861742">Segundo rolo</translation>
+<translation id="1611854593425834707">Pechar a lista de dispositivos de emisión</translation>
 <translation id="1612199629998703524">Xestionar temas</translation>
 <translation id="1615178538289490617">Revogar o acceso a <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">A política do administrador desactiva o modo de captura de pantalla cando nela se mostra contido confidencial</translation>
@@ -452,7 +453,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1810391395243432441">Protexe os contrasinais co bloqueo de pantalla</translation>
 <translation id="1812527064848182527">horizontal</translation>
 <translation id="1812975699435941848">Educación sanitaria e formación médica</translation>
-<translation id="1813414402673211292">Borrar datos de navegación</translation>
 <translation id="1816436748874040213">Pode pedir permiso para desprazarse polas pestanas compartidas e facer zoom</translation>
 <translation id="1818522458013171885">Desbloquear</translation>
 <translation id="1818585559878922121">Documentais</translation>
@@ -875,7 +875,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2647086987482648627">Tecido (semibrillo)</translation>
 <translation id="264810637653812429">Non se atoparon dispositivos compatibles.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para borrar o historial de navegación, as cookies, a memoria caché e outros datos desde a configuración de Chrome</translation>
 <translation id="2650446666397867134">Denegouse o acceso ao ficheiro</translation>
 <translation id="2651465929321991146">Historial e pestanas</translation>
 <translation id="2653659639078652383">Enviar</translation>
@@ -1205,7 +1204,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="33073482541490531">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
 <translation id="3307649904964670439">Botón para personalizar Chrome. Actívao para personalizar o aspecto do navegador</translation>
 <translation id="3308006649705061278">Unidade organizativa (UO)</translation>
-<translation id="3310047144791481950">Mostra información útil para decidir con que tarxeta pagar. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Máis información sobre os beneficios das tarxetas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Comedias de televisión</translation>
 <translation id="3324687287337751929">4 x 6 polgadas</translation>
 <translation id="3324983252691184275">Carmesí</translation>
@@ -1374,7 +1372,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha Comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3615309852743236517">Manicuras e pedicuras</translation>
 <translation id="3620239073311576716">Uniformes e roupa de traballo</translation>
-<translation id="36224234498066874">Borrar datos de navegación...</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
 <translation id="3623041590998910684">Para usar a cámara, concédelle acceso a Chrome en <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Películas románticas</translation>
@@ -1919,6 +1916,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4691093235373904540">Servizos de tellados</translation>
 <translation id="4692623383562244444">Motores de busca</translation>
 <translation id="4698692901173737941">Deportes de contacto</translation>
+<translation id="4701307090948589984">Emitir en...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
 <translation id="4702656508969495934">Subtítulos instantáneos visibles. Usa o conmutador de ventás para enfocalos</translation>
@@ -2055,7 +2053,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4936134414789135531">Non se puido atopar o valor indicado ("<ph name="VALUE_NAME" />").</translation>
 <translation id="4936675324097895694">Finanzas</translation>
 <translation id="4940163644868678279">Modo de incógnito de Chrome</translation>
-<translation id="494111439860963024">Botón para borrar os datos de navegación. Actívao para borrar o historial de navegación, as cookies, a memoria caché e outros datos desde a configuración de Chrome</translation>
 <translation id="4943620199112228840">Usar os micrófonos</translation>
 <translation id="4943872375798546930">Non hai resultados</translation>
 <translation id="4950898438188848926">Botón de cambio de pestana, preme Intro para cambiar á pestana aberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2168,6 +2165,8 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5161334686036120870">Asunto:</translation>
 <translation id="5161506081086828129">Amontoador 9</translation>
 <translation id="5164798890604758545">Escríbese texto</translation>
+<translation id="5164928537947209380">Esta ferramenta de IA experimental non sempre acerta. Para mellorala, o teu contido envíase a Google
+    <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Introduce o código CVC da tarxeta <ph name="CREDIT_CARD" />. Unha vez que confirmes os datos, os detalles da tarxeta da túa Conta de Google compartiranse con este sitio.</translation>
 <translation id="5169827969064885044">Poderías perder o acceso á conta da túa organización ou alguén podería roubarche a identidade. Chrome recoméndache que cambies de contrasinal agora.</translation>
 <translation id="5171045022955879922">Buscar ou escribir o URL</translation>
@@ -2290,7 +2289,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="541416427766103491">Amontoador 4</translation>
 <translation id="5414446060143308245">Cómpre revisar os ficheiros antes de transferilos</translation>
 <translation id="5414511064953050917">Mover igualmente</translation>
-<translation id="5421136146218899937">Borrar datos de navegación...</translation>
 <translation id="5421408724705443535">Música rock</translation>
 <translation id="5423269318075950257">Facer seguimento do prezo</translation>
 <translation id="5425082381151187189">Fogar e decoración de interiores</translation>
@@ -3653,7 +3651,6 @@ Detalles adicionais:
 <translation id="8022542098135319050">Servizos e axencias de viaxes</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Preme Tabulador e, a continuación, Introducir para establecer Chrome como navegador predeterminado do sistema</translation>
 <translation id="8025119109950072390">Os atacantes deste sitio poden enganarte para que fagas algo perigoso como instalar software ou revelar a túa información persoal (por exemplo, contrasinais, números de teléfono ou datos das túas tarxetas de crédito).</translation>
-<translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8027077570865220386">Bandexa 15</translation>
 <translation id="8027585818882015174">Botón para executar unha comprobación de seguranza de Chrome. Actívao se queres executar unha comprobación de seguranza na configuración de Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente un formulario novo en Formularios de Google</translation>
@@ -3924,7 +3921,6 @@ Detalles adicionais:
 <translation id="8527228059738193856">Altofalantes</translation>
 <translation id="8527681393107582734">Agricultura e enxeñaría forestal</translation>
 <translation id="8528149813106025610">Roupa infantil</translation>
-<translation id="8530813470445476232">Borrar o historial de navegación, as cookies, a memoria caché e moito máis na configuración de Chrome</translation>
 <translation id="853246364274116957">Broadway e musicais</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URL bloqueados e outras políticas aplicadas pola persoa que administra o sistema.</translation>
@@ -4064,6 +4060,7 @@ Detalles adicionais:
 <translation id="8807160976559152894">Recorte despois de cada páxina</translation>
 <translation id="8809203544698246977">Os temas bloqueados aparecen aquí</translation>
 <translation id="8811470563853401328">Queres gardar o enderezo na conta?</translation>
+<translation id="8811725516933141693">Escribe @gemini para chatear con Gemini</translation>
 <translation id="8813277370772331957">Lembrarmo máis tarde</translation>
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para actualizar Chrome desde a configuración do navegador</translation>

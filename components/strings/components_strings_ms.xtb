@@ -453,7 +453,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1810391395243432441">Lindungi kata laluan dengan kunci skrin anda</translation>
 <translation id="1812527064848182527">landskap</translation>
 <translation id="1812975699435941848">Pendidikan Kesihatan &amp; Latihan Perubatan</translation>
-<translation id="1813414402673211292">Kosongkan Data Semakan Imbas</translation>
 <translation id="1816436748874040213">Boleh meminta untuk menatal dan mengezum tab kongsi</translation>
 <translation id="1818522458013171885">Nyahsekat</translation>
 <translation id="1818585559878922121">Filem Dokumentari</translation>
@@ -619,7 +618,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2126374524350484896">Pengeluar PDF:</translation>
 <translation id="2130448033692577677">Templat yang anda nyatakan tidak dapat digunakan kerana dasar DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Enjin carian ini ditunjukkan dalam tertib rawak. Anda boleh mengubah enjin carian lalai anda pada bila-bila masa.</translation>
+<translation id="2132825047782982803">Enjin carian ini ditunjukkan dalam tertib rawak. Anda boleh mengubah pilihan lalai anda pada bila-bila masa.</translation>
 <translation id="2137891579555018930">Menunggu kebenaran...</translation>
 <translation id="213826338245044447">Penanda Halaman Mudah Alih</translation>
 <translation id="2141000681034340397">Edit input anda</translation>
@@ -876,7 +875,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2647086987482648627">Fabrik (Separa Kilat)</translation>
 <translation id="264810637653812429">Tiada peranti yang serasi ditemui.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk Mengosongkan sejarah penyemakan imbas, kuki, cache dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="2650446666397867134">Akses ke fail dinafikan</translation>
 <translation id="2651465929321991146">Sejarah dan Tab</translation>
 <translation id="2653659639078652383">Serah</translation>
@@ -1206,7 +1204,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="33073482541490531">Kata laluan yang baru anda gunakan ditemukan dalam pelanggaran data. Password Manager mengesyorkan agar anda menukar kata laluan ini sekarang.</translation>
 <translation id="3307649904964670439">Butang sesuaikan Chrome, aktifkan untuk menyesuaikan rupa penyemak imbas anda</translation>
 <translation id="3308006649705061278">Unit Organisasi (OU)</translation>
-<translation id="3310047144791481950">Lihat maklumat yang dapat membantu anda memilih kad untuk membuat pembayaran. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Ketahui tentang manfaat kad<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Komedi TV</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Merah lembayung</translation>
@@ -1375,7 +1372,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menjalankan semakan keselamatan dalam tetapan Chrome</translation>
 <translation id="3615309852743236517">Rawatan Kuku Tangan &amp; Kaki</translation>
 <translation id="3620239073311576716">Pakaian Seragam &amp; Pakaian Kerja</translation>
-<translation id="36224234498066874">Kosongkan Data Semakan Imbas...</translation>
 <translation id="362276910939193118">Paparkan Sejarah Penuh</translation>
 <translation id="3623041590998910684">Untuk menggunakan kamera anda, beri Chrome akses pada <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Filem Romantik</translation>
@@ -2058,7 +2054,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> yang disisipkan tidak dapat ditemukan.</translation>
 <translation id="4936675324097895694">Kewangan</translation>
 <translation id="4940163644868678279">Inkognito dalam Chrome</translation>
-<translation id="494111439860963024">Butang kosongkan data semakan imbas, aktifkan untuk mengosongkan sejarah penyemakan imbas, kuki, cache dan banyak lagi dalam tetapan Chrome</translation>
 <translation id="4943620199112228840">Gunakan mikrofon anda</translation>
 <translation id="4943872375798546930">Tiada hasil carian</translation>
 <translation id="4950898438188848926">Butang peralihan tab, tekan Enter untuk beralih ke tab yang terbuka, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2296,7 +2291,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="541416427766103491">Petak 4</translation>
 <translation id="5414446060143308245">Semakan diperlukan sebelum memindahkan</translation>
 <translation id="5414511064953050917">Alihkan juga</translation>
-<translation id="5421136146218899937">Kosongkan data semakan imbas...</translation>
 <translation id="5421408724705443535">Muzik Rock</translation>
 <translation id="5423269318075950257">Jejaki Harga</translation>
 <translation id="5425082381151187189">Kediaman &amp; Hiasan Dalaman</translation>
@@ -3660,7 +3654,6 @@ Butiran tambahan:
 <translation id="8022542098135319050">Agensi &amp; Perkhidmatan Pelancongan</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab kemudian Enter untuk menetapkan Chrome sebagai penyemak imbas lalai sistem</translation>
 <translation id="8025119109950072390">Penyerang pada tapak ini mungkin menipu anda supaya melakukan sesuatu yang berbahaya seperti memasang perisian atau mendedahkan maklumat peribadi anda (contohnya, kata laluan, nombor telefon atau maklumat kad kredit).</translation>
-<translation id="8026334261755873520">Kosongkan data semakan imbas</translation>
 <translation id="8027077570865220386">Dulang 15</translation>
 <translation id="8027585818882015174">Butang jalankan semakan keselamatan Chrome, aktifkan untuk menjalankan semakan keselamatan dalam tetapan Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat borang baharu dalam Google Forms dengan pantas</translation>
@@ -3931,7 +3924,6 @@ Butiran tambahan:
 <translation id="8527228059738193856">Pembesar suara</translation>
 <translation id="8527681393107582734">Pertanian &amp; Perhutanan</translation>
 <translation id="8528149813106025610">Pakaian Kanak-kanak</translation>
-<translation id="8530813470445476232">Kosongkan sejarah penyemakan imbas, kuki, cache dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="853246364274116957">Teater Broadway &amp; Muzikal</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Lawati &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat senarai URL yang disekat dan dasar lain yang dikuatkuasakan oleh pentadbir sistem anda.</translation>

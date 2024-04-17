@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Dobrodošli nazaj, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Ime imetnika kartice</translation>
 <translation id="1809939268435598390">Izbriši mapo</translation>
-<translation id="1813414402673211292">Brisanje podatkov brskanja</translation>
 <translation id="1815941218935345331">Geslo</translation>
 <translation id="1820259098641718022">Dodano na bralni seznam</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Spletna stran je naložena</translation>
 <translation id="223356358902285214">Dejavnost v spletu in aplikacijah</translation>
 <translation id="2234827758954819389">Vodnik po zasebnosti</translation>
-<translation id="2239626343334228536">Brisanje podatkov brskanja …</translation>
 <translation id="2251686759395008410">Meni → Zgodovina</translation>
 <translation id="2252674110805316998">Spletno iskanje</translation>
 <translation id="2252749852083403809">Shranjevanje v Drive za <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3485558910355485767">Novo anonimno &amp;okno</translation>
 <translation id="3488501490964659223">Zavihki so bili zaprti in podatki brskanja so bili izbrisani. Bili ste odjavljeni.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Preberite več<ph name="END_LINK" /> o predlagani vsebini</translation>
-<translation id="3494788280727468875">Potrditev izbrisa podatkov brskanja</translation>
 <translation id="35083190962747987">Open ${url}</translation>
 <translation id="3519193562722059437">Open a tab to browse the web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Odpri zavihek}one{Odpri {count} zavihek}two{Odpri {count} zavihka}few{Odpri {count} zavihke}other{Odpri {count} zavihkov}}</translation>
@@ -492,7 +489,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3540141921715814660">Dodajanje med zaznamke</translation>
 <translation id="355101282835380364">Shrani v računu …</translation>
 <translation id="3551320343578183772">Zapri zavihek</translation>
-<translation id="3565207542107370586">Izbris podatkov brskanja …</translation>
 <translation id="3565930036634619844">Zavihek. <ph name="TAB_INDEX" />. od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Za več gesel se dvakrat dotaknite.</translation>
 <translation id="3575234738189584619">Iskanje z Googlom Lens</translation>
@@ -968,7 +964,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6027945736510816438">Ali ste mislili <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nova funkcija</translation>
 <translation id="6033598293589037429">Pripravljeno na prevzem</translation>
-<translation id="6036215966221662377">Clear Browsing Data</translation>
 <translation id="6036514205982097558">Vsi zavihki v enem brskalniku</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zapri</translation>
@@ -1151,7 +1146,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6859944681507688231">Če želite optično prebrati kodo QR ali kreditno kartico, v nastavitvah omogočite fotoaparat.</translation>
 <translation id="6867369562105931222">geslo</translation>
 <translation id="686899695320434745">Naslovi niso šifrirani z geslom To vam omogoča uporabo v drugih Googlovih storitvah.</translation>
-<translation id="6869389390665537774">Ogledate si lahko strani, ki ste jih obiskali, ali jih izbrišete iz zgodovine</translation>
 <translation id="687135068089457384">Pokaži nastavitve</translation>
 <translation id="6873263987691478642">Razdeljeni pogled</translation>
 <translation id="6882836635272038266">Standardna zaščita proti spletnim mestom, prenosom in razširitvam, za katere vemo, da so nevarni.</translation>
@@ -1297,7 +1291,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7719038820139380048">Če želite prejemati vsebino na podlagi svojih zanimanj, se prijavite.</translation>
 <translation id="7720410380936703141">POSKUSI ZNOVA</translation>
 <translation id="7724085059277147439">{count,plural, =1{Element je shranjen v računu Google, {email}}one{Elementi so shranjeni v računu Google, {email}}two{Elementi so shranjeni v računu Google, {email}}few{Elementi so shranjeni v računu Google, {email}}other{Elementi so shranjeni v računu Google, {email}}}</translation>
-<translation id="7726702057919861819">Meni → Zgodovina → Izbriši podatke brskanja</translation>
 <translation id="7729458878441927652">Če si želite ogledati zavihke iz drugih naprav, sinhronizirajte zavihke in zgodovino.</translation>
 <translation id="7730973429297233609">Izberite račun, ki ga želite uporabiti, da shranite <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo v tej napravi.</translation>
@@ -1542,7 +1535,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8870413625673593573">Nedavno zaprto</translation>
 <translation id="8876882697946675716">Poskrbite za sinhroniziranost naprav</translation>
 <translation id="8879604564928138696">Dvakrat se dotaknite, če želite poskusiti</translation>
-<translation id="8879984884633913185">Skrij »Izbriši podatke brskanja«</translation>
 <translation id="8881801611828450202">Uporabi <ph name="SEARCH_ENGINE" /> za iskanje te slike</translation>
 <translation id="8898822736010347272">Pošilja URL-je nekaterih strani, ki jih obiščete, omejene podatke o sistemu in nekatere vsebine strani Googlu zaradi pomoči pri odkrivanju novih groženj in zaščiti vseh uporabnikov v spletu.</translation>
 <translation id="890565330728586731">Nazaj</translation>

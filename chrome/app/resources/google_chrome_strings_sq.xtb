@@ -83,7 +83,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2258103955319320201">Për t'u qasur te gjërat e shfletuesit Chrome nëpër të gjitha pajisjet e tua, identifikohu dhe më pas aktivizo sinkronizimin</translation>
 <translation id="2290014774651636340">Çelësat API të Google mungojnë. Disa funksione të Chrome do të çaktivizohen.</translation>
 <translation id="2290095356545025170">Je i sigurt që dëshiron ta çinstalosh Google Chrome?</translation>
-<translation id="2298849085402457754">Për t'i pastruar të dhënat e shfletimit vetëm nga kjo pajisje, ndërkohë që i mban ato në "Llogarinë tënde të Google", <ph name="BEGIN_LINK" />dil nga Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Ky është instalim dytësor i Google Chrome dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="2345992953227471816">Chrome vuri re se këto shtesa përmbajnë softuer keqdashës:</translation>
 <translation id="2348335408836342058">Chrome ka nevojë për leje për t'u qasur te kamera dhe mikrofoni yt për këtë sajt</translation>
@@ -113,7 +112,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2649768380733403658">Chrome kontrollon rregullisht për t'u siguruar që shfletuesi yt ka cilësimet më të sigurta. Do të të informojmë nëse ka nevojë të rishikosh diçka.</translation>
 <translation id="2652691236519827073">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
 <translation id="2665296953892887393">Ndihmo në përmirësimin e Google Chrome duke dërguar te Google raportet e ndërprerjeve aksidentale dhe <ph name="UMA_LINK" /></translation>
-<translation id="2712234843277364121">Rinise për ta përditësuar - skedat e tua do të hapen përsëri</translation>
 <translation id="2738871930057338499">Lidhja me internetin nuk mund të kryhej. HTTP 403 (E ndaluar). Kontrollo konfigurimin e proxy-t.</translation>
 <translation id="2742320827292110288">Paralajmërim: Google Chrome nuk mund të parandalojë regjistrimin e historikut të shfletimit nga shtesat. Për ta çaktivizuar këtë shtesë në modalitetin "e fshehtë", anulo zgjedhjen e këtij opsioni.</translation>
 <translation id="2765403129283291972">Chrome ka nevojë për leje për t'u qasur te mikrofoni yt për këtë sajt</translation>
@@ -491,7 +489,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8999117580775242387">Kur HTTPS nuk ofrohet, Chrome do të përdorë një lidhje të pasigurt pa të të paralajmëruar</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>
 <translation id="9053892488859122171">Sistemi Chrome OS Flex</translation>
-<translation id="9054037008353851982">Rinise për ta përditësuar - skedat e tua do të hapen përsëri</translation>
 <translation id="9090566250983691233">Mëso se pse Chrome i bllokon disa skedarë</translation>
 <translation id="911206726377975832">Të fshihen po ashtu të dhënat e shfletimit?</translation>
 <translation id="9138603949443464873">Për të zbatuar ndryshimet, rinis Chrome</translation>

@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">واپسی پر خوش آمدید، <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">کارڈ کے حامل کا نام</translation>
 <translation id="1809939268435598390">فولڈر حذف کریں</translation>
-<translation id="1813414402673211292">براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="1815941218935345331">پاس کوڈ</translation>
 <translation id="1820259098641718022">پڑھنے کی فہرست میں شامل کر دیا گیا ہے</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">ویب صفحہ لوڈ کر دیا گیا ہے</translation>
 <translation id="223356358902285214">ویب اور ایپ سرگرمی</translation>
 <translation id="2234827758954819389">رازداری کی گائیڈ</translation>
-<translation id="2239626343334228536">براؤزنگ ڈیٹا صاف ہو رہا ہے...</translation>
 <translation id="2251686759395008410">مینیو ← سرگزشت</translation>
 <translation id="2252674110805316998">Web Search</translation>
 <translation id="2252749852083403809">‏<ph name="USER_EMAIL" /> کے لیے Drive میں محفوظ کیا جا رہا ہے۔</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">نئی پوشیدگی ونڈو</translation>
 <translation id="3488501490964659223">ٹیبز کو بند کر دیا گیا تھا اور براؤزنگ ڈیٹا کو حذف کر دیا گیا تھا آپ کو سائن آؤٹ کر دیا گیا</translation>
 <translation id="3493531032208478708">تجویز کردہ مواد کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">براؤزنگ ڈیٹا صاف کرنے کی توثیق کریں</translation>
 <translation id="35083190962747987">‏{url}$ کھولیں</translation>
 <translation id="3519193562722059437">ویب براؤز کرنے کیلئے ایک ٹیب کھولیں۔</translation>
 <translation id="3519905498307021260">{count,plural, =1{ٹیب کھولیں}other{{count} ٹیبز کھولیں}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">بُک مارکس میں شامل کریں</translation>
 <translation id="355101282835380364">اکاؤنٹ میں محفوظ کریں…</translation>
 <translation id="3551320343578183772">ٹیب بند کریں</translation>
-<translation id="3565207542107370586">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="3565930036634619844">ٹیب۔ <ph name="NUMBER_OF_TABS" /> میں سے <ph name="TAB_INDEX" />۔</translation>
 <translation id="3570693105179140209">مزید پاس ورڈز کے لیے دو بار تھپتھپائیں۔</translation>
 <translation id="3575234738189584619">لینز کا استعمال کرتے ہوئے تلاش کریں</translation>
@@ -969,7 +965,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6027945736510816438">کیا آپ کا مطلب <ph name="WEBSITE" /> ہے؟</translation>
 <translation id="6032845897905314562">نئی خصوصیت</translation>
 <translation id="6033598293589037429">پِک اَپ کے لیے تیار ہے</translation>
-<translation id="6036215966221662377">براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="6036514205982097558">ایک ہی براؤزر میں آپ کے سبھی ٹیبز</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />، <ph name="PUBLISHER_INFORMATION" />، <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">بند کریں</translation>
@@ -1152,7 +1147,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6859944681507688231">‏QR کوڈ یا کریڈٹ کارڈ اسکین کرنے کیلئے، ترتیبات سے کیمرا کو فعال کریں۔</translation>
 <translation id="6867369562105931222">پاس ورڈ</translation>
 <translation id="686899695320434745">‏پتے آپ کے پاس فریز کے ساتھ مرموز نہیں ہیں۔ یہ آپ کو انہیں Google کی دیگر سروسز میں استعمال کرنے دیتا ہے۔</translation>
-<translation id="6869389390665537774">آپ ان صفحات کو دیکھ سکتے ہیں جو آپ نے ملاحظہ کئے ہیں یا انھیں اپنی سرگزشت سے صاف کر سکتے ہیں</translation>
 <translation id="687135068089457384">ترتیبات دکھائیں</translation>
 <translation id="6873263987691478642">منقسم منظر</translation>
 <translation id="6882836635272038266">خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے معیاری حفاظت۔</translation>
@@ -1298,7 +1292,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7719038820139380048">اپنی دلچسپیوں پر مبنی مواد حاصل کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="7720410380936703141">دوبارہ کوشش کریں</translation>
 <translation id="7724085059277147439">{count,plural, =1{‏آپ کے Google اکاؤنٹ میں محفوظ کردہ آئٹم، {email}}other{‏آپ کے Google اکاؤنٹ میں محفوظ کردہ آئٹمز، {email}}}</translation>
-<translation id="7726702057919861819">مینیو ← سرگزشت ← براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="7729458878441927652">اپنے دیگر آلات سے ٹیبز کو دیکھنے کے لیے، اپنے ٹیبز اور سرگزشت کو مطابقت پذیر بنائیں۔</translation>
 <translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> کو محفوظ کرنے کے لیے آپ جس اکاؤنٹ کا استعمال کرنا چاہتے ہیں اسے منتخب کریں</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />۔ صرف اس آلہ پر۔</translation>
@@ -1547,7 +1540,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8870413625673593573">حال ہی میں بند کردہ</translation>
 <translation id="8876882697946675716">اپنے آلات کو مطابقت پذیر رکھیں</translation>
 <translation id="8879604564928138696">کوشش کرنے کے لیے دو بار تھپتھپائیں</translation>
-<translation id="8879984884633913185">براؤزنگ ڈیٹا صاف کریں کو چھپائیں</translation>
 <translation id="8881801611828450202">اس تصویر کیلئے <ph name="SEARCH_ENGINE" /> پر تلاش کریں</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
 <translation id="890565330728586731">پیچھے</translation>

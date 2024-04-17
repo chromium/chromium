@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">ຍິນດີຕ້ອນຮັບກັບມາ, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">ຊື່ຜູ້ຖືບັດ</translation>
 <translation id="1809939268435598390">ລຶບ​ໂຟລເດີ</translation>
-<translation id="1813414402673211292">ລຶບ​ຂໍ້​ມູນ​ການ​ທ່ອງ​ເນັດ</translation>
 <translation id="1815941218935345331">ລະຫັດ</translation>
 <translation id="1820259098641718022">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">ໂຫຼດໜ້າເວັບແລ້ວ</translation>
 <translation id="223356358902285214">ການເຄື່ອນໄຫວເວັບ ແລະ ແອັບ</translation>
 <translation id="2234827758954819389">ຄູ່ມືຄວາມເປັນສ່ວນຕົວ</translation>
-<translation id="2239626343334228536">ກຳລັງລຶບລ້າງຂໍ້ມູນທ່ອງເວັບ...</translation>
 <translation id="2251686759395008410">ເມນູ → ປະຫວັດ</translation>
 <translation id="2252674110805316998">Web Search</translation>
 <translation id="2252749852083403809">ກຳລັງບັນທຶກໃນ Drive ສຳລັບ <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="3488501490964659223">ແຖບຈະຖືກປິດໄວ້ ແລະ ຂໍ້ມູນການທ່ອງເວັບຈະຖືກລຶບ. ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /> ກ່ຽວກັບເນື້ອຫາທີ່ແນະນຳ</translation>
-<translation id="3494788280727468875">ຢືນຢັນລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="35083190962747987">ເປີດ ${url}</translation>
 <translation id="3519193562722059437">ເປີດ​ແຖບ​ເພື່ອ​ທ່ອງ​ເວັບ.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ເປີດແຖບ}other{ເປີດ {count} ແຖບ}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">ເພີ່ມໃສ່ບຸກມາກ</translation>
 <translation id="355101282835380364">ບັນທຶກໃນບັນຊີ…</translation>
 <translation id="3551320343578183772">ປິດແຖບ</translation>
-<translation id="3565207542107370586">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="3565930036634619844">ແຖບ. <ph name="TAB_INDEX" /> ຈາກທັງໝົດ <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">ແຕະສອງເທື່ອເພື່ອເບິ່ງລະຫັດຜ່ານເພີ່ມເຕີມ.</translation>
 <translation id="3575234738189584619">ຊອກຫາດ້ວຍ Lens</translation>
@@ -969,7 +965,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6027945736510816438">ທ່ານໝາຍເຖິງ <ph name="WEBSITE" /> ບໍ?</translation>
 <translation id="6032845897905314562">ຄຸນສົມບັດໃໝ່</translation>
 <translation id="6033598293589037429">ພ້ອມໃຫ້ຮັບແລ້ວ</translation>
-<translation id="6036215966221662377">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="6036514205982097558">ແຖບທັງໝົດຂອງທ່ານໃນໂປຣແກຣມທ່ອງເວັບດຽວ</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -1044,6 +1039,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6363526231572697780">ບໍ່ມີຊື່ຜູ້ໃຊ້</translation>
 <translation id="6366190659675876144">ການປົກປ້ອງມາດຕະຖານ</translation>
 <translation id="6366663624406569102">ອອກຈາກລະບົບ ແລະ ປິດການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="6368038301482806847">ເລືອກໂປຣແກຣມຊອກຫາຈາກລາຍຊື່.</translation>
 <translation id="6374469231428023295">ລອງໃໝ່ອີກ</translation>
 <translation id="6377118281273296434">ຄວາມປອດໄພເວັບໄຊ</translation>
 <translation id="6383719166112032471">ເປີດສະຖານທີ່…</translation>
@@ -1152,7 +1148,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6859944681507688231">ເພື່ອສະແກນລະຫັດ QR ຫຼື ບັດເຄຣດິດ, ກະລຸນາເປີດນຳໃຊ້ກ້ອງຖ່າຍຮູບຈາກການຕັ້ງຄ່າ.</translation>
 <translation id="6867369562105931222">ລະຫັດຜ່ານ</translation>
 <translation id="686899695320434745">ທີ່ຢູ່ຈະບໍ່ຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍລະຫັດຜ່ານຂອງທ່ານ. ນີ້ຈະເຮັດໃຫ້ທ່ານສາມາດໃຊ້ພວກມັນໄດ້ໃນບໍລິການ Google ອື່ນໆ.</translation>
-<translation id="6869389390665537774">ທ່ານສາມາດເຫັນໜ້າທີ່ທ່ານເຂົ້າເບິ່ງ ຫຼື ລຶບລ້າງພວກມັນຈາກປະຫວັດຂອງທ່ານໄດ້</translation>
 <translation id="687135068089457384">ສະແດງການຕັ້ງຄ່າ</translation>
 <translation id="6873263987691478642">ມຸມມອງແຍກກັນ</translation>
 <translation id="6882836635272038266">ການປົກປ້ອງມາດຕະຖານຕໍ່ກັບເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ຮູ້ຈັກວ່າເປັນອັນຕະລາຍ.</translation>
@@ -1203,6 +1198,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7161230316646448869">ຊິ້ງບຸກມາກ, ປະຫວັດ ແລະ ອື່ນໆຂອງທ່ານຢູ່ທຸກໆອຸປະກອນ</translation>
 <translation id="7162168282402939716">ປົດລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນດ້ວຍ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">ເປີດການຕັ້ງຄ່າ</translation>
+<translation id="7186568385131859684">ຄວບຄຸມການໃຊ້ປະຫວັດການທ່ອງເວັບກັບຂໍ້ມູນອື່ນໆຂອງທ່ານໃນບໍລິການຕ່າງໆຂອງ Google</translation>
 <translation id="7189598951263744875">ແບ່ງປັນ...</translation>
 <translation id="719133302483559673">ຈັດການຄວາມສົນໃຈ ແລະ ການຕັ້ງຄ່າຂອງທ່ານ.</translation>
 <translation id="7192050974311852563">ເລີ່ມການບັນທຶກ</translation>
@@ -1246,6 +1242,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7438481509621345350">ຕອນນີ້ທ່ານຈະເຫັນຂ່າວຈາກ <ph name="CHANNEL_NAME" /> ເມື່ອທ່ານເປີດແຖບໃໝ່.</translation>
 <translation id="7451023311965289370">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ແລ້ວ}other{ບັນທຶກບຸກມາກໃສ່ "{title}" ແລ້ວ}}</translation>
 <translation id="7454057999980797137">ລັດ / ຄາວ​ຕີ້</translation>
+<translation id="7458706065921255639">ການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ການລິ້ງ</translation>
 <translation id="745899714366929493">ໝົດມື້</translation>
 <translation id="7459628154744868585">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
 <translation id="7465351360025415755">ຮັບເນື້ອຫາທີ່ສຳຄັນກັບທ່ານ</translation>
@@ -1298,7 +1295,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7719038820139380048">ເຂົ້າສູ່ລະບົບເພື່ອຮັບເນື້ອຫາທີ່ອ້າງອີງໃສ່ຄວາມສົນໃຈຂອງທ່ານ.</translation>
 <translation id="7720410380936703141">ລອງໃໝ່</translation>
 <translation id="7724085059277147439">{count,plural, =1{ບັນທຶກລາຍການໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ເຊິ່ງແມ່ນ {email} ແລ້ວ}other{ບັນທຶກລາຍການໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ເຊິ່ງແມ່ນ {email} ແລ້ວ}}</translation>
-<translation id="7726702057919861819">ເມນູ → ປະຫວັດ → ລຶບລ້າງຂໍ້ມູນການນຳໃຊ້</translation>
 <translation id="7729458878441927652">ເພື່ອເບິ່ງແຖບຕ່າງໆຈາກອຸປະກອນອື່ນຂອງທ່ານ, ໃຫ້ຊິ້ງຂໍ້ມູນແຖບ ແລະ ປະຫວັດຂອງທ່ານ.</translation>
 <translation id="7730973429297233609">ເລືອກບັນຊີທີ່ທ່ານຕ້ອງການໃຊ້ເພື່ອບັນທຶກ <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ສະເພາະຢູ່ອຸປະກອນນີ້.</translation>
@@ -1547,7 +1543,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8870413625673593573">ປິດ​ບໍ່​ດົນ​ມາ​ນີ້</translation>
 <translation id="8876882697946675716">ຊິ້ງຂໍ້ມູນອຸປະກອນຂອງທ່ານສະເໝີ</translation>
 <translation id="8879604564928138696">ແຕະສອງເທື່ອເພື່ອລອງໃຊ້</translation>
-<translation id="8879984884633913185">ເຊື່ອງ ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="8881801611828450202">ຊອກຫາຮູບນີ້ໃນ <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">ສົ່ງ URL ຂອງບາງໜ້າທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບທີ່ຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າໃຫ້ Google ເພື່ອຊ່ວຍຄົ້ນພົບອັນຕະລາຍໃໝ່ ແລະ ປົກປ້ອງທຸກຄົນໃນເວັບ.</translation>
 <translation id="890565330728586731">ກັບຄືນ</translation>

@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Stel toestemmings terug</translation>
 <translation id="301521992641321250">Outomaties geblokkeer</translation>
 <translation id="3069226013421428034">Laat aanmelding deur derde partye vir ’n spesifieke werf toe.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>
 <translation id="310297983047869047">Vorige skyfie</translation>
 <translation id="3109724472072898302">Ingevou</translation>
 <translation id="3114012059975132928">Videospeler</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Toegelaat</translation>
 <translation id="429312253194641664">'n Werf speel tans media</translation>
 <translation id="42981349822642051">Vou uit</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>
 <translation id="4336566011000459927">Chrome sal vandag weer webkoekies beperk</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Jou jongste oortjie</translation>
 <translation id="4338831206024587507">Alle werwe onder <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Altyd</translation>
 <translation id="757524316907819857">Blokkeer werwe om beskermde inhoud te speel</translation>
 <translation id="7594634374516752650">Aan ’n Bluetooth-toestel gekoppel</translation>
-<translation id="7641339528570811325">Maak blaaidata skoon …</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7667547420449112975">Die Wonderlike Towenaar van Oz</translation>

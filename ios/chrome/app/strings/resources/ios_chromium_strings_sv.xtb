@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Den här försändelsen spåras redan i Chromium.</translation>
 <translation id="1707458603865303524">Använd Chromium varje gång du trycker på länkar i meddelanden eller andra appar.</translation>
 <translation id="1722370509450468186">Lösenordet sparas i kontot (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Chromium-data har rensats</translation>
 <translation id="1791845338122684020">Öppnar historiksidan för Chromium.</translation>
 <translation id="1838412507805038478">Chromium har verifierat att <ph name="ISSUER" /> har utfärdat webbplatsens certifikat.</translation>
 <translation id="1843424232666537147">I Chromium finns det funktioner som du kan använda för att hantera dina internetuppgifter och inläsningshastigheten för webbsidor.
@@ -85,7 +84,6 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3472200483164753384">Stöds inte på Chromium Canary</translation>
 <translation id="347967311580159871">Du hittar fler inställningar som använder data för att förbättra Chromium-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Ditt lösenord har inte delats. Kontrollera internetanslutningen och se till att du är inloggad i Chromium. Försök sedan igen.</translation>
-<translation id="3554027294407525061">Rensa webbinformation i Chromium.</translation>
 <translation id="3567399274263440288">Logga in i Chromium med Google-kontot så att du får ut mesta möjliga av programmet.</translation>
 <translation id="3634039384458740619">Öppna inställningarna för Chromium</translation>
 <translation id="3639997914391704523">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
@@ -136,7 +134,6 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 <translation id="5042011327527167688">Tryck på Visa med Google Maps i Chromium.</translation>
 <translation id="5044871537677053278">Chromium identifierar adresser och använder Google Maps för att ge dig vägbeskrivningar och lokal information.</translation>
 <translation id="5048795749726991615">Använd Chromium för autofyll så att du enkelt får tillgång till dina sparade lösenord i andra appar</translation>
-<translation id="5076601183701536878">Rensa webbinformation i Chromium</translation>
 <translation id="5124429847818367226">Nu kan du använda Chrome varje gång du surfar eller trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="5131565040785979529">Din organisation, <ph name="DOMAIN" />, hanterar kontot du är inloggad på och hur Chromium används.</translation>
 <translation id="5146749061471423558">Lägg till bokmärken i Chromium</translation>

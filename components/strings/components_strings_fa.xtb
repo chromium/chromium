@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">نویسنده:</translation>
 <translation id="1247030632403369975">آلومینیوم</translation>
 <translation id="1252209483516427155">لباس بیرون</translation>
+<translation id="1253096324252841344">پرداخت با <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (همگام‌سازی‌شده)</translation>
 <translation id="1255086252236620440">مخلوط‌کن غذا</translation>
 <translation id="1256368399071562588">‏&lt;p&gt;اگر می‌خواهید از وب‌سایتی بازدید کنید و باز نمی‌شود، ابتدا سعی کنید با این مراحل عیب‌یابی خطا را برطرف کنید:&lt;/p&gt;
@@ -340,6 +341,7 @@
 <translation id="160851722280695521">‏بازی کردن بازی دویدن دایناسور در Chrome</translation>
 <translation id="161042844686301425">فیروزه‌ای</translation>
 <translation id="1611101756749861742">رول دوم</translation>
+<translation id="1611854593425834707">بستن فهرست دستگاه‌ها برای پخش محتوا</translation>
 <translation id="1612199629998703524">مدیریت موضوع‌ها</translation>
 <translation id="1615178538289490617">لغو دسترسی برای <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">خط‌مشی سرپرست ضبط صفحه‌نمایش را هنگامی که محتوای محرمانه نمایان باشد غیرفعال می‌کند</translation>
@@ -452,7 +454,6 @@
 <translation id="1810391395243432441">با قفل صفحه از گذرواژه‌ها محافظت کنید</translation>
 <translation id="1812527064848182527">منظره</translation>
 <translation id="1812975699435941848">آموزش بهداشت و آموزش پزشکی</translation>
-<translation id="1813414402673211292">پاک کردن داده‌های مرور</translation>
 <translation id="1816436748874040213">می‌تواند برای پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده درخواست دهد</translation>
 <translation id="1818522458013171885">لغو انسداد کردن</translation>
 <translation id="1818585559878922121">فیلم مستند</translation>
@@ -875,7 +876,6 @@
 <translation id="2647086987482648627">پارچه (نیمه‌براق)</translation>
 <translation id="264810637653812429">هیچ دستگاه سازگاری پیدا نشد.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />، <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای پاک کردن سابقه مرور، کوکی‌ها، حافظه پنهان، و غیره در تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
 <translation id="2650446666397867134">دسترسی به فایل رد شد</translation>
 <translation id="2651465929321991146">سابقه و برگه‌ها</translation>
 <translation id="2653659639078652383">ارسال</translation>
@@ -1205,7 +1205,6 @@
 <translation id="33073482541490531">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. «مدیر گذرواژه» توصیه می‌کند این گذرواژه را همین‌حالا تغییر دهید.</translation>
 <translation id="3307649904964670439">‏دکمه «سفارشی‌سازی Chrome»؛ برای سفارشی‌سازی ظاهر مرورگر، آن را فعال کنید</translation>
 <translation id="3308006649705061278">‏واحد سازمانی (OU)</translation>
-<translation id="3310047144791481950">دیدن اطلاعاتی که به شما کمک می‌کند کارت موردنظر را برای پرداخت انتخاب کنید. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />آشنایی با مزایای کارت<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">کمدی تلویزیونی</translation>
 <translation id="3324687287337751929">۶ × ۴ اینچ</translation>
 <translation id="3324983252691184275">زرشکی</translation>
@@ -1374,7 +1373,6 @@
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای اجرای «بررسی ایمنی» در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3615309852743236517">مانیکور و پدیکور</translation>
 <translation id="3620239073311576716">یونیفرم و لباس کار</translation>
-<translation id="36224234498066874">پاک کردن داده‌های مرور…</translation>
 <translation id="362276910939193118">نمایش کل سابقه</translation>
 <translation id="3623041590998910684">‏برای استفاده از دوربین، در <ph name="LINK" /> به Chrome دسترسی دهید.</translation>
 <translation id="3623398832322170566">فیلم‌های عاشقانه</translation>
@@ -1513,6 +1511,7 @@
 <translation id="385489333361351399">دوربین و تجهیزات عکاسی</translation>
 <translation id="3858027520442213535">به‌روزرسانی تاریخ و زمان</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="3865339060090354361">شرایط <ph name="CREDIT_CARD_NAME" /> را در اینجا ببینید</translation>
 <translation id="3872834068356954457">علم</translation>
 <translation id="3875783148670536197">نمایش روش انجام کار</translation>
 <translation id="3880456882942693779">هنر و سرگرمی</translation>
@@ -1919,6 +1918,7 @@
 <translation id="4691093235373904540">خدمات سقف</translation>
 <translation id="4692623383562244444">موتورهای جستجو</translation>
 <translation id="4698692901173737941">ورزش‌های رزمی</translation>
+<translation id="4701307090948589984">پخش محتوا در…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">رو</translation>
 <translation id="4702656508969495934">«زیرنویس ناشنوایان زنده» نمایان است، برای کانونی کردن آن از تعویض‌کننده پنجره استفاده کنید</translation>
@@ -2055,7 +2055,6 @@
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> درج‌شده پیدا نشد.</translation>
 <translation id="4936675324097895694">امور مالی</translation>
 <translation id="4940163644868678279">‏«حالت ناشناس» در Chrome</translation>
-<translation id="494111439860963024">‏دکمه «پاک کردن داده‌های محصول مرور»؛ برای پاک کردن سابقه مرور، کوکی‌ها، حافظه پنهان، و غیره در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="4943620199112228840">استفاده از میکروفون‌های شما</translation>
 <translation id="4943872375798546930">نتیجه‌ای پیدا نشد</translation>
 <translation id="4950898438188848926">‏دکمه جابه‌جایی برگه، برای جابه‌جایی به برگه باز، کلید Enter را فشار دهید، <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2109,6 +2108,7 @@
 <translation id="5040262127954254034">حریم خصوصی</translation>
 <translation id="5043480802608081735">پیوندی که کپی کرده‌اید</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
+<translation id="5048293684454354469">موضوع‌های آگهی صرفاً یکی از چیزهایی است که سایت می‌تواند برای شخصی‌سازی آگهی‌ها استفاده کند. حتی بدون موضوع‌های آگهی، سایت‌ها می‌توانند همچنان آگهی نمایش دهند اما ممکن است این آگهی‌ها کمتر شخصی‌سازی شده باشند. درباره <ph name="BEGIN_LINK" />مدیریت حریم خصوصی آگهی<ph name="LINK_END" /> بیشتر بدانید.</translation>
 <translation id="5052517576853118371">موضوع‌های فعال</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}one{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}other{برای ارسال این فایل‌ها ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}}</translation>
 <translation id="505757197798929356">دلیلی برای باز کردن ارائه دهید (الزامی)</translation>
@@ -2168,6 +2168,8 @@
 <translation id="5161334686036120870">موضوع:</translation>
 <translation id="5161506081086828129">پشته‌ساز ۹</translation>
 <translation id="5164798890604758545">نوشتار وارد شده است</translation>
+<translation id="5164928537947209380">‏نتایج این ابزار هوش مصنوعی آزمایشی همیشه صحیح نیست. برای بهبود آن، محتوایتان به Google ارسال می‌شود.
+    <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">‏CVC کارت <ph name="CREDIT_CARD" /> را وارد کنید. بعد از تأیید کردن، جزئیات کارت از حساب Google شما با این سایت هم‌رسانی می‌شود.</translation>
 <translation id="5169827969064885044">‏ممکن است دسترسی به حساب سازمانتان را از دست بدهید یا به سرقت هویت دچار شوید. Chrome توصیه می‌کند هم‌اکنون گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="5171045022955879922">‏جستجو یا تایپ URL</translation>
@@ -2290,7 +2292,6 @@
 <translation id="541416427766103491">پشته‌ساز ۴</translation>
 <translation id="5414446060143308245">قبل‌از انتقال باید بررسی شود</translation>
 <translation id="5414511064953050917">درهرصورت منتقل شود</translation>
-<translation id="5421136146218899937">پاک کردن داده‌های مرور...</translation>
 <translation id="5421408724705443535">موسیقی راک</translation>
 <translation id="5423269318075950257">پیگیری قیمت</translation>
 <translation id="5425082381151187189">دکوراسیون داخلی و خانه</translation>
@@ -2326,6 +2327,7 @@
     <ph name="LINE_BREAK" />
     با سرپرست سیستم تماس بگیرید.</translation>
 <translation id="549333378215107354">اندازه ۳</translation>
+<translation id="5496804587179176046">کدهای امنیتی را ذخیره کنید، فعلاً هیچ کد امنیتی ذخیره نشده است</translation>
 <translation id="550365051221576010">تکمیل همه موارد</translation>
 <translation id="5508443345185481044">دوربین عکس‌برداری و فیلم‌برداری</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2349,6 +2351,7 @@
 <translation id="553377674408670169">مشاغل آموزشی</translation>
 <translation id="5536214594743852365">نمایش بخش «<ph name="SECTION" />»</translation>
 <translation id="553782666181800029">پاکت چو ۲</translation>
+<translation id="5538270463355278784">تمام‌صفحه خودکار</translation>
 <translation id="5539243836947087108">«رفت»</translation>
 <translation id="5540224163453853">مقاله درخواستی یافت نشد.</translation>
 <translation id="5540969246441091044">اسب‌سواری</translation>
@@ -2713,6 +2716,7 @@
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="6254436959401408446">حافظه کافی برای باز کردن این صفحه وجود ندارد</translation>
 <translation id="625463612687472648">توقف دسترسی</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}one{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}other{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان گزینه‌های پرداخت می‌بینید}}</translation>
 <translation id="6259156558325130047">&amp;انجام مجدد ترتیب‌بندی مجدد</translation>
 <translation id="6263376278284652872">نشانک‌های <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
@@ -3653,7 +3657,6 @@
 <translation id="8022542098135319050">آژانس‌ها و خدمات مسافرتی</translation>
 <translation id="8023231537967344568">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم، کلید جهش و سپس Enter را فشار دهید</translation>
 <translation id="8025119109950072390">مهاجمان در این سایت ممکن است شما را فریب دهند که کارهای خطرناکی مثل نصب نرم‌افزار یا ارائه اطلاعات شخصی‌تان (مثلاً گذرواژه‌ها، شماره تلفن‌ها یا کارت‌های اعتباری) انجام دهید.</translation>
-<translation id="8026334261755873520">پاک کردن داده‌های مرور</translation>
 <translation id="8027077570865220386">سینی ۱۵</translation>
 <translation id="8027585818882015174">‏دکمه «اجرای بررسی ایمنی در Chrome»؛ برای اجرای «بررسی ایمنی» در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="8028698320761417183">‏<ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع فرم جدید در «فرم‌نگار Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
@@ -3848,6 +3851,7 @@
 <translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>
 <translation id="8380941800586852976">خطرناک</translation>
 <translation id="8381674639488873545">ممکن است این هزینه‌ها یک‌باره یا تکرارشونده باشند و واضح نباشند. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">تمام‌صفحه خودکار</translation>
 <translation id="838307841291975086">استیشن واگن</translation>
 <translation id="8389532092404711541">قیمت معمول: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">خودرو سفارشی و با عملکرد بالا</translation>
@@ -3924,7 +3928,6 @@
 <translation id="8527228059738193856">بلندگوها</translation>
 <translation id="8527681393107582734">کشاورزی و جنگل‌داری</translation>
 <translation id="8528149813106025610">لباس کودکانه</translation>
-<translation id="8530813470445476232">‏سابقه مرور، کوکی، حافظه پنهان و موارد دیگر را در تنظیمات Chrome پاک کنید.</translation>
 <translation id="853246364274116957">برادوی و تئاتر موزیکال</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏برای دیدن فهرست نشانی‌های وب مسدودشده و دیگر خط‌مشی‌های اعمال‌شده توسط سرپرست سیستم، از &lt;strong&gt;chrome://policy&lt;/strong&gt; بازدید کنید.</translation>
@@ -4064,6 +4067,7 @@
 <translation id="8807160976559152894">برش دادن بعد از چاپ هر صفحه</translation>
 <translation id="8809203544698246977">موضوعات مسدودشده در اینجا نشان داده می‌شود</translation>
 <translation id="8811470563853401328">نشانی در حساب ذخیره شود؟</translation>
+<translation id="8811725516933141693">‏برای گپ زدن با Gemini، عبارت ‎@gemini را تایپ کنید</translation>
 <translation id="8813277370772331957">بعداً به من یادآوری شود</translation>
 <translation id="8814707942599948500">پاکت سی۸</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای به‌روزرسانی Chrome ازطریق تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>

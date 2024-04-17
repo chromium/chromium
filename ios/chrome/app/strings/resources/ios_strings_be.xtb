@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">З вяртаннем, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Імя ўладальніка карткі</translation>
 <translation id="1809939268435598390">Выдаліць папку</translation>
-<translation id="1813414402673211292">Выдаленне гісторыі</translation>
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Дададзена ў Спіс чытання</translation>
 <translation id="1822994441903263130">FedEx</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Вэб-старонка загружана</translation>
 <translation id="223356358902285214">Дзеянні ў інтэрнэце і праграмах</translation>
 <translation id="2234827758954819389">Дапаможнік па прыватнасці</translation>
-<translation id="2239626343334228536">Ідзе ачыстка даных прагляду...</translation>
 <translation id="2251686759395008410">Меню → Гісторыя</translation>
 <translation id="2252674110805316998">Вэб-пошук</translation>
 <translation id="2252749852083403809">Ідзе захаванне на Дыску карыстальніка <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">Новае акно ў рэжыме інкогніта</translation>
 <translation id="3488501490964659223">Укладкі былі закрыты, а даныя пра работу ў браўзеры – выдалены. Вы выйшлі з уліковага запісу.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра прапанаванае змесціва</translation>
-<translation id="3494788280727468875">Пацвердзіць выдаленне гісторыі праглядаў</translation>
 <translation id="35083190962747987">Адкрыць ${url}</translation>
 <translation id="3519193562722059437">Адкрыйце ўкладку для прагляду змесціва ў інтэрнэце.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Адкрыць укладку}one{Адкрыць {count} укладку}few{Адкрыць {count} укладкі}many{Адкрыць {count} укладак}other{Адкрыць {count} укладкі}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">Дадаць у закладкі</translation>
 <translation id="355101282835380364">Захаваць ва ўліковым запісе…</translation>
 <translation id="3551320343578183772">Закрыць укладку</translation>
-<translation id="3565207542107370586">Выдаліць даныя пра работу ў браўзеры…</translation>
 <translation id="3565930036634619844">Укладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Двойчы націсніце, каб праглядзець іншыя паролі.</translation>
 <translation id="3575234738189584619">Пошук з дапамогай Аб'ектыва</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438">Ці мелі вы на ўвазе <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">новая функцыя</translation>
 <translation id="6033598293589037429">Забірайце</translation>
-<translation id="6036215966221662377">Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="6036514205982097558">Усе вашы ўкладкі ў адным браўзеры</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Закрыць</translation>
@@ -1151,7 +1146,6 @@
 <translation id="6859944681507688231">Каб сканіраваць QR-код ці крэдытную картку, уключыце ў наладах камеру.</translation>
 <translation id="6867369562105931222">пароль</translation>
 <translation id="686899695320434745">Адрасы не шыфруюцца з дапамогай фразы-пароля. Гэта дазваляе выкарыстоўваць іх у іншых сэрвісах Google.</translation>
-<translation id="6869389390665537774">Вы можаце прагледзець наведаныя старонкі або выдаліць іх з гісторыі</translation>
 <translation id="687135068089457384">Паказаць налады</translation>
 <translation id="6873263987691478642">Раздзяленне экрана</translation>
 <translation id="6882836635272038266">Стандартная абарона ад вэб-сайтаў, спамповак і пашырэнняў, вядомых як небяспечныя.</translation>
@@ -1297,7 +1291,6 @@
 <translation id="7719038820139380048">Увайдзіце ў сістэму, каб атрымліваць змесціва на падставе вашых інтарэсаў.</translation>
 <translation id="7720410380936703141">ПАЎТАРЫЦЬ СПРОБУ</translation>
 <translation id="7724085059277147439">{count,plural, =1{Даныя захаваны ў вашым Уліковым запісе Google ({email})}one{Даныя захаваны ў вашым Уліковым запісе Google ({email})}few{Даныя захаваны ў вашым Уліковым запісе Google ({email})}many{Даныя захаваны ў вашым Уліковым запісе Google ({email})}other{Даныя захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
-<translation id="7726702057919861819">Меню → Гісторыя → Выдаліць гісторыю праглядаў</translation>
 <translation id="7729458878441927652">Каб бачыць укладкі з іншых прылад, сінхранізуйце ўкладкі і гісторыю.</translation>
 <translation id="7730973429297233609">Выберыце ўліковы запіс, у якім трэба захаваць файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Толькі на гэтай прыладзе.</translation>
@@ -1542,7 +1535,6 @@
 <translation id="8870413625673593573">Нядаўна закрытыя</translation>
 <translation id="8876882697946675716">Сінхранізуйце свае прылады</translation>
 <translation id="8879604564928138696">Каб паспрабаваць, націсніце двойчы</translation>
-<translation id="8879984884633913185">Схаваць пункт "Выдаліць даныя пра работу ў браўзеры"</translation>
 <translation id="8881801611828450202">Шукаць гэты відарыс праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
 <translation id="890565330728586731">Назад</translation>

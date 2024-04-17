@@ -149,7 +149,6 @@
 <translation id="1789803444939621101"><ph name="USER_NAME" />, तुमचे पुन्हा स्वागत आहे</translation>
 <translation id="1803264062614276815">कार्डधारकाचे नाव</translation>
 <translation id="1809939268435598390">फोल्डर हटवा</translation>
-<translation id="1813414402673211292">ब्राउझिंग डेटा साफ करा</translation>
 <translation id="1815941218935345331">पासकोड</translation>
 <translation id="1820259098641718022">वाचन सूचीमध्ये जोडले</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">वेबपेज लोड केले</translation>
 <translation id="223356358902285214">वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी</translation>
 <translation id="2234827758954819389">गोपनीयता मार्गदर्शक</translation>
-<translation id="2239626343334228536">ब्राउझिंग डेटा साफ करत आहे...</translation>
 <translation id="2251686759395008410">मेनू → इतिहास</translation>
 <translation id="2252674110805316998">वेब शोध</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> साठी Drive मध्ये सेव्ह करत आहे.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">नवीन गुप्त विंडो</translation>
 <translation id="3488501490964659223">टॅब बंद केले गेले होते आणि ब्राउझिंग डेटा हटवला गेला होता. तुम्हाला साइन आउट केले गेले होते</translation>
 <translation id="3493531032208478708">सूचित केलेल्या आशयविषयी <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">ब्राउझिंग डेटा साफ करता याची पुष्टी करा</translation>
 <translation id="35083190962747987">${url} उघडा</translation>
 <translation id="3519193562722059437">वेब ब्राउझ करण्‍यासाठी एक टॅब उघडा.</translation>
 <translation id="3519905498307021260">{count,plural, =1{टॅब उघडा}other{{count} टॅब उघडा}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">बुकमार्क मध्ये जोडा</translation>
 <translation id="355101282835380364">खाते मध्ये सेव्ह करा…</translation>
 <translation id="3551320343578183772">टॅब बंद करा</translation>
-<translation id="3565207542107370586">ब्राउझिंग डेटा साफ करा…</translation>
 <translation id="3565930036634619844">टॅब. <ph name="NUMBER_OF_TABS" /> पैकी <ph name="TAB_INDEX" /> क्रमांकाचा टॅब.</translation>
 <translation id="3570693105179140209">आणखी पासवर्डसाठी दोनदा टॅप करा.</translation>
 <translation id="3575234738189584619">Lens वापरून शोधा</translation>
@@ -847,6 +843,7 @@
 <translation id="5407969256130905701">बदल काढून टाका</translation>
 <translation id="5414763847370083940">कोणत्याही साइटवर किंमत कमी झाल्यास तुम्हाला सूचना मिळेल.</translation>
 <translation id="5416022985862681400">मागील सात दिवस</translation>
+<translation id="5416455648658732408">टॅब गट यामध्ये हलवा</translation>
 <translation id="5423269318075950257">किमतीचा माग ठेवा</translation>
 <translation id="543338862236136125">पासवर्ड संपादित करा</translation>
 <translation id="5433691172869980887">वापरकर्ता नाव कॉपी केले</translation>
@@ -968,7 +965,6 @@
 <translation id="6027945736510816438">तुम्हाला <ph name="WEBSITE" /> म्हणायचे आहे का?</translation>
 <translation id="6032845897905314562">नवीन वैशिष्ट्य</translation>
 <translation id="6033598293589037429">पिकअपसाठी तयार आहे</translation>
-<translation id="6036215966221662377">ब्राउझिंग डेटा साफ करा</translation>
 <translation id="6036514205982097558">एका ब्राउझरमध्ये तुमचे सर्व टॅब</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">बंद करा</translation>
@@ -1152,7 +1148,6 @@
 <translation id="6859944681507688231">QR कोड किंवा क्रेडिट कार्ड स्कॅन करण्यासाठी सेटिंग्जमध्ये कॅमेरा सुरू करा.</translation>
 <translation id="6867369562105931222">पासवर्ड</translation>
 <translation id="686899695320434745">पत्ते तुमच्या पासफ्रेझसह एन्क्रिप्ट केले जात नाहीत. यामुळे तुम्ही ते इतर Google सेवांमध्ये वापरू शकता.</translation>
-<translation id="6869389390665537774">तुम्ही भेट दिलेली पेज पाहू शकता किंवा ती तुमच्या इतिहासामधून साफ करू शकता</translation>
 <translation id="687135068089457384">सेटिंग्ज दाखवा</translation>
 <translation id="6873263987691478642">विभाजित दृश्य</translation>
 <translation id="6882836635272038266">धोकादायक म्हणून ओळखल्या जाणार्‍या वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून साधारण संरक्षण.</translation>
@@ -1298,7 +1293,6 @@
 <translation id="7719038820139380048">तुमच्या स्वारस्यांवर आधारित आशय मिळवण्यासाठी.</translation>
 <translation id="7720410380936703141">पुन्हा प्रयत्न करा</translation>
 <translation id="7724085059277147439">{count,plural, =1{तुमच्या {email} या Google खाते मध्ये आयटम सेव्ह केला आहे}other{तुमच्या {email} या Google खाते मध्ये आयटम सेव्ह केले आहेत}}</translation>
-<translation id="7726702057919861819">मेनू → इतिहास → ब्राउझिंग डेटा साफ करा</translation>
 <translation id="7729458878441927652">तुमच्या इतर डिव्हाइसवरील टॅब पाहण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा.</translation>
 <translation id="7730973429297233609">तुम्हाला <ph name="FILENAME" /> - <ph name="FILESIZE" /> सेव्ह करण्यासाठी वापरायचे असलेले खाते निवडा</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. फक्त या डिव्हाइसवर.</translation>
@@ -1332,6 +1326,7 @@
 <translation id="7853202427316060426">गतिविधी</translation>
 <translation id="7856733331829174190">डाउनलोड करता आले नाही</translation>
 <translation id="7859704718976024901">ब्राउझिंग इतिहास</translation>
+<translation id="7860900259978879139">गट यामधून काढून टाका</translation>
 <translation id="7866501058614003444">या पॅकेजचा माग ठेवणे यशस्वीरीत्या बंद केले आहे.</translation>
 <translation id="7866872729285243843">तुमच्या सर्व डिव्हाइसवर तुमची वाचन सूची मिळवण्यासाठी, सेटिंग्जमध्ये "वाचन सूची" सुरू करा.</translation>
 <translation id="7866993391592926595">हे कार्ड लपवल्याने पॅकेज ट्रॅकिंग बंद होईल आणि तुमचा सर्व डेटा काढून टाकला जाईल</translation>
@@ -1419,9 +1414,11 @@
 <translation id="8273982424131314219">तुम्ही <ph name="URL" /> मध्ये माहिती भराल</translation>
 <translation id="8281781826761538115">डीफॉल्ट - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">वगळा</translation>
+<translation id="8282657446819506217">टॅब गट यामध्ये उघडा</translation>
 <translation id="828291969289324795">{count,plural, =1{नवीन गट यामध्ये टॅब जोडा}other{नवीन गट यामध्ये टॅब जोडा}}</translation>
 <translation id="8283172974887967105">सेट करा…</translation>
 <translation id="8286036467436129157">साइन इन</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> नोटिफिकेशन बंद केली आहेत</translation>
 <translation id="8292843446079898078">तुम्ही माग ठेवत असलेल्या उत्पादनांसाठी किमतीमध्ये घट झाल्याच्या सूचना मिळवा.</translation>
 <translation id="8299417921174340354">पासवर्ड वापरण्यासाठी, तुम्ही आधी तुमच्या डिव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="8299613349954694191">वेब खाजगीरीत्या ब्राउझ करण्‍यासाठी गुप्त टॅब उघडा.</translation>
@@ -1429,6 +1426,7 @@
 <translation id="8313645224014086262">फाइल सेव्ह करा</translation>
 <translation id="8319076807703933069">नवीन शोध</translation>
 <translation id="8328777765163860529">सर्व बंद करा</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" /> साठी नोटिफिकेशन बंद करा</translation>
 <translation id="8343993175958086504">तुमच्या आशयाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा.</translation>
 <translation id="834783239627985533">सर्वाधिक भेट दिलेल्या साइट</translation>
 <translation id="8358401059263985056">सूचना सुरू करा</translation>
@@ -1543,7 +1541,6 @@
 <translation id="8870413625673593573">अलीकडे बंद</translation>
 <translation id="8876882697946675716">तुमची डिव्हाइस सिंकमध्ये ठेवा</translation>
 <translation id="8879604564928138696">वापरून पाहण्यासाठी दोनदा टॅप करा</translation>
-<translation id="8879984884633913185">ब्राउझिंग डेटा साफ करा हे लपवा</translation>
 <translation id="8881801611828450202">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="8898822736010347272">नवीन धोके शोधण्यात आणि वेबवरील प्रत्येकाचे संरक्षण करण्यात मदत करण्यासाठी, तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि काही पेज आशय Google ला पाठवते.</translation>
 <translation id="890565330728586731">मागे जा</translation>

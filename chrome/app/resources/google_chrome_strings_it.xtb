@@ -79,7 +79,6 @@
 <translation id="2258103955319320201">Per accedere ai tuoi contenuti del browser Chrome su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione</translation>
 <translation id="2290014774651636340">Mancano le chiavi dell'API di Google. Alcune funzionalità di Google Chrome verranno disattivate.</translation>
 <translation id="2290095356545025170">Sei sicuro di voler disinstallare Google Chrome?</translation>
-<translation id="2298849085402457754">Per cancellare i dati di navigazione solo da questo dispositivo e conservarli nel tuo Account Google, <ph name="BEGIN_LINK" />esci da Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Questa è un'installazione secondaria, di conseguenza Google Chrome non può essere impostato come browser predefinito.</translation>
 <translation id="2345992953227471816">Chrome ha rilevato che le seguenti estensioni contengono malware:</translation>
 <translation id="2348335408836342058">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
@@ -109,7 +108,6 @@
 <translation id="2649768380733403658">Chrome esegue controlli regolari per verificare che il browser disponga delle impostazioni più sicure. Ti informeremo qualora fosse necessario un controllo da parte tua.</translation>
 <translation id="2652691236519827073">Apri link in una nuova &amp;scheda di Chrome</translation>
 <translation id="2665296953892887393">Aiutaci a migliorare Google Chrome inviando a Google report sugli arresti anomali e <ph name="UMA_LINK" /></translation>
-<translation id="2712234843277364121">Riavvia per aggiornare: le tue schede si riapriranno</translation>
 <translation id="2738871930057338499">Impossibile connettersi a internet. HTTP 403 Accesso negato. Controlla la configurazione del proxy.</translation>
 <translation id="2742320827292110288">Avviso: Google Chrome non è in grado di impedire alle estensioni di registrare la tua cronologia di navigazione. Per disattivare questa estensione in modalità di navigazione in incognito, deseleziona questa opzione.</translation>
 <translation id="2765403129283291972">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere al microfono</translation>
@@ -484,7 +482,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8999117580775242387">Quando HTTPS non è disponibile, Chrome utilizza una connessione non sicura senza avvisarti</translation>
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
-<translation id="9054037008353851982">Riavvia per aggiornare: le tue schede si riapriranno</translation>
 <translation id="9090566250983691233">Scopri perché Chrome blocca alcuni file</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>
 <translation id="9138603949443464873">Riavvia Chrome per applicare le modifiche</translation>

@@ -236,7 +236,6 @@
 <translation id="1173894706177603556">שינוי שם</translation>
 <translation id="1174073918202301297">קיצור הדרך נוסף</translation>
 <translation id="1174366174291287894">‏החיבור שלך תמיד מאובטח, אלא אם תתקבל הודעה שונה מ-Chrome</translation>
-<translation id="117445914942805388">‏כדי לנקות את נתוני הגלישה מכל המכשירים המסונכרנים ומחשבון Google שלך, <ph name="BEGIN_LINK" />יש להיכנס להגדרות הסנכרון<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">התכונה הזו הושבתה על ידי האדמין.</translation>
 <translation id="1175364870820465910">הדפסה…</translation>
 <translation id="1175914831232945926">ספרות</translation>
@@ -260,7 +259,6 @@
 <translation id="1190086046506744802">גדול מאוד</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{גישה אל קובץ המאוחסן במחשב שלך}one{גישה אל # קבצים המאוחסנים במחשב שלך}two{גישה אל # קבצים המאוחסנים במחשב שלך}other{גישה אל # קבצים המאוחסנים במחשב שלך}}</translation>
 <translation id="1190706173655543975">‏מדיניות לאפליקציות של Microsoft</translation>
-<translation id="119092896208640858">‏כדי לנקות את נתוני הגלישה ממכשיר זה בלבד ועדיין לשמור אותם בחשבון Google שלך, <ph name="BEGIN_LINK" />יש לבצע יציאה<ph name="END_LINK" />.</translation>
 <translation id="1191353342579061195">בחירת העיצוב שמתאים לצרכים שלך. כדי לשנות את העיצוב, הטפט, שומר המסך ועוד, פשוט לוחצים לחיצה ימנית על שולחן העבודה.</translation>
 <translation id="1192706927100816598">{0,plural, =1{בעוד שנייה אחת תתבצע יציאה אוטומטית מחשבונך.
 כדי לעבוד עם הדומיין <ph name="DOMAIN" />, צריך להשאיר את הכרטיס החכם בפנים.}one{בעוד # שניות תתבצע יציאה אוטומטית מחשבונך.
@@ -1067,6 +1065,7 @@
 <translation id="1784707308176068866">הפעלה ברקע כשהדבר מתבקש על-ידי אפליקציה מקורית הפועלת בשיתוף פעולה</translation>
 <translation id="1784849162047402014">חסר מקום אחסון בדיסק של המכשיר</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{בהסרת האפליקציה ’<ph name="APP_NAME" />‘, תוסר גם האפליקציה:}one{בהסרת האפליקציה ’<ph name="APP_NAME" />‘, יוסרו גם האפליקציות הבאות:}two{בהסרת האפליקציה ’<ph name="APP_NAME" />‘, יוסרו גם האפליקציות הבאות:}other{בהסרת האפליקציה ’<ph name="APP_NAME" />‘, יוסרו גם האפליקציות הבאות:}}</translation>
+<translation id="1786044937610313874">‏קיצורי דרך ייפתחו ב-Chrome</translation>
 <translation id="1786290960428378411">התקבלה מהתוסף בקשה לקריאה ולשינוי</translation>
 <translation id="1787350673646245458">תמונת המשתמש</translation>
 <translation id="1790976235243700817">הסרת הגישה</translation>
@@ -1562,7 +1561,6 @@
 <translation id="2144557304298909478">‏פיתוח אפליקציות ל-Android ב-Linux</translation>
 <translation id="2144873026585036769">‏להשתמש בחשבון Google שלך כדי לשמור ולמלא סיסמאות ומפתחות גישה?</translation>
 <translation id="2146263598007866206">כדי לחסוך זמן, אתרים עשויים להוריד קבצים קשורים יחד, באופן אוטומטי</translation>
-<translation id="2147151613919729065">כדי לנקות את ההיסטוריה של 'מצב אורח', עליך לסגור את כל החלונות של האורחים.</translation>
 <translation id="2147218225094845757">הסתרת החלונית הצדדית</translation>
 <translation id="2147282432401652483">‏מקש Command</translation>
 <translation id="2147402320887035428">‏יכול להיות שהקובץ הזה הוא תוכנה זדונית.<ph name="LINE_BREAK" />הגלישה הבטוחה של Google בודקת אם הקובץ הזה לא בטוח – הסריקה נמשכת בדרך כלל כמה שניות.</translation>
@@ -1730,7 +1728,6 @@
 <translation id="2273119997271134996">בעיה עם יציאות הווידאו באביזר העגינה</translation>
 <translation id="2274840746523584236">‏יש לטעון את Chromebook</translation>
 <translation id="2276503375879033601">הוספת יישומים</translation>
-<translation id="2276910256003242519">מתבצע ניקוי נתונים…</translation>
 <translation id="2278193750452754829">יש הרשאה לתוספים באתר הזה. צריך לבחור כדי לפתוח את התפריט</translation>
 <translation id="2278562042389100163">פתיחת חלון דפדפן</translation>
 <translation id="2278668501808246459">המערכת מפעילה את מנהל המאגר</translation>
@@ -2036,7 +2033,6 @@
 <translation id="2484574361686148760">‏רענון של פרטי הלקוחות של Wi-Fi ישיר</translation>
 <translation id="2484743711056182585">הסרת ההרשאה שהוענקה</translation>
 <translation id="2484909293434545162">‏כאן מוצגים אתרים שמשתמשים בקובצי cookie</translation>
-<translation id="2484959914739448251">‏כדי לנקות את נתוני הגלישה מכל המכשירים המסונכרנים ומחשבון Google שלך, <ph name="BEGIN_LINK" />יש להזין את ביטוי הסיסמה<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">המלצות בשבילך</translation>
 <translation id="2485422356828889247">הסרת התקנה</translation>
 <translation id="2485681265915754872">‏התנאים וההגבלות של Google Play</translation>
@@ -2352,8 +2348,6 @@
 <translation id="2727633948226935816">אני לא רוצה לקבל עוד תזכורת</translation>
 <translation id="2727712005121231835">גודל ממשי</translation>
 <translation id="2727744317940422214">‏מצטערים, משהו השתבש. יש לשלוח משוב ולציין ‎#bruschetta בתיאור. קוד השגיאה הוא <ph name="ERROR" />. הניקוי נכשל. יכול להיות שצריך לבצע ניקוי ידני.</translation>
-<translation id="2729314457178420145">‏אני רוצה גם לנקות את נתוני הגלישה (<ph name="URL" />). פעולה זו עשויה לנתק אותך מ-Google.com.
-<ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">‏ב-Chrome מחפשים דרכים חדשות לצמצם את המעקב ולהגביר אפילו יותר את הבטיחות שלך בזמן הגלישה. מערכת Chrome גם מבצעת <ph name="ESTIMATE_INTERESTS_LINK" /> ויש לך אפשרות לנהל אותם. אחר כך, לאתרים שביקרת בהם יש אפשרות לבקש מ-Chrome את תחומי העניין שלך כדי להציג לך מודעות לפיהם.</translation>
 <translation id="2729577602370119849">גישה נוחה למדפסות וניהול שלהן</translation>
 <translation id="2730029791981212295">‏גיבוי אפליקציות וקובצי Linux</translation>
@@ -2713,7 +2707,6 @@
 <translation id="2996108796702395498">המספר הסידורי של המכשיר הוא <ph name="SERIAL_NUMBER" />. המספר הזה יכול לשמש להפעלת השירות.</translation>
 <translation id="2996286169319737844">‏הנתונים מוצפנים באמצעות ביטוי הסיסמה שלך לסינכרון. ההצפנה לא כוללת אמצעי תשלום וכתובות מ-Google Pay.</translation>
 <translation id="2996722619877761919">היפוך בצד הארוך</translation>
-<translation id="2996932914629936323">ניקוי ההיסטוריה בכל המכשירים המסונכרנים</translation>
 <translation id="2998097899774209901">‏פועל • התוסף מפר את המדיניות של חנות האינטרנט של Chrome</translation>
 <translation id="2998267783395280091">נמצאה רשת</translation>
 <translation id="3000378525979847272">יש אישור להרשאות הבאות: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -2903,7 +2896,6 @@
 <translation id="3150927491400159470">טעינה מחדש קשיחה</translation>
 <translation id="315116470104423982">נתוני נייד</translation>
 <translation id="3151539355209957474">שעת התחלה</translation>
-<translation id="3151562827395986343">‏מחיקה של ההיסטוריה, של קובצי ה-cookie, של המטמון ועוד</translation>
 <translation id="3151786313568798007">כיוון</translation>
 <translation id="3152356229013609796">הרשאה להציג את ההתראות שבטלפון, לסגור אותן ולהשיב להן</translation>
 <translation id="3155163173539279776">‏הפעלה מחדש של Chromium</translation>
@@ -3283,7 +3275,6 @@
 <translation id="3459509316159669723">הדפסה</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{סימנייה אחת נמחקה}one{# סימניות נמחקו}two{# סימניות נמחקו}other{# סימניות נמחקו}}</translation>
 <translation id="3461766685318630278">כאן יש אפשרות ליצור ולמחוק קונטיינרים נוספים.</translation>
-<translation id="3462311546193741693">‏הפעולה הזו תוציא אותך מרוב האתרים אך לא מחשבון Google, כדי שניתן יהיה לנקות את הנתונים המסונכרנים.</translation>
 <translation id="3462413494201477527">האם לבטל את הגדרת החשבון?</translation>
 <translation id="346298925039590474">הרשת הסלולרית הזו תהיה זמינה לכל המשתמשים במכשיר הזה</translation>
 <translation id="3464145797867108663">הוספת פרופיל עבודה</translation>
@@ -3425,6 +3416,7 @@
 <translation id="3569682580018832495">ל-<ph name="ORIGIN" /> יש אפשרות להציג את התיקיות והקבצים הבאים</translation>
 <translation id="3571734092741541777">הגדרה</translation>
 <translation id="3575121482199441727">אישור לאתר הזה</translation>
+<translation id="3575224072358507281">‏איסוף תוצאות של כתובות IP ומדידת רשת עבור Measurement Lab, בהתאם למדיניות הפרטיות של החברה (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577487026101678864">סנכרון הקבצים פועל</translation>
 <translation id="3577745545227000795">איסוף נתוני חומרה של <ph name="DEVICE_OS" /></translation>
@@ -3476,7 +3468,6 @@
 <translation id="3615579745882581859">מתבצעת סריקה בקובץ <ph name="FILE_NAME" />.</translation>
 <translation id="3615596877979647433">המפתח חסר. יש להקיש על מקש מקלדת כלשהו כדי להתאים אישית</translation>
 <translation id="3616113530831147358">אודיו</translation>
-<translation id="3616741288025931835">&amp;ניקוי נתוני גלישה...</translation>
 <translation id="3617062258679844578">כדי להקליק, מקישים על לוח המגע במקום ללחוץ עליו</translation>
 <translation id="3617891479562106823">רקעים אינם זמינים. צריך לנסות שוב מאוחר יותר.</translation>
 <translation id="3618286417582819036">מצטערים, אירעה שגיאה</translation>
@@ -3868,7 +3859,6 @@
 <translation id="3890064827463908288">‏צריך להפעיל סנכרון Chrome כדי להשתמש בסנכרון Wi-Fi</translation>
 <translation id="389313931326656921">הקצאת מתג לפעולה "הבא"</translation>
 <translation id="3893268973182382220">אי אפשר לטעון את החלונית כרגע</translation>
-<translation id="3893295674388762059">כדי לנקות נתונים, יש לצאת מכל החלונות האנונימיים</translation>
 <translation id="3893536212201235195">קריאה ושינוי של הגדרות הנגישות שלך</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
@@ -4038,7 +4028,6 @@
 <translation id="4007856537951125667">הסתרת קיצורי הדרך</translation>
 <translation id="4010746393007464819">‏יש שדרוג ל-Debian 12‏ (Bookworm)</translation>
 <translation id="4010917659463429001">כדי לגשת לסימניות שלך בנייד, <ph name="GET_IOS_APP_LINK" />.</translation>
-<translation id="4010938758610910350">מתבצע ארגון בקבוצת כרטיסיות…</translation>
 <translation id="4014432863917027322">לתקן את '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="4015163439792426608">מותקנים אצלך תוספים? אפשר <ph name="BEGIN_LINK" />לנהל את התוספים<ph name="END_LINK" /> בקלות במקום אחד.</translation>
 <translation id="4016762287427926315">ההרשאות שמוענקות לאפליקציה <ph name="APP_NAME" /> יוענקו גם לאפליקציה הזו. <ph name="BEGIN_LINK" />לניהול ההרשאות<ph name="END_LINK" /></translation>
@@ -4121,7 +4110,6 @@
 <translation id="407520071244661467">שינוי קנה מידה</translation>
 <translation id="407543464472585404">הפרופיל של <ph name="NAME" /> מקושר אל <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">מודעות חסומות באתר הזה</translation>
-<translation id="4077919383365622693">‏המערכת תמחק את כל הנתונים וקובצי ה-cookie שנשמרו על ידי <ph name="SITE" />.</translation>
 <translation id="4078738236287221428">תמיד</translation>
 <translation id="4078903002989614318">אפשרויות למיון ולרשימה</translation>
 <translation id="4079140982534148664">שימוש בבדיקת איות משופרת</translation>
@@ -4666,7 +4654,6 @@
 <translation id="4504374760782163539">{COUNT,plural, =0{‏קובצי ה-cookie מותרים}=1{‏קובצי ה-cookie מותרים, חריג אחד}one{‏קובצי ה-cookie מותרים, {COUNT} חריגים}two{‏קובצי ה-cookie מותרים, {COUNT} חריגים}other{‏קובצי ה-cookie מותרים, {COUNT} חריגים}}</translation>
 <translation id="4504940961672722399">אפשר להשתמש בתוסף הזה על ידי לחיצה על הסמל או על ידי הקשה על <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">המילה כבר נוספה</translation>
-<translation id="4507128560633489176">הנתונים נוקו.</translation>
 <translation id="4507373251891673233">חסמת את כל התוספים מ-<ph name="HOST" /></translation>
 <translation id="4507401683427517298">לוחצים על 'הוספת קיצור דרך'</translation>
 <translation id="4508332912150723117">שם המשתמש <ph name="USER_EMAIL" />. לפרטים</translation>
@@ -5274,7 +5261,6 @@
 <translation id="4979263087381759787">אפשרויות למפתחים</translation>
 <translation id="4979510648199782334">‏ההגדרה של Microsoft 365 הושלמה</translation>
 <translation id="4980805016576257426">התוסף הזה מכיל תוכנה זדונית.</translation>
-<translation id="4981449534399733132">‏כדי לנקות את נתוני הגלישה מכל המכשירים המסונכרנים ומחשבון Google שלך, <ph name="BEGIN_LINK" />יש לבצע כניסה<ph name="END_LINK" />.</translation>
 <translation id="4983159853748980742">‏הסיסמה שלך לא שותפה. רצוי לבדוק את החיבור לאינטרנט ולוודא שנכנסת לחשבון ב-Chrome. אחר כך אפשר לנסות שוב.</translation>
 <translation id="4986706507552097681">‏אפשר לבחור מה לסנכרן בכל שלב דרך ההגדרות. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4986728572522335985">הפעולה הזו תמחק את כל הנתונים במפתח האבטחה, כולל קוד האימות שלו</translation>
@@ -5481,6 +5467,7 @@
 <translation id="5146896637028965135">קול המערכת</translation>
 <translation id="5147097165869384760">מנסה למצוא את דף המערכת של מערכת ההפעלה? צריך לעבור אל <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">המלצה</translation>
+<translation id="5147516217412920887">כדי לאמת את הקוד, עליך לפעול לפי ההוראות בטלפון</translation>
 <translation id="5147992672778369947">כדאי להשתמש בסיסמה המומלצת</translation>
 <translation id="5148285448107770349">הסיסמה חייבת להכיל 8 תווים לפחות.</translation>
 <translation id="5149602533174716626">העתקת הפריים</translation>
@@ -5896,7 +5883,6 @@
 <translation id="5486261815000869482">אישור סיסמה</translation>
 <translation id="5486561344817861625">ביצוע הדמיה של הפעלת דפדפן מחדש</translation>
 <translation id="5487460042548760727">שינוי שם הפרופיל לשם <ph name="PROFILE_NAME" /></translation>
-<translation id="5487521232677179737">ניקוי נתונים</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' הועתק</translation>
 <translation id="5488508217173274228">אפשרויות הצפנת סנכרון</translation>
 <translation id="5489077378642700219">לאתר <ph name="WEBSITE" /> אין אישור לשלוח התראות, אבל יש לשאול בהמשך</translation>
@@ -6287,7 +6273,6 @@
 <translation id="5794700615121138172">‏תיקיות משותפות של Linux</translation>
 <translation id="5794786537412027208">‏יציאה מכל אפליקציות Chrome</translation>
 <translation id="5796485699458186843">&amp;כרטיסיית מצב אנונימי חדשה</translation>
-<translation id="5797521893972859201">יתבצע ניקוי של ההיסטוריה שבתיבת החיפוש</translation>
 <translation id="5797934230382081317">‏כך מתחילים להשתמש במנהל הסיסמאות ב-&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; וב-&lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;.</translation>
 <translation id="5798079537501238810">‏אתרים מורשים להתקין רכיבי handler של תשלומים</translation>
 <translation id="5798086737841799234">הזנת קוד אישור</translation>
@@ -6610,7 +6595,6 @@
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">‏צריך להזין את קוד הגישה כדי להתחיל בהעברה (cast)</translation>
 <translation id="6052976518993719690">‏רשות אישורי SSL </translation>
-<translation id="6053401458108962351">&amp;ניקוי נתוני גלישה...</translation>
 <translation id="6053717018321787060">‏חשבון Google הוא אותו חשבון שמשמש אותך ב-Gmail, ב-YouTube, ב-Chrome ובמוצרי Google אחרים.
     באמצעות החשבון, קל לגשת לכל הסימניות, הקבצים ועוד. אם אין לך חשבון, תהיה לך אפשרות ליצור חשבון במסך הבא.</translation>
 <translation id="6054138466019582920">‏חיפוש בדף הזה באמצעות Google…</translation>
@@ -7677,6 +7661,7 @@
 <translation id="686609795364435700">נמוכה</translation>
 <translation id="686664946474413495">טמפרטורת צבע</translation>
 <translation id="6867086642466184030">אפליקציות אחרות מוגדרות לפתוח את אותם קישורים כמו <ph name="APP_NAME" />. כתוצאה מכך, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> וגם <ph name="NUMBER_OF_OTHER_APPS" /> אפליקציות אחרות לא יפתחו קישורים נתמכים.</translation>
+<translation id="6868206169573555318">הפעלה מחדש לעדכון</translation>
 <translation id="686831807558000905">אני לא רוצה להיכנס</translation>
 <translation id="686839242150793617">יש הרשאה להפעלה אוטומטית של מצב תמונה בתוך תמונה</translation>
 <translation id="6868934826811377550">הצגת פרטים</translation>
@@ -8048,6 +8033,7 @@
 <translation id="7180865173735832675">התאמה אישית</translation>
 <translation id="7181117767881540376">הסתרת סרגל הסימניות</translation>
 <translation id="7181329571386134105">‏כדי לאשר ל<ph name="CHILD_NAME" /> להתקין תוספים בעתיד בלי אישור ממך, עליך לפתוח את אפליקציית Family Link במכשיר שלך ולעדכן את הגדרות Google Chrome של <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">שימוש בחשבון אחר</translation>
 <translation id="7182063559013288142">נקודת אינטרנט מיידית</translation>
 <translation id="7182791023900310535">העברת הסיסמה שלך</translation>
 <translation id="718427252411067142">כדי למנוע מאנשים אחרים להשתמש בסיסמה שלך, עליך לפתוח את האפליקציה ולשנות את הסיסמה</translation>
@@ -8511,7 +8497,6 @@
 <translation id="7531771599742723865">המכשיר נמצא בשימוש</translation>
 <translation id="7531779363494549572">עוברים אל 'הגדרות' &gt; 'אפליקציות והודעות' &gt; 'הודעות'.</translation>
 <translation id="7532009420053991888">האפליקציה <ph name="LINUX_APP_NAME" /> לא מגיבה. כדי לסגור את האפליקציה, יש לבחור באפשרות "אילוץ סגירה".</translation>
-<translation id="7535730537657706072">כדי למחוק את היסטוריית הגלישה במצב אנונימי מהמכשיר, סוגרים את כל הכרטיסיות של המצב האנונימי.</translation>
 <translation id="7536815228183532290">נכנסת בתור <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">בדרך כלל לא מורידים את סוג הקובץ הזה, והוא עלול להיות מסוכן</translation>
 <translation id="7540972813190816353">אירעה שגיאה בעת בדיקת עדכונים: <ph name="ERROR" /></translation>
@@ -8555,7 +8540,6 @@
 <translation id="7566118625369982896">‏ניהול קישורים של אפליקציות מ-Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">יצירת שילוב מקשים</translation>
-<translation id="756809126120519699">‏נתוני Chrome נוקו</translation>
 <translation id="756876171895853918">התאמה אישית של הדמות</translation>
 <translation id="7568790562536448087">העדכון מתבצע</translation>
 <translation id="7569983096843329377">שחור</translation>
@@ -8611,6 +8595,7 @@
 <translation id="7617263010641145920">‏הפעלה של חנות Play</translation>
 <translation id="7617648809369507487">שימוש בהצגת התראות שקטה יותר</translation>
 <translation id="7619937211696316184">פעולות התחזוקה הסתיימו</translation>
+<translation id="7620616707541471029">בחירת חשבון להמשך</translation>
 <translation id="7621382409404463535">המערכת לא הצליחה לשמור את תצורת המכשיר.</translation>
 <translation id="7621480263311228380">לאתר אין הרשאה להשתמש במידע עליך שנשמר בו</translation>
 <translation id="7621595347123595643">לא תהיה אפשרות לשחזר נתונים מקומיים אם שוכחים את הסיסמה או קוד האימות.</translation>
@@ -9186,7 +9171,6 @@
 <translation id="8023801379949507775">עדכון תוספים</translation>
 <translation id="8025151549289123443">מסך הנעילה וכניסה לחשבון</translation>
 <translation id="8025291188699172126">מידע על העדכונים</translation>
-<translation id="8026334261755873520">ניקוי נתוני גלישה</translation>
 <translation id="8026471514777758216">כל המכשירים שלך</translation>
 <translation id="8027581147000338959">פתיחה בחלון חדש</translation>
 <translation id="8028060951694135607">‏שחזור מפתח של Microsoft</translation>
@@ -10226,7 +10210,6 @@
 <translation id="8809147117840417135">כחול-ירקרק בהיר</translation>
 <translation id="8811862054141704416">‏גישה של Crostini למיקרופון</translation>
 <translation id="8811923271770626905">לתוסף הזה יש הרשאה לפעול ברקע</translation>
-<translation id="8812593354822910461">‏אני רוצה גם לנקות את נתוני הגלישה (<ph name="URL" />). פעולה זו עשויה לנתק אותך מ-Google.com <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813199641941291474">‏נחסמה האפשרות לשליטה במכשירי MIDI ולתכנות שלהם מחדש</translation>
 <translation id="8813698869395535039">לא ניתן להיכנס עם שם המשתמש <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">צריך שההורים יאשרו את "<ph name="EXTENSION_NAME" />"</translation>

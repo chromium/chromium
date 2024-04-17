@@ -83,7 +83,6 @@
 <translation id="2258103955319320201">Se queres acceder ás túas cousas do navegador Chrome desde calquera dos teus dispositivos, inicia sesión e activa a sincronización</translation>
 <translation id="2290014774651636340">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Google Chrome.</translation>
 <translation id="2290095356545025170">Seguro que queres desinstalar Google Chrome?</translation>
-<translation id="2298849085402457754">Para borrar os datos de navegación só deste dispositivo, pero non da túa Conta de Google, tes que <ph name="BEGIN_LINK" />pechar sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Esta é unha instalación secundaria de Google Chrome e non se pode converter no teu navegador predeterminado.</translation>
 <translation id="2345992953227471816">Chrome detectou que estas extensións conteñen software malicioso:</translation>
 <translation id="2348335408836342058">Chrome necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>
@@ -113,7 +112,6 @@
 <translation id="2649768380733403658">Chrome fai comprobacións de forma periódica para ver se tes a configuración máis segura. Informarémoste se atopamos algo que necesites revisar.</translation>
 <translation id="2652691236519827073">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
 <translation id="2665296953892887393">Axudar a mellorar Google Chrome enviando informes de erros e <ph name="UMA_LINK" /> a Google.</translation>
-<translation id="2712234843277364121">Reiniciar para actualizar; volveranse abrir as pestanas</translation>
 <translation id="2738871930057338499">Non se puido establecer conexión con Internet. Erro: HTTP 403 Forbidden (acceso non permitido). Revisa a configuración do proxy.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome non pode evitar que as extensións rexistren o teu historial de navegación. Para desactivar esta extensión no modo de incógnito, anula a selección da caixa correspondente a esta opción.</translation>
 <translation id="2765403129283291972">Chrome necesita permiso para acceder ao micrófono neste sitio</translation>
@@ -328,6 +326,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6251759518630934363">Analiza máis datos de sitios que a protección estándar para avisarte sobre os que sexan perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chrome.</translation>
 <translation id="6273793429163604305">Preparados…</translation>
 <translation id="6277547788421725101">O teu pai ou nai desactivou en Chrome a opción Permisos para sitios, aplicacións e extensións</translation>
+<translation id="627882678981830918">Personalizar e controlar Chrome. Define Chrome como o navegador predeterminado.</translation>
 <translation id="6291089322031436445">Aplicacións de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome xa está instalado para todos os usuarios no teu ordenador.</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
@@ -491,7 +490,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8999117580775242387">Cando o protocolo HTTPS non estea dispoñible, Chrome usará unha conexión pouco segura sen avisarte</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
 <translation id="9053892488859122171">Sistema Chrome OS Flex</translation>
-<translation id="9054037008353851982">Reiniciar para actualizar; volveranse abrir as pestanas</translation>
 <translation id="9090566250983691233">Descubre por que Chrome bloquea algúns ficheiros</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
 <translation id="9138603949443464873">Para aplicar os cambios, reinicia Chrome</translation>

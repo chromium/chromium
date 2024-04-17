@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Добре дошли отново, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Име на титуляря на картата</translation>
 <translation id="1809939268435598390">Изтриване на папката</translation>
-<translation id="1813414402673211292">Изчистване на данните за сърфирането</translation>
 <translation id="1815941218935345331">Код за достъп</translation>
 <translation id="1820259098641718022">Добавихте към списъка за четене</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Уеб страницата се зареди</translation>
 <translation id="223356358902285214">Активност в мрежата и приложенията</translation>
 <translation id="2234827758954819389">Ръководство за поверителност</translation>
-<translation id="2239626343334228536">Данните за сърфирането се изчистват...</translation>
 <translation id="2251686759395008410">„Меню → История“</translation>
 <translation id="2252674110805316998">Търсене в мрежата</translation>
 <translation id="2252749852083403809">Файлът се запазва в Диск за <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">Нов прозорец в режим „инкогнито“</translation>
 <translation id="3488501490964659223">Разделите бяха затворени, а данните за сърфирането – изтрити. Излязохте от профила си</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за предложеното съдържание</translation>
-<translation id="3494788280727468875">Потвърждаване на изчистването на данните за сърфирането</translation>
 <translation id="35083190962747987">Отваряне на ${url}</translation>
 <translation id="3519193562722059437">Отворете раздел, за да сърфирате в мрежата.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Отваряне на раздела}other{Отваряне на {count} раздела}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">Добавяне към отметките</translation>
 <translation id="355101282835380364">Запазване в профила…</translation>
 <translation id="3551320343578183772">Затваряне на раздела</translation>
-<translation id="3565207542107370586">Изчистване на данните за сърфирането…</translation>
 <translation id="3565930036634619844">Раздел. <ph name="TAB_INDEX" /> от <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Докоснете два пъти за още пароли.</translation>
 <translation id="3575234738189584619">Търсене с Обектив</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438">Може би имахте предвид <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">нова функция</translation>
 <translation id="6033598293589037429">Готова за получаване на място</translation>
-<translation id="6036215966221662377">Изчистване на данните за сърфирането</translation>
 <translation id="6036514205982097558">Един браузър за всичките ви раздели</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затваряне</translation>
@@ -1151,7 +1146,6 @@
 <translation id="6859944681507688231">За да сканирате код за бърза реакция или кредитна карта, активирайте камерата от настройките.</translation>
 <translation id="6867369562105931222">парола</translation>
 <translation id="686899695320434745">Адресите не се шифроват с пропуска ви. Това ви дава възможност да ги използвате в други услуги на Google.</translation>
-<translation id="6869389390665537774">Можете да видите посетените от вас страници или да ги изчистите от историята си</translation>
 <translation id="687135068089457384">Показване на настройките</translation>
 <translation id="6873263987691478642">Разделен изглед</translation>
 <translation id="6882836635272038266">Стандартна защита срещу уебсайтове, изтеглени файлове и разширения, за които е известно, че са опасни.</translation>
@@ -1297,7 +1291,6 @@
 <translation id="7719038820139380048">Влезте в профила си, за да получавате съдържание въз основа на интересите си.</translation>
 <translation id="7720410380936703141">НОВ ОПИТ</translation>
 <translation id="7724085059277147439">{count,plural, =1{Елементът е запазен в профила ви в Google {email}}other{Елементите са запазени в профила ви в Google {email}}}</translation>
-<translation id="7726702057919861819">Меню → История → Изчистване на данните за сърфирането</translation>
 <translation id="7729458878441927652">За да виждате разделите от другите си устройства, синхронизирайте разделите и историята си.</translation>
 <translation id="7730973429297233609">Изберете профила, който искате да използвате, за да запазите <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на това устройство.</translation>
@@ -1542,7 +1535,6 @@
 <translation id="8870413625673593573">Наскоро затворени</translation>
 <translation id="8876882697946675716">Синхронизирайте устройствата си</translation>
 <translation id="8879604564928138696">Докоснете два пъти за изпробване</translation>
-<translation id="8879984884633913185">Скриване на „Изчистване на данните за сърфирането“</translation>
 <translation id="8881801611828450202">Търсене на изобр. със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
 <translation id="890565330728586731">Назад</translation>

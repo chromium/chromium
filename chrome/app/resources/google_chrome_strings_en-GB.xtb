@@ -83,7 +83,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2258103955319320201">To access your Chrome browser across all your devices, sign in, then turn on sync</translation>
 <translation id="2290014774651636340">Google API keys are missing. Some functionality of Google Chrome will be disabled.</translation>
 <translation id="2290095356545025170">Are you sure you want to uninstall Google Chrome?</translation>
-<translation id="2298849085402457754">To clear browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
 <translation id="2345992953227471816">Chrome found that these extensions contain malware:</translation>
 <translation id="2348335408836342058">Chrome needs permission to access your camera and microphone for this site</translation>
@@ -113,7 +112,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2649768380733403658">Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
 <translation id="2665296953892887393">Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
-<translation id="2712234843277364121">Relaunch to update – Your tabs will reopen</translation>
 <translation id="2738871930057338499">Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.</translation>
 <translation id="2742320827292110288">Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
 <translation id="2765403129283291972">Chrome needs permission to access your microphone for this site</translation>
@@ -492,7 +490,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8999117580775242387">When HTTPS isn't available, Chrome will use an insecure connection without warning you</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
 <translation id="9053892488859122171">Chrome OS Flex system</translation>
-<translation id="9054037008353851982">Relaunch to update – Your tabs will reopen</translation>
 <translation id="9090566250983691233">Learn why Chrome blocks some files</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
 <translation id="9138603949443464873">To apply your changes, relaunch Chrome</translation>

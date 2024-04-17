@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chromeமில் டைனோசர் கேமை விளையாடலாம்</translation>
 <translation id="161042844686301425">சியான்</translation>
 <translation id="1611101756749861742">ரோல் 2</translation>
+<translation id="1611854593425834707">அலைபரப்புக்கான சாதனங்களின் பட்டியலை மூடும்</translation>
 <translation id="1612199629998703524">தலைப்புகளை நிர்வகியுங்கள்</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" />க்கான அணுகலை ரத்துசெய்யும்</translation>
 <translation id="1615402009686901181">ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் திரையைப் படமெடுப்பதை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">திரைப்பூட்டு மூலம் கடவுச்சொற்களைப் பாதுகாத்திடுங்கள்</translation>
 <translation id="1812527064848182527">லேண்ட்ஸ்கேப்</translation>
 <translation id="1812975699435941848">சுகாதாரக் கல்வி &amp; மருத்துவப் பயிற்சி</translation>
-<translation id="1813414402673211292">உலாவிய தரவை சுத்தமாக்கு</translation>
 <translation id="1816436748874040213">பகிர்ந்த பக்கங்களில் ஸ்க்ரோல் செய்யவும், அளவை மாற்றவும் அனுமதி கேட்கும்</translation>
 <translation id="1818522458013171885">அனுமதி</translation>
 <translation id="1818585559878922121">ஆவணத் திரைப்படங்கள்</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">செமி க்ளாஸ்ஸி ஃபேப்ரிக்</translation>
 <translation id="264810637653812429">இணக்கமான சாதனங்கள் இல்லை.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளில் உலாவல் வரலாறு, குக்கீகள், தற்காலிகச் சேமிப்பு மற்றும் பலவற்றை அழிக்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="2650446666397867134">ஃபைலுக்கான அணுகல் மறுக்கப்பட்டது</translation>
 <translation id="2651465929321991146">இதுவரை பார்த்தவை மற்றும் பக்கங்கள்</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
@@ -1202,7 +1201,6 @@
 <translation id="33073482541490531">நீங்கள் தற்போது பயன்படுத்திய கடவுச்சொல், தரவு மீறலுக்கு உள்ளாகியிருப்பதாகக் கண்டறியப்பட்டுள்ளது. இதை இப்போதே மாற்றும்படி கடவுச்சொல் நிர்வாகி பரிந்துரைக்கிறது.</translation>
 <translation id="3307649904964670439">Chromeமைப் பிரத்தியேகமாக்குவதற்கான பட்டன். உலாவியின் தோற்றத்தைப் பிரத்தியேகமாக்க இதை இயக்குங்கள்</translation>
 <translation id="3308006649705061278">நிறுவன யூனிட் (OU)</translation>
-<translation id="3310047144791481950">எந்தக் கார்டு மூலம் பணம் செலுத்தலாம் என்பதை நீங்கள் தேர்வுசெய்ய உதவும் கூடுதல் தகவல்கள். <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />கார்டின் பலன்கள் குறித்துத் தெரிந்துகொள்ளுங்கள்<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">டிவி நகைச்சுவை நிகழ்ச்சிகள்</translation>
 <translation id="3324687287337751929">4 x 6 இன்ச்</translation>
 <translation id="3324983252691184275">அடர்சிவப்பு</translation>
@@ -1370,7 +1368,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="3615309852743236517">மெனிக்கியூர் &amp; பெடிக்கியூர்</translation>
 <translation id="3620239073311576716">சீருடை &amp; பணிக்கான ஆடைகள்</translation>
-<translation id="36224234498066874">உலாவிய தரவை அழி...</translation>
 <translation id="362276910939193118">முழு வரலாற்றையும் காண்பி</translation>
 <translation id="3623041590998910684">கேமராவைப் பயன்படுத்த, Chromeமிற்கு <ph name="LINK" /> இல் அணுகலை வழங்குங்கள்.</translation>
 <translation id="3623398832322170566">காதல் திரைப்படங்கள்</translation>
@@ -1915,6 +1912,7 @@
 <translation id="4691093235373904540">மேற்கூரை பழுதுபார்த்தல்</translation>
 <translation id="4692623383562244444">தேடல் இன்ஜின்கள்</translation>
 <translation id="4698692901173737941">போர் விளையாட்டுகள்</translation>
+<translation id="4701307090948589984">அலைபரப்புவதற்கான சாதனம்...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">சைடு</translation>
 <translation id="4702656508969495934">உடனடி வசனம் காட்டப்படுகிறது, ஃபோகஸ் செய்ய சாளர மாற்றியைப் பயன்படுத்தவும்</translation>
@@ -2051,7 +2049,6 @@
 <translation id="4936134414789135531">சேர்க்கப்பட்ட <ph name="VALUE_NAME" /> ஐக் கண்டறிய முடியவில்லை.</translation>
 <translation id="4936675324097895694">நிதி</translation>
 <translation id="4940163644868678279">Chrome மறைநிலைப் பயன்முறை</translation>
-<translation id="494111439860963024">உலாவிய தரவை அழிப்பதற்கான பட்டன், இதுவரை இணையத்தில் பார்த்தவை, குக்கீகள், தற்காலிகச் சேமிப்பு மற்றும் பலவற்றை Chrome அமைப்புகளில் அழிக்க இதை இயக்குங்கள்</translation>
 <translation id="4943620199112228840">மைக்ரோஃபோன்களைப் பயன்படுத்துதல்</translation>
 <translation id="4943872375798546930">முடிவுகள் இல்லை</translation>
 <translation id="4950898438188848926"><ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> தாவலைத் திறக்க, ‘தாவல்’ மாற்ற பட்டனைத் தட்டி, ‘எண்டர்’ பட்டனை அழுத்தவும்</translation>
@@ -2164,6 +2161,8 @@
 <translation id="5161334686036120870">தலைப்பு:</translation>
 <translation id="5161506081086828129">ஸ்டேக்கர் 9</translation>
 <translation id="5164798890604758545">உரை உள்ளிடப்படும்போது</translation>
+<translation id="5164928537947209380">பரிசோதனைக் கட்டத்தில் உள்ள இந்த AI கருவி தவறு செய்யக்கூடும். இதை மேம்படுத்த, Googleளுக்கு உங்கள் உள்ளடக்கம் அனுப்பப்படும்.
+    <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> இன் CVC எண்ணை உள்ளிடவும். நீங்கள் உறுதிப்படுத்திய பின்னர், உங்கள் Google கணக்கிலிருக்கும் கார்டு விவரங்கள் இந்தத் தளத்துடன் பகிரப்படும்.</translation>
 <translation id="5169827969064885044">உங்கள் நிறுவனத்தின் கணக்கிற்கான அணுகலை நீங்கள் இழக்கக்கூடும் அல்லது அடையாளத் திருட்டை எதிர்கொள்ளக்கூடும். இப்போதே உங்கள் கடவுச்சொல்லை மாற்றும்படி Chrome பரிந்துரைக்கிறது.</translation>
 <translation id="5171045022955879922">தேடுக அல்லது URLலை உள்ளிடுக</translation>
@@ -2286,7 +2285,6 @@
 <translation id="541416427766103491">ஸ்டேக்கர் 4</translation>
 <translation id="5414446060143308245">மாற்றுவதற்கு முன் சரிபார்க்க வேண்டும்</translation>
 <translation id="5414511064953050917">பரவாயில்லை நகர்த்து</translation>
-<translation id="5421136146218899937">உலாவிய தரவை அழி...</translation>
 <translation id="5421408724705443535">ராக் இசை</translation>
 <translation id="5423269318075950257">விலையைக் கண்காணித்தல்</translation>
 <translation id="5425082381151187189">வீடு மற்றும் உட்புற அலங்காரம்</translation>
@@ -3648,7 +3646,6 @@
 <translation id="8022542098135319050">டிராவல் ஏஜென்சிகள் &amp; சேவைகள்</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, சிஸ்டத்தின் இயல்பு உலாவியாக Chromeமை அமைக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="8025119109950072390">இந்தத் தளத்தில் உள்ள ஹேக்கர்கள், உங்களை ஏமாற்றி, மென்பொருளை நிறுவுவது அல்லது தனிப்பட்ட தகவலை (எடுத்துக்காட்டாக, கடவுச்சொற்கள், ஃபோன் எண்கள் அல்லது கிரெடிட் கார்டுகள்) வெளிப்படுத்துவது போன்ற உங்களுக்கு ஆபத்தை விளைவிக்கும் செயல்களைச் செய்ய வைக்கலாம்.</translation>
-<translation id="8026334261755873520">உலாவிய தரவை அழி</translation>
 <translation id="8027077570865220386">டிரே 15</translation>
 <translation id="8027585818882015174">Chrome பாதுகாப்புச் சரிபார்ப்பை இயக்குவதற்கான பட்டன். Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க இதை இயக்குங்கள்</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsஸில் புதிய படிவத்தை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
@@ -3919,7 +3916,6 @@
 <translation id="8527228059738193856">ஸ்பீக்கர்கள்</translation>
 <translation id="8527681393107582734">வேளாண்மை மற்றும் வனவியல்</translation>
 <translation id="8528149813106025610">சிறுவர் ஆடைகள்</translation>
-<translation id="8530813470445476232">Chrome அமைப்புகளில் உலாவல் வரலாறு, குக்கீகள் தற்காலிக சேமிப்பு ஆகியவற்றை அழி</translation>
 <translation id="853246364274116957">பிராட்வே &amp; மியூசிக்கல் தியேட்டர்</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">தடைசெய்யப்பட்ட URLகளின் பட்டியலையும் உங்கள் சிஸ்டம் நிர்வாகி செயல்படுத்தியுள்ள பிற கொள்கைகளையும் பார்க்க &lt;strong&gt;chrome://policy&lt;/strong&gt; என்பதற்குச் செல்லவும்.</translation>
@@ -4059,6 +4055,7 @@
 <translation id="8807160976559152894">டிரிம் ஆஃப்டர் ஈச் பேஜ்</translation>
 <translation id="8809203544698246977">தடுக்கப்பட்ட தலைப்புகள் இங்கே காட்டப்படும்</translation>
 <translation id="8811470563853401328">முகவரியைக் கணக்கில் சேமிக்கவா?</translation>
+<translation id="8811725516933141693">Gemini உடன் உரையாட @gemini என்று டைப் செய்யுங்கள்</translation>
 <translation id="8813277370772331957">பின்னர் நினைவூட்டு</translation>
 <translation id="8814707942599948500">என்வெலப் C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளில் Chromeமைப் புதுப்பிக்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>

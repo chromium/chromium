@@ -341,6 +341,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="160851722280695521">Igrajte igru Dino Run u Chromeu</translation>
 <translation id="161042844686301425">Cijan</translation>
 <translation id="1611101756749861742">Drugi kolut</translation>
+<translation id="1611854593425834707">Zatvori popis uređaja za emitiranje</translation>
 <translation id="1612199629998703524">Upravljajte temama</translation>
 <translation id="1615178538289490617">Opozovi pristup za priključak <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Administratorska pravila onemogućuju snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
@@ -453,7 +454,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1810391395243432441">Zaštita zaporki zaključavanjem zaslona</translation>
 <translation id="1812527064848182527">pejzaž</translation>
 <translation id="1812975699435941848">Zdravstveno obrazovanje i medicinska obuka</translation>
-<translation id="1813414402673211292">Brisanje podataka o pregledavanju</translation>
 <translation id="1816436748874040213">Može tražiti dopuštenje za pomicanje i zumiranje dijeljenih kartica</translation>
 <translation id="1818522458013171885">Deblokiraj</translation>
 <translation id="1818585559878922121">Dokumentarni filmovi</translation>
@@ -619,7 +619,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2126374524350484896">Alat za izradu PDF-a:</translation>
 <translation id="2130448033692577677">Predlošci koje ste naveli ne mogu se primijeniti jer nije postavljeno pravilo DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Prikazuju se nasumičnim redoslijedom. Zadanu postavku uvijek možete promijeniti.</translation>
+<translation id="2132825047782982803">Prikazuju se nasumičnim redoslijedom. Zadani preglednik uvijek možete promijeniti.</translation>
 <translation id="2137891579555018930">Čekanje na dopuštenje...</translation>
 <translation id="213826338245044447">Mobilne oznake</translation>
 <translation id="2141000681034340397">Uredite unos</translation>
@@ -876,7 +876,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2647086987482648627">Tkanina (polusjajno)</translation>
 <translation id="264810637653812429">Nije pronađen nijedan kompatibilan uređaj.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste izbrisali povijest pregledavanja, kolačiće, predmemoriju i još mnogo toga u postavkama Chromea</translation>
 <translation id="2650446666397867134">Pristup datoteci nije dopušten</translation>
 <translation id="2651465929321991146">Povijest i kartice</translation>
 <translation id="2653659639078652383">Pošalji</translation>
@@ -1206,7 +1205,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="33073482541490531">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Upravitelj zaporki preporučuje da odmah promijenite tu zaporku.</translation>
 <translation id="3307649904964670439">Gumb Prilagodi Chrome, aktivirajte ga da biste prilagodili izgled svojeg preglednika</translation>
 <translation id="3308006649705061278">Organizacijska jedinica (OU)</translation>
-<translation id="3310047144791481950">Pregledajte informacije koje vam pomažu pri odabiru kartice za plaćanje. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saznajte više o pogodnostima za kartice<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV komedije</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Grimizna</translation>
@@ -1375,7 +1373,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste pokrenuli sigurnosnu provjeru u postavkama Chromea</translation>
 <translation id="3615309852743236517">Manikura i pedikura</translation>
 <translation id="3620239073311576716">Uniforme i radna odjeća</translation>
-<translation id="36224234498066874">Obriši podatke o pregledavanju...</translation>
 <translation id="362276910939193118">Pokaži cijelu povijest</translation>
 <translation id="3623041590998910684">Da biste upotrebljavali kameru, odobrite Chromeu pristup u <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Ljubavni filmovi</translation>
@@ -1920,6 +1917,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4691093235373904540">Krovopokrivanje</translation>
 <translation id="4692623383562244444">Tražilice</translation>
 <translation id="4698692901173737941">Borilački sportovi</translation>
+<translation id="4701307090948589984">Emitiraj na uređaju...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Bočni</translation>
 <translation id="4702656508969495934">Vidljivi su automatski titlovi, upotrijebite izmjenjivač prozora za fokusiranje</translation>
@@ -2056,7 +2054,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4936134414789135531">Nije moguće pronaći umetnutu vrijednost <ph name="VALUE_NAME" />.</translation>
 <translation id="4936675324097895694">Financije</translation>
 <translation id="4940163644868678279">Anonimni način u Chromeu</translation>
-<translation id="494111439860963024">Gumb Izbriši podatke o pregledavanju, aktivirajte ga da biste izbrisali povijest pregledavanja, kolačiće, predmemoriju i još mnogo toga u postavkama Chromea</translation>
 <translation id="4943620199112228840">upotrebu mikrofona</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
 <translation id="4950898438188848926">Gumb za promjenu kartice, pritisnite Enter za prebacivanje na otvorenu karticu, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2169,6 +2166,8 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5161334686036120870">Predmet:</translation>
 <translation id="5161506081086828129">Spremnik za slaganje u snopove 9</translation>
 <translation id="5164798890604758545">Tekst je unesen</translation>
+<translation id="5164928537947209380">Ovaj eksperimentalni AI alat neće uvijek biti u pravu. Da bismo ga poboljšali, vaš se sadržaj šalje Googleu.
+    <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Unesite CVC za karticu <ph name="CREDIT_CARD" />. Nakon što ga potvrdite, podaci o kartici s vašeg Google računa podijelit će se s ovom web-lokacijom.</translation>
 <translation id="5169827969064885044">Mogli biste izgubiti pristup računu svoje organizacije ili bi netko mogao ukrasti vaš identitet. Chrome preporučuje da odmah promijenite zaporku.</translation>
 <translation id="5171045022955879922">Pretražite ili upišite URL</translation>
@@ -2291,7 +2290,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="541416427766103491">Spremnik za slaganje u snopove 4</translation>
 <translation id="5414446060143308245">Prije prijenosa potreban je pregled</translation>
 <translation id="5414511064953050917">Ipak premjesti</translation>
-<translation id="5421136146218899937">Izbriši podatke o pregledavanju...</translation>
 <translation id="5421408724705443535">Rock glazba</translation>
 <translation id="5423269318075950257">Praćenje cijene</translation>
 <translation id="5425082381151187189">Dom i unutarnje uređenje</translation>
@@ -3656,7 +3654,6 @@ Dodatne pojedinosti:
 <translation id="8022542098135319050">Putničke agencije i usluge</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste postavili Chrome kao zadani preglednik sustava</translation>
 <translation id="8025119109950072390">Napadači na ovoj web-lokaciji mogu vas na prijevaru pokušati navesti da napravite nešto opasno kao što je instaliranje softvera ili otkrivanje osobnih podataka (npr. zaporki, telefonskih brojeva ili kreditnih kartica).</translation>
-<translation id="8026334261755873520">Brisanje podataka o pregledavanju</translation>
 <translation id="8027077570865220386">Ladica 15</translation>
 <translation id="8027585818882015174">Gumb Pokreni Chromeovu sigurnosnu provjeru, aktivirajte ga da biste pokrenuli sigurnosnu provjeru u postavkama Chromea</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste brzo izradili novi obrazac u Google obrascima</translation>
@@ -3928,7 +3925,6 @@ Dodatne pojedinosti:
 <translation id="8527228059738193856">Zvučnici</translation>
 <translation id="8527681393107582734">Poljoprivreda i šumarstvo</translation>
 <translation id="8528149813106025610">Dječja odjeća</translation>
-<translation id="8530813470445476232">Izbrišite povijest pregledavanja, kolačiće, predmemoriju i još mnogo toga u postavkama Chromea</translation>
 <translation id="853246364274116957">Broadway i mjuzikli</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Posjetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste vidjeli popis blokiranih URL-ova i druga pravila koja je postavio vaš administrator sustava.</translation>
@@ -4069,6 +4065,7 @@ Dodatne pojedinosti:
 <translation id="8807160976559152894">Obreži nakon svake stranice</translation>
 <translation id="8809203544698246977">Ovdje se prikazuju blokirane teme</translation>
 <translation id="8811470563853401328">Želite li spremiti adresu na račun?</translation>
+<translation id="8811725516933141693">Upišite @gemini da biste chatali s Geminijem</translation>
 <translation id="8813277370772331957">Podsjeti me kasnije</translation>
 <translation id="8814707942599948500">Omotnica C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste ažurirali Chrome iz postavki Chromea</translation>

@@ -68,6 +68,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app da Play Store</translation>
 <translation id="1225748608451425081">Seu Chromebook está bloqueado devido a um problema conhecido. Você poderá fazer login em <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Parar de selecionar</translation>
+<translation id="1230853660706736937">Pesquisar texto em imagens e conferir prévias de imagens</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="1239161794459865856">O recurso <ph name="FEATURE_NAME" /> está conectado.</translation>
 <translation id="1240638468526743569">Um app</translation>
@@ -715,11 +716,13 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3824784079442479685">Essa ação libera o acesso à câmera para <ph name="APP_NAME" /> e todos os apps e sites com essa permissão. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="3826099427150913765">Usar senha</translation>
 <translation id="383058930331066723">Modo de Economia de bateria ativado</translation>
+<translation id="3831226344927851293">Sair da visualização do tutorial</translation>
 <translation id="383629559565718788">Mostrar configurações do teclado</translation>
 <translation id="384082539148746321">Excluir modelo?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> e depois <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Não há informações de rede disponíveis</translation>
+<translation id="3848526302597027234">Acessar estas permissões:</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="385300504083504382">Começo</translation>
 <translation id="3859364108019690">Não é possível fazer streaming de apps</translation>
@@ -1815,7 +1818,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8001755249288974029">Selecionar o texto do cursor até o início da linha</translation>
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8015361438441228492">Não foi possível editar a tarefa.</translation>
-<translation id="8026334261755873520">Remover dados de navegação</translation>
 <translation id="802782383769312836">Espaço de trabalho anterior: <ph name="DESK_NAME" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Falha na conexão com o ponto de acesso</translation>
 <translation id="8029629653277878342">O PIN ou a senha são necessários para aumentar a segurança</translation>

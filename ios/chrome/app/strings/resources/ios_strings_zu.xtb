@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Siyakwamukela Futhi, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Igama lomnikazi wekhadi</translation>
 <translation id="1809939268435598390">Susa ifolda</translation>
-<translation id="1813414402673211292">Sula idatha yopheqululo</translation>
 <translation id="1815941218935345331">Ikhodi yokudlula</translation>
 <translation id="1820259098641718022">Kungezwe kuhlu lokufunda</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Ikhasi lewebhu lilayishiwe</translation>
 <translation id="223356358902285214">Umsebenzi wewebhu nohlelo lokusebenza</translation>
 <translation id="2234827758954819389">Umhlahlandlela Wobumfihlo</translation>
-<translation id="2239626343334228536">Isula idatha yokuphequlula...</translation>
 <translation id="2251686759395008410">Imenyu → Umlando</translation>
 <translation id="2252674110805316998">USesho lweWebhu</translation>
 <translation id="2252749852083403809">Ilondoloza ku-Drive ka-<ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3485558910355485767">Iwindi elisha le-Incognito</translation>
 <translation id="3488501490964659223">Amathebhu avaliwe nedatha yopheqululo keye kwasulwa. Ukhishwe ngemvume</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /> mayelana nokuqukethwe okuphakamisiwe</translation>
-<translation id="3494788280727468875">Qinisekisa ukusula idatha yokuphequlula</translation>
 <translation id="35083190962747987">Vula ${url}</translation>
 <translation id="3519193562722059437">Vula ithebhu ukuze uphequlule iwebhu.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Vula ithebhu}one{Vula amathebhu angu-{count}}other{Vula amathebhu angu-{count}}}</translation>
@@ -492,7 +489,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3540141921715814660">Engeza kumabhukhimakhi</translation>
 <translation id="355101282835380364">Londoloza Ku-akhawunti…</translation>
 <translation id="3551320343578183772">Vala ithebhu</translation>
-<translation id="3565207542107370586">Sula Idatha Yopheqululo</translation>
 <translation id="3565930036634619844">Ithebhu <ph name="TAB_INDEX" /> kokungu-<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Thepha kabili ngamaphasiwedi engeziwe.</translation>
 <translation id="3575234738189584619">Sesha nge-Lens</translation>
@@ -968,7 +964,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6027945736510816438">Ingabe ubukade uqonde i-<ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">isakhi esisha</translation>
 <translation id="6033598293589037429">Kulungele Ukulandwa</translation>
-<translation id="6036215966221662377">Sula Idatha Yopheqululo</translation>
 <translation id="6036514205982097558">Wonke Amathebhu Akho Esipheqululini Esisodwa</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Vala</translation>
@@ -1151,7 +1146,6 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="6859944681507688231">Ukuze uskene ikhodi ye-QR noma ikhadi lesikweletu, nika amandla ikhamera kusuka kuzilungiselelo.</translation>
 <translation id="6867369562105931222">iphasiwedi</translation>
 <translation id="686899695320434745">Amakheli awakhiyiwe ngomushwana wokungena. Lokhu kukuvumela ukuba uwasebenzise kwamanye aamasevisi e-Google.</translation>
-<translation id="6869389390665537774">Ungakwazi ukubona amakhasi owavakashele noma uwasule kumlando wakho</translation>
 <translation id="687135068089457384">Bonisa Amasethingi</translation>
 <translation id="6873263987691478642">Ukubuka okuhlukanisiwe</translation>
 <translation id="6882836635272038266">Ukuvikelwa okujwayelekile ngokumelene namawebhusayithi, okulandwayo, nezandiso ezaziwa njengeziyingozi.</translation>
@@ -1297,7 +1291,6 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="7719038820139380048">Ngena ngemvume ukuze uthole okuqukethwe okusekelwe kulokho okuthandayo.</translation>
 <translation id="7720410380936703141">ZAMA FUTHI</translation>
 <translation id="7724085059277147439">{count,plural, =1{Into ilondolozwe ku-Google Account, {email}}one{Izinto ilondolozwe ku-Google Account, {email}}other{Izinto ilondolozwe ku-Google Account, {email}}}</translation>
-<translation id="7726702057919861819">Imenyu → Umlando → Sula Idatha Yokubhrawuza</translation>
 <translation id="7729458878441927652">Ukuze ubone amathebhu ukusuka kwamanye amadivayisi akho, vumelanisa amathebhu akho nomlando.</translation>
 <translation id="7730973429297233609">Khetha i-akhawunti ofuna ukuyisebenzisa ukuze ulondoloze okuthi <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771">I-<ph name="BOOKMRK_NAME" />. Kule divayisi kuphela</translation>
@@ -1542,7 +1535,6 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8870413625673593573">Okuvalwe kamuva</translation>
 <translation id="8876882697946675716">Gcina Amadivayisi Akho Ekuvumelaniseni</translation>
 <translation id="8879604564928138696">Thepha kabili ukuze uzame</translation>
-<translation id="8879984884633913185">Fihla okuthi Sula Idatha Yokubhrawuza</translation>
 <translation id="8881801611828450202">Sesha i-<ph name="SEARCH_ENGINE" /> yalesi sithombe</translation>
 <translation id="8898822736010347272">Thumela ama-URL wamanye amakhasi owavakashelayo, ulwazi lwesistimu olulinganiselwe, nokunye okuqukethe kwekhasi ku-Google, ukusiza ukuthola izingozi ezintsha nokuvikela wonke umuntu kuwebhu.</translation>
 <translation id="890565330728586731">Emuva</translation>

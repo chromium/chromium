@@ -453,7 +453,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1810391395243432441">Proteggi le password con il blocco schermo</translation>
 <translation id="1812527064848182527">orizzontale</translation>
 <translation id="1812975699435941848">Istruzione e formazione medica</translation>
-<translation id="1813414402673211292">Cancella dati di navigazione</translation>
 <translation id="1816436748874040213">Può chiedere di scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="1818522458013171885">Sblocca</translation>
 <translation id="1818585559878922121">Documentari</translation>
@@ -876,7 +875,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2647086987482648627">Tessuto (semilucido)</translation>
 <translation id="264810637653812429">Nessun dispositivo compatibile trovato.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per cancellare la cronologia di navigazione, i cookie, la cache e altri dati nelle impostazioni di Chrome</translation>
 <translation id="2650446666397867134">L'accesso al file è stato negato</translation>
 <translation id="2651465929321991146">Cronologia e schede</translation>
 <translation id="2653659639078652383">Invia</translation>
@@ -1203,7 +1201,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="33073482541490531">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Il Gestore delle password consiglia di cambiarla subito.</translation>
 <translation id="3307649904964670439">Pulsante Personalizza Chrome, attiva per personalizzare l'aspetto del browser</translation>
 <translation id="3308006649705061278">Unità organizzativa (OU)</translation>
-<translation id="3310047144791481950">Visualizza le informazioni che ti aiutano a scegliere con che carta effettuare il pagamento. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Scopri di più sui vantaggi della carta<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Commedie TV</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Cremisi</translation>
@@ -1372,7 +1369,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per eseguire il controllo di sicurezza nelle impostazioni di Chrome</translation>
 <translation id="3615309852743236517">Manicure e pedicure</translation>
 <translation id="3620239073311576716">Uniformi e indumenti da lavoro</translation>
-<translation id="36224234498066874">Cancella dati di navigazione...</translation>
 <translation id="362276910939193118">Mostra cronologia completa</translation>
 <translation id="3623041590998910684">Per usare la fotocamera, consenti l'accesso a Chrome in <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Film romantici</translation>
@@ -2054,7 +2050,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4936134414789135531">Impossibile trovare l'elemento <ph name="VALUE_NAME" /> inserito.</translation>
 <translation id="4936675324097895694">Finanza</translation>
 <translation id="4940163644868678279">Modalità di navigazione in incognito in Chrome</translation>
-<translation id="494111439860963024">Pulsante Cancella dati di navigazione, attiva per cancellare la cronologia di navigazione, i cookie, la cache e altri dati nelle impostazioni di Chrome</translation>
 <translation id="4943620199112228840">Utilizzare i microfoni</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
 <translation id="4950898438188848926">Pulsante per cambiare scheda, premi INVIO per passare alla scheda aperta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2291,7 +2286,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="541416427766103491">Fascicolatore 4</translation>
 <translation id="5414446060143308245">La revisione è obbligatoria prima del trasferimento</translation>
 <translation id="5414511064953050917">Sposta comunque</translation>
-<translation id="5421136146218899937">Cancella dati di navigazione...</translation>
 <translation id="5421408724705443535">Musica rock</translation>
 <translation id="5423269318075950257">Monitora prezzo</translation>
 <translation id="5425082381151187189">Arredamento e decorazione di interni</translation>
@@ -3653,7 +3647,6 @@ Ulteriori dettagli:
 <translation id="8022542098135319050">Servizi e agenzie di viaggi</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per impostare Chrome come browser predefinito del sistema</translation>
 <translation id="8025119109950072390">I malintenzionati su questo sito potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software o fornire i tuoi dati personali (ad esempio password, numeri di telefono o carte di credito).</translation>
-<translation id="8026334261755873520">Cancella dati di navigazione</translation>
 <translation id="8027077570865220386">Vassoio 15</translation>
 <translation id="8027585818882015174">Pulsante Esegui il controllo di sicurezza di Chrome, attiva per eseguire il controllo di sicurezza nelle impostazioni di Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo modulo in Moduli Google</translation>
@@ -3924,7 +3917,6 @@ Ulteriori dettagli:
 <translation id="8527228059738193856">Altoparlanti</translation>
 <translation id="8527681393107582734">Agricoltura e silvicoltura</translation>
 <translation id="8528149813106025610">Abbigliamento bambino</translation>
-<translation id="8530813470445476232">Cancella la cronologia di navigazione e i cookie, svuota la cache e altro ancora nelle impostazioni di Chrome</translation>
 <translation id="853246364274116957">Broadway e musical</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; per visualizzare l'elenco di URL bloccati e altri criteri applicati dall'amministratore di sistema.

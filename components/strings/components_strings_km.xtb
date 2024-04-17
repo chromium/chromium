@@ -456,7 +456,6 @@
 <translation id="1810391395243432441">ការពារពាក្យសម្ងាត់​​ដោយ​ប្រើ​​ការ​ចាក់សោអេក្រង់​របស់​អ្នក</translation>
 <translation id="1812527064848182527">ផ្ដេក</translation>
 <translation id="1812975699435941848">ការអប់រំ​ផ្នែកសុខភាព និង​ការបណ្ដុះបណ្ដាល​វេជ្ជសាស្ត្រ</translation>
-<translation id="1813414402673211292">ជម្រះទិន្នន័យរុករក</translation>
 <translation id="1816436748874040213">អាចស្នើសុំ​រំកិល និង​ពង្រីកបង្រួម​ផ្ទាំង​ដែលបាន​ចែករំលែក</translation>
 <translation id="1818522458013171885">ឈប់ទប់ស្កាត់</translation>
 <translation id="1818585559878922121">ភាពយន្ត​ឯកសារ</translation>
@@ -622,7 +621,7 @@
 <translation id="2126374524350484896">កម្មវិធីបំប្លែងជា PDF៖</translation>
 <translation id="2130448033692577677">ទម្រង់គំរូ​ដែលអ្នក​បានបញ្ជាក់​ប្រហែលជា​មិន​អាច​ប្រើ​បានទេ ដោយសារ​មិនបាន​កំណត់​គោលការណ៍ DnsOverHttpsMode។</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">ម៉ាស៊ីនស្វែងរកទាំងនេះត្រូវបាន​បង្ហាញ​តាមលំដាប់​ចៃដន្យ។ អ្នកអាចប្ដូរលំនាំដើមរបស់អ្នកនៅពេលណាក៏បាន។</translation>
+<translation id="2132825047782982803">ម៉ាស៊ីនស្វែងរកទាំងនេះបង្ហាញ​តាមលំដាប់​ចៃដន្យ។ អ្នកអាចប្ដូរម៉ាស៊ីនស្វែងរកលំនាំដើមរបស់អ្នកបានគ្រប់ពេល។</translation>
 <translation id="2137891579555018930">កំពុង​រង់ចាំ​ការអនុញ្ញាត...</translation>
 <translation id="213826338245044447">ចំណាំទូរស័ព្ទ</translation>
 <translation id="2141000681034340397">កែការបញ្ចូលរបស់អ្នក</translation>
@@ -880,7 +879,6 @@
 <translation id="2647086987482648627">ក្រណាត់ (រលោងមធ្យម)</translation>
 <translation id="264810637653812429">រកមិន​ឃើញ​ឧបករណ៍​ដែល​ត្រូវគ្នាទេ។</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីសម្អាតប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត ខូគី ឃ្លាំងផ្ទុកទិន្នន័យរបស់អ្នក និងអ្វីៗជាច្រើនទៀតនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="2650446666397867134">ការចូលប្រើឯកសារត្រូវបានបដិសេធ</translation>
 <translation id="2651465929321991146">ប្រវត្តិ និង​ផ្ទាំង</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
@@ -1210,7 +1208,6 @@
 <translation id="33073482541490531">ពាក្យសម្ងាត់ដែលអ្នកទើបតែប្រើត្រូវបានរកឃើញនៅក្នុងការបែកធ្លាយទិន្នន័យ។ កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ណែនាំឱ្យផ្លាស់ប្ដូរពាក្យសម្ងាត់នេះឥឡូវនេះ។</translation>
 <translation id="3307649904964670439">ប៊ូតុង "ប្ដូរ Chrome តាមបំណង", បើកដំណើរការ ដើម្បីប្ដូររូបរាងកម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នកតាមបំណង</translation>
 <translation id="3308006649705061278">ក្រុមអង្គភាព (OU)</translation>
-<translation id="3310047144791481950">មើលឃើញ​ព័ត៌មាន​ដែលជួយអ្នក​ក្នុងការ​ជ្រើសរើស​កាតដែលប្រើ​សម្រាប់​បង់ប្រាក់។ <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ស្វែងយល់​អំពី​អត្ថប្រយោជន៍​កាត<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">កម្មវិធី​កំប្លែង​តាម​ទូរទស្សន៍</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">ឈាមជ្រូក</translation>
@@ -1379,7 +1376,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab បន្ទាប់មក Enter ដើម្បីដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព​នៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="3615309852743236517">ការធ្វើក្រចកដៃ និង​ក្រចកជើង</translation>
 <translation id="3620239073311576716">ឯកសណ្ឋាន និង​សម្លៀកបំពាក់​ធ្វើការ</translation>
-<translation id="36224234498066874">សម្អាត​ទិន្នន័យ​រុករក...</translation>
 <translation id="362276910939193118">បង្ហាញប្រវត្តិពេញលេញ</translation>
 <translation id="3623041590998910684">ដើម្បីប្រើកាមេរ៉ារបស់អ្នក សូមផ្ដល់សិទ្ធិចូលប្រើឱ្យ Chrome នៅក្នុង<ph name="LINK" />។</translation>
 <translation id="3623398832322170566">ភាពយន្ត​មនោសញ្ចេតនា</translation>
@@ -2063,7 +2059,6 @@
 <translation id="4936134414789135531">រកមិនឃើញ <ph name="VALUE_NAME" /> ដែលបានបញ្ចូល​ទេ។</translation>
 <translation id="4936675324097895694">ហិរញ្ញវត្ថុ</translation>
 <translation id="4940163644868678279">មុខងារឯកជននៅក្នុង Chrome</translation>
-<translation id="494111439860963024">ប៊ូតុង "សម្អាតទិន្នន័យរុករក", បើកដំណើរការ ដើម្បីសម្អាតប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត ខូគី ឃ្លាំងបម្រុងរបស់អ្នក និងអ្វីៗជាច្រើនទៀតនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="4943620199112228840">ប្រើមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="4943872375798546930">គ្មានលទ្ធផលទេ</translation>
 <translation id="4950898438188848926">ចុច​ប៊ូតុងប្ដូរ រួចចុច "Enter" ដើម្បី​ប្ដូរទៅ​ផ្ទាំងបើក <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2301,7 +2296,6 @@
 <translation id="541416427766103491">ទម្រគំនរ​ទី 4</translation>
 <translation id="5414446060143308245">តម្រូវឱ្យ​ពិនិត្យមើល មុនពេល​ផ្ទេរ</translation>
 <translation id="5414511064953050917">មិនអីទេ ផ្លាស់ទីចុះ</translation>
-<translation id="5421136146218899937">ជម្រះទិន្នន័យរុករក...</translation>
 <translation id="5421408724705443535">តន្ត្រីរ៉ក់</translation>
 <translation id="5423269318075950257">តាម​ដាន​តម្លៃ</translation>
 <translation id="5425082381151187189">ការតុបតែង​ផ្ទះ និង​ផ្នែក​ខាងក្នុង</translation>
@@ -3669,7 +3663,6 @@
 <translation id="8022542098135319050">ទីភ្នាក់ងារ និងសេវាកម្មទេសចរណ៍</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច tab រួចចុច Enter ដើម្បី​កំណត់ Chrome ជា​កម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម​របស់ប្រព័ន្ធ</translation>
 <translation id="8025119109950072390">អ្នកវាយប្រហារនៅលើទំព័រនេះ អាចនឹងបញ្ឆោតឲ្យអ្នកធ្វើអ្វីមួយដែលគ្រោះថ្នាក់ ដូចជាការដំឡើងកម្មវិធី ឬលាតត្រដាងព័ត៌មានផ្ទាល់ខ្លួនរបស់អ្នក (ឧទាហរណ៍៖ ពាក្យសម្ងាត់ លេខទូរសព្ទ ឬកាតឥណទាន)។</translation>
-<translation id="8026334261755873520">ជម្រះទិន្នន័យរុករក</translation>
 <translation id="8027077570865220386">ទម្រទី 15</translation>
 <translation id="8027585818882015174">ប៊ូតុង "ដំណើរការការពិនិត្យសុវត្ថិភាព Chrome", បើកដំណើរការ ដើម្បីដំណើរការការពិនិត្យសុវត្ថិភាពនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បី​បង្កើតទម្រង់បែបបទថ្មី​នៅក្នុង Google ទម្រង់បែបបទ​បានរហ័ស</translation>
@@ -3941,7 +3934,6 @@
 <translation id="8527228059738193856">ឧបករណ៍​បំពង​សំឡេង</translation>
 <translation id="8527681393107582734">កសិកម្ម និងព្រៃឈើ</translation>
 <translation id="8528149813106025610">សម្លៀកបំពាក់​កុមារ</translation>
-<translation id="8530813470445476232">សម្អាតប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត ខូគី ឃ្លាំងផ្ទុកទិន្នន័យរបស់អ្នក និងអ្វីៗជាច្រើនទៀត​នៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="853246364274116957">មហោស្រព​តន្ត្រី និង Broadway</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">សូមចូលទៅកាន់ &lt;strong&gt;chrome://policy&lt;/strong&gt; ដើម្បីមើល​បញ្ជី URL ដែលបាន​ទប់ស្កាត់ និងគោលការណ៍​ផ្សេងទៀត ដែលបានអនុវត្ត​ដោយអ្នកគ្រប់គ្រងប្រព័ន្ធ​របស់អ្នក។</translation>

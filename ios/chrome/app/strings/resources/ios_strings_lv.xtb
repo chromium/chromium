@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Laipni lūdzam atpakaļ, <ph name="USER_NAME" />!</translation>
 <translation id="1803264062614276815">Kartes īpašnieka vārds, uzvārds</translation>
 <translation id="1809939268435598390">Dzēst mapi</translation>
-<translation id="1813414402673211292">Dzēst pārlūkošanas datus</translation>
 <translation id="1815941218935345331">Piekļuves kods</translation>
 <translation id="1820259098641718022">Pievienota lasīšanas sarakstam</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
 <translation id="223356358902285214">Darbības tīmeklī un lietotnēs</translation>
 <translation id="2234827758954819389">Konfidencialitātes ceļvedis</translation>
-<translation id="2239626343334228536">Notiek pārlūkošanas datu notīrīšana…</translation>
 <translation id="2251686759395008410">Izvēlne → Vēsture</translation>
 <translation id="2252674110805316998">Meklēt tīmeklī</translation>
 <translation id="2252749852083403809">Tiek saglabāts konta <ph name="USER_EMAIL" /> diskā.</translation>
@@ -479,7 +477,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3485558910355485767">Jauns inkognito režīma logs</translation>
 <translation id="3488501490964659223">Cilnes tika aizvērtas, un pārlūkošanas dati tika dzēsti. Jūs tikāt izrakstīts.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par ieteikto saturu.</translation>
-<translation id="3494788280727468875">Apstiprināt pārlūkošanas datu notīrīšanu</translation>
 <translation id="35083190962747987">Atvērt ${url}</translation>
 <translation id="3519193562722059437">Atveriet cilni, lai pārlūkotu tīmekli.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Atvērt cilni}zero{Atvērt {count} cilnes}one{Atvērt {count} cilni}other{Atvērt {count} cilnes}}</translation>
@@ -492,7 +489,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3540141921715814660">Pievienot grāmatzīmēm</translation>
 <translation id="355101282835380364">Saglabāt kontā…</translation>
 <translation id="3551320343578183772">Aizvērt cilni</translation>
-<translation id="3565207542107370586">Notīrīt pārlūkošanas datus…</translation>
 <translation id="3565930036634619844">Cilne numur <ph name="TAB_INDEX" />, kopējais skaits ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Veiciet dubultskārienu, lai skatītu citas paroles.</translation>
 <translation id="3575234738189584619">Meklēt ar Lens</translation>
@@ -968,7 +964,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6027945736510816438">Vai domājāt <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">jauna funkcija</translation>
 <translation id="6033598293589037429">Varat saņemt</translation>
-<translation id="6036215966221662377">Dzēst pārlūkošanas datus</translation>
 <translation id="6036514205982097558">Visas jūsu cilnes vienā pārlūkā</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />. <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Aizvērt</translation>
@@ -1151,7 +1146,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6859944681507688231">Lai skenētu kvadrātkodu vai kredītkarti, iestatījumos iespējojiet kameras atļauju.</translation>
 <translation id="6867369562105931222">parole</translation>
 <translation id="686899695320434745">Adreses netiek šifrētas, izmantojot ieejas frāzi. Tādējādi varat tās izmantot citos Google pakalpojumos.</translation>
-<translation id="6869389390665537774">Varat skatīt apmeklētās lapas vai noņemt tās no vēstures.</translation>
 <translation id="687135068089457384">Rādīt iestatījumus</translation>
 <translation id="6873263987691478642">Dalītais skats</translation>
 <translation id="6882836635272038266">Standarta aizsardzība pret zināmām bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem.</translation>
@@ -1297,7 +1291,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7719038820139380048">Pierakstieties, lai iegūtu savām interesēm atbilstošu saturu.</translation>
 <translation id="7720410380936703141">MĒĢINĀT VĒLREIZ</translation>
 <translation id="7724085059277147439">{count,plural, =1{Vienums ir saglabāts jūsu Google kontā ({email})}zero{Vienumi ir saglabāti jūsu Google kontā ({email})}one{Vienumi ir saglabāti jūsu Google kontā ({email})}other{Vienumi ir saglabāti jūsu Google kontā ({email})}}</translation>
-<translation id="7726702057919861819">Izvēlne → Vēsture → Notīrīt pārlūkošanas datus</translation>
 <translation id="7729458878441927652">Lai skatītu cilnes no citām savām ierīcēm, sinhronizējiet cilnes un vēsturi.</translation>
 <translation id="7730973429297233609">Atlasiet kontu, kuru vēlaties izmantot, lai saglabātu failu “<ph name="FILENAME" />” (<ph name="FILESIZE" />).</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Tikai šajā ierīcē.</translation>
@@ -1542,7 +1535,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8870413625673593573">Nesen aizvērtas</translation>
 <translation id="8876882697946675716">Sinhronizējiet savas ierīces</translation>
 <translation id="8879604564928138696">Lai izmēģinātu, veiciet dubultskārienu</translation>
-<translation id="8879984884633913185">Paslēpt vienumu Notīrīt pārlūkošanas datus</translation>
 <translation id="8881801611828450202">Meklēt šo attēlu ar <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
 <translation id="890565330728586731">Atpakaļ</translation>

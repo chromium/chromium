@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">ნებართვების გადაყენება</translation>
 <translation id="301521992641321250">დაბლოკილია ავტომატურად</translation>
 <translation id="3069226013421428034">მესამე მხარის მეშვეობით სისტემაში შესვლის დაშვება კონკრეტული საიტისთვის.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{მოქმედების ვადა იწურება ხვალ}other{მოქმედების ვადა იწურება # დღეში}}</translation>
 <translation id="310297983047869047">წინა სლაიდი</translation>
 <translation id="3109724472072898302">აკეცილი</translation>
 <translation id="3114012059975132928">ვიდეოდამკვრელი</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">დაშვებულია</translation>
 <translation id="429312253194641664">საიტზე გაშვებულია მედია-კონტენტი</translation>
 <translation id="42981349822642051">გაშლა</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{მოქმედების ვადა იწურება ხვალ}other{მოქმედების ვადა იწურება # დღეში}}</translation>
 <translation id="4336566011000459927">Chrome დღეს კლავ შეზღუდავს ქუქი-ჩანაწერებს</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> თქვენი ბოლო ჩანართი</translation>
 <translation id="4338831206024587507">ყველა საიტი <ph name="DOMAIN" />-ის ფარგლებში</translation>
@@ -290,6 +290,7 @@
 <translation id="5853982612236235577">ჩართვის შემთხვევაში საიტებს შეეძლება შეტყობინებების გამოგზავნის თხოვნა. გამორთვის შემთხვევაში საიტებს არ შეეძლება შეტყობინებების გამოგზავნა.</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="5876056640971328065">ვიდეოს დაპაუზება</translation>
+<translation id="5877248419911025165">ყველა მოთხოვნის ჩაკეცვა</translation>
 <translation id="5884085660368669834">საიტის პარამეტრი</translation>
 <translation id="5887687176710214216">ბოლო ვიზიტი იყო გუშინ</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
@@ -400,7 +401,6 @@
 <translation id="7561196759112975576">ყოველთვის</translation>
 <translation id="757524316907819857">საიტებისთვის დაცული კონტენტის დაკვრის დაბლოკვა</translation>
 <translation id="7594634374516752650">დაკავშირებულია Bluetooth მოწყობილობასთან</translation>
-<translation id="7641339528570811325">დათვალიერების მონაცემების გასუფთავება…</translation>
 <translation id="7649070708921625228">დახმარება</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7667547420449112975">ოზის საოცარი ჯადოქარი</translation>

@@ -234,7 +234,6 @@
 <translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1174073918202301297">શૉર્ટકટ ઉમેર્યો</translation>
 <translation id="1174366174291287894">તમારું કનેક્શન હંમેશાં સુરક્ષિત હોય છે, સિવાય કે Chrome તમને અન્યથા જણાવે</translation>
-<translation id="117445914942805388">તમારા બધા સિંક કરેલા ડિવાઇસ અને તમારા Google એકાઉન્ટમાંથી બ્રાઉઝિંગ ડેટા સાફ કરવા માટે, <ph name="BEGIN_LINK" />સિંક સેટિંગની મુલાકાત લો<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">તમારા ઍડમિનિસ્ટ્રેટરે આ સુવિધા બંધ કરી છે.</translation>
 <translation id="1175364870820465910">&amp;છાપો...</translation>
 <translation id="1175914831232945926">અંકો</translation>
@@ -258,7 +257,6 @@
 <translation id="1190086046506744802">લાઇન વચ્ચે વધુ સ્પેસ</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{તમારા કમ્પ્યુટરમાં સ્ટોર કરેલી એક ફાઇલ ઍક્સેસ કરો}one{તમારા કમ્પ્યુટરમાં સ્ટોર કરેલી # ફાઇલ ઍક્સેસ કરો}other{તમારા કમ્પ્યુટરમાં સ્ટોર કરેલી # ફાઇલ ઍક્સેસ કરો}}</translation>
 <translation id="1190706173655543975">Microsoft ઍપ્લિકેશન પૉલિસીઓ</translation>
-<translation id="119092896208640858">તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગનો ડેટા રાખીને તેને માત્ર આ ડિવાઇસમાંથી સાફ કરવા માટે, <ph name="BEGIN_LINK" />સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
 <translation id="1191353342579061195">તમારી જરૂરિયાત પ્રમાણે થીમ પસંદ કરો. તમારી થીમ, વૉલપેપર અને સ્ક્રીન સેવર જેવું બીજું ઘણું બધું બદલવા માટે, ડેસ્કટૉપ પર માત્ર રાઇટ ક્લિક કરો.</translation>
 <translation id="1192706927100816598">{0,plural, =1{તમે ઑટોમૅટિક રીતે # સેકન્ડમાં સાઇન આઉટ થશો.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}one{તમે ઑટોમૅટિક રીતે # સેકન્ડમાં સાઇન આઉટ થશો.
@@ -1054,6 +1052,7 @@
 <translation id="1784707308176068866">સહયોગ કરનાર મૂળ ઍપ્લિકેશન દ્વારા વિનંતી કરવામાં આવી હોય ત્યારે બૅકગ્રાઉન્ડમાં ચલાવો</translation>
 <translation id="1784849162047402014">ઉપકરણમાં ડિસ્ક સ્થાન ઓછું છે</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />"ને અનઇન્સ્ટૉલ કરવાથી આ ઍપ પણ અનઇન્સ્ટૉલ થઈ જશે:}one{"<ph name="APP_NAME" />"ને અનઇન્સ્ટૉલ કરવાથી આ ઍપ પણ અનઇન્સ્ટૉલ થઈ જશે:}other{"<ph name="APP_NAME" />"ને અનઇન્સ્ટૉલ કરવાથી આ ઍપ પણ અનઇન્સ્ટૉલ થઈ જશે:}}</translation>
+<translation id="1786044937610313874">શૉર્ટકટ Chromeમાં ખુલે છે</translation>
 <translation id="1786290960428378411">વાંચવા અને ફેરફાર કરવા માટે વિનંતી કરવી</translation>
 <translation id="1787350673646245458">વપરાશકર્તાની છબી</translation>
 <translation id="1790976235243700817">ઍક્સેસ કાઢી નાખો</translation>
@@ -1548,7 +1547,6 @@
 <translation id="2144557304298909478">Linux Android ઍપ વિકસાવવાના સેટિંગ</translation>
 <translation id="2144873026585036769">શું પાસવર્ડ અને પાસકી સાચવવા અને ભરવા માટે, તમારા Google એકાઉન્ટનો ઉપયોગ કરીએ?</translation>
 <translation id="2146263598007866206">તમારો સમય બચાવવા માટે, સાઇટ ઑટોમૅટિક રીતે સંબંધિત ફાઇલો કદાચ ડાઉનલોડ કરે</translation>
-<translation id="2147151613919729065">અતિથિ મોડનો ઇતિહાસ સાફ કરવા માટે, તમામ અતિથિ વિન્ડો બંધ કરો.</translation>
 <translation id="2147218225094845757">બાજુની પૅનલ છુપાવો</translation>
 <translation id="2147282432401652483">command</translation>
 <translation id="2147402320887035428">આ ફાઇલ માલવેર હોઈ શકે છે.<ph name="LINE_BREAK" />Google Safe Browsing ચેક કરી રહ્યું છે કે આ ફાઇલ સુરક્ષિત છે કે નહીં — સ્કૅન કરવામાં સામાન્ય રીતે થોડી સેકન્ડનો સમય લાગે છે.</translation>
@@ -1714,7 +1712,6 @@
 <translation id="2273119997271134996">ડૉક વીડિયો-પોર્ટની સમસ્યા</translation>
 <translation id="2274840746523584236">તમારું Chromebook ચાર્જ કરો</translation>
 <translation id="2276503375879033601">વધુ એપ્લિકેશંસ ઉમેરો</translation>
-<translation id="2276910256003242519">ડેટા સાફ કરી રહ્યાં છીએ...</translation>
 <translation id="2278193750452754829">આ સાઇટ પર એક્સ્ટેન્શનની મંજૂરી છે. મેનૂ ખોલવા માટે પસંદ કરો</translation>
 <translation id="2278562042389100163">બ્રાઉઝર વિંડો ખોલો</translation>
 <translation id="2278668501808246459">કન્ટેનર મેનેજર શરૂ કરી રહ્યાં છીએ</translation>
@@ -2020,7 +2017,6 @@
 <translation id="2484574361686148760">WiFi Directના ક્લાયન્ટની માહિતી રિફ્રેશ કરો</translation>
 <translation id="2484743711056182585">પરવાનગી કાઢી નાખો</translation>
 <translation id="2484909293434545162">જો સાઇટ કુકીનો ઉપયોગ કરતી હશે, તો તે અહીં દેખાશે</translation>
-<translation id="2484959914739448251">તમારા બધા સિંક કરેલા ડિવાઇસ અને તમારા Google એકાઉન્ટમાંથી બ્રાઉઝિંગ ડેટા સાફ કરવા માટે, <ph name="BEGIN_LINK" />તમારો પાસફ્રેઝ દાખલ કરો<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">ખાસ તમારા માટે શ્રેષ્ઠ પસંદગીઓ</translation>
 <translation id="2485422356828889247">અનઇન્સ્ટૉલ કરો</translation>
 <translation id="2485681265915754872">Google Playની સેવાની શરતો</translation>
@@ -2336,7 +2332,6 @@
 <translation id="2727633948226935816">મને ફરીથી યાદ કરાવશો નહીં</translation>
 <translation id="2727712005121231835">વાસ્તવિક કદ</translation>
 <translation id="2727744317940422214">માફ કરશો, કંઈક ખોટું થયું. કૃપા કરીને વર્ણનમાં #bruschetta સાથે પ્રતિસાદ ફાઇલ કરો. ભૂલનો કોડ <ph name="ERROR" /> છે. સ્પેસ ખાલી કરવાનું નિષ્ફળ થયું, તમારે તે મેન્યુઅલી કરવું પડશે.</translation>
-<translation id="2729314457178420145">બ્રાઉઝિંગ ડેટા (<ph name="URL" />) પણ સાફ કરો જે તમને Google.comમાંથી સાઇન આઉટ કરી શકે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome ટ્રૅકિંગ ઘટાડવા તેમજ બ્રાઉઝ કરતી વખતે તમને હજી વધુ સુરક્ષિત રાખવા માટે નવી રીતો શોધવા પ્રયત્નશીલ છે. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> તેમજ તેમને મેનેજ કરવાની ક્ષમતા પણ તમને આપે છે. પછી, તમે જે સાઇટની મુલાકાત લેતા હો, તે સાઇટ જાહેરાતો બતાવવા તમારી રુચિઓ વિશે Chromeને પૂછી શકે છે.</translation>
 <translation id="2729577602370119849">પ્રિન્ટર સહેલાઈથી ઍક્સેસ કરો અને મેનેજ કરો</translation>
 <translation id="2730029791981212295">Linux ઍપ અને ફાઇલોનું બૅકઅપ લઈ રહ્યાં છીએ</translation>
@@ -2696,7 +2691,6 @@
 <translation id="2996108796702395498">તમારા ડિવાઇસનો અનુક્રમ નંબર <ph name="SERIAL_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ કરી શકાય છે.</translation>
 <translation id="2996286169319737844">ડેટા તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કર્યો હતો. આમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી.</translation>
 <translation id="2996722619877761919">લાંબી કિનારી પર ફ્લિપ કરો</translation>
-<translation id="2996932914629936323">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ સાફ કરે છે</translation>
 <translation id="2998097899774209901">ચાલુ • આ એક્સ્ટેન્શન Chrome વેબ સ્ટોર પૉલિસીનું ઉલ્લંઘન કરે છે</translation>
 <translation id="2998267783395280091">નેટવર્ક મળ્યું</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ને મંજૂરી આપી</translation>
@@ -2886,7 +2880,6 @@
 <translation id="3150927491400159470">સખત રીતે ફરીથી લોડ કરો</translation>
 <translation id="315116470104423982">મોબાઇલ ડેટા</translation>
 <translation id="3151539355209957474">પ્રારંભ સમય</translation>
-<translation id="3151562827395986343">ઇતિહાસ કુકી, કૅશ અને વધુ સાફ કરો</translation>
 <translation id="3151786313568798007">ઓરિએન્ટેશન</translation>
 <translation id="3152356229013609796">તમારા ફોનના નોટિફિકેશન જુઓ, છોડી દો અને તેમનો જવાબ આપો</translation>
 <translation id="3155163173539279776">Chromium ને ફરીથી લોંચ કરો</translation>
@@ -3266,7 +3259,6 @@
 <translation id="3459509316159669723">છાપવું</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 બુકમાર્ક ડિલીટ કર્યું}one{# બુકમાર્ક ડિલીટ કર્યું}other{# બુકમાર્ક ડિલીટ કર્યા}}</translation>
 <translation id="3461766685318630278">વધારાના કન્ટેનર બનાવો અને ડિલીટ કરો.</translation>
-<translation id="3462311546193741693">આમ કરવાથી તમે મોટાભાગની સાઇટમાંથી સાઇન આઉટ થઈ જશો. તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન થયેલા રહેશો, જેથી તમારો સિંક થયેલો ડેટા સાફ કરી શકાય.</translation>
 <translation id="3462413494201477527">એકાઉન્ટ સેટઅપ રદ કરીએ?</translation>
 <translation id="346298925039590474">આ મોબાઇલ નેટવર્ક, આ ડિવાઇસ પરના બધા વપરાશકર્તાઓ માટે ઉપલબ્ધ રહેશે</translation>
 <translation id="3464145797867108663">ઑફિસની પ્રોફાઇલ ઉમેરો</translation>
@@ -3408,6 +3400,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> નીચે આપેલી ફાઇલો અને ફોલ્ડરો જોઈ શકે છે</translation>
 <translation id="3571734092741541777">સેટ અપ</translation>
 <translation id="3575121482199441727">આ સાઇટ માટે મંજૂરી આપો</translation>
+<translation id="3575224072358507281">Measurement Lab માટે તેમની પ્રાઇવસી પૉલિસી (measurementlab.net/privacy) અનુસાર IP ઍડ્રેસ અને નેટવર્કના માપના પરિણામો એકત્રિત કરો</translation>
 <translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="3577487026101678864">ફાઇલ સિંકની સુવિધા ચાલુ છે</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />ના હાર્ડવેર સંબંધિત ડેટાનું એકત્રીકરણ</translation>
@@ -3459,7 +3452,6 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" />ને સ્કૅન કરવામાં આવી રહી છે.</translation>
 <translation id="3615596877979647433">કી ખૂટે છે. કસ્ટમાઇઝ કરવા માટે કીબોર્ડની કી દબાવો</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
-<translation id="3616741288025931835">બ્રાઉઝિંગ ડેટા &amp;સાફ કરો...</translation>
 <translation id="3617062258679844578">ક્લિક કરવા માટે, તમારા ટચપૅડે દબાવવાને બદલે તેને ટૅપ કરો</translation>
 <translation id="3617891479562106823">બૅકગ્રાઉન્ડ અનુપલબ્ધ છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3618286417582819036">માફ કરશો, કોઈ ભૂલ આવી છે</translation>
@@ -3851,7 +3843,6 @@
 <translation id="3890064827463908288">વાઇ-ફાઇ સિંકનો ઉપયોગ કરવા માટે 'Chrome સિંક' ચાલુ કરો</translation>
 <translation id="389313931326656921">“આગળ” માટે સ્વિચની સોંપણી કરો</translation>
 <translation id="3893268973182382220">આ પૅનલને અત્યારે લોડ કરી શકતા નથી</translation>
-<translation id="3893295674388762059">ડેટા સાફ કરવા માટે, બધી છુપી વિન્ડો બંધ કરો</translation>
 <translation id="3893536212201235195">તમારા ઍક્સેસિબિલિટી સેટિંગને વાંચો અને બદલો</translation>
 <translation id="3893630138897523026">ChromeVox (બોલાયેલો પ્રતિસાદ)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
@@ -4021,7 +4012,6 @@
 <translation id="4007856537951125667">શૉર્ટકટ છુપાવો</translation>
 <translation id="4010746393007464819">Debian 12 (Bookworm) માટેનું અપગ્રેડ ઉપલબ્ધ છે</translation>
 <translation id="4010917659463429001">તમારા મોબાઇલ ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, <ph name="GET_IOS_APP_LINK" />.</translation>
-<translation id="4010938758610910350">ટૅબના ગ્રૂપમાં ગોઠવી રહ્યાં છીએ…</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" ને સુધારીએ?</translation>
 <translation id="4015163439792426608">શું તમારી પાસે એક્સ્ટેંશન છે? એક અનુકૂળ જગ્યાએથી <ph name="BEGIN_LINK" />તમારા એક્સ્ટેંશનને મેનેજ કરો<ph name="END_LINK" />.</translation>
 <translation id="4016762287427926315">તમે <ph name="APP_NAME" /> માટે જે પરવાનગીઓ મંજૂર કરો છો, તે આ ઍપ માટે પણ મંજૂર કરવામાં આવશે. <ph name="BEGIN_LINK" />મેનેજ કરો<ph name="END_LINK" /></translation>
@@ -4104,7 +4094,6 @@
 <translation id="407520071244661467">સ્કેલ</translation>
 <translation id="407543464472585404"><ph name="NAME" />ની પ્રોફાઇલ <ph name="EMAIL" /> સાથે લિંક કરેલી છે</translation>
 <translation id="4077917118009885966">આ સાઇટ પર જાહેરાતો અવરોધિત કરી</translation>
-<translation id="4077919383365622693"><ph name="SITE" /> દ્વારા સ્ટોર થયેલો બધો ડેટા અને કુકી સાફ કરવામાં આવશે.</translation>
 <translation id="4078738236287221428">એગ્રેસિવ</translation>
 <translation id="4078903002989614318">સૉર્ટિંગ અને સૂચિના વિકલ્પો</translation>
 <translation id="4079140982534148664">વધુ સારી બનાવાયેલી જોડણીની તપાસનો ઉપયોગ કરો</translation>
@@ -4647,7 +4636,6 @@
 <translation id="4504374760782163539">{COUNT,plural, =0{કુકીની મંજૂરી છે}=1{કુકીની મંજૂરી છે, જેમાં 1 અપવાદ છે}one{કુકીની મંજૂરી છે, જેમાં {COUNT} અપવાદ છે}other{કુકીની મંજૂરી છે, જેમાં {COUNT} અપવાદ છે}}</translation>
 <translation id="4504940961672722399">આ આયકન પર ક્લિક કરીને અથવા <ph name="EXTENSION_SHORTCUT" /> દબાવીને આ એક્સ્ટેંશનનો ઉપયોગ કરો.</translation>
 <translation id="450552327874992444">શબ્દ પહેલેથી ઉમેરાઈ ગયો છે</translation>
-<translation id="4507128560633489176">ડેટા સાફ કરવામાં આવ્યો.</translation>
 <translation id="4507373251891673233">તમે <ph name="HOST" />ના તમામ એક્સ્ટેન્શન બ્લૉક કર્યા છે</translation>
 <translation id="4507401683427517298">“શૉર્ટકટ ઉમેરો” પર ક્લિક કરો</translation>
 <translation id="4508332912150723117">વપરાશકર્તાનું નામ <ph name="USER_EMAIL" />. વિગતો જુઓ</translation>
@@ -5255,7 +5243,6 @@
 <translation id="4979263087381759787">ડેવલપરનાં વિકલ્પો</translation>
 <translation id="4979510648199782334">Microsoft 365 સેટઅપ પૂર્ણ થયું</translation>
 <translation id="4980805016576257426">આ એક્સટેન્શનમાં માલવેર છે.</translation>
-<translation id="4981449534399733132">તમારા બધા સિંક કરેલા ડિવાઇસ અને તમારા Google એકાઉન્ટમાંથી બ્રાઉઝિંગ ડેટા સાફ કરવા માટે, <ph name="BEGIN_LINK" />સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="4983159853748980742">તમારો પાસવર્ડ શેર કર્યો નહોતો. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ખાતરી કરો કે તમે Chrome પર સાઇન કર્યું છે. પછી, ફરી પ્રયાસ કરો.</translation>
 <translation id="4986706507552097681">શું સિંક કરવું તે હંમેશાં તમે સેટિંગમાં જઈને પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="4986728572522335985">સિક્યુરિટી કીના પિન સહિત, તેના પરના બધા ડેટાને આ ડિલીટ કરશે</translation>
@@ -5462,6 +5449,7 @@
 <translation id="5146896637028965135">સિસ્ટમ વૉઇસ</translation>
 <translation id="5147097165869384760">OS સિસ્ટમ પેજ શોધી રહ્યાં છો? <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />ની મુલાકાત લો.</translation>
 <translation id="5147113439721488265">સુઝાવ</translation>
+<translation id="5147516217412920887">કોડની ચકાસણી કરવા માટે તમારા ફોન પરની સૂચનાઓને અનુસરો</translation>
 <translation id="5147992672778369947">સુઝાવ આપેલા પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="5148285448107770349">પાસવર્ડ ઓછામાં ઓછો 8 અક્ષરનો હોવો જરૂરી છે</translation>
 <translation id="5149602533174716626">વીડિયો ફ્રેમ કૉપિ કરો</translation>
@@ -5877,7 +5865,6 @@
 <translation id="5486261815000869482">પાસવર્ડની પુષ્ટિ કરો</translation>
 <translation id="5486561344817861625">બ્રાઉઝર પુનઃપ્રારંભનું અનુકરણ કરો</translation>
 <translation id="5487460042548760727">પ્રોફાઇલનું નામ બદલીને <ph name="PROFILE_NAME" /> કરો</translation>
-<translation id="5487521232677179737">ડેટા સાફ કરો</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' કૉપિ કરી</translation>
 <translation id="5488508217173274228">સિંક એન્ક્રિપ્શનના વિકલ્પો</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" />માંથી નોટિફિકેશનને મંજૂરી આપશો નહીં, પરંતુ પછીથી પૂછશો</translation>
@@ -6269,7 +6256,6 @@
 <translation id="5794700615121138172">Linuxએ શેર કરેલા ફોલ્ડરો</translation>
 <translation id="5794786537412027208">બધી Chrome એપ્લિકેશન્સને છોડી દો</translation>
 <translation id="5796485699458186843">નવી છૂપી ટૅબ</translation>
-<translation id="5797521893972859201">શોધ બૉક્સમાંના ઇતિહાસ સહિતનો ઇતિહાસ સાફ કરે છે</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; અને &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; પર શરૂઆત કરવાની રીત જાણો</translation>
 <translation id="5798079537501238810">સાઇટ ચુકવણી હૅન્ડલર ઇન્સ્ટૉલ કરી શકે છે</translation>
 <translation id="5798086737841799234">કન્ફર્મેશન કોડ દાખલ કરો</translation>
@@ -6593,7 +6579,6 @@ USB ડિવાઇસ</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">કાસ્ટ કરવાનું શરૂ કરવા માટે, ઍક્સેસ કોડ ટાઇપ કરો</translation>
 <translation id="6052976518993719690">SSL પ્રમાણન અધિકારી</translation>
-<translation id="6053401458108962351">&amp;બ્રાઉઝિંગ ડેટા સાફ કરો...</translation>
 <translation id="6053717018321787060">તમારું Google એકાઉન્ટ એ જ એકાઉન્ટ છે જે તમે Gmail, YouTube, Chrome અને અન્ય Google પ્રોડક્ટ માટે વાપરો છો.
     તમારા બધા બુકમાર્ક, ફાઇલો અને અન્ય સરળતાથી ઍક્સેસ કરવા માટે તમારા એકાઉન્ટનો ઉપયોગ કરો. જો તમારી પાસે એકાઉન્ટ ન હોય તો તમે આગળની સ્ક્રીનમાં બનાવી શકો છો.</translation>
 <translation id="6054138466019582920">Google વડે આ પેજ શોધો...</translation>
@@ -7658,6 +7643,7 @@ USB ડિવાઇસ</translation>
 <translation id="686609795364435700">શાંત</translation>
 <translation id="686664946474413495">રંગ તાપમાન</translation>
 <translation id="6867086642466184030"><ph name="APP_NAME" />ની જેમજ અન્ય ઍપ પણ આ બધી લિંક ખોલવા માટે સેટ કરવામાં આવી છે. આમ કરવાથી <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> અને <ph name="NUMBER_OF_OTHER_APPS" /> અન્ય ઍપ સપોર્ટેડ લિંક ખોલી શકશે નહીં.</translation>
+<translation id="6868206169573555318">અપડેટ કરવા માટે લૉન્ચ કરો</translation>
 <translation id="686831807558000905">સાઇન ઇન કરશો નહીં</translation>
 <translation id="686839242150793617">ચિત્ર-માં-ચિત્ર મોડમાં ઑટોમૅટિક રીતે દાખલ થવાની મંજૂરી છે</translation>
 <translation id="6868934826811377550">વિગતો જુઓ</translation>
@@ -8029,6 +8015,7 @@ USB ડિવાઇસ</translation>
 <translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
 <translation id="7181117767881540376">અને બુકમાર્ક બાર છુપાવો</translation>
 <translation id="7181329571386134105"><ph name="CHILD_NAME" />ને તમારી મંજૂરી વિના ભવિષ્યમાં એક્સ્ટેન્શન ઇન્સ્ટૉલ કરવાની મંજૂરી આપવા માટે, તમારા ડિવાઇસ પર Family Link ઍપ ખોલો અને <ph name="CHILD_NAME" />ના Google Chrome સેટિંગ અપડેટ કરો.</translation>
+<translation id="7182051712900867547">કોઈ અલગ એકાઉન્ટનો ઉપયોગ કરો</translation>
 <translation id="7182063559013288142">ઝટપટ હૉટસ્પૉટ</translation>
 <translation id="7182791023900310535">તમારો પાસવર્ડ ખસેડો</translation>
 <translation id="718427252411067142">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતાં રોકવા માટે, તમારો પાસવર્ડ બદલવા માટે ઍપ ખોલો</translation>
@@ -8492,7 +8479,6 @@ USB ડિવાઇસ</translation>
 <translation id="7531771599742723865">વપરાશમાંનું ડિવાઇસ</translation>
 <translation id="7531779363494549572">સેટિંગ &gt; ઍપ અને નોટિફિકેશન &gt; નોટિફિકેશન પર જાઓ.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ચાલી રહી નથી. ઍપ બંધ કરવા માટે "ફરજિયાત બંધ" પસંદ કરો.</translation>
-<translation id="7535730537657706072">તમારા ડિવાઇસમાંથી છૂપા મોડનો બ્રાઉઝિંગ ઇતિહાસ સાફ કરવા માટે, તમામ છૂપા ટૅબ બંધ કરો</translation>
 <translation id="7536815228183532290"><ph name="EMAIL" /> તરીકે સાઇન ઇન થયા</translation>
 <translation id="7538013435257102593">ફાઇલનો આ પ્રકાર સામાન્ય રીતે ડાઉનલોડ કરવામાં આવતો નથી અને તે જોખમી હોઈ શકે છે</translation>
 <translation id="7540972813190816353">અપડેટ્સ માટે તપાસ કરતી વખતે એક ભૂલ આવી: <ph name="ERROR" /></translation>
@@ -8536,7 +8522,6 @@ USB ડિવાઇસ</translation>
 <translation id="7566118625369982896">Play ઍપ લિંક મેનેજ કરો</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">કીનું કૉમ્બિનેશન બનાવો</translation>
-<translation id="756809126120519699">Chrome ડેટા સાફ કર્યો</translation>
 <translation id="756876171895853918">અવતારને કસ્ટમાઇઝ કરો</translation>
 <translation id="7568790562536448087">અપડેટ થઈ રહ્યું છે</translation>
 <translation id="7569983096843329377">શ્યામ</translation>
@@ -8592,6 +8577,7 @@ USB ડિવાઇસ</translation>
 <translation id="7617263010641145920">Play Store ચાલુ કરો</translation>
 <translation id="7617648809369507487">ગુપચુપ મેસેજિંગનો ઉપયોગ કરો</translation>
 <translation id="7619937211696316184">જાળવણી થઈ ગઈ</translation>
+<translation id="7620616707541471029">આગળ વધવા માટે એકાઉન્ટ પસંદ કરો</translation>
 <translation id="7621382409404463535">ડિવાઇસ ગોઠવણી સાચવવામાં સિસ્ટમ નિષ્ફળ ગઈ.</translation>
 <translation id="7621480263311228380">તેમના દ્વારા તમારા વિશે સાચવવામાં આવેલી માહિતીનો ઉપયોગ કરવાની તેઓને કોઈ મંજૂરી નથી</translation>
 <translation id="7621595347123595643">જો તમે તમારો પાસવર્ડ અથવા પિન ભૂલી જાઓ, તો તમે સ્થાનિક ડેટા રિકવર કરી શકશો નહીં.</translation>
@@ -9162,7 +9148,6 @@ USB ડિવાઇસ</translation>
 <translation id="8023801379949507775">એક્સ્ટેન્શન્સ હમણાં અપડેટ કરો</translation>
 <translation id="8025151549289123443">લૉક સ્ક્રીન અને સાઇન ઇન</translation>
 <translation id="8025291188699172126">અપડેટ વિશે</translation>
-<translation id="8026334261755873520">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="8026471514777758216">તમારા બધા ડિવાઇસ</translation>
 <translation id="8027581147000338959">નવી વિંડોમાં ખોલો</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10199,7 +10184,6 @@ USB ડિવાઇસ</translation>
 <translation id="8809147117840417135">આછો મોરપીંછ</translation>
 <translation id="8811862054141704416">માઇક્રોફોનને Crostiniનો ઍક્સેસ આપવાના સેટિંગ</translation>
 <translation id="8811923271770626905">આ એક્સ્ટેન્શન બૅકગ્રાઉન્ડમાં ચાલી શકે છે</translation>
-<translation id="8812593354822910461">બ્રાઉઝિંગ ડેટા (<ph name="URL" />) પણ સાફ કરો જે તમને <ph name="DOMAIN" />માંથી સાઇન આઉટ કરશે. <ph name="LEARN_MORE" /></translation>
 <translation id="8813199641941291474">MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાનું બ્લૉક કર્યું છે</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> પર સાઇન ઇન કરી શકતાં નથી</translation>
 <translation id="8813872945700551674">જાઓ અને માતાપિતા પાસેથી "<ph name="EXTENSION_NAME" />"ની મંજૂરી મેળવો</translation>

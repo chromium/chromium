@@ -27,8 +27,8 @@
 <translation id="164952285225495380">Esta embalagem já foi acompanhada no Chromium.</translation>
 <translation id="1707458603865303524">Use o Chromium sempre que tocar em links em mensagens ou noutras apps.</translation>
 <translation id="1722370509450468186">A palavra-passe será guardada na sua Conta (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Dados do Chromium apagados</translation>
 <translation id="1791845338122684020">Abre a página Histórico do Chromium.</translation>
+<translation id="1811860791247653035">Para usar a personalização e outras funcionalidades, inclua o Chromium na <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">O Chromium confirmou que a <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
 <translation id="1843424232666537147">O Chromium inclui funcionalidades que o ajudam a gerir os seus dados de Internet e a velocidade com que as páginas Web são carregadas.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -85,12 +85,12 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="3472200483164753384">Opção não suportada no Chromium Canary.</translation>
 <translation id="347967311580159871">Para ver mais definições que usam dados para melhorar a sua experiência do Chromium, aceda aos <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">A sua palavra-passe não foi partilhada. Verifique a ligação à Internet e certifique-se de que tem sessão iniciada no Chromium. Em seguida, tente novamente.</translation>
-<translation id="3554027294407525061">Limpe os dados de navegação no Chromium.</translation>
 <translation id="3567399274263440288">Para tirar o máximo partido do Chromium, inicie sessão no mesmo com a sua Conta Google.</translation>
 <translation id="3634039384458740619">Abrir Definições do Chromium</translation>
 <translation id="3639997914391704523">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="3688710892786762883">O Chromium vai detetar números de acompanhamento de encomendas nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. Os seus dados vão ser partilhados com a Google para oferecer esta funcionalidade e melhorar o Shopping para todos.</translation>
 <translation id="372658070733623520">Para usar e guardar dados do Chromium na sua Conta Google, valide a sua identidade.</translation>
+<translation id="3728124580182886854">Associe o Chromium e outros serviços Google para personalização e outras finalidades</translation>
 <translation id="3780779443901618967">Envia-lhe avisos sobre sites perigosos, mesmo aqueles que a Google desconhecia, ao analisar mais dados de sites do que a Proteção padrão. Pode optar por ignorar os avisos do Chromium.</translation>
 <translation id="3784369638459513223">Abre um novo separador anónimo do Chromium.</translation>
 <translation id="3805899903892079518">O Chromium não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
@@ -136,7 +136,6 @@ Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usa
 <translation id="5042011327527167688">Toque em "Ver com o Google Maps no Chromium".</translation>
 <translation id="5044871537677053278">O Chromium deteta moradas e usa o Google Maps para lhe dar direções e informações locais.</translation>
 <translation id="5048795749726991615">Para obter facilmente as palavras-passe guardadas nas outras apps, use o Chromium para o preenchimento automático</translation>
-<translation id="5076601183701536878">Limpar dados de navegação no Chromium</translation>
 <translation id="5124429847818367226">Agora, pode usar o Chromium sempre que navegar ou tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="5131565040785979529">A sua organização, <ph name="DOMAIN" />, gere a conta na qual tem sessão iniciada e como o Chromium é usado.</translation>
 <translation id="5146749061471423558">Adicione marcadores ao Chromium</translation>

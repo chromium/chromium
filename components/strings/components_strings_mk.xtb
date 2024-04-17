@@ -452,7 +452,6 @@
 <translation id="1810391395243432441">Заштитете ги лозинките со заклучувањето екран</translation>
 <translation id="1812527064848182527">пејзаж</translation>
 <translation id="1812975699435941848">Здравствено образование и медицинска обука</translation>
-<translation id="1813414402673211292">Исчисти податоци од прелистување</translation>
 <translation id="1816436748874040213">Може да се бара да се лизгаат и зумираат споделените картички</translation>
 <translation id="1818522458013171885">Одблокирај</translation>
 <translation id="1818585559878922121">Документарни филмови</translation>
@@ -875,7 +874,6 @@
 <translation id="2647086987482648627">Ткаенина (полусјајна)</translation>
 <translation id="264810637653812429">Не се најдени компатибилни уреди.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ги избришете историјата на прелистувањето, колачињата, кешот и други работи во поставките за Chrome</translation>
 <translation id="2650446666397867134">Пристапот до датотеката беше одбиен</translation>
 <translation id="2651465929321991146">Историја и картички</translation>
 <translation id="2653659639078652383">Испрати</translation>
@@ -1205,7 +1203,6 @@
 <translation id="33073482541490531">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. Password Manager препорачува веднаш да ја промените лозинкава.</translation>
 <translation id="3307649904964670439">Копче за приспособување на Chrome, активирајте го за да го приспособите изгледот на вашиот прелистувач</translation>
 <translation id="3308006649705061278">Организациска единица (ОУ)</translation>
-<translation id="3310047144791481950">Погледнете информации што ќе ви помогнат да одлучите со која картичка да платите. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Дознајте за поволностите на картичките<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">ТВ-комедии</translation>
 <translation id="3324687287337751929">4 x 6 инчи</translation>
 <translation id="3324983252691184275">Темноцрвена</translation>
@@ -1374,7 +1371,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да извршите безбедносна проверка во поставките за Chrome</translation>
 <translation id="3615309852743236517">Маникири и педикири</translation>
 <translation id="3620239073311576716">Униформи и работничка облека</translation>
-<translation id="36224234498066874">Исчисти податоци…</translation>
 <translation id="362276910939193118">Покажи целосна историја</translation>
 <translation id="3623041590998910684">За да ја користи камерата, дајте му пристап на Chrome во <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Романтични филмови</translation>
@@ -2055,7 +2051,6 @@
 <translation id="4936134414789135531">Не може да се најде вметнатата <ph name="VALUE_NAME" />.</translation>
 <translation id="4936675324097895694">Финансии</translation>
 <translation id="4940163644868678279">„Инкогнито“ во Chrome</translation>
-<translation id="494111439860963024">Копче за бришење на податоците од прелистување, активирајте го за да ги избришете историјата на прелистувањето, колачињата, кешот и други работи во поставките за Chrome</translation>
 <translation id="4943620199112228840">да ги користи вашите микрофони</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
 <translation id="4950898438188848926">Копче за префрлање помеѓу картички, притиснете Enter за да се префрлите на отворената картичка, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2290,7 +2285,6 @@
 <translation id="541416427766103491">Фиока за складирање 4</translation>
 <translation id="5414446060143308245">Потребен е преглед пред префрлањето</translation>
 <translation id="5414511064953050917">Сепак премести</translation>
-<translation id="5421136146218899937">Исчисти податоци од прелистување…</translation>
 <translation id="5421408724705443535">Рок-музика</translation>
 <translation id="5423269318075950257">Следи ја цената</translation>
 <translation id="5425082381151187189">Декорирање дом и ентериер</translation>
@@ -3653,7 +3647,6 @@
 <translation id="8022542098135319050">Туристички агенции и услуги</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го поставите Chrome како стандарден прелистувач на системот</translation>
 <translation id="8025119109950072390">Напаѓачите што се наоѓаат на сајтов може да ве измамат да направите нешто опасно како што е инсталирањето софтвер или откривањето лични информации (на пример лозинки, телефонски броеви или кредитни картички).</translation>
-<translation id="8026334261755873520">Исчисти податоци од прелистување</translation>
 <translation id="8027077570865220386">Фиока 15</translation>
 <translation id="8027585818882015174">Копче за извршување безбедносна проверка во Chrome, активирајте го за да извршите безбедносна проверка во поставките за Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нов формулар во Google Forms</translation>
@@ -3924,7 +3917,6 @@
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527681393107582734">Земјоделство и шумарство</translation>
 <translation id="8528149813106025610">Детска облека</translation>
-<translation id="8530813470445476232">Избришете ја историјата на прелистување, колачињата, кешот и друго во поставките за Chrome</translation>
 <translation id="853246364274116957">Бродвеј и музички театар</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Одете на &lt;strong&gt;chrome://policy&lt;/strong&gt; за да го видите списокот со блокирани URL-адреси, како и други правила што ги наметнал системскиот администратор.</translation>

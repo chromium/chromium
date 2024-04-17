@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Toque no ícone do Chrome, pressione e clique em "Editar Tela de Início"</translation>
 <translation id="1066101356081285416">O Chrome vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Google para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
-<translation id="1105362920864247682">Limpar dados de navegação no Chrome.</translation>
 <translation id="1143896152279775643">A senha será salva no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Abra o menu do Google Chrome</translation>
 <translation id="1180362651362502943">Continue usando os dados do Chrome na sua Conta do Google.</translation>
@@ -77,7 +76,6 @@ Considerações:
 <translation id="2750626042242931740">Você pode atualizar suas escolhas a qualquer momento nas configurações do Chrome.</translation>
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
 <translation id="2789947168960170215">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Limpar dados de navegação no Chrome</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Abrir configurações do Chrome</translation>
@@ -125,6 +123,7 @@ Considerações:
 <translation id="4633328489441962921">Não é possível verificar se há atualizações</translation>
 <translation id="4636900170638246267">Faça login neste site e no Chrome.</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
+<translation id="4798859546468762093">Para acessar a personalização e outros recursos, inclua o Chrome na <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google.
 
@@ -181,6 +180,7 @@ Considerações:
 <translation id="6389317667633680932">Conheça novos recursos que ajudam você a aproveitar o Chrome ao máximo.</translation>
 <translation id="6412673304250309937">Verifica se os URLs estão em uma lista de sites não seguros armazenada no Chrome. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar URLs, incluindo partes do conteúdo da página, para o "Navegação segura".</translation>
 <translation id="6427126399757991875">Sua organização está configurando o Chrome…</translation>
+<translation id="6481963882741794338">Vincular o Chrome e outros Serviços do Google para personalização e outras finalidades</translation>
 <translation id="6484712497741564393">Login feito como <ph name="EMAIL" />.
 
 Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
@@ -225,7 +225,6 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7466693328838535498">Na caixa "Widgets da Pesquisa", digite "Chrome".</translation>
 <translation id="746684838091935575">3. Selecione o Chrome</translation>
 <translation id="7492574581995589075">Sua organização desativou a capacidade de usar e salvar dados do Chrome na Conta do Google. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
-<translation id="756809126120519699">Dados do Chrome apagados</translation>
 <translation id="7581063337314642333">Acessar a grade de guias no Chrome</translation>
 <translation id="7662994914830945754">Para acessar suas guias em qualquer lugar onde você usar o Chrome, faça login e ative a sincronização</translation>
 <translation id="7669869107155339016">Acesse as configurações do Chrome.</translation>

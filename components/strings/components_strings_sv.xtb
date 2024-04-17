@@ -453,7 +453,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1810391395243432441">Skydda dina lösenord med skärmlåset</translation>
 <translation id="1812527064848182527">liggande</translation>
 <translation id="1812975699435941848">Utbildning inom hälsa och medicin</translation>
-<translation id="1813414402673211292">Rensa webbinformation</translation>
 <translation id="1816436748874040213">Får begära åtkomst till att scrolla och zooma på delade flikar</translation>
 <translation id="1818522458013171885">Avblockera</translation>
 <translation id="1818585559878922121">Dokumentärer</translation>
@@ -876,7 +875,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2647086987482648627">Tyg (halvblankt)</translation>
 <translation id="264810637653812429">Inga kompatibla enheter hittades.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill rensa webbhistorik, cookies, cacheminne och annat i inställningarna för Chrome</translation>
 <translation id="2650446666397867134">Åtkomst till filen nekades</translation>
 <translation id="2651465929321991146">Historik och flikar</translation>
 <translation id="2653659639078652383">Skicka</translation>
@@ -1206,7 +1204,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="33073482541490531">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta detta lösenord nu.</translation>
 <translation id="3307649904964670439">Knappen Anpassa Chrome: aktivera om du vill anpassa webbläsarens utseende</translation>
 <translation id="3308006649705061278">Organisationsenhet (OU)</translation>
-<translation id="3310047144791481950">Se information som hjälper dig att välja vilket kort du vill betala med. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Läs mer om kortförmåner<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Tv-komedier</translation>
 <translation id="3324687287337751929">4 x 6 tum</translation>
 <translation id="3324983252691184275">Karmosinröd</translation>
@@ -1375,7 +1372,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill köra en säkerhetskontroll i inställningarna för Chrome</translation>
 <translation id="3615309852743236517">Manikyr och pedikyr</translation>
 <translation id="3620239073311576716">Uniformer och arbetskläder</translation>
-<translation id="36224234498066874">Rensa webbinformation ...</translation>
 <translation id="362276910939193118">Visa fullständig historik</translation>
 <translation id="3623041590998910684">Ge Chrome åtkomst i <ph name="LINK" /> om du vill använda kameran.</translation>
 <translation id="3623398832322170566">Romantik</translation>
@@ -2057,7 +2053,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4936134414789135531">Det gick inte att hitta de infogade värdet <ph name="VALUE_NAME" />.</translation>
 <translation id="4936675324097895694">Ekonomi</translation>
 <translation id="4940163644868678279">Inkognitoläge i Chrome</translation>
-<translation id="494111439860963024">Knappen Rensa webbinformation: aktivera om du vill rensa webbhistorik, cookies, cacheminne och annat i inställningarna för Chrome</translation>
 <translation id="4943620199112228840">använda mikrofonerna</translation>
 <translation id="4943872375798546930">Inga resultat</translation>
 <translation id="4950898438188848926">Knapp för flikbyte. Tryck på retur för att byta till den öppna fliken <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2294,7 +2289,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="541416427766103491">Utmatningsfack 4</translation>
 <translation id="5414446060143308245">Granskning krävs innan du överför</translation>
 <translation id="5414511064953050917">Flytta ändå</translation>
-<translation id="5421136146218899937">Ta bort webbinformation...</translation>
 <translation id="5421408724705443535">Rockmusik</translation>
 <translation id="5423269318075950257">Bevaka pris</translation>
 <translation id="5425082381151187189">Heminredning</translation>
@@ -3657,7 +3651,6 @@ Mer information.
 <translation id="8022542098135319050">Resebyråer och tjänster</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill ställa in Chrome som standardwebbläsare</translation>
 <translation id="8025119109950072390">Angripare på den här webbplatsen kan lura dig att göra något farligt, till exempel installera programvara eller lämna ut personliga uppgifter (som lösenord, telefonnummer eller kreditkortsuppgifter).</translation>
-<translation id="8026334261755873520">Rensa webbinformation</translation>
 <translation id="8027077570865220386">Fack 15</translation>
 <translation id="8027585818882015174">Knappen Kör säkerhetskontroll i Chrome: aktivera om du vill köra en säkerhetskontroll i inställningarna för Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa ett nytt formulär i Google Formulär</translation>
@@ -3928,7 +3921,6 @@ Mer information:
 <translation id="8527228059738193856">Högtalare</translation>
 <translation id="8527681393107582734">Lant- och skogsbruk</translation>
 <translation id="8528149813106025610">Barnkläder</translation>
-<translation id="8530813470445476232">Rensa webbhistorik, cookies, cache med mera i inställningarna för Chrome</translation>
 <translation id="853246364274116957">Broadway och musikaler</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Besök &lt;strong&gt;chrome://policy&lt;/strong&gt; om du vill visa listan med blockerade webbadresser och andra policyer som angetts av systemadministratören.</translation>

@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Gói hàng này đã được theo dõi trên Chromium.</translation>
 <translation id="1707458603865303524">Dùng Chromium mỗi khi bạn nhấn vào đường liên kết trong thư/tin nhắn hoặc các ứng dụng khác.</translation>
 <translation id="1722370509450468186">Mật khẩu của bạn sẽ được lưu trong Tài khoản (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Đã xóa dữ liệu Chromium</translation>
 <translation id="1791845338122684020">Mở trang Nhật ký duyệt web trên Chromium.</translation>
 <translation id="1838412507805038478">Chromium xác minh rằng <ph name="ISSUER" /> đã cấp chứng chỉ của trang web này.</translation>
 <translation id="1843424232666537147">Chromium có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
@@ -85,7 +84,6 @@
 <translation id="3472200483164753384">Chưa hỗ trợ trên Chromium Canary</translation>
 <translation id="347967311580159871">Để xem thêm các chế độ cài đặt khác có sử dụng dữ liệu để cải thiện trải nghiệm Chromium của bạn, hãy truy cập vào <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Mật khẩu của bạn chưa được chia sẻ. Kiểm tra kết nối Internet và đảm bảo bạn đã đăng nhập vào Chromium. Sau đó, hãy thử lại.</translation>
-<translation id="3554027294407525061">Xoá dữ liệu duyệt web trong Chromium.</translation>
 <translation id="3567399274263440288">Để khai thác tối đa Chromium, hãy đăng nhập vào Chromium bằng Tài khoản Google của bạn.</translation>
 <translation id="3634039384458740619">Mở phần Cài đặt Chromium</translation>
 <translation id="3639997914391704523">Chromium có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình.</translation>
@@ -136,7 +134,6 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="5042011327527167688">Nhấn vào "Xem bằng Google Maps trên Chromium".</translation>
 <translation id="5044871537677053278">Chromium phát hiện các địa chỉ và sử dụng Google Maps để chỉ đường và cung cấp cho bạn thông tin địa phương.</translation>
 <translation id="5048795749726991615">Để dễ dàng sử dụng mật khẩu đã lưu trong các ứng dụng khác, hãy dùng Chromium làm dịch vụ tự động điền</translation>
-<translation id="5076601183701536878">Xoá dữ liệu duyệt web trong Chromium</translation>
 <translation id="5124429847818367226">Giờ đây, bạn có thể dùng Chromium mỗi khi duyệt web hoặc nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="5131565040785979529">Tổ chức <ph name="DOMAIN" /> của bạn sẽ quản lý tài khoản bạn đăng nhập và cách sử dụng Chromium.</translation>
 <translation id="5146749061471423558">Thêm dấu trang vào Chromium</translation>

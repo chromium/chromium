@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">กดไอคอน Chrome ค้างไว้แล้วคลิก "แก้ไขหน้าจอหลัก"</translation>
 <translation id="1066101356081285416">Chrome จะตรวจหาหมายเลขติดตามพัสดุในเว็บไซต์ที่คุณเข้าชมและแสดงข้อมูลอัปเดตเกี่ยวกับพัสดุในหน้า "แท็บใหม่" ระบบจะส่งหมายเลขติดตามพัสดุและชื่อเว็บไซต์ไปยัง Google เพื่อให้บริการฟีเจอร์นี้และเพื่อปรับปรุงฟีเจอร์ต่างๆ ที่เกี่ยวกับการช็อปปิ้งของ Google สําหรับทุกคน คุณอัปเดตข้อมูลนี้ได้ทุกเมื่อใน<ph name="BEGIN_LINK" />การตั้งค่าการติดตามพัสดุภัณฑ์<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">ใช้ Chrome โดยค่าเริ่มต้น</translation>
-<translation id="1105362920864247682">ล้างข้อมูลการท่องเว็บใน Chrome</translation>
 <translation id="1143896152279775643">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="1177414119866731261">เปิดเมนู Chrome</translation>
 <translation id="1180362651362502943">ใช้ข้อมูล Chrome ในบัญชี Google ต่อไป</translation>
@@ -77,7 +76,6 @@
 <translation id="2750626042242931740">คุณอัปเดตสิ่งที่เลือกไว้ได้ทุกเมื่อในการตั้งค่า Chrome</translation>
 <translation id="2767464022270041271">ไม่มีรหัสผ่านที่บันทึกไว้ เครื่องมือจัดการรหัสผ่านบน Google จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกไว้</translation>
 <translation id="2789947168960170215">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
-<translation id="2868822340714096138">ล้างข้อมูลการท่องเว็บใน Chrome</translation>
 <translation id="2869959624320573933">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="2876628302275096482">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />วิธีที่ Chrome ช่วยรักษาข้อมูลของคุณให้เป็นส่วนตัว<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. เปิดการตั้งค่า Chrome</translation>
@@ -225,7 +223,6 @@
 <translation id="7466693328838535498">ในช่องวิดเจ็ต Search ให้ป้อน Chrome</translation>
 <translation id="746684838091935575">3. เลือก Chrome</translation>
 <translation id="7492574581995589075">องค์กรได้ปิดความสามารถในการใช้และบันทึกข้อมูล Chrome ในบัญชี Google ของคุณ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>
-<translation id="756809126120519699">ล้างข้อมูล Chrome แล้ว</translation>
 <translation id="7581063337314642333">ไปที่ตารางกริดของแท็บใน Chrome</translation>
 <translation id="7662994914830945754">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
 <translation id="7669869107155339016">ไปที่การตั้งค่า Chrome</translation>

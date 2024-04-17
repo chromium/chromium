@@ -24,6 +24,7 @@
 <translation id="1119447706177454957">内部错误</translation>
 <translation id="1124772482545689468">用户</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1135805404083530719">控制面板</translation>
 <translation id="1145018782460575098">“更新外部设备的固件”窗口已打开。有 <ph name="NUM_UPDATES" /> 项可用的更新。</translation>
 <translation id="1145516343487477149">查找帮助文章和常见 Chromebook 问题解答</translation>
 <translation id="1154390310959620237">您只能自定义 5 个快捷键。如要添加一个新的快捷键，请先删除一个现有快捷键。</translation>
@@ -32,6 +33,7 @@
 <translation id="1167755866710282443">打开菜单即可自定义键。拖动菜单即可移动它。</translation>
 <translation id="1171349345463658120">沙湖</translation>
 <translation id="1174073918202301297">快捷方式已添加</translation>
+<translation id="11743817593307477">使用箭头键可将此控件移至您要执行的游戏操作。使用 Enter 键可放置控件。使用 Esc 键可取消。</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">舒适</translation>
@@ -101,6 +103,7 @@
 <translation id="1515129336378114413">浏览器主页</translation>
 <translation id="1526389707933164996">屏保动画</translation>
 <translation id="152892567002884378">调高音量</translation>
+<translation id="1539864135338521185">青金石</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="155865706765934889">触控板</translation>
 <translation id="1561927818299383735">背光颜色</translation>
@@ -109,6 +112,7 @@
 <translation id="1567064801249837505">影集</translation>
 <translation id="1572585716423026576">设为壁纸</translation>
 <translation id="1578784163189013834">选择屏保背景</translation>
+<translation id="1593528591614229756">请务必选择您的移动服务商或管理员提供的 APN。选择 APN 会停用所有自定义 APN。无效的 APN 可能会中断移动网络连接。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">预览图片</translation>
 <translation id="1611649489706141841">前进</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
@@ -161,6 +165,7 @@
 <translation id="1801418420130173017">停用深色主题</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1808803439260407870">经典艺术</translation>
+<translation id="1815850098929213707">所选按键为 <ph name="KEYS" />。点按按钮即可修改控件</translation>
 <translation id="1823120442877418684">物体</translation>
 <translation id="1827738518074806965">画廊</translation>
 <translation id="1836553715834333258">系统颜色</translation>
@@ -215,6 +220,7 @@
 <translation id="2105810540595158374">设备类型是游戏控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">可用内存为 <ph name="AVAILABLE_MEMORY" /> GB，总共 <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2135668738111962377">修改<ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">一飘而过</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 张照片</translation>
@@ -227,6 +233,7 @@
 <translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
 <translation id="2189104374785738357">修改 APN 详细信息</translation>
+<translation id="2195732836444333448">目前已达到资源上限。请稍后再试。</translation>
 <translation id="2201758491318984023">自行车</translation>
 <translation id="2203222757805818543">当前时间表设置为<ph name="SUNRISE" /> - <ph name="SUNSET" />。如要自动更新深色模式时间表，请<ph name="BEGIN_LINK" />开启位置信息访问权限<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">温泉</translation>
@@ -287,6 +294,7 @@
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2521835766824839541">上一首</translation>
 <translation id="2526590354069164005">桌面</translation>
+<translation id="2529641961800709867">按钮选项</translation>
 <translation id="253029298928638905">正在重启…</translation>
 <translation id="2531772459602846206">绣球花</translation>
 <translation id="2533048460510040082">推荐的帮助内容</translation>
@@ -297,6 +305,7 @@
 <translation id="2584547424703650812">发光景观</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
 <translation id="2586146417912237930">蓝色和靛蓝色</translation>
+<translation id="2589921777872778654">“修改和删除”菜单</translation>
 <translation id="2597774443162333062">文件将被发送到 Google 进行调试</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
 <translation id="2617397783536231890">棉</translation>
@@ -428,6 +437,7 @@
 <translation id="3510890413042482857">发送<ph name="BEGIN_LINK1" />性能跟踪数据<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome 操作系统更新</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
+<translation id="353214771040290298">完成修改</translation>
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
 <translation id="3533790840489634638">水池</translation>
 <translation id="3547264467365135390">公式</translation>
@@ -530,6 +540,7 @@
 <translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白色</translation>
+<translation id="4143226836069425823">点按其他键盘按键即可替换</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4150201353443180367">显示</translation>
@@ -624,6 +635,7 @@
 <translation id="4665014895760275686">制造商</translation>
 <translation id="467510802200863975">输入的两个密码不相同</translation>
 <translation id="467715984478005772">疑似存在防火墙</translation>
+<translation id="4683762547447150570">点按按钮即可聚焦于按键分配</translation>
 <translation id="4691278870498629773">已停止 - 缺少送纸盘</translation>
 <translation id="469379815867856270">信号强度</translation>
 <translation id="4697260493945012995">选择控件类型</translation>
@@ -705,6 +717,7 @@
 <translation id="5130848777448318809">小马</translation>
 <translation id="5137451382116112100">全屏</translation>
 <translation id="5142961317498132443">身份验证</translation>
+<translation id="5144311987923128508">“确认”按钮现已停用</translation>
 <translation id="5144887194300568405">复制译文</translation>
 <translation id="5145081769226915336">要自动开启深色模式吗？</translation>
 <translation id="5154917547274118687">内存</translation>
@@ -824,6 +837,7 @@
 <translation id="5860491529813859533">启用</translation>
 <translation id="5876385649737594562">开启后才能选择所需选项</translation>
 <translation id="588258955323874662">全屏</translation>
+<translation id="5893975327266416093">点按键盘按键即可进行分配</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5903200662178656908">设备是键盘和鼠标的组合。</translation>
@@ -896,6 +910,7 @@
 <translation id="6243280677745499710">当前设置的壁纸</translation>
 <translation id="6250316632541035980">培根和鸡蛋</translation>
 <translation id="6255213378196499011">“帮我写”设置</translation>
+<translation id="6265268291107409527">所选按键为 <ph name="KEYS" />。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">向右</translation>
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -957,6 +972,7 @@
 <translation id="6535178685492749208">您目前处于离线状态。系统会在晚些时候发送您的反馈。</translation>
 <translation id="6543412779435705598">墨西哥卷饼</translation>
 <translation id="6551839203326557324">苹果</translation>
+<translation id="65526652485742171">“确认”按钮现已启用</translation>
 <translation id="6557784757915238407">APN 类型为<ph name="ATTACH" />。</translation>
 <translation id="65587193855025101">平台式</translation>
 <translation id="6560196641871357166">鲜亮色</translation>
@@ -1031,6 +1047,16 @@
 <translation id="6975981640379148271">考拉</translation>
 <translation id="6977381486153291903">固件版本</translation>
 <translation id="6981982820502123353">无障碍</translation>
+<translation id="698242338298293034">选择一个主题，然后选择带下划线的字词，打造个性化的 AI 图像。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          选择“给我灵感”，获得更多独特而多样的 AI 图像选项。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" /> 
+          当您利用 AI 创作内容时，系统会将提示发送到 Google AI 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的隐私权政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图像并改进产品。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 尚处于早期开发实验阶段，目前仅面向部分用户推出。</translation>
 <translation id="6982462588253070448">沙丘</translation>
 <translation id="7005833343836210400">设备处于离线状态</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
@@ -1051,6 +1077,7 @@
 <translation id="7103252855940681301">第 <ph name="INDEX" /> 部设备（共 <ph name="COUNT" /> 部），名称为“<ph name="NAME" />”。</translation>
 <translation id="7107255225945990211">选择 <ph name="PRODUCT_NAME" /> 专有艺术作品</translation>
 <translation id="7108668606237948702">输入</translation>
+<translation id="7118522231018231199">请务必选择您的移动服务商或管理员提供的 APN。选择 APN 会停用所有自定义 APN。无效的 APN 可能会中断移动网络连接。</translation>
 <translation id="7119389851461848805">电源</translation>
 <translation id="7129287270910503851">您的流量消耗会在每月的这一天重置</translation>
 <translation id="7130438335435247835">接入点名称 (APN)</translation>
@@ -1173,6 +1200,7 @@
 <translation id="7791543448312431591">添加</translation>
 <translation id="779591286616261875">发送新报告</translation>
 <translation id="7799817062559422778">浅色模式</translation>
+<translation id="7802764839223122985">缺少按键。<ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7813073042185856802">山</translation>
@@ -1219,6 +1247,7 @@
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /><ph name="CHARACTERS_SUBJECTS" />搭配<ph name="CHARACTERS_BACKGROUND" />背景</translation>
 <translation id="8067126283828232460">已连接 APN。</translation>
 <translation id="8067208048261192356">棕色</translation>
+<translation id="8067224607978179455">删除<ph name="ACTION_NAME" /></translation>
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8079860070590459552">花田</translation>
@@ -1244,6 +1273,7 @@
 <translation id="8226628635270268143">选择您喜爱的照片和影集</translation>
 <translation id="8227119283605456246">附上文件</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
+<translation id="8238771987802558562">选择 APN</translation>
 <translation id="8246209727385807362">未知运营商</translation>
 <translation id="8250926778281121244">铁锈色</translation>
 <translation id="8257572018929862473">打开“快速解答”设置</translation>
@@ -1366,6 +1396,7 @@
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
 <translation id="8930521118335213258">对等节点</translation>
 <translation id="8930622219860340959">无线</translation>
+<translation id="8933650076320258356">所选按键为表示<ph name="DIRECTION" />的 <ph name="KEYS" />。<ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">客户端 IP 地址</translation>
 <translation id="8944651180182756621">启动器颜色</translation>
 <translation id="8945308580158685341">蜜蜂</translation>
@@ -1416,18 +1447,22 @@
 <translation id="9149391708638971077">运行内存测试</translation>
 <translation id="9159524746324788320">汉堡</translation>
 <translation id="9161276708550942948">空格键</translation>
+<translation id="9169345239923038539">您尚未连接网络。如果您的移动运营商推荐使用自定义 APN，请<ph name="BEGIN_LINK" />输入 APN 信息。<ph name="END_LINK" /></translation>
 <translation id="9173638680043580060">还剩不到 1 分钟</translation>
 <translation id="9174334653006917325">界面颜色</translation>
 <translation id="917720651393141712">测试</translation>
 <translation id="9188992814426075118">键盘可自动与您的壁纸匹配</translation>
 <translation id="9189000703457422362">无法使用自动检测到的 APN 连接到此网络。如需了解详情，请与您的移动运营商联系。</translation>
 <translation id="9193744392140377127">APN*</translation>
+<translation id="9195918315673527512">所选的操纵杆按键为 <ph name="KEYS" />。点按按钮即可修改控件</translation>
 <translation id="9204237731135241582">无法从 Android 应用连接网关</translation>
 <translation id="921080052717160800">已将图片设为相机背景</translation>
 <translation id="9211490828691860325">所有桌面</translation>
+<translation id="9218016617214286986">显示已知的 APN</translation>
 <translation id="932327136139879170">首页</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">发送反馈</translation>
+<translation id="950520315903467048">缺少表示<ph name="DIRECTION" />的按键。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="952992212772159698">未激活</translation>
 <translation id="95718197892796296">黏土</translation>
 <translation id="960719561871045870">运营商代码</translation>

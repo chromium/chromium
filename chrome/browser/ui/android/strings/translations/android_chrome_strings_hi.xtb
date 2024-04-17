@@ -65,7 +65,6 @@
 <translation id="1273937721055267968"><ph name="DOMAIN" /> को ब्लॉक करें</translation>
 <translation id="1283039547216852943">पूरा खोलने के लिए टैप करें</translation>
 <translation id="1289059016768036948">आपसे अपने Google खाते में साइन इन करने के लिए कहा जाएगा</translation>
-<translation id="1291207594882862231">इतिहास, कुकी, साइट डेटा, कैश मेमोरी मिटाएं…</translation>
 <translation id="129553762522093515">हाल ही में बंद किए गए</translation>
 <translation id="1298077576058087471">60% तक डेटा बचाएं, आज की खबरें पढ़ें</translation>
 <translation id="1303339473099049190">वह पासवर्ड नहीं मिला. अपनी स्पेलिंग की जांच करें और फिर से कोशिश करें.</translation>
@@ -380,7 +379,6 @@
 <translation id="2992473221983447149">इमेज के बारे में जानकारी</translation>
 <translation id="2996291259634659425">'पासफ़्रेज़' बनाएं</translation>
 <translation id="2996809686854298943">URL ज़रूरी है</translation>
-<translation id="2996932914629936323">सिंक किए हुए सभी डिवाइसों से ब्राउज़िंग इतिहास मिट जाएगा</translation>
 <translation id="2997081575621687554">जब कोई Google साइट अपने पेज पर, लिंक को निजी तौर पर पहले से लोड करने के लिए कहती है, तो Chrome, Google के सर्वर की मदद से पेजों को एन्क्रिप्ट करके पहले से लोड कर देता है. इसके लिए, Chrome कुकी का इस्तेमाल नहीं करता है. इससे, पहले से लोड की गई साइट से आपकी पहचान को छिपाया जा सकता है.</translation>
 <translation id="3003253259757197230">इस बात का अंदाज़ा लगाने के लिए कि आपको कौन-कौनसी साइटें पसंद हैं और आपने जिस पेज को विज़िट किया है उसके बारे में ज़्यादा जानकारी दिखाने के लिए, Google को आपके विज़िट किए गए पेजों के यूआरएल भेजे जाते हैं</translation>
 <translation id="3026955690410463085">लिंक जोड़ें</translation>
@@ -542,7 +540,6 @@
 <translation id="3932390316856284148">साइन इन करने के लिए, खातों की सूची पूरी स्क्रीन पर खुली है.</translation>
 <translation id="393697183122708255">कोई चालू बोलकर खोजने की सुविधा उपलब्‍ध नहीं है</translation>
 <translation id="395377504920307820">साइन इन किए बिना जारी रखें</translation>
-<translation id="3958287878205277013">अपने डिवाइस पर गुप्त मोड में की गई ब्राउज़िंग का इतिहास मिटाने के लिए, सभी गुप्त टैब बंद कर दें.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{तैयार होने पर Chrome आपका पेज लोड करेगा}one{तैयार होने पर Chrome आपके पेज लोड करेगा}other{तैयार होने पर Chrome आपके पेज लोड करेगा}}</translation>
 <translation id="3962119236270174787">ऐसे डाउनलोड, वेबसाइटों, और एक्सटेंशन से मानक सुरक्षा जो नुकसान पहुंचा सकते हैं</translation>
 <translation id="3969142555815019568">Chrome आपके पासवर्ड की जांच नहीं कर सकता</translation>
@@ -848,7 +845,6 @@
 <translation id="5468068603361015296">क्या आप फिर भी <ph name="FILE_NAME" /> को डाउनलोड करना चाहते हैं?</translation>
 <translation id="548278423535722844">मैप ऐप्लिकेशन में खोलें</translation>
 <translation id="5486841595534124508">पेज इनसाइट हब के लिए निजता नोटिस का लोगो, जो 'मेरी गतिविधि' वाले पेज पर रीडायरेक्ट करता है.</translation>
-<translation id="5487521232677179737">डेटा मिटाएं</translation>
 <translation id="5492637351392383067">डिवाइस पर पासवर्ड एन्क्रिप्ट (सुरक्षित) करना</translation>
 <translation id="5514904542973294328">इस डिवाइस के व्यवस्थापक ने अक्षम किया है</translation>
 <translation id="5515439363601853141">अपना पासवर्ड देखने के लिए अनलॉक करें</translation>
@@ -887,7 +883,6 @@
 <translation id="5683547024293500885">Chrome, अपडेट की जांच नहीं कर सकता</translation>
 <translation id="5686790454216892815">फ़ाइल का नाम बहुत लंबा है</translation>
 <translation id="5687606994963670306">Chrome उन साइटों को सूची से अपने-आप मिटा देता है जिन्हें आपने 30 दिन पहले विज़िट किया था. किसी साइट को फिर से विज़िट करने पर, उसे सूची में दोबारा शामिल किया जा सकता है. इसके अलावा, साइट को विज्ञापनों का सुझाव देने से रोका जा सकता है. <ph name="BEGIN_LINK" />Chrome में विज्ञापन देखने वाले की निजता बनाए रखने<ph name="END_LINK" /> के बारे में ज़्यादा जानें.</translation>
-<translation id="569435661099256888">आपने जिन पेजों पर विज़िट किया है उन्हें देखा जा सकता है या अपने इतिहास से हटाया जा सकता है</translation>
 <translation id="569536719314091526">'ज़्यादा विकल्प' बटन से इस पेज का अनुवाद किसी भी भाषा में करें</translation>
 <translation id="5696597120588531049">Chrome आपको डेटा के गलत इस्तेमाल, नुकसान पहुंचाने वाली वेबसाइटों वगैरह से सुरक्षित रहने में मदद कर सकता है</translation>
 <translation id="5698878456427040674">देखें कि चुना गया खाता काम करता है या नहीं.</translation>
@@ -914,7 +909,6 @@
 <translation id="5780792035410621042">पासवर्ड कॉपी करने के लिए, पहले अपने डिवाइस पर एक स्क्रीन लॉक सेट करें</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> में से <ph name="SPACE_USED" /> का इस्तेमाल किया जा रहा है</translation>
 <translation id="5795872532621730126">खोजें और ब्राउज़ करें</translation>
-<translation id="5797521893972859201">ब्राउज़िंग इतिहास मिटाता है. इसमें खोज बॉक्स का ब्राउज़िंग इतिहास भी शामिल है</translation>
 <translation id="5797949256525811424">ब्लॉक किया गया विषय</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# घंटा पहले}one{# घंटे पहले}other{# घंटे पहले}}</translation>
 <translation id="5810288467834065221">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
@@ -1087,7 +1081,6 @@
 <translation id="6637100877383020115">ऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">हमेशा के लिए ब्लॉक करें</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> हटाएं</translation>
-<translation id="6643016212128521049">मिटाएं</translation>
 <translation id="6645629752388991326">कंट्रोल करें कि सुरक्षा कुंजी के तौर पर इस फ़ोन का इस्तेमाल करके किन डिवाइसों पर साइन इन किया जा सकता है.</translation>
 <translation id="6646696210740573446">यह आपके आईपी पते को छिपाने वाले निजी सर्वर की मदद से, Google को यूआरएल का अस्पष्ट हिस्सा भेजता है. अगर कोई साइट आपका पासवर्ड चुराने की कोशिश करती है या अगर आपने अनजाने में नुकसान पहुंचाने वाली कोई फ़ाइल डाउनलोड की है, तो Chrome उनके यूआरएल Google को भेज सकता है. यूआरएल के साथ-साथ पेज का कुछ कॉन्टेंट भी भेजा जाता है.</translation>
 <translation id="6647441008198474441">इस बात का अंदाज़ा लगाने के लिए कि आपको कौन-कौनसी साइटें पसंद हैं, Google को आपके देखे गए पेजों के यूआरएल भेजे जाते हैं</translation>
@@ -1283,8 +1276,6 @@
 <translation id="752220631458524187">काम हो जाने के बाद डिसकनेक्ट कर दें</translation>
 <translation id="7523960634226602883">Google Lens के ज़रिए अपने कैमरे और फ़ोटो की मदद से खोजें</translation>
 <translation id="752731652852882757">गुप्त मोड इस्तेमाल करते समय ब्लॉक करें</translation>
-<translation id="7562080006725997899">ब्राउज़िंग डेटा साफ़ हो रहा है</translation>
-<translation id="756809126120519699">साफ़ किया गया Chrome डेटा</translation>
 <translation id="7577900504646297215">पसंद प्रबंधित करें</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फ़ाइल डाउनलोड की गई}one{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}other{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}}</translation>
 <translation id="7581273696622423628">सर्वेक्षण में भाग लें</translation>
@@ -1317,14 +1308,12 @@
 <translation id="7697383401610880082">खींचकर छोड़ने वाला हैंडल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> में ईमेल बनाएं</translation>
 <translation id="7702029078562412515">क्वेरी टाइल</translation>
-<translation id="7702388902581909985">ब्राउज़िंग डेटा मिटाने का मतलब यह नहीं है कि आपको Google खाते से साइन आउट कर दिया जाएगा. ऐसा करने के लिए, <ph name="BEGIN_LINK1" />Chrome से साइन आउट करें<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="7709918231054955894">अपने सभी डिवाइसों पर खुले हुए टैब ऐक्सेस करें</translation>
 <translation id="7733878270780732638">डिवाइस में स्टोरेज कम है.</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
-<translation id="7766587497031415281">ब्राउज़िंग डेटा को मिटाने के ज़्यादा विकल्प</translation>
 <translation id="7772032839648071052">'पासफ़्रेज' की पुष्टि करें</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> को बंद करें</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
@@ -1383,7 +1372,6 @@
 <translation id="8013372441983637696">इस डिवाइस से अपना Chrome डेटा भी हटाएं</translation>
 <translation id="8015452622527143194">पेज पर सब कुछ वापस डिफ़ॉल्ट आकार में लाएं</translation>
 <translation id="8026238112629815203">हमने इस डिवाइस पर पासवर्ड सेव करने का तरीका बदल दिया है</translation>
-<translation id="8026334261755873520">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="8027863900915310177">डाउनलोड की जाने वाली फ़ाइल को सेव करने की जगह चुनें</translation>
 <translation id="8030852056903932865">अनुमति दें</translation>
 <translation id="8032569120109842252">फ़ॉलो कर रहे हैं</translation>
@@ -1480,6 +1468,7 @@
 <translation id="84594714173170813">अपने Google खाते में, Chrome के डेटा का इस्तेमाल जारी रखें</translation>
 <translation id="8460448946170646641">निजता और सुरक्षा से जुड़े मुख्य कंट्रोल देखें</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>
+<translation id="8477178913400731244">डेटा मिटाएं</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहास पेज खोलें</translation>
 <translation id="8493948351860045254">स्‍थान खाली करें</translation>
@@ -1517,7 +1506,6 @@
 <translation id="8636825310635137004">अपने अन्य डिवाइस से अपने टैब पाने के लिए, सिंक करना चालू करें.</translation>
 <translation id="864544049772947936">विंडो (<ph name="INSTANCE_COUNTS" />) मैनेज करें</translation>
 <translation id="8645920082661222035">यह सुविधा, नुकसान पहुंचाने वाली घटनाओं का पहले से अंदाज़ा लगाती है और उनके बारे में आपको चेतावनी देती है</translation>
-<translation id="8655129584991699539">आप 'Chrome सेटिंग' में डेटा हटा सकते हैं</translation>
 <translation id="8664215986015753476">Chrome को अपने हिसाब से इस्तेमाल करें</translation>
 <translation id="8664979001105139458">इस नाम की फ़ाइल पहले से मौजूद है</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से, <ph name="SITE_ETLD_PLUS_ONE" /> में साइन अप करें</translation>

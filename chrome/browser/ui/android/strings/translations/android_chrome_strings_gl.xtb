@@ -65,7 +65,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1273937721055267968">Bloquear <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Toca para despregar</translation>
 <translation id="1289059016768036948">Pediráseche que inicies sesión na túa Conta de Google</translation>
-<translation id="1291207594882862231">Borrar o historial, as cookies, os datos dos sitios, a memoria caché…</translation>
 <translation id="129553762522093515">Pechado recentemente</translation>
 <translation id="1298077576058087471">Le as noticias do día e aforra ata un 60 % de datos</translation>
 <translation id="1303339473099049190">Non se puido atopar o contrasinal. Comproba a ortografía e téntao de novo.</translation>
@@ -380,7 +379,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="2992473221983447149">Descricións de imaxes</translation>
 <translation id="2996291259634659425">Crear contrasinal</translation>
 <translation id="2996809686854298943">O URL é obrigatorio</translation>
-<translation id="2996932914629936323">Borra o historial de todos os dispositivos sincronizados</translation>
 <translation id="2997081575621687554">Cando un sitio de Google solicita precargar ligazóns da súa páxina de forma privada, Chrome encripta e precarga as páxinas correspondentes a través dos nosos servidores sen cookies. Deste xeito, ocúltaselle a túa identidade ao sitio precargado.</translation>
 <translation id="3003253259757197230">Os URL aos que accedas enviaranse a Google para predicir que sitios poderías visitar despois e para mostrarche información adicional sobre a páxina que esteas consultando</translation>
 <translation id="3026955690410463085">Incluír ligazón</translation>
@@ -542,7 +540,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="3932390316856284148">Panel inferior de inicio de sesión aberto a pantalla completa.</translation>
 <translation id="393697183122708255">A busca por voz non está dispoñible</translation>
 <translation id="395377504920307820">Usar sen conta</translation>
-<translation id="3958287878205277013">Para borrar o historial de navegación do modo de incógnito do teu dispositivo, pecha todas as pestanas que teñas abertas nese modo.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome cargará a páxina cando o dispositivo estea listo}other{Chrome cargará as páxinas cando o dispositivo estea listo}}</translation>
 <translation id="3962119236270174787">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos</translation>
 <translation id="3969142555815019568">Chrome non puido comprobar os teus contrasinais</translation>
@@ -848,7 +845,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="5468068603361015296">Queres descargar <ph name="FILE_NAME" /> de todas as formas?</translation>
 <translation id="548278423535722844">Abrir na aplicación de mapas</translation>
 <translation id="5486841595534124508">Logotipo do aviso de privacidade do centro de estatísticas da páxina que redirixe á páxina A miña actividade.</translation>
-<translation id="5487521232677179737">Borrar datos</translation>
 <translation id="5492637351392383067">Encriptación no dispositivo</translation>
 <translation id="5514904542973294328">Desactivado polo administrador deste dispositivo</translation>
 <translation id="5515439363601853141">Desbloquea a pantalla para ver o teu contrasinal</translation>
@@ -887,7 +883,6 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="5683547024293500885">Chrome non puido buscar actualizacións</translation>
 <translation id="5686790454216892815">O nome do ficheiro é demasiado longo</translation>
 <translation id="5687606994963670306">Chrome elimina automaticamente os sitios que teñan máis de 30 días de antigüidade. Se volves visitar un sitio, é posible que apareza na lista outra vez. Tamén podes impedir que un sitio che suxira anuncios. Máis información sobre <ph name="BEGIN_LINK" />como xestionar a privacidade nos anuncios en Chrome<ph name="END_LINK" />.</translation>
-<translation id="569435661099256888">Podes ver as páxinas que visitaches ou borralas do teu historial</translation>
 <translation id="569536719314091526">Traduce esta páxina a calquera idioma desde o botón Máis opcións</translation>
 <translation id="5696597120588531049">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis</translation>
 <translation id="5698878456427040674">Comproba se se admite a conta seleccionada.</translation>
@@ -914,7 +909,6 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="5780792035410621042">Para poder copiar os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
 <translation id="5793665092639000975">Espazo utilizado: <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Busca e navegación</translation>
-<translation id="5797521893972859201">Borra o historial, tamén o da caixa de busca.</translation>
 <translation id="5797949256525811424">Tema bloqueado</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Hai # hora}other{Hai # horas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
@@ -1087,7 +1081,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6637100877383020115">Para contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_UMA_LINK" />Xestionar<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloquear sempre</translation>
 <translation id="6641780377503683465">Quitar <ph name="INTEREST" /></translation>
-<translation id="6643016212128521049">Borrar</translation>
 <translation id="6645629752388991326">Controla os dispositivos nos que se pode iniciar sesión utilizando este aparello como chave de seguranza.</translation>
 <translation id="6646696210740573446">Envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode enviarlle a Google os URL, así como fragmentos do contido das páxinas.</translation>
 <translation id="6647441008198474441">Os URL que visitas envíanse a Google para predicir os sitios que probablemente visites a continuación</translation>
@@ -1283,8 +1276,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="752220631458524187">Cando remates, desconéctao</translation>
 <translation id="7523960634226602883">Realizar buscas coa cámara usando Google Lens</translation>
 <translation id="752731652852882757">Bloquear no modo de incógnito</translation>
-<translation id="7562080006725997899">Borrando datos de navegación</translation>
-<translation id="756809126120519699">Borráronse os datos de Chrome</translation>
 <translation id="7577900504646297215">Xestionar intereses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ficheiro descargado}other{<ph name="FILES_DOWNLOADED_MANY" /> ficheiros descargados}}</translation>
 <translation id="7581273696622423628">Completar enquisa</translation>
@@ -1317,14 +1308,12 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7702029078562412515">Bloques de consultas</translation>
-<translation id="7702388902581909985">Ao borrar os teus datos de navegación, non se pecha a sesión da túa Conta de Google. Para facelo, <ph name="BEGIN_LINK1" />pecha a sesión en Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7709918231054955894">Accede a todas as túas pestanas</translation>
 <translation id="7733878270780732638">Non hai suficiente espazo no dispositivo.</translation>
 <translation id="7759809451544302770">Opcionais</translation>
 <translation id="7762668264895820836">Tarxeta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>
-<translation id="7766587497031415281">Máis opcións para borrar os datos de navegación</translation>
 <translation id="7772032839648071052">Confirmar frase de acceso</translation>
 <translation id="7772375229873196092">Pechar <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}}</translation>
@@ -1383,7 +1372,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8013372441983637696">Borrar tamén deste dispositivo os teus datos de Chrome</translation>
 <translation id="8015452622527143194">Recuperar o tamaño predeterminado da páxina</translation>
 <translation id="8026238112629815203">Cambiamos o modo no que se gardan os contrasinais neste dispositivo</translation>
-<translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8027863900915310177">Escolle onde queres gardar o ficheiro</translation>
 <translation id="8030852056903932865">Aprobar</translation>
 <translation id="8032569120109842252">Seguindo</translation>
@@ -1480,6 +1468,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="84594714173170813">Sigue usando os datos de Chrome na túa Conta de Google</translation>
 <translation id="8460448946170646641">Revisa os controis clave de privacidade e seguranza</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
+<translation id="8477178913400731244">Eliminar datos</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abrir a páxina do historial</translation>
 <translation id="8493948351860045254">Liberar espazo</translation>
@@ -1517,7 +1506,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="864544049772947936">Xestionar ventás (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Predí eventos perigosos antes de que se produzan e móstrache unha advertencia</translation>
-<translation id="8655129584991699539">Podes borrar os datos na configuración de Chrome</translation>
 <translation id="8664215986015753476">Utiliza Chrome ao teu xeito</translation>
 <translation id="8664979001105139458">Xa existe un ficheiro con este nome</translation>
 <translation id="8676276370198826499">Rexístrate en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

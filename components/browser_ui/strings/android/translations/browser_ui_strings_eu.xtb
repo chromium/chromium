@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Berrezarri baimenak</translation>
 <translation id="301521992641321250">Automatikoki blokeatuta</translation>
 <translation id="3069226013421428034">Eman webgune jakin batean saioa hasteko baimena hirugarrenei.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Bihar iraungiko da}other{# egun barru iraungiko da}}</translation>
 <translation id="310297983047869047">Aurreko diapositiba</translation>
 <translation id="3109724472072898302">Tolestuta</translation>
 <translation id="3114012059975132928">Bideo-erreproduzigailua</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Baimenduta</translation>
 <translation id="429312253194641664">Webgune bat multimedia-edukia erreproduzitzen ari da</translation>
 <translation id="42981349822642051">Zabaldu</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Bihar iraungiko da}other{# egun barru iraungiko da}}</translation>
 <translation id="4336566011000459927">Gaur mugatuko ditu cookieak berriro Chrome-k</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Azken fitxa</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domeinuko webgune guztiak</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Beti</translation>
 <translation id="757524316907819857">Ez utzi webguneei eduki babestua erreproduzitzen</translation>
 <translation id="7594634374516752650">Bluetooth bidezko gailu batera konektatuta zaude</translation>
-<translation id="7641339528570811325">Garbitu arakatze-datuak…</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7667547420449112975">Ozeko azti miragarria</translation>

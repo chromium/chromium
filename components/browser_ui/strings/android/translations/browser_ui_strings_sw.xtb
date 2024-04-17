@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Badilisha ruhusa</translation>
 <translation id="301521992641321250">Imezuiwa kiotomatiki</translation>
 <translation id="3069226013421428034">Ruhusu uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>
 <translation id="310297983047869047">Slaidi iliyotangulia</translation>
 <translation id="3109724472072898302">Imekunjwa</translation>
 <translation id="3114012059975132928">Kicheza video</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Imeruhusiwa</translation>
 <translation id="429312253194641664">Tovuti inacheza maudhui</translation>
 <translation id="42981349822642051">Panua</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>
 <translation id="4336566011000459927">Chrome itadhibiti vidakuzi tena leo</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Kichupo chako cha mwisho</translation>
 <translation id="4338831206024587507">Tovuti zote zenye kikoa cha <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Kila wakati</translation>
 <translation id="757524316907819857">Zuia tovuti zisicheze maudhui yanayolindwa</translation>
 <translation id="7594634374516752650">Imeunganishwa kwenye Kifaa chenye Bluetooth</translation>
-<translation id="7641339528570811325">Futa data ya kuvinjari...</translation>
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>

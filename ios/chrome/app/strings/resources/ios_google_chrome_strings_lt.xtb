@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="1066101356081285416">„Chrome“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Siuntinio stebėjimo numeris ir svetainės pavadinimas bus siunčiami „Google“, kad būtų galima teikti šią funkciją ir tobulinti „Google“ apsipirkimo funkcijas visiems žmonėms. Tai galite bet kada atnaujinti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
-<translation id="1105362920864247682">Išvalyti naršymo duomenis naršyklėje „Chrome“.</translation>
 <translation id="1143896152279775643">Slaptažodis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="1177414119866731261">Atidarykite „Chrome“ meniu</translation>
 <translation id="1180362651362502943">Toliau naudokite „Chrome“ duomenis „Google“ paskyroje.</translation>
@@ -77,7 +76,6 @@
 <translation id="2750626042242931740">Pasirinkimus galite bet kada atnaujinti „Chrome“ nustatymuose.</translation>
 <translation id="2767464022270041271">Nėra išsaugotų slaptažodžių. „Google“ slaptažodžių tvarkyklė gali tikrinti slaptažodžius, kai juos išsaugote.</translation>
 <translation id="2789947168960170215">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Išvalyti naršymo duomenis naršyklėje „Chrome“</translation>
 <translation id="2869959624320573933">Prisijunkite prie „Chrome“</translation>
 <translation id="2876628302275096482">Sužinokite daugiau, <ph name="BEGIN_LINK" />kaip „Chrome“ užtikrina jūsų duomenų privatumą<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Atidarykite „Chrome“ nustatymus</translation>
@@ -225,7 +223,6 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7466693328838535498">Laukelyje „Paieškos valdikliai“ įveskite „Chrome“</translation>
 <translation id="746684838091935575">3. Pasirinkite „Chrome“</translation>
 <translation id="7492574581995589075">Organizacija išjungė galimybę naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>
-<translation id="756809126120519699">Išvalyti „Chrome“ duomenys</translation>
 <translation id="7581063337314642333">Apsilankykite „Chrome“ skirtukų tinklelyje</translation>
 <translation id="7662994914830945754">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="7669869107155339016">Eikite į „Chrome“ nustatymus.</translation>

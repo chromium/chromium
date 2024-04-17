@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="301521992641321250">အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="3069226013421428034">သတ်မှတ်ဝဘ်ဆိုက်အတွက် ပြင်ပအဖွဲ့အစည်းသို့ လက်မှတ်ထိုးဝင်ခြင်းကို ခွင့်ပြုနိုင်သည်။</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{မနက်ဖြန် သက်တမ်းကုန်မည်}other{# ရက်အတွင်း သက်တမ်းကုန်မည်}}</translation>
 <translation id="310297983047869047">ယခင်ဆလိုက်</translation>
 <translation id="3109724472072898302">ခေါက်ထား</translation>
 <translation id="3114012059975132928">ဗီဒီယိုဖွင့်စနစ်</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">ခွင့်ပြုထား</translation>
 <translation id="429312253194641664">ဝဘ်ဆိုက်တစ်ခုက မီဒီယာကို ဖွင့်နေသည်</translation>
 <translation id="42981349822642051">တိုးချဲ့</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{မနက်ဖြန် သက်တမ်းကုန်မည်}other{# ရက်အကြာတွင် သက်တမ်းကုန်မည်}}</translation>
 <translation id="4336566011000459927">Chrome သည် ကွတ်ကီးများကို ယနေ့ ထပ်မံကန့်သတ်ပါမည်</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> အောက်ရှိ ဝဘ်ဆိုက်အားလုံး</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">အမြဲတမ်း</translation>
 <translation id="757524316907819857">ကာကွယ်ထားသည့် အကြောင်းအရာများကို မပြသရန် ဝဘ်ဆိုက်များကို ပိတ်ပါ</translation>
 <translation id="7594634374516752650">ဘလူးတုသ်သုံးစက်သို့ ချိတ်ဆက်ထားသည်</translation>
-<translation id="7641339528570811325">ဖွင့်ကြည့်ထားသည့် မှတ်တမ်းဒေတာများကို ရှင်းလင်းရန်…</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7667547420449112975">Oz ၏အံ့ဖွယ်ဝိဇ္ဇာ</translation>

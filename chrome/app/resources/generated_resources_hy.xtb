@@ -234,7 +234,6 @@
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1174073918202301297">Դյուրանցումն ավելացվեց</translation>
 <translation id="1174366174291287894">Chrome-ը կզգուշացնի ձեզ, եթե միացումը վտանգավոր լինի</translation>
-<translation id="117445914942805388">Այցելությունների պատմությունը բոլոր համաժամացված սարքերից և Google հաշվից ջնջելու համար <ph name="BEGIN_LINK" />անցեք համաժամացման կարգավորումներ<ph name="END_LINK" />:</translation>
 <translation id="1175131936083782305">Ձեր ադմինիստրատորն անջատել է այս գործառույթը։</translation>
 <translation id="1175364870820465910">&amp;Տպել…</translation>
 <translation id="1175914831232945926">Թվանշաններ</translation>
@@ -258,7 +257,6 @@
 <translation id="1190086046506744802">Շատ հեռու</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Օգտագործել ձեր համակարգչում պահված ֆայլը}one{Օգտագործել ձեր համակարգչում պահված # ֆայլ}other{Օգտագործել ձեր համակարգչում պահված # ֆայլ}}</translation>
 <translation id="1190706173655543975">Microsoft-ի հավելվածներին վերաբերող կանոններ</translation>
-<translation id="119092896208640858">Այցելությունների պատմությունը այս սարքից ջնջելու, սակայն Google հաշվում պահպանելու համար <ph name="BEGIN_LINK" />դուրս գրվեք հաշվից<ph name="END_LINK" />:</translation>
 <translation id="1191353342579061195">Ընտրեք ձեզ հարմար թեմա։ Թեման, պաստառը, էկրանապահը և այլ տարրեր փոխելու համար պարզապես սեղմեք մկնիկի աջ կոճակն աշխատասեղանին։</translation>
 <translation id="1192706927100816598">{0,plural, =1{Դուք # վայրկյանից ավտոմատ դուրս կգաք համակարգից։
 Համաձայն <ph name="DOMAIN" /> տիրույթի կանոնների՝ խելացի քարտը պետք է տեղադրված լինի։}one{Դուք # վայրկյանից ավտոմատ դուրս կգաք համակարգից։
@@ -1059,6 +1057,7 @@
 <translation id="1784707308176068866">Աշխատեցնել ֆոնային ռեժիմում, եթե դա պահանջում է համագործակցող որևէ հավելված</translation>
 <translation id="1784849162047402014">Սարքի սկավառակում ազատ տարածքը քիչ է</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> հավելվածի ապատեղադրման արդյունքում կապատեղադրվի նաև այս հավելվածը՝}one{<ph name="APP_NAME" /> հավելվածի ապատեղադրման արդյունքում կապատեղադրվի նաև այս հավելվածը՝}other{<ph name="APP_NAME" /> հավելվածի ապատեղադրման արդյունքում կապատեղադրվեն նաև այս հավելվածները՝}}</translation>
+<translation id="1786044937610313874">Դյուրանցումները բացել Chrome-ում</translation>
 <translation id="1786290960428378411">Պահանջվում է դիտելու և փոխելու թույլտվություն</translation>
 <translation id="1787350673646245458">Օգտատիրոջ պատկեր</translation>
 <translation id="1790976235243700817">Հեռացնել մուտքի թույլտվությունը</translation>
@@ -1553,7 +1552,6 @@
 <translation id="2144557304298909478">Android-ի համար հավելվածների մշակում Լինուքսում</translation>
 <translation id="2144873026585036769">Օգտագործե՞լ Google հաշիվը՝ գաղտնաբառեր և անցաբառեր պահելու և ինքնալրացնելու համար</translation>
 <translation id="2146263598007866206">Կայքերը կարող են առնչվող ֆայլերն ավտոմատ միասին ներբեռնել՝ ձեր ժամանակը խնայելու համար</translation>
-<translation id="2147151613919729065">Հյուրի ռեժիմի պատմությունը ջնջելու համար փակեք այդ ռեժիմում բացված բոլոր պատուհանները։</translation>
 <translation id="2147218225094845757">Թաքցնել կողային վահանակը</translation>
 <translation id="2147282432401652483">command</translation>
 <translation id="2147402320887035428">Այս ֆայլը կարող է վնասագիր լինել։<ph name="LINE_BREAK" />Google Ապահով դիտարկումը ստուգում է՝ արդյոք ֆայլը վտանգավոր է։ Ստուգումը սովորաբար մի քանի վայրկյան է տևում։</translation>
@@ -1718,7 +1716,6 @@
 <translation id="2273119997271134996">Դոկ-կայանի տեսամիացքի հետ կապված խնդիր կա</translation>
 <translation id="2274840746523584236">Լիցքավորեք ձեր Chromebook-ը</translation>
 <translation id="2276503375879033601">Ավելացնել հավելվածներ</translation>
-<translation id="2276910256003242519">Տվյալները ջնջվում են…</translation>
 <translation id="2278193750452754829">Ընդլայնումները թույլատրված են այս կայքում։ Սեղմեք՝ ընտրացանկը բացելու համար</translation>
 <translation id="2278562042389100163">Բացել դիտարկիչի պատուհանը</translation>
 <translation id="2278668501808246459">Կոնտեյներների կառավարիչը գործարկվում է</translation>
@@ -2024,7 +2021,6 @@
 <translation id="2484574361686148760">Թարմացնել Wi-Fi Direct-ի սպասառուների մասին տեղեկությունները</translation>
 <translation id="2484743711056182585">Հեռացնել թույլտվությունը</translation>
 <translation id="2484909293434545162">Եթե որևէ կայք քուքիներ է օգտագործում, դրա մասին տեղեկությունները կցուցադրվեն այստեղ</translation>
-<translation id="2484959914739448251">Այցելությունների պատմությունը բոլոր համաժամացված սարքերից և Google հաշվից ջնջելու համար <ph name="BEGIN_LINK" />մուտքագրեք ձեր անցաբառը<ph name="END_LINK" />:</translation>
 <translation id="2485394160472549611">Հատուկ ձեզ համար</translation>
 <translation id="2485422356828889247">Ապատեղադրել</translation>
 <translation id="2485681265915754872">Google Play-ի օգտագործման պայմաններ</translation>
@@ -2338,7 +2334,6 @@
 <translation id="2727633948226935816">Այլևս չհիշեցնել</translation>
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2727744317940422214">Սխալ առաջացավ։ Կարծիք հայտնեք՝ նկարագրության մեջ ավելացնելով #bruschetta։ Սխալի կոդ՝ <ph name="ERROR" />։ Չհաջողվեց ջնջել տվյալները։ Փորձեք ձեռքով ջնջել։</translation>
-<translation id="2729314457178420145">Ջնջել նաև այցելությունների պատմությունը (<ph name="URL" />)։ Նկատի ունեցեք, որ արդյունքում հնարավոր է դուրս գրվեք ձեր հաշվից Google.com կայքում։ <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome-ը նոր եղանակներ է գտնում՝ ձեր գործողությունների հետագծումը նվազեցնելու և ձեր կողմից կայքերի այցելությունն ավելի անվտանգ դարձնելու համար։ Chrome-ը նաև <ph name="ESTIMATE_INTERESTS_LINK" /> և տալիս է ձեզ դրանք կառավարելու հնարավորություն։ Այնուհետև, կայքերը, որոնք այցելում եք, կարող են Chrome-ից իմանալ ձեր հետաքրքրությունները՝ գովազդ ցուցադրելու համար։</translation>
 <translation id="2729577602370119849">Հեշտությամբ օգտագործեք և կառավարեք տպիչները</translation>
 <translation id="2730029791981212295">Լինուքսի հավելվածների ու ֆայլերի պահուստավորում</translation>
@@ -2698,7 +2693,6 @@
 <translation id="2996108796702395498">Ձեր սարքի սերիական համարն է <ph name="SERIAL_NUMBER" />։ Դրա միջոցով կարող եք ակտիվացնել ծառայությունը։</translation>
 <translation id="2996286169319737844">Տվյալները գաղտնագրվել են ձեր համաժամացման անցաբառով: Գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։</translation>
 <translation id="2996722619877761919">Շրջել երկար եզրի կողմով</translation>
-<translation id="2996932914629936323">Մաքրում է ձեր բոլոր համաժամացված սարքերի պատմությունը</translation>
 <translation id="2998097899774209901">Միացված է • Այս ընդլայնումը խախտում է Chrome Web Store-ի կանոնները</translation>
 <translation id="2998267783395280091">Գտնվել է ցանց</translation>
 <translation id="3000378525979847272">Տրված թույլտվություններ՝ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -2888,7 +2882,6 @@
 <translation id="3150927491400159470">Նոր բեռնում սերվերից</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
 <translation id="3151539355209957474">Մեկնարկի ժամը</translation>
-<translation id="3151562827395986343">Մաքրել պատմությունը, քուքիները, քեշը և ավելին</translation>
 <translation id="3151786313568798007">Էկրանի դիրքը</translation>
 <translation id="3152356229013609796">Դիտեք և անտեսեք հեռախոսի ծանուցումները, ինչպես նաև պատասխանեք դրանց</translation>
 <translation id="3155163173539279776">Chromium-ի վերագործարկում</translation>
@@ -3266,7 +3259,6 @@
 <translation id="3459509316159669723">Տպում</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 էջանիշ ջնջվեց}one{# էջանիշ ջնջվեց}other{# էջանիշ ջնջվեց}}</translation>
 <translation id="3461766685318630278">Ստեղծեք և ջնջեք լրացուցիչ կոնտեյներներ։</translation>
-<translation id="3462311546193741693">Դուք դուրս կգրվեք կայքերի մեծ մասից, սակայն կմնաք Google հաշվում, որպեսզի համաժամացված տվյալները հնարավոր լինի ջնջել:</translation>
 <translation id="3462413494201477527">Չեղարկե՞լ հաշվի կարգավորումը:</translation>
 <translation id="346298925039590474">Այս բջջային ցանցը հասանելի կլինի այս սարքի բոլոր օգտատերերին</translation>
 <translation id="3464145797867108663">Ավելացնել աշխատանքային պրոֆիլ</translation>
@@ -3459,7 +3451,6 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> ֆայլը սկանավորվում է։</translation>
 <translation id="3615596877979647433">Ստեղնը նշված չէ։ Սեղմեք այն՝ կարգավորելու համար։</translation>
 <translation id="3616113530831147358">Աուդիո</translation>
-<translation id="3616741288025931835">&amp;Մաքրել դիտարկումների տվյալները…</translation>
 <translation id="3617062258679844578">Սեղմելու փոխարեն հպեք ձեր հպահարթակին</translation>
 <translation id="3617891479562106823">Ֆոնային պատկերները հասանելի չեն: Փորձեք ավելի ուշ:</translation>
 <translation id="3618286417582819036">Սխալ առաջացավ</translation>
@@ -3851,7 +3842,6 @@
 <translation id="3890064827463908288">Միացրեք Chrome Sync-ը՝ Wi-Fi համաժամացումն օգտագործելու համար։</translation>
 <translation id="389313931326656921">Նշանակեք փոխանջատիչ «Առաջ» գործողության համար</translation>
 <translation id="3893268973182382220">Այս վահանակը հնարավոր չէ բեռնել հիմա</translation>
-<translation id="3893295674388762059">Տվյալները ջնջելու համար փակեք բոլոր ինկոգնիտո պատուհանները</translation>
 <translation id="3893536212201235195">Կարդալ և փոփոխել ձեր մատչելիության կարգավորումները</translation>
 <translation id="3893630138897523026">ChromeVox (ձայնային ուղեկցում)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
@@ -4021,7 +4011,6 @@
 <translation id="4007856537951125667">Թաքցնել դյուրանցումները</translation>
 <translation id="4010746393007464819">Հասանելի է Debian 12-ի (Bookworm) նորացում</translation>
 <translation id="4010917659463429001">Ձեր էջանիշները ձեր շարժական սարքում օգտագործելու համար <ph name="GET_IOS_APP_LINK" />:</translation>
-<translation id="4010938758610910350">Ներդիրների խմբի դասավորում…</translation>
 <translation id="4014432863917027322">Վերանորոգե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="4015163439792426608">Օգտվո՞ւմ եք ընդլայնումներից: <ph name="BEGIN_LINK" />Կառավարեք ձեր ընդլայնումները<ph name="END_LINK" /> մեկ վայրում:</translation>
 <translation id="4016762287427926315">Թույլտվությունները, որոնք տրամադրում եք «<ph name="APP_NAME" />» հավելվածին, նաև կգործեն այս հավելվածի համար։ <ph name="BEGIN_LINK" />Կարգավորումներ<ph name="END_LINK" /></translation>
@@ -4104,7 +4093,6 @@
 <translation id="407520071244661467">Մասշտաբ</translation>
 <translation id="407543464472585404"><ph name="NAME" />-ի պրոֆիլը կապված է <ph name="EMAIL" /> հաշվի հետ</translation>
 <translation id="4077917118009885966">Գովազդն արգելափակված է այս կայքում</translation>
-<translation id="4077919383365622693"><ph name="SITE" /> կայքի պահած բոլոր տվյալներն ու քուքիները կջնջվեն։</translation>
 <translation id="4078738236287221428">Ագրեսիվ</translation>
 <translation id="4078903002989614318">Տեսակավորման և ցանկի ընտրանքներ</translation>
 <translation id="4079140982534148664">Օգտագործել ուղղագրության ընդլայնված ստուգումը</translation>
@@ -4647,7 +4635,6 @@
 <translation id="4504374760782163539">{COUNT,plural, =0{Քուքիները թույլատրված են։}=1{Բոլոր քուքիները՝ բացառությամբ 1-ի, թույլատրված են։}one{Բոլոր քուքիները՝ բացառությամբ {COUNT}-ի, թույլատրված են։}other{Բոլոր քուքիները՝ բացառությամբ {COUNT}-ի, թույլատրված են։}}</translation>
 <translation id="4504940961672722399">Օգտագործեք այս ընդլայնումը` սեղմելով այս պատկերակը կամ <ph name="EXTENSION_SHORTCUT" />:</translation>
 <translation id="450552327874992444">Բառն արդեն ավելացվել է</translation>
-<translation id="4507128560633489176">Տվյալները ջնջվեցին։</translation>
 <translation id="4507373251891673233">Դուք արգելափակել եք <ph name="HOST" /> կայքի բոլոր ընդլայնումները</translation>
 <translation id="4507401683427517298">Սեղմեք «Ավելացնել դյուրանցում»</translation>
 <translation id="4508332912150723117">օգտանուն (<ph name="USER_EMAIL" />): Դիտել մանրամասները</translation>
@@ -5256,7 +5243,6 @@
 <translation id="4979263087381759787">Մշակողի ընտրանքներ</translation>
 <translation id="4979510648199782334">Microsoft 365-ի կարգավորումն ավարտվել է</translation>
 <translation id="4980805016576257426">Այս ընդլայնումը վնասաբեր ծրագիր է պարունակում:</translation>
-<translation id="4981449534399733132">Այցելությունների պատմությունը բոլոր համաժամացված սարքերից և Google հաշվից ջնջելու համար <ph name="BEGIN_LINK" />մտեք հաշիվ<ph name="END_LINK" />:</translation>
 <translation id="4983159853748980742">Ձեր գաղտնաբառը չի փոխանցվել։ Ստուգեք ինտերնետ կապը և համոզվեք, որ մուտք եք գործել Chrome։ Այնուհետև նորից փորձեք։</translation>
 <translation id="4986706507552097681">Դուք ցանկացած ժամանակ կարող եք անցնել կարգավորումներ և ընտրել, թե ինչն եք ուզում համաժամացնել։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայությունները։</translation>
 <translation id="4986728572522335985">Անվտանգության բանալու վրա պահված բոլոր տվյալները, այդ թվում՝ դրա PIN կոդերը կջնջվեն:</translation>
@@ -5463,6 +5449,7 @@
 <translation id="5146896637028965135">Համակարգային ձայնը</translation>
 <translation id="5147097165869384760">ՕՀ-ի համակարգի է՞ջն եք փնտրում։ Անցեք <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />։</translation>
 <translation id="5147113439721488265">Առաջարկ</translation>
+<translation id="5147516217412920887">Կոդը հաստատելու համար հետևեք ձեր հեռախոսի էկրանին ցուցադրվող ցուցումներին</translation>
 <translation id="5147992672778369947">Օգտագործեք առաջարկվող գաղտնաբառը</translation>
 <translation id="5148285448107770349">Գաղտնաբառը պետք է առնվազն 8 նիշ պարունակի</translation>
 <translation id="5149602533174716626">Պատճենել տեսանյութի կադրը</translation>
@@ -5878,7 +5865,6 @@
 <translation id="5486261815000869482">Հաստատեք գաղտնաբառը</translation>
 <translation id="5486561344817861625">Նմանակել դիտարկիչի վերագործարկումը</translation>
 <translation id="5487460042548760727">Վերանվանել պրոֆիլը <ph name="PROFILE_NAME" />-ի</translation>
-<translation id="5487521232677179737">Ջնջել տվյալները</translation>
 <translation id="5488093641312826914">«<ph name="COPIED_ITEM_NAME" />» տարրը պատճենվեց</translation>
 <translation id="5488508217173274228">Համաժամացնել գաղտնագրման ընտրանքները</translation>
 <translation id="5489077378642700219">Արգելել <ph name="WEBSITE" /> կայքին ծանուցումներ ուղարկել, բայց հարցնել ավելի ուշ</translation>
@@ -6267,7 +6253,6 @@
 <translation id="5794700615121138172">Լինուքսի ընդհանուր պանակներ</translation>
 <translation id="5794786537412027208">Դուրս գալ Chrome-ի բոլոր հավելվածներից</translation>
 <translation id="5796485699458186843">Նոր ինկոգնիտո ներդիր</translation>
-<translation id="5797521893972859201">Մաքրում է պատմությունը, այդ թվում որոնման դաշտում</translation>
 <translation id="5797934230382081317">Իմացեք, թե ինչպես սկսել օգտվել ծառայությունից &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; և &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; սարքերում</translation>
 <translation id="5798079537501238810">Կայքերը կարող են տեղադրել վճարումների մշակիչներ</translation>
 <translation id="5798086737841799234">Մուտքագրեք հաստատման կոդը</translation>
@@ -6589,7 +6574,6 @@
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Հեռարձակումը սկսելու համար մուտքագրեք մուտքի կոդը</translation>
 <translation id="6052976518993719690">SSL հավաստագրման կենտրոն</translation>
-<translation id="6053401458108962351">&amp;Մաքրել դիտարկումների տվյալները…</translation>
 <translation id="6053717018321787060">Ձեր Google հաշիվը նույն հաշիվն է, որն օգտագործում եք Gmail-ի, YouTube-ի, Chrome-ի և Google-ի այլ պրոդուկտների համար։
     Դրա շնորհիվ հեշտությամբ կարող եք բացել ձեր բոլոր էջանիշները, ֆայլերը և այլն։ Եթե չունեք հաշիվ, կարող եք ստեղծել այն հաջորդ էկրանին։</translation>
 <translation id="6054138466019582920">Որոնել այս էջում Google-ի միջոցով…</translation>
@@ -7654,6 +7638,7 @@
 <translation id="686609795364435700">Ցածր</translation>
 <translation id="686664946474413495">Գունային ջերմություն</translation>
 <translation id="6867086642466184030">Կան այլ հավելվածներ, որոնք կարգավորված են այնպես, որ կարողանան բացել նույն հղումները, ինչ <ph name="APP_NAME" /> հավելվածը։ Դա նշանակում է, որ <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ու ևս <ph name="NUMBER_OF_OTHER_APPS" /> հավելված չեն կարողանա բացել աջակցվող հղումներ։</translation>
+<translation id="6868206169573555318">Թարմացնելու համար վերագործարկեք</translation>
 <translation id="686831807558000905">Մուտք չգործել</translation>
 <translation id="686839242150793617">Կարող են ավտոմատ բացել «Նկար նկարի մեջ» պատուհանները</translation>
 <translation id="6868934826811377550">Դիտել մանրամասները</translation>
@@ -8487,7 +8472,6 @@
 <translation id="7531771599742723865">Սարքն օգտագործվում է</translation>
 <translation id="7531779363494549572">Անցեք Կարգավորումներ &gt; Հավելվածներ և ծանուցումներ &gt; Ծանուցումներ։</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> հավելվածը չի արձագանքում: Ընտրեք «Ստիպողաբար փակել» տարբերակը:</translation>
-<translation id="7535730537657706072">Փակեք բոլոր ինկոգնիտո ներդիրները՝ ինկոգնիտո ռեժիմում այցելությունների պատմությունը սարքից հեռացնելու համար։</translation>
 <translation id="7536815228183532290">Դուք մտել եք որպես <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">Ֆայլի այս տեսակը հազվադեպ են ներբեռնում, և այն կարող է վտանգավոր լինել</translation>
 <translation id="7540972813190816353">Թարմացումներն ստուգելիս սխալ տեղի ունեցավ` <ph name="ERROR" /></translation>
@@ -8531,7 +8515,6 @@
 <translation id="7566118625369982896">Կառավարել Google Play հավելվածի հղումները</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Ստեղծել ստեղների համադրություն</translation>
-<translation id="756809126120519699">Chrome-ի տվյալները ջնջվեցին</translation>
 <translation id="756876171895853918">Անհատականացնել ավատարը</translation>
 <translation id="7568790562536448087">Թարմացում</translation>
 <translation id="7569983096843329377">Սև</translation>
@@ -9161,7 +9144,6 @@
 <translation id="8023801379949507775">Թարմացնել ընդլայնումները հիմա</translation>
 <translation id="8025151549289123443">Կողպէկրան և մուտք</translation>
 <translation id="8025291188699172126">Թարմացումների մասին</translation>
-<translation id="8026334261755873520">Դիտարկումների տվյալների մաքրում</translation>
 <translation id="8026471514777758216">Ձեր բոլոր սարքերը</translation>
 <translation id="8027581147000338959">Բացել նոր պատուհանում</translation>
 <translation id="8028060951694135607">Microsoft-ի բանալիների վերականգնում</translation>
@@ -10198,7 +10180,6 @@
 <translation id="8809147117840417135">Բաց փիրուզագույն</translation>
 <translation id="8811862054141704416">Խոսափողի օգտագործման թույլտվություն Crostini-ում</translation>
 <translation id="8811923271770626905">Այս ընդլայնումը կարող է աշխատել ֆոնային ռեժիմում</translation>
-<translation id="8812593354822910461">Ջնջել նաև այցելությունների պատմությունը (<ph name="URL" />)։ Նկատի ունեցեք, որ արդյունքում հնարավոր է դուրս գրվեք ձեր հաշվից <ph name="DOMAIN" /> կայքում։ <ph name="LEARN_MORE" /></translation>
 <translation id="8813199641941291474">MIDI սարքերի վերահսկումն ու վերածրագրավորումը արգելափակված է</translation>
 <translation id="8813698869395535039">Հնարավոր չէ մուտք գործել <ph name="USERNAME" /> հաշիվ</translation>
 <translation id="8813872945700551674">Դիմեք ձեր ծնողին՝ «<ph name="EXTENSION_NAME" />» ընդլայնումը թույլատրելու համար</translation>

@@ -72,7 +72,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="2329088755516916767">Þegar kveikt er á Chromium forhleður það síður sem gerir skoðun og leit hraðari.</translation>
 <translation id="2343156876103232566">Til að senda númer héðan í Android símann þinn skaltu skrá þig inn á Chromium í báðum tækjunum.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
-<translation id="2359920621792549529">Til að hreinsa eingöngu vefskoðunargögn úr þessu tæki en halda þeim á Google-reikningnum þínum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">ChromiumOS gat ekki samstillt gögnin vegna þess að innskráningarupplýsingar reikningsins þíns eru úreltar.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Ein eða fleiri Chromium-viðbætur fengu aðgang að 1 HID-tæki}=1{Ein eða fleiri Chromium-viðbætur hafa aðgang að 1 HID-tæki}one{Ein eða fleiri Chromium-viðbætur hafa aðgang að # HID-tæki}other{Ein eða fleiri Chromium-viðbætur hafa aðgang að # HID-tækjum}}</translation>
 <translation id="2401032172288869980">Chromium verður að fá leyfi fyrir myndavél og hljóðnema fyrir þetta vefsvæði</translation>

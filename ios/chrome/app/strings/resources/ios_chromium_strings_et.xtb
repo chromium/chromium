@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Seda saadetist on Chromiumis juba jälgitud.</translation>
 <translation id="1707458603865303524">Saate Chromiumi kasutada igal ajal, kui puudutate sõnumites või muudes rakendustes linke.</translation>
 <translation id="1722370509450468186">Parool salvestatakse teie kontole (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Chromiumi andmed kustutati</translation>
 <translation id="1791845338122684020">Avab teie Chromiumi ajaloo lehe.</translation>
 <translation id="1838412507805038478">Chromium kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromiumil on funktsioonid, mis aitavad teil hallata oma Interneti-andmeid ja seda, kui kiiresti saate veebilehti laadida.
@@ -85,7 +84,6 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiu
 <translation id="3472200483164753384">Ei toetata versioonis Chromium Canary</translation>
 <translation id="347967311580159871">Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiumi kasutuskogemust, avage <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Teie parooli ei jagatud. Kontrollige internetiühendust ja veenduge, et oleksite Chromiumi sisse logitud. Seejärel proovige uuesti.</translation>
-<translation id="3554027294407525061">Tühjendage Chromiumi sirvimisandmed.</translation>
 <translation id="3567399274263440288">Chromiumi kasutamiseks parimal moel logige Chromiumi sisse oma Google'i kontoga.</translation>
 <translation id="3634039384458740619">Ava Chromiumi seaded</translation>
 <translation id="3639997914391704523">Chromium saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
@@ -136,7 +134,6 @@ Teie andmed on krüpteeritud teie parooliga. Chromiumi andmete kasutamiseks ja s
 <translation id="5042011327527167688">Puudutage valikut „Kuva Google Mapsi abil Chromiumis“.</translation>
 <translation id="5044871537677053278">Chromium tuvastab aadressid ning annab teile Google Mapsi abil juhiseid ja kohalikku teavet.</translation>
 <translation id="5048795749726991615">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, kasutage funktsiooni Chromium automaattäite jaoks</translation>
-<translation id="5076601183701536878">Tühjenda Chromiumi sirvimisandmed</translation>
 <translation id="5124429847818367226">Nüüd saate kasutada Chromiumi iga kord, kui sirvite või puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="5131565040785979529">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele olete sisse logitud, ja Chromiumi kasutamist.</translation>
 <translation id="5146749061471423558">Järjehoidjate lisamine Chromiumisse</translation>

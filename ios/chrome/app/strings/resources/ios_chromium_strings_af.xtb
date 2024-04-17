@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Hierdie pakkie is reeds op Chromium nagespoor.</translation>
 <translation id="1707458603865303524">Gebruik Chromium enige tyd wanneer jy op skakels in boodskappe of ander apps tik.</translation>
 <translation id="1722370509450468186">Jou wagwoord sal in jou rekening (<ph name="EMAIL" />) gestoor word.</translation>
-<translation id="1736662517232558588">Chromium-data is uitgevee</translation>
 <translation id="1791845338122684020">Maak jou Chromium-geskiedenisbladsy oop.</translation>
 <translation id="1838412507805038478">Chromium het geverifieer dat <ph name="ISSUER" /> hierdie webwerf se sertifikaat uitgereik het.</translation>
 <translation id="1843424232666537147">Chromium het kenmerke wat jou help om jou internetdata te bestuur en hoe vinnig jy webblaaie kan laai.
@@ -85,7 +84,6 @@ Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer in
 <translation id="3472200483164753384">Nie gesteun in Chromium Kanarie nie</translation>
 <translation id="347967311580159871">Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat data gebruik om jou Chromium-ervaring te verbeter.</translation>
 <translation id="3512168799938877162">Jou wagwoord is nie gedeel nie. Gaan jou internetverbinding na en maak seker dat jy by Chromium aangemeld is. Probeer dan weer.</translation>
-<translation id="3554027294407525061">Vee blaaierdata in Chromium uit.</translation>
 <translation id="3567399274263440288">Meld met jou Google-rekening aan om die meeste voordeel uit Chromium te trek.</translation>
 <translation id="3634039384458740619">Maak Chromium-instellings oop</translation>
 <translation id="3639997914391704523">Chromium kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
@@ -136,7 +134,6 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <translation id="5042011327527167688">Tik op “Bekyk met Google Maps op Chromium”.</translation>
 <translation id="5044871537677053278">Chromium bespeur adresse en gebruik Google Maps om vir jou aanwysings en plaaslike inligting te gee.</translation>
 <translation id="5048795749726991615">Gebruik Chromium vir Outovul om jou gestoorde wagwoorde maklik in jou ander apps te kry</translation>
-<translation id="5076601183701536878">Vee blaaierdata in Chromium uit</translation>
 <translation id="5124429847818367226">Jy kan Chromium nou enige tyd gebruik wanneer jy blaai of op skakels in boodskappe, dokumente en ander apps tik.</translation>
 <translation id="5131565040785979529">Jou organisasie, <ph name="DOMAIN" />, bestuur die rekening waarby jy aangemeld is en hoe Chromium gebruik word.</translation>
 <translation id="5146749061471423558">Voeg boekmerke by Chromium</translation>
@@ -251,6 +248,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="800195749539500647">Benut Chromium ten beste</translation>
 <translation id="8013573822802650211">Meld op al jou toestelle aan om jou oortjies te sien van waar ook al jy Chromium gebruik.</translation>
 <translation id="8071041515667087705">Gaan na Chromium-instellings.</translation>
+<translation id="8104697640054703121">Kry Chromium se sterkste sekuriteit teen gevaarlike werwe</translation>
 <translation id="8115308261377517697">Stel Chromium as jou verstekblaaier</translation>
 <translation id="8197822717502700527">Jy sal Chromium nou ten beste op jou toestel benut.</translation>
 <translation id="8234150821523419638">Maak die Chromium-kieslys oop</translation>

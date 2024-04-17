@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">അനുമതികൾ പുനഃസജ്ജീകരിക്കുക</translation>
 <translation id="301521992641321250">സ്വയമേവ ബ്ലോക്കുചെയ്‌തു</translation>
 <translation id="3069226013421428034">നിർദ്ദിഷ്ട സൈറ്റിനായി മൂന്നാം കക്ഷി സൈൻ ഇൻ അനുവദിക്കുക.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{നാളെ കാലഹരണപ്പെടും}other{# ദിവസത്തിനുള്ളിൽ കാലഹരണപ്പെടും}}</translation>
 <translation id="310297983047869047">മുമ്പത്തെ സ്ലൈഡ്</translation>
 <translation id="3109724472072898302">ചുരുക്കിയത്</translation>
 <translation id="3114012059975132928">വീഡിയോ പ്ലേയർ</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">അനുവദനീയം</translation>
 <translation id="429312253194641664">സൈറ്റ്, മീഡിയ പ്ലേ ചെയ്യുന്നു</translation>
 <translation id="42981349822642051">വികസിപ്പിക്കുക</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{നാളെ കാലഹരണപ്പെടും}other{# ദിവസത്തിനുള്ളിൽ കാലഹരണപ്പെടും}}</translation>
 <translation id="4336566011000459927">Chrome ഇന്ന് വീണ്ടും കുക്കികൾ പരിമിതപ്പെടുത്തും</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> നിങ്ങളുടെ അവസാനത്തെ ടാബ്</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> എന്നതിന് കീഴിലുള്ള എല്ലാ സൈറ്റുകളും</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">എല്ലായ്പ്പോഴും</translation>
 <translation id="757524316907819857">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="7594634374516752650">ഒരു Bluetooth ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്തു</translation>
-<translation id="7641339528570811325">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="7649070708921625228">സഹായം</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7667547420449112975">ഓസ് നഗരത്തിലെ അതിശയിപ്പിക്കുന്ന മന്ത്രവാദി</translation>

@@ -79,7 +79,6 @@
 <translation id="2258103955319320201">Aby mieć dostęp do danych z Chrome na wszystkich swoich urządzeniach, zaloguj się i włącz synchronizację</translation>
 <translation id="2290014774651636340">Brakuje kluczy interfejsu Google API. Niektóre funkcje Google Chrome będą wyłączone.</translation>
 <translation id="2290095356545025170">Czy na pewno chcesz odinstalować przeglądarkę Google Chrome?</translation>
-<translation id="2298849085402457754">Aby wyczyścić dane przeglądania tylko z tego urządzenia, zachowując je na swoim koncie Google, <ph name="BEGIN_LINK" />wyloguj się z Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">To jest druga instalacja Google Chrome. Nie można ustawić jej jako przeglądarki domyślnej.</translation>
 <translation id="2345992953227471816">Przeglądarka Chrome wykryła w tych rozszerzeniach złośliwe oprogramowanie:</translation>
 <translation id="2348335408836342058">Chrome potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
@@ -109,7 +108,6 @@
 <translation id="2649768380733403658">Chrome regularnie sprawdza, czy przeglądarka ma możliwie najbezpieczniejsze ustawienia. Jeśli będziemy potrzebować Twojej weryfikacji, powiadomimy Cię.</translation>
 <translation id="2652691236519827073">O&amp;twórz link w nowej karcie Chrome</translation>
 <translation id="2665296953892887393">Pomóż nam ulepszyć Google Chrome, przesyłając do Google raporty o awariach i <ph name="UMA_LINK" /></translation>
-<translation id="2712234843277364121">Uruchom ponownie, aby zaktualizować – karty zostaną ponownie otwarte</translation>
 <translation id="2738871930057338499">Nie można połączyć się z internetem. Kod HTTP 403 (Zabroniony). Sprawdź konfigurację proxy.</translation>
 <translation id="2742320827292110288">Ostrzeżenie: Google Chrome nie może uniemożliwić rozszerzeniom zapisywania historii przeglądania. Aby wyłączyć to rozszerzenie w trybie incognito, odznacz tę opcję.</translation>
 <translation id="2765403129283291972">Chrome potrzebuje uprawnień dostępu do mikrofonu na tej stronie</translation>
@@ -196,6 +194,7 @@
 <translation id="4053720452172726777">Dostosowywanie i kontrolowanie Google Chrome</translation>
 <translation id="4106587138345390261">Testujemy nowe funkcje Chrome, dzięki którym witryny będą mogły zapewniać użytkownikom taką samą wygodę przeglądania treści przy wykorzystaniu mniejszej ilości informacji</translation>
 <translation id="4110895483821904099">Skonfiguruj nowy profil w Chrome</translation>
+<translation id="4111566860456076004">Chrome nie może zweryfikować, skąd pochodzi to rozszerzenie, które może być niebezpieczne. Usuń je z Chrome, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to też danych osobowych.</translation>
 <translation id="4128488089242627000">Chrome działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami (zalecane)</translation>
 <translation id="4147555960264124640">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Google Chrome. Twoje dane Chrome, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Trwa instalowanie...</translation>
@@ -321,6 +320,7 @@
 <translation id="6251759518630934363">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chrome.</translation>
 <translation id="6273793429163604305">Na miejsca…</translation>
 <translation id="6277547788421725101">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” w Chrome</translation>
+<translation id="627882678981830918">Dostosuj i kontroluj Chrome. Ustaw Chrome jako przeglądarkę domyślną.</translation>
 <translation id="6291089322031436445">Aplikacje do Chrome w wersji deweloperskiej</translation>
 <translation id="6291549208091401781">Google Chrome jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="6326175484149238433">Usuń z Chrome</translation>
@@ -485,7 +485,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8999208279178790196">{0,plural, =0{Dostępna jest aktualizacja Chrome}=1{Dostępna jest aktualizacja Chrome}few{Aktualizacja Chrome jest dostępna od # dni}many{Aktualizacja Chrome jest dostępna od # dni}other{Aktualizacja Chrome jest dostępna od # dnia}}</translation>
 <translation id="9024318700713112071">Ustaw Chrome jako przeglądarkę domyślną</translation>
 <translation id="9053892488859122171">System ChromeOS Flex</translation>
-<translation id="9054037008353851982">Uruchom ponownie, aby zaktualizować – karty zostaną ponownie otwarte</translation>
 <translation id="9090566250983691233">Dlaczego Chrome blokuje niektóre pliki</translation>
 <translation id="911206726377975832">Czy usunąć także dane przeglądania?</translation>
 <translation id="9138603949443464873">Aby zastosować zmiany, uruchom ponownie Chrome</translation>

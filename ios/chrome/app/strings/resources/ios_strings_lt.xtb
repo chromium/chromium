@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Sveiki sugrįžę, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Kortelės savininko vardas</translation>
 <translation id="1809939268435598390">Ištrinti aplanką</translation>
-<translation id="1813414402673211292">Išvalyti naršymo duomenis</translation>
 <translation id="1815941218935345331">Slaptažodis</translation>
 <translation id="1820259098641718022">Pridėta prie skaitymo sąrašo</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">TInklalapis įkeltas</translation>
 <translation id="223356358902285214">Žiniatinklio ir programų veikla</translation>
 <translation id="2234827758954819389">Privatumo vadovas</translation>
-<translation id="2239626343334228536">Išvalomi naršymo duomenis...</translation>
 <translation id="2251686759395008410">Meniu → „Istorija“</translation>
 <translation id="2252674110805316998">Žiniatinklio paieška</translation>
 <translation id="2252749852083403809">Išsaugoma Diske (<ph name="USER_EMAIL" />).</translation>
@@ -479,7 +477,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3485558910355485767">Naujas inkognito langas</translation>
 <translation id="3488501490964659223">Skirtukai uždaryti ir naršymo duomenys ištrinti. Buvote atjungti</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie siūlomą turinį</translation>
-<translation id="3494788280727468875">Patvirtinti naršymo duomenų išvalymą</translation>
 <translation id="35083190962747987">Atidaryti ${url}</translation>
 <translation id="3519193562722059437">Norėdami naršyti žiniatinklį, atidarykite skirtuką.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Atidaryti skirtuką}one{Atidaryti {count} skirtuką}few{Atidaryti {count} skirtukus}many{Atidaryti {count} skirtuko}other{Atidaryti {count} skirtukų}}</translation>
@@ -492,7 +489,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3540141921715814660">Pridėti prie žymių</translation>
 <translation id="355101282835380364">Išsaugoti paskyroje…</translation>
 <translation id="3551320343578183772">Uždaryti skirtuką</translation>
-<translation id="3565207542107370586">Išvalyti naršymo duomenis…</translation>
 <translation id="3565930036634619844">Skirtukas. <ph name="TAB_INDEX" /> iš <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Dukart palieskite, jei reikia daugiau slaptažodžių.</translation>
 <translation id="3575234738189584619">Paieška naudojant „Lens“</translation>
@@ -968,7 +964,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6027945736510816438">Turėjote omenyje <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nauja funkcija</translation>
 <translation id="6033598293589037429">Galima atsiimti</translation>
-<translation id="6036215966221662377">Išvalyti naršymo duomenis</translation>
 <translation id="6036514205982097558">Visi skirtukai vienoje naršyklėje</translation>
 <translation id="6039429417015973673">„<ph name="TITLE" />“, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Uždaryti</translation>
@@ -1151,7 +1146,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6859944681507688231">Jei norite nuskaityti QR kodą ar kredito kortelę, nustatymuose įgalinkite fotoaparatą.</translation>
 <translation id="6867369562105931222">slaptažodis</translation>
 <translation id="686899695320434745">Adresai nešifruojami naudojant slaptafrazę. Juos galite naudoti kitose „Google“ paslaugose.</translation>
-<translation id="6869389390665537774">Galite peržiūrėti puslapius, kuriuose lankėtės, arba išvalyti juos iš istorijos</translation>
 <translation id="687135068089457384">Rodyti nustatymus</translation>
 <translation id="6873263987691478642">Padalytas rodinys</translation>
 <translation id="6882836635272038266">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi.</translation>
@@ -1297,7 +1291,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7719038820139380048">Prisijunkite, kad gautumėte pagal jūsų pomėgius atrinkto turinio.</translation>
 <translation id="7720410380936703141">BANDYKITE DAR KARTĄ</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elementas išsaugotas „Google“ paskyroje ({email})}one{Elementai išsaugoti „Google“ paskyroje ({email})}few{Elementai išsaugoti „Google“ paskyroje ({email})}many{Elementai išsaugoti „Google“ paskyroje ({email})}other{Elementai išsaugoti „Google“ paskyroje ({email})}}</translation>
-<translation id="7726702057919861819">Meniu → Istorija → Išvalyti naršymo duomenis</translation>
 <translation id="7729458878441927652">Jei norite peržiūrėti kitų įrenginių skirtukus, sinchronizuokite skirtukus ir istoriją.</translation>
 <translation id="7730973429297233609">Pasirinkite paskyrą, kurią norite naudoti, kad išsaugotumėte „<ph name="FILENAME" />“ – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Tik šiame įrenginyje.</translation>
@@ -1542,7 +1535,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8870413625673593573">Neseniai uždaryta</translation>
 <translation id="8876882697946675716">Įrenginių sinchronizavimas</translation>
 <translation id="8879604564928138696">Dukart palieskite, kad išbandytumėte</translation>
-<translation id="8879984884633913185">Slėpti parinktį „Išvalyti naršymo duomenis“</translation>
 <translation id="8881801611828450202">Ieškoti „<ph name="SEARCH_ENGINE" />“ šio vaizdo</translation>
 <translation id="8898822736010347272">„Google“ siunčiami kai kurių lankomų puslapių URL, ribota sistemos informacija ir kai kurių puslapių turinys, kad būtų galima aptikti naujas grėsmes ir apsaugoti visus žiniatinklio naudotojus.</translation>
 <translation id="890565330728586731">Atgal</translation>

@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Բարի վերադարձ, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Քարտատիրոջ անունը</translation>
 <translation id="1809939268435598390">Ջնջել պանակը</translation>
-<translation id="1813414402673211292">Ջնջել դիտարկման տվյալները</translation>
 <translation id="1815941218935345331">Անցակոդ</translation>
 <translation id="1820259098641718022">Ավելացվել է ընթերցանության ցանկում</translation>
 <translation id="1822994441903263130">FedEx</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
 <translation id="223356358902285214">Ակտիվությունը համացանցում և հավելվածներում</translation>
 <translation id="2234827758954819389">Տվյալների պաշտպանության ուղեցույց</translation>
-<translation id="2239626343334228536">Այցելությունների պատմությունը ջնջվում է…</translation>
 <translation id="2251686759395008410">Ընտրացանկ → Պատմություն</translation>
 <translation id="2252674110805316998">Որոնել համացանցում</translation>
 <translation id="2252749852083403809">Պահվում է Drive-ում <ph name="USER_EMAIL" /> օգտատիրոջ համար։</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">Նոր ինկոգնիտո պատուհան</translation>
 <translation id="3488501490964659223">Ներդիրները փակվեցին, իսկ այցելությունների պատմությունը ջնջվեց։ Դուք դուրս եկաք հաշվից</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> առաջարկվող բովանդակության վերաբերյալ</translation>
-<translation id="3494788280727468875">Հաստատել այցելությունների պատմության ջնջումը</translation>
 <translation id="35083190962747987">Անցնել ${url}</translation>
 <translation id="3519193562722059437">Բացեք ներդիր՝ համացանցում կայքեր դիտելու համար:</translation>
 <translation id="3519905498307021260">{count,plural, =1{Բացել ներդիրը}one{Բացել {count} ներդիր}other{Բացել {count} ներդիր}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">Ավելացնել էջանիշներում</translation>
 <translation id="355101282835380364">Պահել հաշվում…</translation>
 <translation id="3551320343578183772">Փակել ներդիրը</translation>
-<translation id="3565207542107370586">Ջնջել այցելությունների պատմությունը…</translation>
 <translation id="3565930036634619844">Ներդիր։ Էջ <ph name="TAB_INDEX" />՝ <ph name="NUMBER_OF_TABS" />-ից։</translation>
 <translation id="3570693105179140209">Կրկնակի հպեք՝ ավելի շատ գաղտնաբառեր տեսնելու համար։</translation>
 <translation id="3575234738189584619">Որոնել Տեսապակու միջոցով</translation>
@@ -968,7 +964,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6027945736510816438">Արդյո՞ք նկատի ունեիք <ph name="WEBSITE" /></translation>
 <translation id="6032845897905314562">նոր գործառույթ</translation>
 <translation id="6033598293589037429">Հանձնման կետում է</translation>
-<translation id="6036215966221662377">Ջնջել այցելությունների պատմությունը</translation>
 <translation id="6036514205982097558">Ձեր բոլոր ներդիրները՝ մեկ դիտարկիչում</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Փակել</translation>
@@ -1151,7 +1146,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6859944681507688231">QR կոդ կամ վարկային քարտ սկանավորելու համար կարգավորումներում միացրեք ֆոտոխցիկը:</translation>
 <translation id="6867369562105931222">գաղտնաբառ</translation>
 <translation id="686899695320434745">Հասցեները չեն գաղտնագրվում ձեր անցաբառով։ Սա թույլ է տալիս օգտագործել դրանք Google-ի այլ ծառայություններում։</translation>
-<translation id="6869389390665537774">Դուք կարող եք տեսնել ձեր այցելած էջերը կամ ջնջել դրանք պատմությունից</translation>
 <translation id="687135068089457384">Ցույց տալ կարգավորումները</translation>
 <translation id="6873263987691478642">Տրոհված դիտակերպ</translation>
 <translation id="6882836635272038266">Սովորական պաշտպանություն վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։</translation>
@@ -1297,7 +1291,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7719038820139380048">Մուտք գործեք՝ ձեր հետաքրքրությունների հիման վրա բովանդակություն ստանալու համար։</translation>
 <translation id="7720410380936703141">ՆՈՐԻՑ ՓՈՐՁԵԼ</translation>
 <translation id="7724085059277147439">{count,plural, =1{Տարրը պահվեց ձեր Google հաշվում, {email}}one{Տարրը պահվեց ձեր Google հաշվում, {email}}other{Տարրերը պահվեցին ձեր Google հաշվում, {email}}}</translation>
-<translation id="7726702057919861819">Ընտրացանկ → Պատմություն → Մաքրել այցելությունների պատմությունը</translation>
 <translation id="7729458878441927652">Ձեր մյուս սարքերի ներդիրները տեսնելու համար համաժամացրեք ձեր ներդիրներն ու պատմությունը։</translation>
 <translation id="7730973429297233609">Ընտրեք հաշիվը, որն ուզում եք օգտագործել՝ <ph name="FILENAME" /> ֆայլը (<ph name="FILESIZE" />) պահելու համար</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />։ Միայն այս սարքում։</translation>
@@ -1542,7 +1535,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8870413625673593573">Վերջին փակվածները</translation>
 <translation id="8876882697946675716">Համաժամացրեք ձեր սարքերը</translation>
 <translation id="8879604564928138696">Կրկնակի հպեք փորձելու համար</translation>
-<translation id="8879984884633913185">Թաքցնել «Ջնջել այցելությունների պատմությունը» գործողությունը</translation>
 <translation id="8881801611828450202">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
 <translation id="890565330728586731">Հետ</translation>

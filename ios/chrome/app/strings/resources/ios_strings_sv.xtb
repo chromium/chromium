@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Välkommen tillbaka, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Namn på kortinnehavare</translation>
 <translation id="1809939268435598390">Ta bort mapp</translation>
-<translation id="1813414402673211292">Rensa webbinformation</translation>
 <translation id="1815941218935345331">Lösenord</translation>
 <translation id="1820259098641718022">Har lagts till i läslistan</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Webbsidan har lästs in</translation>
 <translation id="223356358902285214">Webb- och appaktivitet</translation>
 <translation id="2234827758954819389">Integritetsguide</translation>
-<translation id="2239626343334228536">Tar bort webbinformation …</translation>
 <translation id="2251686759395008410">Meny → Historik</translation>
 <translation id="2252674110805316998">Webbsökning</translation>
 <translation id="2252749852083403809">Sparas i Drive för <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3485558910355485767">Nytt inkognitofönster</translation>
 <translation id="3488501490964659223">Flikarna stängdes och webbinformationen rensades. Du loggades ut</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om förslag på innehåll</translation>
-<translation id="3494788280727468875">Bekräfta rensning av webbinformation</translation>
 <translation id="35083190962747987">Öppna ${url}</translation>
 <translation id="3519193562722059437">Öppna en flik om du vill surfa på webben.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Öppna fliken}other{Öppna {count} flikar}}</translation>
@@ -492,7 +489,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3540141921715814660">Lägg till i bokmärken</translation>
 <translation id="355101282835380364">Spara i kontot …</translation>
 <translation id="3551320343578183772">Stäng flik</translation>
-<translation id="3565207542107370586">Rensa webbinformation …</translation>
 <translation id="3565930036634619844">Flik. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Tryck snabbt två gånger för fler lösenord.</translation>
 <translation id="3575234738189584619">Sök med Lens</translation>
@@ -968,7 +964,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6027945736510816438">Menade du <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">ny funktion</translation>
 <translation id="6033598293589037429">Klar för upphämtning</translation>
-<translation id="6036215966221662377">Rensa webbinformation</translation>
 <translation id="6036514205982097558">Alla flikarna i en enda webbläsare</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Stäng</translation>
@@ -1151,7 +1146,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6859944681507688231">Aktivera kameran i inställningarna om du vill skanna en QR-kod eller ett kreditkort.</translation>
 <translation id="6867369562105931222">lösenord</translation>
 <translation id="686899695320434745">Adresserna krypteras inte med lösenfrasen. Detta gör att du kan använda dem i andra Google-tjänster.</translation>
-<translation id="6869389390665537774">Du kan se sidor som du har besökt eller ta bort dem från historiken</translation>
 <translation id="687135068089457384">Visa inställningar</translation>
 <translation id="6873263987691478642">Delad vy</translation>
 <translation id="6882836635272038266">Standardskydd mot kända skadliga webbplatser, nedladdningar och tillägg.</translation>
@@ -1297,7 +1291,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7719038820139380048">Logga in om du vill få innehåll utifrån dina intressen.</translation>
 <translation id="7720410380936703141">FÖRSÖK IGEN</translation>
 <translation id="7724085059277147439">{count,plural, =1{Objektet har sparats i Google-kontot {email}}other{Objekten har sparats i Google-kontot {email}}}</translation>
-<translation id="7726702057919861819">Menyn → Historik → Rensa webbinformation</translation>
 <translation id="7729458878441927652">Synkronisera flikar och historik om du vill se flikar från dina andra enheter</translation>
 <translation id="7730973429297233609">Välj det konto du vill använda för att spara <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Bara på den här enheten.</translation>
@@ -1542,7 +1535,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8870413625673593573">Nyligen stängda</translation>
 <translation id="8876882697946675716">Håll dina enheter synkroniserade</translation>
 <translation id="8879604564928138696">Tryck snabbt två gånger för att testa</translation>
-<translation id="8879984884633913185">Dölj Rensa webbinformation</translation>
 <translation id="8881801611828450202">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="890565330728586731">Tillbaka</translation>

@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Ce colis a déjà fait l'objet d'un suivi dans Chromium.</translation>
 <translation id="1707458603865303524">Utiliser Chromium chaque fois que vous appuyez sur un lien dans un message ou une autre appli.</translation>
 <translation id="1722370509450468186">Votre mot de passe sera enregistré dans votre compte (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Données de Chromium effacées</translation>
 <translation id="1791845338122684020">Ouvre votre historique Chromium.</translation>
 <translation id="1838412507805038478">Chromium a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium dispose de fonctionnalités qui vous permettent de gérer vos données Internet et la vitesse de chargement des pages Web.
@@ -85,7 +84,6 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="3472200483164753384">Non disponible dans Chromium Canary</translation>
 <translation id="347967311580159871">Pour voir d'autres paramètres qui utilisent les données pour améliorer votre expérience Chromium, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Votre mot de passe n'a pas été partagé. Vérifiez votre connexion Internet et assurez-vous que vous êtes connecté à Chromium, puis réessayez.</translation>
-<translation id="3554027294407525061">Effacer les données de navigation dans Chromium.</translation>
 <translation id="3567399274263440288">Pour profiter pleinement de Chromium, connectez-vous avec votre compte Google.</translation>
 <translation id="3634039384458740619">Ouvrir les paramètres Chromium</translation>
 <translation id="3639997914391704523">Chromium peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
@@ -136,7 +134,6 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 <translation id="5042011327527167688">Appuyez sur "Afficher avec Google Maps sur Chromium".</translation>
 <translation id="5044871537677053278">Chromium détecte les adresses et utilise Google Maps pour vous proposer des itinéraires et des informations locales.</translation>
 <translation id="5048795749726991615">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applis, utilisez Chromium pour la saisie automatique</translation>
-<translation id="5076601183701536878">Effacer les données de navigation dans Chromium</translation>
 <translation id="5124429847818367226">Vous pouvez désormais utiliser Chromium chaque fois que vous naviguez ou appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
 <translation id="5131565040785979529">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous êtes connecté et la manière dont Chromium est utilisé.</translation>
 <translation id="5146749061471423558">Ajouter des favoris dans Chromium</translation>

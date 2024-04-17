@@ -80,7 +80,6 @@
 <translation id="2258103955319320201">如要透過所有裝置存取你的 Chrome 瀏覽器資料，請登入並開啟同步功能</translation>
 <translation id="2290014774651636340">缺少 Google API 金鑰，系統將停用 Google Chrome 的部分功能。</translation>
 <translation id="2290095356545025170">你是否確定要解除安裝 Google Chrome？</translation>
-<translation id="2298849085402457754">如果只要清除這部裝置上的瀏覽資料，但保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2309047409763057870">這是以並存形式安裝的次要 Google Chrome，無法設為您的預設瀏覽器。</translation>
 <translation id="2345992953227471816">Chrome 偵測到下列擴充功能含有惡意軟體：</translation>
 <translation id="2348335408836342058">Chrome 需要相關權限，才能讓這個網站使用你的攝影機和麥克風</translation>
@@ -110,7 +109,6 @@
 <translation id="2649768380733403658">Chrome 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>
 <translation id="2652691236519827073">在新的 Chrome 分頁中開啟連結(&amp;T)</translation>
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
-<translation id="2712234843277364121">重新啟動即可更新 - 你的分頁將會重新開啟</translation>
 <translation id="2738871930057338499">無法連線至網際網路。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法禁止擴充功能記錄你的瀏覽記錄。如要在無痕模式中停用這個擴充功能，請取消選取這個選項。</translation>
 <translation id="2765403129283291972">Chrome 需要相關權限，才能讓這個網站使用你的麥克風</translation>
@@ -323,6 +321,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6251759518630934363">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chrome 的警告。</translation>
 <translation id="6273793429163604305">即將就緒...</translation>
 <translation id="6277547788421725101">你的家長已停用 Chrome 的「網站、應用程式和擴充功能的權限」設定</translation>
+<translation id="627882678981830918">自訂及管理 Chrome。將 Chrome 設為預設瀏覽器。</translation>
 <translation id="6291089322031436445">Chrome 開發人員版應用程式</translation>
 <translation id="6291549208091401781">電腦上的所有使用者都已經安裝 Google Chrome 了。</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
@@ -486,7 +485,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8999117580775242387">如果無法使用 HTTPS，Chrome 將使用不安全的連線，且不會發出警告</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發布 # 天}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系統</translation>
-<translation id="9054037008353851982">重新啟動即可更新 - 你的分頁將會重新開啟</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖某些檔案的原因</translation>
 <translation id="911206726377975832">你要一併刪除瀏覽資料嗎？</translation>
 <translation id="9138603949443464873">如要套用變更，請重新啟動 Chrome</translation>

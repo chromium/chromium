@@ -160,6 +160,7 @@
 <translation id="1569384531973824928">এইটোৱে কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
 <translation id="1571697193564730395">অসুবিধা নিদিব ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">বিৱৰ্ধক অন কৰা থাকিলে জুম আউট কৰক</translation>
+<translation id="1582946770779745370">গে’ম ডেশ্বব’ৰ্ড উপলব্ধ। খুলিবলৈ যিকোনো সময়তে <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape আৰু তাৰ পাছত <ph name="LAUNCHER_KEY_NAME" /> + g টিপক</translation>
 <translation id="1586324912145647027">ডেস্ক ১ৰ পৰা ৮লৈ যাওক</translation>
 <translation id="158838227375272121">Google Classroomৰ ৱেবছাইট</translation>
 <translation id="1589090746204042747">এই ছেশ্বনত আপোনাৰ সকলো কার্যকলাপ এক্সেছ কৰে</translation>
@@ -1815,7 +1816,6 @@
 <translation id="8001755249288974029">কাৰ্ছৰৰ পৰা শাৰীৰ আৰম্ভণিলৈকে পাঠ বাছনি কৰক</translation>
 <translation id="8004512796067398576">বৃদ্ধি</translation>
 <translation id="8015361438441228492">কাৰ্য সম্পাদনা কৰিব পৰা নগ’ল।</translation>
-<translation id="8026334261755873520">ব্ৰাউজিং ডেটা মচক</translation>
 <translation id="802782383769312836">পূৰ্বৱৰ্তী ডেস্ক: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ৰ ভিতৰত <ph name="DESK_INDEX" /> তম ডেস্ক।</translation>
 <translation id="8029247720646289474">হটস্পটৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="8029629653277878342">অধিক সুৰক্ষাৰ বাবে পিন অথবা পাছৱর্ডৰ আৱশ্যক</translation>

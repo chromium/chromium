@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">重置权限</translation>
 <translation id="301521992641321250">已被自动禁止</translation>
 <translation id="3069226013421428034">允许使用第三方账号登录特定网站。</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{明天过期}other{# 天后过期}}</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3109724472072898302">已收起</translation>
 <translation id="3114012059975132928">视频播放器</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">允许</translation>
 <translation id="429312253194641664">某个网站正在播放媒体内容</translation>
 <translation id="42981349822642051">展开</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{明天过期}other{# 天后过期}}</translation>
 <translation id="4336566011000459927">Chrome 将于今天再次限制 Cookie</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 您的最后一个标签页</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有网站</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">永远</translation>
 <translation id="757524316907819857">禁止网站播放受保护的内容</translation>
 <translation id="7594634374516752650">已连接到蓝牙设备</translation>
-<translation id="7641339528570811325">清除浏览数据…</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">绿野仙踪</translation>

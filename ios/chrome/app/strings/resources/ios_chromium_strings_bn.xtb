@@ -27,7 +27,6 @@
 <translation id="164952285225495380">এই প্যাকেজটি আগেই Chromium-এ ট্র্যাক করা হয়েছে।</translation>
 <translation id="1707458603865303524">মেসেজে বা অন্যান্য অ্যাপে থাকা লিঙ্ক যখনই খুলবেন তা Chromium-এ খুলুন।</translation>
 <translation id="1722370509450468186">পাসওয়ার্ড আপনার অ্যাকাউন্টে (<ph name="EMAIL" />) সেভ করা হবে।</translation>
-<translation id="1736662517232558588">Chromium ডেটা সাফ করা হয়েছে</translation>
 <translation id="1791845338122684020">আপনার Chromium-এর ইতিহাস পৃষ্ঠা খোলে।</translation>
 <translation id="1838412507805038478"><ph name="ISSUER" /> যে এই ওয়েবসাইটের শংসাপত্র প্রকাশ করেছে Chromium তা যাচাই করেছে।</translation>
 <translation id="1843424232666537147">Google Chrome-এর এমন বৈশিষ্ট্য রয়েছে যা আপনাকে আপনার ইন্টারনেট ডেটা পরিচালনা করতে এবং কিভাবে আপনি ওয়েবপৃষ্ঠাগুলি দ্রুত লোড করতে পারবেন সে বিষয়ে সহায়তা করে।
@@ -85,7 +84,6 @@
 <translation id="3472200483164753384">এই সুবিধা 'Chromium ক্যানারি'তে কাজ করে না</translation>
 <translation id="347967311580159871">আপনার Chromium ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
 <translation id="3512168799938877162">আপনার পাসওয়ার্ড শেয়ার করা হয়নি। আপনার ইন্টারনেট কানেকশন চেক করুন এবং Chromium-এ সাইন-ইন করে আছেন কিনা তা ভালোভাবে দেখে নিন। তারপর, আবার চেষ্টা করুন।</translation>
-<translation id="3554027294407525061">Chromium-এ ব্রাউজ করা ডেটা মুছুন।</translation>
 <translation id="3567399274263440288">Chromium থেকে সবচেয়ে বেশি সুবিধা পেতে, আপনার Google অ্যাকাউন্ট দিয়ে Chromium-এ সাইন-ইন করুন।</translation>
 <translation id="3634039384458740619">Chromium সেটিংস খুলুন</translation>
 <translation id="3639997914391704523">আপনি যখন নিজের Google অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করবেন, Chromium তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারে।</translation>
@@ -136,7 +134,6 @@
 <translation id="5042011327527167688">“Chromium-এ Google Maps-এর মাধ্যমে দেখুন” বিকল্পে ট্যাপ করুন।</translation>
 <translation id="5044871537677053278">Chromium আপনাকে দিকনির্দেশ এবং স্থানীয় তথ্য দিতে ঠিকানা শনাক্ত ও Google Maps ব্যবহার করে।</translation>
 <translation id="5048795749726991615">আপনার অন্যান্য অ্যাপে আপনার সেভ করা পাসওয়ার্ডগুলি সহজেই পেতে, অটোফিলের জন্য Chromium ব্যবহার করুন</translation>
-<translation id="5076601183701536878">Chromium-এ ব্রাউজ করা ডেটা মুছুন</translation>
 <translation id="5124429847818367226">মেসেজ, ডকুমেন্ট ও অন্যান্য অ্যাপ ব্রাউজ করতে বা এইসবের লিঙ্কে ট্যাপ করতে এখন আপনি যেকোনও সময় Chromium ব্যবহার করত পারবেন।</translation>
 <translation id="5131565040785979529">আপনার সাইন-ইন করে থাকা অ্যাকাউন্ট এবং Chromium কীভাবে ব্যবহার করা হয় তা আপনার প্রতিষ্ঠান, <ph name="DOMAIN" />, ম্যানেজ করে।</translation>
 <translation id="5146749061471423558">Chromium-এ বুকমার্ক যোগ করুন</translation>

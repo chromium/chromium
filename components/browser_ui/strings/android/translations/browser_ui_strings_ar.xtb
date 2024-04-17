@@ -124,7 +124,6 @@
 <translation id="3008272652534848354">إعادة ضبط الأذونات</translation>
 <translation id="301521992641321250">تم الحظر تلقائيًا</translation>
 <translation id="3069226013421428034">يمكنك السماح بتسجيل الدخول في الخدمات التابعة لجهات خارجية في موقع إلكتروني محدَّد.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{تنتهي الصلاحية غدًا}zero{تنتهي الصلاحية بعد # يوم}two{تنتهي الصلاحية بعد يومَين}few{تنتهي الصلاحية بعد # أيام}many{تنتهي الصلاحية بعد # يومًا}other{تنتهي الصلاحية بعد # يوم}}</translation>
 <translation id="310297983047869047">الشريحة السابقة</translation>
 <translation id="3109724472072898302">مصغّر</translation>
 <translation id="3114012059975132928">مشغّل الفيديو</translation>
@@ -199,6 +198,7 @@
 <translation id="4278390842282768270">مسموح به</translation>
 <translation id="429312253194641664">تفعيل موقع إلكتروني للوسائط</translation>
 <translation id="42981349822642051">توسيع</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{تنتهي الصلاحية غدًا}zero{تنتهي الصلاحية بعد # يوم}two{تنتهي الصلاحية بعد يومَين}few{تنتهي الصلاحية بعد # أيام}many{تنتهي الصلاحية بعد # يومًا}other{تنتهي الصلاحية بعد # يوم}}</translation>
 <translation id="4336566011000459927">‏سيُعيد متصفِّح Chrome حظر ملفات تعريف الارتباط اليوم</translation>
 <translation id="4336836404251800362">‫<ph name="RECENCY" /> <ph name="SEPARATOR" /> من علامة التبويب الأخيرة</translation>
 <translation id="4338831206024587507">جميع المواقع الإلكترونية ضمن <ph name="DOMAIN" /></translation>
@@ -401,7 +401,6 @@
 <translation id="7561196759112975576">دائمًا</translation>
 <translation id="757524316907819857">منع المواقع الإلكترونية من تشغيل المحتوى المحمي</translation>
 <translation id="7594634374516752650">تم الاتصال بجهاز يتضمّن بلوتوث.</translation>
-<translation id="7641339528570811325">محو بيانات التصفّح...</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7667547420449112975">ساحر "أوز" العجيب</translation>

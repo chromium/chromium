@@ -82,7 +82,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2258103955319320201">Ak chcete získať prístup k obsahu Chromu vo všetkých svojich zariadeniach, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="2290014774651636340">Chýbajú kľúče rozhrania Google API. Niektoré funkcie prehliadača Google Chrome budú zakázané.</translation>
 <translation id="2290095356545025170">Naozaj chcete odinštalovať aplikáciu Google Chrome?</translation>
-<translation id="2298849085402457754">Ak chcete vymazať dáta prehliadania iba z tohto zariadenia a v účte Google ich ponechať, <ph name="BEGIN_LINK" />odhláste sa z Chromu<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Toto je sekundárna inštalácia prehliadača Google Chrome – nemôže byť nastavený ako váš predvolený prehliadač.</translation>
 <translation id="2345992953227471816">Chrome zistil, že tieto rozšírenia obsahujú malvér:</translation>
 <translation id="2348335408836342058">Chrome potrebuje povolenie pre tento web na prístup k fotoaparátu a mikrofónu</translation>
@@ -112,7 +111,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2649768380733403658">Chrome vykonáva pravidelné kontroly s cieľom uistiť sa, že v prehliadači máte najbezpečnejšie nastavenia. Ak bude treba, aby ste niečo skontrolovali, oznámime vám to.</translation>
 <translation id="2652691236519827073">Otvoriť odkaz na novej &amp;karte Chromu</translation>
 <translation id="2665296953892887393">Pomôcť zlepšiť prehliadač Google Chrome odosielaním správ o zlyhaní a <ph name="UMA_LINK" /> spoločnosti Google</translation>
-<translation id="2712234843277364121">Aktualizujete opätovným spustením (karty sa znova otvoria)</translation>
 <translation id="2738871930057338499">Nepodarilo sa pripojiť k internetu. Chyba odmietnutia prístupu HTTP 403. Skontrolujte konfiguráciu servera proxy.</translation>
 <translation id="2742320827292110288">Upozornenie: Google Chrome nemôže zabrániť rozšíreniam v zaznamenávaní vašej histórie prehliadania. Ak chcete dané rozšírenie v režime inkognito zakázať, zrušte výber tejto možnosti.</translation>
 <translation id="2765403129283291972">Chrome potrebuje povolenie pre tento web na prístup k mikrofónu</translation>
@@ -329,6 +327,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6251759518630934363">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z Chromu môžete preskočiť.</translation>
 <translation id="6273793429163604305">Príprava na štart…</translation>
 <translation id="6277547788421725101">Váš nadradený účet vypol Povolenia pre weby, aplikácie a rozšírenia v Chrome</translation>
+<translation id="627882678981830918">Prispôsobte si a ovládajte Chrome. Nastavte Chrome ako predvolený prehliadač.</translation>
 <translation id="6291089322031436445">Aplikácie pre Chrome vo verzii pre vývojárov</translation>
 <translation id="6291549208091401781">Google Chrome už majú nainštalovaný všetci používatelia na vašom počítači.</translation>
 <translation id="6326175484149238433">Odstrániť z Chromu</translation>
@@ -497,7 +496,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8999117580775242387">Keď HTTPS nie je k dispozícii, Chrome bude bez upozornenia používať nezabezpečené pripojenie</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozícii aktualizácia Chromu}=1{Je k dispozícii aktualizácia Chromu}few{Aktualizácia Chromu je k dispozícii už # dni}many{Aktualizácia Chromu je k dispozícii už # dňa}other{Aktualizácia Chromu je k dispozícii už # dní}}</translation>
 <translation id="9053892488859122171">Systém Chrome OS Flex</translation>
-<translation id="9054037008353851982">Aktualizujete opätovným spustením (karty sa znova otvoria)</translation>
 <translation id="9090566250983691233">Prečo Chrome blokuje niektoré súbory</translation>
 <translation id="911206726377975832">Chcete tiež odstrániť svoje údaje prehliadania?</translation>
 <translation id="9138603949443464873">Ak chcete zmeny použiť, spustite Chrome znova</translation>

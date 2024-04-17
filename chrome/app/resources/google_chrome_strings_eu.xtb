@@ -83,7 +83,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2258103955319320201">Chrome arakatzaileko gauzak gailu guztietan atzitzeko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="2290014774651636340">Google APIko gakoak falta dira. Agian Google Chrome-ren funtzio batzuk desgaituta egongo dira.</translation>
 <translation id="2290095356545025170">Ziur Google Chrome desinstalatu nahi duzula?</translation>
-<translation id="2298849085402457754">Zure arakatze-datuak gailu honetan soilik garbitzeko, baina Google-ko kontuko arakatze-datuak gordetzeko, <ph name="BEGIN_LINK" />amaitu saioa Chrome-n<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Google Chrome-ren bigarren mailako instalazio bat da hau; beraz, ezin duzu ezarri arakatzaile lehenetsi gisa.</translation>
 <translation id="2345992953227471816">Luzapenok malwarea dutela hauteman du Chrome-k:</translation>
 <translation id="2348335408836342058">Chrome-k webgune honen izenean kamera eta mikrofonoa erabiltzeko baimena behar du</translation>
@@ -113,7 +112,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2649768380733403658">Chrome-k maiz begiratzen die arakatzailearen ezarpenei, ahalik eta seguruenak direla ziurtatzeko. Ezarpenen bat berrikustea komeni bazaizu, jakinarazpen bat bidaliko dizugu.</translation>
 <translation id="2652691236519827073">Ireki esteka Chrome-ko beste &amp;fitxa batean</translation>
 <translation id="2665296953892887393">Lagundu Google Chrome hobetzen hutsegite-txostenak eta <ph name="UMA_LINK" /> Google-ri bidalita</translation>
-<translation id="2712234843277364121">Eguneratzeko, exekutatu berriro. Fitxak berriro irekiko dira.</translation>
 <translation id="2738871930057338499">Ezin da konektatu Internetera. HTTP 403 (debekatuta). Egiaztatu proxyaren konfigurazioa.</translation>
 <translation id="2742320827292110288">Abisua: Google Chrome-k ezin die eragotzi luzapenei zure arakatze-historia erregistratzea. Luzapena ezkutuko moduan desgaitzeko, desautatu aukera hau.</translation>
 <translation id="2765403129283291972">Chrome-k webgune honen izenean mikrofonoa erabiltzeko baimena behar du</translation>
@@ -491,7 +489,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8999117580775242387">HTTPS erabilgarri ez dagoenean, Chrome-k konexio ez-seguru bat erabiliko du abisatu gabe</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome arakatzailearen eguneratze bat dago erabilgarri}=1{Chrome arakatzailearen eguneratze bat dago erabilgarri}other{Chrome arakatzailearen eguneratze batek # egun daramatza erabilgarri}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex sistema</translation>
-<translation id="9054037008353851982">Eguneratzeko, exekutatu berriro. Fitxak berriro irekiko dira.</translation>
 <translation id="9090566250983691233">Ikusi zergatik blokeatzen dituen Chrome-k fitxategi batzuk</translation>
 <translation id="911206726377975832">Arakatze-datuak ere ezabatu nahi dituzu?</translation>
 <translation id="9138603949443464873">Aldaketak aplikatzeko, exekutatu Chrome berriro</translation>

@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Бул таңгакка мурунтан эле Chromium'да көз салынган.</translation>
 <translation id="1707458603865303524">Эми билдирүүлөрдөгү шилтемелерди же башка колдонмолорду Chromium'да ача аласыз.</translation>
 <translation id="1722370509450468186">Сырсөзүңүз аккаунтуңузга (<ph name="EMAIL" />) сакталат.</translation>
-<translation id="1736662517232558588">Chromium дайындары тазаланды</translation>
 <translation id="1791845338122684020">Chromium таржымалынын бетин ачат.</translation>
 <translation id="1811860791247653035">Жекелештирүүнү жана башка функцияларды пайдалануу үчүн Chromium'ду <ph name="FEATURE_NAME_1" /> жана <ph name="FEATURE_NAME_2" /> функцияарына кошуңуз</translation>
 <translation id="1838412507805038478">Chromium бул вебсайттын тастыктамасын <ph name="ISSUER" /> басып чыгарганын ырастады.</translation>
@@ -86,7 +85,6 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="3472200483164753384">Chromium Canary'де колдоого алынбайт</translation>
 <translation id="347967311580159871">Chromium'дун ишин жакшыртуу үчүн маалыматтарды колдоно турган кошумча параметрлерди <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнөн көрө аласыз.</translation>
 <translation id="3512168799938877162">Сырсөзүңүз бөлүшүлгөн жок. Интернет байланышыңызды жана Chromium'га кирип турганыңызды текшериңиз. Андан кийин кайталап көрүңүз.</translation>
-<translation id="3554027294407525061">Chromium'дагы серептөө дайындарын өчүрүү.</translation>
 <translation id="3567399274263440288">Chromium'дун бардык мүмкүнчүлүктөрүн пайдалануу үчүн Google аккаунтуңуз менен Chromium'га кириңиз.</translation>
 <translation id="3634039384458740619">Chromium параметрлерин ачуу</translation>
 <translation id="3639997914391704523">Google аккаунтуңуз менен киргенде Chromium сырсөздөрүңүздү текшерет.</translation>
@@ -138,7 +136,6 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="5042011327527167688">"Chromium'дагы Google Карталарда көрүү" дегенди таптап коюңуз.</translation>
 <translation id="5044871537677053278">Chromium багыттарды жана жергиликтүү маалыматты көрсөтүү үчүн, даректерди аныктап, Google Карталарды колдонот.</translation>
 <translation id="5048795749726991615">Башка колдонмолордо сакталган сырсөздөрдү оңой терүү максатында автотолтуруу үчүн Chromium'ду колдонуңуз</translation>
-<translation id="5076601183701536878">Chromium'дагы серептөө дайындарын өчүрүү</translation>
 <translation id="5124429847818367226">Эми Chromium'да каалаган убакта сайттарды карап, билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду ача аласыз.</translation>
 <translation id="5131565040785979529">Кирип турган аккаунтуңузду жана Chromium'дун колдонулушун уюмуңуз жана <ph name="DOMAIN" /> тескейт.</translation>
 <translation id="5146749061471423558">Кыстармаларды Chromium'га кошуу</translation>

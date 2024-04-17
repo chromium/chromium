@@ -65,7 +65,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1273937721055267968">Zablokuj witrynę <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Kliknij, by rozwinąć</translation>
 <translation id="1289059016768036948">Poprosimy Cię o zalogowanie się na konto Google</translation>
-<translation id="1291207594882862231">Czyszczenie historii, plików cookie, danych witryn, pamięci podręcznej…</translation>
 <translation id="129553762522093515">Ostatnio zamknięte</translation>
 <translation id="1298077576058087471">Oszczędź do 60% danych, przeczytaj dzisiejsze wiadomości</translation>
 <translation id="1303339473099049190">Nie udało się znaleźć tego hasła. Sprawdź pisownię i spróbuj jeszcze raz.</translation>
@@ -380,7 +379,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2992473221983447149">Opisy obrazów</translation>
 <translation id="2996291259634659425">Utwórz hasło wielowyrazowe</translation>
 <translation id="2996809686854298943">Wymagany adres URL</translation>
-<translation id="2996932914629936323">Usuwa historię ze wszystkich zsynchronizowanych urządzeń</translation>
 <translation id="2997081575621687554">Gdy witryna Google prosi o prywatne wstępne wczytanie linków z jej stron, Chrome szyfruje i wstępnie wczytuje te strony przy użyciu serwerów Google, ale bez plików cookie. Pozwala to na ukrycie Twojej tożsamości przed wstępnie wczytywaną witryną.</translation>
 <translation id="3003253259757197230">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić, i wyświetlania dodatkowych informacji o odwiedzonej stronie</translation>
 <translation id="3026955690410463085">Dołącz link</translation>
@@ -542,7 +540,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="3932390316856284148">Plansza dolna logowania jest otwarta na całą wysokość.</translation>
 <translation id="393697183122708255">Brak włączonego wyszukiwania głosowego</translation>
 <translation id="395377504920307820">Używaj bez konta</translation>
-<translation id="3958287878205277013">Aby usunąć z urządzenia historię przeglądania w trybie incognito, zamknij wszystkie karty incognito.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome wczyta stronę, gdy będzie gotowa}few{Chrome wczyta strony, gdy będą gotowe}many{Chrome wczyta strony, gdy będą gotowe}other{Chrome wczyta strony, gdy będą gotowe}}</translation>
 <translation id="3962119236270174787">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne</translation>
 <translation id="3969142555815019568">Chrome nie może sprawdzić Twoich haseł</translation>
@@ -701,7 +698,9 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4732120983431207637">Moduł rozwijania stosu</translation>
 <translation id="4736934858538408121">Karta wirtualna</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
+<translation id="4738065825338914557">Anuluję subskrypcję…</translation>
 <translation id="4738836084190194332">Ostatnia synchronizacja: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Filtruj według aplikacji</translation>
 <translation id="4741753828624614066">Będziesz otrzymywać ulepszone sugestie na pasku adresu.</translation>
 <translation id="4742970037960872810">Usuń podświetlenie</translation>
 <translation id="4749960740855309258">Otwórz nową kartę</translation>
@@ -785,6 +784,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5099845111805573968">Jeśli raz wybierzesz stronę na komputery, to ustawienie będzie stosowane w jej przypadku przy każdej wizycie</translation>
 <translation id="5102401324271069229">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie</translation>
 <translation id="510275257476243843">Pozostała godzina</translation>
+<translation id="5114895953710637392">Arkusz filtra aplikacji jest zamknięty.</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Zainteresowania</translation>
 <translation id="5122378528687922675">Jeśli potrzebujesz pomocy, poproś rodzica (<ph name="PARENT_NAME_1" /> lub <ph name="PARENT_NAME_2" />)</translation>
@@ -848,7 +848,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5468068603361015296">Czy mimo wszystko chcesz pobrać plik <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Otwórz w aplikacji z mapami</translation>
 <translation id="5486841595534124508">Logo informacji na temat ochrony prywatności w centrum statystyk strony, które przekierowuje na stronę Moja aktywność.</translation>
-<translation id="5487521232677179737">Wyczyść dane</translation>
 <translation id="5492637351392383067">Szyfrowanie na urządzeniu</translation>
 <translation id="5514904542973294328">Wyłączone przez administratora tego urządzenia</translation>
 <translation id="5515439363601853141">Odblokuj, by wyświetlić hasło</translation>
@@ -887,7 +886,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="5683547024293500885">Chrome nie może sprawdzić dostępności aktualizacji</translation>
 <translation id="5686790454216892815">Nazwa pliku jest za długa</translation>
 <translation id="5687606994963670306">Chrome automatycznie usuwa witryny odwiedzone ponad 30 dni wcześniej. Witryna, którą odwiedzisz ponownie, może pojawić się znów na liście. Możesz też zablokować witrynie możliwość sugerowania reklam. Dowiedz się więcej o <ph name="BEGIN_LINK" />zarządzaniu prywatnością w reklamach w Chrome<ph name="END_LINK" />.</translation>
-<translation id="569435661099256888">Możesz przejrzeć odwiedzone strony lub usunąć je z historii</translation>
 <translation id="569536719314091526">Możesz przetłumaczyć tę stronę na dowolny język, używając przycisku Więcej opcji</translation>
 <translation id="5696597120588531049">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami</translation>
 <translation id="5698878456427040674">Sprawdź, czy wybrane konto jest obsługiwane.</translation>
@@ -914,7 +912,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="5780792035410621042">Aby skopiować hasła, najpierw ustaw blokadę ekranu na urządzeniu</translation>
 <translation id="5793665092639000975">Zajmują <ph name="SPACE_USED" /> z <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Wyszukiwanie i przeglądanie</translation>
-<translation id="5797521893972859201">Usuwa historię, również z pola wyszukiwania</translation>
 <translation id="5797949256525811424">Temat został zablokowany</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
@@ -1088,7 +1085,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6637100877383020115">Aby pomóc nam ulepszać aplikację, Chrome wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_UMA_LINK" />Zarządzaj<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokuj zawsze</translation>
 <translation id="6641780377503683465">Usuń: <ph name="INTEREST" /></translation>
-<translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6645629752388991326">Kontroluj, za pomocą których urządzeń można się logować, używając tego urządzenia jako klucza bezpieczeństwa.</translation>
 <translation id="6646696210740573446">Wysyła zaciemnioną część adresu URL do Google przez serwer prywatności, który ukrywa Twój adres IP. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać adresy URL wraz z fragmentami zawartości strony do Google.</translation>
 <translation id="6647441008198474441">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić</translation>
@@ -1140,6 +1136,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="685850645784703949">Discover od Google – wyłączone</translation>
 <translation id="686366188661646310">Usunąć hasło?</translation>
 <translation id="6864459304226931083">Pobierz obraz</translation>
+<translation id="686490460830618322">Arkusz filtra aplikacji</translation>
 <translation id="6865313869410766144">Autouzupełnianie danych formularzy</translation>
 <translation id="6867400383614725881">Nowa karta incognito</translation>
 <translation id="6869056123412990582">komputerze</translation>
@@ -1205,6 +1202,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7177466738963138057">Możesz zmienić to później w Ustawieniach</translation>
 <translation id="7177873915659574692">Nie udało się utworzyć kodu QR. URL ma za dużo znaków – ponad <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
+<translation id="7183517696921903380">Arkusz filtra aplikacji jest otwarty.</translation>
 <translation id="7183693674623539380">Grupa kart – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
@@ -1284,8 +1282,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="752220631458524187">Odłącz go, gdy skończysz</translation>
 <translation id="7523960634226602883">Szukaj za pomocą aparatu i Obiektywu Google</translation>
 <translation id="752731652852882757">Blokuj w trybie incognito</translation>
-<translation id="7562080006725997899">Czyszczenie danych przeglądania</translation>
-<translation id="756809126120519699">Wyczyszczono dane Chrome</translation>
 <translation id="7577900504646297215">Zarządzaj zainteresowaniami</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Pobrano <ph name="FILES_DOWNLOADED_ONE" /> plik}few{Pobrano <ph name="FILES_DOWNLOADED_MANY" /> pliki}many{Pobrano <ph name="FILES_DOWNLOADED_MANY" /> plików}other{Pobrano <ph name="FILES_DOWNLOADED_MANY" /> pliku}}</translation>
 <translation id="7581273696622423628">Wypełnij ankietę</translation>
@@ -1318,14 +1314,12 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7697383401610880082">Uchwyt do przeciągania</translation>
 <translation id="7698359219371678927">Utwórz e-maila w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="7702029078562412515">Kafelki zapytań</translation>
-<translation id="7702388902581909985">Wyczyszczenie danych przeglądania nie spowoduje wylogowania z konta Google. Aby to zrobić, <ph name="BEGIN_LINK1" />wyloguj się z Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Użycie mobilnej transmisji danych</translation>
 <translation id="7709918231054955894">Wyświetl wszystkie swoje karty</translation>
 <translation id="7733878270780732638">Za mało miejsca na urządzeniu.</translation>
 <translation id="7759809451544302770">Opcjonalne</translation>
 <translation id="7762668264895820836">Karta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodaj adres</translation>
-<translation id="7766587497031415281">Więcej opcji czyszczenia danych przeglądania</translation>
 <translation id="7772032839648071052">Potwierdź hasło wielowyrazowe</translation>
 <translation id="7772375229873196092">Zamknij aplikację <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1334,6 +1328,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7780645209293383778">Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, aby chronić Cię we wszystkich aplikacjach Google</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Liczba przywróconych kart: <ph name="TAB_COUNT" /></translation>
+<translation id="780287761701992588">Korzystaj z zakładek, haseł i innych ustawień na wszystkich urządzeniach</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7808889146555843082">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="SITE" />. Aby uniemożliwić innym osobom dostęp do konta w serwisie <ph name="SITE" />, usuń je lub zmień do niego hasło.</translation>
 <translation id="7810647596859435254">Otwórz za pomocą…</translation>
@@ -1384,7 +1379,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8013372441983637696">Usuń też swoje dane Chrome z tego urządzenia</translation>
 <translation id="8015452622527143194">Powróć do normalnego rozmiaru całej treści strony</translation>
 <translation id="8026238112629815203">Zmieniliśmy sposób zapisywania haseł na tym urządzeniu</translation>
-<translation id="8026334261755873520">Wyczyść dane przeglądania</translation>
 <translation id="8027863900915310177">Wybierz lokalizację, do której chcesz pobrać plik</translation>
 <translation id="8030852056903932865">Zatwierdź</translation>
 <translation id="8032569120109842252">Obserwujesz</translation>
@@ -1481,6 +1475,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="84594714173170813">Nadal korzystaj z danych Chrome na koncie Google</translation>
 <translation id="8460448946170646641">Informacje o najważniejszych funkcjach prywatności i bezpieczeństwa</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
+<translation id="8477178913400731244">Usuń dane</translation>
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8489271220582375723">Otwórz stronę historii</translation>
 <translation id="8493948351860045254">Zwolnij miejsce</translation>
@@ -1518,7 +1513,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8636825310635137004">Aby korzystać z kart ze swoich innych urządzeń, włącz synchronizację</translation>
 <translation id="864544049772947936">Zarządzaj oknami (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Przewiduje niebezpieczne zdarzenia i ostrzega Cię przed nimi, zanim nastąpią</translation>
-<translation id="8655129584991699539">Dane możesz usunąć w Ustawieniach Chrome</translation>
 <translation id="8664215986015753476">Używaj Chrome po swojemu</translation>
 <translation id="8664979001105139458">Ta nazwa pliku już istnieje</translation>
 <translation id="8676276370198826499">Zarejestruj się w witrynie <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

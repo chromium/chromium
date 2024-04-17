@@ -161,6 +161,7 @@
 <translation id="1569384531973824928">ಇದು ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ. ನೀವು ವೆಬ್ ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಬೇಕಾಗಬಹುದು ಅಥವಾ ಆ್ಯಪ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕಾಗಬಹುದು.</translation>
 <translation id="1571697193564730395">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಸ್ಥಿತಿಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಆನ್ ಆಗಿರುವಾಗ ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
+<translation id="1582946770779745370">ಗೇಮ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಲಭ್ಯವಿದೆ. ತೆರೆಯಲು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape ಒತ್ತಿರಿ, ನಂತರ <ph name="LAUNCHER_KEY_NAME" /> + g ಒತ್ತಿರಿ</translation>
 <translation id="1586324912145647027">1 ರಿಂದ 8 ನೇ ಡೆಸ್ಕ್‌ವರೆಗೆ ಹೋಗಿ</translation>
 <translation id="158838227375272121">Google Classroom ವೆಬ್‌ಸೈಟ್</translation>
 <translation id="1589090746204042747">ಈ ಸೆಶನ್‌ನಲ್ಲಿ ನೀವು ನಡೆಸುವ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಯನ್ನು ಪ್ರವೇಶಿಸುವುದು</translation>
@@ -1818,7 +1819,6 @@
 <translation id="8001755249288974029">ಕರ್ಸರ್‌ನಿಂದ ಸಾಲಿನ ಆರಂಭಕ್ಕೆ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8004512796067398576">ಹೆಚ್ಚಿಕೆ</translation>
 <translation id="8015361438441228492">ಕಾರ್ಯವನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
-<translation id="8026334261755873520">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="802782383769312836">ಹಿಂದಿನ ಡೆಸ್ಕ್: <ph name="DESK_NAME" />. ಒಟ್ಟು <ph name="DESK_COUNT" /> ರಲ್ಲಿ ಡೆಸ್ಕ್‌ <ph name="DESK_INDEX" />.</translation>
 <translation id="8029247720646289474">ಹಾಟ್‌ಸ್ಪಾಟ್ ಕನೆಕ್ಷನ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8029629653277878342">ಹೆಚ್ಚಿನ ಭದ್ರತೆಗಾಗಿ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>

@@ -27,8 +27,8 @@
 <translation id="164952285225495380">已在 Chromium 上跟踪此包裹。</translation>
 <translation id="1707458603865303524">每次点按消息或其他应用中的链接时，都使用 Chromium 打开。</translation>
 <translation id="1722370509450468186">您的密码将会保存到您的账号 (<ph name="EMAIL" />) 中。</translation>
-<translation id="1736662517232558588">已清除 Chromium 数据</translation>
 <translation id="1791845338122684020">打开 Chromium 历史记录页面。</translation>
+<translation id="1811860791247653035">若要获得个性化体验和其他功能，请在 <ph name="FEATURE_NAME_1" /> 和 <ph name="FEATURE_NAME_2" /> 中包含 Chromium</translation>
 <translation id="1838412507805038478">Chromium 已证实：此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="1843424232666537147">Chromium 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -85,12 +85,12 @@
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
 <translation id="347967311580159871">如需更多使用数据来提升 Chromium 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="3512168799938877162">未能分享密码。请检查互联网连接，确保您已登录 Chromium。然后，再试一次。</translation>
-<translation id="3554027294407525061">清除 Chromium 中的浏览数据。</translation>
 <translation id="3567399274263440288">若要充分利用 Chromium，请使用您的 Google 账号登录 Chromium。</translation>
 <translation id="3634039384458740619">打开 Chromium 设置</translation>
 <translation id="3639997914391704523">您需要先登录 Google 账号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="3688710892786762883">Chromium 将检测您所访问的网站上的包裹跟踪编号，并在新标签页中向您显示包裹动态。您的数据将分享给 Google，以便系统提供此功能和改进 Google 购物，让所有人都受益。</translation>
 <translation id="372658070733623520">如要将 Chromium 数据保存在您的 Google 账号中并使用这些数据，请确认是您本人在操作。</translation>
+<translation id="3728124580182886854">关联 Chromium 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="3780779443901618967">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chromium 警告。</translation>
 <translation id="3784369638459513223">打开新的 Chromium 无痕式标签页。</translation>
 <translation id="3805899903892079518">Chromium 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
@@ -136,7 +136,6 @@
 <translation id="5042011327527167688">点按“在 Chromium 上通过 Google 地图查看”。</translation>
 <translation id="5044871537677053278">Chromium 会检测地址，并使用 Google 地图为您提供路线和本地信息。</translation>
 <translation id="5048795749726991615">若要在其他应用中轻松获取您已保存的密码，请使用 Chromium 的自动填充功能</translation>
-<translation id="5076601183701536878">清除 Chromium 中的浏览数据</translation>
 <translation id="5124429847818367226">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
 <translation id="5131565040785979529">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chromium 的使用方式。</translation>
 <translation id="5146749061471423558">将书签添加到 Chromium</translation>

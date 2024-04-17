@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Bu kargo halihazırda Chromium'da takip ediliyor.</translation>
 <translation id="1707458603865303524">Mesajlardaki veya diğer uygulamalardaki bağlantılara her dokunduğunuzda Chromium'u kullanın.</translation>
 <translation id="1722370509450468186">Şifreniz, hesabınıza (<ph name="EMAIL" />) kaydedilir.</translation>
-<translation id="1736662517232558588">Chromium verileri temizlendi</translation>
 <translation id="1791845338122684020">Chromium geçmişi sayfanızı açar.</translation>
 <translation id="1838412507805038478">Chromium, bu web sitesi sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
 <translation id="1843424232666537147">Chromium İnternet verilerinizi yönetmenize ve web sayfalarını hızlı yükleyebilmenize yardımcı olacak özelliklere sahiptir.
@@ -85,7 +84,6 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="3472200483164753384">Chromium Canary'de desteklenmiyor</translation>
 <translation id="347967311580159871">Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="3512168799938877162">Şifreniz paylaşılamadı. İnternet bağlantınızı kontrol edin ve Chromium'da oturum açtığınızdan emin olun. Daha sonra tekrar deneyin.</translation>
-<translation id="3554027294407525061">Chromium'da Tarama Verilerini Temizleyin.</translation>
 <translation id="3567399274263440288">Chromium'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chromium'da oturum açın.</translation>
 <translation id="3634039384458740619">Chromium Ayarları'nı aç</translation>
 <translation id="3639997914391704523">Chromium, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
@@ -136,7 +134,6 @@ Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google He
 <translation id="5042011327527167688">"Chromium'da Google Haritalar ile görüntüle"ye dokunun.</translation>
 <translation id="5044871537677053278">Chromium, adresleri algılayıp size yol tarifleri ve yerel bilgiler vermek için Google Haritalar'ı kullanır.</translation>
 <translation id="5048795749726991615">Kayıtlı şifrelerinizi diğer uygulamalarınızda da kolayca görmek amacıyla Otomatik Doldurma için Chromium'u kullanın</translation>
-<translation id="5076601183701536878">Chromium'da Tarama Verilerini Temizle</translation>
 <translation id="5124429847818367226">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chromium'u kullanabilirsiniz.</translation>
 <translation id="5131565040785979529">Oturum açtığınız hesabı ve Chromium'un kullanılma şeklini kuruluşunuz (<ph name="DOMAIN" />) yönetiyor.</translation>
 <translation id="5146749061471423558">Chromium'a yer işareti ekle</translation>

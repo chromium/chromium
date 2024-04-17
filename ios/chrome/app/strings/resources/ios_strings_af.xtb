@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">Merk alles as gelees</translation>
 <translation id="1689333818294560261">Bynaam</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> gekies</translation>
+<translation id="1710698977900873766">Skakel verbeterde beskerming aan</translation>
 <translation id="1713777106376424209">Afgelewer deur</translation>
 <translation id="1715515772563243997">As jy <ph name="SITE" /> vertrou, kan jy ’n gestoorde wagwoord gebruik om aan te meld.</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeer.</translation>
@@ -148,7 +149,6 @@
 <translation id="1789803444939621101">Welkom terug, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Kaarthouer se naam</translation>
 <translation id="1809939268435598390">Vee vouer uit</translation>
-<translation id="1813414402673211292">Maak blaaidata skoon</translation>
 <translation id="1815941218935345331">Wagkode</translation>
 <translation id="1820259098641718022">By Leeslys gevoeg</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -225,7 +225,6 @@
 <translation id="2230173723195178503">Webblad is gelaai</translation>
 <translation id="223356358902285214">Web- en App-aktiwiteit</translation>
 <translation id="2234827758954819389">Privaatheidgids</translation>
-<translation id="2239626343334228536">Vee blaaierdata uit …</translation>
 <translation id="2251686759395008410">Kieslys → Geskiedenis</translation>
 <translation id="2252674110805316998">Websoektog</translation>
 <translation id="2252749852083403809">Stoor tans in Drive vir <ph name="USER_EMAIL" />.</translation>
@@ -478,7 +477,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3485558910355485767">Nuwe Incognito-venster</translation>
 <translation id="3488501490964659223">Oortjies is toegemaak en blaaierdata is uitgevee. Jy is afgemeld</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /> oor voorgestelde inhoud</translation>
-<translation id="3494788280727468875">Bevestig die uitvee van blaaierdata</translation>
 <translation id="35083190962747987">Maak ${url} oop</translation>
 <translation id="3519193562722059437">Maak 'n oortjie oop om deur die web te blaai.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Maak die oortjie oop}other{Maak {count} oortjies oop}}</translation>
@@ -491,7 +489,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3540141921715814660">Voeg by Boekmerke</translation>
 <translation id="355101282835380364">Stoor in rekening …</translation>
 <translation id="3551320343578183772">Maak oortjie toe</translation>
-<translation id="3565207542107370586">Maak blaaierdata skoon …</translation>
 <translation id="3565930036634619844">Oortjie. <ph name="TAB_INDEX" /> van <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Dubbeltik vir meer wagwoorde.</translation>
 <translation id="3575234738189584619">Soek met Lens</translation>
@@ -967,7 +964,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6027945736510816438">Het jy bedoel <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nuwe kenmerk</translation>
 <translation id="6033598293589037429">Gereed om afgehaal te word</translation>
-<translation id="6036215966221662377">Maak blaaierdata skoon</translation>
 <translation id="6036514205982097558">Al jou oortjies in een blaaier</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Maak toe</translation>
@@ -1150,7 +1146,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6859944681507688231">Aktiveer die kamera in die instellings om 'n QR-kode of kredietkaart te skandeer.</translation>
 <translation id="6867369562105931222">wagwoord</translation>
 <translation id="686899695320434745">Adresse word nie met jou wagfrase geënkripteer nie. Dit laat jou toe om hulle in ander Google-dienste te gebruik.</translation>
-<translation id="6869389390665537774">Jy kan die bladsye sien wat jy besoek het of hulle van jou geskiedenis af uitvee</translation>
 <translation id="687135068089457384">Wys instellings</translation>
 <translation id="6873263987691478642">Deelaansig</translation>
 <translation id="6882836635272038266">Standaardbeskerming teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is.</translation>
@@ -1296,7 +1291,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7719038820139380048">Meld aan om inhoud gegrond op jou belangstellings te kry.</translation>
 <translation id="7720410380936703141">PROBEER WEER</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item in jou Google-rekening, {email}, gestoor}other{Items in jou Google-rekening, {email}, gestoor}}</translation>
-<translation id="7726702057919861819">Kieslys → Geskiedenis → Vee blaaierdata uit</translation>
 <translation id="7729458878441927652">Sinkroniseer jou oortjies en geskiedenis om oortjies van jou ander toestelle af te sien.</translation>
 <translation id="7730973429297233609">Kies die rekening wat jy wil gebruik om <ph name="FILENAME" /> - <ph name="FILESIZE" /> te stoor</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Net op hierdie toestel.</translation>
@@ -1541,7 +1535,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8870413625673593573">Onlangs toegemaak</translation>
 <translation id="8876882697946675716">Hou jou toestelle gesinkroniseer</translation>
 <translation id="8879604564928138696">Dubbeltik om te probeer</translation>
-<translation id="8879984884633913185">Versteek Vee blaaierdata uit</translation>
 <translation id="8881801611828450202">Deursoek <ph name="SEARCH_ENGINE" /> vir hierdie prent</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
 <translation id="890565330728586731">Terug</translation>

@@ -340,6 +340,7 @@
 <translation id="160851722280695521">‏تشغيل لعبة الديناصور في Chrome</translation>
 <translation id="161042844686301425">سماوي</translation>
 <translation id="1611101756749861742">اللفافة الثانية</translation>
+<translation id="1611854593425834707">إغلاق قائمة أجهزة البث</translation>
 <translation id="1612199629998703524">إدارة المواضيع</translation>
 <translation id="1615178538289490617">إلغاء إذن الوصول إلى <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">تحظر سياسة المشرف إمكانية تصوير الشاشة عند عرض محتوى سري.</translation>
@@ -451,7 +452,6 @@
 <translation id="1810391395243432441">حماية كلمات المرور باستخدام ميزة "قفل الشاشة"</translation>
 <translation id="1812527064848182527">معالم</translation>
 <translation id="1812975699435941848">تعليم صحي وتدريب طبي</translation>
-<translation id="1813414402673211292">محو بيانات التصفّح</translation>
 <translation id="1816436748874040213">السماح بطلب الانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="1818522458013171885">إزالة الحظر</translation>
 <translation id="1818585559878922121">أفلام وثائقية</translation>
@@ -617,7 +617,7 @@
 <translation id="2126374524350484896">‏التطبيق الذي أنشأ مستند PDF:</translation>
 <translation id="2130448033692577677">‏قد لا يتم تطبيق النماذج التي حدّدتها بسبب عدم ضبط سياسة DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">تظهر محركات البحث هذه بترتيب عشوائي. ويمكنك تغيير محرك البحث التلقائي في أي وقت.</translation>
+<translation id="2132825047782982803">تظهر محركات البحث هذه بترتيب عشوائي. ويمكنك تغيير خيارك التلقائي في أي وقت.</translation>
 <translation id="2137891579555018930">في انتظار الحصول على الإذن...</translation>
 <translation id="213826338245044447">الإشارات المرجعية على الجوّال</translation>
 <translation id="2141000681034340397">تعديل الإدخال</translation>
@@ -874,7 +874,6 @@
 <translation id="2647086987482648627">نسيج (شبه لامع)</translation>
 <translation id="264810637653812429">لم يتم العثور على أي أجهزة متوافقة.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لمحو سجلّ التصفُّح وملفات تعريف الارتباط وذاكرة التخزين المؤقت وغير ذلك في إعدادات Chrome.</translation>
 <translation id="2650446666397867134">تم رفض الدخول إلى الملف</translation>
 <translation id="2651465929321991146">السجلّ وعلامات التبويب</translation>
 <translation id="2653659639078652383">إرسال</translation>
@@ -1202,7 +1201,6 @@
 <translation id="33073482541490531">‏استُخدمت كلمة المرور التي أدخلتها للتو في عملية اختراق للبيانات، لذلك ينصح "مدير كلمات المرور" في Google بتغيير كلمة المرور هذه الآن.</translation>
 <translation id="3307649904964670439">‏زر تخصيص Chrome: انقر على هذا الزر لتخصيص مظهر المتصفِّح.</translation>
 <translation id="3308006649705061278">‏الوحدة التنظيمية (OU)</translation>
-<translation id="3310047144791481950">يمكنك الاطّلاع على معلومات تُساعدك في اختيار البطاقة التي تريد استخدامها للدفع. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />التعرُّف على مزايا البطاقة<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">أعمال تلفزيونية كوميدية</translation>
 <translation id="3324687287337751929">4 × 6 بوصة</translation>
 <translation id="3324983252691184275">قرمزي</translation>
@@ -1371,7 +1369,6 @@
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتفعيل ميزة "التحقّق من الأمان" في إعدادات Chrome</translation>
 <translation id="3615309852743236517">عناية بأظافر اليدين والقدمين</translation>
 <translation id="3620239073311576716">أزياء موحدة وسترات عمل</translation>
-<translation id="36224234498066874">محو بيانات التصفّح...</translation>
 <translation id="362276910939193118">عرض السجلّ بكامله</translation>
 <translation id="3623041590998910684">‏لاستخدام الكاميرا، يجب منح Chrome إذن الوصول في <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">أفلام رومانسية</translation>
@@ -1916,6 +1913,7 @@
 <translation id="4691093235373904540">خدمات تسقيف</translation>
 <translation id="4692623383562244444">محرّكات البحث</translation>
 <translation id="4698692901173737941">رياضات قتالية</translation>
+<translation id="4701307090948589984">البث إلى…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" />‏ <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">الجانب</translation>
 <translation id="4702656508969495934">ميزة "النسخ النصي التلقائي" مرئية، يُرجى استخدام مبدِّل النوافذ للتركيز.</translation>
@@ -2052,7 +2050,6 @@
 <translation id="4936134414789135531">تعذَّر العثور على قيمة <ph name="VALUE_NAME" /> التي تم إدراجها.</translation>
 <translation id="4936675324097895694">خدمات مالية</translation>
 <translation id="4940163644868678279">‏وضع التصفّح المتخفي في متصفّح Chrome</translation>
-<translation id="494111439860963024">‏زر محو بيانات التصفّح: انقر على هذا الزر لمحو سجلّ التصفّح وملفات تعريف الارتباط وذاكرة التخزين المؤقت وغير ذلك في إعدادات Chrome.</translation>
 <translation id="4943620199112228840">استخدام الميكروفونات</translation>
 <translation id="4943872375798546930">لا نتائج</translation>
 <translation id="4950898438188848926">‏زر التبديل بين علامات التبويب، اضغط على Enter للتبديل إلى علامة التبويب المفتوحة هذه <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2165,6 +2162,8 @@
 <translation id="5161334686036120870">الموضوع:</translation>
 <translation id="5161506081086828129">المكدِّس 9</translation>
 <translation id="5164798890604758545">تم إدخال نص</translation>
+<translation id="5164928537947209380">‏قد تكون هذه الأداة التجريبية المستندة إلى الذكاء الاصطناعي غير دقيقة في بعض الأحيان. وللمساعدة في تحسينها، يتم إرسال محتواك إلى Google.
+    <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">‏يمكنك إدخال رمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" />. وبعد التأكيد، ستتم مشاركة تفاصيل البطاقة من حسابك على Google مع هذا الموقع الإلكتروني.</translation>
 <translation id="5169827969064885044">‏قد تفقد إمكانية الوصول إلى حساب مؤسستك أو تتعرَّض لسرقة هويتك. لذا، يوصي Chrome بتغيير كلمة مرورك الآن.</translation>
 <translation id="5171045022955879922">‏البحث أو إدخال عنوان URL</translation>
@@ -2287,7 +2286,6 @@
 <translation id="541416427766103491">المكدِّس 4</translation>
 <translation id="5414446060143308245">يجب مراجعة الملفات قبل نقلها</translation>
 <translation id="5414511064953050917">النقل على أي حال</translation>
-<translation id="5421136146218899937">محو بيانات التصفّح...</translation>
 <translation id="5421408724705443535">موسيقى روك</translation>
 <translation id="5423269318075950257">تتبُّع السعر</translation>
 <translation id="5425082381151187189">ديكور منزلي وديكور داخلي</translation>
@@ -3649,7 +3647,6 @@
 <translation id="8022542098135319050">وكالات وخدمات سفر</translation>
 <translation id="8023231537967344568">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لضبط Chrome كمتصفِّح تلقائي للنظام.</translation>
 <translation id="8025119109950072390">قد يحاول المهاجمون على هذا الموقع خداعك لاتّخاذ إجراءات خطيرة مثل تثبيت برامج معيّنة أو كشف معلوماتك الشخصية (مثل  كلمات المرور أو أرقام الهواتف أو بطاقات الائتمان).</translation>
-<translation id="8026334261755873520">محو بيانات التصفُّح</translation>
 <translation id="8027077570865220386">الدُرج 15</translation>
 <translation id="8027585818882015174">‏زر تفعيل ميزة "التحقّق من الأمان" في Chrome: انقر على هذا الزر لتفعيل هذه الميزة في إعدادات Chrome.</translation>
 <translation id="8028698320761417183">‏<ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء نموذج جديد في "نماذج Google" بسرعة.</translation>
@@ -3922,7 +3919,6 @@
 <translation id="8527228059738193856">مكبّرات الصوت</translation>
 <translation id="8527681393107582734">زراعة وحراجة</translation>
 <translation id="8528149813106025610">ملابس أطفال</translation>
-<translation id="8530813470445476232">‏محو سجلّ التصفُّح وملفات تعريف الارتباط وذاكرة التخزين المؤقت وغير ذلك في إعدادات متصفِّح Chrome</translation>
 <translation id="853246364274116957">مسرح موسيقي وبرودواي</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏انتقِل إلى &lt;strong&gt;chrome://policy&lt;/strong&gt; للاطّلاع على قائمة عناوين URL المحظورة والسياسات الأخرى التي يفرضها مشرف النظام.</translation>
@@ -4063,6 +4059,7 @@
 <translation id="8807160976559152894">القطع بعد كل صفحة</translation>
 <translation id="8809203544698246977">تظهر المواضيع المحظورة هنا.</translation>
 <translation id="8811470563853401328">هل تريد حفظ العنوان في الحساب؟</translation>
+<translation id="8811725516933141693">‏اكتب ‎@gemini للدردشة مع Gemini</translation>
 <translation id="8813277370772331957">تذكيري لاحقًا</translation>
 <translation id="8814707942599948500">‏ظرف C8</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لتحديث Chrome من إعدادات Chrome.</translation>

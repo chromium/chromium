@@ -79,7 +79,6 @@
 <translation id="2258103955319320201">Chrome öğelerinize tüm cihazlarınızda erişmek için oturum açın ve senkronizasyonu etkinleştirin</translation>
 <translation id="2290014774651636340">Google API anahtarları eksik. Google Chrome'un bazı işlevleri devre dışı bırakılacak.</translation>
 <translation id="2290095356545025170">Google Chrome'u kaldırmak istediğinizden emin misiniz?</translation>
-<translation id="2298849085402457754">Tarama verilerini yalnızca bu cihazdan temizleyip Google Hesabınızda tutmak için <ph name="BEGIN_LINK" />Chrome oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Bu, Google Chrome'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
 <translation id="2345992953227471816">Chrome aşağıdaki uzantılarda kötü amaçlı yazılım tespit etti:</translation>
 <translation id="2348335408836342058">Chrome'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
@@ -109,7 +108,6 @@
 <translation id="2649768380733403658">Chrome, tarayıcınızın en güvenli ayarlara sahip olup olmadığını düzenli olarak kontrol eder. İncelemeniz gereken bir konu varsa sizi bilgilendiririz.</translation>
 <translation id="2652691236519827073">Bağlantıyı Yeni Chrome &amp;sekmesinde aç</translation>
 <translation id="2665296953892887393">Kilitlenme raporlarını ve <ph name="UMA_LINK" /> bilgilerini Google'a göndererek Google Chrome'u daha iyi hale getirmeye yardımcı olun</translation>
-<translation id="2712234843277364121">Güncellemek için yeniden başlatın. Sekmeleriniz yeniden açılır.</translation>
 <translation id="2738871930057338499">İnternet'e bağlanılamadı. HTTP 403 Yasak. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="2742320827292110288">Uyarı: Google Chrome, uzantıların tarama geçmişinizi kaydetmesini önleyemez. Gizli modda bu uzantıyı devre dışı bırakmak için bu seçeneğin onay işaretini kaldırın.</translation>
 <translation id="2765403129283291972">Chrome'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>
@@ -322,6 +320,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6251759518630934363">Standart korumaya ek olarak sitelerden alınmış daha fazla veriyi analiz ederek Google'ın daha önce bilmedikleri de dahil olmak üzere tehlikeli siteler hakkında sizi uyarır. Chrome uyarılarını atlamayı seçebilirsiniz.</translation>
 <translation id="6273793429163604305">Başlamak üzere...</translation>
 <translation id="6277547788421725101">Anne veya babanız, Chrome'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı.</translation>
+<translation id="627882678981830918">Chrome'u özelleştirin ve kontrol edin. Chrome'u varsayılan tarayıcınız olarak ayarlayın.</translation>
 <translation id="6291089322031436445">Chrome Dev Uygulamaları</translation>
 <translation id="6291549208091401781">Google Chrome zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
 <translation id="6326175484149238433">Chrome'dan kaldır</translation>
@@ -485,7 +484,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8999117580775242387">Chrome, HTTPS kullanılamadığında size uyarı göndermeden güvenli olmayan bir bağlantı kullanır</translation>
 <translation id="8999208279178790196">{0,plural, =0{Bir Chrome güncellemesi var}=1{Bir Chrome güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chrome güncellemesi var}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex sistemi</translation>
-<translation id="9054037008353851982">Güncellemek için yeniden başlatın. Sekmeleriniz yeniden açılır.</translation>
 <translation id="9090566250983691233">Chrome'un bazı dosyaları neden engellediğini öğrenin</translation>
 <translation id="911206726377975832">Tarama verileriniz de silinsin mi?</translation>
 <translation id="9138603949443464873">Yaptığınız değişiklikleri uygulamak için Chrome'u yeniden başlatın</translation>

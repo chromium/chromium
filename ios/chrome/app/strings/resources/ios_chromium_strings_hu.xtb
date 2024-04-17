@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Ezt a csomagot már nyomon követi a Chromium.</translation>
 <translation id="1707458603865303524">Bármikor használhatja a Chromiumot, amikor üzenetekben vagy más alkalmazásokban linkekre kattint.</translation>
 <translation id="1722370509450468186">Jelszavát a rendszer a fiókjába (<ph name="EMAIL" />) menti.</translation>
-<translation id="1736662517232558588">A Chromium adatai törölve</translation>
 <translation id="1791845338122684020">Megnyitja a Chromium-előzmények oldalát.</translation>
 <translation id="1838412507805038478">A Chromium ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="1843424232666537147">A Google Chrome számos olyan funkciót biztosít, amelyek segítik internetes adatainak kezelésében, illetve a weboldalak betöltési gyorsaságának beállításában.
@@ -85,7 +84,6 @@ Az adatokat a Chromium-élmény javítására használó további beállítások
 <translation id="3472200483164753384">A Chromium Canary nem támogatja</translation>
 <translation id="347967311580159871">Az adatokat a Chromium-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
 <translation id="3512168799938877162">A jelszó megosztása nem sikerült. Ellenőrizze az internetkapcsolatot, és győződjön meg arról, hogy be van jelentkezve a Chromiumba. Ezután próbálja újra.</translation>
-<translation id="3554027294407525061">A Chromiumban lévő böngészési adatok törlése.</translation>
 <translation id="3567399274263440288">Annak érdekében, hogy a legtöbbet hozhassa ki a Chromiumból, jelentkezzen be Google-fiókjával a Chromiumba.</translation>
 <translation id="3634039384458740619">Nyissa meg a Chromium beállításait.</translation>
 <translation id="3639997914391704523">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
@@ -136,7 +134,6 @@ Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókj
 <translation id="5042011327527167688">Koppintson a „Megtekintés a Google Térképpel a Chromiumban” lehetőségre.</translation>
 <translation id="5044871537677053278">A Chromium észleli a címeket, és a Google Térkép használatával útvonalterveket és helyi információkat jelenít meg.</translation>
 <translation id="5048795749726991615">Használja a Chromium Automatikus kitöltés funkcióját, hogy egyszerűen hozzáférhessen mentett jelszavaihoz a többi alkalmazásában is</translation>
-<translation id="5076601183701536878">A Chromiumban lévő böngészési adatok törlése</translation>
 <translation id="5124429847818367226">Mostantól mindig a Chromiumot használhatja, amikor böngészik, illetve üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre kattint.</translation>
 <translation id="5131565040785979529">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe be van jelentkezve, és a Chromium használatának módját is.</translation>
 <translation id="5146749061471423558">Könyvjelzők hozzáadása a Chromiumhoz</translation>

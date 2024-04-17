@@ -80,7 +80,6 @@
 <translation id="2258103955319320201">Untuk mengakses aktivitas browser Chrome di semua perangkat, login lalu aktifkan sinkronisasi</translation>
 <translation id="2290014774651636340">Kunci API Google tidak ada. Beberapa fungsi Google Chrome tidak akan berfungsi.</translation>
 <translation id="2290095356545025170">Apakah Anda yakin ingin mencopot penginstalan Google Chrome?</translation>
-<translation id="2298849085402457754">Untuk menghapus data penjelajahan dari perangkat ini saja dan tetap menyimpannya di Akun Google Anda, <ph name="BEGIN_LINK" />logout dari Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan Google Chrome sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
 <translation id="2345992953227471816">Chrome menemukan bahwa ekstensi berikut berisi malware:</translation>
 <translation id="2348335408836342058">Chrome memerlukan izin akses ke kamera dan mikrofon untuk situs ini</translation>
@@ -110,7 +109,6 @@
 <translation id="2649768380733403658">Chrome memeriksa secara berkala untuk memastikan browser Anda memiliki setelan yang paling aman. Kami akan memberi tahu Anda jika ada yang perlu ditinjau.</translation>
 <translation id="2652691236519827073">Buka Link di &amp;tab Chrome Baru</translation>
 <translation id="2665296953892887393">Bantu Google Chrome jadi lebih baik dengan mengirim laporan kerusakan dan <ph name="UMA_LINK" /> ke Google</translation>
-<translation id="2712234843277364121">Luncurkan kembali untuk mengupdate - tab Anda akan dibuka kembali</translation>
 <translation id="2738871930057338499">Tidak dapat terhubung ke internet. HTTP 403 Terlarang. Periksa konfigurasi proxy Anda.</translation>
 <translation id="2742320827292110288">Peringatan: Google Chrome tidak dapat mencegah ekstensi merekam histori penjelajahan Anda. Untuk menonaktifkan ekstensi ini dalam mode Samaran, batalkan pilihan opsi ini.</translation>
 <translation id="2765403129283291972">Chrome memerlukan izin akses ke mikrofon untuk situs ini</translation>
@@ -321,6 +319,7 @@
 <translation id="6251759518630934363">Memperingatkan Anda tentang situs berbahaya, bahkan situs yang tidak diketahui Google sebelumnya, dengan menganalisis lebih banyak data dari situs dibandingkan perlindungan standar. Anda dapat memilih untuk melewati peringatan Chrome.</translation>
 <translation id="6273793429163604305">Bersiap-siap...</translation>
 <translation id="6277547788421725101">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chrome</translation>
+<translation id="627882678981830918">Sesuaikan dan kontrol Chrome. Setel Chrome sebagai browser default.</translation>
 <translation id="6291089322031436445">Aplikasi Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="6326175484149238433">Hapus dari Chrome</translation>
@@ -484,7 +483,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8999117580775242387">Jika HTTPS tidak tersedia, Chrome akan menggunakan koneksi yang tidak aman tanpa memperingatkan Anda</translation>
 <translation id="8999208279178790196">{0,plural, =0{Update Chrome tersedia}=1{Update Chrome tersedia}other{Update Chrome telah tersedia selama # hari}}</translation>
 <translation id="9053892488859122171">Sistem ChromeOS Flex</translation>
-<translation id="9054037008353851982">Luncurkan kembali untuk Mengupdate - Tab Anda akan dibuka kembali</translation>
 <translation id="9090566250983691233">Pelajari alasan Chrome memblokir beberapa file</translation>
 <translation id="911206726377975832">Hapus juga data browsing Anda?</translation>
 <translation id="9138603949443464873">Untuk menerapkan perubahan, luncurkan ulang Chrome</translation>

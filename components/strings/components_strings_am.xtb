@@ -340,6 +340,7 @@
 <translation id="160851722280695521">በChrome ውስጥ የDino አሂድ ጨዋታ አጫውት</translation>
 <translation id="161042844686301425">ውሃ ሰማያዊ</translation>
 <translation id="1611101756749861742">ሁለተኛ ጥቅልል</translation>
+<translation id="1611854593425834707">cast ለማድረግ የመሣሪያ ዝርዝርን ይዝጉ</translation>
 <translation id="1612199629998703524">ርዕሶችን አስተዳድር</translation>
 <translation id="1615178538289490617">ለ<ph name="PORT_NAME" /> መዳረሻን ሻር</translation>
 <translation id="1615402009686901181">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገፅ ማንሳትን ያሰናክላል</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">በማያ ገፅ መቆለፊያዎ ለይለፍ ቃላት ጥበቃ ያድርጉ</translation>
 <translation id="1812527064848182527">የመሬት ገጽታ</translation>
 <translation id="1812975699435941848">የጤና ትምህርት እና የህክምና ስልጠና</translation>
-<translation id="1813414402673211292">የአሰሳ ውሂብ አስወግድ</translation>
 <translation id="1816436748874040213">የተጋሩ ትሮችን ለማሸብለል እና ለማጉላት መጠየቅ ይችላል</translation>
 <translation id="1818522458013171885">እገዳውን አንሳ</translation>
 <translation id="1818585559878922121">ዘጋቢ ፊልሞች</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">ጨርቅ (በግማሽ አንጸባራቂ)</translation>
 <translation id="264810637653812429">ምንም ተኳሃኝ መሣሪያዎች አልተገኙም።</translation>
 <translation id="2649204054376361687"><ph name="CITY" />፣ <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የእርስዎን የአሰሳ ታሪክ፣ ኩኪዎች፣ መሸጎጫ እና ተጨማሪ ነገሮች ለማጽዳት ትርን ይጫኑ፣ ከዚያ በChrome ቅንብሮች ውስጥ አስገባን ይጫኑ</translation>
 <translation id="2650446666397867134">የፋይሉ መዳረሻ ተከልክሏል</translation>
 <translation id="2651465929321991146">ታሪክ እና ትሮች</translation>
 <translation id="2653659639078652383">አስገባ</translation>
@@ -1204,7 +1203,6 @@
 <translation id="33073482541490531">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የይለፍ ቃል አስተዳዳሪ ይህን የይለፍ ቃል አሁን እንዲቀይሩት ይመክራል።</translation>
 <translation id="3307649904964670439">የChrome አዝራርን ያብጁ፣ የአሳሽዎን መልክ ለማበጀት ያግብሩ</translation>
 <translation id="3308006649705061278">ድርጅታዊ መስፈርት (OU)</translation>
-<translation id="3310047144791481950">በየትኛው ካርድ እንደሚከፍሉ ለመምረጥ የሚረዳዎትን መረጃ ይመልከቱ። <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ስለ ካርድ ጥቅማጥቅሞች ይወቁ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">የቴሌቪዥን ኮሜዲዎች</translation>
 <translation id="3324687287337751929">4 x 6 ኢንች</translation>
 <translation id="3324983252691184275">ክሪምሶን</translation>
@@ -1373,7 +1371,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ የደህንነት ፍተሻን ለማሄድ ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="3615309852743236517">የወንድ ጥፍር ሥራ እና የሴት ጥፍር ሥራ</translation>
 <translation id="3620239073311576716">ዩኒፎርም እና የስራ ልብስ</translation>
-<translation id="36224234498066874">የአሰሳ ውሂብ አስወግድ…</translation>
 <translation id="362276910939193118">ሙሉ ታሪክ አሳይ</translation>
 <translation id="3623041590998910684">ካሜራዎን ለመጠቀም በ<ph name="LINK" /> ውስጥ ለChrome መዳረሻ ይስጡ።</translation>
 <translation id="3623398832322170566">የፍቅር ፊልሞች</translation>
@@ -1918,6 +1915,7 @@
 <translation id="4691093235373904540">የጣሪያ ሥራ</translation>
 <translation id="4692623383562244444">የፍለጋ ፕሮግራሞች</translation>
 <translation id="4698692901173737941">የትግል ስፖርት</translation>
+<translation id="4701307090948589984">Cast አድርግ ወደ...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ጎን</translation>
 <translation id="4702656508969495934">የቀጥታ መግለጫ ጽሁፍ ይታያል፣ ለትኩረት መስኮት መቀየሪያን ይጠቀሙ</translation>
@@ -2054,7 +2052,6 @@
 <translation id="4936134414789135531">ያስገቡት <ph name="VALUE_NAME" /> ሊገኝ አልቻለም።</translation>
 <translation id="4936675324097895694">ፋይናንስ</translation>
 <translation id="4940163644868678279">በChrome ውስጥ ያለ ማንነት የማያሳውቅ</translation>
-<translation id="494111439860963024">የአሰሳ ውሂብ አዝራርን ያጽዱ፣ በChrome ቅንብሮች ውስጥ የእርስዎን የአሰሳ ታሪክ፣ ኩኪዎች፣ መሸጎጫ እና ሌሎችንም ለማጽዳት ያግብሩ</translation>
 <translation id="4943620199112228840">ማይክሮፎኖቾን መጠቀም</translation>
 <translation id="4943872375798546930">ውጤቶች የሉም</translation>
 <translation id="4950898438188848926">የትር መቀየሪያ አዝራር፣ ወደ ክፍቱ ትር <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> ለመቀየር Enterን ይጫኑ</translation>
@@ -2168,6 +2165,8 @@
 <translation id="5161334686036120870">ርዕሰ ጉዳይ፦</translation>
 <translation id="5161506081086828129">ቁልል 9</translation>
 <translation id="5164798890604758545">ጽሁፍ ገብቷል</translation>
+<translation id="5164928537947209380">ይህ የሙከራ AI መሣሪያ ሁልጊዜ ትክክል አይሆንም። እሱን ለማሻሻል፣ የእርስዎ ይዘት ወደ Google ይላካል።
+    <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">የ<ph name="CREDIT_CARD" /> CVC ያስገቡ። ካረጋገጡ በኋላ የGoogle መለያዎ ካርድ ዝርዝሮች ለዚህ ጣቢያ ይጋራሉ።</translation>
 <translation id="5169827969064885044">የድርጅት መለያዎን መዳረሻ ሊያጡ ወይም የማንነት ስርቆት ሊያጋጥመዎት ይችላሉ። Chrome የይለፍ ቃልዎን አሁን እንዲቀይሩ ይመክራል።</translation>
 <translation id="5171045022955879922">ይፈልጉ ወይም ዩአርኤል ይጻፉ</translation>
@@ -2290,7 +2289,6 @@
 <translation id="541416427766103491">ቁልል 4</translation>
 <translation id="5414446060143308245">ከማስተላለፍ በፊት ግምገማ ያስፈልጋል</translation>
 <translation id="5414511064953050917">ለማንኛውም አንቀሳቅስ</translation>
-<translation id="5421136146218899937">የአሰሳ ውሂብ አጽዳ…</translation>
 <translation id="5421408724705443535">ሮክ ሙዚቃ</translation>
 <translation id="5423269318075950257">ዋጋ ይከታተሉ</translation>
 <translation id="5425082381151187189">የቤት እና የቤት ውስጥ ማስጌጫ</translation>
@@ -3654,7 +3652,6 @@
 <translation id="8022542098135319050">የጉዞ ወኪሎች እና አገልግሎቶች</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ Chromeን እንደ የሥርዓቱ ነባሪ አሳሽ ለማቀናበር ትርን ከዚያም አስገባን ይጫኑ</translation>
 <translation id="8025119109950072390">በዚህ ጣቢያ ላይ ያሉ አጥቂዎች እርስዎ እንደ ሶፍትዌር መጫን ወይም የግል መረጃዎን (ለምሳሌ፦ የይለፍ ቃላት፣ ስልክ ቁጥሮች ወይም ክሬዲት ካርዶች) አሳልፈው እንዲሰጡ ያሉ አደገኛ ነገር እንዲያደርጉ ሊያታልሉዎት ይችላሉ።</translation>
-<translation id="8026334261755873520">የአሰሳ ውሂብ አጽዳ</translation>
 <translation id="8027077570865220386">መሳቢያ 15</translation>
 <translation id="8027585818882015174">የChrome ደህንነት ፍተሻ አዝራርን ያሂዱ፣ በChrome ቅንብሮች ውስጥ የደህንነት ፍተሻን ለማሄድ ያግብሩ</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle ቅጾች ውስጥ አዲስ ቅጽ በፍጥነት ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
@@ -3925,7 +3922,6 @@
 <translation id="8527228059738193856">ድምፅ ማውጫዎች</translation>
 <translation id="8527681393107582734">ግብርና እና የደን ልማት</translation>
 <translation id="8528149813106025610">የልጆች አልባሳት</translation>
-<translation id="8530813470445476232">የእርስዎን የአሰሳ ታሪክ፣ ኩኪዎች፣ መሸጎጫዎች እና ተጨማሪ በChrome ቅንብሮች ውስጥ ያጽዱ</translation>
 <translation id="853246364274116957">ብሮድዌይ እና ሙዚቃዊ ቲያትር</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">የታገዱ የዩአርኤሎች ዝርዝር እና ሌሎች በሥርዓት አስተዳዳሪዎ አስገዳጅነት የተሰጣቸው መመሪያዎችን ለማየት &lt;strong&gt;chrome://policy&lt;/strong&gt;ን ይጎብኙ።</translation>
@@ -4066,6 +4062,7 @@
 <translation id="8807160976559152894">ከእያንዳንዱ ገፅ በኋላ ከርክም</translation>
 <translation id="8809203544698246977">የታገዱ ርዕሶች እዚህ ላይ ይታያሉ</translation>
 <translation id="8811470563853401328">አድራሻ በመለያ ውስጥ ይቀመጥ?</translation>
+<translation id="8811725516933141693">ከGemini ጋር ለመወያየት @gemini ብለው ይተይቡ</translation>
 <translation id="8813277370772331957">ቆይተህ አስታውሰኝ</translation>
 <translation id="8814707942599948500">ሲ8 ፖስታ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ይጫኑ እና ከእርስዎ Chrome ቅንብሮች Chromeን ለማዘመን አስገባን ይጫኑ</translation>

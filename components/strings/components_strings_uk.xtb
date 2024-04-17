@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
 <translation id="1611101756749861742">Другий рулон</translation>
+<translation id="1611854593425834707">Закрити список пристроїв для трансляції</translation>
 <translation id="1612199629998703524">Керувати темами</translation>
 <translation id="1615178538289490617">Скасувати доступ для порту <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">Захистіть свої паролі за допомогою функції блокування екрана</translation>
 <translation id="1812527064848182527">альбомна</translation>
 <translation id="1812975699435941848">Освіта у сфері охорони здоров’я і медичне навчання</translation>
-<translation id="1813414402673211292">Очистити історію</translation>
 <translation id="1816436748874040213">Може запитувати дозвіл на зміну масштабу й прокручування вмісту вкладок, які демонструються</translation>
 <translation id="1818522458013171885">Розблокувати</translation>
 <translation id="1818585559878922121">Документальні фільми</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">Тканина (напівглянцева)</translation>
 <translation id="264810637653812429">Сумісних пристроїв не знайдено.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб очистити історію веб-перегляду, файли cookie, кеш та інше в налаштуваннях Chrome</translation>
 <translation id="2650446666397867134">У доступі до файлу відмовлено</translation>
 <translation id="2651465929321991146">Історія і вкладки</translation>
 <translation id="2653659639078652383">Надіслати</translation>
@@ -1205,7 +1204,6 @@
 <translation id="33073482541490531">Введений пароль розкрито через порушення безпеки даних. Менеджер паролів радить негайно його змінити.</translation>
 <translation id="3307649904964670439">Кнопка "Налаштувати Chrome"; активуйте, щоб налаштувати вигляд веб-переглядача</translation>
 <translation id="3308006649705061278">Організаційний підрозділ (OU)</translation>
-<translation id="3310047144791481950">Показувати інформацію, яка допоможе вибрати картку для оплати. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Докладніше про переваги карток.<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Телевізійні комедії</translation>
 <translation id="3324687287337751929">4 x 6 дюйм.</translation>
 <translation id="3324983252691184275">Малиновий</translation>
@@ -1374,7 +1372,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="3615309852743236517">Манікюр і педикюр</translation>
 <translation id="3620239073311576716">Уніформа й робочий одяг</translation>
-<translation id="36224234498066874">Очистити історію…</translation>
 <translation id="362276910939193118">Показати всю історію</translation>
 <translation id="3623041590998910684">Щоб використовувати камеру, надайте Chrome відповідний доступ у <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Романтичні фільми</translation>
@@ -1919,6 +1916,7 @@
 <translation id="4691093235373904540">Покрівельні роботи</translation>
 <translation id="4692623383562244444">Пошукові системи</translation>
 <translation id="4698692901173737941">Спортивні єдиноборства</translation>
+<translation id="4701307090948589984">Транслювати на…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Сторона</translation>
 <translation id="4702656508969495934">Відображаються живі субтитри. Щоб сфокусуватися на них, скористайтеся перемикачем вікон.</translation>
@@ -2055,7 +2053,6 @@
 <translation id="4936134414789135531">Вставлене значення <ph name="VALUE_NAME" /> не знайдено.</translation>
 <translation id="4936675324097895694">Фінанси</translation>
 <translation id="4940163644868678279">Анонімний режим у Chrome</translation>
-<translation id="494111439860963024">Кнопка "Очистити дані веб-перегляду"; активуйте, щоб очистити історію веб-перегляду, файли cookie, кеш і інше в налаштуваннях Chrome</translation>
 <translation id="4943620199112228840">Використовувати мікрофони</translation>
 <translation id="4943872375798546930">Не знайдено жодного результату</translation>
 <translation id="4950898438188848926">Кнопка перемикання вкладки: натисніть Enter, щоб перейти на відкриту вкладку, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2168,6 +2165,8 @@
 <translation id="5161334686036120870">Тема:</translation>
 <translation id="5161506081086828129">Накопичувач 9</translation>
 <translation id="5164798890604758545">Введено текст</translation>
+<translation id="5164928537947209380">Цей експериментальний інструмент на основі ШІ не завжди повертає правильні результати. Щоб покращити його, ваш контент надсилається в Google.
+    <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Введіть код CVC картки <ph name="CREDIT_CARD" />. Щойно ви підтвердите дані картки в обліковому записі Google, цей сайт отримає доступ до них.</translation>
 <translation id="5169827969064885044">Ви можете втратити доступ до облікового запису організації, або хтось може викрасти вашу особисту інформацію. Chrome радить змінити пароль.</translation>
 <translation id="5171045022955879922">Введіть запит або URL-адресу</translation>
@@ -2290,7 +2289,6 @@
 <translation id="541416427766103491">Накопичувач 4</translation>
 <translation id="5414446060143308245">Перевірте файли, перш ніж переносити їх</translation>
 <translation id="5414511064953050917">Усе одно перемістити</translation>
-<translation id="5421136146218899937">Очистити історію…</translation>
 <translation id="5421408724705443535">Рок-музика</translation>
 <translation id="5423269318075950257">Відстежувати ціну</translation>
 <translation id="5425082381151187189">Домашній декор і декор інтер’єру</translation>
@@ -3653,7 +3651,6 @@
 <translation id="8022542098135319050">Туристичні агентства й послуги</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб зробити Chrome веб-переглядачем системи за умовчанням</translation>
 <translation id="8025119109950072390">Зловмисники на цьому сайті можуть обманом змусити вас виконати небезпечну дію, як-от установити програмне забезпечення або повідомити особисту інформацію (наприклад, паролі, номери телефонів або кредитних карток).</translation>
-<translation id="8026334261755873520">Очистити історію</translation>
 <translation id="8027077570865220386">Лоток 15</translation>
 <translation id="8027585818882015174">Кнопка "Виконати перевірку безпеки Chrome"; активуйте, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову форму в Google Формах</translation>
@@ -3924,7 +3921,6 @@
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527681393107582734">Сільське й лісове господарство</translation>
 <translation id="8528149813106025610">Дитячий одяг</translation>
-<translation id="8530813470445476232">Очистити історію веб-перегляду, файли cookie, кеш та інше в налаштуваннях Chrome</translation>
 <translation id="853246364274116957">Бродвей і музичний театр</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Перейдіть на сторінку &lt;strong&gt;chrome://policy&lt;/strong&gt;, щоб переглянути список заблокованих URL-адрес та інші правила, які ввімкнув ваш системний адміністратор.</translation>
@@ -4065,6 +4061,7 @@
 <translation id="8807160976559152894">Обрізати після кожної сторінки</translation>
 <translation id="8809203544698246977">Тут відображатимуться заблоковані теми</translation>
 <translation id="8811470563853401328">Зберегти адресу в обліковому записі?</translation>
+<translation id="8811725516933141693">Щоб спілкуватися в чаті з Gemini, введіть @gemini</translation>
 <translation id="8813277370772331957">Нагадати пізніше</translation>
 <translation id="8814707942599948500">Конверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>

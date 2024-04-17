@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chrome-да Dino Run ойынын ойнау</translation>
 <translation id="161042844686301425">Көгілдір</translation>
 <translation id="1611101756749861742">Екінші орам</translation>
+<translation id="1611854593425834707">Трансляциялауға арналған құрылғылар тізімін жабу</translation>
 <translation id="1612199629998703524">Тақырыптарды басқару</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> портына кіру рұқсатын қайтару</translation>
 <translation id="1615402009686901181">Құпия контент көрініп тұрғанда, әкімші саясаты экранды түсіру функциясын өшіреді.</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">Құпия сөздерді экран құлпы арқылы қорғау</translation>
 <translation id="1812527064848182527">альбомдық</translation>
 <translation id="1812975699435941848">Санитарлық сауаттандыру және медициналық дайындық</translation>
-<translation id="1813414402673211292">Шолу деректерін тазалау</translation>
 <translation id="1816436748874040213">Ортақ қойындыларды айналдыру мен масштабтауды сұрай алады</translation>
 <translation id="1818522458013171885">Блоктан шығару</translation>
 <translation id="1818585559878922121">Деректі фильмдер</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">Мата (жартылай жылтыр)</translation>
 <translation id="264810637653812429">Үйлесімді құрылғылар табылмады.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде браузерді қолдану тарихын, cookie файлдарын, кэшті және т.б. өшіру үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="2650446666397867134">Файлға кіруге тыйым салынған</translation>
 <translation id="2651465929321991146">Тарих және қойындылар</translation>
 <translation id="2653659639078652383">Жіберу</translation>
@@ -1204,7 +1203,6 @@
 <translation id="33073482541490531">Сіз жаңа ғана қолданған құпия сөз деректердің қолды болуы салдарынан жария етілді. Password Manager оны дереу өзгертуді ұсынады.</translation>
 <translation id="3307649904964670439">"Chrome-ды реттеу" түймесі, браузер көрінісін реттеу үшін белсендіріңіз</translation>
 <translation id="3308006649705061278">Ұйымдық бірлік (OU)</translation>
-<translation id="3310047144791481950">Төлейтін картаны таңдауға көмектесетін ақпаратты қараңыз. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Карта бонустары туралы ақпарат<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Телекомедиялар</translation>
 <translation id="3324687287337751929">4 x 6 дюйм</translation>
 <translation id="3324983252691184275">Қызыл күрең</translation>
@@ -1373,7 +1371,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінен қауіпсіздік тексерісін іске қосу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3615309852743236517">Маникюр және педикюр</translation>
 <translation id="3620239073311576716">Форма және жұмыс киімі</translation>
-<translation id="36224234498066874">Шолу деректерін өшіру…</translation>
 <translation id="362276910939193118">Тарихты толық көрсету</translation>
 <translation id="3623041590998910684">Камераны пайдалану үшін <ph name="LINK" /> бөлімінде Chrome-ға рұқсат беріңіз.</translation>
 <translation id="3623398832322170566">Романтикалық фильмдер</translation>
@@ -1918,6 +1915,7 @@
 <translation id="4691093235373904540">Шатырларды жөндеу</translation>
 <translation id="4692623383562244444">Іздеу жүйелері</translation>
 <translation id="4698692901173737941">Спорттық жекпе-жек</translation>
+<translation id="4701307090948589984">Келесі құрылғыға трансляциялау...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Бүйірлік</translation>
 <translation id="4702656508969495934">Live Caption көрінеді, ерекшелеу үшін терезе ауыстырғышты пайдаланыңыз.</translation>
@@ -2054,7 +2052,6 @@
 <translation id="4936134414789135531">Енгізілген <ph name="VALUE_NAME" /> табылмады.</translation>
 <translation id="4936675324097895694">Қаржы</translation>
 <translation id="4940163644868678279">Chrome браузеріндегі инкогнито режимі</translation>
-<translation id="494111439860963024">"Браузерді пайдалану деректерін өшіру" түймесі, Chrome параметрлерінде браузерді қолдану тарихын, cookie файлдарын, кэшті және т.б. өшіру үшін белсендіріңіз</translation>
 <translation id="4943620199112228840">Микрофондарды пайдалану</translation>
 <translation id="4943872375798546930">Нәтижесіз</translation>
 <translation id="4950898438188848926">Қойынды ауыстыру түймесі: ашық қойындыға ауысу үшін Enter пернесін басыңыз, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2167,6 +2164,8 @@
 <translation id="5161334686036120870">Тақырыбы:</translation>
 <translation id="5161506081086828129">9-жинастырушы</translation>
 <translation id="5164798890604758545">Мәтін енгізілді</translation>
+<translation id="5164928537947209380">Бұл эксперименттік AI құралы кейде қателесуі мүмкін. Оны жақсарту үшін контентіңіз Google-ға жіберіледі.
+    <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> картасының CVC кодын енгізіңіз. Растағаннан кейін, Google аккаунтындағы карта мәліметтері осы сайтқа беріледі.</translation>
 <translation id="5169827969064885044">Ұйымның аккаунтына кіре алмай қалуыңыз мүмкін немесе жеке деректеріңіз ұрлануы ықтимал. Chrome құпия сөзіңізді қазір өзгертуге кеңес береді.</translation>
 <translation id="5171045022955879922">Іздеңіз не URL теріңіз</translation>
@@ -2289,7 +2288,6 @@
 <translation id="541416427766103491">4-жинастырушы</translation>
 <translation id="5414446060143308245">Тасымалдау алдында қарап шығу қажет</translation>
 <translation id="5414511064953050917">Сонда да ауыстыру</translation>
-<translation id="5421136146218899937">Шолу деректерін өшіру…</translation>
 <translation id="5421408724705443535">Рок</translation>
 <translation id="5423269318075950257">Бағаны бақылау</translation>
 <translation id="5425082381151187189">Үй және интерьер декорациясы</translation>
@@ -3652,7 +3650,6 @@
 <translation id="8022542098135319050">Туристік агенттік және қызметтер</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ды жүйенің әдепкі браузері етіп орнату үшін қойындыны басып, Enter пернесін басыңыз</translation>
 <translation id="8025119109950072390">Бұл сайттағы шабуылдаушылар бағдарламалық құрал орнату немесе жеке ақпаратты (мысалы, құпия сөздер, телефон нөмірлері немесе несиелік карталар) жария ету сияқты қауіпті әрекеттерді айлакерлікпен істетуі мүмкін.</translation>
-<translation id="8026334261755873520">Шолу деректерін өшіру</translation>
 <translation id="8027077570865220386">15-науа</translation>
 <translation id="8027585818882015174">"Chrome қауіпсіздік тексерісін іске қосу" түймесі, Chrome параметрлерінде қауіпсіздік тексерісін іске қосу үшін белсендіріңіз</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-да жылдам жаңа үлгі жасау үшін Tab, cодан кейін Enter пернесін басыңыз.</translation>
@@ -3923,7 +3920,6 @@
 <translation id="8527228059738193856">Динамиктер</translation>
 <translation id="8527681393107582734">Ауыл және орман шаруашылығы</translation>
 <translation id="8528149813106025610">Балалар киімі</translation>
-<translation id="8530813470445476232">Chrome параметрлерінен браузерді қолдану тарихын, cookie файлдарын, кэшті және т.б. деректерді өшіріңіз.</translation>
 <translation id="853246364274116957">Бродвей және музыкалық театр</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Тыйым салынған URL мекенжайларын және жүйе әкімшісі енгізген басқа саясаттар тізімін қарау үшін &lt;strong&gt;chrome://policy&lt;/strong&gt; бетіне кіріңіз.</translation>
@@ -4063,6 +4059,7 @@
 <translation id="8807160976559152894">Әр беттен кейін кесу</translation>
 <translation id="8809203544698246977">Бөгелген тақырыптар осы жерде пайда болады</translation>
 <translation id="8811470563853401328">Мекенжайды аккаунтта сақтау керек пе?</translation>
+<translation id="8811725516933141693">Gemini-мен чатта сөйлесу үшін @gemini деп теріңіз.</translation>
 <translation id="8813277370772331957">Кейінірек еске салу</translation>
 <translation id="8814707942599948500">C8 хатқалтасы</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде Chrome-ды жаңарту үшін Tab, одан кейін Enter пернесін басыңыз.</translation>

@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Prima sem soltar o ícone do Chrome e clique em "Editar ecrã principal"</translation>
 <translation id="1066101356081285416">O Chrome vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. O número de acompanhamento da embalagem e o nome do Website vão ser enviados para a Google para oferecer esta funcionalidade e melhorar as funcionalidades do Google Shopping para todos. Pode atualizar esta opção em qualquer altura nas <ph name="BEGIN_LINK" />Definições de acompanhamento de encomendas<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Use o Chrome por predefinição</translation>
-<translation id="1105362920864247682">Limpe os dados de navegação no Chrome.</translation>
 <translation id="1143896152279775643">A palavra-passe será guardada no Gestor de palavras-passe da Google para <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Abra o menu do Chrome</translation>
 <translation id="1180362651362502943">Continue a usar os dados do Chrome na sua Conta Google.</translation>
@@ -77,7 +76,6 @@ Aspetos a considerar:
 <translation id="2750626042242931740">Pode atualizar as suas seleções em qualquer altura nas definições do Chrome.</translation>
 <translation id="2767464022270041271">Não existem palavras-passe guardadas. O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando as guardar.</translation>
 <translation id="2789947168960170215">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Limpar dados de navegação no Chrome</translation>
 <translation id="2869959624320573933">Inicie sessão no Chrome</translation>
 <translation id="2876628302275096482">Saiba <ph name="BEGIN_LINK" />como o Chrome mantém os seus dados privados<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Abra as definições do Chrome.</translation>
@@ -125,6 +123,7 @@ Aspetos a considerar:
 <translation id="4633328489441962921">O Chrome não consegue verificar se existem atualizações.</translation>
 <translation id="4636900170638246267">Inicie sessão neste site e no Chrome.</translation>
 <translation id="4761869838909035636">Executar verificação de segurança do Chrome</translation>
+<translation id="4798859546468762093">Para usar a personalização e outras funcionalidades, inclua o Chrome nas <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para ajudar a melhorar a app, o Chrome envia dados de utilização e falhas de sistema para a Google. <ph name="BEGIN_LINK" />Faça a gestão<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.
 
@@ -181,6 +180,7 @@ Aspetos a considerar:
 <translation id="6389317667633680932">Explore novas funcionalidades que ajudam a tirar o máximo partido do Chrome.</translation>
 <translation id="6412673304250309937">Verifica os URLs com listas de sites inseguros armazenados no Chrome. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
 <translation id="6427126399757991875">A sua entidade está a configurar o Chrome…</translation>
+<translation id="6481963882741794338">Associe o Chrome e outros serviços Google para personalização e outras finalidades</translation>
 <translation id="6484712497741564393">Com sessão iniciada como <ph name="EMAIL" />.
 
 Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
@@ -225,7 +225,6 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="7466693328838535498">Na caixa Widgets de Pesquisa, introduza "Chrome"</translation>
 <translation id="746684838091935575">3. Selecione o Chrome.</translation>
 <translation id="7492574581995589075">A sua organização desativou a capacidade de usar e guardar dados do Chrome na sua Conta Google. Os novos marcadores, palavras-passe e muito mais são guardados apenas neste dispositivo.</translation>
-<translation id="756809126120519699">Dados do Chrome limpos</translation>
 <translation id="7581063337314642333">Visite a grelha de separadores no Chrome</translation>
 <translation id="7662994914830945754">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, inicie sessão e ative a sincronização.</translation>
 <translation id="7669869107155339016">Aceda às definições do Chrome.</translation>

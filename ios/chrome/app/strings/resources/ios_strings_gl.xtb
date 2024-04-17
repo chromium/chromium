@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Dámosche a benvida de novo, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nome do titular da tarxeta</translation>
 <translation id="1809939268435598390">Eliminar cartafol</translation>
-<translation id="1813414402673211292">Borrar datos de navegación</translation>
 <translation id="1815941218935345331">Contrasinal</translation>
 <translation id="1820259098641718022">Engadiuse a páxina á lista de lectura</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
 <translation id="223356358902285214">Actividade web e das aplicacións</translation>
 <translation id="2234827758954819389">Guía de privacidade</translation>
-<translation id="2239626343334228536">Borrando datos de navegación…</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2252674110805316998">Busca web</translation>
 <translation id="2252749852083403809">Está gardándose en Drive para <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3485558910355485767">Nova ventá do modo de incógnito</translation>
 <translation id="3488501490964659223">Pecháronse as pestanas e elimináronse os datos de navegación. Pechouse a túa sesión</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca do contido suxerido</translation>
-<translation id="3494788280727468875">Confirmar a eliminación dos datos de navegación</translation>
 <translation id="35083190962747987">Abre ${url}</translation>
 <translation id="3519193562722059437">Abre unha pestana para examinar a web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Abrir a pestana}other{Abrir {count} pestanas}}</translation>
@@ -492,7 +489,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3540141921715814660">Engadir aos marcadores</translation>
 <translation id="355101282835380364">Gardar na conta…</translation>
 <translation id="3551320343578183772">Pechar pestana</translation>
-<translation id="3565207542107370586">Borrar datos de navegación…</translation>
 <translation id="3565930036634619844">Pestana. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Toca dúas veces para obter máis contrasinais.</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
@@ -968,7 +964,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6027945736510816438">Querías dicir "<ph name="WEBSITE" />"?</translation>
 <translation id="6032845897905314562">nova función</translation>
 <translation id="6033598293589037429">Dispoñible para a recollida</translation>
-<translation id="6036215966221662377">Borrar datos de navegación</translation>
 <translation id="6036514205982097558">Todas as túas pestanas nun navegador</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" /> (<ph name="PUBLICATION_DATE" />)</translation>
 <translation id="6040143037577758943">Pechar</translation>
@@ -1151,7 +1146,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6859944681507688231">Para escanear un código QR ou unha tarxeta de crédito, activa a cámara na configuración.</translation>
 <translation id="6867369562105931222">contrasinal</translation>
 <translation id="686899695320434745">Os enderezos non se encriptan coa túa frase de acceso. Deste xeito, poderás usalos noutros servizos de Google.</translation>
-<translation id="6869389390665537774">Podes ver as páxinas que visitaches ou borralas do teu historial</translation>
 <translation id="687135068089457384">Mostrar configuración</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
 <translation id="6882836635272038266">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos.</translation>
@@ -1297,7 +1291,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7719038820139380048">Inicia sesión para desfrutar de contido en función dos teus intereses.</translation>
 <translation id="7720410380936703141">TENTAR DE NOVO</translation>
 <translation id="7724085059277147439">{count,plural, =1{O elemento gardouse na túa Conta de Google, {email}}other{Os elementos gardáronse na túa Conta de Google, {email}}}</translation>
-<translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
 <translation id="7729458878441927652">Para ver as pestanas doutros dispositivos, sincroniza as pestanas e o historial.</translation>
 <translation id="7730973429297233609">Selecciona a conta que queres usar para gardar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
@@ -1542,7 +1535,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8870413625673593573">Pechados recentemente</translation>
 <translation id="8876882697946675716">Mantén sincronizados os teus dispositivos</translation>
 <translation id="8879604564928138696">Toca dúas veces para tentalo</translation>
-<translation id="8879984884633913185">Ocultar Borrar datos de navegación</translation>
 <translation id="8881801611828450202">Buscar esta imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="890565330728586731">Atrás</translation>

@@ -80,7 +80,6 @@
 <translation id="2258103955319320201">Per accedir al teu contingut del navegador Chrome des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització</translation>
 <translation id="2290014774651636340">Falten les claus de l'API de Google. Es desactivaran algunes de les funcionalitats de Google Chrome.</translation>
 <translation id="2290095356545025170">Confirmeu que voleu desinstal·lar Google Chrome?</translation>
-<translation id="2298849085402457754">Per esborrar les dades de navegació només d'aquest dispositiu i conservar-les al teu Compte de Google, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Aquesta és una instal·lació secundària de Google Chrome i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="2345992953227471816">Chrome ha detectat que aquestes extensions contenen programari maliciós:</translation>
 <translation id="2348335408836342058">Per visitar aquest lloc web, Chrome necessita permís per accedir a la càmera i al micròfon</translation>
@@ -110,7 +109,6 @@
 <translation id="2649768380733403658">Chrome comprova regularment que el navegador tingui la configuració més segura. T'avisarem si hi ha res que hagis de revisar.</translation>
 <translation id="2652691236519827073">Obre l'enllaç en una pes&amp;tanya nova a Chrome</translation>
 <translation id="2665296953892887393">Ajudeu a millorar Google Chrome; envieu informes d'error i <ph name="UMA_LINK" /> a Google.</translation>
-<translation id="2712234843277364121">Reinicia per actualitzar: les pestanyes es tornaran a obrir</translation>
 <translation id="2738871930057338499">No es pot connectar a Internet. Error d'HTTP "403 Forbidden". Comprova la configuració del servidor intermediari.</translation>
 <translation id="2742320827292110288">Advertiment: Google Chrome no pot evitar que les extensions registrin l'historial de navegació. Per desactivar aquesta extensió en mode d'incògnit, desselecciona aquesta opció.</translation>
 <translation id="2765403129283291972">Per visitar aquest lloc web, Chrome necessita permís per accedir al micròfon</translation>
@@ -321,6 +319,7 @@
 <translation id="6251759518630934363">T'avisa de llocs web perillosos, fins i tot dels que Google no coneixia abans, ja que analitza més dades dels llocs web que la protecció estàndard. Pots optar per ometre els advertiments de Chrome.</translation>
 <translation id="6273793429163604305">Preparats…</translation>
 <translation id="6277547788421725101">El teu pare o mare ha desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chrome</translation>
+<translation id="627882678981830918">Personalitza i controla Chrome. Defineix Chrome com a navegador predeterminat.</translation>
 <translation id="6291089322031436445">Aplicacions de Chrome Dev</translation>
 <translation id="6291549208091401781">Ja tens instal·lat Google Chrome per a tots els usuaris de l'ordinador.</translation>
 <translation id="6326175484149238433">Suprimeix de Chrome</translation>
@@ -484,7 +483,6 @@
 <translation id="8999117580775242387">Quan l'HTTPS no estigui disponible, Chrome utilitzarà una connexió no segura sense avisar-te</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
-<translation id="9054037008353851982">Reinicia per actualitzar: les pestanyes es tornaran a obrir</translation>
 <translation id="9090566250983691233">Descobreix per què Chrome bloqueja alguns fitxers</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>
 <translation id="9138603949443464873">Torna a iniciar Chrome perquè s'apliquin els canvis</translation>

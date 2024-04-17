@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Que bom que você voltou, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nome do titular do cartão</translation>
 <translation id="1809939268435598390">Excluir pasta</translation>
-<translation id="1813414402673211292">Remover dados de navegação</translation>
 <translation id="1815941218935345331">Senha</translation>
 <translation id="1820259098641718022">Adicionada à lista de leitura</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Página da Web carregada</translation>
 <translation id="223356358902285214">Atividade na Web e de apps</translation>
 <translation id="2234827758954819389">Guia de privacidade</translation>
-<translation id="2239626343334228536">Limpando dados de navegação…</translation>
 <translation id="2251686759395008410">Menu → Histórico</translation>
 <translation id="2252674110805316998">Pesquisa Google na Web</translation>
 <translation id="2252749852083403809">Salvando no Google Drive de <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3485558910355485767">Nova janela anônima</translation>
 <translation id="3488501490964659223">As guias foram fechadas e os dados de navegação foram excluídos. Sua conta foi desconectada</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre o conteúdo sugerido</translation>
-<translation id="3494788280727468875">Confirmar limpeza de dados de navegação</translation>
 <translation id="35083190962747987">Abrir ${url}</translation>
 <translation id="3519193562722059437">Abra uma guia para navegar na Web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Abrir a guia}one{Abrir {count} guia}other{Abrir {count} guias}}</translation>
@@ -492,7 +489,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3540141921715814660">Adicionar aos favoritos</translation>
 <translation id="355101282835380364">Salvar na conta…</translation>
 <translation id="3551320343578183772">Fechar guia</translation>
-<translation id="3565207542107370586">Limpar dados de navegação…</translation>
 <translation id="3565930036634619844">Guia. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Toque duas vezes para conferir mais senhas.</translation>
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
@@ -968,7 +964,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6027945736510816438">Você quis dizer <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">novo recurso</translation>
 <translation id="6033598293589037429">Pronto para retirada</translation>
-<translation id="6036215966221662377">Remover dados de navegação</translation>
 <translation id="6036514205982097558">Todas as guias em um só navegador</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -1043,6 +1038,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6363526231572697780">Sem nome de usuário</translation>
 <translation id="6366190659675876144">Proteção padrão</translation>
 <translation id="6366663624406569102">Sair e desativar a sincronização</translation>
+<translation id="6368038301482806847">Selecione um mecanismo de pesquisa na lista.</translation>
 <translation id="6374469231428023295">Repetir</translation>
 <translation id="6377118281273296434">Segurança do site</translation>
 <translation id="6383719166112032471">Abrir local…</translation>
@@ -1151,7 +1147,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6859944681507688231">Para ler um QR code ou cartão de crédito, ative a câmera nas configurações.</translation>
 <translation id="6867369562105931222">senha</translation>
 <translation id="686899695320434745">Endereços não são criptografados com sua senha longa. Isso permite que você os use em outros serviços do Google.</translation>
-<translation id="6869389390665537774">Você pode ver as páginas visitadas ou apagá-las do histórico</translation>
 <translation id="687135068089457384">Mostrar configurações</translation>
 <translation id="6873263987691478642">Visualização dividida</translation>
 <translation id="6882836635272038266">Proteção padrão contra sites, downloads e extensões perigosos.</translation>
@@ -1202,6 +1197,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7161230316646448869">Sincronize seus favoritos, histórico e muito mais em todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Configurações</translation>
+<translation id="7186568385131859684">Controle como o histórico de navegação é usado com seus outros dados nos Serviços do Google</translation>
 <translation id="7189598951263744875">Compartilhar...</translation>
 <translation id="719133302483559673">Gerencie seus interesses e suas preferências.</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
@@ -1245,6 +1241,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7438481509621345350">Agora, você verá stories de <ph name="CHANNEL_NAME" /> quando abrir uma nova guia.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
 <translation id="7454057999980797137">Estado/Prov.</translation>
+<translation id="7458706065921255639">Personalização e vinculação</translation>
 <translation id="745899714366929493">O dia todo</translation>
 <translation id="7459628154744868585">A proteção reforçada está ativa</translation>
 <translation id="7465351360025415755">Receba conteúdo importante para você</translation>
@@ -1297,7 +1294,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7719038820139380048">Faça login para acessar conteúdo com base nos seus interesses.</translation>
 <translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item salvo na sua Conta do Google {email}}one{Item salvo na sua Conta do Google {email}}other{Itens salvos na sua Conta do Google {email}}}</translation>
-<translation id="7726702057919861819">Menu → Histórico → Remover dados de navegação</translation>
 <translation id="7729458878441927652">Para conferir as guias dos seus outros dispositivos, sincronize-as com o histórico.</translation>
 <translation id="7730973429297233609">Selecione a conta que você quer usar para salvar o arquivo <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Somente neste dispositivo.</translation>
@@ -1542,7 +1538,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8876882697946675716">Manter os dispositivos sincronizados</translation>
 <translation id="8879604564928138696">Toque duas vezes para testar</translation>
-<translation id="8879984884633913185">Ocultar "Remover dados de navegação"</translation>
 <translation id="8881801611828450202">Pesquisar esta imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
 <translation id="890565330728586731">Voltar</translation>

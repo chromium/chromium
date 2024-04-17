@@ -72,7 +72,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="2329088755516916767">Cuando esta opción está activada, Chromium precarga las páginas, lo que te permite navegar y hacer búsquedas más rápido.</translation>
 <translation id="2343156876103232566">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chromium con ambos dispositivos.</translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2359920621792549529">Para borrar los datos de navegación de este dispositivo, pero no de tu cuenta de Google, <ph name="BEGIN_LINK" />cierra sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">ChromiumOS no ha podido sincronizar tus datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o varias extensiones de Chromium estaban accediendo a 1 dispositivo HID}=1{Una o varias extensiones de Chromium están accediendo a 1 dispositivo HID}other{Una o varias extensiones de Chromium están accediendo a # dispositivos HID}}</translation>
 <translation id="2401032172288869980">Chromium necesita los permisos del micrófono y de la cámara para este sitio</translation>

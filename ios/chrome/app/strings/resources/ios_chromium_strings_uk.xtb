@@ -27,7 +27,6 @@
 <translation id="164952285225495380">Це відправлення вже відстежувалося в Chromium.</translation>
 <translation id="1707458603865303524">Відкривайте посилання з повідомлень або інших додатків за допомогою Chromium.</translation>
 <translation id="1722370509450468186">Ваш пароль буде збережено в обліковому записі (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Дані Chromium стерто</translation>
 <translation id="1791845338122684020">Відкриває сторінку історії Chromium.</translation>
 <translation id="1838412507805038478">Chromium підтвердив, що сертифікат цьому веб-сайту надала компанія <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">У Chromium є функції, які допомагають керувати інтернет-даними та швидкістю завантаження веб-сторінок.
@@ -85,7 +84,6 @@
 <translation id="3472200483164753384">Не підтримується в Chromium Canary</translation>
 <translation id="347967311580159871">Щоб дізнатися про інші налаштування, які використовують дані для покращення роботи Chromium, перейдіть на <ph name="BEGIN_LINK" />сторінку сервісів Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Не вдалося поділитися паролем. Перевірте інтернет-з’єднання й переконайтеся, що ви ввійшли в Chromium. Потім повторіть спробу.</translation>
-<translation id="3554027294407525061">Очистити дані веб-перегляду в Chromium.</translation>
 <translation id="3567399274263440288">Щоб користуватися всіма можливостями Chromium, увійдіть в обліковий запис Google у цьому веб-переглядачі.</translation>
 <translation id="3634039384458740619">Відкрити налаштування Chromium</translation>
 <translation id="3639997914391704523">Chromium зможе перевірити ваші паролі, коли ви ввійдете в обліковий запис Google.</translation>
@@ -136,7 +134,6 @@
 <translation id="5042011327527167688">Натисніть "Переглянути на Картах Google у Chromium".</translation>
 <translation id="5044871537677053278">Chromium визначає адреси й використовує Карти Google, щоб прокладати маршрути й надавати місцеву інформацію.</translation>
 <translation id="5048795749726991615">Щоб легко використовувати збережені паролі в інших додатках, застосовуйте функцію автозаповнення в Chromium</translation>
-<translation id="5076601183701536878">Очистити дані веб-перегляду в Chromium</translation>
 <translation id="5124429847818367226">Тепер ви можете переглядати й відкривати в Chromium посилання з повідомлень, документів і інших додатків.</translation>
 <translation id="5131565040785979529">Ваша організація (<ph name="DOMAIN" />) керує обліковим записом, у який ви ввійшли, і тим, як використовується Chromium.</translation>
 <translation id="5146749061471423558">Додати закладки в Chromium</translation>

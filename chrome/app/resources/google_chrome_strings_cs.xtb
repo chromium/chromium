@@ -84,7 +84,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2258103955319320201">Pokud ke svým údajům v Chromu chcete mít přístup na všech zařízeních, přihlaste se a poté zapněte synchronizaci</translation>
 <translation id="2290014774651636340">Chybí klíče rozhraní Google API. Některé funkce Google Chrome nebudou k dispozici.</translation>
 <translation id="2290095356545025170">Opravdu chcete odinstalovat Google Chrome?</translation>
-<translation id="2298849085402457754">Pokud chcete údaje o prohlížení vymazat jen z tohoto zařízení, ale v účtu Google je ponechat, <ph name="BEGIN_LINK" />odhlaste se z prohlížeče Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Toto je druhá instalace prohlížeče Google Chrome. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
 <translation id="2345992953227471816">Prohlížeč Chrome zjistil, že tato rozšíření obsahují malware:</translation>
 <translation id="2348335408836342058">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
@@ -114,7 +113,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2649768380733403658">Chrome pravidelně kontroluje, zda je v prohlížeči vybráno nejbezpečnější nastavení. Pokud bude něco vyžadovat vaši kontrolu, dáme vám vědět.</translation>
 <translation id="2652691236519827073">Otevřít odkaz na nové kar&amp;tě Chrome</translation>
 <translation id="2665296953892887393">Pomozte aplikaci Google Chrome zlepšovat tím, že budete společnosti Google zasílat zprávy o selhání a <ph name="UMA_LINK" />.</translation>
-<translation id="2712234843277364121">Spustit znovu a aktualizovat – vaše karty se znovu otevřou</translation>
 <translation id="2738871930057338499">Nelze se připojit k internetu. HTTP 403 (Zakázáno). Zkontrolujte konfiguraci proxy.</translation>
 <translation id="2742320827292110288">Upozornění: Google Chrome nemůže rozšířením zabránit v zaznamenávání vaší historie prohlížení. Chcete-li toto rozšíření v anonymním režimu deaktivovat, zrušte výběr této možnosti.</translation>
 <translation id="2765403129283291972">Chrome pro tento web potřebuje oprávnění k přístupu k mikrofonu</translation>
@@ -329,6 +327,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6251759518630934363">Varuje vás před nebezpečnými weby (včetně těch, o kterých Google dříve nevěděl) tím, že analyzuje více dat z webů než standardní ochrana. Upozornění prohlížeče Chrome můžete přeskočit.</translation>
 <translation id="6273793429163604305">Připravit…</translation>
 <translation id="6277547788421725101">Tvůj rodič pro Chrome vypnul možnost Oprávnění pro weby, aplikace a rozšíření</translation>
+<translation id="627882678981830918">Přizpůsobení a ovládání Chromu. Nastavení Chromu jako výchozího prohlížeče.</translation>
 <translation id="6291089322031436445">Chrome Dev – aplikace</translation>
 <translation id="6291549208091401781">Prohlížeč Google Chrome je na tomto počítači již nainstalován pro všechny uživatele.</translation>
 <translation id="6326175484149238433">Odstranit z Chromu</translation>
@@ -492,7 +491,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8999117580775242387">Když není k dispozici protokol HTTPS, použije Chrome nezabezpečené připojení, aniž by vás upozornil</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozici aktualizace Chromu}=1{Je k dispozici aktualizace Chromu}few{Již # dny je k dispozici aktualizace Chromu}many{Již # dne je k dispozici aktualizace Chromu}other{Již # dní je k dispozici aktualizace Chromu}}</translation>
 <translation id="9053892488859122171">Systém ChromeOS Flex</translation>
-<translation id="9054037008353851982">Spustit znovu a aktualizovat – vaše karty se znovu otevřou</translation>
 <translation id="9090566250983691233">Přečtěte si, proč Chrome některé soubory blokuje</translation>
 <translation id="911206726377975832">Vymazat také všechna data procházení?</translation>
 <translation id="9138603949443464873">Chcete-li změny použít, restartujte Chrome</translation>

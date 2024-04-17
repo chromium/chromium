@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3069226013421428034">Autorisez la connexion tierce pour un site spécifique.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="310297983047869047">Diapositive précédente</translation>
 <translation id="3109724472072898302">Réduit</translation>
 <translation id="3114012059975132928">Lecteur vidéo</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Autorisé</translation>
 <translation id="429312253194641664">Un site est en train de lire un contenu multimédia</translation>
 <translation id="42981349822642051">Développer</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="4336566011000459927">Chrome limitera de nouveau les cookies aujourd'hui</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Votre dernier onglet</translation>
 <translation id="4338831206024587507">Tous les sites du domaine <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="757524316907819857">Empêcher les sites de lire les contenus protégés</translation>
 <translation id="7594634374516752650">Connecté à un appareil Bluetooth</translation>
-<translation id="7641339528570811325">Effacer les données de navigation</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7667547420449112975">Le Magicien d'Oz</translation>

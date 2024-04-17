@@ -27,7 +27,6 @@
 <translation id="164952285225495380">‏سبق أن تم تتبُّع هذا الطرد على Chromium.</translation>
 <translation id="1707458603865303524">‏يؤدي هذا الإعداد إلى فتح Chromium عند النقر على الروابط في الرسائل أو التطبيقات الأخرى.</translation>
 <translation id="1722370509450468186">سيتم حفظ كلمة المرور في حسابك (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">‏تم محو بيانات Chromium</translation>
 <translation id="1791845338122684020">‏يؤدي هذا الاختصار إلى فتح صفحة "سجلّ Chromium".</translation>
 <translation id="1838412507805038478">‏لقد تحقق Chromium من أن <ph name="ISSUER" /> أصدر شهادة الموقع الإلكتروني هذه.</translation>
 <translation id="1843424232666537147">‏يتمتع Chromium بميزات تساعدك على إدارة بياناتك على الإنترنت ومدى السرعة التي بمقدورك تحميل صفحات الويب من خلالها.
@@ -85,7 +84,6 @@
 <translation id="3472200483164753384">‏غير متاح على Chromium Canary</translation>
 <translation id="347967311580159871">‏للوصول إلى الإعدادات الإضافية التي تستخدم البيانات لتحسين تجربة استخدام Chromium، انتقِل إلى <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">‏لم تتم مشاركة كلمة المرور. يُرجى التحقّق من اتصالك بالإنترنت وأنّك سجَّلت الدخول إلى Chromium. ثم أعِد المحاولة.</translation>
-<translation id="3554027294407525061">‏يمكنك محو بيانات التصفُّح في Chromium.</translation>
 <translation id="3567399274263440288">‏للاستفادة إلى أقصى حدّ من Chromium، سجِّل الدخول إلى Chromium باستخدام حسابك على Google.</translation>
 <translation id="3634039384458740619">‏فتح إعدادات Chromium</translation>
 <translation id="3639997914391704523">‏يجب تسجيل الدخول إلى حسابك على Google ليتمكّن Chromium من التحقُّق من كلمات المرور.</translation>
@@ -136,7 +134,6 @@
 <translation id="5042011327527167688">‏انقر على "العرض على Chromium باستخدام خرائط Google".</translation>
 <translation id="5044871537677053278">‏يرصد Chromium العناوين ويستخدم "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية.</translation>
 <translation id="5048795749726991615">‏للوصول بسهولة إلى كلمات المرور المحفوظة واستخدامها في تطبيقاتك الأخرى، استخدِم Chromium للاستفادة من ميزة "الملء التلقائي".</translation>
-<translation id="5076601183701536878">‏محو بيانات التصفُّح في Chromium</translation>
 <translation id="5124429847818367226">‏يمكنك الآن استخدام Chromium في أي وقت تتصفَّح فيه أو تنقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="5131565040785979529">‏يدير نطاق مؤسستك <ph name="DOMAIN" /> الحساب الذي سجَّلت الدخول إليه وطريقة استخدامك لمتصفِّح Chromium.</translation>
 <translation id="5146749061471423558">‏إضافة الإشارات المرجعية إلى Chromium</translation>

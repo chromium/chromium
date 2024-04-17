@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Te damos la bienvenida nuevamente, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nombre del titular de la tarjeta</translation>
 <translation id="1809939268435598390">Eliminar carpeta</translation>
-<translation id="1813414402673211292">Borrar datos de navegación</translation>
 <translation id="1815941218935345331">Contraseña</translation>
 <translation id="1820259098641718022">Se agregó a la lista de lectura</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Se cargó la página web</translation>
 <translation id="223356358902285214">Actividad web y de aplicaciones</translation>
 <translation id="2234827758954819389">Guía de privacidad</translation>
-<translation id="2239626343334228536">Borrando datos de navegación…</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2252674110805316998">Búsqueda web de Google</translation>
 <translation id="2252749852083403809">Guardando en Drive para <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3485558910355485767">Nueva ventana de incógnito</translation>
 <translation id="3488501490964659223">Se cerraron las pestañas y se borraron los datos de navegación. Saliste de tu cuenta</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
-<translation id="3494788280727468875">Confirmar el borrado de los datos de navegación</translation>
 <translation id="35083190962747987">Abrir ${url}</translation>
 <translation id="3519193562722059437">Abre una pestaña para navegar por la Web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Abrir la pestaña}other{Abrir {count} pestañas}}</translation>
@@ -492,7 +489,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3540141921715814660">Agregar a Favoritos</translation>
 <translation id="355101282835380364">Guardar en la cuenta…</translation>
 <translation id="3551320343578183772">Cerrar pestaña</translation>
-<translation id="3565207542107370586">Borrar datos de navegación…</translation>
 <translation id="3565930036634619844">Pestaña. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Presiona dos veces para obtener más contraseñas.</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
@@ -968,7 +964,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6027945736510816438">¿Quisiste decir <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nueva función</translation>
 <translation id="6033598293589037429">Listo para retirar</translation>
-<translation id="6036215966221662377">Borrar datos de navegación</translation>
 <translation id="6036514205982097558">Todas tus pestañas en un navegador</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -1151,7 +1146,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6859944681507688231">Para escanear un código QR o una tarjeta de crédito, habilita la cámara desde la configuración.</translation>
 <translation id="6867369562105931222">contraseña</translation>
 <translation id="686899695320434745">Las direcciones no se encriptaron con tu frase de contraseña. Esto te permite usarlas en otros servicios de Google.</translation>
-<translation id="6869389390665537774">Puedes ver las páginas que visitaste o borrarlas de tu historial</translation>
 <translation id="687135068089457384">Mostrar la configuración</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
 <translation id="6882836635272038266">Protección estándar contra descargas, extensiones y sitios web identificados como peligrosos.</translation>
@@ -1297,7 +1291,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7719038820139380048">Accede para obtener contenido según tus intereses.</translation>
 <translation id="7720410380936703141">VOLVER A INTENTAR</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elemento guardado en tu Cuenta de Google ({email})}other{Elementos guardados en tu Cuenta de Google ({email})}}</translation>
-<translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
 <translation id="7729458878441927652">Para ver las pestañas de tus otros dispositivos, sincroniza las pestañas y el historial.</translation>
 <translation id="7730973429297233609">Selecciona la cuenta que quieres usar para guardar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Solo en este dispositivo.</translation>
@@ -1542,7 +1535,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8870413625673593573">Cerrado recientemente</translation>
 <translation id="8876882697946675716">Mantén tus dispositivos sincronizados</translation>
 <translation id="8879604564928138696">Presionar dos veces para probar</translation>
-<translation id="8879984884633913185">Ocultar la opción Borrar datos de navegación</translation>
 <translation id="8881801611828450202">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Envía a Google las URL de algunas páginas que visitas, información limitada del sistema y parte del contenido de las páginas para ayudar a detectar nuevas amenazas y proteger a todos los usuarios en la Web.</translation>
 <translation id="890565330728586731">Atrás</translation>

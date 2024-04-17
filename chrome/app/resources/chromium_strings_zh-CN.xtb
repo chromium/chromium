@@ -70,7 +70,6 @@
 <translation id="2329088755516916767">开启此设置后，Chromium 会预加载网页，以便您更快速地浏览和搜索。</translation>
 <translation id="2343156876103232566">若要从此处向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chromium。</translation>
 <translation id="2359808026110333948">继续</translation>
-<translation id="2359920621792549529">要想仅清除此设备中的浏览数据而保留您的 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />退出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="2384373936468275798">由于您的账号登录详细信息已过期，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{一个或多个 Chromium 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chromium 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chromium 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="2401032172288869980">Chromium 需要为此网站授予摄像头权限和麦克风权限</translation>
@@ -149,6 +148,7 @@
 <translation id="3702352323269013324">在 Chromium 设置中详细了解广告个性化</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{您的管理员要求您重新启动 Chromium 以应用此项更新}=1{您的管理员要求您重新启动 Chromium 以应用此项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用此项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3713809861844741608">在 Chromium 新标签页中打开链接(&amp;T)</translation>
+<translation id="3728124580182886854">关联 Chromium 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="3788675262216168505">管理 Chromium 个人资料</translation>
 <translation id="378917192836375108">您可以在 Chromium 中点击网上的电话号码，然后通过 Skype 拨打！</translation>
 <translation id="3790262771324122253">了解 Chromium 为何会拦截部分下载内容</translation>
@@ -230,6 +230,7 @@
 <translation id="5352361688875342522">其他 Chromium 个人资料</translation>
 <translation id="5358375970380395591">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Chromium 个人资料。您的 Chromium 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。<ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">额外代码：<ph name="EXTRA_CODE" />。</translation>
+<translation id="5377622451696208284">若要获得个性化体验，请在“网络与应用活动记录”中包含 Chromium</translation>
 <translation id="5383439451358640070">了解 Chromium 为何屏蔽某些文件</translation>
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">允许登录 Chromium</translation>
@@ -272,6 +273,7 @@
 <translation id="608006075545470555">向此浏览器添加工作资料</translation>
 <translation id="6096348254544841612">有可用的更新。欢迎自定义和控制 Chromium。</translation>
 <translation id="6102072151902574948">开启此设置后，Chromium 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。</translation>
+<translation id="6107893135096467929">已开启 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="6119438414301547735">允许扩展程序在 Chromium 工具栏中显示访问请求</translation>
 <translation id="6120345080069858279">Chromium 会将此密码保存在您的 Google 账号中，因此您不必记住它。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 存在危险，因此 Chromium 已将其拦截。</translation>
@@ -306,6 +308,7 @@
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
 <translation id="6442900851116057561">重启 Chromium 操作系统</translation>
 <translation id="6443470774889161065">Chromium 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
+<translation id="645458117210240797">已关闭 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="6455857529632101747">欢迎使用 Chromium 个人资料</translation>
 <translation id="6475912303565314141">它还能够控制Chromium启动后显示的页面。</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
@@ -328,6 +331,7 @@
 <translation id="6717134281241384636">您的个人资料来自更高版本的 Chromium，因此无法使用。
 
 某些功能可能会无法使用。请指定其他个人资料目录或使用更高版本的 Chromium。</translation>
+<translation id="6729124504294600478">若要获得个性化体验和其他功能，请在“网络与应用活动记录”和关联的 Google 服务中包含 Chromium</translation>
 <translation id="6734291798041940871">已为您计算机上的所有用户都安装 Chromium。</translation>
 <translation id="673636774878526923">如需在您的所有设备上访问自己的 Chromium 信息，请登录您的账号，然后开启同步功能。</translation>
 <translation id="67706546131546258">Chromium 建议您扫描此文件，因为它可能包含危险因素。</translation>
@@ -355,9 +359,11 @@
 <translation id="718435575166326686">Chromium 需要为此网站授予摄像头权限</translation>
 <translation id="7196312274710523067">无法启动 Chromium。请重试。</translation>
 <translation id="7197677400338048821">Chromium 无法检查您的密码。请过 24 小时再试。</translation>
+<translation id="7198365860059291213">Chromium 需要获得场景理解和手部跟踪权限，才能启动沉浸式会话</translation>
 <translation id="7213407614656404070">随时使用 Chromium 打开您在消息、文档和其他应用内点击的链接</translation>
 <translation id="7223968959479464213">任务管理器 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推测出的您的兴趣</translation>
+<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium 建议您移除它}other{Chromium 建议您移除它们}}</translation>
 <translation id="7309928523159922338">借助 Ad measurement，您访问的网站可向 Chromium 请求信息，以便对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
 <translation id="731795002583552498">正在更新 Chromium</translation>
 <translation id="7318036098707714271">您的偏好设置文件已损坏或无效。

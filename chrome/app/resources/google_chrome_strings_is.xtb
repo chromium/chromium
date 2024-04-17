@@ -83,7 +83,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2258103955319320201">Til að fá aðgang að efni Chrome vafrans í öllum tækjunum þínum skaltu skrá þig inn og kveikja á samstillingu.</translation>
 <translation id="2290014774651636340">Lykla fyrir forritaskil Google vantar. Vissir eiginleikar Google Chrome verða óvirkir.</translation>
 <translation id="2290095356545025170">Ertu viss um að þú viljir fjarlægja Google Chrome?</translation>
-<translation id="2298849085402457754">Til að hreinsa eingöngu vefskoðunargögn úr þessu tæki en halda þeim á Google-reikningnum þínum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Þetta er aukaleg uppsetning á Google Chrome sem ekki er hægt að gera að sjálfgefnum vafra.</translation>
 <translation id="2345992953227471816">Chrome komst að því að eftirfarandi viðbætur innihalda spilliforrit:</translation>
 <translation id="2348335408836342058">Chrome þarf leyfi til að nota myndavélina og hljóðnemann á þessu vefsvæði</translation>
@@ -113,7 +112,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2649768380733403658">Chrome athugar reglulega hvort vafrinn þinn sé með öruggustu stillingarnar. Við látum þig vita ef þú þarft að yfirfara eitthvað.</translation>
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>
 <translation id="2665296953892887393">Hjálpaðu til við að bæta Google Chrome með því að senda tilkynningar um hrun og <ph name="UMA_LINK" /> til Google.</translation>
-<translation id="2712234843277364121">Endurræstu til að uppfæra – fliparnir þínir opnast aftur</translation>
 <translation id="2738871930057338499">Ekki er hægt að tengjast internetinu. HTTP 403 bannað. Kannaðu uppsetningu staðgengilsþjóna.</translation>
 <translation id="2742320827292110288">Viðvörun: Google Chrome getur ekki komið í veg fyrir að viðbætur skrái vafraferilinn þinn. Afturkallaðu þennan valkost til að gera þessa viðbót óvirka í huliðsstillingu.</translation>
 <translation id="2765403129283291972">Chrome þarf leyfi til að nota hljóðnemann á þessu vefsvæði</translation>
@@ -491,7 +489,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8999117580775242387">Ef HTTPS er ekki í boði mun Chrome notast við ótrygga tengingu án þess að vara þig við</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex kerfi</translation>
-<translation id="9054037008353851982">Endurræstu til að uppfæra – fliparnir þínir opnast aftur</translation>
 <translation id="9090566250983691233">Kynntu þér hvers vegna Chrome lokar á sumar skrár</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>
 <translation id="9138603949443464873">Endurræstu Chrome til að breytingarnar taki gildi</translation>

@@ -453,7 +453,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1810391395243432441">Protect passwords with your screen lock</translation>
 <translation id="1812527064848182527">landscape</translation>
 <translation id="1812975699435941848">Health Education and Medical Training</translation>
-<translation id="1813414402673211292">Clear Browsing Data</translation>
 <translation id="1816436748874040213">Can ask to scroll and zoom shared tabs</translation>
 <translation id="1818522458013171885">Unblock</translation>
 <translation id="1818585559878922121">Documentary films</translation>
@@ -876,7 +875,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2647086987482648627">Fabric (semi-gloss)</translation>
 <translation id="264810637653812429">No compatible devices found.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="2650446666397867134">Access to the file was denied</translation>
 <translation id="2651465929321991146">History and tabs</translation>
 <translation id="2653659639078652383">Submit</translation>
@@ -1206,7 +1204,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="33073482541490531">The password that you just used was found in a data breach. Password Manager recommends changing this password now.</translation>
 <translation id="3307649904964670439">Customise Chrome button, activate to customise the look of your browser</translation>
 <translation id="3308006649705061278">Organisational Unit (OU)</translation>
-<translation id="3310047144791481950">See info that helps you choose which card to pay with. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV comedies</translation>
 <translation id="3324687287337751929">4 in x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>
@@ -1375,7 +1372,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to run a safety check in Chrome settings</translation>
 <translation id="3615309852743236517">Manicures and Pedicures</translation>
 <translation id="3620239073311576716">Uniforms and Workwear</translation>
-<translation id="36224234498066874">Clear Browsing Data...</translation>
 <translation id="362276910939193118">Show full history</translation>
 <translation id="3623041590998910684">To use your camera, give Chrome access in <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Romance films</translation>
@@ -2057,7 +2053,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4936134414789135531">The inserted <ph name="VALUE_NAME" /> couldn't be found.</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Incognito in Chrome</translation>
-<translation id="494111439860963024">Clear browsing data button, activate to clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="4943620199112228840">Use your microphones</translation>
 <translation id="4943872375798546930">No results</translation>
 <translation id="4950898438188848926">Tab switch button, press Enter to switch to the open tab, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2294,7 +2289,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="541416427766103491">Stacker 4</translation>
 <translation id="5414446060143308245">Review is required before transferring</translation>
 <translation id="5414511064953050917">Move anyway</translation>
-<translation id="5421136146218899937">Clear browsing data...</translation>
 <translation id="5421408724705443535">Rock music</translation>
 <translation id="5423269318075950257">Track price</translation>
 <translation id="5425082381151187189">Home and interior decor</translation>
@@ -3657,7 +3651,6 @@ Additional details:
 <translation id="8022542098135319050">Travel Agencies and Services</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to set Chrome as the system's default browser</translation>
 <translation id="8025119109950072390">Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example passwords, phone numbers or credit cards).</translation>
-<translation id="8026334261755873520">Clear browsing data</translation>
 <translation id="8027077570865220386">Tray 15</translation>
 <translation id="8027585818882015174">Run Chrome safety check button, activate to run a safety check in Chrome settings</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new form in Google Forms quickly</translation>
@@ -3928,7 +3921,6 @@ Additional details:
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527681393107582734">Agriculture and forestry</translation>
 <translation id="8528149813106025610">Children's clothing</translation>
-<translation id="8530813470445476232">Clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="853246364274116957">Broadway and Musical Theatre</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visit &lt;strong&gt;chrome://policy&lt;/strong&gt; to see the list of blocked URLs and other policies enforced by your system administrator.</translation>

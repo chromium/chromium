@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">İcazələri sıfırlayın</translation>
 <translation id="301521992641321250">Avtomatik olaraq blok edildi</translation>
 <translation id="3069226013421428034">Müəyyən bir sayt üçün üçüncü tərəfin girişinə icazə verin.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Sabah vaxtı bitir}other{# gün sonra vaxtı bitir}}</translation>
 <translation id="310297983047869047">Əvvəlki slayd</translation>
 <translation id="3109724472072898302">Yığcamlaşdı</translation>
 <translation id="3114012059975132928">Video pleyer</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">İcazə verilib</translation>
 <translation id="429312253194641664">Sayt media oxudur</translation>
 <translation id="42981349822642051">Genişləndirin</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Sabah vaxtı bitir}other{# gün sonra vaxtı bitir}}</translation>
 <translation id="4336566011000459927">Chrome bu gün kukiləri yenidən məhdudlaşdıracaq</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Son tab</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domenindəki bütün saytlar</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Həmişə</translation>
 <translation id="757524316907819857">Saytların qorunan kontenti oxutmasını blok edin</translation>
 <translation id="7594634374516752650">Bluetooth cihazına qoşulub</translation>
-<translation id="7641339528570811325">Brauzinq datasını təmizləyin...</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7667547420449112975">Ozlu Heyrətamiz Sehrbaz</translation>

@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">అనుమతులను రీసెట్ చేయండి</translation>
 <translation id="301521992641321250">ఆటోమేటిక్‌గా బ్లాక్ చేయబడింది</translation>
 <translation id="3069226013421428034">నిర్దిష్ట సైట్ కోసం థర్డ్-పార్టీ సైన్-ఇన్‌ను అనుమతిస్తుంది.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{రేపు గడువు ముగుస్తుంది}other{# రోజుల్లో గడువు ముగుస్తుంది}}</translation>
 <translation id="310297983047869047">మునుపటి స్లయిడ్</translation>
 <translation id="3109724472072898302">కుదించబడింది</translation>
 <translation id="3114012059975132928">వీడియో ప్లేయర్</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
 <translation id="429312253194641664">ఒక సైట్‌లో మీడియా ప్లే చేయబడుతోంది</translation>
 <translation id="42981349822642051">విస్తరించు</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{రేపు గడువు ముగుస్తుంది}other{# రోజుల్లో గడువు ముగుస్తుంది}}</translation>
 <translation id="4336566011000459927">కుక్కీలను Chrome ఈరోజు మళ్లీ పరిమితం చేస్తుంది</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> మీ చివరి ట్యాబ్</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> కింద ఉన్న అన్ని సైట్‌లు</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">ఎల్లప్పుడూ</translation>
 <translation id="757524316907819857">రక్షిత కంటెంట్‌ను ప్లే చేయకుండా సైట్‌లను బ్లాక్ చేస్తుంది</translation>
 <translation id="7594634374516752650">బ్లూటూత్ పరికరానికి కనెక్ట్ అయింది</translation>
-<translation id="7641339528570811325">బ్రౌజింగ్ డేటాను తీసివేయండి…</translation>
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7667547420449112975">ది వండర్‌ఫుల్ విజర్డ్ ఆఫ్ ఆజ్</translation>

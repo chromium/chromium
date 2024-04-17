@@ -381,6 +381,7 @@
 <translation id="3170673040743561620">మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టండి</translation>
 <translation id="3174321110679064523">'ఉదయం నుండి సాయంత్రం' వాల్‌పేపర్</translation>
 <translation id="3178532070248519384">అవాంట్-గార్డ్</translation>
+<translation id="3182676044300231689">"మరింత కాన్ఫిడెంట్‌గా ఉండేలా రాయి" వంటి ప్రాంప్ట్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3188257591659621405">నా ఫైళ్లు</translation>
 <translation id="319101249942218879">అవతార్ ఇమేజ్ మారింది</translation>
 <translation id="3192947282887913208">ఆడియో  ఫైళ్ళు</translation>
@@ -586,6 +587,7 @@
 <translation id="4394049700291259645">నిలిపివేయి</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> రీస్టార్ట్ అవుతోంది</translation>
 <translation id="4395835743215824109">కీబోర్డ్‌ను అనుకూలంగా మార్చవచ్చు</translation>
+<translation id="439946595190720558">ఈ బ్యాక్‌గ్రౌండ్‌ను ఈ టెక్స్ట్‌ను ఉపయోగించి AIతో క్రియేట్ చేశారు: "<ph name="PROMPT" />."</translation>
 <translation id="4415951057168511744">ప్రస్తుత అవతార్</translation>
 <translation id="4417830657741848074">మీ అడ్మినిస్ట్రేటర్ ఆటోమేటిక్‌గా ప్రారంభించడానికి కొన్ని యాప్‌లను సెటప్ చేశారు. ఈ యాప్‌లలో కొన్ని మూసివేయబడకపోవచ్చు.</translation>
 <translation id="4422041425070339732">కింది వైపు బాణం</translation>
@@ -1034,6 +1036,7 @@
 <translation id="6905724422583748843">తిరిగి <ph name="PAGE_NAME" />‌కు</translation>
 <translation id="6910312834584889076">స్కానర్ కవర్ తెరిచి ఉంది. కవర్‌ను మూసివేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6911383237894364323">మీడియా సర్వర్‌లకు కనెక్ట్ చేయడం సాధ్యం కాలేదు</translation>
+<translation id="6930597342185648547">బ్యాక్‌గ్రౌండ్ గురించి వివరాలు</translation>
 <translation id="6939766318048400022">కెఫే</translation>
 <translation id="6943893908656559156">రిమోట్ గుర్తింపు (ఆప్షనల్)</translation>
 <translation id="6953137545147683679">బంగారం రంగు</translation>

@@ -70,7 +70,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2329088755516916767">Gdy to ustawienie jest włączone, Chromium wstępnie wczytuje strony, co przyspiesza przeglądanie i wyszukiwanie.</translation>
 <translation id="2343156876103232566">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chromium na obu urządzeniach.</translation>
 <translation id="2359808026110333948">Dalej</translation>
-<translation id="2359920621792549529">Aby wyczyścić dane przeglądania tylko z tego urządzenia, zachowując je na swoim koncie Google, <ph name="BEGIN_LINK" />wyloguj się z Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">System operacyjny Chromium nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Co najmniej 1 rozszerzenie do Chromium uzyskiwało dostęp do 1 urządzenia HID}=1{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do 1 urządzenia HID}few{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzeń HID}many{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzeń HID}other{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzenia HID}}</translation>
 <translation id="2401032172288869980">Ta strona musi mieć w Chromium dostęp do aparatu i mikrofonu</translation>
@@ -249,6 +248,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Wyświetlaj Chromium w tym języku</translation>
 <translation id="569897634095159764">Nie można połączyć się z internetem. Serwer proxy wymaga uwierzytelnienia.</translation>
+<translation id="5800158606660203929">Dostosuj i kontroluj Chromium. Ustaw Chromium jako przeglądarkę domyślną.</translation>
 <translation id="5809516625706423866">Nie można połączyć się z internetem. Kod HTTP 401 (Brak autoryzacji). Sprawdź konfigurację proxy.</translation>
 <translation id="5862307444128926510">Chromium – witamy!</translation>
 <translation id="5883558403894052917">Przeglądarka Chromium wykryła w tych elementach złośliwe oprogramowanie:</translation>
@@ -407,6 +407,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="813913629614996137">Inicjuję…</translation>
 <translation id="8166782796394721554">Włącz dodatkową ochronę w mechanizmie JavaScript i WebAssembly w Chromium</translation>
 <translation id="81770708095080097">Ten plik jest niebezpieczny, dlatego został zablokowany przez Chromium.</translation>
+<translation id="8232193495299001329">Chromium nie może zweryfikować, skąd pochodzi to rozszerzenie, które może być niebezpieczne. Usuń je z Chromium, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to też danych osobowych.</translation>
 <translation id="8248265253516264921">Jeśli obraz nie ma przydatnego opisu, Chromium spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google. W każdej chwili możesz wyłączyć tę funkcję w ustawieniach.</translation>
 <translation id="8266560134891435528">Chromium nie może sprawdzić haseł, jeśli się nie zalogujesz</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ostrzega<ph name="END_LINK" /> o niebezpiecznych stronach i pobieranych plikach</translation>

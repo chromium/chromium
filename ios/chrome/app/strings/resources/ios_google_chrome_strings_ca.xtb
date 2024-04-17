@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Mantén premuda la icona de Chrome i fes clic a Edita la pantalla d'inici</translation>
 <translation id="1066101356081285416">Chrome detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. El número de seguiment de l'enviament i el nom del lloc web s'enviaran a Google per oferir aquesta funció i millorar les funcions de compra a Google per a tothom. Pots actualitzar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utilitza Chrome de manera predeterminada</translation>
-<translation id="1105362920864247682">Esborra les dades de navegació a Chrome.</translation>
 <translation id="1143896152279775643">La contrasenya es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Obre el menú de Chrome</translation>
 <translation id="1180362651362502943">Continua utilitzant les dades de Chrome al teu Compte de Google.</translation>
@@ -77,7 +76,6 @@ Aspectes que cal tenir en compte:
 <translation id="2750626042242931740">Pots actualitzar les teves seleccions en qualsevol moment a Configuració de Chrome.</translation>
 <translation id="2767464022270041271">No hi ha cap contrasenya desada. El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="2789947168960170215">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Esborra les dades de navegació a Chrome</translation>
 <translation id="2869959624320573933">Inicia la sessió a Chrome</translation>
 <translation id="2876628302275096482">Més informació sobre <ph name="BEGIN_LINK" />com Chrome manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Obre la configuració de Chrome.</translation>
@@ -225,7 +223,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="7466693328838535498">Al quadre de widgets de la Cerca, escriu "Chrome"</translation>
 <translation id="746684838091935575">3. Selecciona Chrome.</translation>
 <translation id="7492574581995589075">La teva organització ha desactivat l'opció de fer servir i desar dades de Chrome al teu Compte de Google. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
-<translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>
 <translation id="7581063337314642333">Visita la quadrícula de pestanyes a Chrome</translation>
 <translation id="7662994914830945754">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió i activa la sincronització</translation>
 <translation id="7669869107155339016">Ves a la configuració de Chrome.</translation>

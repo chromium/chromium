@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Καλώς ορίσατε πάλι, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Όνομα κατόχου κάρτας</translation>
 <translation id="1809939268435598390">Διαγραφή φακέλου</translation>
-<translation id="1813414402673211292">Διαγραφή δεδ. περιήγ.</translation>
 <translation id="1815941218935345331">Κωδικός πρόσβασης</translation>
 <translation id="1820259098641718022">Προστέθηκε στη λίστα ανάγνωσης</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Η ιστοσελίδα φορτώθηκε</translation>
 <translation id="223356358902285214">Δραστηριότητα ιστού και εφαρμογών</translation>
 <translation id="2234827758954819389">Οδηγός απορρήτου</translation>
-<translation id="2239626343334228536">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="2251686759395008410">Μενού → Ιστορικό</translation>
 <translation id="2252674110805316998">Αναζήτηση στον Ιστό</translation>
 <translation id="2252749852083403809">Αποθηκεύεται στο Drive για τον λογαριασμό <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">Νέο παράθυρο για ανώνυμη περιήγηση</translation>
 <translation id="3488501490964659223">Οι καρτέλες έκλεισαν και τα δεδομένα περιήγησης διαγράφηκαν. Αποσυνδεθήκατε</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με το προτεινόμενο περιεχόμενο</translation>
-<translation id="3494788280727468875">Επιβεβαίωση διαγραφής δεδομένων περιήγησης</translation>
 <translation id="35083190962747987">Άνοιγμα ${url}</translation>
 <translation id="3519193562722059437">Άνοιγμα καρτέλας για περιήγηση στον ιστό</translation>
 <translation id="3519905498307021260">{count,plural, =1{Άνοιγμα καρτέλας}other{Άνοιγμα {count} καρτελών}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">Προσθήκη στους σελιδοδείκτες</translation>
 <translation id="355101282835380364">Αποθήκευση στον Λογαριασμό…</translation>
 <translation id="3551320343578183772">Κλείσιμο Καρτέλας</translation>
-<translation id="3565207542107370586">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="3565930036634619844">Καρτέλα. <ph name="TAB_INDEX" /> από <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Πατήστε δύο φορές για περισσότερους κωδικούς πρόσβασης.</translation>
 <translation id="3575234738189584619">Αναζήτηση με το Lens</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438">Μήπως εννοούσατε <ph name="WEBSITE" />;</translation>
 <translation id="6032845897905314562">νέα λειτουργία</translation>
 <translation id="6033598293589037429">Έτοιμο για παραλαβή</translation>
-<translation id="6036215966221662377">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="6036514205982097558">Όλες οι καρτέλες σας σε ένα πρόγραμμα περιήγησης</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
@@ -1152,7 +1147,6 @@
 <translation id="6859944681507688231">Για να σαρώσετε έναν κώδικα QR, ή μια πιστωτική κάρτα, ενεργοποιήστε την κάμερα από τις ρυθμίσεις.</translation>
 <translation id="6867369562105931222">κωδικός πρόσβασης</translation>
 <translation id="686899695320434745">Οι διευθύνσεις δεν κρυπτογραφούνται με τη φράση πρόσβασής σας. Με αυτόν τον τρόπο, μπορείτε να τις χρησιμοποιείτε σε άλλες υπηρεσίες Google.</translation>
-<translation id="6869389390665537774">Μπορείτε να δείτε τις σελίδες που έχετε επισκεφτεί ή να τις διαγράψετε από το ιστορικό σας.</translation>
 <translation id="687135068089457384">Προβολή ρυθμίσεων</translation>
 <translation id="6873263987691478642">Προβολή διαχωρισμού οθόνης</translation>
 <translation id="6882836635272038266">Βασική προστασία από ιστοτόπους, λήψεις και επεκτάσεις που είναι γνωστό ότι είναι επικίνδυνα.</translation>
@@ -1298,7 +1292,6 @@
 <translation id="7719038820139380048">Συνδεθείτε για να λάβετε περιεχόμενο με βάση τα ενδιαφέροντά σας.</translation>
 <translation id="7720410380936703141">ΔΟΚΙΜΑΣΤΕ ΞΑΝΑ</translation>
 <translation id="7724085059277147439">{count,plural, =1{Το στοιχείο αποθηκεύτηκε στον Λογαριασμό σας Google, {email}}other{Τα στοιχεία αποθηκεύτηκαν στον Λογαριασμό σας Google, {email}}}</translation>
-<translation id="7726702057919861819">Μενού → Ιστορικό → Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="7729458878441927652">Για να δείτε τις καρτέλες από τις άλλες συσκευές σας, συγχρονίστε τις καρτέλες και το ιστορικό.</translation>
 <translation id="7730973429297233609">Επιλέξτε τον λογαριασμό που θέλετε να χρησιμοποιήσετε για την αποθήκευση του αρχείου <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Μόνο σε αυτήν τη συσκευή.</translation>
@@ -1543,7 +1536,6 @@
 <translation id="8870413625673593573">Έκλεισαν πρόσφατα</translation>
 <translation id="8876882697946675716">Διατηρήστε συγχρονισμένες τις συσκευές σας</translation>
 <translation id="8879604564928138696">Πατήστε δύο φορές για δοκιμή</translation>
-<translation id="8879984884633913185">Απόκρυψη της επιλογής Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="8881801611828450202">Αναζήτηση εικόνας σε <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Στέλνει URL από ορισμένες σελίδες που επισκέπτεστε, περιορισμένες πληροφορίες συστήματος και ορισμένο περιεχόμενο σελίδας στην Google, για να συμβάλλει στην ανακάλυψη νέων απειλών και την προστασία όλων των χρηστών στον ιστό.</translation>
 <translation id="890565330728586731">Πίσω</translation>

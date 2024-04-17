@@ -340,6 +340,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="160851722280695521">Chrome Dino in Chrome spielen</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Zweite Rolle</translation>
+<translation id="1611854593425834707">Geräteliste für das Streamen schließen</translation>
 <translation id="1612199629998703524">Themen verwalten</translation>
 <translation id="1615178538289490617">Zugriff für <ph name="PORT_NAME" /> widerrufen</translation>
 <translation id="1615402009686901181">Die Administratorrichtlinie blockiert die Bildschirmaufnahme, wenn vertrauliche Inhalte sichtbar sind</translation>
@@ -452,7 +453,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1810391395243432441">Passwörter mit der Displaysperre schützen</translation>
 <translation id="1812527064848182527">Querformat</translation>
 <translation id="1812975699435941848">Gesundheitsbildung und medizinische Schulung</translation>
-<translation id="1813414402673211292">Browserdaten löschen</translation>
 <translation id="1816436748874040213">Darf nachfragen, ob auf geteilten Tabs gescrollt und gezoomt werden darf</translation>
 <translation id="1818522458013171885">Blockierung aufheben</translation>
 <translation id="1818585559878922121">Dokumentarfilme</translation>
@@ -875,7 +875,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2647086987482648627">Stoff (halbglanz)</translation>
 <translation id="264810637653812429">Es wurden keine kompatiblen Geräte gefunden.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in den Chrome-Einstellungen deinen Browserverlauf, deine Cookies und andere Daten zu löschen sowie den Cache zu leeren</translation>
 <translation id="2650446666397867134">Der Zugriff auf die Datei wurde verweigert.</translation>
 <translation id="2651465929321991146">Verlauf und Tabs</translation>
 <translation id="2653659639078652383">Senden</translation>
@@ -1205,7 +1204,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="33073482541490531">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Der Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="3307649904964670439">Schaltfläche „Chrome anpassen“ – aktivieren, um das Erscheinungsbild des Browsers anzupassen</translation>
 <translation id="3308006649705061278">Organisationseinheit (OU)</translation>
-<translation id="3310047144791481950">Hier findest du Informationen, die dir bei der Auswahl deiner Karte zum Bezahlen helfen. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Informationen zu Kartenvorteilen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Comedy-Fernsehserien</translation>
 <translation id="3324687287337751929">4 × 6 Zoll</translation>
 <translation id="3324983252691184275">Purpur</translation>
@@ -1373,7 +1371,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um den Sicherheitscheck in den Chrome-Einstellungen auszuführen</translation>
 <translation id="3615309852743236517">Maniküre und Pediküre</translation>
 <translation id="3620239073311576716">Uniformen und Arbeitskleidung</translation>
-<translation id="36224234498066874">Browserdaten löschen...</translation>
 <translation id="362276910939193118">Gesamtverlauf anzeigen</translation>
 <translation id="3623041590998910684">Wenn du deine Kamera verwenden möchtest, erlaube Chrome über die <ph name="LINK" /> den Zugriff darauf.</translation>
 <translation id="3623398832322170566">Liebesfilme</translation>
@@ -1917,6 +1914,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4691093235373904540">Dachdeckerei</translation>
 <translation id="4692623383562244444">Suchmaschinen</translation>
 <translation id="4698692901173737941">Kampfsport</translation>
+<translation id="4701307090948589984">Streamen auf…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Seite</translation>
 <translation id="4702656508969495934">Automatische Untertitel sind sichtbar, Fensterwechsel zum Fokussieren verwenden</translation>
@@ -2053,7 +2051,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4936134414789135531">Der angegebene „<ph name="VALUE_NAME" />“-Wert wurde nicht gefunden.</translation>
 <translation id="4936675324097895694">Finanzen</translation>
 <translation id="4940163644868678279">Inkognitomodus in Chrome</translation>
-<translation id="494111439860963024">Schaltfläche „Browserdaten löschen“ – aktivieren, um in den Chrome-Einstellungen beispielsweise deinen Browserverlauf, deine Cookies und andere Daten zu löschen sowie den Cache zu leeren</translation>
 <translation id="4943620199112228840">Mikrofon verwenden</translation>
 <translation id="4943872375798546930">Keine Ergebnisse</translation>
 <translation id="4950898438188848926">Schaltfläche zum Wechseln von Tabs, Eingabetaste drücken, um zum offenen Tab "<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />" zu wechseln</translation>
@@ -2166,6 +2163,8 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5161334686036120870">Thema:</translation>
 <translation id="5161506081086828129">Stapelfach 9</translation>
 <translation id="5164798890604758545">Text eingegeben</translation>
+<translation id="5164928537947209380">Dieses experimentelle KI-Tool kann falsche Ergebnisse ausgeben. Deine Inhalte werden an Google gesendet, damit wir sie verbessern können.
+    <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Gib die Kartenprüfnummer (CVC) für <ph name="CREDIT_CARD" /> ein. Nach erfolgter Bestätigung werden die Kartendetails deines Google-Kontos an diese Website weitergegeben.</translation>
 <translation id="5169827969064885044">Du könntest den Zugriff auf das Konto deines Unternehmens verlieren oder zum Opfer von Identitätsdiebstahl werden. Chrome empfiehlt dir, dein Passwort jetzt zu ändern.</translation>
 <translation id="5171045022955879922">Suchen oder URL eingeben</translation>
@@ -2288,7 +2287,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="541416427766103491">Stapelfach 4</translation>
 <translation id="5414446060143308245">Vor der Übertragung ist eine Überprüfung erforderlich</translation>
 <translation id="5414511064953050917">Trotzdem verschieben</translation>
-<translation id="5421136146218899937">Browserdaten löschen...</translation>
 <translation id="5421408724705443535">Rockmusik</translation>
 <translation id="5423269318075950257">Preis beobachten</translation>
 <translation id="5425082381151187189">Wohnungsdekoration und Inneneinrichtung</translation>
@@ -3651,7 +3649,6 @@ Weitere Details:
 <translation id="8022542098135319050">Reiseagenturen und ‑dienstleistungen</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> – Drück die Tabulatortaste und dann die Eingabetaste, um Chrome als Standardbrowser für das System festzulegen</translation>
 <translation id="8025119109950072390">Unbefugte Dritte auf dieser Website versuchen unter Umständen auf betrügerische Weise, dich zur Installation von Software zu bewegen oder dir personenbezogene Daten zu entlocken, zum Beispiel Passwörter, Telefonnummern oder Kreditkartendaten.</translation>
-<translation id="8026334261755873520">Browserdaten löschen</translation>
 <translation id="8027077570865220386">Fach 15</translation>
 <translation id="8027585818882015174">Schaltfläche „Chrome-Sicherheitscheck ausführen“ – aktivieren, um in den Chrome-Einstellungen den Sicherheitscheck auszuführen</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell ein neues Formular in Google Formulare zu erstellen</translation>
@@ -3922,7 +3919,6 @@ Weitere Details:
 <translation id="8527228059738193856">Lautsprecher</translation>
 <translation id="8527681393107582734">Land- und Forstwirtschaft</translation>
 <translation id="8528149813106025610">Kinderbekleidung</translation>
-<translation id="8530813470445476232">In den Chrome-Einstellungen Browserverlauf, Cookies und mehr löschen sowie Cache leeren</translation>
 <translation id="853246364274116957">Broadway und Musicals</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Unter &lt;strong&gt;chrome://policy&lt;/strong&gt; findest du eine Liste mit blockierten URLs und andere Richtlinien, die von deinem Systemadministrator festgelegt wurden.</translation>
@@ -4063,6 +4059,7 @@ Weitere Details:
 <translation id="8807160976559152894">Nach jeder Seite zuschneiden</translation>
 <translation id="8809203544698246977">Hier werden blockierte Themen angezeigt</translation>
 <translation id="8811470563853401328">Adresse im Konto speichern?</translation>
+<translation id="8811725516933141693">Gib @gemini ein, um mit Gemini zu chatten</translation>
 <translation id="8813277370772331957">Später erinnern</translation>
 <translation id="8814707942599948500">Umschlag C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>

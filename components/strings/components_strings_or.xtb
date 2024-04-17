@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chromeରେ Dino Run ଗେମ ଖେଳନ୍ତୁ</translation>
 <translation id="161042844686301425">ସାୟାନ୍</translation>
 <translation id="1611101756749861742">ଦ୍ୱିତୀୟ ରୋଲ୍</translation>
+<translation id="1611854593425834707">କାଷ୍ଟ କରିବା ପାଇଁ ଡିଭାଇସ ତାଲିକା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1612199629998703524">ବିଷୟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> ପାଇଁ ଆକ୍ସେସ ପ୍ରତ୍ୟାହାର କରନ୍ତୁ</translation>
 <translation id="1615402009686901181">ଯେତେବେଳେ ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦୃଶ୍ୟମାନ ହୁଏ, ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ସ୍କ୍ରିନ୍ କ୍ୟାପଚରକୁ ଅକ୍ଷମ କରିଦିଏ</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ସହ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରନ୍ତୁ</translation>
 <translation id="1812527064848182527">ଲ୍ୟାଣ୍ଡସ୍କେପ୍</translation>
 <translation id="1812975699435941848">ସ୍ୱାସ୍ଥ୍ୟ ଶିକ୍ଷା ଓ ମେଡିକାଲ ଟ୍ରେନିଂ</translation>
-<translation id="1813414402673211292">ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="1816436748874040213">ସେୟାର କରାଯାଇଥିବା ଟାବଗୁଡ଼ିକୁ ସ୍କ୍ରୋଲ କରି ଜୁମ କରିବା ପାଇଁ କହିପାରିବ</translation>
 <translation id="1818522458013171885">ଅନବ୍ଲକ କରନ୍ତୁ</translation>
 <translation id="1818585559878922121">ଡକ୍ୟୁମେଣ୍ଟାରୀ ମୁଭିଗୁଡ଼ିକ</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">ଫେବ୍ରିକ (ସେମି-ଗ୍ଲସ)</translation>
 <translation id="264810637653812429">କୌଣସି ସମତୁଲ୍ୟ ଡିଭାଇସ୍ ମିଳିଲା ନାହିଁ।</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ, କୁକୀ, କ୍ୟାଶ୍ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଖାଲି କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="2650446666397867134">ଫାଇଲ୍‌ଟିକୁ ଆକ୍‌ସେସ୍ ଦେବାକୁ ମନା କରି ଦିଆଯାଇଥିଲା</translation>
 <translation id="2651465929321991146">ଇତିହାସ ଏବଂ ଟାବଗୁଡ଼ିକ</translation>
 <translation id="2653659639078652383">ଉପସ୍ଥାପନ</translation>
@@ -1203,7 +1202,6 @@
 <translation id="33073482541490531">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। Password Manager ବର୍ତ୍ତମାନ ଏହି ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।</translation>
 <translation id="3307649904964670439">'Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ' ବଟନ, ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="3308006649705061278">ସାଙ୍ଗଠନିକ‍ ୟୁନିଟ୍‌ (OU)</translation>
-<translation id="3310047144791481950">କେଉଁ କାର୍ଡ ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରିବେ ତାହା ବାଛିବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ ସୂଚନା ଦେଖନ୍ତୁ। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />କାର୍ଡର ଲାଭ ବିଷୟରେ ଜାଣନ୍ତୁ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">ଟିଭି କମେଡିଗୁଡ଼ିକ</translation>
 <translation id="3324687287337751929">4 x 6 ଇଞ୍ଚ</translation>
 <translation id="3324983252691184275">ଗାଢ଼ ଲାଲ୍‌ ରଙ୍ଗ</translation>
@@ -1372,7 +1370,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଏକ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାଇବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="3615309852743236517">ମେନିକ୍ୟୋର ଏବଂ ପେଡିକ୍ୟୋର</translation>
 <translation id="3620239073311576716">ୟୁନିଫର୍ମ ଏବଂ ୱାର୍କୱେର</translation>
-<translation id="36224234498066874">ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ...</translation>
 <translation id="362276910939193118">ସମ୍ପୂର୍ଣ୍ଣ ଇତିବୃତ୍ତି ଦେଖାନ୍ତୁ</translation>
 <translation id="3623041590998910684">ଆପଣଙ୍କ କେମେରାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="LINK" />ରେ Chromeକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ।</translation>
 <translation id="3623398832322170566">ରୋମାନ୍ସ ମୁଭିଗୁଡ଼ିକ</translation>
@@ -1916,6 +1913,7 @@
 <translation id="4691093235373904540">ରୁଫିଂ</translation>
 <translation id="4692623383562244444">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="4698692901173737941">କମ୍ବାଟ ସ୍ପୋର୍ଟ୍ସ</translation>
+<translation id="4701307090948589984">ଏଥିରେ କାଷ୍ଟ କରନ୍ତୁ...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ସାଇଡ୍</translation>
 <translation id="4702656508969495934">ଲାଇଭ୍ କ୍ୟାପସନ୍ ଦୃଶ୍ୟମାନ ହେଉଛି, ଫୋକସ୍ କରିବା ପାଇଁ ୱିଣ୍ଡୋ ସ୍ୱିଚର୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -2052,7 +2050,6 @@
 <translation id="4936134414789135531">ଇନସାର୍ଟ କରାଯାଇଥିବା <ph name="VALUE_NAME" /> ମିଳିଲା ନାହିଁ।</translation>
 <translation id="4936675324097895694">ଫାଇନାନ୍ସ</translation>
 <translation id="4940163644868678279">Chromeରେ ଇନକଗ୍ନିଟୋ</translation>
-<translation id="494111439860963024">'ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ, କୁକୀ, କେଶେ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଖାଲି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4943620199112228840">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4950898438188848926">ଟାବ୍ ସ୍ୱିଚ୍ କରିବା ବଟନ୍, ଖୋଲାଥିବା ଟାବ୍‍କୁ ଯିବା ପାଇଁ Enter ଦବାନ୍ତୁ, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2165,6 +2162,8 @@
 <translation id="5161334686036120870">ବିଷୟ:</translation>
 <translation id="5161506081086828129">ଷ୍ଟାକର୍ 9</translation>
 <translation id="5164798890604758545">ଟେକ୍ସଟ୍ ଲେଖାଯାଇଛି</translation>
+<translation id="5164928537947209380">ଏହି ପରୀକ୍ଷାମୂଳକ AI ଟୁଲ ସର୍ବଦା ସଠିକ ହେବ ନାହିଁ। ଏହାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ସମ୍ମତି Googleକୁ ପଠାଯାଏ।
+    <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" />ର CVC ଲେଖନ୍ତୁ। ଆପଣ ସୁନିଶ୍ଚିତ କରିବା ପରେ, ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରୁ କାର୍ଡର ବିବରଣୀ ଏହି ସାଇଟ୍‌ ସହିତ ସେୟାର୍‌ କରାଯିବ।</translation>
 <translation id="5169827969064885044">ଆପଣଙ୍କ ସଂସ୍ଥାର ଆକାଉଣ୍ଟକୁ ଥିବା ଆକ୍ସେସ୍ ହରାଇବା କିମ୍ବା ନିଜର ପରିଚୟ ଚୋରି ହେବାର ଅନୁଭୁତି ପ୍ରାପ୍ତ କରିପାରନ୍ତି। ବର୍ତ୍ତମାନ, Chrome ଆପଣଙ୍କୁ ପାସ୍‌ୱର୍ଡ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ୍‌ କରୁଛି।</translation>
 <translation id="5171045022955879922">ଖୋଜନ୍ତୁ କିମ୍ବା URL ଟାଇପ୍ କରନ୍ତୁ</translation>
@@ -2287,7 +2286,6 @@
 <translation id="541416427766103491">ଷ୍ଟାକର୍ 4</translation>
 <translation id="5414446060143308245">ଟ୍ରାନ୍ସଫର କରିବା ପୂର୍ବରୁ ସମୀକ୍ଷା କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="5414511064953050917">ଯେ କୌଣସି ମତେ ମୁଭ କରନ୍ତୁ</translation>
-<translation id="5421136146218899937">ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ...</translation>
 <translation id="5421408724705443535">ରକ ମ୍ୟୁଜିକ</translation>
 <translation id="5423269318075950257">ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="5425082381151187189">ଘର ଏବଂ ଇଣ୍ଟେରିଅର ସାଜସଜ୍ଜା</translation>
@@ -3649,7 +3647,6 @@
 <translation id="8022542098135319050">ଟ୍ରାଭେଲ ଏଜେନ୍ସି ଏବଂ ସେବା</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରିବା ପାଇଁ Tab ତା'ପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="8025119109950072390">ଏହି ସାଇଟ୍‍‍ରେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କୁ କିଛି ବିପଜ୍ଜନକ କାର୍ଯ୍ୟ ଯେପରିକି, ସଫ୍ଟୱେର୍ ଇନ୍‌ଷ୍ଟଲେସନ୍ କିମ୍ବା ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ସୂଚନା (ଉଦାହରଣସ୍ୱରୂପ, ପାସ୍‌ୱର୍ଡ, ଫୋନ୍ ନମ୍ବର କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡ) ପ୍ରକାଶ କରିବା ପାଇଁ ପ୍ରତାରିତ କରିପାରନ୍ତି।</translation>
-<translation id="8026334261755873520">ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="8027077570865220386">ଟ୍ରେ 15</translation>
 <translation id="8027585818882015174">'Chrome ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାଇବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsରେ ଶୀଘ୍ର ଏକ ନୂଆ ଫର୍ମ ତିଆରି କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -3920,7 +3917,6 @@
 <translation id="8527228059738193856">ସ୍ପିକରଗୁଡ଼ିକ</translation>
 <translation id="8527681393107582734">ଏଗ୍ରିକଲଚର ଏବଂ ଫରେଷ୍ଟ୍ରି</translation>
 <translation id="8528149813106025610">ପିଲାମାନଙ୍କ ପୋଷାକ</translation>
-<translation id="8530813470445476232">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ, କୁକୀ, କ୍ୟାଶ୍ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଖାଲି କରନ୍ତୁ</translation>
 <translation id="853246364274116957">ବ୍ରଡୱେ ଏବଂ ମ୍ୟୁଜିକାଲ ଥିଏଟର</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ବ୍ଲକ୍ କରାଯାଇଥିବା URLଗୁଡ଼ିକର ତାଲିକା ଏବଂ ଆପଣଙ୍କ ସିଷ୍ଟମ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ଵାରା ଲାଗୁ କରାଯାଇଥିବା ଅନ୍ୟ ନୀତିଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ &lt;strong&gt;chrome://policy&lt;/strong&gt; କୁ ଭିଜିଟ୍ କରନ୍ତୁ।</translation>
@@ -4060,6 +4056,7 @@
 <translation id="8807160976559152894">ପ୍ରତ୍ୟେକ ଡକ୍ୟୁମେଣ୍ଟ ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
 <translation id="8809203544698246977">ବ୍ଲକ କରାଯାଇଥିବା ବିଷୟଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯାଏ</translation>
 <translation id="8811470563853401328">ଆକାଉଣ୍ଟରେ ଠିକଣା ସେଭ କରିବେ?</translation>
+<translation id="8811725516933141693">Gemini ସହ ଚାଟ କରିବାକୁ @gemini ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="8813277370772331957">ମୋତେ ପରେ ରିମାଇଣ୍ଡ କରନ୍ତୁ</translation>
 <translation id="8814707942599948500">ଏନଭେଲପ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Chrome ସେଟିଂସରୁ Chrome ଅପଡେଟ୍ କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>

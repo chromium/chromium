@@ -456,7 +456,6 @@
 <translation id="1810391395243432441">Պաշտպանեք գաղտնաբառերը էկրանի կողպման միջոցով</translation>
 <translation id="1812527064848182527">հորիզոնական</translation>
 <translation id="1812975699435941848">Կրթություն առողջապահության ոլորտում և բուժպատրաստություն</translation>
-<translation id="1813414402673211292">Ջնջել դիտարկման տվյալները</translation>
 <translation id="1816436748874040213">Կարող է խնդրել ոլորումով փոխել մասշտաբը</translation>
 <translation id="1818522458013171885">Արգելաբացել</translation>
 <translation id="1818585559878922121">Վավերագրական ֆիլմեր</translation>
@@ -879,7 +878,6 @@
 <translation id="2647086987482648627">Գործվածք (կիսափայլուն)</translation>
 <translation id="264810637653812429">Համատեղելի սարքեր չեն գտնվել:</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում այցելությունների պատմությունը, քուքիները, քեշը և այլ տվյալներ ջնջելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="2650446666397867134">Ֆայլի մատչումն արգելված է</translation>
 <translation id="2651465929321991146">Պատմություն և ներդիրներ</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
@@ -1211,7 +1209,6 @@
 <translation id="33073482541490531">Գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Գաղտնաբառերի կառավարիչը խորհուրդ է տալիս անհապաղ փոխել այն։</translation>
 <translation id="3307649904964670439">«Անհատականացնել Chrome-ը» կոճակ․ ակտիվացրեք՝ դիտարկիչի տեսքն անհատականացնելու համար</translation>
 <translation id="3308006649705061278">Ստորաբաժանում (OU)</translation>
-<translation id="3310047144791481950">Տեղեկություններ, որոնք կօգնեն ձեզ ընտրել, թե որ քարտով վճարել։ <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Իմանալ ավելին քարտի առավելությունների մասին<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Հեռուստատեսային կատակերգություններ</translation>
 <translation id="3324687287337751929">4 x 6 դյույմ</translation>
 <translation id="3324983252691184275">Բոսորագույն</translation>
@@ -1380,7 +1377,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Tab», ապա՝ «Enter»։</translation>
 <translation id="3615309852743236517">Մատնահարդարում և ոտնահարդարում</translation>
 <translation id="3620239073311576716">Համազգեստ և աշխատանքային հագուստ</translation>
-<translation id="36224234498066874">Ջնջել այցելությունների պատմությունը...</translation>
 <translation id="362276910939193118">Ցույց տալ ամբողջ պատմությունը</translation>
 <translation id="3623041590998910684">Ձեր տեսախցիկն օգտագործելու համար անցեք <ph name="LINK" /> և Chrome-ին թույլտվություն տրամադրեք։</translation>
 <translation id="3623398832322170566">Ռոմանտիկ ֆիլմեր</translation>
@@ -2063,7 +2059,6 @@
 <translation id="4936134414789135531">Մուտքագրված «<ph name="VALUE_NAME" />» արժեքը չի գտնվել։</translation>
 <translation id="4936675324097895694">Ֆինանսներ</translation>
 <translation id="4940163644868678279">Ինկոգնիտո ռեժիմը Chrome-ում</translation>
-<translation id="494111439860963024">«Ջնջել այցելությունների պատմությունը» կոճակ․ ակտիվացրեք՝ Chrome-ի կարգավորումներում այցելությունների պատմությունը, քուքիները, քեշը և այլ տվյալներ ջնջելու համար</translation>
 <translation id="4943620199112228840">Օգտագործել ձեր խոսափողները</translation>
 <translation id="4943872375798546930">Արդյունքներ չկան</translation>
 <translation id="4950898438188848926">Ներդիրների միջև անցման կոճակ։ Բացված ներդիրին (<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />) անցնելու համար սեղմեք «Enter»։</translation>
@@ -2301,7 +2296,6 @@
 <translation id="541416427766103491">Շեղջիչ 4</translation>
 <translation id="5414446060143308245">Նախքան փոխանցելը ստուգեք ֆայլերը</translation>
 <translation id="5414511064953050917">Տեղափոխել</translation>
-<translation id="5421136146218899937">Մաքրել դիտարկումների տվյալները…</translation>
 <translation id="5421408724705443535">Ռոք երաժշտություն</translation>
 <translation id="5423269318075950257">Հետևեք գներին</translation>
 <translation id="5425082381151187189">Տան կահավորում և ներքին հարդարանք</translation>
@@ -3664,7 +3658,6 @@
 <translation id="8022542098135319050">Տուրիստական գործակալություններ և ծառայություններ</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա՝ Enter, որպեսզի Chrome-ը դարձնեք համակարգի կանխադրված դիտարկիչը։</translation>
 <translation id="8025119109950072390">Այս կայքում հարձակվողները կարող են ձեր սարքում խաբեությամբ ծրագրեր տեղադրել կամ առբերել ձեր անձնական տեղեկությունները (օրինակ՝ գաղտնաբառերը, հեռախոսահամարները կամ վարկային քարտերը):</translation>
-<translation id="8026334261755873520">Դիտարկումների տվյալների մաքրում</translation>
 <translation id="8027077570865220386">Դարակ 15</translation>
 <translation id="8027585818882015174">«Անցնել Chrome-ի անվտանգության ստուգում» կոճակ․ ակտիվացրեք՝ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Ձևաթղթերում արագ ձև ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
@@ -3935,7 +3928,6 @@
 <translation id="8527228059738193856">Բարձրախոսներ</translation>
 <translation id="8527681393107582734">Գյուղատնտեսություն և անտառային տնտեսություն</translation>
 <translation id="8528149813106025610">Մանկական հագուստ</translation>
-<translation id="8530813470445476232">Ջնջեք ձեր այցելությունների պատմությունը, քուքիները, քեշը և այլ տվյալներ Chrome-ի կարգավորումներում</translation>
 <translation id="853246364274116957">Բրոդվեյ և երաժշտական թատրոն</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Արգելափակված URL-ների ցուցակը և ձեր համակարգի ադմինիստրատորի կողմից կիրառված մյուս կանոնները տեսնելու համար այցելեք &lt;strong&gt;chrome://policy&lt;/strong&gt;։</translation>

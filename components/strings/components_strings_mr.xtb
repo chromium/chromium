@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chrome मध्ये Dino Run गेम खेळा</translation>
 <translation id="161042844686301425">निळसर</translation>
 <translation id="1611101756749861742">दुसरा रोल</translation>
+<translation id="1611854593425834707">कास्ट करण्यासाठी डिव्हाइस सूची बंद करा</translation>
 <translation id="1612199629998703524">विषय व्यवस्थापित करा</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> साठी अ‍ॅक्सेस मागे घ्या</translation>
 <translation id="1615402009686901181">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्‍क्रीन कॅप्‍चर बंद करते</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">तुमचे स्क्रीन लॉक वापरून पासवर्ड संरक्षित करा</translation>
 <translation id="1812527064848182527">लॅंडस्केप</translation>
 <translation id="1812975699435941848">आरोग्य शिक्षण आणि वैद्यकीय प्रशिक्षण</translation>
-<translation id="1813414402673211292">ब्राउझिंग डेटा साफ करा</translation>
 <translation id="1816436748874040213">शेअर केलेल्या टॅबना स्क्रोल आणि झूम करण्याची विनंती करू शकतात</translation>
 <translation id="1818522458013171885">अनब्लॉक करा</translation>
 <translation id="1818585559878922121">माहितीपट</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">फॅब्रिक (सेमी-ग्लॉस)</translation>
 <translation id="264810637653812429">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमधील तुमचा ब्राउझिंग इतिहास, कुकी, कॅशे आणि आणखी बरेच काही साफ करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="2650446666397867134">फाइलवरील ॲक्सेस नाकारण्यात आला</translation>
 <translation id="2651465929321991146">इतिहास आणि टॅब</translation>
 <translation id="2653659639078652383">सबमिट करा</translation>
@@ -1205,7 +1204,6 @@
 <translation id="33073482541490531">तुम्ही नुकताच वापरलेला पासवर्ड डेटा भंगामध्ये आढळला होता. पासवर्ड व्यवस्थापक हा पासवर्ड आता बदलण्याची शिफारस करतो.</translation>
 <translation id="3307649904964670439">Chrome कस्टमाइझ करा बटण, तुमच्या ब्राउझरचे रूप कस्टमाइझ करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="3308006649705061278">संस्थात्मक एकक (OU)</translation>
-<translation id="3310047144791481950">तुम्हाला कोणत्या कार्डने पेमेंट करायचे ते निवडण्यात मदत करणारी माहिती पहा. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />कार्डच्या फायद्यांबद्दल जाणून घ्या<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">टीव्हीवरील विनोदी कार्यक्रम</translation>
 <translation id="3324687287337751929">४ x ६ इं</translation>
 <translation id="3324983252691184275">किरमिजी</translation>
@@ -1373,7 +1371,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये सुरक्षितता तपासणी रन करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3615309852743236517">मॅनिक्युअर आणि पेडीक्युअर</translation>
 <translation id="3620239073311576716">गणवेश आणि वर्कवेअर</translation>
-<translation id="36224234498066874">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="362276910939193118">पूर्ण इतिहास दर्शवा</translation>
 <translation id="3623041590998910684">तुमचा कॅमेरा वापरण्यासाठी, Chrome ला <ph name="LINK" /> मध्ये अ‍ॅक्सेस द्या.</translation>
 <translation id="3623398832322170566">रोमान्स असलेले चित्रपट</translation>
@@ -1918,6 +1915,7 @@
 <translation id="4691093235373904540">रूफिंग</translation>
 <translation id="4692623383562244444">शोध इंजिने</translation>
 <translation id="4698692901173737941">द्वंद्व क्रीडा</translation>
+<translation id="4701307090948589984">यावर कास्ट करा...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">साइड</translation>
 <translation id="4702656508969495934">लाइव्ह कॅप्शन दिसत आहे, फोकस करण्यासाठी विंडो स्विचर वापरा</translation>
@@ -2054,7 +2052,6 @@
 <translation id="4936134414789135531">घातलेले <ph name="VALUE_NAME" /> आढळले नाही.</translation>
 <translation id="4936675324097895694">वित्तविषयक</translation>
 <translation id="4940163644868678279">Chrome मधील गुप्त मोड</translation>
-<translation id="494111439860963024">ब्राउझिंग डेटा साफ करा बटण, Chrome सेटिंग्जमधील तुमचा ब्राउझिंग इतिहास, कुकी, कॅशे आणि आणखी बरेच काही साफ करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4943620199112228840">तुमचे मायक्रोफोन वापरा</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
 <translation id="4950898438188848926">टॅब स्विच बटण, उघड्या टॅबवर स्विच करण्यासाठी एंटर प्रेस करा, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2108,6 +2105,7 @@
 <translation id="5040262127954254034">गोपनीयता</translation>
 <translation id="5043480802608081735">तुम्ही कॉपी केलेली लिंक</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
+<translation id="5048293684454354469">जाहिराती पर्सनलाइझ करण्यासाठी साइट वापरू शकत असलेल्या अनेक गोष्टींपैकी जाहिरातीचे विषय ही फक्त एक गोष्ट आहे. जाहिरातीच्या विषयांशिवायदेखील साइट तुम्हाला जाहिराती दाखवू शकतात, पण त्या कमी पर्सनलाइझ केलेल्या असतील. <ph name="BEGIN_LINK" />तुमची जाहिरातीसंबंधित गोपनीयता व्यवस्थापित करणे<ph name="LINK_END" /> याबद्दल अधिक जाणून घ्या.</translation>
 <translation id="5052517576853118371">ॲक्टिव्ह विषय</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby सह शेअरिंग वापरून ही फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}other{Nearby सह शेअरिंग वापरून या फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}}</translation>
 <translation id="505757197798929356">उघड्याचे कारण द्या (आवश्यक)</translation>
@@ -2167,6 +2165,8 @@
 <translation id="5161334686036120870">विषय:</translation>
 <translation id="5161506081086828129">स्टॅकर ९</translation>
 <translation id="5164798890604758545">मजकूर एंटर केला गेला</translation>
+<translation id="5164928537947209380">हे प्रायोगिक AI टूल नेहमी बरोबर असेल असे नाही. त्यामध्ये सुधारणा करण्यासाठी, तुमचा आशय Google कडे पाठवला जातो.
+    <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> चा CVC टाका. तुम्ही निश्चित केल्यानंतर तुमच्या Google खात्यामधील कार्डाचा तपशील या साइटसोबत शेअर केला जाईल.</translation>
 <translation id="5169827969064885044">तुम्ही तुमच्या संस्थेच्या खात्याचा ॲक्सेस गमावू शकता किंवा तुमची संवेदनशील माहिती चोरीला जाऊ शकते. Chrome लगेच तुमचा पासवर्ड बदलण्याची शिफारस करत आहे.</translation>
 <translation id="5171045022955879922">URL शोधा किंवा टाइप करा</translation>
@@ -2289,7 +2289,6 @@
 <translation id="541416427766103491">स्टॅकर ४</translation>
 <translation id="5414446060143308245">ट्रान्सफर करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="5414511064953050917">तरीही हलवा</translation>
-<translation id="5421136146218899937">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="5421408724705443535">रॉक संगीत</translation>
 <translation id="5423269318075950257">किमतीचा माग ठेवा</translation>
 <translation id="5425082381151187189">घर आणि त्यासंबंधित इंटिरीयर डेकोरेशन</translation>
@@ -2325,6 +2324,7 @@
     <ph name="LINE_BREAK" />
     सिस्टम ॲडमिनिस्ट्रेटरशी संपर्क साधण्याचा प्रयत्न करा.</translation>
 <translation id="549333378215107354">आकार ३</translation>
+<translation id="5496804587179176046">सुरक्षा कोड सेव्ह करा, सध्या कोणतेही सुरक्षा कोड नाहीत</translation>
 <translation id="550365051221576010">सर्व फील्ड</translation>
 <translation id="5508443345185481044">कॅमेरा आणि कॅमकॉर्डर</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3653,7 +3653,6 @@
 <translation id="8022542098135319050">प्रवास एजन्‍सी आणि सेवा</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी टॅब प्रेस करा, त्यानंतर एंटर करा</translation>
 <translation id="8025119109950072390">या साइट वरील आक्रमणकर्ते सॉफ्‍टवेअर इंस्टॉल करणे किंवा तुमची वैयक्तिक माहिती (उदाहरणार्थ, पासवर्ड, फोन नंबर किंवा क्रेडिट कार्ड) उघड करणे यासारखे काहीतरी धोकादायक करण्‍यामध्‍ये तुम्हाला चलाखीने गुंतवू शकतात.</translation>
-<translation id="8026334261755873520">ब्राउझिंग डेटा साफ करा</translation>
 <translation id="8027077570865220386">ट्रे १५</translation>
 <translation id="8027585818882015174">Chrome सुरक्षितता तपासणी रन करा बटण, Chrome सेटिंग्जमध्ये सुरक्षितता तपासणी रन करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms मध्ये नवीन फॉर्म झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
@@ -3924,7 +3923,6 @@
 <translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8527681393107582734">कृषिशास्त्र आणि वनशास्त्र</translation>
 <translation id="8528149813106025610">लहान मुलांचे कपडे</translation>
-<translation id="8530813470445476232">Chrome सेटिंग्जमधील तुमचा ब्राउझिंग इतिहास, कुकी, कॅशे आणि बरेच काही साफ करा</translation>
 <translation id="853246364274116957">ब्रॉडवे आणि संगीत थिएटर</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">तुमच्या सिस्टम अ‍ॅडमिनिस्ट्रेटरद्वारे ब्लॉक केलेल्या URL आणि लागू केलेली इतर धोरणे पाहण्यासाठी &lt;strong&gt;chrome://policy&lt;/strong&gt; ला भेट द्या.</translation>
@@ -4064,6 +4062,7 @@
 <translation id="8807160976559152894">प्रत्येक पेजनंतर ट्रिम करा</translation>
 <translation id="8809203544698246977">ब्लॉक केलेले विषय येथे दिसतात</translation>
 <translation id="8811470563853401328">खात्यामध्ये पत्ता सेव्ह करायचा का?</translation>
+<translation id="8811725516933141693">Gemini सोबत चॅट करण्यासाठी @gemini टाइप करा</translation>
 <translation id="8813277370772331957">मला नंतर आठवण करून द्या</translation>
 <translation id="8814707942599948500">एन्व्हलप सी८</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Chrome सेटिंग्जमधून Chrome अपडेट करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>

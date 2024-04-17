@@ -340,6 +340,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="160851722280695521">Jouer au jeu du dino dans Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">2e rouleau</translation>
+<translation id="1611854593425834707">Fermer la liste des appareils de diffusion</translation>
 <translation id="1612199629998703524">Gérer les thèmes</translation>
 <translation id="1615178538289490617">Révoquer l'accès de <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Une règle définie par l'administrateur a désactivé la capture d'écran lorsqu'un contenu confidentiel est affiché</translation>
@@ -452,7 +453,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1810391395243432441">Protéger les mots de passe avec le verrouillage de l'écran</translation>
 <translation id="1812527064848182527">paysage</translation>
 <translation id="1812975699435941848">Éducation sanitaire et formation médicale</translation>
-<translation id="1813414402673211292">Effacer les données de navigation</translation>
 <translation id="1816436748874040213">Peut demander à faire défiler les onglets partagés et à zoomer dessus</translation>
 <translation id="1818522458013171885">Débloquer</translation>
 <translation id="1818585559878922121">Films documentaires</translation>
@@ -875,7 +875,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2647086987482648627">Tissu (semi-brillance)</translation>
 <translation id="264810637653812429">Aucun appareil compatible détecté.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis sur Entrée pour effacer votre historique de navigation et vos cookies, vider le cache et bien davantage dans les paramètres Chrome</translation>
 <translation id="2650446666397867134">Accès au fichier refusé</translation>
 <translation id="2651465929321991146">Historique et onglets</translation>
 <translation id="2653659639078652383">Envoyer</translation>
@@ -1205,7 +1204,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="33073482541490531">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Le Gestionnaire de mots de passe vous recommande de le modifier immédiatement.</translation>
 <translation id="3307649904964670439">Bouton "Personnaliser Chrome" à activer pour personnaliser l'apparence de votre navigateur</translation>
 <translation id="3308006649705061278">Unité d'organisation (OU)</translation>
-<translation id="3310047144791481950">Consultez des infos qui vous aident à choisir avec quelle carte payer. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />En savoir plus sur les avantages des cartes<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Comédies (films TV)</translation>
 <translation id="3324687287337751929">4 x 6 pouces</translation>
 <translation id="3324983252691184275">Pourpre</translation>
@@ -1374,7 +1372,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, puis Tabulation, puis Entrée pour effectuer un contrôle de sécurité dans les paramètres de Chrome</translation>
 <translation id="3615309852743236517">Manucure et pédicure</translation>
 <translation id="3620239073311576716">Uniformes et vêtements professionnels</translation>
-<translation id="36224234498066874">Effacer les données de navigation...</translation>
 <translation id="362276910939193118">Afficher l'historique complet</translation>
 <translation id="3623041590998910684">Pour utiliser votre appareil photo, autorisez Chrome à y accéder dans les <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Comédies romantiques</translation>
@@ -1919,6 +1916,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4691093235373904540">Couverture de toits</translation>
 <translation id="4692623383562244444">Moteurs de recherche</translation>
 <translation id="4698692901173737941">Sports de combat</translation>
+<translation id="4701307090948589984">Caster sur...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Côté</translation>
 <translation id="4702656508969495934">Sous-titres instantanés visibles, utilisez le permuteur de fenêtres pour déplacer le curseur</translation>
@@ -2055,7 +2053,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4936134414789135531">La <ph name="VALUE_NAME" /> insérée est introuvable.</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Navigation privée dans Chrome</translation>
-<translation id="494111439860963024">Bouton "Effacer les données de navigation" à activer pour effacer votre historique de navigation et vos cookies, vider le cache et plus dans les paramètres Chrome</translation>
 <translation id="4943620199112228840">Utiliser vos micros</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
 <translation id="4950898438188848926">Bouton pour changer d'onglet (appuyez sur Entrée pour passer à l'onglet ouvert, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />)</translation>
@@ -2168,6 +2165,8 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5161334686036120870">Sujet :</translation>
 <translation id="5161506081086828129">Empileur 9</translation>
 <translation id="5164798890604758545">Texte saisi</translation>
+<translation id="5164928537947209380">Cet outil d'IA expérimental n'est pas infaillible. Pour l'améliorer, votre contenu est envoyé à Google.
+    <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Saisissez le code CVC de la carte <ph name="CREDIT_CARD" />. Une fois la validation effectuée, les informations relatives à la carte de votre compte Google seront partagées avec ce site.</translation>
 <translation id="5169827969064885044">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'usurpation d'identité. L'équipe Chrome vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="5171045022955879922">Rechercher ou saisir une URL</translation>
@@ -2290,7 +2289,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="541416427766103491">Empileur 4</translation>
 <translation id="5414446060143308245">Examen requis avant le transfert</translation>
 <translation id="5414511064953050917">Déplacer quand même</translation>
-<translation id="5421136146218899937">Effacer les données de navigation...</translation>
 <translation id="5421408724705443535">Rock</translation>
 <translation id="5423269318075950257">Suivre les prix</translation>
 <translation id="5425082381151187189">Décoration de maison et d'intérieur</translation>
@@ -3654,7 +3652,6 @@ Informations supplémentaires :
 <translation id="8022542098135319050">Services et agences de voyages</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour définir Chrome comme navigateur par défaut du système</translation>
 <translation id="8025119109950072390">Des individus malveillants à l'œuvre sur ce site pourraient vous inciter à effectuer des opérations dangereuses, telles que l'installation d'un logiciel ou la révélation d'informations personnelles (par exemple des mots de passe, des numéros de téléphone ou des numéros de carte de paiement).</translation>
-<translation id="8026334261755873520">Effacer les données de navigation</translation>
 <translation id="8027077570865220386">Bac 15</translation>
 <translation id="8027585818882015174">Bouton "Effectuer un contrôle de sécurité de Chrome" à activer pour effectuer un contrôle de sécurité dans les paramètres de Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer rapidement un formulaire dans Google Forms</translation>
@@ -3925,7 +3922,6 @@ Informations supplémentaires :
 <translation id="8527228059738193856">Enceintes</translation>
 <translation id="8527681393107582734">Agriculture et gestion forestière</translation>
 <translation id="8528149813106025610">Vêtements pour enfants</translation>
-<translation id="8530813470445476232">Effacez votre historique de navigation, supprimez les cookies, videz le cache, et plus encore dans les paramètres Chrome</translation>
 <translation id="853246364274116957">Théâtre musical et comédies musicales</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Pour consulter la liste des URL bloquées et des autres règles définies par votre administrateur système, rendez-vous sur &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
@@ -4065,6 +4061,7 @@ Informations supplémentaires :
 <translation id="8807160976559152894">Couper après chaque page</translation>
 <translation id="8809203544698246977">Les thèmes bloqués s'affichent ici</translation>
 <translation id="8811470563853401328">Enregistrer l'adresse dans le compte ?</translation>
+<translation id="8811725516933141693">Saisissez @gemini pour discuter avec Gemini</translation>
 <translation id="8813277370772331957">Plus tard</translation>
 <translation id="8814707942599948500">Enveloppe C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis Entrée pour mettre à jour Chrome depuis les paramètres du navigateur</translation>

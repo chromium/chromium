@@ -65,7 +65,6 @@
 <translation id="1273937721055267968">Заблокувати домен <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Торкніться, щоб розгорнути</translation>
 <translation id="1289059016768036948">Для цього вам потрібно ввійти у свій обліковий запис Google</translation>
-<translation id="1291207594882862231">Очистити історію, файли cookie, дані сайтів, кеш…</translation>
 <translation id="129553762522093515">Нещодавно закриті</translation>
 <translation id="1298077576058087471">Заощаджуйте до 60% даних і читайте сьогоднішні новини</translation>
 <translation id="1303339473099049190">Не вдалося знайти такий пароль. Перевірте правильність написання та повторіть спробу.</translation>
@@ -380,7 +379,6 @@
 <translation id="2992473221983447149">Описи зображень</translation>
 <translation id="2996291259634659425">Створити парольну фразу</translation>
 <translation id="2996809686854298943">Потрібна URL-адреса</translation>
-<translation id="2996932914629936323">Буде видалено історію на всіх синхронізованих пристроях</translation>
 <translation id="2997081575621687554">Коли сайт Google надсилає запит на приватне попереднє завантаження посилань на його сторінці, Chrome шифрує та попередньо завантажує сторінки через сервери Google без файлів cookie. Таким чином вашу особу не можна визначити через попередньо завантажений сайт.</translation>
 <translation id="3003253259757197230">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли показувати вам додаткову інформацію про них і передбачати, які сайти ви можете відвідати наступними</translation>
 <translation id="3026955690410463085">Додати посилання</translation>
@@ -542,7 +540,6 @@
 <translation id="3932390316856284148">Нижній екран для входу відкрито на всю висоту.</translation>
 <translation id="393697183122708255">Голосовий пошук вимкнено</translation>
 <translation id="395377504920307820">Використовувати без облікового запису</translation>
-<translation id="3958287878205277013">Щоб видалити історію веб-перегляду в анонімному режимі з пристрою, закрийте всі анонімні вкладки.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Коли все буде готово, Chrome завантажить сторінку}one{Коли все буде готово, Chrome завантажить сторінки}few{Коли все буде готово, Chrome завантажить сторінки}many{Коли все буде готово, Chrome завантажить сторінки}other{Коли все буде готово, Chrome завантажить сторінки}}</translation>
 <translation id="3962119236270174787">Стандартний захист від відомих небезпечних веб-сайтів, завантажень і розширень</translation>
 <translation id="3969142555815019568">Chrome не може перевірити паролі</translation>
@@ -848,7 +845,6 @@
 <translation id="5468068603361015296">Усе одно завантажити файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="548278423535722844">Відкрити в додатку Карти</translation>
 <translation id="5486841595534124508">Логотип Примітки про конфіденційність для центру статистики сторінки, який переспрямовує на сторінку "Мої дії".</translation>
-<translation id="5487521232677179737">Видалити дані</translation>
 <translation id="5492637351392383067">Шифрування на пристрої</translation>
 <translation id="5514904542973294328">Вимкнено адміністратором пристрою</translation>
 <translation id="5515439363601853141">Розблокуйте, щоб переглянути пароль</translation>
@@ -887,7 +883,6 @@
 <translation id="5683547024293500885">Chrome не може перевірити наявність оновлень</translation>
 <translation id="5686790454216892815">Назва файлу задовга</translation>
 <translation id="5687606994963670306">Chrome автоматично видаляє сайти через 30 днів. Якщо ви повторно відвідаєте видалений сайт, він може знову з’явитися в списку. Ви також можете заборонити сайту пропонувати вам оголошення. Дізнайтесь, <ph name="BEGIN_LINK" />як керувати конфіденційністю в рекламі в Chrome<ph name="END_LINK" />.</translation>
-<translation id="569435661099256888">Ви можете переглядати сторінки, які відвідували, або видаляти їх з історії</translation>
 <translation id="569536719314091526">Перекладіть цю сторінку будь-якою мовою, натиснувши кнопку "Більше опцій"</translation>
 <translation id="5696597120588531049">Chrome може захищати вас від порушень безпеки даних, ненадійних веб-сайтів тощо</translation>
 <translation id="5698878456427040674">Перевірте, чи підтримується вибраний обліковий запис.</translation>
@@ -914,7 +909,6 @@
 <translation id="5780792035410621042">Щоб скопіювати паролі, спершу налаштуйте блокування екрана на пристрої</translation>
 <translation id="5793665092639000975">Використано <ph name="SPACE_USED" /> з <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Пошук і перегляд</translation>
-<translation id="5797521893972859201">Буде очищено історію, зокрема в полі пошуку</translation>
 <translation id="5797949256525811424">Заблокована тема</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# годину тому}one{# годину тому}few{# години тому}many{# годин тому}other{# години тому}}</translation>
 <translation id="5810288467834065221">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
@@ -1087,7 +1081,6 @@
 <translation id="6637100877383020115">Щоб покращити додаток, Chrome надсилає дані про використання та збої в Google. <ph name="BEGIN_UMA_LINK" />Керувати<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Блокувати завжди</translation>
 <translation id="6641780377503683465">Вилучити інтерес "<ph name="INTEREST" />"</translation>
-<translation id="6643016212128521049">Очистити</translation>
 <translation id="6645629752388991326">Керуйте пристроями, на яких можна входити в обліковий запис, використовуючи цей пристрій як ключ безпеки.</translation>
 <translation id="6646696210740573446">Надсилає в Google обфусковану частину URL-адреси через сервер конфіденційності, який приховує вашу IP-адресу. Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chrome також може надсилати в Google URL-адреси, зокрема уривки контенту сторінки.</translation>
 <translation id="6647441008198474441">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли передбачити, які сайти ви можете відвідати наступними</translation>
@@ -1283,8 +1276,6 @@
 <translation id="752220631458524187">Коли завершите, відключіть телефон</translation>
 <translation id="7523960634226602883">Пошук за допомогою камери через Google Об’єктив</translation>
 <translation id="752731652852882757">Блокувати в анонімному режимі</translation>
-<translation id="7562080006725997899">Очищення даних веб-перегляду</translation>
-<translation id="756809126120519699">Дані Chrome видалено</translation>
 <translation id="7577900504646297215">Керувати інтересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Завантажено <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файли}many{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файлів}other{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файлу}}</translation>
 <translation id="7581273696622423628">Відповісти на запитання</translation>
@@ -1317,14 +1308,12 @@
 <translation id="7697383401610880082">Маркер переміщення</translation>
 <translation id="7698359219371678927">Створити електронну адресу в додатку <ph name="APP_NAME" /></translation>
 <translation id="7702029078562412515">Запити</translation>
-<translation id="7702388902581909985">Якщо очистити дані веб-перегляду, ви не вийдете з облікового запису Google. Для цього потрібно <ph name="BEGIN_LINK1" />вийти з Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Використовувати мобільне передавання даних</translation>
 <translation id="7709918231054955894">Переглядайте всі свої вкладки</translation>
 <translation id="7733878270780732638">На пристрої недостатньо місця.</translation>
 <translation id="7759809451544302770">Необов’язково</translation>
 <translation id="7762668264895820836">Карта SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Додати адресу</translation>
-<translation id="7766587497031415281">Більше опцій для очищення даних веб-перегляду</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
 <translation id="7772375229873196092">Закрити додаток <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1383,7 +1372,6 @@
 <translation id="8013372441983637696">Також видалити дані Chrome із цього пристрою</translation>
 <translation id="8015452622527143194">Відновити розміри всіх елементів за умовчанням</translation>
 <translation id="8026238112629815203">Ми змінили спосіб зберігання паролів на цьому пристрої</translation>
-<translation id="8026334261755873520">Очистити історію</translation>
 <translation id="8027863900915310177">Виберіть, куди завантажити файл</translation>
 <translation id="8030852056903932865">Дозволити</translation>
 <translation id="8032569120109842252">У підписках</translation>
@@ -1480,6 +1468,7 @@
 <translation id="84594714173170813">Продовжуйте використовувати дані Chrome в обліковому записі Google</translation>
 <translation id="8460448946170646641">Перегляньте основні елементи керування конфіденційністю та безпекою</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
+<translation id="8477178913400731244">Видалити дані</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Відкрити сторінку "Історія"</translation>
 <translation id="8493948351860045254">Звільнити місце</translation>
@@ -1517,7 +1506,6 @@
 <translation id="8636825310635137004">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію.</translation>
 <translation id="864544049772947936">Керувати вікнами (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Передбачає небезпечні події та повідомляє про них ще до того, як вони відбудуться</translation>
-<translation id="8655129584991699539">Ви можете очистити дані в налаштуваннях Chrome</translation>
 <translation id="8664215986015753476">Налаштуйте Chrome на свій смак</translation>
 <translation id="8664979001105139458">Файл із такою назвою вже існує</translation>
 <translation id="8676276370198826499">Зареєструйтеся на сайті <ph name="SITE_ETLD_PLUS_ONE" />, використовуючи обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

@@ -72,7 +72,6 @@
 <translation id="2329088755516916767">ଏହା ଚାଲୁ ଥିବା ସମୟରେ, Chromium ବ୍ରାଉଜ ଓ ସର୍ଚ୍ଚ କରିବାକୁ ଦ୍ରୁତ କରାଉଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରେ।</translation>
 <translation id="2343156876103232566">ଏଠାରୁ ଆପଣଙ୍କ Android ଫୋନକୁ ଏକ ନମ୍ବର ପଠାଇବାକୁ, ଉଭୟ ଡିଭାଇସରେ Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
-<translation id="2359920621792549529">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଡାଟା ରଖି କେବଳ ଏହି ଡିଭାଇସରୁ ସେହି ଡାଟା ଖାଲି କରିବାକୁ <ph name="BEGIN_LINK" />Chromiumରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="2384373936468275798">ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ସାଇନ-ଇନ ବିବରଣୀ ପୁରୁଣା ହୋଇଯାଇଥିବା ଯୋଗୁଁ ChromiumOS ଆପଣଙ୍କ ଡାଟାକୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଥିଲା}=1{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}other{#ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}}</translation>
 <translation id="2401032172288869980">ଏହି ସାଇଟ୍ ପାଇଁ Chromium କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
@@ -252,6 +251,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumକୁ ଏହି ଭାଷାରେ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="569897634095159764">ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରିବାରେ ଅସମର୍ଥ। ପ୍ରକ୍ସି ସର୍ଭର ପ୍ରମାଣୀକରଣ ଆବଶ୍ୟକ।</translation>
+<translation id="5800158606660203929">Chromiumକୁ କଷ୍ଟମାଇଜ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ। Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ।</translation>
 <translation id="5809516625706423866">ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରିବାରେ ଅସମର୍ଥ। HTTP 401 ଅନଧିକୃତ। ଦୟାକରି ଆପଣଙ୍କ ପ୍ରକ୍ସି କନଫିଗରେସନ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="5862307444128926510">Chromiumକୁ ସ୍ଵାଗତ</translation>
 <translation id="5883558403894052917">ଏହି ଆଇଟମଗୁଡ଼ିକରେ ମାଲୱେର୍ ଥିବା Chromium ଜାଣିବାକୁ ପାଇଛି:</translation>

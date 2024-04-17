@@ -452,7 +452,6 @@
 <translation id="1810391395243432441">Абараніце паролі з дапамогай блакіроўкі экрана</translation>
 <translation id="1812527064848182527">альбомная</translation>
 <translation id="1812975699435941848">Адукацыя ў сферы аховы здароўя і медыцынская падрыхтоўка</translation>
-<translation id="1813414402673211292">Выдаленне гісторыі</translation>
 <translation id="1816436748874040213">Запытваць дазвол на змяненне маштабу і прагортванне змесціва абагуленых укладак</translation>
 <translation id="1818522458013171885">Разблакіраваць</translation>
 <translation id="1818585559878922121">Дакументальныя фільмы</translation>
@@ -876,7 +875,6 @@
 <translation id="2647086987482648627">Паўглянцавая тканіна</translation>
 <translation id="264810637653812429">Сумяшчальныя прылады не знойдзены.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выдаліць даныя гісторыі праглядаў сайтаў, файлы cookie, кэшаванае змесціва і іншае праз налады Chrome, націсніце Tab, затым Enter</translation>
 <translation id="2650446666397867134">У доступе да файла адмоўлена</translation>
 <translation id="2651465929321991146">Гісторыя і ўкладкі</translation>
 <translation id="2653659639078652383">Адправіць</translation>
@@ -1206,7 +1204,6 @@
 <translation id="33073482541490531">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў.</translation>
 <translation id="3307649904964670439">Кнопка "Наладзіць Chrome". Каб наладзіць выгляд браўзера, націсніце яе.</translation>
 <translation id="3308006649705061278">Арганізацыйная адзінка (АА)</translation>
-<translation id="3310047144791481950">Уключыце гэты параметр, каб даведвацца, якой карткай выгадней плаціць за пакупку. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Даведацца больш пра перавагі картак<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Камедыйныя праграмы</translation>
 <translation id="3324687287337751929">4 x 6 цаляў</translation>
 <translation id="3324983252691184275">Цёмна-чырвоны</translation>
@@ -1374,7 +1371,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выканаць праверку бяспекі ў наладах Chrome, націсніце Tab, затым Enter</translation>
 <translation id="3615309852743236517">Манікюр і педыкюр</translation>
 <translation id="3620239073311576716">Уніформа і рабочае адзенне</translation>
-<translation id="36224234498066874">Выдаліць гісторыю...</translation>
 <translation id="362276910939193118">Паказаць усю гісторыю</translation>
 <translation id="3623041590998910684">Каб выкарыстоўваць камеру, дайце Chrome доступ у <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Фільмы пра каханне</translation>
@@ -2055,7 +2051,6 @@
 <translation id="4936134414789135531">Устаўленае значэнне "<ph name="VALUE_NAME" />" не знойдзена.</translation>
 <translation id="4936675324097895694">Фінансы</translation>
 <translation id="4940163644868678279">Рэжым інкогніта ў браўзеры Chrome</translation>
-<translation id="494111439860963024">Кнопка "Выдаліць даныя пра работу ў браўзеры". Каб выдаліць даныя гісторыі праглядаў сайтаў, файлы cookie, кэшаванае змесціва і іншае праз налады Chrome, націсніце яе.</translation>
 <translation id="4943620199112228840">Выкарыстоўваць мікрафоны</translation>
 <translation id="4943872375798546930">Няма вынікаў</translation>
 <translation id="4950898438188848926">Кнопка пераключэння ўкладак. Націсніце Enter, каб пераключыцца на адкрытую ўкладку, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2290,7 +2285,6 @@
 <translation id="541416427766103491">Укладчык 4</translation>
 <translation id="5414446060143308245">Перш чым пераносіць файлы, іх неабходна праверыць</translation>
 <translation id="5414511064953050917">Усё роўна перамясціць</translation>
-<translation id="5421136146218899937">Выдаліць гісторыю...</translation>
 <translation id="5421408724705443535">Рок-музыка</translation>
 <translation id="5423269318075950257">Адсочванне цэн</translation>
 <translation id="5425082381151187189">Афармленне дома і дэкор інтэр'ера</translation>
@@ -3654,7 +3648,6 @@
 <translation id="8022542098135319050">Турыстычныя агенцтвы і паслугі</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб зрабіць Chrome стандартным браўзерам сістэмы, націсніце Tab, затым Увод.</translation>
 <translation id="8025119109950072390">Зламыснікі на гэтым сайце могуць падмануць вас і прымусіць зрабіць што-небудзь небяспечнае – напрыклад, усталяваць ПЗ або выдаць асабістую інфармацыю (паролі, нумары тэлефонаў або даныя крэдытных картак і падобнае).</translation>
-<translation id="8026334261755873520">Выдаленне гісторыі</translation>
 <translation id="8027077570865220386">Латок 15</translation>
 <translation id="8027585818882015174">Кнопка "Запусціць праверку бяспекі Chrome". Каб выканаць праверку бяспекі ў наладах Chrome, націсніце яе.</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую форму ў Формах Google, націсніце Tab, затым Enter</translation>
@@ -3925,7 +3918,6 @@
 <translation id="8527228059738193856">Дынамікі</translation>
 <translation id="8527681393107582734">Сельская і лясная гаспадарка</translation>
 <translation id="8528149813106025610">Дзіцячае адзенне</translation>
-<translation id="8530813470445476232">Выдаліць гісторыю прагляду сайтаў, файлы cookie, кэшаванае змесціва і іншае праз налады Chrome</translation>
 <translation id="853246364274116957">Брадвей і музычныя тэатры</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Каб прагледзець спіс заблакіраваных URL-адрасоў і іншыя палітыкі, якімі кіруе сістэмны адміністратар, наведайце &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>

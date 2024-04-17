@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">‏اضغط مع الاستمرار على رمز Chrome وانقر على "تعديل الشاشة الرئيسية"</translation>
 <translation id="1066101356081285416">‏سيرصُد Chrome أرقام التتبُّع على المواقع الإلكترونية التي تزورها ويعرض لك إشعارات الطرود في صفحة "علامة تبويب جديدة". وسيتم إرسال رقم تتبُّع الطرد واسم الموقع الإلكتروني إلى فريق Google لتوفير هذه الميزة وتحسين ميزات التسوّق المقدّمة من Google للجميع. ويمكنك تغيير ذلك في أي وقت في <ph name="BEGIN_LINK" />إعدادات تتبُّع الطرود<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">‏استخدام Chrome بشكلٍ تلقائي</translation>
-<translation id="1105362920864247682">‏يمكنك محو بيانات التصفُّح في Chrome.</translation>
 <translation id="1143896152279775643">‏سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google لعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">‏افتح قائمة Chrome.</translation>
 <translation id="1180362651362502943">‏يمكنك مواصلة استخدام بيانات Chrome في حسابك على Google.</translation>
@@ -77,7 +76,6 @@
 <translation id="2750626042242931740">‏يمكنك تعديل اختياراتك متى شئت من خلال إعدادات Chrome.</translation>
 <translation id="2767464022270041271">‏ما مِن كلمات مرور محفوظة. لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند حفظها.</translation>
 <translation id="2789947168960170215">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">‏محو بيانات التصفُّح في Chrome</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="2876628302275096482">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chrome للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">‏1- افتَح إعدادات Chrome.</translation>
@@ -224,7 +222,6 @@
 <translation id="7466693328838535498">‏أدخِل كلمة "Chrome" في مربّع "البحث في التطبيقات المصغّرة"</translation>
 <translation id="746684838091935575">‏3- اختَر Chrome.</translation>
 <translation id="7492574581995589075">‏أوقفت مؤسستك إمكانية استخدام وحفظ بيانات Chrome في حسابك على Google. سيتم حفظ كلمات المرور والإشارات المرجعية الجديدة وغيرها على هذا الجهاز فقط.</translation>
-<translation id="756809126120519699">‏بيانات Chrome التي تم محوها</translation>
 <translation id="7581063337314642333">‏الانتقال إلى شبكة علامات التبويب في Chrome</translation>
 <translation id="7662994914830945754">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، سجِّل الدخول وفعِّل المزامنة.</translation>
 <translation id="7669869107155339016">‏انتقِل إلى إعدادات Chrome.</translation>

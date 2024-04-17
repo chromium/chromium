@@ -451,7 +451,6 @@
 <translation id="1810391395243432441">Защитите пароли при помощи блокировки экрана</translation>
 <translation id="1812527064848182527">горизонтальная ориентация</translation>
 <translation id="1812975699435941848">Санитарное просвещение и медицинское образование</translation>
-<translation id="1813414402673211292">Очистка истории</translation>
 <translation id="1816436748874040213">Может запрашивать разрешение на изменение масштаба и прокрутку содержимого демонстрируемых вкладок</translation>
 <translation id="1818522458013171885">Разблокировать</translation>
 <translation id="1818585559878922121">Документальные фильмы</translation>
@@ -873,7 +872,6 @@
 <translation id="2647086987482648627">Ткань (полуглянцевая)</translation>
 <translation id="264810637653812429">Совместимые устройства не найдены.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы открыть настройки Chrome и удалить историю браузера, файлы cookie, кеш и прочее.</translation>
 <translation id="2650446666397867134">Доступ к файлу запрещен</translation>
 <translation id="2651465929321991146">История и вкладки</translation>
 <translation id="2653659639078652383">Отправить</translation>
@@ -1200,7 +1198,6 @@
 <translation id="33073482541490531">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Измените его прямо сейчас в Менеджере паролей.</translation>
 <translation id="3307649904964670439">Кнопка "Настроить Chrome". Нажмите ее, чтобы настроить внешний вид браузера.</translation>
 <translation id="3308006649705061278">Подразделение (OU)</translation>
-<translation id="3310047144791481950">Включите эту функцию, чтобы узнавать, какой картой выгоднее оплатить покупку. Подробнее <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />о преимуществах карт<ph name="CARD_BENEFIT_HELP_LINK_END" />…</translation>
 <translation id="3318016344440038475">Телекомедии</translation>
 <translation id="3324687287337751929">4 x 6 дюймов</translation>
 <translation id="3324983252691184275">Малиновый</translation>
@@ -1369,7 +1366,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы запустить проверку безопасности в настройках Chrome.</translation>
 <translation id="3615309852743236517">Маникюр и педикюр</translation>
 <translation id="3620239073311576716">Униформа и рабочая одежда</translation>
-<translation id="36224234498066874">Очистить историю...</translation>
 <translation id="362276910939193118">Показать всю историю</translation>
 <translation id="3623041590998910684">Чтобы использовать камеру, предоставьте браузеру Chrome доступ в <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Романтические фильмы</translation>
@@ -2048,7 +2044,6 @@
 <translation id="4936134414789135531">Введенное значение "<ph name="VALUE_NAME" />" не найдено.</translation>
 <translation id="4936675324097895694">Финансы</translation>
 <translation id="4940163644868678279">Режим инкогнито в Chrome</translation>
-<translation id="494111439860963024">Кнопка "Очистить историю". Нажмите ее, чтобы удалить историю браузера, файлы cookie, кеш и другие данные в Chrome.</translation>
 <translation id="4943620199112228840">Использование микрофонов.</translation>
 <translation id="4943872375798546930">Нет результатов</translation>
 <translation id="4950898438188848926">Кнопка переключения между вкладками. Чтобы переключиться на открытую вкладку (<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />), нажмите клавишу "Ввод".</translation>
@@ -2057,7 +2052,7 @@
 <translation id="4957080528849277028">Кнопка "Посмотреть историю Chrome". Нажмите ее, чтобы перейти к управлению историей браузера в настройках Chrome.</translation>
 <translation id="4958444002117714549">Развернуть список</translation>
 <translation id="4960068118612257147">Вы можете изменить свой выбор в разделе "Конфиденциальность в рекламе" настроек Chrome.</translation>
-<translation id="4960203958361543136">Выберите поисковую систему</translation>
+<translation id="4960203958361543136">Выберите поисковую систему по умолчанию</translation>
 <translation id="4961708452830821006">Чтобы использовать микрофон, предоставьте браузеру Chrome доступ в <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Ландшафтный дизайн</translation>
 <translation id="4967366744630699583">Изменить адрес</translation>
@@ -2283,7 +2278,6 @@
 <translation id="541416427766103491">Укладчик 4</translation>
 <translation id="5414446060143308245">Проверьте файлы, перед тем как переносить их</translation>
 <translation id="5414511064953050917">Все равно переместить</translation>
-<translation id="5421136146218899937">Очистить историю...</translation>
 <translation id="5421408724705443535">Рок-музыка</translation>
 <translation id="5423269318075950257">Отслеживание цен</translation>
 <translation id="5425082381151187189">Обустройство дома и отделка помещений</translation>
@@ -2809,7 +2803,7 @@
 <translation id="6432297414176614592">Подробнее о темах рекламы</translation>
 <translation id="6432831586648556868">Вакансии в сфере продаж и маркетинга</translation>
 <translation id="6433490469411711332">Изменить контактную информацию</translation>
-<translation id="6433501201775827830">Выберите поисковую систему</translation>
+<translation id="6433501201775827830">Выберите поисковую систему по умолчанию</translation>
 <translation id="6433595998831338502">Сайт <ph name="HOST_NAME" /> не позволяет установить соединение.</translation>
 <translation id="6433797564277305076">Подтверждайте карты быстрее с помощью разблокировки устройства.</translation>
 <translation id="643917412048333145">Платья</translation>
@@ -3645,7 +3639,6 @@
 <translation id="8022542098135319050">Туристические агентства и услуги</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы сделать Chrome браузером по умолчанию.</translation>
 <translation id="8025119109950072390">Посещение этого сайта может привести к установке вредоносного ПО или хищению личной информации (например, паролей, телефонных номеров и данных банковских карт).</translation>
-<translation id="8026334261755873520">Очистить историю</translation>
 <translation id="8027077570865220386">Лоток 15</translation>
 <translation id="8027585818882015174">Кнопка "Запустить проверку безопасности". Нажмите ее, чтобы запустить проверку безопасности в Chrome.</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать форму Google, нажмите Tab, а затем Ввод.</translation>
@@ -3916,7 +3909,6 @@
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527681393107582734">Сельское хозяйство и лесоводство</translation>
 <translation id="8528149813106025610">Детская одежда</translation>
-<translation id="8530813470445476232">Удалить историю браузера, файлы cookie, кеш и другие данные в настройках Chrome</translation>
 <translation id="853246364274116957">Бродвей и музыкальные театры</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Чтобы посмотреть список заблокированных URL и узнать, какие ещё правила заданы системным администратором, перейдите на страницу &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>

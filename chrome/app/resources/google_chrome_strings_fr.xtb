@@ -83,7 +83,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2258103955319320201">Pour retrouver vos réglages Chrome sur tous vos appareils, connectez-vous, puis activez la synchronisation.</translation>
 <translation id="2290014774651636340">Les clés API Google sont manquantes. Certaines fonctionnalités de Google Chrome vont être désactivées.</translation>
 <translation id="2290095356545025170">Voulez-vous vraiment désinstaller Google Chrome ?</translation>
-<translation id="2298849085402457754">Pour effacer les données de navigation sur cet appareil uniquement, tout en les conservant dans votre compte Google, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Ceci est une installation secondaire de Google Chrome. Vous ne pouvez pas le définir comme navigateur par défaut.</translation>
 <translation id="2345992953227471816">Chrome a détecté que ces extensions contiennent des logiciels malveillants :</translation>
 <translation id="2348335408836342058">Chrome a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
@@ -113,7 +112,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2649768380733403658">Chrome vérifie régulièrement que les paramètres de votre navigateur sont les plus sûrs possibles. Si vous devez examiner quoi que ce soit, nous vous le signalerons.</translation>
 <translation id="2652691236519827073">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
 <translation id="2665296953892887393">Aidez-nous à améliorer Google Chrome en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
-<translation id="2712234843277364121">Relancer pour mettre à jour – Vos onglets seront rouverts</translation>
 <translation id="2738871930057338499">Impossible de se connecter à Internet : erreur HTTP 403 (accès interdit). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="2742320827292110288">Avertissement : Google Chrome ne peut pas empêcher les extensions d'enregistrer l'historique de votre navigation. Pour désactiver cette extension en mode navigation privée, désélectionnez cette option.</translation>
 <translation id="2765403129283291972">Chrome a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
@@ -328,6 +326,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6251759518630934363">Vous avertit en cas de sites dangereux, y compris ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chrome.</translation>
 <translation id="6273793429163604305">À vos marques...</translation>
 <translation id="6277547788421725101">Ton parent a désactivé "Autorisations des sites, applications et extensions" pour Chrome</translation>
+<translation id="627882678981830918">Personnaliser et contrôler Chrome. Définir Chrome comme navigateur par défaut.</translation>
 <translation id="6291089322031436445">Applications Chrome pour les développeurs</translation>
 <translation id="6291549208091401781">Google Chrome est déjà installé pour tous les utilisateurs de votre ordinateur.</translation>
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
@@ -491,7 +490,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8999117580775242387">Lorsque HTTPS n'est pas disponible, Chrome utilise une connexion non sécurisée sans vous avertir</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est disponible}=1{Une mise à jour de Chrome est disponible}one{Une mise à jour de Chrome est disponible depuis # jour}other{Une mise à jour de Chrome est disponible depuis # jours}}</translation>
 <translation id="9053892488859122171">Système ChromeOS Flex</translation>
-<translation id="9054037008353851982">Relancer pour mettre à jour – Vos onglets seront rouverts</translation>
 <translation id="9090566250983691233">Découvrez pourquoi Chrome bloque certains fichiers</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
 <translation id="9138603949443464873">Pour appliquer vos modifications, relancez Chrome</translation>

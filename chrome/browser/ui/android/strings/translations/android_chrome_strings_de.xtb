@@ -65,7 +65,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1273937721055267968"><ph name="DOMAIN" /> blockieren</translation>
 <translation id="1283039547216852943">Zum Maximieren tippen</translation>
 <translation id="1289059016768036948">Du wirst möglicherweise aufgefordert, dich in deinem Google-Konto anzumelden</translation>
-<translation id="1291207594882862231">Cache leeren sowie Verlauf, Cookies und andere Daten löschen</translation>
 <translation id="129553762522093515">Kürzlich geschlossen</translation>
 <translation id="1298077576058087471">Bis zu 60 % Daten sparen und die Nachrichten von heute lesen</translation>
 <translation id="1303339473099049190">Dieses Passwort wurde nicht gefunden. Überprüfe die Schreibweise und versuche es noch einmal.</translation>
@@ -380,7 +379,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="2992473221983447149">Bildbeschreibungen</translation>
 <translation id="2996291259634659425">Passphrase erstellen</translation>
 <translation id="2996809686854298943">URL erforderlich</translation>
-<translation id="2996932914629936323">Löscht den Verlauf auf allen synchronisierten Geräten</translation>
 <translation id="2997081575621687554">Wenn eine Google Sites-Website anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verschlüsselt Chrome die verlinkten Seiten und lädt sie ohne Cookies über Google-Server vorab. Damit wird deine Identität vor der vorab geladenen Website verborgen.</translation>
 <translation id="3003253259757197230">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du möglicherweise als Nächstes besuchen wirst, und um dir zusätzliche Informationen über die Seite anzuzeigen, auf der du gerade bist</translation>
 <translation id="3026955690410463085">Link hinzufügen</translation>
@@ -542,7 +540,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="3932390316856284148">Ansicht zum Anmelden am unteren Rand ist vollständig geöffnet.</translation>
 <translation id="393697183122708255">Keine aktivierte Sprachsuche verfügbar</translation>
 <translation id="395377504920307820">Ohne Konto verwenden</translation>
-<translation id="3958287878205277013">Schließe alle Inkognitotabs, um den Inkognito-Browserverlauf vom Gerät zu löschen</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome lädt deine Seite, sobald diese bereit ist}other{Chrome lädt deine Seiten, sobald diese bereit sind}}</translation>
 <translation id="3962119236270174787">Standardschutz vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind</translation>
 <translation id="3969142555815019568">Chrome kann deine Passwörter nicht prüfen</translation>
@@ -848,7 +845,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5468068603361015296">Möchtest du <ph name="FILE_NAME" /> trotzdem herunterladen?</translation>
 <translation id="548278423535722844">In einer Karten-App öffnen</translation>
 <translation id="5486841595534124508">Logo der Datenschutzhinweise der Seitenstatistiken, das auf die Seite „Meine Aktivitäten“ weiterleitet.</translation>
-<translation id="5487521232677179737">Daten löschen</translation>
 <translation id="5492637351392383067">Verschlüsselung auf dem Gerät</translation>
 <translation id="5514904542973294328">Vom Administrator dieses Geräts deaktiviert</translation>
 <translation id="5515439363601853141">Entsperren, um dein Passwort zu sehen</translation>
@@ -887,7 +883,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="5683547024293500885">Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="5686790454216892815">Dateiname zu lang</translation>
 <translation id="5687606994963670306">Websites, die länger als 30 Tage gelistet sind, werden von Chrome automatisch gelöscht. Eine Website, die du noch einmal besuchst, kann wieder in der Liste angezeigt werden. Du kannst auch Websites blockieren, sodass sie für dich keine Werbung mehr vorschlagen können. <ph name="BEGIN_LINK" />Weitere Informationen zum Verwalten des Datenschutzes bei Anzeigen in Chrome<ph name="END_LINK" /></translation>
-<translation id="569435661099256888">Du kannst die von dir besuchten Seiten ansehen oder sie aus dem Verlauf löschen</translation>
 <translation id="569536719314091526">Über die Schaltfläche "Weitere Optionen" kannst du dir diese Seite in eine beliebige Sprache übersetzen lassen</translation>
 <translation id="5696597120588531049">Chrome kann helfen, dich vor Bedrohungen wie Datenpannen und unsicheren Websites zu schützen</translation>
 <translation id="5698878456427040674">Prüfe, ob das ausgewählte Konto unterstützt wird.</translation>
@@ -914,7 +909,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="5780792035410621042">Wenn du Passwörter kopieren möchtest, richte zuerst eine Displaysperre auf deinem Gerät ein</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> von <ph name="SPACE_AVAILABLE" /> werden verwendet</translation>
 <translation id="5795872532621730126">Suchen und surfen</translation>
-<translation id="5797521893972859201">Löscht den Verlauf, auch im Suchfeld</translation>
 <translation id="5797949256525811424">Blockiertes Thema</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Vor # Stunde}other{Vor # Stunden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC Alle Rechte vorbehalten.</translation>
@@ -1087,7 +1081,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6637100877383020115">Chrome sendet Nutzungsstatistiken und Absturzberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_UMA_LINK" />Verwalten<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Immer blockieren</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> entfernen</translation>
-<translation id="6643016212128521049">Löschen</translation>
 <translation id="6645629752388991326">Du kannst festlegen, welche Geräte dieses Gerät als Sicherheitsschlüssel für die Anmeldung verwenden können.</translation>
 <translation id="6646696210740573446">Sendet einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs und Teile von Seiteninhalten an Google senden.</translation>
 <translation id="6647441008198474441">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du voraussichtlich als Nächstes besuchen wirst</translation>
@@ -1283,8 +1276,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="752220631458524187">Wenn du fertig bist, kannst du die Verbindung trennen</translation>
 <translation id="7523960634226602883">Mit deiner Kamera über Google Lens suchen</translation>
 <translation id="752731652852882757">Im Inkognitomodus blockieren</translation>
-<translation id="7562080006725997899">Browserdaten werden gelöscht</translation>
-<translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
 <translation id="7577900504646297215">Interessen verwalten</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> Datei heruntergeladen}other{<ph name="FILES_DOWNLOADED_MANY" /> Dateien heruntergeladen}}</translation>
 <translation id="7581273696622423628">An Umfrage teilnehmen</translation>
@@ -1317,14 +1308,12 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7697383401610880082">Ziehpunkt</translation>
 <translation id="7698359219371678927">E-Mail in <ph name="APP_NAME" /> erstellen</translation>
 <translation id="7702029078562412515">Abfragekacheln</translation>
-<translation id="7702388902581909985">Durch das Löschen deiner Browserdaten wirst du nicht von deinem Google-Konto abgemeldet. <ph name="BEGIN_LINK1" />Melde dich dazu von Chrome ab.<ph name="END_LINK1" /></translation>
 <translation id="7707922173985738739">Mobile Daten verwenden</translation>
 <translation id="7709918231054955894">Alle deine Tabs abrufen</translation>
 <translation id="7733878270780732638">Nicht genug Speicherplatz auf dem Gerät.</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7762668264895820836">SD-Karte <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
-<translation id="7766587497031415281">Weitere Optionen zum Löschen von Browserdaten</translation>
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> schließen</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
@@ -1383,7 +1372,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8013372441983637696">Meine Chrome-Daten auch von diesem Gerät löschen</translation>
 <translation id="8015452622527143194">Gesamten Seiteninhalt auf Standardgröße zurücksetzen</translation>
 <translation id="8026238112629815203">Die Passwortspeicherung auf diesem Gerät wurde geändert</translation>
-<translation id="8026334261755873520">Browserdaten löschen</translation>
 <translation id="8027863900915310177">Speicherort auswählen</translation>
 <translation id="8030852056903932865">Genehmigen</translation>
 <translation id="8032569120109842252">Folge ich</translation>
@@ -1480,6 +1468,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="84594714173170813">Chrome-Daten in deinem Google-Konto weiterhin verwenden</translation>
 <translation id="8460448946170646641">Die wichtigsten Datenschutz- und Sicherheitseinstellungen überprüfen</translation>
 <translation id="8473863474539038330">Adressen und andere Daten</translation>
+<translation id="8477178913400731244">Daten löschen</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Verlaufsseite öffnen</translation>
 <translation id="8493948351860045254">Speicherplatz freigeben</translation>
@@ -1517,7 +1506,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
 <translation id="864544049772947936">Fenster verwalten (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor sie eintreten</translation>
-<translation id="8655129584991699539">Du kannst die Daten in den Chrome-Einstellungen löschen</translation>
 <translation id="8664215986015753476">Chrome für dich anpassen</translation>
 <translation id="8664979001105139458">Dateiname schon vorhanden</translation>
 <translation id="8676276370198826499">Bei <ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> anmelden</translation>

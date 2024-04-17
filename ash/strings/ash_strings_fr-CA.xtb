@@ -68,6 +68,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1218444235442067213"><ph name="APP_NAME" />, application Play Store</translation>
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
+<translation id="1230853660706736937">Rechercher du texte dans les images et consulter les aperçus des images</translation>
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
 <translation id="1240638468526743569">Une application</translation>
@@ -715,11 +716,13 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3824784079442479685">Cela autorise l'accès à l'appareil photo pour <ph name="APP_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="3826099427150913765">Passer au mot de passe</translation>
 <translation id="383058930331066723">Le mode Économiseur de pile est activé</translation>
+<translation id="3831226344927851293">Quitter l'affichage de tutoriel</translation>
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
 <translation id="384082539148746321">Supprimer le modèle?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, puis <ph name="KEY_ONE" /> ou <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94/5</translation>
 <translation id="3846575436967432996">Aucune information concernant le réseau</translation>
+<translation id="3848526302597027234">Accédez aux autorisations suivantes :</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="385300504083504382">Début</translation>
 <translation id="3859364108019690">Impossible de diffuser des applications</translation>
@@ -1814,7 +1817,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8001755249288974029">Sélectionner le texte du curseur au début de la ligne</translation>
 <translation id="8004512796067398576">Incrémenter</translation>
 <translation id="8015361438441228492">Impossible de modifier la tâche.</translation>
-<translation id="8026334261755873520">Effacer les données de navigation</translation>
 <translation id="802782383769312836">Bureau précédent : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Échec de la connexion au point d'accès sans fil</translation>
 <translation id="8029629653277878342">Le NIP ou le mot de passe est exigé pour plus de sécurité</translation>

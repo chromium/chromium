@@ -65,7 +65,6 @@
 <translation id="1273937721055267968"><ph name="DOMAIN" /> 차단</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
 <translation id="1289059016768036948">Google 계정에 로그인하라는 메시지가 표시됩니다</translation>
-<translation id="1291207594882862231">방문 기록, 쿠키, 사이트 데이터, 캐시 삭제…</translation>
 <translation id="129553762522093515">최근에 닫은 탭</translation>
 <translation id="1298077576058087471">데이터 최대 60% 절약 및 오늘의 뉴스 읽기</translation>
 <translation id="1303339473099049190">비밀번호를 찾을 수 없습니다. 철자를 확인하고 다시 시도해 주세요.</translation>
@@ -380,7 +379,6 @@
 <translation id="2992473221983447149">이미지 설명</translation>
 <translation id="2996291259634659425">암호 만들기</translation>
 <translation id="2996809686854298943">URL이 필요합니다.</translation>
-<translation id="2996932914629936323">동기화된 모든 기기에서 기록 삭제</translation>
 <translation id="2997081575621687554">Google 사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 페이지를 암호화한 다음 쿠키를 사용하지 않고 Google 서버를 통해 미리 로드합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있습니다.</translation>
 <translation id="3003253259757197230">다음에 방문할 사이트를 예측하고 현재 방문 중인 페이지에 관한 추가 정보를 표시하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
 <translation id="3026955690410463085">링크 포함</translation>
@@ -542,7 +540,6 @@
 <translation id="3932390316856284148">로그인 하단 시트가 전체 높이로 열렸습니다.</translation>
 <translation id="393697183122708255">사용 가능한 음성 검색이 없습니다.</translation>
 <translation id="395377504920307820">계정 없이 사용</translation>
-<translation id="3958287878205277013">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 시크릿 탭을 닫으세요.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{준비가 완료되면 Chrome에서 페이지를 로드합니다.}other{준비가 완료되면 Chrome에서 페이지를 로드합니다.}}</translation>
 <translation id="3962119236270174787">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 대응하는 표준 보호 기능입니다.</translation>
 <translation id="3969142555815019568">Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
@@ -848,7 +845,6 @@
 <translation id="5468068603361015296">그래도 <ph name="FILE_NAME" /> 파일을 다운로드하시겠습니까?</translation>
 <translation id="548278423535722844">지도 앱에서 열기</translation>
 <translation id="5486841595534124508">내 활동 페이지로 리디렉션되는 페이지 인사이트 허브의 개인정보처리방침 로고</translation>
-<translation id="5487521232677179737">인터넷 사용 기록 삭제</translation>
 <translation id="5492637351392383067">기기 내 암호화</translation>
 <translation id="5514904542973294328">기기 관리자가 사용 중지함</translation>
 <translation id="5515439363601853141">비밀번호를 보려면 잠금 해제하세요</translation>
@@ -887,7 +883,6 @@
 <translation id="5683547024293500885">Chrome에서 업데이트를 확인할 수 없음</translation>
 <translation id="5686790454216892815">파일 이름이 너무 깁니다.</translation>
 <translation id="5687606994963670306">Chrome에서는 30일이 지난 사이트를 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 또는 사용자가 사이트에서 광고를 추천하지 못하도록 차단할 수 있습니다. <ph name="BEGIN_LINK" />Chrome에서 광고 개인 정보 보호 관리<ph name="END_LINK" />에 대해 자세히 알아보세요.</translation>
-<translation id="569435661099256888">방문한 페이지를 확인하거나 방문 기록에서 삭제할 수 있습니다</translation>
 <translation id="569536719314091526">옵션 더보기 버튼을 눌러 이 페이지를 원하는 언어로 번역하세요</translation>
 <translation id="5696597120588531049">Chrome은 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호해 줍니다.</translation>
 <translation id="5698878456427040674">선택한 계정이 지원되는지 확인하세요.</translation>
@@ -914,7 +909,6 @@
 <translation id="5780792035410621042">비밀번호를 복사하려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> 중 <ph name="SPACE_USED" /> 사용 중</translation>
 <translation id="5795872532621730126">검색 및 탐색</translation>
-<translation id="5797521893972859201">검색창에 입력한 내용을 비롯한 기록 삭제</translation>
 <translation id="5797949256525811424">주제를 차단했습니다.</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{#시간 전}other{#시간 전}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
@@ -1087,7 +1081,6 @@
 <translation id="6637100877383020115">앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">항상 차단</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> 삭제</translation>
-<translation id="6643016212128521049">삭제</translation>
 <translation id="6645629752388991326">이 기기를 보안 키로 사용하여 로그인할 수 있는 기기를 제어합니다.</translation>
 <translation id="6646696210740573446">IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 Google에 보낼 수 있습니다.</translation>
 <translation id="6647441008198474441">다음에 방문할 사이트를 예측하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
@@ -1283,8 +1276,6 @@
 <translation id="752220631458524187">완료 후 연결 해제하세요.</translation>
 <translation id="7523960634226602883">Google 렌즈를 사용하여 카메라로 검색</translation>
 <translation id="752731652852882757">시크릿 모드를 사용하는 동안에는 차단</translation>
-<translation id="7562080006725997899">인터넷 사용 기록 삭제</translation>
-<translation id="756809126120519699">Chrome 데이터 삭제됨</translation>
 <translation id="7577900504646297215">관심분야 관리</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />개 파일 다운로드됨}other{<ph name="FILES_DOWNLOADED_MANY" />개 파일 다운로드됨}}</translation>
 <translation id="7581273696622423628">설문조사 참여</translation>
@@ -1317,14 +1308,12 @@
 <translation id="7697383401610880082">드래그 핸들</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />에서 이메일 만들기</translation>
 <translation id="7702029078562412515">쿼리 타일</translation>
-<translation id="7702388902581909985">인터넷 사용 기록을 삭제해도 Google 계정에서는 로그아웃되지 않습니다. 다시 시작하려면 <ph name="BEGIN_LINK1" />Chrome에서 로그아웃<ph name="END_LINK1" />하세요.</translation>
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
 <translation id="7709918231054955894">탭 모두 가져오기</translation>
 <translation id="7733878270780732638">기기에 공간이 부족합니다.</translation>
 <translation id="7759809451544302770">선택사항</translation>
 <translation id="7762668264895820836">SD 카드 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">주소 추가</translation>
-<translation id="7766587497031415281">인터넷 사용 기록 삭제 옵션 더보기</translation>
 <translation id="7772032839648071052">암호 확인</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> 닫기</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
@@ -1383,7 +1372,6 @@
 <translation id="8013372441983637696">이 기기에서 내 Chrome 데이터 삭제</translation>
 <translation id="8015452622527143194">페이지의 모든 항목을 기본 크기로 되돌리기</translation>
 <translation id="8026238112629815203">이 기기에 비밀번호가 저장되는 방식이 변경되었습니다.</translation>
-<translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
 <translation id="8027863900915310177">다운로드 위치 선택</translation>
 <translation id="8030852056903932865">승인</translation>
 <translation id="8032569120109842252">팔로우 중</translation>
@@ -1480,6 +1468,7 @@
 <translation id="84594714173170813">Google 계정의 Chrome 데이터를 계속 사용하세요.</translation>
 <translation id="8460448946170646641">주요 개인 정보 보호 및 보안 제어 기능 검토</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
+<translation id="8477178913400731244">데이터 삭제</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">방문 기록 페이지 열기</translation>
 <translation id="8493948351860045254">저장 공간 확보하기</translation>
@@ -1517,7 +1506,6 @@
 <translation id="8636825310635137004">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
 <translation id="864544049772947936">창 관리(<ph name="INSTANCE_COUNTS" />개)</translation>
 <translation id="8645920082661222035">위험한 이벤트가 발생하기 전에 이를 예측하여 알립니다.</translation>
-<translation id="8655129584991699539">Chrome 설정에서 데이터를 삭제할 수 있습니다.</translation>
 <translation id="8664215986015753476">원하는 방식으로 Chrome 사용</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" />에 가입하기</translation>

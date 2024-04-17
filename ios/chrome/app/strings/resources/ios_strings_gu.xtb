@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">આપનું ફરી સ્વાગત છે, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">કાર્ડધારકનું નામ</translation>
 <translation id="1809939268435598390">ફોલ્ડર ડિલીટ કરો</translation>
-<translation id="1813414402673211292">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="1815941218935345331">પાસકોડ</translation>
 <translation id="1820259098641718022">વાંચન સૂચિમાં ઉમેર્યું</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">વેબપેજ લોડ કર્યું</translation>
 <translation id="223356358902285214">વેબ અને ઍપ પ્રવૃત્તિ</translation>
 <translation id="2234827758954819389">પ્રાઇવસી સંબંધિત માર્ગદર્શિકા</translation>
-<translation id="2239626343334228536">બ્રાઉઝિંગ ડેટા સાફ થઈ રહ્યો છે...</translation>
 <translation id="2251686759395008410">મેનૂ → ઇતિહાસ</translation>
 <translation id="2252674110805316998">વેબ પર શોધ</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> માટે Driveમાં સાચવવામાં આવી રહી છે.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">નવી છૂપી વિન્ડો</translation>
 <translation id="3488501490964659223">ટૅબ બંધ કરવામાં આવી અને બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવ્યો. તમને સાઇન આઉટ કરવામાં આવ્યા</translation>
 <translation id="3493531032208478708">સૂચવેલ કન્ટેન્ટ વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">બ્રાઉઝિંગ ડેટા સાફ કરવાની પુષ્ટિ કરો</translation>
 <translation id="35083190962747987">${url} ખોલો</translation>
 <translation id="3519193562722059437">વેબ બ્રાઉઝ કરવા ટેબ ખોલો.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ટૅબ ખોલો}one{{count} ટૅબ ખોલો}other{{count} ટૅબ ખોલો}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">બુકમાર્કમાં ઉમેરો</translation>
 <translation id="355101282835380364">એકાઉન્ટમાં સાચવો…</translation>
 <translation id="3551320343578183772">ટૅબ બંધ કરો</translation>
-<translation id="3565207542107370586">બ્રાઉઝિંગ ડેટા સાફ કરો…</translation>
 <translation id="3565930036634619844">ટૅબ. <ph name="NUMBER_OF_TABS" />માંથી <ph name="TAB_INDEX" />.</translation>
 <translation id="3570693105179140209">વધુ પાસવર્ડ માટે બે વાર ટૅપ કરો.</translation>
 <translation id="3575234738189584619">Lens વડે શોધો</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438">શું તમારો અર્થ <ph name="WEBSITE" /> હતો?</translation>
 <translation id="6032845897905314562">નવી સુવિધા</translation>
 <translation id="6033598293589037429">પિકઅપ માટે તૈયાર</translation>
-<translation id="6036215966221662377">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="6036514205982097558">એક જ બ્રાઉઝરમાં તમારી બધી ટૅબ</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
@@ -1151,7 +1146,6 @@
 <translation id="6859944681507688231">QR કોડ અથવા ક્રેડિટ કાર્ડ સ્કૅન કરવા માટે, સેટિંગમાં કૅમેરા ચાલુ કરો.</translation>
 <translation id="6867369562105931222">પાસવર્ડ</translation>
 <translation id="686899695320434745">સરનામાઓને તમારા પાસફ્રેઝ વડે એન્ક્રિપ્ટ કરવામાં આવતા નથી. આ તમને Googleની અન્ય સેવાઓમાં તેનો ઉપયોગ કરવા દે છે.</translation>
-<translation id="6869389390665537774">તમે જેની મુલાકાત લીધેલી હોય તેવા પેજ તમે તમારા ઇતિહાસમાં જોઈ શકો છો અથવા તેમાંથી તેને સાફ કરી શકો છો</translation>
 <translation id="687135068089457384">સેટિંગ બતાવો</translation>
 <translation id="6873263987691478642">વિભાજિત દૃશ્ય</translation>
 <translation id="6882836635272038266">જોખમકારક જણાતી હોય એવી વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેંશન સામે માનક સંરક્ષણ.</translation>
@@ -1297,7 +1291,6 @@
 <translation id="7719038820139380048">તમારી રુચિઓ આધારિત કન્ટેન્ટ મેળવવા માટે સાઇન ઇન કરો.</translation>
 <translation id="7720410380936703141">ફરી પ્રયાસ કરો</translation>
 <translation id="7724085059277147439">{count,plural, =1{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}one{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}other{આઇટમને તમારા Google એકાઉન્ટ, {email}માં સાચવી}}</translation>
-<translation id="7726702057919861819">મેનૂ → ઇતિહાસ → બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="7729458878441927652">તમારા અન્ય ડિવાઇસમાંના ટૅબ જોવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો.</translation>
 <translation id="7730973429297233609">જેનો ઉપયોગ કરીને તમે <ph name="FILENAME" /> - <ph name="FILESIZE" />ને સાચવવા માગો છો, તે એકાઉન્ટ પસંદ કરો</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. માત્ર આ જ ડિવાઇસ પર.</translation>
@@ -1542,7 +1535,6 @@
 <translation id="8870413625673593573">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="8876882697946675716">તમારા ડિવાઇસને સિંક કરેલું રાખો</translation>
 <translation id="8879604564928138696">અજમાવવા માટે બે વાર ટૅપ કરો</translation>
-<translation id="8879984884633913185">'બ્રાઉઝિંગ ડેટા સાફ કરો' છુપાવો</translation>
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> પર આ છબી શોધો</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
 <translation id="890565330728586731">પાછળ</translation>

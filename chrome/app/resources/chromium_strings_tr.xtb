@@ -70,7 +70,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2329088755516916767">Chromium, bu ayar açıkken sayfaları önceden yükleyerek internette gezinme ve arama işlemlerini hızlandırır.</translation>
 <translation id="2343156876103232566">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chromium'da oturum açın.</translation>
 <translation id="2359808026110333948">Devam et</translation>
-<translation id="2359920621792549529">Tarama verilerini yalnızca bu cihazdan temizleyip Google Hesabınızda tutmak için <ph name="BEGIN_LINK" />Chromium oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">Hesap oturum açma ayrıntılarınız güncel olmadığından ChromiumOS, verilerinizi senkronize edemedi.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Bir veya daha fazla Chromium uzantısı, 1 insan arabirim cihazına erişiyordu}=1{Bir veya daha fazla Chromium uzantısı, 1 insan arabirim cihazına erişiyor}other{Bir veya daha fazla Chromium uzantısı, # insan arabirim cihazına erişiyor}}</translation>
 <translation id="2401032172288869980">Bu site için Chromium'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
@@ -248,6 +247,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium'u bu dilde görüntüle</translation>
 <translation id="569897634095159764">İnternet'e bağlanılamıyor. Proxy sunucu kimlik doğrulama gerektiriyor.</translation>
+<translation id="5800158606660203929">Chromium'u özelleştirin ve kontrol edin. Chromium'u varsayılan tarayıcınız olarak ayarlayın.</translation>
 <translation id="5809516625706423866">İnternet'e bağlanılamadı. HTTP 401 Yetkisiz. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
 <translation id="5883558403894052917">Chromium, aşağıdaki öğelerde kötü amaçlı yazılım tespit etti:</translation>

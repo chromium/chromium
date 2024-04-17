@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">እንኳን በደህና ተመልሰው መጡ፣ <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">የካርድ ያዢው ስም</translation>
 <translation id="1809939268435598390">አቃፊ ሰርዝ</translation>
-<translation id="1813414402673211292">የአሰሳ ውሂብ አስወግድ</translation>
 <translation id="1815941218935345331">የይለፍ ኮድ</translation>
 <translation id="1820259098641718022">ወደ የንባብ ዝርዝር ታክሏል</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">ድረ-ገፅ ተጭኗል</translation>
 <translation id="223356358902285214">የድር እና የመተግበሪያ እንቅስቃሴ</translation>
 <translation id="2234827758954819389">የግላዊነት መመሪያ</translation>
-<translation id="2239626343334228536">የአሰሳ ውሂብን በማጽዳት ላይ...</translation>
 <translation id="2251686759395008410">ምናሌ → ታሪክ</translation>
 <translation id="2252674110805316998">የድር ፍለጋ</translation>
 <translation id="2252749852083403809">በDrive ውስጥ ለ<ph name="USER_EMAIL" /> በማስቀመጥ ላይ።</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">አዲስ ማንነትን የማያሳውቅ መስኮት</translation>
 <translation id="3488501490964659223">ትሮች ተዘግተዋል እና የአሰሳ ውሂብ ተሰርዟል። እርስዎ ዘግተው ወጥተዋል</translation>
 <translation id="3493531032208478708">ስለሚጠቆም ይዘት <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">የአሰሳ ውሂብን ማጽዳትን ያረጋግጡ</translation>
 <translation id="35083190962747987">${url} ክፈት</translation>
 <translation id="3519193562722059437">ድሩን ለማሰስ ትር ይክፈቱ።</translation>
 <translation id="3519905498307021260">{count,plural, =1{ትሩን ክፈት}one{{count} ትር ክፈት}other{{count} ትሮች ክፈት}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">ወደ እልባቶች አክል</translation>
 <translation id="355101282835380364">በመለያ ውስጥ አስቀምጥ…</translation>
 <translation id="3551320343578183772">ትር ዝጋ</translation>
-<translation id="3565207542107370586">የአሰሳ ውሂብን አጽዳ…</translation>
 <translation id="3565930036634619844">ትር። <ph name="TAB_INDEX" /> ከ<ph name="NUMBER_OF_TABS" />።</translation>
 <translation id="3570693105179140209">ለተጨማሪ የይለፍ ቃላት ሁለቴ መታ ያድርጉ።</translation>
 <translation id="3575234738189584619">በሌንስ ፈልግ</translation>
@@ -969,7 +965,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6027945736510816438"><ph name="WEBSITE" /> ለማለት ፈልገው ነው?</translation>
 <translation id="6032845897905314562">አዲስ ባህሪ</translation>
 <translation id="6033598293589037429">ለመወሰድ ዝግጁ የሆነ</translation>
-<translation id="6036215966221662377">የአሰሳ ውሂብን አጽዳ</translation>
 <translation id="6036514205982097558">ሁሉም ትሮችዎ በአንድ አሳሽ ውስጥ</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />፣ <ph name="PUBLISHER_INFORMATION" />፣ <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">ዝጋ</translation>
@@ -1152,7 +1147,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6859944681507688231">አንድ QR ኮድ ወይም ክሬዲት ካርድ ለመቃኘት ከቅንብሮች ሆነው ካሜራውን ያንቁት።</translation>
 <translation id="6867369562105931222">የይለፍ ቃል</translation>
 <translation id="686899695320434745">አድራሻዎች በእርስዎ የይለፍ ሐረግ የተመሰጠሩ አይደሉም። ይህ በሌሎች የGoogle አገልግሎቶች እንዲጠቀሟቸው ያስችልዎታል።</translation>
-<translation id="6869389390665537774">የጎበኟቸዉን ገጾች ማየት ወይም ከታሪክዎ ውስጥ ማፅዳት ይችላሉ</translation>
 <translation id="687135068089457384">ቅንብሮችን አሳይ</translation>
 <translation id="6873263987691478642">የተከፈለ ዕይታ</translation>
 <translation id="6882836635272038266">አደገኛ መሆናቸው ከታወቁ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች መደበኛ ጥበቃ።</translation>
@@ -1298,7 +1292,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7719038820139380048">በፍላጎቶችዎ መሰረት ይዘት ለማግኘት በመለያ ይግቡ።</translation>
 <translation id="7720410380936703141">እንደገና ይሞክሩ</translation>
 <translation id="7724085059277147439">{count,plural, =1{በእርስዎ Google መለያ፣ {email} ውስጥ የተቀመጠ ንጥል}one{በእርስዎ Google መለያ፣ {email} ውስጥ የተቀመጠ ንጥል}other{በእርስዎ Google መለያ፣ {email} ውስጥ የተቀመጡ ንጥሎች}}</translation>
-<translation id="7726702057919861819">ምናሌ → ታሪክ → የአሰሳ ውሂብን አጽዳ</translation>
 <translation id="7729458878441927652">ከሌሎች መሣሪያዎችዎ ላይ ትሮችን ለማየት ትሮችዎን እና ታሪክዎን ያስምሩ።</translation>
 <translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> ለማስቀመጥ ሊጠቀሙበት የሚፈልጉትን መለያ ይምረጡ</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />። በዚህ መሣሪያ ላይ ብቻ።</translation>
@@ -1547,7 +1540,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8870413625673593573">በቅርብ ጊዜ የተዘጉ</translation>
 <translation id="8876882697946675716">መሳሪያዎችዎን በስምረት ላይ ያቆዩዋቸው</translation>
 <translation id="8879604564928138696">ለመሞከር ሁለቴ መታ ያድርጉ</translation>
-<translation id="8879984884633913185">የአሰሳ ውሂብ አጽዳን ደብቅ</translation>
 <translation id="8881801611828450202">ይህን ምስል በ<ph name="SEARCH_ENGINE" /> ውስጥ ፈልግ</translation>
 <translation id="8898822736010347272">አዲስ ስጋቶችን ለማግኘት እንዲያግዝ እና በድር ላይ ያለ ሁሉንም ሰው ለመጠበቅ የጎበኟቸው የአንዳንድ ገጾች ዩአርኤሎችን፣ የተወሰነ የስርዓት መረጃን እና አንዳንድ የገጽ ይዘትን ወደ Google ይልካል።</translation>
 <translation id="890565330728586731">ተመለስ</translation>

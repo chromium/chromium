@@ -65,7 +65,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="1273937721055267968">Estä <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Laajenna napauttamalla.</translation>
 <translation id="1289059016768036948">Sinua pyydetään kirjautumaan Google-tilillesi</translation>
-<translation id="1291207594882862231">Tyhjennä historia, evästeet, sivustojen tiedot, välimuisti ja niin edelleen.</translation>
 <translation id="129553762522093515">Hiljattain suljetut välilehdet</translation>
 <translation id="1298077576058087471">Käytä jopa 60 % vähemmän dataa, lue päivän uutiset</translation>
 <translation id="1303339473099049190">Tätä salasanaa ei löydy. Tarkista oikeinkirjoitus ja yritä uudelleen.</translation>
@@ -380,7 +379,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="2992473221983447149">Kuvien kuvaukset</translation>
 <translation id="2996291259634659425">Luo tunnuslause</translation>
 <translation id="2996809686854298943">URL-osoite vaaditaan</translation>
-<translation id="2996932914629936323">Tyhjentää kaikkien synkronoitujen laitteiden historian</translation>
 <translation id="2997081575621687554">Kun Googlen sivusto pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Chrome salaa ja esilataa sivut Googlen palvelimien kautta ilman evästeitä. Henkilöllisyytesi piilotetaan esiladatulta sivustolta.</translation>
 <translation id="3003253259757197230">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida, ja sivusta voidaan näyttää lisätietoa</translation>
 <translation id="3026955690410463085">Sisällytä linkki</translation>
@@ -542,7 +540,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="3932390316856284148">Kirjautumispaneeli avattu koko näytölle.</translation>
 <translation id="393697183122708255">Puhehaku ei ole käytössä</translation>
 <translation id="395377504920307820">Käytä ilman tiliä</translation>
-<translation id="3958287878205277013">Tyhjennä laitteen incognito-selaushistoria sulkemalla kaikki incognito-välilehdet.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome lataa sivusi, kun se on valmis}other{Chrome lataa sivusi, kun ne ovat valmiina}}</translation>
 <translation id="3962119236270174787">Perustason suojaus vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan</translation>
 <translation id="3969142555815019568">Chrome ei voi tarkistaa salasanojasi</translation>
@@ -848,7 +845,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5468068603361015296">Ladataanko <ph name="FILE_NAME" /> silti?</translation>
 <translation id="548278423535722844">Avaa karttasovelluksessa</translation>
 <translation id="5486841595534124508">Tietosuojailmoituksen logo sivun Insights-hubissa, joka uudelleenohjaa Omat tapahtumat ‑sivulle.</translation>
-<translation id="5487521232677179737">Poista tiedot</translation>
 <translation id="5492637351392383067">Laitteen salaus</translation>
 <translation id="5514904542973294328">Laitteen järjestelmänvalvojan estämä</translation>
 <translation id="5515439363601853141">Avaa lukitus nähdäksesi salasanan</translation>
@@ -887,7 +883,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="5683547024293500885">Chrome ei voi tarkistaa päivityksiä</translation>
 <translation id="5686790454216892815">Tiedoston nimi on liian pitkä</translation>
 <translation id="5687606994963670306">Chrome poistaa automaattisesti yli 30 päivää vanhat sivustot. Jos käyt taas sivustolla, se voi näkyä listalla uudelleen. Voit myös estää sivustoa ehdottamasta sinulle mainoksia. Lue lisää <ph name="BEGIN_LINK" />mainosyksityisyyden ylläpidosta Chromessa<ph name="END_LINK" />.</translation>
-<translation id="569435661099256888">Voit nähdä avaamasi sivut tai poistaa ne historiasta</translation>
 <translation id="569536719314091526">Käännä sivu mille tahansa kielelle Lisävalinnat-painikkeella</translation>
 <translation id="5696597120588531049">Chrome voi auttaa suojaamaan sinua esim. tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta</translation>
 <translation id="5698878456427040674">Tarkista, tuetaanko valittua tiliä.</translation>
@@ -914,7 +909,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="5780792035410621042">Jos haluat kopioida salasanoja, sinun on asetettava näytön lukitus laitteellesi</translation>
 <translation id="5793665092639000975">Käytössä <ph name="SPACE_USED" /> / <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Hae ja selaa</translation>
-<translation id="5797521893972859201">Tyhjentää historian esim. hakukentästä</translation>
 <translation id="5797949256525811424">Estetty aihe</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# tunti sitten}other{# tuntia sitten}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
@@ -1087,7 +1081,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6637100877383020115">Chrome lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_UMA_LINK" />Muokkaa<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Estä aina</translation>
 <translation id="6641780377503683465">Poista <ph name="INTEREST" /></translation>
-<translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6645629752388991326">Hallitse, mitkä laitteet voivat kirjautua sisään käyttämällä tätä laitetta suojausavaimena.</translation>
 <translation id="6646696210740573446">Lähettää osan URL-osoitteesta obfuskoituna Googlelle yksityisen palvelimen kautta, jolloin IP-osoitteesi piilotetaan. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Googlelle URL-osoitteita, mukaan lukien osia sivujen sisällöstä</translation>
 <translation id="6647441008198474441">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida</translation>
@@ -1283,8 +1276,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="752220631458524187">Katkaise yhteys, kun olet valmis</translation>
 <translation id="7523960634226602883">Hae kameran avulla Google Lensissa</translation>
 <translation id="752731652852882757">Estä incognito-tilassa</translation>
-<translation id="7562080006725997899">Selaustietoja poistetaan</translation>
-<translation id="756809126120519699">Chrome-tiedot tyhjennetty</translation>
 <translation id="7577900504646297215">Ylläpidä kiinnostuksen kohteita</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> tiedosto ladattu}other{<ph name="FILES_DOWNLOADED_MANY" /> tiedostoa ladattu}}</translation>
 <translation id="7581273696622423628">Vastaa kyselyyn</translation>
@@ -1317,14 +1308,12 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7697383401610880082">Vetokahva</translation>
 <translation id="7698359219371678927">Luo sähköposti sovelluksessa <ph name="APP_NAME" /></translation>
 <translation id="7702029078562412515">Kyselyosiot</translation>
-<translation id="7702388902581909985">Selausdatan poistaminen ei kirjaa sinua ulos Google-tililtäsi. <ph name="BEGIN_LINK1" />Kirjaudu ulos Chromesta<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Käytä mobiilidataa</translation>
 <translation id="7709918231054955894">Hae kaikki välilehtesi</translation>
 <translation id="7733878270780732638">Laitteella ei ole riittävästi tilaa.</translation>
 <translation id="7759809451544302770">Valinnainen</translation>
 <translation id="7762668264895820836">SD-kortti <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Lisää osoite</translation>
-<translation id="7766587497031415281">Lisää vaihtoehtoja selausdatan poistamiseen</translation>
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
 <translation id="7772375229873196092">Sulje <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muu}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muuta}}</translation>
@@ -1383,7 +1372,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8013372441983637696">Poistetaanko Chrome-data tältä laitteelta?</translation>
 <translation id="8015452622527143194">Palauta sivun kaiken sisällön oletuskoko</translation>
 <translation id="8026238112629815203">Muutimme salasanojen tallennustapaa tällä laitteella</translation>
-<translation id="8026334261755873520">Poista selaustiedot</translation>
 <translation id="8027863900915310177">Valitse latauspaikka</translation>
 <translation id="8030852056903932865">Hyväksy</translation>
 <translation id="8032569120109842252">Seurataan</translation>
@@ -1480,6 +1468,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="84594714173170813">Jatka Chrome-datan käyttöä Google-tilillä</translation>
 <translation id="8460448946170646641">Tarkista tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
 <translation id="8473863474539038330">Osoitteet ja muita tietoja</translation>
+<translation id="8477178913400731244">Poista data</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Avaa Historia-sivu</translation>
 <translation id="8493948351860045254">Vapauta tilaa</translation>
@@ -1517,7 +1506,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8636825310635137004">Ota synkronointi käyttöön, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>
 <translation id="864544049772947936">Ylläpidä ikkunoita (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Ennustaa vaarallisia tapahtumia ja varoittaa niistä etukäteen</translation>
-<translation id="8655129584991699539">Voit tyhjentää datan Chromen asetuksissa</translation>
 <translation id="8664215986015753476">Käytä Chromea omalla tavallasi</translation>
 <translation id="8664979001105139458">Tiedoston nimi on jo käytössä</translation>
 <translation id="8676276370198826499">Rekisteröidy palveluun <ph name="SITE_ETLD_PLUS_ONE" /> kumppanin <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kanssa</translation>

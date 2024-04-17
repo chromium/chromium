@@ -234,7 +234,6 @@
 <translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1174073918202301297">Ярлык дададзены</translation>
 <translation id="1174366174291287894">Калі ваша падключэнне небяспечнае, Chrome паведаміць вам аб гэтым</translation>
-<translation id="117445914942805388">Каб ачысціць даныя прагляду з усіх сінхранізаваных прылад і Уліковага запісу Google, <ph name="BEGIN_LINK" />перайдзіце ў налады сінхранізацыі<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Ваш адміністратар адключыў гэту функцыю.</translation>
 <translation id="1175364870820465910">&amp;Друк...</translation>
 <translation id="1175914831232945926">Лічбы</translation>
@@ -258,7 +257,6 @@
 <translation id="1190086046506744802">Вельмі свабодна</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Доступ да файла на вашым камп'ютары}one{Доступ да # файла на вашым камп'ютары}few{Доступ да # файлаў на вашым камп'ютары}many{Доступ да # файлаў на вашым камп'ютары}other{Доступ да # файла на вашым камп'ютары}}</translation>
 <translation id="1190706173655543975">Правілы для праграм Microsoft</translation>
-<translation id="119092896208640858">Каб ачысціць даныя прагляду толькі з гэтай прылады, захаваўшы іх ва Уліковым запісе Google, <ph name="BEGIN_LINK" />выйдзіце з браўзера<ph name="END_LINK" />.</translation>
 <translation id="1191353342579061195">Выберыце тэму, якая адпавядае вашым патрэбам. Каб змяніць тэму, шпалеры, застаўку і іншыя параметры, проста націсніце правай кнопкай мышы на працоўным стале.</translation>
 <translation id="1192706927100816598">{0,plural, =1{Вы выйдзеце з уліковага запісу праз # секунду.
 Па правілах дамена <ph name="DOMAIN" /> разумная картка павінна быць устаўлена.}one{Вы выйдзеце з уліковага запісу праз # секунду.
@@ -1060,6 +1058,7 @@
 <translation id="1784707308176068866">Працаваць у фонавым рэжыме па запыце ад уласных праграмам, якія дазваляюць сумесную працу</translation>
 <translation id="1784849162047402014">На дыску прылады мала месца</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Разам з праграмай "<ph name="APP_NAME" />" таксама будзе выдалена наступная праграма:}one{Разам з праграмай "<ph name="APP_NAME" />" таксама будуць выдалены наступныя праграмы:}few{Разам з праграмай "<ph name="APP_NAME" />" таксама будуць выдалены наступныя праграмы:}many{Разам з праграмай "<ph name="APP_NAME" />" таксама будуць выдалены наступныя праграмы:}other{Разам з праграмай "<ph name="APP_NAME" />" таксама будуць выдалены наступныя праграмы:}}</translation>
+<translation id="1786044937610313874">Ярлыкі адкрываюцца ў Chrome</translation>
 <translation id="1786290960428378411">Адпраўляецца запыт на чытанне і змяненне сайта</translation>
 <translation id="1787350673646245458">Відарыс карыстальніка</translation>
 <translation id="1790976235243700817">Выдаліць доступ</translation>
@@ -1552,7 +1551,6 @@
 <translation id="2144557304298909478">Распрацоўка праграм для Android у Linux</translation>
 <translation id="2144873026585036769">Выкарыстоўваць Уліковы запіс Google, каб захоўваць і ўводзіць паролі і ключы доступу?</translation>
 <translation id="2146263598007866206">Сайты могуць аўтаматычна спампоўваць звязаныя файлы разам, каб эканоміць час</translation>
-<translation id="2147151613919729065">Каб выдаліць гісторыю гасцявога рэжыму, закрыйце ўсе вокны, адкрытыя ў гэтым рэжыме.</translation>
 <translation id="2147218225094845757">Схаваць бакавую панэль</translation>
 <translation id="2147282432401652483">Command</translation>
 <translation id="2147402320887035428">Гэты файл можа быць шкодным.<ph name="LINE_BREAK" />Google Бяспечны прагляд правярае файл на наяўнасць пагроз бяспецы. Праверка звычайна займае некалькі секунд.</translation>
@@ -1717,7 +1715,6 @@
 <translation id="2273119997271134996">Праблема з відэапортам док-станцыі</translation>
 <translation id="2274840746523584236">Зарадзіце Chromebook</translation>
 <translation id="2276503375879033601">Дадаць іншыя праграмы</translation>
-<translation id="2276910256003242519">Ідзе выдаленне даных...</translation>
 <translation id="2278193750452754829">Пашырэнні дазволены для гэтага сайта. Каб адкрыць меню, выберыце гэта.</translation>
 <translation id="2278562042389100163">Адкрыць акно браўзера</translation>
 <translation id="2278668501808246459">Запускаецца менеджар кантэйнераў</translation>
@@ -2023,7 +2020,6 @@
 <translation id="2484574361686148760">Абнавіць інфармацыю пра кліентаў Wi-Fi Direct</translation>
 <translation id="2484743711056182585">Выдаліць дазвол</translation>
 <translation id="2484909293434545162">Сайты, якія выкарыстоўваюць файлы cookie, з'явяцца тут</translation>
-<translation id="2484959914739448251">Каб ачысціць даныя прагляду з усіх сінхранізаваных прылад і Уліковага запісу Google, <ph name="BEGIN_LINK" />увядзіце фразу-пароль<ph name="END_LINK" />.</translation>
 <translation id="2485394160472549611">Найлепшыя падборкі для вас</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
 <translation id="2485681265915754872">Умовы выкарыстання Google Play</translation>
@@ -2339,7 +2335,6 @@
 <translation id="2727633948226935816">Больш не напамінаць</translation>
 <translation id="2727712005121231835">Фактычны памер</translation>
 <translation id="2727744317940422214">Нешта пайшло не так. Адпраўце нам водгук, дадаўшы слова #bruschetta у яго апісанне. Код памылкі: <ph name="ERROR" />. Не ўдалося выдаліць даныя. Магчыма, вам трэба будзе зрабіць гэта ўручную.</translation>
-<translation id="2729314457178420145">Таксама выдаліць гісторыю праглядаў сайта (<ph name="URL" />), што можа прывесці да выхаду з уліковага запісу на дамене Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome апрабоўвае новыя спосабы абмежавання механізмаў адсочвання вашых паводзін на сайтах, каб яшчэ надзейней абараняць вас у інтэрнэце. Chrome таксама <ph name="ESTIMATE_INTERESTS_LINK" /> і дае вам магчымасць кіраваць імі. Сайты, якія вы будзеце наведваць, могуць запытваць у Chrome інфармацыю пра вашы інтарэсы, каб паказваць вам рэкламу.</translation>
 <translation id="2729577602370119849">Просты доступ да прынтараў і кіраванне імі</translation>
 <translation id="2730029791981212295">Ідзе рэзервовае капіраванне файлаў і праграм Linux</translation>
@@ -2699,7 +2694,6 @@
 <translation id="2996108796702395498">Серыйны нумар прылады: <ph name="SERIAL_NUMBER" />. Гэты нумар можна выкарыстаць для актывацыі сэрвісу.</translation>
 <translation id="2996286169319737844">Даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Шыфраванне не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay.</translation>
 <translation id="2996722619877761919">Карашок па доўгім краі</translation>
-<translation id="2996932914629936323">З усіх сінхранізаваных прылад будзе выдалена гісторыя</translation>
 <translation id="2998097899774209901">Уключана • Гэта пашырэнне парушае палітыку Вэб-крамы Chrome</translation>
 <translation id="2998267783395280091">Знойдзена сетка</translation>
 <translation id="3000378525979847272">Дазволена: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -2889,7 +2883,6 @@
 <translation id="3150927491400159470">Халодная перазагрузка</translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
 <translation id="3151539355209957474">Час пачатку</translation>
-<translation id="3151562827395986343">Ачысціць гісторыю, файлы cookie, кэш і іншае</translation>
 <translation id="3151786313568798007">Арыентацыя</translation>
 <translation id="3152356229013609796">Праглядайце і закрывайце апавяшчэнні з тэлефона або адказвайце на іх</translation>
 <translation id="3155163173539279776">Перазапусціць Chromium</translation>
@@ -3269,7 +3262,6 @@
 <translation id="3459509316159669723">Друк</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Выдалена 1 закладка}one{Выдалена # закладка}few{Выдалена # закладкі}many{Выдалена # закладак}other{Выдалена # закладкі}}</translation>
 <translation id="3461766685318630278">Стварэнне і выдаленне дадатковых кантэйнераў.</translation>
-<translation id="3462311546193741693">Будзе выкананы выхад з большасці сайтаў. З Уліковага запісу Google вы не выйдзеце, таму сінхранізаваныя даныя захаваюцца.</translation>
 <translation id="3462413494201477527">Скасаваць наладку ўліковага запісу?</translation>
 <translation id="346298925039590474">Гэта мабільная сетка будзе даступнай усім карыстальнікам прылады</translation>
 <translation id="3464145797867108663">Дадаць працоўны профіль</translation>
@@ -3462,7 +3454,6 @@
 <translation id="3615579745882581859">Выконваецца праверка файла "<ph name="FILE_NAME" />".</translation>
 <translation id="3615596877979647433">Клавіша не ўказана. Націсніце клавішу на клавіятуры, каб выканаць наладжванне.</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
-<translation id="3616741288025931835">&amp;Выдаліць гісторыю праглядаў...</translation>
 <translation id="3617062258679844578">Ажыццяўляць націсканне дотыкам да сэнсарнай панэлі, а не націсканнем на яе</translation>
 <translation id="3617891479562106823">Змяненне фону недаступнае. Паўтарыце спробу пазней.</translation>
 <translation id="3618286417582819036">Адбылася памылка</translation>
@@ -3852,7 +3843,6 @@
 <translation id="3890064827463908288">Каб выкарыстоўваць функцыю сінхранізацыі параметраў Wi-Fi, уключыце Сінхранізацыю Chrome</translation>
 <translation id="389313931326656921">Прызначце пераключальнік для дзеяння "Далей"</translation>
 <translation id="3893268973182382220">Не ўдалося загрузіць гэту панэль</translation>
-<translation id="3893295674388762059">Каб выдаліць даныя, закрыйце ўсе вокны ў рэжыме інкогніта</translation>
 <translation id="3893536212201235195">Прагляд і змена налад спецыяльных магчымасцей</translation>
 <translation id="3893630138897523026">ChromeVox (галасавая зваротная сувязь)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
@@ -4022,7 +4012,6 @@
 <translation id="4007856537951125667">Схаваць ярлыкі</translation>
 <translation id="4010746393007464819">Даступнае абнаўленне да версіі Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Каб карыстацца сваімі закладкамі на мабільнай прыладзе, <ph name="GET_IOS_APP_LINK" />.</translation>
-<translation id="4010938758610910350">Стварэнне групы ўкладак…</translation>
 <translation id="4014432863917027322">Выправіць "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">У вас ёсць пашырэнні? <ph name="BEGIN_LINK" />Кіруйце пашырэннямі<ph name="END_LINK" /> з лёгкасцю з аднаго месца.</translation>
 <translation id="4016762287427926315">Дазволы, якія вы даяце праграме "<ph name="APP_NAME" />", таксама будуць дадзены гэтай праграме. <ph name="BEGIN_LINK" />Кіраваць<ph name="END_LINK" /></translation>
@@ -4105,7 +4094,6 @@
 <translation id="407520071244661467">Маштаб</translation>
 <translation id="407543464472585404">Профіль карыстальніка <ph name="NAME" /> звязаны з адрасам электроннай пошты <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Рэклама заблакіравана на гэтым сайце</translation>
-<translation id="4077919383365622693">Усе даныя і файлы cookie, захаваныя сайтам <ph name="SITE" />, будуць выдалены.</translation>
 <translation id="4078738236287221428">Дзейная</translation>
 <translation id="4078903002989614318">Параметры сартавання і спісу</translation>
 <translation id="4079140982534148664">Выкарыстоўваць палепшаную праверку правапісу</translation>
@@ -4648,7 +4636,6 @@
 <translation id="4504374760782163539">{COUNT,plural, =0{Файлы cookie дазволены}=1{Файлы cookie дазволены, 1 выключэнне}one{Файлы cookie дазволены, {COUNT} выключэнне}few{Файлы cookie дазволены, {COUNT} выключэнні}many{Файлы cookie дазволены, {COUNT} выключэнняў}other{Файлы cookie дазволены, {COUNT} выключэння}}</translation>
 <translation id="4504940961672722399">Каб выкарыстаць гэта пашырэнне, націсніце на гэты значок або націсніце клавішы <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Слова ўжо дададзена</translation>
-<translation id="4507128560633489176">Даныя выдалены.</translation>
 <translation id="4507373251891673233">Вы заблакіравалі ўсім пашырэнням доступ да сайта <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Націсніце "Дадаць ярлык"</translation>
 <translation id="4508332912150723117">імя карыстальніка <ph name="USER_EMAIL" />. Паглядзець падрабязныя звесткі.</translation>
@@ -5256,7 +5243,6 @@
 <translation id="4979263087381759787">Параметры распрацоўшчыка</translation>
 <translation id="4979510648199782334">Наладжванне Microsoft 365 завершана</translation>
 <translation id="4980805016576257426">Гэта пашырэнне змяшчае шкоднае ПЗ.</translation>
-<translation id="4981449534399733132">Каб ачысціць даныя прагляду з усіх сінхранізаваных прылад і Уліковага запісу Google, <ph name="BEGIN_LINK" />увайдзіце ва ўліковы запіс<ph name="END_LINK" />.</translation>
 <translation id="4983159853748980742">Ваш пароль не быў абагулены. Праверце падключэнне да інтэрнэту і ўпэўніцеся, што вы ўвайшлі ў Chrome, а затым паўтарыце спробу.</translation>
 <translation id="4986706507552097681">У наладах заўсёды можна выбраць, што трэба сінхранізаваць. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове гісторыі прагляду вамі сайтаў.</translation>
 <translation id="4986728572522335985">Будуць выдалены ўсе даныя на ключы бяспекі, уключаючы яго PIN-код</translation>
@@ -5463,6 +5449,7 @@
 <translation id="5146896637028965135">Стандартны для сістэмы голас</translation>
 <translation id="5147097165869384760">Шукаеце старонку аперацыйнай сістэмы? Перайдзіце па спасылцы <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Рэкамендацыя</translation>
+<translation id="5147516217412920887">Каб пацвердзіць код, выканайце інструкцыі на тэлефоне</translation>
 <translation id="5147992672778369947">Выкарыстоўвайце рэкамендаваны пароль</translation>
 <translation id="5148285448107770349">Мінімальная колькасць сімвалаў у паролі – 8</translation>
 <translation id="5149602533174716626">Кап&amp;іраваць кадр відэа</translation>
@@ -5878,7 +5865,6 @@
 <translation id="5486261815000869482">Пацвердзіце пароль</translation>
 <translation id="5486561344817861625">Імітаваць перазапуск браўзера</translation>
 <translation id="5487460042548760727">Даць профілю назву "<ph name="PROFILE_NAME" />"</translation>
-<translation id="5487521232677179737">Ачысціць даныя</translation>
 <translation id="5488093641312826914">Элемент "<ph name="COPIED_ITEM_NAME" />" скапіраваны</translation>
 <translation id="5488508217173274228">Параметры шыфравання для сінхранізацыі</translation>
 <translation id="5489077378642700219">Не дазваляць сайту <ph name="WEBSITE" /> адпраўляць апавяшчэнні, але спытаць яшчэ раз пазней</translation>
@@ -6268,7 +6254,6 @@
 <translation id="5794700615121138172">Абагуленыя папкі Linux</translation>
 <translation id="5794786537412027208">Выйсці з усіх праграм Chrome</translation>
 <translation id="5796485699458186843">Новая ўкладка ў рэжыме інкогніта</translation>
-<translation id="5797521893972859201">Будзе выдалена гісторыя, у тым ліку даныя, якія ўводзіліся ў полі пошуку</translation>
 <translation id="5797934230382081317">Даведайцеся, як пачаць выкарыстоўваць сэрвіс на прыладах &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; і &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Сайты могуць усталёўваць апрацоўшчыкі плацяжоў</translation>
 <translation id="5798086737841799234">Увядзіце код пацвярджэння</translation>
@@ -6591,7 +6576,6 @@
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Каб пачаць трансляцыю, увядзіце код доступу</translation>
 <translation id="6052976518993719690">Цэнтр сертыфікацыі SSL</translation>
-<translation id="6053401458108962351">&amp;Выдаліць гісторыю праглядаў...</translation>
 <translation id="6053717018321787060">Ваш Уліковы запіс Google – гэта той самы ўліковы запіс, які вы выкарыстоўваеце для Gmail, YouTube, Chrome і іншых прадуктаў Google.
     Выкарыстоўвайце свой уліковы запіс, каб лёгка атрымліваць доступ да ўсіх вашых закладак, файлаў і іншага. Калі ў вас няма ўліковага запісу, вы можаце стварыць яго на наступным экране.</translation>
 <translation id="6054138466019582920">П&amp;ошук на старонцы з дапамогай Google...</translation>
@@ -7660,6 +7644,7 @@
 <translation id="686609795364435700">Ціха</translation>
 <translation id="686664946474413495">Тэмпература колеру</translation>
 <translation id="6867086642466184030">Іншыя праграмы наладжаны адкрываць такія ж спасылкі, што і <ph name="APP_NAME" />. Праграмы "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />", "<ph name="APP_NAME_4" />" і яшчэ <ph name="NUMBER_OF_OTHER_APPS" /> перастануць адкрываць адпаведныя спасылкі.</translation>
+<translation id="6868206169573555318">Перазапусціць, каб абнавіць</translation>
 <translation id="686831807558000905">Не ўваходзіць</translation>
 <translation id="686839242150793617">Сайты, якім дазволена аўтаматычна запускаць рэжым "відарыс у відарысе"</translation>
 <translation id="6868934826811377550">Больш падрабязна</translation>
@@ -8493,7 +8478,6 @@
 <translation id="7531771599742723865">Прылада выкарыстоўваецца</translation>
 <translation id="7531779363494549572">Перайдзіце ў раздзел "Налады &gt; Праграмы і апавяшчэнні &gt; Апавяшчэнні".</translation>
 <translation id="7532009420053991888">Праграма <ph name="LINUX_APP_NAME" /> не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
-<translation id="7535730537657706072">Каб ачысціць гісторыю прагляду сайтаў у рэжыме інкогніта на прыладзе, закрыйце ўсе ўкладкі ў рэжыме інкогніта</translation>
 <translation id="7536815228183532290">Вы ўвайшлі як <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">Гэты тып файла спампоўваецца рэдка і можа быць небяспечным</translation>
 <translation id="7540972813190816353">Адбылася памылка пры праверцы наяўнасці абнаўленняў: <ph name="ERROR" /></translation>
@@ -8537,7 +8521,6 @@
 <translation id="7566118625369982896">Кіраванне спасылкамі праграмы Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Стварыць спалучэнне клавіш</translation>
-<translation id="756809126120519699">Даныя Chrome выдалены</translation>
 <translation id="756876171895853918">Наладзіць аватар</translation>
 <translation id="7568790562536448087">Ідзе абнаўленне</translation>
 <translation id="7569983096843329377">Чорны</translation>
@@ -9168,7 +9151,6 @@
 <translation id="8023801379949507775">Абнавіць пашырэнні</translation>
 <translation id="8025151549289123443">Экран блакіроўкі і ўваход</translation>
 <translation id="8025291188699172126">Пра абнаўленні</translation>
-<translation id="8026334261755873520">Выдаленне гісторыі</translation>
 <translation id="8026471514777758216">Усе вашы прылады</translation>
 <translation id="8027581147000338959">Адкрыць у новым акне</translation>
 <translation id="8028060951694135607">Аднаўленне ключоў Microsoft</translation>
@@ -10207,7 +10189,6 @@
 <translation id="8809147117840417135">Светла-бірузовы</translation>
 <translation id="8811862054141704416">Доступ да мікрафона ў Crostini</translation>
 <translation id="8811923271770626905">Гэта пашырэнне можа запускацца ў фонавым рэжыме</translation>
-<translation id="8812593354822910461">Таксама выдаліць гісторыю праглядаў сайта (<ph name="URL" />), што можа прывесці да выхаду з уліковага запісу на дамене <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813199641941291474">Кіраванне прыладамі MIDI і іх перапраграмаванне забаронена</translation>
 <translation id="8813698869395535039">Не ўдаецца ўвайсці ва ўліковы запіс <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Для ўхвалення пашырэння "<ph name="EXTENSION_NAME" />" звярніцеся да бацькоў.</translation>

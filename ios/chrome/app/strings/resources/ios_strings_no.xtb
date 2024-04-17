@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Velkommen tilbake, ‏<ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Kortinnehaverens navn</translation>
 <translation id="1809939268435598390">Slett mappen</translation>
-<translation id="1813414402673211292">Slett nettlesingsdata</translation>
 <translation id="1815941218935345331">Sikkerhetskode</translation>
 <translation id="1820259098641718022">Lagt til i leselisten</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Nettsiden er lastet inn</translation>
 <translation id="223356358902285214">Nett- og appaktivitet</translation>
 <translation id="2234827758954819389">Personvernveiledning</translation>
-<translation id="2239626343334228536">Sletter nettlesingsdata …</translation>
 <translation id="2251686759395008410">Meny → Logg</translation>
 <translation id="2252674110805316998">Nettsøk</translation>
 <translation id="2252749852083403809">Lagres i Disk for <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3485558910355485767">Nytt inkognitovindu</translation>
 <translation id="3488501490964659223">Faner ble lukket, og nettlesingsdata ble slettet. Du ble logget av</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om foreslått innhold</translation>
-<translation id="3494788280727468875">Bekreft at du vil slette nettleserdataene</translation>
 <translation id="35083190962747987">Åpne ${url}</translation>
 <translation id="3519193562722059437">Åpne en fane for å surfe på nettet.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Åpne fanen}other{Åpne {count} faner}}</translation>
@@ -492,7 +489,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3540141921715814660">Legg til i bokmerker</translation>
 <translation id="355101282835380364">Lagre i kontoen…</translation>
 <translation id="3551320343578183772">Lukk fanen</translation>
-<translation id="3565207542107370586">Slett nettlesingsdata…</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Dobbelttrykk for å se flere passord.</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
@@ -969,7 +965,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6027945736510816438">Mente du <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">ny funksjon</translation>
 <translation id="6033598293589037429">Klar for henting</translation>
-<translation id="6036215966221662377">Slett nettlesingsdata</translation>
 <translation id="6036514205982097558">Alle fanene dine i én nettleser</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Lukk</translation>
@@ -1153,7 +1148,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6859944681507688231">For å skanne QR-koder eller kredittkort, slå på kameraet i innstillingene.</translation>
 <translation id="6867369562105931222">passord</translation>
 <translation id="686899695320434745">Adresser krypteres ikke med passordfrasen. Dermed kan du bruke dem i andre Google-tjenester.</translation>
-<translation id="6869389390665537774">Du kan se sidene du har besøkt, eller fjerne dem fra loggen</translation>
 <translation id="687135068089457384">Vis Innstillinger</translation>
 <translation id="6873263987691478642">Delt visning</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
@@ -1301,7 +1295,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7719038820139380048">Logg på for å få innhold basert på interessene dine.</translation>
 <translation id="7720410380936703141">PRØV PÅ NYTT</translation>
 <translation id="7724085059277147439">{count,plural, =1{Elementet er lagret i Google-kontoen din, {email}}other{Elementene er lagret i Google-kontoen din, {email}}}</translation>
-<translation id="7726702057919861819">Meny → Logg → Slett nettlesingsdata</translation>
 <translation id="7729458878441927652">For å se faner fra de andre enhetene dine, synkroniser fanene dine og loggen din.</translation>
 <translation id="7730973429297233609">Velg kontoen du vil bruke til å lagre <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Bare på denne enheten.</translation>
@@ -1550,7 +1543,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8870413625673593573">Nylig lukket</translation>
 <translation id="8876882697946675716">Hold enhetene dine synkronisert</translation>
 <translation id="8879604564928138696">Dobbelttrykk for å prøve</translation>
-<translation id="8879984884633913185">Skjul Slett nettlesingsdata</translation>
 <translation id="8881801611828450202">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
 <translation id="890565330728586731">Tilbake</translation>

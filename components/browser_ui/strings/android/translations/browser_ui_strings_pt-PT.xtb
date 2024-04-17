@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Repor autorizações</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3069226013421428034">Permita o início de sessão de terceiros num site específico.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Expira amanhã}other{Expira dentro de # dias}}</translation>
 <translation id="310297983047869047">Diapositivo anterior</translation>
 <translation id="3109724472072898302">Fechado</translation>
 <translation id="3114012059975132928">Leitor de vídeo</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Permitido</translation>
 <translation id="429312253194641664">Um site está a reproduzir multimédia.</translation>
 <translation id="42981349822642051">Expandir</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Expira amanhã}other{Expira dentro de # dias}}</translation>
 <translation id="4336566011000459927">O Chrome vai limitar os cookies novamente hoje</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> O seu último separador</translation>
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
@@ -290,6 +290,7 @@
 <translation id="5853982612236235577">Quando esta opção está ativada, os sites podem pedir para enviar notificações. Quando esta opção está desativada, os sites não podem enviar notificações.</translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5876056640971328065">Colocar vídeo em pausa</translation>
+<translation id="5877248419911025165">Reduzir todos os pedidos</translation>
 <translation id="5884085660368669834">Preferência do site</translation>
 <translation id="5887687176710214216">Última visita ontem</translation>
 <translation id="5916664084637901428">Ativado</translation>
@@ -400,7 +401,6 @@
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="757524316907819857">Impedir que os sites reproduzam conteúdos protegidos</translation>
 <translation id="7594634374516752650">Ligado a um dispositivo Bluetooth</translation>
-<translation id="7641339528570811325">Limpar dados de navegação…</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">O Maravilhoso Feiticeiro de Oz</translation>

@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ਐਪ</translation>
 <translation id="1225748608451425081">ਕਿਸੇ ਜਾਣੂ ਸਮੱਸਿਆ ਕਰਕੇ ਤੁਹਾਡੀ Chromebook ਲਾਕ ਹੈ। ਤੁਸੀਂ ਇੰਨੇ ਸਮੇਂ ਬਾਅਦ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋਗੇ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ਚੋਣ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
+<translation id="1230853660706736937">ਚਿੱਤਰਾਂ ਦੇ ਅੰਦਰ ਲਿਖਤ ਨੂੰ ਖੋਜੋ ਅਤੇ ਚਿੱਤਰ ਦੀਆਂ ਪੂਰਵ-ਝਲਕਾਂ ਦੇਖੋ</translation>
 <translation id="1235458158152011030">ਗਿਆਤ ਨੈੱਟਵਰਕ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="1240638468526743569">ਐਪ</translation>
@@ -715,11 +716,13 @@
 <translation id="3824784079442479685">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ। ਤੁਹਾਨੂੰ ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
 <translation id="3826099427150913765">ਪਾਸਵਰਡ 'ਤੇ ਬਦਲੀ ਕਰੋ</translation>
 <translation id="383058930331066723">ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਚਾਲੂ ਹੈ</translation>
+<translation id="3831226344927851293">ਟਿਊਟੋਰੀਅਲ ਦ੍ਰਿਸ਼ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="383629559565718788">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="384082539148746321">ਕੀ ਟੈਮਪਲੇਟ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> ਫਿਰ <ph name="KEY_ONE" /> ਜਾਂ <ph name="KEY_TWO" /> ਜਾਂ <ph name="KEY_THREE" /> ਜਾਂ <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">ਕੋਈ ਵੀ ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ</translation>
+<translation id="3848526302597027234">ਹੇਠਾਂ ਦਿੱਤੀਆਂ ਇਜਾਜ਼ਤਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ:</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="385300504083504382">ਸ਼ੁਰੂਆਤ</translation>
 <translation id="3859364108019690">ਐਪਾਂ ਨੂੰ ਸਟ੍ਰੀਮ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
@@ -1816,7 +1819,6 @@
 <translation id="8001755249288974029">ਕਰਸਰ ਤੋਂ ਲਾਈਨ ਦੀ ਸ਼ੁਰੂਆਤ ਤੱਕ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="8004512796067398576">ਵਧਾਓ</translation>
 <translation id="8015361438441228492">ਕਾਰਜ ਦਾ ਸੰਪਾਦਨ ਨਹੀਂ ਹੋ ਸਕਿਆ।</translation>
-<translation id="8026334261755873520">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="802782383769312836">ਪਿਛਲਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="8029247720646289474">ਹੌਟਸਪੌਟ ਕਨੈਕਸ਼ਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8029629653277878342">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਲੋੜੀਂਦਾ ਹੈ</translation>

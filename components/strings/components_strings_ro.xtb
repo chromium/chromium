@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Joacă jocul Dino Run în Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">A doua rolă</translation>
+<translation id="1611854593425834707">Închide lista de dispozitive pentru proiectare</translation>
 <translation id="1612199629998703524">Gestionează subiectele</translation>
 <translation id="1615178538289490617">Revocă accesul pentru <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Politica implementată de administrator dezactivează capturarea ecranului atunci când se afișează conținut confidențial</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">Protejează-ți parolele cu blocarea ecranului</translation>
 <translation id="1812527064848182527">peisaj</translation>
 <translation id="1812975699435941848">Educație sanitară și pregătire medicală</translation>
-<translation id="1813414402673211292">Ștergeți datele de navigare</translation>
 <translation id="1816436748874040213">Poate solicita permisiunea de a derula și de a face zoom în filele la care s-a permis accesul</translation>
 <translation id="1818522458013171885">Deblochează</translation>
 <translation id="1818585559878922121">Filme documentare</translation>
@@ -618,7 +618,7 @@
 <translation id="2126374524350484896">PDF Producer:</translation>
 <translation id="2130448033692577677">Șabloanele specificate nu pot fi aplicate, deoarece politica DnsOverHttpsMode nu este setată.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Acestea apar în ordine aleatorie. Poți să modifici setarea prestabilită oricând.</translation>
+<translation id="2132825047782982803">Opțiunile apar aleatoriu. Poți să modifici setarea prestabilită.</translation>
 <translation id="2137891579555018930">Se așteaptă permisiunea…</translation>
 <translation id="213826338245044447">Marcaje mobile</translation>
 <translation id="2141000681034340397">Editează textul introdus</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">Material textil (semilucios)</translation>
 <translation id="264810637653812429">Nu s-au găsit dispozitive compatibile.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a șterge istoricul de navigare, cookie-urile, memoria cache și altele din setările Chrome</translation>
 <translation id="2650446666397867134">Accesul la fișier a fost refuzat</translation>
 <translation id="2651465929321991146">Istoric și file</translation>
 <translation id="2653659639078652383">Trimite</translation>
@@ -1205,7 +1204,6 @@
 <translation id="33073482541490531">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Managerul de parole recomandă să schimbi parola acum.</translation>
 <translation id="3307649904964670439">Butonul Personalizează Chrome, activează pentru a personaliza aspectul browserului</translation>
 <translation id="3308006649705061278">Unitate organizațională (OU)</translation>
-<translation id="3310047144791481950">Vezi informații care te ajută să alegi cu ce card să plătești. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Află mai multe despre beneficiile cardurilor<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Comedii TV</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Roșu aprins</translation>
@@ -1374,7 +1372,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a rula verificarea de siguranță în setările Chrome</translation>
 <translation id="3615309852743236517">Manichiură și pedichiură</translation>
 <translation id="3620239073311576716">Uniforme și îmbrăcăminte pentru lucru</translation>
-<translation id="36224234498066874">Șterge datele de navigare...</translation>
 <translation id="362276910939193118">Afișează întregul istoric</translation>
 <translation id="3623041590998910684">Pentru a folosi camera foto, permite accesul browserului Chrome în <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Filme romantice</translation>
@@ -1919,6 +1916,7 @@
 <translation id="4691093235373904540">Servicii pentru acoperișuri</translation>
 <translation id="4692623383562244444">Motoare de căutare</translation>
 <translation id="4698692901173737941">Sporturi de luptă</translation>
+<translation id="4701307090948589984">Proiectează către...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lateral</translation>
 <translation id="4702656508969495934">Subtitrări live vizibile, folosește comutatorul de ferestre pentru a focaliza</translation>
@@ -2055,7 +2053,6 @@
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> inserat nu a fost găsit.</translation>
 <translation id="4936675324097895694">Finanțe</translation>
 <translation id="4940163644868678279">Modul incognito în Chrome</translation>
-<translation id="494111439860963024">Butonul Șterge datele de navigare, activează pentru a șterge istoricul de navigare, cookie-urile, memoria cache și altele din setările Chrome</translation>
 <translation id="4943620199112228840">Îți folosească microfoanele</translation>
 <translation id="4943872375798546930">Nu există rezultate</translation>
 <translation id="4950898438188848926">Butonul Comută între file, apasă pe Enter pentru a comuta la fila deschisă, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2168,6 +2165,8 @@
 <translation id="5161334686036120870">Subiect:</translation>
 <translation id="5161506081086828129">Receptorul de hârtie 9</translation>
 <translation id="5164798890604758545">Textul este introdus</translation>
+<translation id="5164928537947209380">Acest instrument AI experimental nu va avea întotdeauna dreptate. Pentru a-l îmbunătăți, conținutul tău este trimis la Google.
+    <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Introdu codul CVC pentru <ph name="CREDIT_CARD" />. După ce confirmi, acest site va avea acces la detaliile cardului tău din Contul Google.</translation>
 <translation id="5169827969064885044">Este posibil să pierzi accesul la contul organizației sau să fii victima unui furt de identitate. Chrome îți recomandă să îți schimbi acum parola.</translation>
 <translation id="5171045022955879922">Caută sau introdu adresa URL</translation>
@@ -2290,7 +2289,6 @@
 <translation id="541416427766103491">Receptorul de hârtie 4</translation>
 <translation id="5414446060143308245">Examinarea este obligatorie înainte de transfer</translation>
 <translation id="5414511064953050917">Mută oricum</translation>
-<translation id="5421136146218899937">Șterge datele de navigare...</translation>
 <translation id="5421408724705443535">Muzică rock</translation>
 <translation id="5423269318075950257">Urmărește prețul</translation>
 <translation id="5425082381151187189">Casă și decorațiuni interioare</translation>
@@ -3653,7 +3651,6 @@ Detalii suplimentare:
 <translation id="8022542098135319050">Servicii și agenții de turism</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe tab, apoi pe Enter ca să setezi Chrome ca browser prestabilit pentru sistem</translation>
 <translation id="8025119109950072390">Atacatorii de pe acest site te pot înșela, determinându-te să faci ceva periculos, cum ar fi să instalezi software sau să îți dezvălui informațiile cu caracter personal (de exemplu, parole, numere de telefon sau carduri de credit).</translation>
-<translation id="8026334261755873520">Șterge datele de navigare</translation>
 <translation id="8027077570865220386">Tava 15</translation>
 <translation id="8027585818882015174">Butonul Rulează verificarea de siguranță pentru Chrome, activează pentru a rula verificarea de siguranță în setările Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid un formular în Formulare Google</translation>
@@ -3924,7 +3921,6 @@ Detalii suplimentare:
 <translation id="8527228059738193856">Difuzoare</translation>
 <translation id="8527681393107582734">Agricultură și silvicultură</translation>
 <translation id="8528149813106025610">Îmbrăcăminte pentru copii</translation>
-<translation id="8530813470445476232">Șterge istoricul de navigare, cookie-urile, memoria cache și altele din setările Chrome</translation>
 <translation id="853246364274116957">Teatru de pe Broadway și teatru muzical</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Accesează &lt;strong&gt;chrome://policy&lt;/strong&gt; ca să vezi lista de adrese URL blocate și alte politici aplicate de administratorul de sistem.</translation>
@@ -4065,6 +4061,7 @@ Detalii suplimentare:
 <translation id="8807160976559152894">Decupare după fiecare pagină</translation>
 <translation id="8809203544698246977">Subiectele blocate apar aici</translation>
 <translation id="8811470563853401328">Salvezi adresa în cont?</translation>
+<translation id="8811725516933141693">Introdu textul @gemini pentru a conversa prin chat cu Gemini</translation>
 <translation id="8813277370772331957">Amintește-mi mai târziu</translation>
 <translation id="8814707942599948500">Plic C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a actualiza Chrome din setările Chrome</translation>

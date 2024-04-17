@@ -161,6 +161,7 @@
 <translation id="1569384531973824928">तपाईंले यसो गर्नुभयो भने क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="1571697193564730395">Do Not Disturb अन वा अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">म्याग्निफायर अन भएका बेला जुम आउट गर्नुहोस्</translation>
+<translation id="1582946770779745370">गेम ड्यासबोर्ड उपलब्ध छ। खोल्नका लागि जुनसुकै बेला <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape थिच्नुहोस्, त्यसपछि <ph name="LAUNCHER_KEY_NAME" /> + g थिच्नुहोस्</translation>
 <translation id="1586324912145647027">डेस्क १ देखि ८ मा जानुहोस्</translation>
 <translation id="158838227375272121">Google Classroom को वेबसाइट</translation>
 <translation id="1589090746204042747">यो सत्रअन्तर्गतका आफ्ना सबै क्रियाकलापमाथि पहुँच राख्नुहोस्</translation>
@@ -1818,7 +1819,6 @@
 <translation id="8001755249288974029">कर्सरबाट लाइनको सुरुसम्मको टेक्स्ट चयन गर्नुहोस्</translation>
 <translation id="8004512796067398576">बृद्धि</translation>
 <translation id="8015361438441228492">कार्य सम्पादन गर्न सकिएन।</translation>
-<translation id="8026334261755873520">ब्राउजिङ लगत खालि गर्नुहोस्</translation>
 <translation id="802782383769312836">अघिल्लो डेस्क: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" /> वटामध्ये <ph name="DESK_INDEX" /> औँ डेस्क।</translation>
 <translation id="8029247720646289474">हटस्पटमा कनेक्ट गर्न सकिएन</translation>
 <translation id="8029629653277878342">थप सुरक्षाका लागि PIN वा पासवर्ड चाहिन्छ</translation>

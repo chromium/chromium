@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Ruxsatlarni qasliga qaytarish</translation>
 <translation id="301521992641321250">Avtomatik bloklangan</translation>
 <translation id="3069226013421428034">Muayyan sayt uchun tashqi xizmatga kirishga ruxsat bering.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Muddati ertaga tugaydi}other{# kundan keyin muddati tugaydi}}</translation>
 <translation id="310297983047869047">Avvalgi slaydi</translation>
 <translation id="3109724472072898302">Yig‘ilgan</translation>
 <translation id="3114012059975132928">Video pleyer</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Berilgan ruxsatnomalar</translation>
 <translation id="429312253194641664">Saytda media-fayl ijro etilmoqda</translation>
 <translation id="42981349822642051">Kengaytirish</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Muddati ertaga tugaydi}other{# kundan keyin muddati tugaydi}}</translation>
 <translation id="4336566011000459927">Chrome cookie fayllarni bugun yana cheklaydi</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Oxirgi varaq</translation>
 <translation id="4338831206024587507">Barcha saytlar <ph name="DOMAIN" /> ostida</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Har doim</translation>
 <translation id="757524316907819857">Saytlarga himoyalangan kontent ijrosini taqiqlash</translation>
 <translation id="7594634374516752650">Bluetooth qurilmaga ulandi</translation>
-<translation id="7641339528570811325">Brauzer tarixini tozalash…</translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7667547420449112975">Oz mamlakati sehrgari</translation>

@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Добре дојдовте назад, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Име на сопственикот на картичката</translation>
 <translation id="1809939268435598390">Избриши папка</translation>
-<translation id="1813414402673211292">Исчисти податоци од прелистување</translation>
 <translation id="1815941218935345331">Лозинка</translation>
 <translation id="1820259098641718022">Додаено во „Список за читање“</translation>
 <translation id="1822994441903263130">FEDEX</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="223356358902285214">Активност на веб и апликации</translation>
 <translation id="2234827758954819389">Водич за приватност</translation>
-<translation id="2239626343334228536">Се чистат податоците од прелистувањето…</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
 <translation id="2252674110805316998">Пребарување на интернет</translation>
 <translation id="2252749852083403809">Се зачувува на Drive за <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">Нов прозорец „Инкогнито“</translation>
 <translation id="3488501490964659223">Картичките се затворија, а податоците од прелистување се избришаа. Се одјавивте</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /> за предложените содржини</translation>
-<translation id="3494788280727468875">Одобри го чистењето на податоците од прелистување</translation>
 <translation id="35083190962747987">Отвори ${url}</translation>
 <translation id="3519193562722059437">Отворете картичка за да прелистувате на интернет.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Отвори ја картичката}one{Отвори {count} картичка}other{Отвори {count} картички}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">Додај во „Обележувачи“</translation>
 <translation id="355101282835380364">Зачувај во сметката…</translation>
 <translation id="3551320343578183772">Затвори ја картичката</translation>
-<translation id="3565207542107370586">Избриши ги податоците од прелистувањето</translation>
 <translation id="3565930036634619844">Картичка. <ph name="TAB_INDEX" /> од <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Допрете двапати за уште лозинки.</translation>
 <translation id="3575234738189584619">Пребарајте со Lens</translation>
@@ -968,7 +964,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6027945736510816438">Дали мислевте на <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">нова функција</translation>
 <translation id="6033598293589037429">Подготвено за подигнување</translation>
-<translation id="6036215966221662377">Избриши податоци од прелистување</translation>
 <translation id="6036514205982097558">Сите ваши картички во еден прелистувач</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -1151,7 +1146,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6859944681507688231">За да скенирате QR-код или кредитна картичка, овозможете ја камерата од поставки.</translation>
 <translation id="6867369562105931222">лозинка</translation>
 <translation id="686899695320434745">Адресите не се шифрирани со вашата лозинка. Тоа ви овозможува да ги користите на други услуги на Google.</translation>
-<translation id="6869389390665537774">Може да ги гледате страниците што сте ги посетиле или да ги избришете од историјата</translation>
 <translation id="687135068089457384">Прикажете ги поставките</translation>
 <translation id="6873263987691478642">Поделен приказ</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтови, преземања и екстензии за коишто се знае дека се опасни.</translation>
@@ -1297,7 +1291,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7719038820139380048">Најавете се за да добивате содржини согласно со вашите интереси.</translation>
 <translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>
 <translation id="7724085059277147439">{count,plural, =1{Ставката е зачувана во вашата сметка на Google, {email}}one{Ставките се зачувани во вашата сметка на Google, {email}}other{Ставките се зачувани во вашата сметка на Google, {email}}}</translation>
-<translation id="7726702057919861819">Мени → Историја → Избришете ги податоците од прелистување</translation>
 <translation id="7729458878441927652">За да ги гледате картичките од другите ваши уреди, синхронизирајте ги вашите картички и историја.</translation>
 <translation id="7730973429297233609">Изберете ја сметката што сакате да се користи за зачувување на <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на уредов.</translation>
@@ -1542,7 +1535,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8870413625673593573">Неодамна затворено</translation>
 <translation id="8876882697946675716">Уредите нека ви бидат синхронизирани</translation>
 <translation id="8879604564928138696">Допрете двапати за да се обидете</translation>
-<translation id="8879984884633913185">Скриј „Избриши ги податоците од прелистување“</translation>
 <translation id="8881801611828450202">Пребарај <ph name="SEARCH_ENGINE" /> за сликава</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>
 <translation id="890565330728586731">Назад</translation>

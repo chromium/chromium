@@ -129,6 +129,7 @@
 <translation id="1420408895951708260">ღამის განათების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">დიახ</translation>
 <translation id="1435537621343861112">კარნახის დაწყება ვერ მოხერხდა. მიკროფონი გამორთულია.</translation>
+<translation id="1448963928642384376">თქვენი მოწყობილობის უსადენო ქსელები</translation>
 <translation id="1455242230282523554">ენის პარამეტრების ჩვენება</translation>
 <translation id="1460620680449458626">ხმა დადუმებულია.</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" />-ს, <ph name="APP2_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა</translation>
@@ -161,6 +162,7 @@
 <translation id="1569384531973824928">წვდომა მიენიჭება ყველა აპსა და ვებსაიტს, რომლებსაც კამერისა და მიკროფონის გამოყენების ნებართვა აქვს. შესაძლოა, დაგჭირდეთ ვებგვერდის განახლება ან აპის გადატვირთვა.</translation>
 <translation id="1571697193564730395">„არ შემაწუხოთ“ რეჟიმის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">მასშტაბის შემცირება, როცა ლუპა ჩართულია</translation>
+<translation id="1582946770779745370">ხელმისაწვდომია თამაშების დაფა. გასახსნელად ნებისმიერ დროს დააჭირეთ კლავიშთა კომბინაციას <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, შემდეგ კი — კომბინაციას <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1586324912145647027">1-ლიდან მე-8 სამუშაო მაგიდებს შორის გადასვლა</translation>
 <translation id="158838227375272121">Google Classroom-ის ვებსაიტი</translation>
 <translation id="1589090746204042747">ამ სესიის დროს თქვენს მთელ აქტივობაზე წვდომა</translation>
@@ -1818,7 +1820,6 @@
 <translation id="8001755249288974029">ტექსტის არჩევა კურსორიდან სტრიქონის დასაწყისამდე</translation>
 <translation id="8004512796067398576">ზრდა</translation>
 <translation id="8015361438441228492">ამოცანის რედაქტირება ვერ მოხერხდა.</translation>
-<translation id="8026334261755873520">დათვალიერების მონაცემების გასუფთავება</translation>
 <translation id="802782383769312836">წინა სამუშაო მაგიდა: <ph name="DESK_NAME" />. სამუშაო მაგიდა <ph name="DESK_INDEX" /> / <ph name="DESK_COUNT" />-დან.</translation>
 <translation id="8029247720646289474">უსადენო ქსელმა ვერ მოახერხა კავშირის დამყარება</translation>
 <translation id="8029629653277878342">დამატებითი უსაფრთხოებისთვის საჭიროა PIN-კოდის ან პაროლის შეყვანა</translation>

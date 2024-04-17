@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">កំណត់​ការអនុញ្ញាត​ឡើងវិញ</translation>
 <translation id="301521992641321250">បាន​ទប់ស្កាត់ដោយ​ស្វ័យ​ប្រវត្តិ</translation>
 <translation id="3069226013421428034">អនុញ្ញាត​ការចូល​របស់ភាគីទីបី​សម្រាប់​គេហទំព័រ​ជាក់លាក់។</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{ផុតកំណត់​ថ្ងៃស្អែក}other{ផុតកំណត់​ក្នុងរយៈពេល # ថ្ងៃ}}</translation>
 <translation id="310297983047869047">ស្លាយ​មុន</translation>
 <translation id="3109724472072898302">បានបង្រួមចូល</translation>
 <translation id="3114012059975132928">កម្មវិធី​ចាក់​វីដេអូ</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">បានអនុញ្ញាត</translation>
 <translation id="429312253194641664">គេហទំព័រ​កំពុង​ចាក់មេឌៀ</translation>
 <translation id="42981349822642051">ពង្រីក</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{ផុតកំណត់​ថ្ងៃស្អែក}other{ផុតកំណត់​ក្នុងរយៈពេល # ថ្ងៃ}}</translation>
 <translation id="4336566011000459927">Chrome នឹង​ដាក់កំហិត​ខូគី​ម្ដង​ទៀត​នៅ​ថ្ងៃនេះ</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> ផ្ទាំង​ចុងក្រោយ​របស់អ្នក</translation>
 <translation id="4338831206024587507">គេហទំព័រ​ទាំង​អស់​នៅក្រោម <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">ជានិច្ច</translation>
 <translation id="757524316907819857">ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​លេងខ្លឹមសារ​ដែលមានការការពារ</translation>
 <translation id="7594634374516752650">បានភ្ជាប់ឧបករណ៍ប៊្លូធូស</translation>
-<translation id="7641339528570811325">សម្អាត​ទិន្នន័យ​រុករក​…</translation>
 <translation id="7649070708921625228">ជំនួយ</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>

@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="301521992641321250">Bloqueado de forma automática</translation>
 <translation id="3069226013421428034">Permite el acceso de terceros a un sitio específico.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Vence mañana}other{Vence en # días}}</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3109724472072898302">Contraído</translation>
 <translation id="3114012059975132928">Reproductor de video</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Permitidas</translation>
 <translation id="429312253194641664">Un sitio está reproduciendo contenido multimedia</translation>
 <translation id="42981349822642051">Expandir</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Vence mañana}other{Vence dentro de # días}}</translation>
 <translation id="4336566011000459927">Chrome volverá a limitar las cookies hoy</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Tu pestaña más reciente</translation>
 <translation id="4338831206024587507">Todos los sitios en <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="757524316907819857">Impedir que los sitios reproduzcan contenido protegido</translation>
 <translation id="7594634374516752650">Conectado a un dispositivo Bluetooth</translation>
-<translation id="7641339528570811325">Borrar datos de navegación…</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">El maravilloso mago de Oz</translation>

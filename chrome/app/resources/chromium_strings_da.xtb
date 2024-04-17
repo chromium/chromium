@@ -70,7 +70,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2329088755516916767">Når indstillingen er aktiveret, forudindlæser Chromium sider, hvilket gør det hurtigere at browse og søge.</translation>
 <translation id="2343156876103232566">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chromium på begge enheder.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
-<translation id="2359920621792549529"><ph name="BEGIN_LINK" />Log ud af Chromium<ph name="END_LINK" /> for kun at rydde browserdata fra denne enhed uden at slette dataene på din Google-konto.</translation>
 <translation id="2384373936468275798">Chromium OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{En eller flere Chromium-udvidelser havde adgang til 1 HID-enhed}=1{En eller flere Chromium-udvidelser har adgang til 1 HID-enhed}one{En eller flere Chromium-udvidelser har adgang til # HID-enhed}other{En eller flere Chromium-udvidelser har adgang til # HID-enheder}}</translation>
 <translation id="2401032172288869980">Chromium skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
@@ -250,6 +249,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Vis Chromium på dette sprog</translation>
 <translation id="569897634095159764">Der kan ikke oprettes forbindelse til internettet. Proxyserveren kræver godkendelse.</translation>
+<translation id="5800158606660203929">Tilpas og styr Chromium. Angiv Chromium som din standardbrowser.</translation>
 <translation id="5809516625706423866">Der kan ikke oprettes forbindelse til internettet. HTTP 401 (uautoriseret). Tjek din proxykonfiguration.</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5883558403894052917">Chromium har registreret malware i disse elementer:</translation>

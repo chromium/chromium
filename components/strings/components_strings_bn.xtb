@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chrome-এ ডাইনো রান গেম খেলুন</translation>
 <translation id="161042844686301425">নীলাভ</translation>
 <translation id="1611101756749861742">Second Roll</translation>
+<translation id="1611854593425834707">কাস্টিংয়ের জন্য ডিভাইসের তালিকা বন্ধ করুন</translation>
 <translation id="1612199629998703524">বিষয় ম্যানেজ করুন</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" />-এর জন্য অ্যাক্সেস তুলে নিন</translation>
 <translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">স্ক্রিন লক দিয়ে পাসওয়ার্ড সুরক্ষিত করুন</translation>
 <translation id="1812527064848182527">ল্যান্ডস্কেপ</translation>
 <translation id="1812975699435941848">স্বাস্থ্য বিষয়ক শিক্ষা ও চিকিৎসা প্রশিক্ষণ</translation>
-<translation id="1813414402673211292">ব্রাউজ করা ডেটা সাফ করুন</translation>
 <translation id="1816436748874040213">শেয়ার করা ট্যাব স্ক্রল ও জুম করার কথা বলতে পারবেন</translation>
 <translation id="1818522458013171885">আনব্লক করুন</translation>
 <translation id="1818585559878922121">ডকুমেন্টারি সিনেমা</translation>
@@ -619,7 +619,7 @@
 <translation id="2126374524350484896">PDF প্রোডিউসার:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতি সেট না থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">এগুলি যেকোনও ক্রমে দেখা যায়। আপনি যেকোনও সময়ে ডিফল্ট সার্চ ইঞ্জিন পরিবর্তন করতে পারবেন।</translation>
+<translation id="2132825047782982803">এগুলি র‍্যান্ডম অর্ডারে দেখা যায়। আপনি যেকোনও সময় আপনার ডিফল্ট সার্চ ইঞ্জিন পরিবর্তন করতে পারবেন।</translation>
 <translation id="2137891579555018930">অনুমতির জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="213826338245044447">মোবাইল বুকমার্ক</translation>
 <translation id="2141000681034340397">আপনার ইনপুট এডিট করুন</translation>
@@ -876,7 +876,6 @@
 <translation id="2647086987482648627">ফ্যাব্রিক (সেমি-গ্লস)</translation>
 <translation id="264810637653812429">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি।</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার ব্রাউজিং ইতিহাস, কুকি, ক্যাশে ও আরও অনেক কিছু মুছতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="2650446666397867134">ফাইলে অ্যাক্সেস অস্বীকৃত হয়েছে</translation>
 <translation id="2651465929321991146">ইতিহাস ও ট্যাব</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
@@ -1206,7 +1205,6 @@
 <translation id="33073482541490531">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। Password Manager এখনই আপনার পাসওয়ার্ড পরিবর্তন করতে সাজেস্ট করছে।</translation>
 <translation id="3307649904964670439">'Chrome কাস্টমাইজ করুন' বোতাম, আপনার ব্রাউজারের লুক কাস্টমাইজ করতে এটি চালু করুন</translation>
 <translation id="3308006649705061278">অর্গানাইজেশনাল ইউনিট (OU) </translation>
-<translation id="3310047144791481950">কোন কার্ড ব্যবহার করে পেমেন্ট করবেন তা বেছে নেওয়ার জন্য তথ্য দেখুন। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />কার্ডের বিভিন্ন সুবিধা সম্পর্কে আরও জানুন<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">টিভি কমেডি</translation>
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
 <translation id="3324983252691184275">টকটকে লাল</translation>
@@ -1375,7 +1373,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে 'নিরাপত্তা সংক্রান্ত পরীক্ষা' চালাতে প্রথমে Tab আর তারপরে Enter কী প্রেস করুন</translation>
 <translation id="3615309852743236517">মেনিকিওর ও পেডিকিওর</translation>
 <translation id="3620239073311576716">ইউনিফর্ম ও কাজের পোশাক</translation>
-<translation id="36224234498066874">ব্রাউজ করা ডেটা সাফ করুন...</translation>
 <translation id="362276910939193118">সম্পূর্ণ ইতিহাস দেখুন</translation>
 <translation id="3623041590998910684">আপনার ক্যামেরা ব্যবহার করতে, <ph name="LINK" /> লিঙ্কে গিয়ে Chrome-কে অ্যাক্সেস দিন।</translation>
 <translation id="3623398832322170566">প্রেমের সিনেমা</translation>
@@ -1920,6 +1917,7 @@
 <translation id="4691093235373904540">ক্ষতিগ্রস্ত ছাদ মেরামত করা</translation>
 <translation id="4692623383562244444">সার্চ ইঞ্জিনসমূহ</translation>
 <translation id="4698692901173737941">কম্ব্যাট স্পোর্টস</translation>
+<translation id="4701307090948589984">এতে কাস্ট করুন...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">সাইড</translation>
 <translation id="4702656508969495934">লাইভ ক্যাপশন দেখা যাচ্ছে, ফোকাস করতে উইন্ডো পরিবর্তনকারী ব্যবহার করুন</translation>
@@ -2056,7 +2054,6 @@
 <translation id="4936134414789135531">যোগ করা <ph name="VALUE_NAME" /> পাওয়া যায়নি।</translation>
 <translation id="4936675324097895694">ফাইন্যান্স</translation>
 <translation id="4940163644868678279">Chrome-এ ছদ্মবেশী মোড</translation>
-<translation id="494111439860963024">'ব্রাউজ করা ডেটা মুছুন' বোতাম, Chrome সেটিংস থেকে আপনার ব্রাউজিং ইতিহাস, কুকি, ক্যাশে ও আরও অনেক কিছু করতে এটি চালু করুন</translation>
 <translation id="4943620199112228840">আপনার মাইক্রোফোন ব্যবহার করুন</translation>
 <translation id="4943872375798546930">কোন ফলাফল নেই</translation>
 <translation id="4950898438188848926">একটি ট্যাব থেকে অন্য ট্যাবে যাওয়ার বোতাম, খোলা ট্যাবে যেতে এন্টার টিপুন, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2169,6 +2166,8 @@
 <translation id="5161334686036120870">বিষয়:</translation>
 <translation id="5161506081086828129">স্ট্যাকার ৯</translation>
 <translation id="5164798890604758545">টেক্সট লেখা হয়েছে</translation>
+<translation id="5164928537947209380">এই পরীক্ষামূলক AI টুল সব সময় ঠিক হবে না। এটির উন্নতি করতে, আপনার কন্টেন্ট Google-এ পাঠানো হয়।
+    <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" />-এর জন্য সিভিসি লিখুন। আপনি কনফার্ম করার পর আপনার Google অ্যাকাউন্ট থেকে কার্ডের বিবরণ এই সাইটে শেয়ার করা হবে।</translation>
 <translation id="5169827969064885044">আপনি নিজের প্রতিষ্ঠানের অ্যাকাউন্টের অ্যাক্সেস হারাতে পারেন অথবা আপনার পরিচয় চুরি হয়ে যেতে পারে। Chrome এখনই আপনার পাসওয়ার্ড পরিবর্তন করার আর্জি জানাচ্ছে।</translation>
 <translation id="5171045022955879922">খুঁজুন বা URL লিখুন</translation>
@@ -2291,7 +2290,6 @@
 <translation id="541416427766103491">স্ট্যাকার ৪</translation>
 <translation id="5414446060143308245">ট্রান্সফার করার আগেই পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="5414511064953050917">যেকোনওভাবে সরান</translation>
-<translation id="5421136146218899937">ব্রাউজিং ডেটা সাফ করুন...</translation>
 <translation id="5421408724705443535">রক মিউজিক</translation>
 <translation id="5423269318075950257">দাম ট্র্যাক করুন</translation>
 <translation id="5425082381151187189">গৃহ ও অন্দর সজ্জা</translation>
@@ -3653,7 +3651,6 @@
 <translation id="8022542098135319050">ট্রাভেল এজেন্সি ও পরিষেবা</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করতে ট্যাব তারপর Enter প্রেস করুন</translation>
 <translation id="8025119109950072390">Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers, or credit cards).</translation>
-<translation id="8026334261755873520">ব্রাউজিং ডেটা সাফ করুন</translation>
 <translation id="8027077570865220386">ট্রে ১৫</translation>
 <translation id="8027585818882015174">'Chrome নিরাপত্তা সংক্রান্ত পরীক্ষা রান করান' বোতাম, Chrome সেটিংসে নিরাপত্তা সংক্রান্ত পরীক্ষা রান করাতে এটি চালু করুন</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-এ চটপট নতুন ফর্ম তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
@@ -3924,7 +3921,6 @@
 <translation id="8527228059738193856">স্পিকার</translation>
 <translation id="8527681393107582734">কৃষি ও বনজ</translation>
 <translation id="8528149813106025610">বাচ্চাদের পোশাক</translation>
-<translation id="8530813470445476232">Chrome সেটিংস থেকে আপনার ব্রাউজিং ইতিহাস, কুকি, ক্যাশে ও আরও অনেক কিছু মুছুন</translation>
 <translation id="853246364274116957">ব্রডওয়ে ও মিউজিকাল থিয়েটার</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ব্লক করা ইউআরএলের তালিকা এবং আপনার সিস্টেম অ্যাডমিনিস্ট্রেটরের প্রয়োগ করা অন্যান্য নীতিগুলি দেখার জন্য &lt;strong&gt;chrome://policy&lt;/strong&gt;-এ যান।</translation>
@@ -4064,6 +4060,7 @@
 <translation id="8807160976559152894">প্রতিটি পৃষ্ঠার পর ট্রিম করুন</translation>
 <translation id="8809203544698246977">ব্লক করা বিষয়গুলি এখানে দেখা যাবে</translation>
 <translation id="8811470563853401328">অ্যাকাউন্টে ঠিকানা সেভ করবেন?</translation>
+<translation id="8811725516933141693">Gemini-র সাথে চ্যাট করতে @gemini টাইপ করুন</translation>
 <translation id="8813277370772331957">আমাকে পরে মনে করানো হোক</translation>
 <translation id="8814707942599948500">এনভেলপ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Chrome সেটিংসে Chrome আপডেট করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>

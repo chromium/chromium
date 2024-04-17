@@ -68,6 +68,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicação da Play Store</translation>
 <translation id="1225748608451425081">O seu Chromebook está bloqueado devido a um problema conhecido. Poderá iniciar sessão dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Parar seleção</translation>
+<translation id="1230853660706736937">Pesquise texto em imagens e veja pré-visualizações de imagens</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="1239161794459865856">A funcionalidade <ph name="FEATURE_NAME" /> está ligada.</translation>
 <translation id="1240638468526743569">Uma app</translation>
@@ -128,6 +129,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1420408895951708260">Ativar/desativar Luz noturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1435537621343861112">Não é possível iniciar o ditado. O microfone está desligado.</translation>
+<translation id="1448963928642384376">As zonas Wi-Fi do seu dispositivo</translation>
 <translation id="1455242230282523554">Mostrar definições de idioma</translation>
 <translation id="1460620680449458626">O volume está desativado.</translation>
 <translation id="14648076227129703">Isto permite o acesso à câmara para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e para todas as apps e Websites com a autorização da câmara</translation>
@@ -715,11 +717,13 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3824784079442479685">Isto permite o acesso à câmara para a app <ph name="APP_NAME" />, e para todas as apps e Websites com a autorização da câmara. Pode ter de atualizar a página Web ou reiniciar a app.</translation>
 <translation id="3826099427150913765">Mudar para palavra-passe</translation>
 <translation id="383058930331066723">O modo de Poupança de bateria está ativado.</translation>
+<translation id="3831226344927851293">Sair da vista do tutorial</translation>
 <translation id="383629559565718788">Mostrar definições do teclado</translation>
 <translation id="384082539148746321">Eliminar o modelo?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> e, em seguida, <ph name="KEY_ONE" /> ou <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Não existem informações de rede disponíveis</translation>
+<translation id="3848526302597027234">Acesso às seguintes autorizações:</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="385300504083504382">Início</translation>
 <translation id="3859364108019690">Não é possível fazer stream de apps</translation>
@@ -1815,7 +1819,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8001755249288974029">Selecionar o texto do cursor até ao início da linha</translation>
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8015361438441228492">Não foi possível editar a tarefa.</translation>
-<translation id="8026334261755873520">Limpar dados de navegação</translation>
 <translation id="802782383769312836">Espaço de trabalho anterior: <ph name="DESK_NAME" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Falha na ligação à zona Wi-Fi</translation>
 <translation id="8029629653277878342">É necessário um PIN ou uma palavra-passe para uma maior segurança.</translation>

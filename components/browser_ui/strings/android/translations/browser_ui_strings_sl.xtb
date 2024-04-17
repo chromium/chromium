@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
 <translation id="3069226013421428034">Omogočanje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
 <translation id="310297983047869047">Prejšnji diapozitiv</translation>
 <translation id="3109724472072898302">Strnjeno</translation>
 <translation id="3114012059975132928">Videopredvajalnik</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Dovoljeno</translation>
 <translation id="429312253194641664">Spletno mesto predvaja predstavnost</translation>
 <translation id="42981349822642051">Razširi</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
 <translation id="4336566011000459927">Chrome bo danes znova omejil piškotke</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Zadnji zavihek</translation>
 <translation id="4338831206024587507">Vsa spletna mesta v domeni <ph name="DOMAIN" />.</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Vedno</translation>
 <translation id="757524316907819857">Prepreči spletnim mestom predvajanje zaščitene vsebine</translation>
 <translation id="7594634374516752650">Povezano z napravo Bluetooth</translation>
-<translation id="7641339528570811325">Izbris podatkov brskanja …</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7667547420449112975">Čudoviti čarovnik iz Oza</translation>

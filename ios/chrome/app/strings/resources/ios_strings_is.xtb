@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">Velkomin(n) aftur, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nafn korthafa</translation>
 <translation id="1809939268435598390">Eyða möppu</translation>
-<translation id="1813414402673211292">Hreinsa vafragögn</translation>
 <translation id="1815941218935345331">Aðgangskóði</translation>
 <translation id="1820259098641718022">Bætt við leslista</translation>
 <translation id="1822994441903263130">FedEx</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">Vefsíða sótt</translation>
 <translation id="223356358902285214">Vef- og forritavirkni</translation>
 <translation id="2234827758954819389">Leiðbeiningar um persónuvernd</translation>
-<translation id="2239626343334228536">Hreinsar vefskoðunargögn...</translation>
 <translation id="2251686759395008410">Valmynd → Ferill</translation>
 <translation id="2252674110805316998">Vefleit</translation>
 <translation id="2252749852083403809">Vistar á Drive fyrir <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3485558910355485767">Nýr huliðsgluggi</translation>
 <translation id="3488501490964659223">Flipum var lokað og vefskoðunargögnum eytt. Þú skráðist út</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /> um uppástungur að efni</translation>
-<translation id="3494788280727468875">Staðfesta hreinsun vefskoðunargagna</translation>
 <translation id="35083190962747987">Opna ${url}</translation>
 <translation id="3519193562722059437">Opnaðu flipa til að vafra.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Opna flipann}one{Opna {count} flipa}other{Opna {count} flipa}}</translation>
@@ -492,7 +489,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3540141921715814660">Bæta við bókamerki</translation>
 <translation id="355101282835380364">Vista á reikningi…</translation>
 <translation id="3551320343578183772">Loka flipa</translation>
-<translation id="3565207542107370586">Hreinsa vefskoðunargögn…</translation>
 <translation id="3565930036634619844">Flipi. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Ýttu tvisvar til að fá fleiri aðgangsorð.</translation>
 <translation id="3575234738189584619">Leita með Linsu</translation>
@@ -968,7 +964,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6027945736510816438">Áttirðu við <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nýr eiginleiki</translation>
 <translation id="6033598293589037429">Hægt að sækja</translation>
-<translation id="6036215966221662377">Hreinsa vefskoðunargögn</translation>
 <translation id="6036514205982097558">Allir fliparnir þínir í einum og sama vafranum</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Loka</translation>
@@ -1151,7 +1146,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6859944681507688231">Kveiktu á myndavélinni í stillingum til að skanna QR-kóða eða kreditkort.</translation>
 <translation id="6867369562105931222">aðgangsorð</translation>
 <translation id="686899695320434745">Vefföng eru ekki dulkóðuð með aðgangsorðinu þínu. Þetta gerir þér kleift að nota þau í öðrum Google-þjónustum.</translation>
-<translation id="6869389390665537774">Þú getur séð síðurnar sem þú hefur opnað eða hreinsað þær úr ferlinum</translation>
 <translation id="687135068089457384">Sýna stillingar</translation>
 <translation id="6873263987691478642">Tvískiptur skjár</translation>
 <translation id="6882836635272038266">Hefðbundin vörn gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg.</translation>
@@ -1297,7 +1291,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7719038820139380048">Skráðu þig inn til að fá efni byggt á áhugasviðum þínum.</translation>
 <translation id="7720410380936703141">REYNDU AFTUR</translation>
 <translation id="7724085059277147439">{count,plural, =1{Atriði vistað á Google-reikningnum þínum, {email}}one{Atriði vistuð á Google-reikningnum þínum, {email}}other{Atriði vistuð á Google-reikningnum þínum, {email}}}</translation>
-<translation id="7726702057919861819">Valmynd → Ferill → Hreinsa vefskoðunargögn</translation>
 <translation id="7729458878441927652">Samstilltu flipana þína og ferilinn til að sjá flipa úr hinum tækjunum þínum.</translation>
 <translation id="7730973429297233609">Veldu reikninginn sem þú vilt nota til að vista <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Aðeins í þessu tæki.</translation>
@@ -1542,7 +1535,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8870413625673593573">Nýlega lokað</translation>
 <translation id="8876882697946675716">Samstilltu öll tækin þín</translation>
 <translation id="8879604564928138696">Ýttu tvisvar til að prófa</translation>
-<translation id="8879984884633913185">Fela „Hreinsa vefskoðunargögn“</translation>
 <translation id="8881801611828450202">Leita að þessari mynd á <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Sendir vefslóðir sumra vefsíðna sem þú skoðar, takmarkaðar kerfisupplýsingar og tiltekið innihald síðna til Google til að hjálpa til við að finna og loka á nýjar ógnir og vernda alla vefnotendur.</translation>
 <translation id="890565330728586731">Til baka</translation>

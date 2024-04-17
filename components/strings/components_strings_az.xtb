@@ -341,6 +341,7 @@
 <translation id="160851722280695521">Chrome'da Dinozavr Qaçış oyununu oynayın</translation>
 <translation id="161042844686301425">Firuzəyi</translation>
 <translation id="1611101756749861742">İkinci Rulon</translation>
+<translation id="1611854593425834707">Yayım üçün cihaz siyahısını bağlayın</translation>
 <translation id="1612199629998703524">Mövzuları idarə edin</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> üçün girişi ləğv edin</translation>
 <translation id="1615402009686901181">Administrator siyasəti məxfi məzmun görünəndə ekran çəkimini deaktiv edir</translation>
@@ -453,7 +454,6 @@
 <translation id="1810391395243432441">Parolları ekran kilidinizlə qoruyun</translation>
 <translation id="1812527064848182527">peyzaj</translation>
 <translation id="1812975699435941848">Səhiyyə təhsili və tibbi təlim</translation>
-<translation id="1813414402673211292">Axtarış Datasını Silin</translation>
 <translation id="1816436748874040213">Paylaşılan tabları sürüşdürüb zumlamaq istəyə bilər</translation>
 <translation id="1818522458013171885">Blokdan çıxarın</translation>
 <translation id="1818585559878922121">Sənədli filmlər</translation>
@@ -876,7 +876,6 @@
 <translation id="2647086987482648627">Parça (yarıparlaq)</translation>
 <translation id="264810637653812429">Uyğun cihaz tapılmadı.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında baxış tarixçəsi, kukilər, keş və daha çoxunu təmizləyin</translation>
 <translation id="2650446666397867134">Fayla giriş rədd edildi</translation>
 <translation id="2651465929321991146">Tarixçə və tablar</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
@@ -1204,7 +1203,6 @@
 <translation id="33073482541490531">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Parol Meneceri bu parolu indi dəyişdirmənizi tövsiyə edir.</translation>
 <translation id="3307649904964670439">"Chrome-u fərdiləşdirin" düyməsi, aktivləşdirərək brauzer görünüşünü fərdiləşdirin</translation>
 <translation id="3308006649705061278">Təşkilati Birlik (OU)</translation>
-<translation id="3310047144791481950">Ödəniş edəcəyiniz kartı seçməyə kömək edən məlumata baxın. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Kart faydaları haqqında məlumat əldə edin<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV Komediyaları</translation>
 <translation id="3324687287337751929">4 x 6 düym</translation>
 <translation id="3324983252691184275">Tünd-qırmızı</translation>
@@ -1372,7 +1370,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında Təhlükəsizlik Yoxlanışını icra edin</translation>
 <translation id="3615309852743236517">Manikür və pedikür</translation>
 <translation id="3620239073311576716">Uniforma və iş geyimləri</translation>
-<translation id="36224234498066874">Axtarış Datasını Silin...</translation>
 <translation id="362276910939193118">Tam tarixçəni göstərin</translation>
 <translation id="3623041590998910684">Kamera istifadəsi üçün <ph name="LINK" /> bölməsində Chrome-a giriş imkanı verin.</translation>
 <translation id="3623398832322170566">Romantik Filmlər</translation>
@@ -1917,6 +1914,7 @@
 <translation id="4691093235373904540">Dam örtüyü</translation>
 <translation id="4692623383562244444">Axtarış Sistemləri</translation>
 <translation id="4698692901173737941">Döyüş idman növləri</translation>
+<translation id="4701307090948589984">Burada yayımlayın...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Tərəf</translation>
 <translation id="4702656508969495934">Canlı Altyazı görünür, fokuslanmaq üçün pəncərə dəyişdiricisindən istifadə edin</translation>
@@ -2053,7 +2051,6 @@
 <translation id="4936134414789135531">Daxil edilən <ph name="VALUE_NAME" /> tapılmadı.</translation>
 <translation id="4936675324097895694">Maliyyə</translation>
 <translation id="4940163644868678279">Chrome'da Anonim Rejim</translation>
-<translation id="494111439860963024">"Axtarış datasını silin" düyməsi, aktivləşdirərək Chrome ayarlarında brauzer tarixçəsi, kukilər, keş və s. silin</translation>
 <translation id="4943620199112228840">Mikrofonlardan istifadə edin</translation>
 <translation id="4943872375798546930">Nəticə yoxdur</translation>
 <translation id="4950898438188848926">Keçid düyməsinə klikləyin, açıq <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> tabına keçmək üçün "Daxil olun" düyməsinə basın</translation>
@@ -2166,6 +2163,8 @@
 <translation id="5161334686036120870">Mövzu:</translation>
 <translation id="5161506081086828129">Yığıcı 9</translation>
 <translation id="5164798890604758545">Mətn daxil edilib</translation>
+<translation id="5164928537947209380">Bu təcrübi Sİ aləti həmişə düz olmaya bilər. Təkmilləşdirmək üçün kontent Google-a göndərilir.
+    <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> üçün CVC daxil edin. Təsdiqlədikdən sonra Google Hesabındakı kart məlumatları bu saytda paylaşılacaq.</translation>
 <translation id="5169827969064885044">Təşkilat hesabına girişi itirə və ya kimlik oğurluğu ilə üzləşə bilərsiniz. Chrome parollarınızı indi dəyişməyi məsləhət görür.</translation>
 <translation id="5171045022955879922">Linki axtarın və ya yazın</translation>
@@ -2288,7 +2287,6 @@
 <translation id="541416427766103491">Yığıcı 4</translation>
 <translation id="5414446060143308245">Ötürməzdən əvvəl nəzərdən keçirilməlidir</translation>
 <translation id="5414511064953050917">İstənilən halda köçürün</translation>
-<translation id="5421136146218899937">Baxış datasını silin...</translation>
 <translation id="5421408724705443535">Rok Musiqisi</translation>
 <translation id="5423269318075950257">Qiyməti izləyin</translation>
 <translation id="5425082381151187189">Ev və İnteryer Dekoru</translation>
@@ -3653,7 +3651,6 @@
 <translation id="8022542098135319050">Səyahət agentlik və xidmətləri</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, tab düyməsi, sonra Enter düyməsinə basaraq Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="8025119109950072390">Bu saytdakı hücumçular Sizi proqram təminatı endirmək və ya şəxsi məlumatları aşkarlamaq kimi təhlükəli işləri görməyə (məsələn, parollar, telefon nömrələri və ya kredit kartları) sövq edə bilər</translation>
-<translation id="8026334261755873520">Brauzinq datasını təmizləyin</translation>
 <translation id="8027077570865220386">Qab 15</translation>
 <translation id="8027585818882015174">"Chrome təhlükəsizlik yoxlanışını icra edin" düyməsi, aktivləşdirərək Chrome ayarlarında təhlükəsizlik yoxlanışı icra edin</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Forma'da cəld yeni forma yaradın</translation>
@@ -3925,7 +3922,6 @@
 <translation id="8527228059738193856">Dinamiklər</translation>
 <translation id="8527681393107582734">Kənd və Meşə Təsərrüfatı</translation>
 <translation id="8528149813106025610">Uşaq Geyimi</translation>
-<translation id="8530813470445476232">Baxış tarixçəsi, kukilər, keş və daha çoxunu Chrome ayarlarında təmizləyin</translation>
 <translation id="853246364274116957">Broadway və musiqi teatrı</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Bloklanmış URL-ləri və sistem admininin tətbiq etdiyi digər siyasətləri görmək üçün buraya keçin: &lt;strong&gt;chrome://policy&lt;/strong&gt;</translation>
@@ -4065,6 +4061,7 @@
 <translation id="8807160976559152894">Hər səhifədən sonra kəsin</translation>
 <translation id="8809203544698246977">Bloklanmış mövzular burada görünür</translation>
 <translation id="8811470563853401328">Ünvan hesabda yadda saxlansın?</translation>
+<translation id="8811725516933141693">Gemini ilə söhbət etmək üçün @gemini yazın</translation>
 <translation id="8813277370772331957">Sonra xatırladın</translation>
 <translation id="8814707942599948500">Zərf C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında Chrome'u güncəlləyin</translation>

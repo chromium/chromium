@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
 <translation id="301521992641321250">Bllokuar automatikisht</translation>
 <translation id="3069226013421428034">Lejo identifikimin e palëve të treta për një sajt specifik.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Skadon nesër}other{Skadon për # ditë}}</translation>
 <translation id="310297983047869047">Diapozitivi i mëparshëm</translation>
 <translation id="3109724472072898302">Palosur</translation>
 <translation id="3114012059975132928">Luajtësi i videos</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">Të lejuara</translation>
 <translation id="429312253194641664">Një sajt po luan media</translation>
 <translation id="42981349822642051">Zgjero</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Skadon nesër}other{Skadon për # ditë}}</translation>
 <translation id="4336566011000459927">Chrome do t'i kufizojë kukit përsëri sot</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Skeda jote e fundit</translation>
 <translation id="4338831206024587507">Të gjitha sajtet nën domenin <ph name="DOMAIN" /></translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="757524316907819857">Blloko sajtet që të mos luajnë përmbajtje të mbrojtura</translation>
 <translation id="7594634374516752650">U lidh me një pajisje me Bluetooth</translation>
-<translation id="7641339528570811325">Pastro të dhënat e shfletimit...</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7667547420449112975">Magjistari i mrekullueshëm i Ozit</translation>

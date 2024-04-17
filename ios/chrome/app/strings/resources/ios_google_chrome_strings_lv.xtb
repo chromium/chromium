@@ -4,7 +4,6 @@
 <translation id="1021782183249308751">Nospiediet un turiet Chrome ikonu un noklikšķiniet uz “Rediģēt sākuma ekrānu”</translation>
 <translation id="1066101356081285416">Pārlūkā Chrome jūsu apmeklētajās vietnēs tiks noteikti izsekošanas numuri un jaunas cilnes lapā tiks parādīti jaunumi par sūtījumiem. Pakas izsekošanas numurs un vietnes nosaukums tiks nosūtīts uzņēmumam Google, lai nodrošinātu šo funkciju un uzlabotu Google iepirkšanās funkcijas visiem lietotājiem. Šo informāciju varat jebkurā laikā atjaunināt <ph name="BEGIN_LINK" />pakas izsekošanas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Chrome izmantošana pēc noklusējuma</translation>
-<translation id="1105362920864247682">Notīrīt pārlūkošanas datus pārlūkā Chrome.</translation>
 <translation id="1143896152279775643">Jūsu parole tiks saglabāta Google paroļu pārvaldniekā kontā <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Atveriet Chrome izvēlni.</translation>
 <translation id="1180362651362502943">Varat turpināt izmantot Google kontā saglabātos Chrome datus.</translation>
@@ -77,7 +76,6 @@ Svarīga informācija
 <translation id="2750626042242931740">Jebkurā brīdi Chrome iestatījumos varat atjaunināt atlasi.</translation>
 <translation id="2767464022270041271">Nav saglabātu paroļu. Google paroļu pārvaldnieks var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="2789947168960170215">Ja esat aizmirsis ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus savā kontā<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Notīrīt pārlūkošanas datus pārlūkā Chrome</translation>
 <translation id="2869959624320573933">Pierakstīšanās pārlūkprogrammā Chrome</translation>
 <translation id="2876628302275096482">Uzziniet vairāk par to, <ph name="BEGIN_LINK" />kā pārlūkā Chrome tiek saglabāta jūsu datu konfidencialitāte<ph name="END_LINK" />.</translation>
 <translation id="2952581218264071393">1. Atveriet pārlūka Chrome iestatījumus.</translation>
@@ -225,7 +223,6 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="7466693328838535498">Lodziņā Search Widgets (Logrīku meklēšana) ievadiet “Chrome”.</translation>
 <translation id="746684838091935575">3. Atlasiet Chrome.</translation>
 <translation id="7492574581995589075">Jūsu organizācija ir izslēgusi iespēju izmantot un saglabāt Chrome datus jūsu Google kontā. Jaunas grāmatzīmes, paroles un citi dati tiks saglabāti tikai šajā ierīcē.</translation>
-<translation id="756809126120519699">Chrome dati tika notīrīti</translation>
 <translation id="7581063337314642333">Atvērt ciļņu režģi pārlūkā Chrome</translation>
 <translation id="7662994914830945754">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chrome, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="7669869107155339016">Pārejiet uz Chrome iestatījumiem.</translation>

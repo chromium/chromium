@@ -123,7 +123,6 @@
 <translation id="3008272652534848354">権限をリセット</translation>
 <translation id="301521992641321250">自動でブロックされました</translation>
 <translation id="3069226013421428034">特定のサイトのサードパーティのログインを許可します。</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="310297983047869047">前のスライド</translation>
 <translation id="3109724472072898302">折りたたみ表示中</translation>
 <translation id="3114012059975132928">動画プレーヤー</translation>
@@ -198,6 +197,7 @@
 <translation id="4278390842282768270">許可</translation>
 <translation id="429312253194641664">サイトでメディアが再生されています</translation>
 <translation id="42981349822642051">展開</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="4336566011000459927">今日、Chrome で Cookie を再び制限します</translation>
 <translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 最後のタブ</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> のすべてのサイト</translation>
@@ -400,7 +400,6 @@
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="757524316907819857">サイトでの保護されたコンテンツの再生をブロックする</translation>
 <translation id="7594634374516752650">Bluetooth デバイスに接続されています</translation>
-<translation id="7641339528570811325">閲覧履歴データを削除…</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7667547420449112975">オズの魔法使い</translation>

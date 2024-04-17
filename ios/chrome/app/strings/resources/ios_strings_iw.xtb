@@ -149,7 +149,6 @@
 <translation id="1789803444939621101">שמחים שחזרת, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">שם בעל הכרטיס</translation>
 <translation id="1809939268435598390">מחיקת תיקייה</translation>
-<translation id="1813414402673211292">ניקוי נתוני גלישה</translation>
 <translation id="1815941218935345331">קוד גישה</translation>
 <translation id="1820259098641718022">נוסף לרשימת הקריאה</translation>
 <translation id="1822994441903263130">FedEx</translation>
@@ -226,7 +225,6 @@
 <translation id="2230173723195178503">דף האינטרנט נטען</translation>
 <translation id="223356358902285214">פעילות באינטרנט ובאפליקציות</translation>
 <translation id="2234827758954819389">המדריך בנושא פרטיות</translation>
-<translation id="2239626343334228536">ניקוי נתוני הגלישה מתבצע…</translation>
 <translation id="2251686759395008410">תפריט ← היסטוריה</translation>
 <translation id="2252674110805316998">‏חיפוש Google</translation>
 <translation id="2252749852083403809">‏מתבצעת שמירה ב-Drive של <ph name="USER_EMAIL" />.</translation>
@@ -479,7 +477,6 @@
 <translation id="3485558910355485767">חלון פרטי חדש</translation>
 <translation id="3488501490964659223">הכרטיסיות נסגרו ונתוני הגלישה נמחקו. המערכת הוציאה אותך מהחשבון</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
-<translation id="3494788280727468875">אישור הניקוי של נתוני הגלישה</translation>
 <translation id="35083190962747987">‏פתיחה של ${url}</translation>
 <translation id="3519193562722059437">אפשר לפתוח כרטיסייה כדי לגלוש באינטרנט.</translation>
 <translation id="3519905498307021260">{count,plural, =1{פתיחת הכרטיסייה}one{פתיחת {count} הכרטיסיות}two{פתיחת {count} הכרטיסיות}other{פתיחת {count} הכרטיסיות}}</translation>
@@ -492,7 +489,6 @@
 <translation id="3540141921715814660">הוספה לסימניות</translation>
 <translation id="355101282835380364">שמירה בחשבון…</translation>
 <translation id="3551320343578183772">סגירת כרטיסייה</translation>
-<translation id="3565207542107370586">מחיקת נתוני הגלישה…</translation>
 <translation id="3565930036634619844">‏מקש Tab. ‫<ph name="TAB_INDEX" /> מתוך <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">בהקשה כפולה יוצגו סיסמאות נוספות.</translation>
 <translation id="3575234738189584619">‏חיפוש באמצעות Lens</translation>
@@ -968,7 +964,6 @@
 <translation id="6027945736510816438">האם התכוונת לאתר <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">תכונה חדשה</translation>
 <translation id="6033598293589037429">החבילה מוכנה לאיסוף</translation>
-<translation id="6036215966221662377">מחיקת נתוני הגלישה</translation>
 <translation id="6036514205982097558">כל הכרטיסיות שלך בדפדפן אחד</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">סגירה</translation>
@@ -1151,7 +1146,6 @@
 <translation id="6859944681507688231">‏כדי לסרוק קוד QR או כרטיס אשראי, יש להפעיל את המצלמה דרך ההגדרות.</translation>
 <translation id="6867369562105931222">סיסמה</translation>
 <translation id="686899695320434745">‏הכתובות לא מוצפנות באמצעות ביטוי הסיסמה. פעולה זו מאפשרת לך להשתמש בהן בשירותי Google אחרים.</translation>
-<translation id="6869389390665537774">בדף ההיסטוריה אפשר לראות את הדפים שאליהם נכנסת או למחוק אותם</translation>
 <translation id="687135068089457384">הצגת ההגדרות</translation>
 <translation id="6873263987691478642">‏מצב Split View</translation>
 <translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
@@ -1297,7 +1291,6 @@
 <translation id="7719038820139380048">צריך להיכנס לחשבון כדי לקבל תוכן מותאם לתחומי העניין שלך.</translation>
 <translation id="7720410380936703141">ניסיון חוזר</translation>
 <translation id="7724085059277147439">{count,plural, =1{‏הפריט נשמר בחשבון Google עם הכתובת {email}}one{‏הפריטים נשמרו בחשבון Google עם הכתובת {email}.}two{‏הפריטים נשמרו בחשבון Google עם הכתובת {email}.}other{‏הפריטים נשמרו בחשבון Google עם הכתובת {email}.}}</translation>
-<translation id="7726702057919861819">תפריט ← היסטוריה ← מחיקה של נתוני הגלישה</translation>
 <translation id="7729458878441927652">כדי לראות כרטיסיות מהמכשירים האחרים שלך, צריך לסנכרן את הכרטיסיות ואת ההיסטוריה.</translation>
 <translation id="7730973429297233609">צריך לבחור את החשבון שבו רוצים להשתמש כדי לשמור את <ph name="FILENAME" /> ‏– <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. רק במכשיר הזה.</translation>
@@ -1542,7 +1535,6 @@
 <translation id="8870413625673593573">נסגרו לאחרונה</translation>
 <translation id="8876882697946675716">אפשר לסנכרן בין המכשירים</translation>
 <translation id="8879604564928138696">אפשר להקיש הקשה כפולה כדי לנסות</translation>
-<translation id="8879984884633913185">הסתרת 'ניקוי נתוני הגלישה'</translation>
 <translation id="8881801611828450202">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="890565330728586731">אחורה</translation>

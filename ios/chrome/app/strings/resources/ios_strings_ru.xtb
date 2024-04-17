@@ -148,7 +148,6 @@
 <translation id="1789803444939621101">С возвращением, <ph name="USER_NAME" />!</translation>
 <translation id="1803264062614276815">Владелец карты</translation>
 <translation id="1809939268435598390">Удалить папку</translation>
-<translation id="1813414402673211292">Очистка истории</translation>
 <translation id="1815941218935345331">Код доступа</translation>
 <translation id="1820259098641718022">Добавлено в список чтения</translation>
 <translation id="1822994441903263130">FedEx</translation>
@@ -225,7 +224,6 @@
 <translation id="2230173723195178503">Веб-страница загружена</translation>
 <translation id="223356358902285214">История приложений и веб-поиска</translation>
 <translation id="2234827758954819389">Руководство по конфиденциальности</translation>
-<translation id="2239626343334228536">Удаление данных о работе в браузере…</translation>
 <translation id="2251686759395008410">Меню → История</translation>
 <translation id="2252674110805316998">Веб-поиск</translation>
 <translation id="2252749852083403809">Сохраняется на Диске пользователя <ph name="USER_EMAIL" />…</translation>
@@ -478,7 +476,6 @@
 <translation id="3485558910355485767">Новое окно в режиме инкогнито</translation>
 <translation id="3488501490964659223">Вкладки были закрыты, а данные о работе в браузере удалены. Вы вышли из аккаунта.</translation>
 <translation id="3493531032208478708">Подробнее <ph name="BEGIN_LINK" />о рекомендованном контенте<ph name="END_LINK" />…</translation>
-<translation id="3494788280727468875">Подтвердить удаление данных о работе в браузере</translation>
 <translation id="35083190962747987">Открыть URL ${url}</translation>
 <translation id="3519193562722059437">Чтобы просматривать веб-страницы, откройте вкладку.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Открыть вкладку}one{Открыть {count} вкладку}few{Открыть {count} вкладки}many{Открыть {count} вкладок}other{Открыть {count} вкладки}}</translation>
@@ -491,7 +488,6 @@
 <translation id="3540141921715814660">Добавить в закладки</translation>
 <translation id="355101282835380364">Сохранить в аккаунте</translation>
 <translation id="3551320343578183772">Закрыть вкладку</translation>
-<translation id="3565207542107370586">Удалить данные о работе в браузере</translation>
 <translation id="3565930036634619844">Номер вкладки: <ph name="TAB_INDEX" /> из <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Чтобы посмотреть другие пароли, нажмите дважды.</translation>
 <translation id="3575234738189584619">Искать с помощью Объектива</translation>
@@ -967,7 +963,6 @@
 <translation id="6027945736510816438">Вам нужен домен <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">новая функция</translation>
 <translation id="6033598293589037429">Готово</translation>
-<translation id="6036215966221662377">Удалить данные о работе в браузере</translation>
 <translation id="6036514205982097558">Все вкладки в одном браузере</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Закрыть</translation>
@@ -1150,7 +1145,6 @@
 <translation id="6859944681507688231">Чтобы сканировать QR-код или банковскую карту, разрешите приложению доступ к камере.</translation>
 <translation id="6867369562105931222">(пароль)</translation>
 <translation id="686899695320434745">Адреса не шифруются кодовой фразой. Поэтому вы можете использовать их в других сервисах Google.</translation>
-<translation id="6869389390665537774">Вы можете посмотреть посещенные страницы или удалить их из истории.</translation>
 <translation id="687135068089457384">Показать настройки</translation>
 <translation id="6873263987691478642">Режим Split View</translation>
 <translation id="6882836635272038266">Стандартная защита от опасных сайтов, расширений и скачанных файлов.</translation>
@@ -1296,7 +1290,6 @@
 <translation id="7719038820139380048">Войдите, чтобы получать контент на основе ваших интересов.</translation>
 <translation id="7720410380936703141">ПОВТОРИТЬ</translation>
 <translation id="7724085059277147439">{count,plural, =1{Объект сохранен в вашем аккаунте Google ({email}).}one{Объекты сохранены в вашем аккаунте Google ({email}).}few{Объекты сохранены в вашем аккаунте Google ({email}).}many{Объекты сохранены в вашем аккаунте Google ({email}).}other{Объекты сохранены в вашем аккаунте Google ({email}).}}</translation>
-<translation id="7726702057919861819">Меню → История → Очистить историю</translation>
 <translation id="7729458878441927652">Синхронизируйте вкладки и историю. Тогда вам станут доступны вкладки, открытые на других ваших устройствах.</translation>
 <translation id="7730973429297233609">Выберите аккаунт, в котором вы хотите сохранить файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />).</translation>
 <translation id="7733646263819020771">Закладка <ph name="BOOKMRK_NAME" />. Только на этом устройстве.</translation>
@@ -1541,7 +1534,6 @@
 <translation id="8870413625673593573">Недавно закрытые</translation>
 <translation id="8876882697946675716">Синхронизируйте устройства</translation>
 <translation id="8879604564928138696">Чтобы попробовать, нажмите дважды</translation>
-<translation id="8879984884633913185">Скрыть действие "Удалить данные о работе в браузере"</translation>
 <translation id="8881801611828450202">Найти это изображение в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей Интернета)</translation>
 <translation id="890565330728586731">Назад</translation>

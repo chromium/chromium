@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chrome 공룡 달리기 게임 플레이</translation>
 <translation id="161042844686301425">청록색</translation>
 <translation id="1611101756749861742">2번째 롤</translation>
+<translation id="1611854593425834707">전송 기기 목록 닫기</translation>
 <translation id="1612199629998703524">주제 관리</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" />의 액세스 권한 취소</translation>
 <translation id="1615402009686901181">기밀 콘텐츠가 보일 때 관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
@@ -452,7 +453,6 @@
 <translation id="1810391395243432441">화면 잠금으로 비밀번호 보호</translation>
 <translation id="1812527064848182527">가로 모드</translation>
 <translation id="1812975699435941848">건강 교육 및 의료 훈련</translation>
-<translation id="1813414402673211292">인터넷 사용 기록 삭제</translation>
 <translation id="1816436748874040213">공유한 탭의 스크롤 및 확대/축소를 요청할 수 있음</translation>
 <translation id="1818522458013171885">차단 해제</translation>
 <translation id="1818585559878922121">다큐멘터리 영화</translation>
@@ -875,7 +875,6 @@
 <translation id="2647086987482648627">패브릭(반광택)</translation>
 <translation id="264810637653812429">호환되는 기기가 없습니다.</translation>
 <translation id="2649204054376361687"><ph name="COUNTRY" />, <ph name="CITY" /></translation>
-<translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="2650446666397867134">파일 액세스 거부됨</translation>
 <translation id="2651465929321991146">기록 및 탭</translation>
 <translation id="2653659639078652383">제출</translation>
@@ -1205,7 +1204,6 @@
 <translation id="33073482541490531">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기를 바랍니다.</translation>
 <translation id="3307649904964670439">Chrome 맞춤설정 버튼, 브라우저 테마를 맞춤설정하려면 활성화하세요.</translation>
 <translation id="3308006649705061278">조직 구성 단위(OU)</translation>
-<translation id="3310047144791481950">결제에 사용할 카드를 선택하는 데 도움이 되는 정보를 확인합니다. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />카드 혜택 알아보기<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV 코미디</translation>
 <translation id="3324687287337751929">4x6인치</translation>
 <translation id="3324983252691184275">진홍색</translation>
@@ -1374,7 +1372,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 안전 확인을 실행하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3615309852743236517">매니큐어 및 페디큐어</translation>
 <translation id="3620239073311576716">유니폼 및 작업복</translation>
-<translation id="36224234498066874">인터넷 사용 기록 삭제...</translation>
 <translation id="362276910939193118">방문 기록 전체 보기</translation>
 <translation id="3623041590998910684">카메라를 사용하려면 <ph name="LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="3623398832322170566">로맨스 영화</translation>
@@ -1919,6 +1916,7 @@
 <translation id="4691093235373904540">지붕 수리</translation>
 <translation id="4692623383562244444">검색엔진</translation>
 <translation id="4698692901173737941">격투기</translation>
+<translation id="4701307090948589984">전송 대상…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">사이드</translation>
 <translation id="4702656508969495934">실시간 자막 표시, 창 전환 도구를 사용하여 포커스 설정</translation>
@@ -2055,7 +2053,6 @@
 <translation id="4936134414789135531">삽입된 <ph name="VALUE_NAME" />을(를) 찾을 수 없습니다.</translation>
 <translation id="4936675324097895694">금융</translation>
 <translation id="4940163644868678279">Chrome 시크릿 모드</translation>
-<translation id="494111439860963024">인터넷 사용 기록 삭제 버튼, Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하려면 활성화하세요.</translation>
 <translation id="4943620199112228840">마이크 사용</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
 <translation id="4950898438188848926">탭 전환 버튼, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> 열린 탭으로 전환하려면 Enter를 누르세요</translation>
@@ -2168,6 +2165,8 @@
 <translation id="5161334686036120870">제목:</translation>
 <translation id="5161506081086828129">스태커 9</translation>
 <translation id="5164798890604758545">텍스트 입력됨</translation>
+<translation id="5164928537947209380">이 실험용 AI 도구가 항상 정확하지는 않습니다. 도구를 개선하기 위해 콘텐츠가 Google로 전송됩니다.
+    <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> 카드의 CVC를 입력하세요. 카드를 확인하면 Google 계정의 카드 세부정보가 이 사이트와 공유됩니다.</translation>
 <translation id="5169827969064885044">조직의 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="5171045022955879922">검색 또는 URL 입력</translation>
@@ -2290,7 +2289,6 @@
 <translation id="541416427766103491">스태커 4</translation>
 <translation id="5414446060143308245">전송하기 전에 검토 필요</translation>
 <translation id="5414511064953050917">무시하고 이동</translation>
-<translation id="5421136146218899937">인터넷 사용 기록 삭제...</translation>
 <translation id="5421408724705443535">록 음악</translation>
 <translation id="5423269318075950257">가격 추적</translation>
 <translation id="5425082381151187189">가정 및 인테리어 장식</translation>
@@ -3652,7 +3650,6 @@
 <translation id="8022542098135319050">여행사 및 여행 서비스</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="8025119109950072390">이 사이트의 공격자가 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드)를 공개하는 등의 위험한 행동을 하도록 사용자를 속일 수 있습니다.</translation>
-<translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
 <translation id="8027077570865220386">트레이 15</translation>
 <translation id="8027585818882015174">Chrome 안전 확인 실행 버튼, Chrome 설정에서 안전 확인을 실행하려면 활성화하세요.</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Forms에서 빠르게 새 양식 만들기</translation>
@@ -3923,7 +3920,6 @@
 <translation id="8527228059738193856">스피커</translation>
 <translation id="8527681393107582734">농업 및 임업</translation>
 <translation id="8528149813106025610">아동 의류</translation>
-<translation id="8530813470445476232">Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하세요.</translation>
 <translation id="853246364274116957">브로드웨이 및 뮤지컬 극장</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">차단된 URL 및 시스템 관리자가 설정한 기타 정책 목록을 확인하려면 &lt;strong&gt;chrome://policy&lt;/strong&gt;를 방문하세요.</translation>
@@ -4063,6 +4059,7 @@
 <translation id="8807160976559152894">각 페이지 뒤에 트림</translation>
 <translation id="8809203544698246977">차단한 주제가 여기에 표시됩니다.</translation>
 <translation id="8811470563853401328">계정에 주소를 저장하시겠습니까?</translation>
+<translation id="8811725516933141693">@gemini를 입력하여 Gemini와 채팅하기</translation>
 <translation id="8813277370772331957">나중에 알림</translation>
 <translation id="8814707942599948500">봉투 C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 Chrome을 업데이트하려면 Tab을 누른 다음 Enter 누르기</translation>

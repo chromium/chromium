@@ -80,7 +80,6 @@
 <translation id="2258103955319320201">Untuk mengakses bahan penyemak imbas Chrome anda pada semua peranti anda, log masuk, kemudian hidupkan penyegerakan</translation>
 <translation id="2290014774651636340">Kunci API Google tiada. Sesetengah fungsi Google Chrome akan dilumpuhkan.</translation>
 <translation id="2290095356545025170">Adakah anda pasti anda mahu menyahpasang Google Chrome?</translation>
-<translation id="2298849085402457754">Untuk mengosongkan data semakan imbas daripada peranti ini sahaja dan menyimpan data semakan imbas tersebut dalam Google Account anda, <ph name="BEGIN_LINK" />log keluar dari Chrome<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan kedua Google Chrome dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
 <translation id="2345992953227471816">Chrome mendapati bahawa item ini mengandungi perisian hasad:</translation>
 <translation id="2348335408836342058">Chrome memerlukan kebenaran untuk mengakses kamera dan mikrofon anda bagi tapak ini</translation>
@@ -110,7 +109,6 @@
 <translation id="2649768380733403658">Chrome sentiasa menyemak untuk memastikan penyemak imbas anda menawarkan tetapan paling selamat. Kami akan memaklumi anda jika ada apa-apa yang memerlukan semakan anda.</translation>
 <translation id="2652691236519827073">Buka Pautan dalam &amp;tab Chrome Baharu</translation>
 <translation id="2665296953892887393">Bantu jadikan Google Chrome lebih baik dengan menghantar laporan ranap dan <ph name="UMA_LINK" /> kepada Google.</translation>
-<translation id="2712234843277364121">Lancarkan semula untuk pengemaskinian - tab anda akan dibuka semula</translation>
 <translation id="2738871930057338499">Tidak dapat disambungkan kepada Internet. HTTP 403 Dilarang. Sila semak konfigurasi proksi anda.</translation>
 <translation id="2742320827292110288">Amaran: Google Chrome tidak dapat menghalang sambungan daripada merakam sejarah penyemakan imbas anda. Untuk melumpuhkan sambungan ini dalam mod Inkognito, nyahpilih pilihan ini.</translation>
 <translation id="2765403129283291972">Chrome memerlukan kebenaran untuk mengakses mikrofon anda bagi tapak ini</translation>
@@ -487,7 +485,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8999208279178790196">{0,plural, =0{Kemas kini Chrome tersedia}=1{Kemas kini Chrome tersedia}other{Kemas kini Chrome telah tersedia selama # hari}}</translation>
 <translation id="9024318700713112071">Tetapkan Chrome sebagai lalai anda</translation>
 <translation id="9053892488859122171">Sistem Chrome OS Flex</translation>
-<translation id="9054037008353851982">Lancarkan semula untuk Pengemaskinian - Tab anda akan dibuka semula</translation>
 <translation id="9090566250983691233">Ketahui sebab Chrome menyekat sesetengah fail</translation>
 <translation id="911206726377975832">Padamkan juga data menyemak imbas anda?</translation>
 <translation id="9138603949443464873">Untuk menggunakan perubahan anda, mulakan semula Chrome</translation>

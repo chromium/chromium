@@ -65,7 +65,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1273937721055267968">Blocca <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Tocca per espandere</translation>
 <translation id="1289059016768036948">Ti verrà chiesto di accedere al tuo Account Google</translation>
-<translation id="1291207594882862231">Cancella la cronologia, i cookie, i dati dei siti, la cache…</translation>
 <translation id="129553762522093515">Chiuse di recente</translation>
 <translation id="1298077576058087471">Risparmia fino al 60% di dati, leggi le notizie di oggi</translation>
 <translation id="1303339473099049190">Impossibile trovare quella password. Verifica di averla scritta correttamente e riprova.</translation>
@@ -380,7 +379,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="2992473221983447149">Descrizioni delle immagini</translation>
 <translation id="2996291259634659425">Crea passphrase</translation>
 <translation id="2996809686854298943">URL obbligatorio</translation>
-<translation id="2996932914629936323">Consente di cancellare la cronologia da tutti i dispositivi sincronizzati</translation>
 <translation id="2997081575621687554">Quando un sito Google richiede di precaricare privatamente i link sulle sue pagine, Chrome cripta e precarica le pagine tramite i server di Google senza usare cookie. In questo modo la tua identità rimane nascosta ai siti precaricati.</translation>
 <translation id="3003253259757197230">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro e per mostrarti informazioni aggiuntive sulla pagina che stai visitando</translation>
 <translation id="3026955690410463085">Includi link</translation>
@@ -542,7 +540,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="3932390316856284148">Riquadro inferiore di accesso aperto a schermo intero.</translation>
 <translation id="393697183122708255">Nessuna ricerca vocale attiva disponib.</translation>
 <translation id="395377504920307820">Utilizza senza un account</translation>
-<translation id="3958287878205277013">Per cancellare la cronologia di navigazione in incognito dal tuo dispositivo, chiudi tutte le schede di navigazione in incognito.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome caricherà la tua pagina quando sarà pronta}other{Chrome caricherà le tue pagine quando saranno pronte}}</translation>
 <translation id="3962119236270174787">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi</translation>
 <translation id="3969142555815019568">Chrome non può controllare le tue password</translation>
@@ -848,7 +845,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5468068603361015296">Vuoi comunque scaricare <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Apri nell'app di mappe</translation>
 <translation id="5486841595534124508">Logo dell'informativa sulla privacy per l'hub Approfondimenti sulle pagine che reindirizza alla pagina Le mie attività.</translation>
-<translation id="5487521232677179737">Cancella dati</translation>
 <translation id="5492637351392383067">Crittografia on-device</translation>
 <translation id="5514904542973294328">Opzione disattivata dall'amministratore del dispositivo</translation>
 <translation id="5515439363601853141">Sblocca per visualizzare la password</translation>
@@ -887,7 +883,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="5683547024293500885">Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="5686790454216892815">Nome file troppo lungo</translation>
 <translation id="5687606994963670306">Chrome elimina automaticamente i siti risalenti a più di 30 giorni prima della data corrente. Se visiti di nuovo un sito, questo potrebbe essere visualizzato di nuovo nell'elenco. In alternativa, puoi impedire a un sito di suggerire annunci per te. Scopri di più sulla <ph name="BEGIN_LINK" />gestione della privacy per gli annunci in Chrome<ph name="END_LINK" />.</translation>
-<translation id="569435661099256888">Puoi visualizzare le pagine che hai visitato o cancellarle dalla cronologia</translation>
 <translation id="569536719314091526">Traduci questa pagina in una lingua qualsiasi usando il pulsante Altre opzioni</translation>
 <translation id="5696597120588531049">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo</translation>
 <translation id="5698878456427040674">Verifica se l'account selezionato è supportato.</translation>
@@ -914,7 +909,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="5780792035410621042">Per copiare le password, imposta prima un blocco schermo sul tuo dispositivo</translation>
 <translation id="5793665092639000975">Spazio utilizzato: <ph name="SPACE_USED" /> di <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Cerca e sfoglia</translation>
-<translation id="5797521893972859201">Cancella la cronologia, anche nella casella di ricerca</translation>
 <translation id="5797949256525811424">Argomento bloccato</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ora fa}other{# ore fa}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
@@ -1087,7 +1081,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6637100877383020115">Per contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_UMA_LINK" />Gestisci<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blocca sempre</translation>
 <translation id="6641780377503683465">Rimuovi <ph name="INTEREST" /></translation>
-<translation id="6643016212128521049">Cancella</translation>
 <translation id="6645629752388991326">Controlla quali dispositivi possono eseguire l'accesso usando questo dispositivo come token di sicurezza.</translation>
 <translation id="6646696210740573446">Invia una parte offuscata dell'URL a Google tramite un server di tutela della privacy che nasconde il tuo indirizzo IP. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare a Google anche gli URL, inclusi frammenti dei contenuti delle pagine.</translation>
 <translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
@@ -1283,8 +1276,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="752220631458524187">Scollegati quando hai finito</translation>
 <translation id="7523960634226602883">Cerca con la fotocamera usando Google Lens</translation>
 <translation id="752731652852882757">Blocca quando la modalità di navigazione in incognito è in uso</translation>
-<translation id="7562080006725997899">Cancellazione dei dati di navigazione in corso</translation>
-<translation id="756809126120519699">Dati di Chrome cancellati</translation>
 <translation id="7577900504646297215">Gestisci interessi</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file scaricato}other{<ph name="FILES_DOWNLOADED_MANY" /> file scaricati}}</translation>
 <translation id="7581273696622423628">Vai al sondaggio</translation>
@@ -1317,14 +1308,12 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7697383401610880082">Punto di trascinamento</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
 <translation id="7702029078562412515">Riquadri query</translation>
-<translation id="7702388902581909985">Se cancelli i dati di navigazione, non uscirai dal tuo Account Google. Per farlo, <ph name="BEGIN_LINK1" />esci da Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7709918231054955894">Visualizza tutte le tue schede</translation>
 <translation id="7733878270780732638">Spazio sul dispositivo insufficiente.</translation>
 <translation id="7759809451544302770">Facoltative</translation>
 <translation id="7762668264895820836">Scheda SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Aggiungi indirizzo</translation>
-<translation id="7766587497031415281">Altre opzioni per cancellare i dati di navigazione</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>
 <translation id="7772375229873196092">Chiudi <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1383,7 +1372,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8013372441983637696">Cancella i tuoi dati di Chrome anche da questo dispositivo</translation>
 <translation id="8015452622527143194">Ripristina le dimensioni predefinite della pagina</translation>
 <translation id="8026238112629815203">Abbiamo cambiato la modalità di salvataggio delle password su questo dispositivo</translation>
-<translation id="8026334261755873520">Cancella dati di navigazione</translation>
 <translation id="8027863900915310177">Scegli dove effettuare il download</translation>
 <translation id="8030852056903932865">Approva</translation>
 <translation id="8032569120109842252">Stai seguendo</translation>
@@ -1480,6 +1468,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="84594714173170813">Continua a usare i dati di Chrome nel tuo Account Google</translation>
 <translation id="8460448946170646641">Esamina i controlli per la privacy e la sicurezza più importanti</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
+<translation id="8477178913400731244">Elimina i dati</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Apri la pagina Cronologia</translation>
 <translation id="8493948351860045254">Libera spazio</translation>
@@ -1517,7 +1506,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8636825310635137004">Attiva la sincronizzazione per trovare le tue schede degli altri dispositivi.</translation>
 <translation id="864544049772947936">Gestisci finestre (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Prevede eventi pericolosi e ti avvisa prima che si verifichino</translation>
-<translation id="8655129584991699539">Puoi cancellare i dati nelle Impostazioni di Chrome</translation>
 <translation id="8664215986015753476">Usa Chrome a modo tuo</translation>
 <translation id="8664979001105139458">Nome file già esistente</translation>
 <translation id="8676276370198826499">Registrati a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
