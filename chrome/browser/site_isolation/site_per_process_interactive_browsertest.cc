@@ -1547,15 +1547,15 @@ class SitePerProcessInteractivePDFTest
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
 // shows up at the correct position.
-// Flaky on win and linux asan. See https://crbug.com/1423184
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1423184, crbug.com/327338993): Fix flaky test.
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER))
 #define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
   DISABLED_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
 #else
 #define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
   ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
-#endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) &&
-        // defined(ADDRESS_SANITIZER)
+#endif  // BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) &&
+        // defined(ADDRESS_SANITIZER))
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessInteractivePDFTest,
     MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame) {
