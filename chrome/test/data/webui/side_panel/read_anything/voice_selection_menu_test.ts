@@ -4,9 +4,10 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 function stringToHtmlTestId(s: string): string {
   return s.replace(/\s/g, '-').replace(/[()]/g, '');
@@ -271,17 +272,24 @@ suite('VoiceSelectionMenuElement', () => {
       test('it shows preview-playing button when preview plays', () => {
         const playIconVoice0 =
             getDropdownItemForVoice(availableVoices[0]!)
-                .querySelector<HTMLButtonElement>('#play-icon')!;
+                .querySelector<CrIconButtonElement>('#preview-icon')!;
         const playIconOfPreviewVoice =
             getDropdownItemForVoice(previewVoice)
-                .querySelector<HTMLButtonElement>('#play-icon')!;
+                .querySelector<CrIconButtonElement>('#preview-icon')!;
 
-        // The play icon should flip to disabled for the voice being previewed
+        // The play icon should flip to pause for the voice being previewed
         assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
-        assertTrue(isDisabled(playIconOfPreviewVoice));
-        // The play icon should remain enabled for the other buttons
+        assertEquals(
+            playIconOfPreviewVoice.ironIcon, 'read-anything-20:pause-circle');
+        assertStringContains(
+            playIconOfPreviewVoice.title.toLowerCase(), 'pause');
+        assertStringContains(
+            playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'pause');
+        // The play icon should remain unchanged for the other buttons
         assertTrue(isPositionedOnPage(playIconVoice0));
-        assertFalse(isDisabled(playIconVoice0));
+        assertEquals(playIconVoice0.ironIcon, 'read-anything-20:play-circle');
+        assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
+        assertStringContains(playIconVoice0.ariaLabel!.toLowerCase(), 'play');
       });
 
       suite('when preview finishes playing', () => {
@@ -293,20 +301,27 @@ suite('VoiceSelectionMenuElement', () => {
           flush();
         });
 
-        test('it flips the preview button back to enabled', () => {
+        test('it flips the preview button back to play icon', () => {
           const playIconVoice0 =
               getDropdownItemForVoice(availableVoices[0]!)
-                  .querySelector<HTMLButtonElement>('#play-icon')!;
+                  .querySelector<CrIconButtonElement>('#preview-icon')!;
           const playIconOfPreviewVoice =
               getDropdownItemForVoice(availableVoices[1]!)
-                  .querySelector<HTMLButtonElement>('#play-icon')!;
+                  .querySelector<CrIconButtonElement>('#preview-icon')!;
 
-          // All icons should be enabled play icons because no preview is
+          // All icons should be play icons because no preview is
           // playing
           assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
           assertTrue(isPositionedOnPage(playIconVoice0));
-          assertFalse(isDisabled(playIconVoice0));
-          assertFalse(isDisabled(playIconOfPreviewVoice));
+          assertEquals(
+              playIconOfPreviewVoice.ironIcon, 'read-anything-20:play-circle');
+          assertEquals(playIconVoice0.ironIcon, 'read-anything-20:play-circle');
+          assertStringContains(
+              playIconOfPreviewVoice.title.toLowerCase(), 'play');
+          assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
+          assertStringContains(
+              playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'play');
+          assertStringContains(playIconVoice0.ariaLabel!.toLowerCase(), 'play');
         });
       });
     });
@@ -321,8 +336,4 @@ function isPositionedOnPage(element: HTMLElement) {
   return !!element &&
       !!(element.offsetWidth || element.offsetHeight ||
          element.getClientRects().length);
-}
-
-function isDisabled(element: HTMLButtonElement) {
-  return element.disabled;
 }

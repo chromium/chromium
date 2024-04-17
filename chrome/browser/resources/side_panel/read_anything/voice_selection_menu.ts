@@ -14,6 +14,7 @@ import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -152,14 +153,19 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     // line is to make sure that the voice-selection callback is not triggered.
     event.stopImmediatePropagation();
 
-    const previewVoice = event.model.item.voice;
-    this.dispatchEvent(new CustomEvent('preview-voice', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        previewVoice,
-      },
-    }));
+    const button = event.target as HTMLElement;
+    assert(button, 'no target for preview');
+
+    if (!event.model.item.previewPlaying) {
+      const previewVoice = event.model.item.voice;
+      this.dispatchEvent(new CustomEvent('preview-voice', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          previewVoice,
+        },
+      }));
+    }
   }
 
   private onClose_() {
@@ -179,10 +185,9 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
         (currentElement.classList.contains('dropdown-voice-selection-button')) ?
         true :
         false;
-    const targetIsPreviewButton = (currentElement.id === 'play-icon' ||
-                                   currentElement.id === 'pause-icon') ?
-        true :
-        false;
+    const targetIsPreviewButton =
+        (currentElement.id === 'preview-icon') ? true : false;
+
     // For voice options, only handle the right arrow - everything else is
     // default
     if (targetIsVoiceOption && !['ArrowRight'].includes(e.key)) {
@@ -193,6 +198,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
         !['ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
       return;
     }
+
     // When the menu first opens, the target is the whole menu.
     // In that case, use default behavior.
     if (!targetIsVoiceOption && !targetIsPreviewButton) return;
@@ -200,16 +206,36 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     e.preventDefault();
 
     if (targetIsVoiceOption) {
-      // From a voice option, go to whichever preview button is visible
-      // There are 'play-icon' and 'pause-icon' preview buttons, and
-      // only one is visible at a time. The one that's visible has style
-      // display-true, so use that to directly select the right button
+      // From a voice option, go to its preview button
       const visiblePreviewButton =
-          currentElement.querySelector<HTMLElement>('#play-icon');
+          currentElement.querySelector<HTMLElement>('#preview-icon');
       assert(visiblePreviewButton, 'can\'t find preview button');
       visiblePreviewButton!.focus();
-    } else {  // Voice preview button - go to voice entry
-      currentElement.parentElement!.focus();
+    }
+    // This action is also handled by the menu itself
+    // For left arrow, this takes us to the voice being previewed,
+    // For up and down arrows this is combined with the default up/down
+    // action, taking us to the next or previous voice.
+    currentElement.parentElement!.focus();
+  }
+
+  private previewLabel_(previewPlaying: boolean, voiceName: string): string {
+    let nameSuffix = '';
+    if (voiceName.length > 0) {
+      nameSuffix = ' ' + voiceName;
+    }
+    if (previewPlaying) {
+      return loadTimeData.getString('pauseLabel') + nameSuffix;
+    } else {
+      return loadTimeData.getString('playLabel') + nameSuffix;
+    }
+  }
+
+  private previewIcon_(previewPlaying: boolean): string {
+    if (previewPlaying) {
+      return 'read-anything-20:pause-circle';
+    } else {
+      return 'read-anything-20:play-circle';
     }
   }
 }

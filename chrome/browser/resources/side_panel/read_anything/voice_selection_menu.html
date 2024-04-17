@@ -35,7 +35,7 @@
   }
   .dropdown-voice-selection-button:hover {
     background-color: var(--cr-hover-background-color);
-    cursor:pointer;
+    cursor: pointer;
   }
   .dropdown-voice-selection-button:focus-visible {
     background-color: var(--cr-hover-background-color);
@@ -92,14 +92,14 @@
                   icon="read-anything-20:check-mark"></cr-icon>
                 [[item.title]]
               </span>
-              <!-- TODO(b/333958820): Ensure keyboard focus is handled correctly
-                   when the play button is pressed. -->
-              <cr-icon-button id="play-icon" on-click="onVoicePreviewClick_"
-                title="$i18n{playLabel}"
-                disabled$="[[item.previewPlaying]]"
-                aria-label="$i18n{playLabel} [[item.title]]"
-                iron-icon="read-anything-20:play-circle"></cr-icon-button>
+              <cr-icon-button id="preview-icon" on-click="onVoicePreviewClick_"
+                title$="[[previewLabel_(item.previewPlaying,'')]]"
+                aria-label$="[[previewLabel_(item.previewPlaying,item.title)]]"
+                iron-icon="[[previewIcon_(item.previewPlaying)]]">
+              </cr-icon-button>
             </button>
+          <!-- TODO(crbug.com/1474951) Pause the preview when pause button is
+                    pressed -->
           </template>
         </div>
       </template>
