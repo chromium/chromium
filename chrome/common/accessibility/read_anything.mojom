@@ -36,15 +36,30 @@ struct ReadAnythingTheme {
 };
 
 [Extensible]
-enum VoicePackState {
-  [Default] UNKNOWN = 0,
-  NOT_INSTALLED = 1,
-  INSTALLING = 2,
-  INSTALLED = 3
+enum InstallationState {
+  [Default] kUnknown = 0,
+  kNotInstalled = 1,
+  kInstalling = 2,
+  kInstalled = 3
+};
+
+[Extensible]
+enum ErrorCode {
+  [Default] kNone = 0,
+  kOther = 1,
+  kWrongId = 2,
+  kNeedReboot = 3,
+  kAllocation = 4,
+  kUnsupportedPlatform = 5
+};
+
+union VoicePackInstallationState {
+  InstallationState installation_state;
+  ErrorCode error_code;
 };
 
 struct VoicePackInfo {
-  VoicePackState pack_state;
+  VoicePackInstallationState pack_state;
   string language;
 };
 
@@ -100,6 +115,9 @@ enum HighlightGranularity {
 interface UntrustedPageHandler {
   // Called by the renderer to see if a voice is installed, or being installed.
   GetVoicePackInfo(string language) => (VoicePackInfo voice_pack_info);
+
+  // Called by the renderer to install a natural-voice pack.
+  InstallVoicePack(string language) => (VoicePackInfo voice_pack_info);
 
   // Informs the browser controller that a user tried to copy text from the
   // WebUI. If the main page allows copy commands, then the current selection

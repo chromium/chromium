@@ -1040,6 +1040,23 @@ void ReadAnythingAppController::OnGetVoicePackInfoResponse(
   // TODO (b/40927698) Send the voice_pack_info to the read-aloud UI
 }
 
+void ReadAnythingAppController::SendInstallVoicePackRequest(
+    const std::string& language) const {
+  page_handler_->InstallVoicePack(
+      language,
+      base::BindOnce(&ReadAnythingAppController::OnInstallVoicePackResponse,
+                     weak_ptr_factory_.GetSafeRef()));
+}
+
+void ReadAnythingAppController::OnInstallVoicePackResponse(
+    read_anything::mojom::VoicePackInfoPtr voice_pack_info) const {
+  // TODO (b/40927698) Send the voice_pack_info to the read-aloud UI.
+  // TODO (b/40927698) Investigate the fact that VoicePackManager doesn't return
+  // the expected pack_state. Even when a voice is unavailable and not
+  // installed, it responds "INSTALLED" in the InstallVoicePackCallback. So we
+  // probably need to rely on GetVoicePackInfo for the pack_state.
+}
+
 std::string ReadAnythingAppController::GetAltText(
     ui::AXNodeID ax_node_id) const {
   return model_.GetAltText(ax_node_id);

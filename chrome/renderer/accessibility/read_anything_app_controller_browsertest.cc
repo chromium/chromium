@@ -44,6 +44,11 @@ class MockReadAnythingUntrustedPageHandler
                GetVoicePackInfoCallback mojo_callback),
               (override));
   MOCK_METHOD(void,
+              InstallVoicePack,
+              (const std::string& language,
+               InstallVoicePackCallback mojo_callback),
+              (override));
+  MOCK_METHOD(void,
               OnLinkClicked,
               (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),
               (override));
