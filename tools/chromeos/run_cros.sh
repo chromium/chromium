@@ -60,7 +60,7 @@ DISPLAY_CONFIG=${DISPLAY_RES[fhd]}
 LACROS_FEATURES=LacrosOnly
 LACROS_FLAGS="\
 --gpu-sandbox-start-early####\
---disable-features=OzoneBubblesUsePlatformWidgets"
+--enable-features=OzoneBubblesUsePlatformWidgets"
 FEATURES=
 
 LACROS_ENABLED=false
