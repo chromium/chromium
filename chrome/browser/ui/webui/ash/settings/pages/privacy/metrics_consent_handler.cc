@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_consent_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -103,8 +102,7 @@ bool MetricsConsentHandler::IsMetricsConsentConfigurable() const {
 }
 
 bool MetricsConsentHandler::ShouldUseUserConsent() const {
-  return base::FeatureList::IsEnabled(ash::features::kPerUserMetrics) &&
-         metrics_service_->GetCurrentUserMetricsConsent().has_value();
+  return metrics_service_->GetCurrentUserMetricsConsent().has_value();
 }
 
 }  // namespace ash::settings

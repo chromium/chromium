@@ -65,13 +65,11 @@ void ArcOptInPreferenceHandler::Start() {
             base::Unretained(this)));
   }
 
-  if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
-    pref_change_registrar_.Add(
-        metrics::prefs::kMetricsUserConsent,
-        base::BindRepeating(
-            &ArcOptInPreferenceHandler::OnMetricsPreferenceChanged,
-            base::Unretained(this)));
-  }
+  pref_change_registrar_.Add(
+      metrics::prefs::kMetricsUserConsent,
+      base::BindRepeating(
+          &ArcOptInPreferenceHandler::OnMetricsPreferenceChanged,
+          base::Unretained(this)));
 
   // Send current state.
   OnMetricsPreferenceChanged();
@@ -203,11 +201,6 @@ void ArcOptInPreferenceHandler::EnableLocationService(bool is_enabled) {
 
 bool ArcOptInPreferenceHandler::IsAllowedToUpdateUserConsent(
     ash::DeviceSettingsService::OwnershipStatus ownership_status) {
-  // Return user consent should not be used if feature is disabled.
-  if (!base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
-    return false;
-  }
-
   // Managed devices should not use per-user consent.
   // Devices that fail this check are unmanaged, referred to as
   // having consumer ownership.

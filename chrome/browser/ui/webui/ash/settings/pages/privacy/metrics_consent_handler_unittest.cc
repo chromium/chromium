@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_consent_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
@@ -112,10 +111,7 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
 
 class MetricsConsentHandlerTest : public testing::Test {
  public:
-  MetricsConsentHandlerTest() {
-    feature_list_.InitAndEnableFeature(::ash::features::kPerUserMetrics);
-  }
-
+  MetricsConsentHandlerTest() = default;
   MetricsConsentHandlerTest(const MetricsConsentHandlerTest&) = delete;
   MetricsConsentHandlerTest& operator=(const MetricsConsentHandlerTest&) =
       delete;
@@ -248,8 +244,6 @@ class MetricsConsentHandlerTest : public testing::Test {
     }
     return false;
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
   // Profiles must be created in browser threads.
   content::BrowserTaskEnvironment task_environment_;

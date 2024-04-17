@@ -869,10 +869,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   bluetooth_log_controller_ = std::make_unique<ash::BluetoothLogController>(
       user_manager::UserManager::Get());
 
-  if (base::FeatureList::IsEnabled(features::kPerUserMetrics)) {
     // Enable per-user metrics support as soon as user_manager is created.
-    g_browser_process->metrics_service()->InitPerUserMetrics();
-  }
+  g_browser_process->metrics_service()->InitPerUserMetrics();
 
   ScreenLocker::InitClass();
 

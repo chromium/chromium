@@ -1407,58 +1407,48 @@ ChromeMetricsServiceClient::AddOnClonedInstallDetectedCallback(
 
 bool ChromeMetricsServiceClient::ShouldUploadMetricsForUserId(
     const uint64_t user_id) {
-  if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
-    // Metrics logs with user ids should be stored in a user cryptohome so this
-    // function should only be called after a user logins.
-    // |per_user_state_manager_| is initialized before a user can login.
-    DCHECK(per_user_state_manager_);
+  // Metrics logs with user ids should be stored in a user cryptohome so this
+  // function should only be called after a user logins.
+  // |per_user_state_manager_| is initialized before a user can login.
+  DCHECK(per_user_state_manager_);
 
-    // This function should only be called if reporting is enabled.
-    DCHECK(ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
+  // This function should only be called if reporting is enabled.
+  DCHECK(ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
 
-    auto current_user_id = per_user_state_manager_->GetCurrentUserId();
+  auto current_user_id = per_user_state_manager_->GetCurrentUserId();
 
-    // Do not upload logs that are missing |user_id| during this session.
-    if (!current_user_id.has_value()) {
-      return false;
-    }
-
-    // If |user_id| is different from the currently logged in user, log
-    // associated with different |user_id| should not be uploaded. This can
-    // happen if a user goes from enable->disable->enable state as user ID is
-    // reset going from enable->disable state.
-    //
-    // The log will be dropped since it may contain data collected during a
-    // point in which metrics reporting consent was disabled.
-    return user_id == metrics::MetricsLog::Hash(current_user_id.value());
+  // Do not upload logs that are missing |user_id| during this session.
+  if (!current_user_id.has_value()) {
+    return false;
   }
 
-  return true;
+  // If |user_id| is different from the currently logged in user, log
+  // associated with different |user_id| should not be uploaded. This can
+  // happen if a user goes from enable->disable->enable state as user ID is
+  // reset going from enable->disable state.
+  //
+  // The log will be dropped since it may contain data collected during a
+  // point in which metrics reporting consent was disabled.
+  return user_id == metrics::MetricsLog::Hash(current_user_id.value());
 }
 
 void ChromeMetricsServiceClient::UpdateCurrentUserMetricsConsent(
     bool user_metrics_consent) {
-  if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
-    DCHECK(per_user_state_manager_);
-    per_user_state_manager_->SetCurrentUserMetricsConsent(user_metrics_consent);
-  }
+  DCHECK(per_user_state_manager_);
+  per_user_state_manager_->SetCurrentUserMetricsConsent(user_metrics_consent);
 }
 
 void ChromeMetricsServiceClient::InitPerUserMetrics() {
-  if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
-    per_user_state_manager_ =
-        std::make_unique<metrics::PerUserStateManagerChromeOS>(
-            this, g_browser_process->local_state());
-    per_user_consent_change_subscription_ =
-        per_user_state_manager_->AddObserver(
-            base::BindRepeating(&UpdateMetricsServicesForPerUser));
-  }
+  per_user_state_manager_ =
+      std::make_unique<metrics::PerUserStateManagerChromeOS>(
+          this, g_browser_process->local_state());
+  per_user_consent_change_subscription_ = per_user_state_manager_->AddObserver(
+      base::BindRepeating(&UpdateMetricsServicesForPerUser));
 }
 
 std::optional<bool> ChromeMetricsServiceClient::GetCurrentUserMetricsConsent()
     const {
   if (per_user_state_manager_) {
-    DCHECK(base::FeatureList::IsEnabled(ash::features::kPerUserMetrics));
     return per_user_state_manager_
         ->GetCurrentUserReportingConsentIfApplicable();
   }
@@ -1469,7 +1459,6 @@ std::optional<bool> ChromeMetricsServiceClient::GetCurrentUserMetricsConsent()
 std::optional<std::string> ChromeMetricsServiceClient::GetCurrentUserId()
     const {
   if (per_user_state_manager_) {
-    DCHECK(base::FeatureList::IsEnabled(ash::features::kPerUserMetrics));
     return per_user_state_manager_->GetCurrentUserId();
   }
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/per_session_settings_user_action_tracker.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -55,9 +54,7 @@ constexpr char kProfileName[] = "user@gmail.com";
 
 class PerSessionSettingsUserActionTrackerTest : public testing::Test {
  protected:
-  PerSessionSettingsUserActionTrackerTest() {
-    feature_list_.InitAndEnableFeature(::ash::features::kPerUserMetrics);
-  }
+  PerSessionSettingsUserActionTrackerTest() = default;
   ~PerSessionSettingsUserActionTrackerTest() override = default;
 
   void SetUp() override {
@@ -139,11 +136,6 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
   std::unique_ptr<PerSessionSettingsUserActionTracker> tracker_;
   std::unique_ptr<OsSettingsMetricsProvider> tracker_metrics_provider_;
   metrics::ChromeUserMetricsExtension uma_proto_;
-
-  // This needs to be initialized before any tasks running on other threads
-  // access the feature list, and destroyed after |task_environment_|, to avoid
-  // data races.
-  base::test::ScopedFeatureList feature_list_;
 
   // MetricsService.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -66,9 +65,7 @@ constexpr char kTestUser2GaiaId[] = "2222222222";
 // out.
 class ChromeOSPerUserMetricsBrowserTestBase : public ash::LoginManagerTest {
  public:
-  ChromeOSPerUserMetricsBrowserTestBase() {
-    feature_list_.InitAndEnableFeature(::ash::features::kPerUserMetrics);
-  }
+  ChromeOSPerUserMetricsBrowserTestBase() = default;
   ~ChromeOSPerUserMetricsBrowserTestBase() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -103,9 +100,6 @@ class ChromeOSPerUserMetricsBrowserTestBase : public ash::LoginManagerTest {
     return g_browser_process->local_state()->GetBoolean(
         prefs::kMetricsReportingEnabled);
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class ChromeOSPerUserRegularUserTest
@@ -244,9 +238,7 @@ INSTANTIATE_TEST_SUITE_P(MetricsConsentForGuestWithNoOwner,
 
 class ChromeOSPerUserOobeConsentTest : public ash::OobeBaseTest {
  public:
-  ChromeOSPerUserOobeConsentTest() {
-    feature_list_.InitAndEnableFeature(::ash::features::kPerUserMetrics);
-  }
+  ChromeOSPerUserOobeConsentTest() = default;
 
   void SetUpOnMainThread() override {
     ash::LoginDisplayHost::default_host()
@@ -287,7 +279,6 @@ class ChromeOSPerUserOobeConsentTest : public ash::OobeBaseTest {
   ash::LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
@@ -398,9 +389,7 @@ class ChromeOSPerUserManagedOobeConsentTest
     : public ash::OobeBaseTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  ChromeOSPerUserManagedOobeConsentTest() {
-    feature_list_.InitAndEnableFeature(::ash::features::kPerUserMetrics);
-  }
+  ChromeOSPerUserManagedOobeConsentTest() = default;
 
   void SetUpOnMainThread() override {
     ash::LoginDisplayHost::default_host()
@@ -459,7 +448,6 @@ class ChromeOSPerUserManagedOobeConsentTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   const ash::LoginManagerMixin::TestUserInfo managed_user_{
       AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId)};

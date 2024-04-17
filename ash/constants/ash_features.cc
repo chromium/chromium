@@ -3116,12 +3116,6 @@ BASE_FEATURE(kPeripheralNotification,
              "PeripheralNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables whether to store UMA logs per-user and whether metrics
-// consent is per-user.
-BASE_FEATURE(kPerUserMetrics,
-             "PerUserMetricsConsent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable fast ink for software cursor. Fast ink provides a low-latency
 // cursor with possible tearing artifacts.
 BASE_FEATURE(kEnableFastInkForSoftwareCursor,
