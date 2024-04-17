@@ -255,14 +255,20 @@ void BookmarkButton::StartPrerendering(GURL url) {
   // TODO(crbug.com/40259793): Prerender only for https scheme, and add
   // an enum metric to report the protocol scheme.
   CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
-  if (!prerender_handle_) {
-    prerender_web_contents_ =
-        browser_->tab_strip_model()->GetActiveWebContents()->GetWeakPtr();
-    PrerenderManager::CreateForWebContents(&(*prerender_web_contents_));
-    auto* prerender_manager =
-        PrerenderManager::FromWebContents(&(*prerender_web_contents_));
-    prerender_handle_ = prerender_manager->StartPrerenderBookmark(url);
+  if (prerender_handle_) {
+    return;
   }
+  auto* active_web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!active_web_contents) {
+    return;
+  }
+
+  prerender_web_contents_ = active_web_contents->GetWeakPtr();
+  PrerenderManager::CreateForWebContents(&(*prerender_web_contents_));
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(&(*prerender_web_contents_));
+  prerender_handle_ = prerender_manager->StartPrerenderBookmark(url);
 }
 
 BEGIN_METADATA(BookmarkButton)
