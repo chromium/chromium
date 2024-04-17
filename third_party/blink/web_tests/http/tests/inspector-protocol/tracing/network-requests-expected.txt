@@ -38,6 +38,7 @@ Object: {
 Object: {
 	args: {
 		data: {
+			connectionId: number
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
@@ -179,6 +180,7 @@ Object: {
 Object: {
 	args: {
 		data: {
+			connectionId: number
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
@@ -290,6 +292,7 @@ Object: {
 Object: {
 	args: {
 		data: {
+			connectionId: number
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
@@ -419,6 +422,7 @@ Object: {
 Object: {
 	args: {
 		data: {
+			connectionId: number
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean

@@ -989,6 +989,7 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
 
   auto dict = std::move(context).WriteDictionary();
   dict.Add("requestId", request_id);
+  dict.Add("connectionId", response.ConnectionID());
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("statusCode", response.HttpStatusCode());
   dict.Add("mimeType", response.MimeType().GetString());
