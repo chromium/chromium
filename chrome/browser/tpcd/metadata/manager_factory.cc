@@ -5,6 +5,7 @@
 #include "chrome/browser/tpcd/metadata/manager_factory.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/browser_process.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/tpcd/metadata/manager.h"
 #include "components/tpcd/metadata/parser.h"
@@ -29,7 +30,8 @@ Manager* ManagerFactory::GetForProfile(Profile* profile) {
   };
 
   return tpcd::metadata::Manager::GetInstance(
-      Parser::GetInstance(), base::BindRepeating(sync_network_service));
+      Parser::GetInstance(), base::BindRepeating(sync_network_service),
+      g_browser_process->local_state());
 }
 
 }  // namespace tpcd::metadata

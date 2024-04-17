@@ -4,6 +4,20 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+static_library("prefs") {
+  sources = [
+    "prefs.cc",
+    "prefs.h",
+  ]
+
+  deps = [
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("metadata") {
   sources = [
     "manager.cc",
@@ -11,12 +25,16 @@ source_set("metadata") {
     "parser.cc",
     "parser.h",
   ]
-  deps = [ ":metadata_proto" ]
+  deps = [
+    ":metadata_proto",
+    ":prefs",
+  ]
   public_deps = [
     "//base",
     "//components/content_settings/core/common",
     "//components/content_settings/core/common:content_settings_enums",
     "//components/content_settings/core/common:features",
+    "//components/prefs",
     "//components/tpcd/metadata/common",
     "//net",
     "//third_party/abseil-cpp:absl",
@@ -61,8 +79,10 @@ source_set("unit_tests") {
   deps = [
     ":metadata",
     ":metadata_proto",
+    ":prefs",
     ":test_support",
     "//base/test:test_support",
     "//components/content_settings/core/common:features",
+    "//components/prefs:test_support",
   ]
 }

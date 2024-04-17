@@ -19,8 +19,10 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/prefs.h"
 #include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,7 +51,7 @@ class ManagerTest : public testing::Test,
 
   Manager* GetManager(GrantsSyncCallback callback = base::NullCallback()) {
     if (!manager_) {
-      manager_ = std::make_unique<Manager>(GetParser(), callback);
+      manager_ = std::make_unique<Manager>(GetParser(), callback, nullptr);
     }
     return manager_.get();
   }
@@ -199,12 +201,16 @@ TEST_P(ManagerTest, FireSyncCallback) {
 
 class DeterministicManager : public Manager {
  public:
-  DeterministicManager(Parser* parser, GrantsSyncCallback callback)
-      : Manager(parser, callback) {}
+  DeterministicManager(Parser* parser,
+                       GrantsSyncCallback callback,
+                       PrefService* local_state)
+      : Manager(parser, callback, local_state) {}
   ~DeterministicManager() override = default;
 
   // Returns a deterministic "random" value for testing.
   uint32_t GenerateRand() const override { return rand_; }
+
+  using Manager::GenerateKeyHash;
 
   void set_rand(uint32_t rand) { rand_ = rand; }
 
@@ -228,7 +234,7 @@ class ManagerCohortsTest
 
   Manager* GetManager(GrantsSyncCallback callback = base::NullCallback()) {
     if (!manager_) {
-      manager_ = std::make_unique<Manager>(GetParser(), callback);
+      manager_ = std::make_unique<Manager>(GetParser(), callback, nullptr);
     }
     return manager_.get();
   }
@@ -236,8 +242,8 @@ class ManagerCohortsTest
   DeterministicManager* GetDeterministicManager(
       GrantsSyncCallback callback = base::NullCallback()) {
     if (!det_manager_) {
-      det_manager_ =
-          std::make_unique<DeterministicManager>(GetParser(), callback);
+      det_manager_ = std::make_unique<DeterministicManager>(GetParser(),
+                                                            callback, nullptr);
     }
     return det_manager_.get();
   }
@@ -512,6 +518,195 @@ TEST_P(ManagerCohortsTest, DTRP_LT_Rand) {
   } else {
     EXPECT_EQ(picked_cohort,
               content_settings::mojom::TpcdMetadataCohort::DEFAULT);
+  }
+}
+
+class ManagerPrefsTest : public testing::Test {
+ public:
+  ManagerPrefsTest() = default;
+  ~ManagerPrefsTest() override = default;
+
+  Parser* GetParser() {
+    if (!parser_) {
+      parser_ = std::make_unique<Parser>();
+    }
+    return parser_.get();
+  }
+
+  Manager* GetManager() {
+    if (!manager_) {
+      manager_ = std::make_unique<Manager>(GetParser(), base::NullCallback(),
+                                           &local_state_);
+    }
+    return manager_.get();
+  }
+
+  DeterministicManager* GetDeterministicManager() {
+    if (!det_manager_) {
+      det_manager_ = std::make_unique<DeterministicManager>(
+          GetParser(), base::NullCallback(), &local_state_);
+    }
+    return det_manager_.get();
+  }
+
+  PrefService* GetLocalState() { return &local_state_; }
+
+ protected:
+  base::test::TaskEnvironment env_;
+
+  void SetUp() override {
+    scoped_list_.InitWithFeatures({net::features::kTpcdMetadataGrants,
+                                   net::features::kTpcdMetadataStagedRollback},
+                                  {});
+
+    RegisterLocalStatePrefs(local_state_.registry());
+  }
+
+  // Guarantees proper tear down of dependencies.
+  void TearDown() override {
+    delete manager_.release();
+    delete det_manager_.release();
+    delete parser_.release();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_list_;
+  std::unique_ptr<Parser> parser_;
+  std::unique_ptr<Manager> manager_;
+  std::unique_ptr<DeterministicManager> det_manager_;
+  TestingPrefServiceSimple local_state_;
+};
+
+TEST_F(ManagerPrefsTest, PersistedCohorts) {
+  const std::string primary_pattern_spec = "https://www.der.com";
+  const std::string secondary_pattern_spec = "https://www.foo.com";
+
+  // First encounter of entry x. Expected to set a new state for entry x in the
+  // prefs store.
+  {
+    // dtrp is arbitrary here, selected between (0,100).
+    const uint32_t dtrp = 10;
+    // rand is set as-is here to guarantee GRACE_PERIOD_FORCED_ON.
+    uint32_t rand = dtrp + 1;
+    Metadata metadata;
+    helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                secondary_pattern_spec, Parser::kSource1pDt,
+                                dtrp);
+    EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+    DeterministicManager* manager = GetDeterministicManager();
+    manager->set_rand(rand);
+    GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+    auto picked_cohort =
+        manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+    EXPECT_EQ(
+        picked_cohort,
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
+
+    const auto& dict = GetLocalState()->GetDict(prefs::kCohorts);
+    EXPECT_EQ(dict.size(), 1u);
+    EXPECT_EQ(dict.cbegin()->first,
+              manager->GenerateKeyHash(metadata.metadata_entries(0)));
+    EXPECT_EQ(dict.cbegin()->second,
+              static_cast<int>(content_settings::mojom::TpcdMetadataCohort::
+                                   GRACE_PERIOD_FORCED_ON));
+  }
+
+  // Second encounter of the same entry x. Cohort will be sourced from the
+  // locale state prefs.
+  {
+    // dtrp is arbitrary here, selected between (0,100).
+    const uint32_t dtrp = 10;
+    // rand is set as-is here to guarantee GRACE_PERIOD_FORCED_OFF.
+    uint32_t rand = dtrp;
+    Metadata metadata;
+    helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                secondary_pattern_spec, Parser::kSource1pDt,
+                                dtrp);
+    EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+    DeterministicManager* manager = GetDeterministicManager();
+    manager->set_rand(rand);
+    GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+    auto stored_cohort =
+        manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+    EXPECT_EQ(
+        stored_cohort,
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
+
+    const auto& dict = GetLocalState()->GetDict(prefs::kCohorts);
+    EXPECT_EQ(dict.size(), 1u);
+    EXPECT_EQ(dict.cbegin()->first,
+              manager->GenerateKeyHash(metadata.metadata_entries(0)));
+    EXPECT_EQ(dict.cbegin()->second,
+              static_cast<int>(content_settings::mojom::TpcdMetadataCohort::
+                                   GRACE_PERIOD_FORCED_ON));
+  }
+
+  // First encounter of a modified version of entry x, say y. Expected to set a
+  // new state for entry y in the prefs store and erase the that of entry x.
+  {
+    // dtrp is arbitrary here, selected between (0,100).
+    const uint32_t dtrp = 50;
+    // rand is set as-is here to guarantee GRACE_PERIOD_FORCED_ON.
+    uint32_t rand = dtrp + 1;
+    Metadata metadata;
+    helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                secondary_pattern_spec, Parser::kSource1pDt,
+                                dtrp);
+    EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+    DeterministicManager* manager = GetDeterministicManager();
+    manager->set_rand(rand);
+    GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+    auto picked_cohort =
+        manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+    EXPECT_EQ(
+        picked_cohort,
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
+
+    const auto& dict = GetLocalState()->GetDict(prefs::kCohorts);
+    EXPECT_EQ(dict.size(), 1u);
+    EXPECT_EQ(dict.cbegin()->first,
+              manager->GenerateKeyHash(metadata.metadata_entries(0)));
+    EXPECT_EQ(dict.cbegin()->second,
+              static_cast<int>(content_settings::mojom::TpcdMetadataCohort::
+                                   GRACE_PERIOD_FORCED_ON));
+  }
+
+  // Third encounter of the same entry x. Cohort will be (randomly) re-picked
+  // and stored in the locale state prefs.
+  {
+    // dtrp is arbitrary here, selected between (0,100).
+    const uint32_t dtrp = 10;
+    // rand is set as-is here to guarantee GRACE_PERIOD_FORCED_OFF.
+    uint32_t rand = dtrp;
+    Metadata metadata;
+    helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                secondary_pattern_spec, Parser::kSource1pDt,
+                                dtrp);
+    EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+    DeterministicManager* manager = GetDeterministicManager();
+    manager->set_rand(rand);
+    GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+    auto picked_cohort =
+        manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+    EXPECT_EQ(
+        picked_cohort,
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
+
+    const auto& dict = GetLocalState()->GetDict(prefs::kCohorts);
+    EXPECT_EQ(dict.size(), 1u);
+    EXPECT_EQ(dict.cbegin()->first,
+              manager->GenerateKeyHash(metadata.metadata_entries(0)));
+    EXPECT_EQ(dict.cbegin()->second,
+              static_cast<int>(content_settings::mojom::TpcdMetadataCohort::
+                                   GRACE_PERIOD_FORCED_OFF));
   }
 }
 

@@ -4,32 +4,55 @@
 
 #include "components/tpcd/metadata/manager.h"
 
+#include <cstdint>
 #include <random>
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/hash/sha1.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/prefs.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace tpcd::metadata {
+
+namespace {
+uint32_t ElectedDtrp(const MetadataEntry& metadata_entry) {
+  return metadata_entry.has_dtrp_override() ? metadata_entry.dtrp_override()
+                                            : metadata_entry.dtrp();
+}
+}  // namespace
+
 // static
-Manager* Manager::GetInstance(Parser* parser, GrantsSyncCallback callback) {
-  static base::NoDestructor<Manager> instance(parser, std::move(callback));
+Manager* Manager::GetInstance(Parser* parser,
+                              GrantsSyncCallback callback,
+                              PrefService* local_state) {
+  static base::NoDestructor<Manager> instance(parser, std::move(callback),
+                                              local_state);
   return instance.get();
 }
 
-Manager::Manager(Parser* parser, GrantsSyncCallback callback)
-    : parser_(parser), grants_sync_callback_(std::move(callback)) {
+Manager::Manager(Parser* parser,
+                 GrantsSyncCallback callback,
+                 PrefService* local_state)
+    : parser_(parser),
+      grants_sync_callback_(std::move(callback)),
+      local_state_(local_state) {
   CHECK(parser_);
 
   if (base::FeatureList::IsEnabled(
@@ -67,6 +90,18 @@ uint32_t Manager::GenerateRand() const {
   return rand;
 }
 
+std::string Manager::GenerateKeyHash(
+    const MetadataEntry& metadata_entry) const {
+  std::string key = base::StrCat(
+      {metadata_entry.primary_pattern_spec(),
+       /*Non-url delimiter:*/ "\\", metadata_entry.secondary_pattern_spec(),
+       base::NumberToString(ElectedDtrp(metadata_entry))});
+
+  // The hash from SHA1 is faster to obtain than SHA256 and will be forever
+  // unchanged if key is unchanged and provides lesser collision risk than MD5.
+  return base::Base64Encode(base::SHA1HashString(key));
+}
+
 void Manager::SetGrants(const ContentSettingsForOneType& grants) {
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
@@ -94,6 +129,16 @@ void Manager::OnMetadataReady() {
     return;
   }
 
+  base::flat_set<std::string> remove_keys;
+  if (base::FeatureList::IsEnabled(
+          net::features::kTpcdMetadataStagedRollback) &&
+      local_state_) {
+    const base::Value::Dict& dict = local_state_->GetDict(prefs::kCohorts);
+    for (const auto itr : dict) {
+      remove_keys.insert(itr.first);
+    }
+  }
+
   ContentSettingsForOneType grants;
   for (const auto& metadata_entry : parser_->GetMetadata()) {
     const auto primary_pattern = ContentSettingsPattern::FromString(
@@ -114,29 +159,64 @@ void Manager::OnMetadataReady() {
     rule_metadata.set_tpcd_metadata_rule_source(
         Parser::ToRuleSource(metadata_entry.source()));
 
+    std::optional<content_settings::mojom::TpcdMetadataCohort> cohort;
+
     if (!Parser::IsDtrpEligible(
             Parser::ToRuleSource(metadata_entry.source())) ||
         !base::FeatureList::IsEnabled(
             net::features::kTpcdMetadataStagedRollback)) {
-      rule_metadata.set_tpcd_metadata_cohort(
-          content_settings::mojom::TpcdMetadataCohort::DEFAULT);
-    } else {
-      uint32_t elected_dtrp = metadata_entry.has_dtrp_override()
-                                  ? metadata_entry.dtrp_override()
-                                  : metadata_entry.dtrp();
-
-      auto cohort = GenerateRand() <= elected_dtrp
-                        ? content_settings::mojom::TpcdMetadataCohort::
-                              GRACE_PERIOD_FORCED_OFF
-                        : content_settings::mojom::TpcdMetadataCohort::
-                              GRACE_PERIOD_FORCED_ON;
-
-      rule_metadata.set_tpcd_metadata_cohort(cohort);
+      cohort = content_settings::mojom::TpcdMetadataCohort::DEFAULT;
     }
+
+    std::string key_hash = GenerateKeyHash(metadata_entry);
+
+    // Get the cohort from the prefs if available.
+    if (!cohort.has_value()) {
+      if (local_state_) {
+        const base::Value::Dict& dict = local_state_->GetDict(prefs::kCohorts);
+
+        const std::optional<int> stored_int = dict.FindInt(key_hash);
+        if (stored_int.has_value()) {
+          auto stored_cohort =
+              static_cast<content_settings::mojom::TpcdMetadataCohort>(
+                  stored_int.value());
+
+          if (content_settings::mojom::IsKnownEnumValue(stored_cohort)) {
+            cohort = stored_cohort;
+            remove_keys.erase(key_hash);
+          }
+        }
+      }
+    }
+
+    if (!cohort.has_value()) {
+      cohort = GenerateRand() <= ElectedDtrp(metadata_entry)
+                   ? content_settings::mojom::TpcdMetadataCohort::
+                         GRACE_PERIOD_FORCED_OFF
+                   : content_settings::mojom::TpcdMetadataCohort::
+                         GRACE_PERIOD_FORCED_ON;
+
+      if (local_state_) {
+        ScopedDictPrefUpdate update(local_state_, prefs::kCohorts);
+        update->Set(key_hash, static_cast<int32_t>(cohort.value()));
+      }
+    }
+
+    CHECK(cohort.has_value());
+    rule_metadata.set_tpcd_metadata_cohort(cohort.value());
 
     grants.emplace_back(primary_pattern, secondary_pattern, std::move(value),
                         /*source=*/std::string(), /*incognito=*/false,
                         std::move(rule_metadata));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kTpcdMetadataStagedRollback) &&
+      local_state_) {
+    ScopedDictPrefUpdate update(local_state_, prefs::kCohorts);
+    for (const auto& key : remove_keys) {
+      update->Remove(key);
+    }
   }
 
   SetGrants(grants);
