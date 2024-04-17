@@ -26,7 +26,7 @@ class LockStateControllerTestApi {
   }
 
   bool shutdown_timer_is_running() const {
-    return controller_->pre_shutdown_timer_.IsRunning();
+    return controller_->cancelable_shutdown_timer_.IsRunning();
   }
   bool real_shutdown_timer_is_running() const {
     return controller_->real_shutdown_timer_.IsRunning();
@@ -34,12 +34,10 @@ class LockStateControllerTestApi {
   bool is_animating_lock() const { return controller_->animating_lock_; }
 
   void trigger_shutdown_timeout() {
-    controller_->OnPreShutdownAnimationTimeout();
-    controller_->pre_shutdown_timer_.Stop();
+    controller_->cancelable_shutdown_timer_.FireNow();
   }
   void trigger_real_shutdown_timeout() {
-    controller_->OnRealPowerTimeout();
-    controller_->real_shutdown_timer_.Stop();
+    controller_->real_shutdown_timer_.FireNow();
   }
 
   void set_pine_image_callback(base::OnceClosure callback) {
@@ -47,7 +45,7 @@ class LockStateControllerTestApi {
   }
 
   void disable_screenshot_timeout_for_test(bool value) {
-    controller_->disable_screenshot_tiemout_for_test_ = value;
+    controller_->disable_screenshot_timeout_for_test_ = value;
   }
 
   void trigger_take_screenshot_timeout() const {

@@ -1284,4 +1284,20 @@ TEST_F(LockStateControllerPineTest, TakeScreenshotTimeout) {
           ScreenshotOnShutdownStatus::kFailedOnTakingScreenshotTimeout, 1)));
 }
 
+TEST_F(LockStateControllerPineTest, CancelShutdown) {
+  // Create an empty file to simulate an old pine image.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
+  lock_state_controller_->RequestCancelableShutdown(
+      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
+
+  // The shutdown should be cancelable and the existing pine image should be
+  // deleted as the shutdown was canceled.
+  EXPECT_TRUE(lock_state_controller_->MaybeCancelShutdownAnimation());
+  run_loop.Run();
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
+
 }  // namespace ash

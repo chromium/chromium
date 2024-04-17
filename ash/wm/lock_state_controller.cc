@@ -426,34 +426,37 @@ void LockStateController::RequestShutdown(ShutdownReason reason) {
   }
 
   HideAndMaybeLockCursor(/*lock=*/true);
-  ShutdownOnPine(/*with_pre_animation=*/false);
+  ShutdownOnPine(/*cancelable_shutdown=*/false);
 }
 
 void LockStateController::RequestCancelableShutdown(ShutdownReason reason) {
   shutdown_reason_ = reason;
 
   HideAndMaybeLockCursor(/*lock=*/false);
-  ShutdownOnPine(/*with_pre_animation=*/true);
+  ShutdownOnPine(/*cancelable_shutdown=*/true);
 }
 
-bool LockStateController::ShutdownRequested() {
+bool LockStateController::ShutdownRequested() const {
   return shutting_down_;
 }
 
-bool LockStateController::CanCancelShutdownAnimation() {
-  return pre_shutdown_timer_.IsRunning();
-}
-
-void LockStateController::CancelShutdownAnimation() {
-  if (!CanCancelShutdownAnimation()) {
-    return;
+bool LockStateController::MaybeCancelShutdownAnimation() {
+  if (ShutdownRequested()) {
+    return false;
   }
 
   animator_->StartAnimation(
       SessionStateAnimator::ROOT_CONTAINER,
       SessionStateAnimator::ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS,
       SessionStateAnimator::ANIMATION_SPEED_REVERT_SHUTDOWN);
-  pre_shutdown_timer_.Stop();
+  shutdown_canceled_ = true;
+  if (IsForestFeatureEnabled()) {
+    // Shutdown maybe canceled before or after image saved. So we need to delete
+    // both here and `OnImageSaved`.
+    DeletePineImage(pine_image_callback_for_test_, GetShutdownPineImagePath());
+  }
+  cancelable_shutdown_timer_.Stop();
+  return true;
 }
 
 void LockStateController::RequestRestart(
@@ -463,7 +466,7 @@ void LockStateController::RequestRestart(
     restart_reason_ = reason;
     restart_description_ = description;
     HideAndMaybeLockCursor(/*lock=*/false);
-    TakePineImageAndShutdown(/*with_pre_animation=*/false);
+    TakePineImageAndShutdown(/*cancelable_shutdown=*/false);
   } else {
     chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
   }
@@ -768,8 +771,8 @@ void LockStateController::OnLockStateEvent(LockStateObserver::EventType event) {
 }
 
 void LockStateController::StartPreShutdownAnimationTimer() {
-  pre_shutdown_timer_.Stop();
-  pre_shutdown_timer_.Start(
+  cancelable_shutdown_timer_.Stop();
+  cancelable_shutdown_timer_.Start(
       FROM_HERE,
       animator_->GetDuration(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN),
       this, &LockStateController::OnPreShutdownAnimationTimeout);
@@ -812,20 +815,21 @@ void LockStateController::OnRealPowerTimeout() {
   }
 }
 
-void LockStateController::ShutdownOnPine(bool with_pre_animation) {
+void LockStateController::ShutdownOnPine(bool cancelable_shutdown) {
+  shutdown_canceled_ = false;
   if (IsForestFeatureEnabled()) {
-    TakePineImageAndShutdown(with_pre_animation);
+    TakePineImageAndShutdown(cancelable_shutdown);
   } else {
-    StartShutdownProcess(with_pre_animation);
+    StartShutdownProcess(cancelable_shutdown);
   }
 }
 
-void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
+void LockStateController::TakePineImageAndShutdown(bool cancelable_shutdown) {
   const base::FilePath file_path = GetShutdownPineImagePath();
 
   if (!ShouldTakePineScreeshot()) {
     DeletePineImage(pine_image_callback_for_test_, file_path);
-    StartShutdownProcess(with_pre_animation);
+    StartShutdownProcess(cancelable_shutdown);
     return;
   }
 
@@ -834,16 +838,16 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
   CaptureModeController::Get()->CheckScreenCaptureDlpRestrictions(
       base::BindOnce(
           &LockStateController::OnDlpRestrictionCheckedAtScreenCapture,
-          weak_ptr_factory_.GetWeakPtr(), with_pre_animation, file_path));
+          weak_ptr_factory_.GetWeakPtr(), cancelable_shutdown, file_path));
 }
 
 void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
-    bool with_pre_animation,
+    bool cancelable_shutdown,
     const base::FilePath& file_path,
     bool proceed) {
   if (!proceed) {
     RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus::kFailedOnDLP);
-    StartShutdownProcess(with_pre_animation);
+    StartShutdownProcess(cancelable_shutdown);
     return;
   }
 
@@ -872,14 +876,14 @@ void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
   shutdown_screenshot_layer->Add(mirror_wallpaper_layer_.get());
   shutdown_screenshot_layer->StackAtBottom(mirror_wallpaper_layer_.get());
 
-  if (!disable_screenshot_tiemout_for_test_) {
+  if (!disable_screenshot_timeout_for_test_) {
     // Trigger the `take_screenshot_fail_timer_` and start taking the screenshot
     // at the same time. If the timer timeouts before receiving the screenshot,
     // shutdown process will be triggered without the screenshot.
     take_screenshot_fail_timer_.Start(
         FROM_HERE, kTakeScreenshotFailTimeout,
         base::BindOnce(&LockStateController::OnTakeScreenshotFailTimeout,
-                       base::Unretained(this), with_pre_animation));
+                       base::Unretained(this), cancelable_shutdown));
   }
 
   // Take the screenshot on the shutdown screenshot container, thus the float
@@ -888,41 +892,46 @@ void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
       pine_screenshot_container,
       /*source_rect=*/gfx::Rect(pine_screenshot_container->bounds().size()),
       base::BindOnce(&LockStateController::OnPineImageTaken,
-                     weak_ptr_factory_.GetWeakPtr(), with_pre_animation,
+                     weak_ptr_factory_.GetWeakPtr(), cancelable_shutdown,
                      file_path, base::TimeTicks::Now()));
 }
 
-void LockStateController::StartShutdownProcess(bool with_pre_animation) {
+void LockStateController::StartShutdownProcess(bool cancelable_shutdown) {
+  if (shutdown_canceled_) {
+    return;
+  }
+
   animator_->StartAnimation(
       SessionStateAnimator::ROOT_CONTAINER,
       SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS,
       SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
 
-  if (with_pre_animation) {
+  if (cancelable_shutdown) {
     StartPreShutdownAnimationTimer();
   } else {
     StartRealShutdownTimer(true);
   }
 }
 
-void LockStateController::OnTakeScreenshotFailTimeout(bool with_pre_animation) {
+void LockStateController::OnTakeScreenshotFailTimeout(
+    bool cancelable_shutdown) {
   SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
                              kTakeScreenshotFailTimeout);
   RecordScreenshotOnShutdownStatus(
       ScreenshotOnShutdownStatus::kFailedOnTakingScreenshotTimeout);
   mirror_wallpaper_layer_.reset();
   DeletePineImage(pine_image_callback_for_test_, GetShutdownPineImagePath());
-  StartShutdownProcess(with_pre_animation);
+  StartShutdownProcess(cancelable_shutdown);
 }
 
-void LockStateController::OnPineImageTaken(bool with_pre_animation,
+void LockStateController::OnPineImageTaken(bool cancelable_shutdown,
                                            const base::FilePath& file_path,
                                            base::TimeTicks start_time,
                                            gfx::Image pine_image) {
   // Do not proceed if the `take_screenshot_fail_timer_` is stopped, which means
   // taking screenshot process took too long and the shutdown process has been
   // triggered without the pine image.
-  if (!disable_screenshot_tiemout_for_test_ &&
+  if (!disable_screenshot_timeout_for_test_ &&
       !take_screenshot_fail_timer_.IsRunning()) {
     return;
   }
@@ -939,12 +948,14 @@ void LockStateController::OnPineImageTaken(bool with_pre_animation,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(&EncodeAndSavePineImage, file_path, std::move(pine_image)),
       base::BindOnce(&LockStateController::OnPineImageSaved,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     file_path));
 
-  StartShutdownProcess(with_pre_animation);
+  StartShutdownProcess(cancelable_shutdown);
 }
 
-void LockStateController::OnPineImageSaved(base::TimeTicks start_time) {
+void LockStateController::OnPineImageSaved(base::TimeTicks start_time,
+                                           const base::FilePath& file_path) {
   SavePineScreenshotDuration(local_state_,
                              prefs::kPineScreenshotEncodeAndSaveDuration,
                              // This duration includes the time waiting for the
@@ -953,6 +964,9 @@ void LockStateController::OnPineImageSaved(base::TimeTicks start_time) {
                              // from the `ThreadPool`.
                              base::TimeTicks::Now() - start_time);
   RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus::kSucceeded);
+  if (shutdown_canceled_) {
+    DeletePineImage(pine_image_callback_for_test_, file_path);
+  }
   if (pine_image_callback_for_test_) {
     std::move(pine_image_callback_for_test_).Run();
   }

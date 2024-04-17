@@ -233,9 +233,8 @@ void PowerButtonController::OnPowerButtonEvent(
     }
   } else {
     uint32_t up_state = UP_NONE;
-    if (lock_state_controller_->CanCancelShutdownAnimation()) {
+    if (lock_state_controller_->MaybeCancelShutdownAnimation()) {
       up_state |= UP_CAN_CANCEL_SHUTDOWN_ANIMATION;
-      lock_state_controller_->CancelShutdownAnimation();
     }
     const base::TimeTicks previous_up_time = last_button_up_time_;
     last_button_up_time_ = timestamp;
