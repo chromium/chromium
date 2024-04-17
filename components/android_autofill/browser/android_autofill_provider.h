@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_H_
-#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_PROVIDER_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_PROVIDER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/android_autofill/browser/autofill_provider.h"
-#include "components/android_autofill/browser/autofill_provider_android_bridge.h"
+#include "components/android_autofill/browser/android_autofill_provider_bridge.h"
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -29,8 +29,8 @@ class TouchToFillKeyboardSuppressor;
 // Android implementation of AutofillProvider, it has one instance per
 // WebContents, this class is native peer of AutofillProvider.java.
 // This class is always instantialized by AutofillProvider Java object.
-class AutofillProviderAndroid : public AutofillProvider,
-                                public AutofillProviderAndroidBridge::Delegate,
+class AndroidAutofillProvider : public AutofillProvider,
+                                public AndroidAutofillProviderBridge::Delegate,
                                 public content::WebContentsObserver {
  public:
   // Used as a metric that describes the state of a prefill requests. It is
@@ -79,12 +79,12 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   static void CreateForWebContents(content::WebContents* web_contents);
 
-  static AutofillProviderAndroid* FromWebContents(
+  static AndroidAutofillProvider* FromWebContents(
       content::WebContents* web_contents);
 
-  AutofillProviderAndroid(const AutofillProviderAndroid&) = delete;
-  AutofillProviderAndroid& operator=(const AutofillProviderAndroid&) = delete;
-  ~AutofillProviderAndroid() override;
+  AndroidAutofillProvider(const AndroidAutofillProvider&) = delete;
+  AndroidAutofillProvider& operator=(const AndroidAutofillProvider&) = delete;
+  ~AndroidAutofillProvider() override;
 
   // Attach this detached object to `jcaller`.
   void AttachToJavaAutofillProvider(
@@ -135,9 +135,9 @@ class AutofillProviderAndroid : public AutofillProvider,
   void MaybeInitKeyboardSuppressor() override;
 
  private:
-  friend class AutofillProviderAndroidTestApi;
+  friend class AndroidAutofillProviderTestApi;
 
-  explicit AutofillProviderAndroid(content::WebContents* web_contents);
+  explicit AndroidAutofillProvider(content::WebContents* web_contents);
 
   // AndroidAutofillProviderBridge::Delegate:
   void OnAutofillAvailable() override;
@@ -332,11 +332,11 @@ class AutofillProviderAndroid : public AutofillProvider,
   SessionId last_session_id_ = kMaximumSessionId;
 
   // The bridge for C++ <-> Java communication.
-  std::unique_ptr<AutofillProviderAndroidBridge> bridge_;
+  std::unique_ptr<AndroidAutofillProviderBridge> bridge_;
 
   // Used for handling keyboard suppression in case there's a bottom sheet.
   std::unique_ptr<TouchToFillKeyboardSuppressor> keyboard_suppressor_;
 };
 }  // namespace autofill
 
-#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_PROVIDER_H_

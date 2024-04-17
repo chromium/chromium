@@ -8,7 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
-#include "components/android_autofill/browser/autofill_provider_android_bridge_impl.h"
+#include "components/android_autofill/browser/android_autofill_provider_bridge_impl.h"
 #include "components/android_autofill/browser/form_data_android_bridge_impl.h"
 #include "components/android_autofill/browser/form_field_data_android_bridge_impl.h"
 
@@ -24,13 +24,13 @@ AndroidAutofillBridgeFactory& AndroidAutofillBridgeFactory::GetInstance() {
   return *instance;
 }
 
-std::unique_ptr<AutofillProviderAndroidBridge>
-AndroidAutofillBridgeFactory::CreateAutofillProviderAndroidBridge(
-    AutofillProviderAndroidBridge::Delegate* delegate) {
+std::unique_ptr<AndroidAutofillProviderBridge>
+AndroidAutofillBridgeFactory::CreateAndroidAutofillProviderBridge(
+    AndroidAutofillProviderBridge::Delegate* delegate) {
   if (autofill_provider_android_bridge_testing_factory_) {
     return autofill_provider_android_bridge_testing_factory_.Run(delegate);
   }
-  return std::make_unique<AutofillProviderAndroidBridgeImpl>(delegate);
+  return std::make_unique<AndroidAutofillProviderBridgeImpl>(delegate);
 }
 
 std::unique_ptr<FormDataAndroidBridge>

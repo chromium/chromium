@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_BRIDGE_H_
-#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_BRIDGE_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_PROVIDER_BRIDGE_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_PROVIDER_BRIDGE_H_
 
 #include <jni.h>
 
@@ -23,11 +23,11 @@ namespace autofill {
 
 class FormDataAndroid;
 
-// Interface for the C++ <-> Android bridge between `AutofillProviderAndroid`
+// Interface for the C++ <-> Android bridge between `AndroidAutofillProvider`
 // and Java `AutofillProvider`.
-class AutofillProviderAndroidBridge {
+class AndroidAutofillProviderBridge {
  public:
-  virtual ~AutofillProviderAndroidBridge() = default;
+  virtual ~AndroidAutofillProviderBridge() = default;
 
   // The delegate interface that is to be implemented by the owner of this
   // bridge. It is used to forward calls from Java to C++.
@@ -107,4 +107,4 @@ class AutofillProviderAndroidBridge {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_BRIDGE_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_PROVIDER_BRIDGE_H_

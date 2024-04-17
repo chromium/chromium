@@ -96,11 +96,11 @@ static_library("android") {
     "android_autofill_bridge_factory.h",
     "android_autofill_client.cc",
     "android_autofill_client.h",
-    "autofill_provider_android.cc",
-    "autofill_provider_android.h",
-    "autofill_provider_android_bridge.h",
-    "autofill_provider_android_bridge_impl.cc",
-    "autofill_provider_android_bridge_impl.h",
+    "android_autofill_provider.cc",
+    "android_autofill_provider.h",
+    "android_autofill_provider_bridge.h",
+    "android_autofill_provider_bridge_impl.cc",
+    "android_autofill_provider_bridge_impl.h",
     "form_data_android.cc",
     "form_data_android.h",
     "form_data_android_bridge.h",
@@ -146,7 +146,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "autofill_provider_android_unittest.cc",
+    "android_autofill_provider_unittest.cc",
     "form_data_android_unittest.cc",
     "form_event_logger_weblayer_android_unittest.cc",
     "form_field_data_android_unittest.cc",
@@ -166,7 +166,7 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "autofill_provider_android_test_api.h",
+    "android_autofill_provider_test_api.h",
     "form_data_android_test_api.h",
     "mock_form_data_android_bridge.cc",
     "mock_form_data_android_bridge.h",

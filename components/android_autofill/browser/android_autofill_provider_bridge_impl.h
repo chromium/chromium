@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_BRIDGE_IMPL_H_
-#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_BRIDGE_IMPL_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_PROVIDER_BRIDGE_IMPL_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_PROVIDER_BRIDGE_IMPL_H_
 
 #include <jni.h>
 
@@ -13,17 +13,17 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
-#include "components/android_autofill/browser/autofill_provider_android_bridge.h"
+#include "components/android_autofill/browser/android_autofill_provider_bridge.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 
 namespace autofill {
 
-class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
+class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
  public:
-  explicit AutofillProviderAndroidBridgeImpl(Delegate* delegate);
-  ~AutofillProviderAndroidBridgeImpl() override;
+  explicit AndroidAutofillProviderBridgeImpl(Delegate* delegate);
+  ~AndroidAutofillProviderBridgeImpl() override;
 
-  // AutofillProviderAndroidBridge:
+  // AndroidAutofillProviderBridge:
   void AttachToJavaAutofillProvider(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jcaller) override;
@@ -88,4 +88,4 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_BRIDGE_IMPL_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_PROVIDER_BRIDGE_IMPL_H_

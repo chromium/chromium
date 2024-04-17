@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/android_autofill/browser/autofill_provider_android.h"
+#include "components/android_autofill/browser/android_autofill_provider.h"
 
 #include <memory>
 
@@ -17,7 +17,7 @@
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
-#include "components/android_autofill/browser/autofill_provider_android_bridge.h"
+#include "components/android_autofill/browser/android_autofill_provider_bridge.h"
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -45,7 +45,7 @@ using ::autofill::mojom::SubmissionSource;
 using ::base::android::JavaRef;
 using ::content::BrowserThread;
 using ::password_manager::PasswordForm;
-using FieldInfo = ::autofill::AutofillProviderAndroidBridge::FieldInfo;
+using FieldInfo = ::autofill::AndroidAutofillProviderBridge::FieldInfo;
 
 constexpr int kMinimumSdkVersionForPrefillRequests =
     base::android::SdkVersion::SDK_VERSION_U;
@@ -107,37 +107,37 @@ constexpr base::TimeDelta kWasBottomSheetShownFlipTimeout =
 }  // namespace
 
 // static
-void AutofillProviderAndroid::CreateForWebContents(
+void AndroidAutofillProvider::CreateForWebContents(
     content::WebContents* web_contents) {
   if (!FromWebContents(web_contents)) {
     web_contents->SetUserData(
         UserDataKey(),
-        base::WrapUnique(new AutofillProviderAndroid(web_contents)));
+        base::WrapUnique(new AndroidAutofillProvider(web_contents)));
   }
 }
 
-AutofillProviderAndroid* AutofillProviderAndroid::FromWebContents(
+AndroidAutofillProvider* AndroidAutofillProvider::FromWebContents(
     content::WebContents* web_contents) {
-  return static_cast<AutofillProviderAndroid*>(
+  return static_cast<AndroidAutofillProvider*>(
       AutofillProvider::FromWebContents(web_contents));
 }
 
-AutofillProviderAndroid::AutofillProviderAndroid(
+AndroidAutofillProvider::AndroidAutofillProvider(
     content::WebContents* web_contents)
     : AutofillProvider(web_contents),
       content::WebContentsObserver(web_contents),
       bridge_(AndroidAutofillBridgeFactory::GetInstance()
-                  .CreateAutofillProviderAndroidBridge(/*delegate=*/this)) {}
+                  .CreateAndroidAutofillProviderBridge(/*delegate=*/this)) {}
 
-AutofillProviderAndroid::~AutofillProviderAndroid() = default;
+AndroidAutofillProvider::~AndroidAutofillProvider() = default;
 
-void AutofillProviderAndroid::AttachToJavaAutofillProvider(
+void AndroidAutofillProvider::AttachToJavaAutofillProvider(
     JNIEnv* env,
     const JavaRef<jobject>& jcaller) {
   bridge_->AttachToJavaAutofillProvider(env, jcaller);
 }
 
-void AutofillProviderAndroid::RenderFrameDeleted(
+void AndroidAutofillProvider::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
   // If the popup menu has been triggered from within an iframe and that frame
   // is deleted, hide the popup. This is necessary because the popup may
@@ -150,7 +150,7 @@ void AutofillProviderAndroid::RenderFrameDeleted(
   }
 }
 
-void AutofillProviderAndroid::DidFinishNavigation(
+void AndroidAutofillProvider::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (manager_ &&
       last_queried_field_rfh_id_ ==
@@ -161,14 +161,14 @@ void AutofillProviderAndroid::DidFinishNavigation(
   }
 }
 
-void AutofillProviderAndroid::OnVisibilityChanged(
+void AndroidAutofillProvider::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN && manager_) {
     OnHidePopup(manager_.get());
   }
 }
 
-void AutofillProviderAndroid::OnAskForValuesToFill(
+void AndroidAutofillProvider::OnAskForValuesToFill(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field,
@@ -204,7 +204,7 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
                              field.text_direction == base::i18n::RIGHT_TO_LEFT);
 }
 
-bool AutofillProviderAndroid::IsFormSimilarToCachedForm(
+bool AndroidAutofillProvider::IsFormSimilarToCachedForm(
     const FormData& form,
     const FormStructure* form_structure) const {
   if (!cached_data_ || !cached_data_->cached_form) {
@@ -227,7 +227,7 @@ bool AutofillProviderAndroid::IsFormSimilarToCachedForm(
   return cached_data_->cached_form->SimilarFormAs(form);
 }
 
-void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
+void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
                                               const FormData& form,
                                               const FormFieldData& field,
                                               const gfx::RectF& bounding_box) {
@@ -327,7 +327,7 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
       *form_, field_info, manager->has_server_prediction(form.global_id()));
 }
 
-void AutofillProviderAndroid::OnAutofillAvailable() {
+void AndroidAutofillProvider::OnAutofillAvailable() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   was_bottom_sheet_just_shown_ = false;
   if (manager_ && form_) {
@@ -337,7 +337,7 @@ void AutofillProviderAndroid::OnAutofillAvailable() {
   }
 }
 
-void AutofillProviderAndroid::OnAcceptDatalistSuggestion(
+void AndroidAutofillProvider::OnAcceptDatalistSuggestion(
     const std::u16string& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager_) {
@@ -346,7 +346,7 @@ void AutofillProviderAndroid::OnAcceptDatalistSuggestion(
   }
 }
 
-void AutofillProviderAndroid::SetAnchorViewRect(
+void AndroidAutofillProvider::SetAnchorViewRect(
     const base::android::JavaRef<jobject>& anchor,
     const gfx::RectF& bounds) {
   if (ui::ViewAndroid* view_android = web_contents()->GetNativeView()) {
@@ -354,7 +354,7 @@ void AutofillProviderAndroid::SetAnchorViewRect(
   }
 }
 
-void AutofillProviderAndroid::OnShowBottomSheetResult(
+void AndroidAutofillProvider::OnShowBottomSheetResult(
     bool is_shown,
     bool provided_autofill_structure) {
   was_bottom_sheet_just_shown_ = is_shown;
@@ -387,7 +387,7 @@ void AutofillProviderAndroid::OnShowBottomSheetResult(
   }
 }
 
-void AutofillProviderAndroid::OnTextFieldDidChange(
+void AndroidAutofillProvider::OnTextFieldDidChange(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field,
@@ -396,7 +396,7 @@ void AutofillProviderAndroid::OnTextFieldDidChange(
   MaybeFireFormFieldDidChange(manager, form, field, bounding_box);
 }
 
-void AutofillProviderAndroid::OnTextFieldDidScroll(
+void AndroidAutofillProvider::OnTextFieldDidScroll(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field,
@@ -416,7 +416,7 @@ void AutofillProviderAndroid::OnTextFieldDidScroll(
   bridge_->OnTextFieldDidScroll(field_info);
 }
 
-void AutofillProviderAndroid::OnSelectControlDidChange(
+void AndroidAutofillProvider::OnSelectControlDidChange(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field,
@@ -428,13 +428,13 @@ void AutofillProviderAndroid::OnSelectControlDidChange(
   MaybeFireFormFieldDidChange(manager, form, field, bounding_box);
 }
 
-void AutofillProviderAndroid::FireSuccessfulSubmission(
+void AndroidAutofillProvider::FireSuccessfulSubmission(
     SubmissionSource source) {
   bridge_->OnFormSubmitted(source);
   Reset();
 }
 
-void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
+void AndroidAutofillProvider::OnFormSubmitted(AndroidAutofillManager* manager,
                                               const FormData& form,
                                               bool known_success,
                                               SubmissionSource source) {
@@ -463,7 +463,7 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
   pending_submission_source_ = source;
 }
 
-void AutofillProviderAndroid::OnFocusNoLongerOnForm(
+void AndroidAutofillProvider::OnFocusNoLongerOnForm(
     AndroidAutofillManager* manager,
     bool had_interacted_form) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -474,7 +474,7 @@ void AutofillProviderAndroid::OnFocusNoLongerOnForm(
   bridge_->OnFocusChanged(std::nullopt);
 }
 
-void AutofillProviderAndroid::OnFocusOnFormField(
+void AndroidAutofillProvider::OnFocusOnFormField(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field,
@@ -493,7 +493,7 @@ void AutofillProviderAndroid::OnFocusOnFormField(
   bridge_->OnFocusChanged(field_info);
 }
 
-void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
+void AndroidAutofillProvider::MaybeFireFormFieldDidChange(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field,
@@ -510,7 +510,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
   bridge_->OnFormFieldDidChange(field_info);
 }
 
-void AutofillProviderAndroid::MaybeFireFormFieldVisibilitiesDidChange(
+void AndroidAutofillProvider::MaybeFireFormFieldVisibilitiesDidChange(
     AndroidAutofillManager* manager,
     const FormData& form) {
   if (!IsLinkedForm(form)) {
@@ -525,7 +525,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldVisibilitiesDidChange(
   bridge_->OnFormFieldVisibilitiesDidChange(field_indices_with_change);
 }
 
-void AutofillProviderAndroid::OnDidFillAutofillFormData(
+void AndroidAutofillProvider::OnDidFillAutofillFormData(
     AndroidAutofillManager* manager,
     const FormData& form,
     base::TimeTicks timestamp) {
@@ -539,14 +539,14 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
   bridge_->OnDidFillAutofillFormData();
 }
 
-void AutofillProviderAndroid::OnHidePopup(AndroidAutofillManager* manager) {
+void AndroidAutofillProvider::OnHidePopup(AndroidAutofillManager* manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager == manager_.get()) {
     bridge_->HideDatalistPopup();
   }
 }
 
-void AutofillProviderAndroid::OnServerPredictionsAvailable(
+void AndroidAutofillProvider::OnServerPredictionsAvailable(
     AndroidAutofillManager& manager,
     FormGlobalId form_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -565,7 +565,7 @@ void AutofillProviderAndroid::OnServerPredictionsAvailable(
   bridge_->OnServerPredictionsAvailable();
 }
 
-void AutofillProviderAndroid::OnManagerResetOrDestroyed(
+void AndroidAutofillProvider::OnManagerResetOrDestroyed(
     AndroidAutofillManager* manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsLinkedManager(manager)) {
@@ -583,14 +583,14 @@ void AutofillProviderAndroid::OnManagerResetOrDestroyed(
   Reset();
 }
 
-bool AutofillProviderAndroid::GetCachedIsAutofilled(
+bool AndroidAutofillProvider::GetCachedIsAutofilled(
     const FormFieldData& field) const {
   size_t field_index = 0u;
   return form_ && form_->GetFieldIndex(field, &field_index) &&
          form_->form().fields[field_index].is_autofilled;
 }
 
-bool AutofillProviderAndroid::IntendsToShowBottomSheet(
+bool AndroidAutofillProvider::IntendsToShowBottomSheet(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field,
@@ -599,44 +599,44 @@ bool AutofillProviderAndroid::IntendsToShowBottomSheet(
          form == cached_data_->cached_form->form().global_id();
 }
 
-bool AutofillProviderAndroid::WasBottomSheetJustShown(
+bool AndroidAutofillProvider::WasBottomSheetJustShown(
     AutofillManager& manager) {
   // TODO(crbug.com/1490581) Remove the timer once a fix is landed on the
   // renderer side.
   was_shown_bottom_sheet_timer_.Start(
       FROM_HERE, kWasBottomSheetShownFlipTimeout, this,
-      &AutofillProviderAndroid::SetBottomSheetShownOff);
+      &AndroidAutofillProvider::SetBottomSheetShownOff);
   return was_bottom_sheet_just_shown_;
 }
 
-void AutofillProviderAndroid::SetBottomSheetShownOff() {
+void AndroidAutofillProvider::SetBottomSheetShownOff() {
   was_bottom_sheet_just_shown_ = false;
 }
 
-void AutofillProviderAndroid::MaybeInitKeyboardSuppressor() {
+void AndroidAutofillProvider::MaybeInitKeyboardSuppressor() {
   // Return early if prefill requests are not supported.
   if (!ArePrefillRequestsSupported()) {
     return;
   }
   keyboard_suppressor_ = std::make_unique<TouchToFillKeyboardSuppressor>(
       ContentAutofillClient::FromWebContents(web_contents()),
-      base::BindRepeating(&AutofillProviderAndroid::WasBottomSheetJustShown,
+      base::BindRepeating(&AndroidAutofillProvider::WasBottomSheetJustShown,
                           base::Unretained(this)),
-      base::BindRepeating(&AutofillProviderAndroid::IntendsToShowBottomSheet,
+      base::BindRepeating(&AndroidAutofillProvider::IntendsToShowBottomSheet,
                           base::Unretained(this)),
       kKeyboardSuppressionTimeout);
 }
 
-bool AutofillProviderAndroid::IsLinkedManager(
+bool AndroidAutofillProvider::IsLinkedManager(
     AndroidAutofillManager* manager) const {
   return manager == manager_.get();
 }
 
-bool AutofillProviderAndroid::IsIdOfLinkedForm(FormGlobalId form_id) const {
+bool AndroidAutofillProvider::IsIdOfLinkedForm(FormGlobalId form_id) const {
   return form_ && form_->form().global_id() == form_id;
 }
 
-bool AutofillProviderAndroid::IsLinkedForm(const FormData& form,
+bool AndroidAutofillProvider::IsLinkedForm(const FormData& form,
                                            const char* similarity_metric) {
   if (!form_) {
     return false;
@@ -655,13 +655,13 @@ bool AutofillProviderAndroid::IsLinkedForm(const FormData& form,
   return similarity_result == FormDataAndroid::kFormsAreSimilar;
 }
 
-gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
+gfx::RectF AndroidAutofillProvider::ToClientAreaBound(
     const gfx::RectF& bounding_box) {
   gfx::Rect client_area = web_contents()->GetContainerBounds();
   return bounding_box + client_area.OffsetFromOrigin();
 }
 
-void AutofillProviderAndroid::Reset() {
+void AndroidAutofillProvider::Reset() {
   manager_ = nullptr;
   form_.reset();
   last_focused_field_id_ = {};
@@ -682,7 +682,7 @@ void AutofillProviderAndroid::Reset() {
   // Autofill session is truly terminated.
 }
 
-void AutofillProviderAndroid::CancelSession() {
+void AndroidAutofillProvider::CancelSession() {
   cached_data_ = std::nullopt;
   has_used_cached_form_ = false;
   was_bottom_sheet_just_shown_ = false;
@@ -690,21 +690,21 @@ void AutofillProviderAndroid::CancelSession() {
   bridge_->CancelSession();
 }
 
-SessionId AutofillProviderAndroid::CreateSessionId() {
+SessionId AndroidAutofillProvider::CreateSessionId() {
   last_session_id_ = last_session_id_ == kMaximumSessionId
                          ? kMinimumSessionId
                          : SessionId(last_session_id_.value() + 1);
   return last_session_id_;
 }
 
-bool AutofillProviderAndroid::ArePrefillRequestsSupported() const {
+bool AndroidAutofillProvider::ArePrefillRequestsSupported() const {
   return base::android::BuildInfo::GetInstance()->sdk_int() >=
              kMinimumSdkVersionForPrefillRequests &&
          base::FeatureList::IsEnabled(
              features::kAndroidAutofillPrefillRequestsForLoginForms);
 }
 
-void AutofillProviderAndroid::MaybeSendPrefillRequest(
+void AndroidAutofillProvider::MaybeSendPrefillRequest(
     const AndroidAutofillManager& manager,
     FormGlobalId form_id) {
   if (!ArePrefillRequestsSupported()) {
@@ -747,7 +747,7 @@ void AutofillProviderAndroid::MaybeSendPrefillRequest(
 }
 
 base::flat_map<FieldGlobalId, AutofillType>
-AutofillProviderAndroid::PasswordParserOverrides::ToFieldTypeMap() const {
+AndroidAutofillProvider::PasswordParserOverrides::ToFieldTypeMap() const {
   base::flat_map<FieldGlobalId, AutofillType> result;
   if (username_field_id) {
     result.emplace(*username_field_id, FieldType::USERNAME);
@@ -759,8 +759,8 @@ AutofillProviderAndroid::PasswordParserOverrides::ToFieldTypeMap() const {
 }
 
 // static
-std::optional<AutofillProviderAndroid::PasswordParserOverrides>
-AutofillProviderAndroid::PasswordParserOverrides::FromLoginForm(
+std::optional<AndroidAutofillProvider::PasswordParserOverrides>
+AndroidAutofillProvider::PasswordParserOverrides::FromLoginForm(
     const PasswordForm& pw_form,
     const FormStructure& form_structure) {
   PasswordParserOverrides result;
@@ -803,13 +803,13 @@ AutofillProviderAndroid::PasswordParserOverrides::FromLoginForm(
   return result;
 }
 
-AutofillProviderAndroid::CachedData::CachedData() = default;
+AndroidAutofillProvider::CachedData::CachedData() = default;
 
-AutofillProviderAndroid::CachedData::CachedData(CachedData&&) = default;
+AndroidAutofillProvider::CachedData::CachedData(CachedData&&) = default;
 
-AutofillProviderAndroid::CachedData&
-AutofillProviderAndroid::CachedData::operator=(CachedData&&) = default;
+AndroidAutofillProvider::CachedData&
+AndroidAutofillProvider::CachedData::operator=(CachedData&&) = default;
 
-AutofillProviderAndroid::CachedData::~CachedData() = default;
+AndroidAutofillProvider::CachedData::~CachedData() = default;
 
 }  // namespace autofill

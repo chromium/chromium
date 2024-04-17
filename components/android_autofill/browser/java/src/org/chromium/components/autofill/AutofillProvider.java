@@ -46,9 +46,9 @@ import org.chromium.ui.display.DisplayAndroid;
  * cancels previous session and starts a new one, the calling of other methods shall associate with
  * current session.
  *
- * <p>This class doesn't have 1:1 mapping to native AutofillProviderAndroid; the normal ownership
+ * <p>This class doesn't have 1:1 mapping to native AndroidAutofillProvider; the normal ownership
  * model is that this object is owned by the embedder-specific Java WebContents wrapper (e.g.,
- * AwContents.java in //android_webview), and AutofillProviderAndroid is owned by the
+ * AwContents.java in //android_webview), and AndroidAutofillProvider is owned by the
  * embedder-specific C++ WebContents wrapper (e.g., native AwContents in //android_webview).
  */
 @JNINamespace("autofill")
@@ -794,16 +794,16 @@ public class AutofillProvider {
     interface Natives {
         void init(AutofillProvider caller, WebContents webContents);
 
-        void detachFromJavaAutofillProvider(long nativeAutofillProviderAndroidBridgeImpl);
+        void detachFromJavaAutofillProvider(long nativeAndroidAutofillProviderBridgeImpl);
 
-        void onAutofillAvailable(long nativeAutofillProviderAndroidBridgeImpl);
+        void onAutofillAvailable(long nativeAndroidAutofillProviderBridgeImpl);
 
         void onAcceptDataListSuggestion(
-                long nativeAutofillProviderAndroidBridgeImpl,
+                long nativeAndroidAutofillProviderBridgeImpl,
                 @JniType("std::u16string") String value);
 
         void setAnchorViewRect(
-                long nativeAutofillProviderAndroidBridgeImpl,
+                long nativeAndroidAutofillProviderBridgeImpl,
                 View anchorView,
                 float x,
                 float y,
@@ -811,7 +811,7 @@ public class AutofillProvider {
                 float height);
 
         void onShowBottomSheetResult(
-                long nativeAutofillProviderAndroidBridgeImpl,
+                long nativeAndroidAutofillProviderBridgeImpl,
                 boolean isShown,
                 boolean providedAutofillStructure);
     }
