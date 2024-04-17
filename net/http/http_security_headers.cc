@@ -99,6 +99,10 @@ bool ParseHSTSHeader(const std::string& value,
     DCHECK(!tokenizer.token_is_delim() || token.length() == 1);
     switch (state) {
       case START:
+        if (token[0] == ';') {
+          continue;
+        }
+        [[fallthrough]];
       case DIRECTIVE_END:
         if (base::IsAsciiWhitespace(token[0]))
           continue;

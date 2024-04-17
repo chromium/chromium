@@ -36,6 +36,24 @@ class HttpSecurityHeadersTest : public testing::Test {
   }
 };
 
+TEST_F(HttpSecurityHeadersTest, LeadingSemicolons) {
+  base::TimeDelta max_age;
+  bool include_subdomains = false;
+
+  const char* test_cases[] = {
+    "max-age=123",
+    ";max-age=123",
+    ";;max-age=123",
+    ";;;;max-age=123",
+    "; ;max-age=123",
+    "; ; max-age=123"
+  };
+  for (const char* t : test_cases) {
+    EXPECT_TRUE(ParseHSTSHeader(t, &max_age, &include_subdomains));
+    EXPECT_EQ(base::Seconds(123), max_age);
+    EXPECT_FALSE(include_subdomains);
+  }
+}
 
 TEST_F(HttpSecurityHeadersTest, BogusHeaders) {
   base::TimeDelta max_age;
