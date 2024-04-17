@@ -907,11 +907,6 @@ extern const char kTFLiteLanguageDetectionIgnoreDescription[];
 extern const char kThemeColorInTopToolbarName[];
 extern const char kThemeColorInTopToolbarDescription[];
 
-// Title and description for the flag to enable the iOS Hide Feed with Search
-// Choice feature.
-extern const char kIOSHideFeedWithSearchChoiceName[];
-extern const char kIOSHideFeedWithSearchChoiceDescription[];
-
 // Title and description for the flag to enable the iOS Large Fakebox feature
 extern const char kIOSLargeFakeboxName[];
 extern const char kIOSLargeFakeboxDescription[];

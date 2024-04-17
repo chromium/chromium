@@ -609,13 +609,6 @@ const FeatureEntry::Choice kEnablePasswordSharingChoices[] = {
      "PasswordManagerEnableReceiverService,SharedPasswordNotificationUI"},
 };
 
-const FeatureEntry::FeatureParam kIOSHideFeedWithSearchChoiceTargetedParams[] =
-    {{kIOSHideFeedWithSearchChoiceTargeted, "true"}};
-const FeatureEntry::FeatureVariation kIOSHideFeedWithSearchChoiceVariations[]{
-    {"with targeting", kIOSHideFeedWithSearchChoiceTargetedParams,
-     std::size(kIOSHideFeedWithSearchChoiceTargetedParams), nullptr},
-};
-
 const flags_ui::FeatureEntry::FeatureParam kParcelTrackingTestDataDelivered[] =
     {{commerce::kParcelTrackingTestDataParam,
       commerce::kParcelTrackingTestDataParamDelivered}};
@@ -964,14 +957,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kMagicStack,
                                     kMagicStackVariations,
                                     flag_descriptions::kMagicStackName)},
-    {"ios-hide-feed-with-search-choice",
-     flag_descriptions::kIOSHideFeedWithSearchChoiceName,
-     flag_descriptions::kIOSHideFeedWithSearchChoiceDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kIOSHideFeedWithSearchChoice,
-         kIOSHideFeedWithSearchChoiceVariations,
-         flag_descriptions::kIOSHideFeedWithSearchChoiceName)},
     {"ios-keyboard-accessory-upgrade",
      flag_descriptions::kIOSKeyboardAccessoryUpgradeName,
      flag_descriptions::kIOSKeyboardAccessoryUpgradeDescription,

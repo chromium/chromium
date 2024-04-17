@@ -8,7 +8,6 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -35,8 +34,6 @@ bool IsNTPWithoutHistory(web::WebState* web_state) {
 }
 
 bool ShouldHideFeedWithSearchChoice(TemplateURLService* template_url_service) {
-  return IsIOSHideFeedWithSearchChoiceEnabled() &&
-         !search::DefaultSearchProviderIsGoogle(template_url_service) &&
-         (!IsIOSHideFeedWithSearchChoiceTargeted() ||
-          template_url_service->IsEeaChoiceCountry());
+  return !search::DefaultSearchProviderIsGoogle(template_url_service) &&
+         template_url_service->IsEeaChoiceCountry();
 }

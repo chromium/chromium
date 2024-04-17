@@ -5066,11 +5066,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "ios-hide-feed-with-search-choice",
-    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 127
-  },
-  {
     "name": "ios-iph-for-safari-switcher",
     "owners": [ "huitingyu@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 121

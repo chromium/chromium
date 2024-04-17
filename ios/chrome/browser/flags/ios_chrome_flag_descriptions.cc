@@ -1024,11 +1024,6 @@ const char kThemeColorInTopToolbarDescription[] =
     "When enabled with bottom omnibox, the top toolbar background color is the "
     "page's theme color. Disabled when a dynamic color flag is enabled.";
 
-const char kIOSHideFeedWithSearchChoiceName[] = "Hide Feed with Search Choice";
-const char kIOSHideFeedWithSearchChoiceDescription[] =
-    "When enabled, the feed and feed header are hidden depending on the "
-    "Search Engine setting.";
-
 const char kIOSLargeFakeboxName[] = "Enable Large Fakebox on Home";
 const char kIOSLargeFakeboxDescription[] =
     "When enabled, the Fakebox on Home appears larger and has an updated "

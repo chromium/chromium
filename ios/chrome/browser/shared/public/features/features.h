@@ -348,10 +348,6 @@ BASE_DECLARE_FEATURE(kContentPushNotifications);
 // Feature flag to enable the Large Fakebox design changes.
 BASE_DECLARE_FEATURE(kIOSLargeFakebox);
 
-// Feature flag to enable hiding the feed and feed header depending on Search
-// Engine choice.
-BASE_DECLARE_FEATURE(kIOSHideFeedWithSearchChoice);
-
 // Feature flag to enable a more stable fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenImprovement);
 
@@ -398,11 +394,6 @@ extern const char kBackgroundRefreshIntervalInSeconds[];
 // max age in seconds. This value is compared against the age of the feed when
 // performing a background refresh. A zero value means the age check is ignored.
 extern const char kBackgroundRefreshMaxAgeInSeconds[];
-
-// Feature param under `kIOSHideFeedWithSearchChoice` to only target the
-// feature at certain countries (i.e. only hide the feed when the device is
-// from those countries when the search engine is changed).
-extern const char kIOSHideFeedWithSearchChoiceTargeted[];
 
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
@@ -465,10 +456,6 @@ double GetBackgroundRefreshIntervalInSeconds();
 // Returns the background refresh max age in seconds.
 double GetBackgroundRefreshMaxAgeInSeconds();
 
-// Returns whether the feed hide with search choice feature should be targeted
-// only at devices from certain countries.
-bool IsIOSHideFeedWithSearchChoiceTargeted();
-
 // Whether the feed is disabled.
 bool IsFeedAblationEnabled();
 
@@ -497,9 +484,6 @@ bool IsContentPushNotificationsProvisionalBypass();
 
 // Returns true when the IOSLargeFakebox feature is enabled.
 bool IsIOSLargeFakeboxEnabled();
-
-// Returns true when the IOSHideFeedWithSearchChoice feature is enabled.
-bool IsIOSHideFeedWithSearchChoiceEnabled();
 
 // Whether or not the kIOSKeyboardAccessoryUpgrade feature is enabled.
 bool IsKeyboardAccessoryUpgradeEnabled();

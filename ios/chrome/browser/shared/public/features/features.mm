@@ -378,10 +378,6 @@ BASE_FEATURE(kIOSLargeFakebox,
              "IOSLargeFakebox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSHideFeedWithSearchChoice,
-             "IOSHideFeedWithSearchChoice",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -434,8 +430,6 @@ const char kBackgroundRefreshIntervalInSeconds[] =
     "BackgroundRefreshIntervalInSeconds";
 const char kBackgroundRefreshMaxAgeInSeconds[] =
     "BackgroundRefreshMaxAgeInSeconds";
-const char kIOSHideFeedWithSearchChoiceTargeted[] =
-    "IOSHideFeedWithSearchChoiceTargeted";
 
 bool IsDockingPromoEnabled() {
   return base::FeatureList::IsEnabled(kIOSDockingPromo);
@@ -579,12 +573,6 @@ double GetBackgroundRefreshMaxAgeInSeconds() {
       /*default=*/0);
 }
 
-bool IsIOSHideFeedWithSearchChoiceTargeted() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kIOSHideFeedWithSearchChoice, kIOSHideFeedWithSearchChoiceTargeted,
-      /*default=*/true);
-}
-
 bool IsFeedAblationEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedAblation);
 }
@@ -638,10 +626,6 @@ bool IsContentPushNotificationsProvisionalBypass() {
 
 bool IsIOSLargeFakeboxEnabled() {
   return base::FeatureList::IsEnabled(kIOSLargeFakebox);
-}
-
-bool IsIOSHideFeedWithSearchChoiceEnabled() {
-  return base::FeatureList::IsEnabled(kIOSHideFeedWithSearchChoice);
 }
 
 bool IsKeyboardAccessoryUpgradeEnabled() {

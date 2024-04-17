@@ -234,41 +234,9 @@ TEST_F(NewTabPageMediatorTest, TestHandleFeedLearnMoreTapped) {
                                         1);
 }
 
-// Tests that the feed will be hidden when IOSHideFeedWithSearchChoice is
-// enabled and a non-Google search engine is chosen.
-TEST_F(NewTabPageMediatorTest, TestHideFeedWithSearchChoice) {
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {
-          {kIOSHideFeedWithSearchChoice,
-           {{kIOSHideFeedWithSearchChoiceTargeted, "false"}}},
-      },
-      {});
-
-  // Test it with the default search engine.
-  [mediator_ setUp];
-  EXPECT_TRUE(mediator_.feedHeaderVisible);
-
-  // Set up expectation for custom search engine.
-  id feed_control_delegate = OCMProtocolMock(@protocol(FeedControlDelegate));
-  OCMExpect([feed_control_delegate setFeedAndHeaderVisibility:NO]);
-  mediator_.feedControlDelegate = feed_control_delegate;
-
-  // Test setting a custom search engine.
-  SetCustomSearchEngine();
-  EXPECT_FALSE(mediator_.feedHeaderVisible);
-  EXPECT_OCMOCK_VERIFY(feed_control_delegate);
-}
-
-// Tests that the feed will be hidden when IOSHideFeedWithSearchChoice is
-// enabled and a non-Google search engine is chosen, but only in EEA countries.
+// Tests that the feed will be hidden when a non-Google search engine is chosen,
+// but only in EEA countries.
 TEST_F(NewTabPageMediatorTest, TestHideFeedWithSearchChoiceTargeted) {
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {
-          {kIOSHideFeedWithSearchChoice,
-           {{kIOSHideFeedWithSearchChoiceTargeted, "true"}}},
-      },
-      {});
-
   // Test it with the default search engine, with country set to France.
   OverrideSearchEngineChoiceCountry("FR");
   [mediator_ setUp];
