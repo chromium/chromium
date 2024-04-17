@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1231926): Implement support for update channels.
+// TODO(crbug.com/42050321): Implement support for update channels.
 
 #include "chrome/common/channel_info.h"
 
@@ -21,7 +21,7 @@ struct ChannelState {
 };
 
 // Determine the state of the browser based on branding and channel.
-// TODO(crbug.com/1253820): Update implementation when channel are implemented.
+// TODO(crbug.com/40199316): Update implementation when channel are implemented.
 ChannelState DetermineChannelState() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   NOTIMPLEMENTED_LOG_ONCE();

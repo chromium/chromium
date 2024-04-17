@@ -16,7 +16,7 @@ struct WebRtcLoggingMessage {
 interface WebRtcLoggingClient {
   // New log messages are sent in batches to limit the frequency of calls.
   //
-  // TODO(crbug.com/1142013): Investigate whether the [UnlimitedSize] tag can
+  // TODO(crbug.com/40727469): Investigate whether the [UnlimitedSize] tag can
   // be removed here by either chunking the messages into multiple calls or
   // using something like BigString for WebRtcLoggingMessage's data.
   [UnlimitedSize]

@@ -84,7 +84,7 @@ class SidePanelExtensionsTest : public testing::Test {
 // Error loading extension when filepath doesn't exist or is empty.
 TEST_F(SidePanelExtensionsTest, FileDoesntExist) {
   // This switch is required to make this test pass on official build bots.
-  // TODO(crbug.com/1413908): Remove once side panel is not experimental.
+  // TODO(crbug.com/40255871): Remove once side panel is not experimental.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       extensions::switches::kEnableExperimentalExtensionApis);
 

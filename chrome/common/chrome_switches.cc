@@ -35,7 +35,7 @@ const char kAllowCrossOriginAuthPrompt[] = "allow-cross-origin-auth-prompt";
 const char kAllowHttpScreenCapture[] = "allow-http-screen-capture";
 
 // Allows profiles to be created outside of the user data dir.
-// TODO(https://crbug.com/1060366): Various places in Chrome assume that all
+// TODO(crbug.com/40122009): Various places in Chrome assume that all
 // profiles are within the user data dir. Some tests need to violate that
 // assumption. The switch should be removed after this workaround is no longer
 // needed.
@@ -633,7 +633,7 @@ const char kUserDataDir[] = "user-data-dir";
 // Uses WinHttp to resolve proxies instead of using Chromium's normal proxy
 // resolution logic. This is only supported in Windows.
 //
-// TODO(https://crbug.com/1032820): Only use WinHttp whenever Chrome is
+// TODO(crbug.com/40111093): Only use WinHttp whenever Chrome is
 // exclusively using system proxy configs.
 const char kUseSystemProxyResolver[] = "use-system-proxy-resolver";
 
@@ -750,10 +750,10 @@ const char kHelpShort[] = "h";
 // Specifies which encryption storage backend to use. Possible values are
 // kwallet, kwallet5, kwallet6, gnome-libsecret, basic.
 // Any other value will lead to Chrome detecting the best backend automatically.
-// TODO(crbug.com/571003): Once PasswordStore no longer uses KWallet for storing
-// passwords, rename this flag to stop referencing passwords. Do not rename it
-// sooner, though; developers and testers might rely on it keeping large amounts
-// of testing passwords out of their KWallets.
+// TODO(crbug.com/40449930): Once PasswordStore no longer uses KWallet for
+// storing passwords, rename this flag to stop referencing passwords. Do not
+// rename it sooner, though; developers and testers might rely on it keeping
+// large amounts of testing passwords out of their KWallets.
 const char kPasswordStore[] = "password-store";
 
 // Enables the feature of allowing the user to disable the backend via a

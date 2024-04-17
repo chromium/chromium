@@ -109,7 +109,7 @@ bool FindChromeBundle(NSString* bundle_id, base::FilePath* out_bundle) {
     }
 
     // Otherwise, select a running bundle path arbitrarily.
-    // TODO(https://crbug.com/1278425): This choice should not be made
+    // TODO(crbug.com/40208159): This choice should not be made
     // arbitrarily.
     if (!running_bundle_paths.empty()) {
       *out_bundle = *running_bundle_paths.begin();

@@ -1506,7 +1506,7 @@ std::optional<std::string> X509CertificateModel::ProcessExtensionData(
       extension.oid == bssl::der::Input(kNetscapeLostPasswordURLOid)) {
     return ProcessIA5String(extension.value);
   }
-  // TODO(https://crbug.com/853550): SCT
+  // TODO(crbug.com/41395047): SCT
   // TODO(mattm): name constraints
   // TODO(mattm): policy mappings
   // TODO(mattm): policy constraints

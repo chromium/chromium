@@ -321,7 +321,7 @@ bool ThreadProfilerPlatformConfiguration::IsSupported(
 // `ThreadProfiler` is currently not supported on ARM64, even if
 // `base::StackSamplingProfiler` may support it.
 //
-// TODO(crbug.com/1392158): Remove this conditional.
+// TODO(crbug.com/40247701): Remove this conditional.
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
   return false;
 #else

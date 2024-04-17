@@ -986,7 +986,7 @@ TEST(PermissionsDataTest, ChromeWebstoreUrl) {
 
       // Unintuitively, the script blocking also applies to deeper subdomains
       // and other paths on chrome.google.com.
-      // TODO(crbug.com/1355623): We probably want to adjust the logic so these
+      // TODO(crbug.com/40235977): We probably want to adjust the logic so these
       // are not the case, but it's better to have the current behavior
       // explicitly documented in tests for now.
       GURL("https://foo.chrome.google.com/webstore"),
@@ -1599,7 +1599,7 @@ TEST_F(CaptureVisiblePageTest, URLsCapturableOnlyWithActiveTab) {
   }
 }
 
-// TODO(crbug.com/1041309): Add support for capturing chrome-untrusted://.
+// TODO(crbug.com/40667841): Add support for capturing chrome-untrusted://.
 TEST_F(CaptureVisiblePageTest, ChromeUntrustedSchemeNotCaptured) {
   const GURL chrome_untrusted_url(kChromeUntrustedURL);
 

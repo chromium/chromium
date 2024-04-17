@@ -102,7 +102,7 @@ COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kChangePictureVideoMode);
 
 // Enable the Certificate Management UI v2.
 //
-// TODO(crbug.com/1477317) Remove this flag when UI is complete.
+// TODO(crbug.com/40928765) Remove this flag when UI is complete.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableCertManagementUIV2);
 
@@ -943,7 +943,7 @@ BASE_DECLARE_FEATURE(kUserTypeByDeviceTypeMetricsProvider);
 #endif
 
 // Android expects this string from Java code, so it is always needed.
-// TODO(crbug.com/731802): Use #if BUILDFLAG(ENABLE_VR_BROWSING) instead.
+// TODO(crbug.com/41324480): Use #if BUILDFLAG(ENABLE_VR_BROWSING) instead.
 #if BUILDFLAG(ENABLE_VR) || BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kVrBrowsing);
 #endif

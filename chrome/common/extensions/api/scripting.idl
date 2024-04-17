@@ -187,7 +187,7 @@ namespace scripting {
     // and modify as a JS object. One instance exists per frame and is shared
     // between all content scripts for a given extension. This object is
     // initialized when the frame is created, before document_start.
-    // TODO(crbug.com/1054624): Enable this once implementation is complete.
+    // TODO(crbug.com/40119604): Enable this once implementation is complete.
     [nodoc, nocompile] static long globalParams();
   };
 

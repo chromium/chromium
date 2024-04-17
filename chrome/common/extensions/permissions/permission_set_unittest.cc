@@ -1673,7 +1673,7 @@ TEST(PermissionsTest, IsHostPrivilegeIncrease) {
        false,
        true},
       // Test expanding from any .com host to any host in any TLD.
-      // TODO(crbug.com/849906): Should this really be a permissions increase?
+      // TODO(crbug.com/40579475): Should this really be a permissions increase?
       {{{URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS, "*://*.com/*"}},
        {{URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS, "*://*/*"}},
        Manifest::TYPE_EXTENSION,

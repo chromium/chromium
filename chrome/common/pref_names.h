@@ -1481,7 +1481,7 @@ inline constexpr char kEnableReferrers[] = "enable_referrers";
 
 // Whether to allow the use of Encrypted Media Extensions (EME), except for the
 // use of Clear Key key sytems, which is always allowed as required by the spec.
-// TODO(crbug.com/784675): This pref was used as a WebPreference which is why
+// TODO(crbug.com/40549758): This pref was used as a WebPreference which is why
 // the string is prefixed with "webkit.webprefs". Now this is used in
 // blink::RendererPreferences and we should migrate the pref to use a new
 // non-webkit-prefixed string.
@@ -1740,7 +1740,7 @@ inline constexpr char kMigratedToSiteNotificationChannels[] =
 
 // Boolean pref indicating whether blocked site notification channels underwent
 // a one-time reset yet for https://crbug.com/835232.
-// TODO(https://crbug.com/837614): Remove this after a few releases (M69?).
+// TODO(crbug.com/40573963): Remove this after a few releases (M69?).
 inline constexpr char kClearedBlockedSiteNotificationChannels[] =
     "notifications.cleared_blocked_channels";
 
@@ -1796,7 +1796,7 @@ inline constexpr char kFirstRunFinished[] = "browser.first_run_finished";
 
 // String that refers to the study group in which this install was enrolled.
 // Used to implement the sticky experiment tracking.
-// TODO(crbug.com/1418017): Clean up experiment setup.
+// TODO(crbug.com/40257496): Clean up experiment setup.
 inline constexpr char kFirstRunStudyGroup[] = "browser.first_run_study_group";
 #endif
 
@@ -3592,7 +3592,7 @@ inline constexpr char kSitePerProcess[] = "site_isolation.site_per_process";
 
 #if !BUILDFLAG(IS_ANDROID)
 // Boolean to allow SharedArrayBuffer in non-crossOriginIsolated contexts.
-// TODO(crbug.com/1144104) Remove when migration to COOP+COEP is complete.
+// TODO(crbug.com/40155376) Remove when migration to COOP+COEP is complete.
 inline constexpr char kSharedArrayBufferUnrestrictedAccessAllowed[] =
     "profile.shared_array_buffer_unrestricted_access_allowed";
 

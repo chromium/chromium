@@ -33,7 +33,7 @@
     "contexts": ["privileged_extension"]
   },
   "action.openPopup": [{
-    // TODO(https://crbug.com/1245093): Upgrade to stable channel.
+    // TODO(crbug.com/40057101): Upgrade to stable channel.
     "channel": "dev"
   }, {
     "channel": "stable",

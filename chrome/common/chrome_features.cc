@@ -1425,7 +1425,7 @@ const base::FeatureParam<base::TimeDelta>
         &kTrustSafetySentimentSurveyV2, "min-session-time", base::Seconds(30)};
 // The feature area probabilities for each feature area considered as part of
 // the Trust & Safety sentiment survey.
-// TODO(crbug.com/1382134): Calculate initial probabilities and remove 0.0
+// TODO(crbug.com/40245476): Calculate initial probabilities and remove 0.0
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2BrowsingDataProbability{
         &kTrustSafetySentimentSurveyV2, "browsing-data-probability", 0.0};
@@ -1588,7 +1588,7 @@ BASE_FEATURE(kWebKioskEnableIwaApis,
 // Allow capturing of WebRTC event logs, and uploading of those logs to Crash.
 // Please note that a Chrome policy must also be set, for this to have effect.
 // Effectively, this is a kill-switch for the feature.
-// TODO(crbug.com/775415): Remove this kill-switch.
+// TODO(crbug.com/40545136): Remove this kill-switch.
 BASE_FEATURE(kWebRtcRemoteEventLog,
              "WebRtcRemoteEventLog",
              base::FEATURE_ENABLED_BY_DEFAULT);

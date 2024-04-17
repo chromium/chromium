@@ -314,7 +314,7 @@ namespace autotestPrivate {
     // Specifies the mode Lacros is currently running.
     // For a full list of supported mode, see LacrosMode enum definition.
     // DEPRECATED: please use isEnabled.
-    // TODO(crbug.com/1494005): Remove this field after tests are fixed.
+    // TODO(crbug.com/40286020): Remove this field after tests are fixed.
     LacrosMode mode;
     // True iff Lacros is enabled for the current user session's primary user.
     boolean isEnabled;

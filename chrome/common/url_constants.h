@@ -322,7 +322,7 @@ inline constexpr char kIpProtectionHelpCenterURL[] =
     "https://support.google.com/chrome?p=ip_protection";
 
 // The URL for "Learn more" page for Isolated Web Apps.
-// TODO(crbug.com/1480695): Update this URL with proper user-facing explainer.
+// TODO(crbug.com/40281470): Update this URL with proper user-facing explainer.
 inline constexpr char16_t kIsolatedWebAppsLearnMoreUrl[] =
     u"https://github.com/WICG/isolated-web-apps/blob/main/README.md";
 

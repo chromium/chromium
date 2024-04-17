@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1231928): Define user data directory paths within the
+// TODO(crbug.com/42050322): Define user data directory paths within the
 // Chrome component namespace, or update UX to remove these concepts where they
 // will not apply under Fuchsia.
 

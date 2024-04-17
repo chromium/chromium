@@ -75,7 +75,8 @@ struct ArchiveAnalyzerResults {
   int directory_count = 0;
   ArchiveAnalysisResult analysis_result = ArchiveAnalysisResult::kUnspecified;
 
-  // TODO(crbug/1466284): Populate this information for RAR archives as well.
+  // TODO(crbug.com/40923880): Populate this information for RAR archives as
+  // well.
   EncryptionInfo encryption_info;
 
   ArchiveAnalyzerResults();

@@ -411,7 +411,7 @@ namespace developerPrivate {
     // The site set that `site` belongs to.
     SiteSet siteSet;
     // The number of extensions with access to `site`.
-    // TODO(crbug.com/1331137): A tricky edge case is when one extension
+    // TODO(crbug.com/40227416): A tricky edge case is when one extension
     // specifies something like *.foo.com and another specifies foo.com.
     // Patterns which match all subdomains should be represented differently.
     long numExtensions;

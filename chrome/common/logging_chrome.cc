@@ -379,7 +379,7 @@ base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log) {
       !(target_path.IsAbsolute() &&
         base::StartsWith(target_path.value(), kChronosHomeDir));
 
-  // TODO(crbug.com/1326369): Remove the old symlink logic.
+  // TODO(crbug.com/40225776): Remove the old symlink logic.
   if (supports_symlinks) {
     // As for now, we keep the original log rotation logic on the file system
     // which supports symlinks.
