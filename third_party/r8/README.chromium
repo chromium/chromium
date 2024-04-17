@@ -121,3 +121,9 @@ How to submit CLs to R8:
 * Request to be added to their allowlist in order to upload CLs.
 * After CLs are submitted, check the bots for build breakage.
   * https://ci.chromium.org/p/r8/g/main_all/console
+
+How to check the size impact of recent R8 rolls:
+# To public APK:
+tools/binary_size/print_trybot_sizes.py --grep "Roll R8" -n 20
+# To internal APK:
+tools/binary_size/print_trybot_sizes.py --grep "Roll R8" -n 20 --internal
