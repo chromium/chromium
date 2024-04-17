@@ -20,7 +20,11 @@ function runTest() {
 
     const innerIFrame = outerIFrame.contentDocument.createElement("iframe");
 
-    window.onmessage = function() {
+    window.onmessage = function(event) {
+      if (event.data != "ready") {
+        return;
+      }
+
       // We receive an message when the innerIFrame is ready and its input is focused.
       // outerIframe is the ancestor of inner iframe, so the activeElement of
       // it should be the inner iframe.
