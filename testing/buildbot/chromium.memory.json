@@ -10954,9 +10954,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -11242,9 +11242,9 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.content_browsertests.filter"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -12305,9 +12305,9 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.unit_tests.filter"
+          "--recover-devices"
         ],
         "merge": {
           "args": [

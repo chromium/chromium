@@ -99,9 +99,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1045,9 +1045,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2132,9 +2132,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2456,9 +2456,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3337,9 +3337,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4193,9 +4193,9 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a13.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a13.gl_tests.filter"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4224,9 +4224,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4731,9 +4731,9 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a23.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a23.gl_tests.filter"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4762,9 +4762,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5299,9 +5299,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

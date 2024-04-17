@@ -38,9 +38,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -112,9 +112,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1092,9 +1092,9 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1697,9 +1697,9 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests.filter"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1732,9 +1732,9 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -2694,9 +2694,9 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--use-persistent-shell"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -2799,9 +2799,9 @@
     "gtest_tests": [
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -2846,9 +2846,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -2893,9 +2893,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -2940,9 +2940,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -2987,9 +2987,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -3034,10 +3034,10 @@
       },
       {
         "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
-          "--emulator-enable-network"
+          "--emulator-enable-network",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -3084,9 +3084,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -3131,9 +3131,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -3178,9 +3178,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -3225,9 +3225,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -3273,9 +3273,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
         "isolate_profile_data": true,
@@ -3328,9 +3328,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3375,9 +3375,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -3425,9 +3425,9 @@
         "args": [
           "--test-launcher-batch-limit=1",
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -3474,9 +3474,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3562,9 +3562,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3609,9 +3609,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3656,9 +3656,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3703,10 +3703,10 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3756,9 +3756,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3803,9 +3803,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3851,9 +3851,9 @@
         "args": [
           "--gtest_filter=-*UsingRealWebcam*",
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3898,9 +3898,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3945,9 +3945,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3992,10 +3992,10 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4045,9 +4045,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4092,11 +4092,11 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--git-revision=${got_revision}",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4147,11 +4147,11 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--git-revision=${got_revision}",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4202,9 +4202,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4250,9 +4250,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4298,10 +4298,10 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4348,10 +4348,10 @@
         "args": [
           "--gtest_filter=QuicConnectionMigrationTest.*",
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--emulator-enable-network"
+          "--emulator-enable-network",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4397,9 +4397,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4445,9 +4445,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4493,9 +4493,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4540,9 +4540,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4587,9 +4587,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4634,9 +4634,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4681,9 +4681,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -4729,9 +4729,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4776,9 +4776,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4823,9 +4823,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4870,9 +4870,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4918,10 +4918,10 @@
         "args": [
           "--use-cmd-decoder=validating",
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4966,9 +4966,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5013,9 +5013,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5060,9 +5060,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5107,9 +5107,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5154,9 +5154,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5201,9 +5201,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5248,9 +5248,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -5296,9 +5296,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5343,9 +5343,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5390,9 +5390,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5437,9 +5437,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5484,9 +5484,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5531,9 +5531,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5578,9 +5578,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5625,9 +5625,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5672,9 +5672,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5720,10 +5720,10 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--gtest_filter=-ScopedDirTest.CloseOutOfScope"
+          "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5768,9 +5768,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5815,10 +5815,10 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.services_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.services_unittests.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5864,9 +5864,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5911,9 +5911,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5958,9 +5958,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6005,9 +6005,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6052,9 +6052,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6099,9 +6099,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6146,9 +6146,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6193,9 +6193,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6240,9 +6240,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6288,9 +6288,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6335,9 +6335,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6382,9 +6382,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6430,9 +6430,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6485,10 +6485,10 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--use-persistent-shell"
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6534,9 +6534,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6581,9 +6581,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -6628,9 +6628,9 @@
       {
         "args": [
           "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--recover-devices"
         ],
         "isolate_profile_data": true,
         "merge": {

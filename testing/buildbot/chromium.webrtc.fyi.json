@@ -16,9 +16,9 @@
       {
         "args": [
           "--gtest_filter=WebRtc*",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -77,9 +77,9 @@
       {
         "args": [
           "--gtest_filter=WebRtc*",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter"
+          "--recover-devices"
         ],
         "merge": {
           "args": [

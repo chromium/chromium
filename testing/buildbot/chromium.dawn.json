@@ -45,12 +45,12 @@
       {
         "args": [
           "--enable-implicit-device-sync",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "ci_only": true,
         "merge": {
@@ -85,12 +85,12 @@
       },
       {
         "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -325,12 +325,12 @@
       {
         "args": [
           "--enable-implicit-device-sync",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "ci_only": true,
         "merge": {
@@ -365,12 +365,12 @@
       },
       {
         "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -566,12 +566,12 @@
       {
         "args": [
           "--enable-implicit-device-sync",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "ci_only": true,
         "merge": {
@@ -606,12 +606,12 @@
       },
       {
         "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -805,12 +805,12 @@
       {
         "args": [
           "--enable-implicit-device-sync",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "ci_only": true,
         "merge": {
@@ -846,12 +846,12 @@
       },
       {
         "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -1089,12 +1089,12 @@
       {
         "args": [
           "--enable-implicit-device-sync",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "ci_only": true,
         "merge": {
@@ -1129,12 +1129,12 @@
       },
       {
         "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--test-launcher-batch-limit=512"
+          "--test-launcher-batch-limit=512",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
         ],
         "merge": {
           "args": [

@@ -724,11 +724,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         }
 
   def add_android_presentation_args(self, tester_config, result):
-    args = result.get('args', [])
     bucket = tester_config.get('results_bucket', 'chromium-result-details')
-    args.append('--gs-results-bucket=%s' % bucket)
-    if (result['swarming']['can_use_on_swarming_builders'] and not
-        tester_config.get('skip_merge_script', False)):
+    result.setdefault('args', []).append('--gs-results-bucket=%s' % bucket)
+
+    if ('swarming' in result and 'merge' not in 'result'
+        and not tester_config.get('skip_merge_script', False)):
       result['merge'] = {
           'args': [
               '--bucket',
@@ -739,8 +739,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           'script': ('//build/android/pylib/results/presentation/'
                      'test_results_presentation.py'),
       }
-    if args:
-      result['args'] = args
 
   def generate_gtest(self, waterfall, tester_name, tester_config, test_name,
                      test_config):
@@ -754,16 +752,14 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
     self.initialize_args_for_test(
         result, tester_config, additional_arg_keys=['gtest_args'])
-    if self.is_android(tester_config) and tester_config.get(
-        'use_swarming', True):
-      if not test_config.get('use_isolated_scripts_api', False):
+    result = self.update_and_cleanup_test(result, test_name, tester_name,
+                                          tester_config, waterfall)
+    if self.is_android(tester_config) and 'swarming' in result:
+      if not result.get('use_isolated_scripts_api', False):
         # TODO(https://crbug.com/1137998) make Android presentation work with
         # isolated scripts in test_results_presentation.py merge script
         self.add_android_presentation_args(tester_config, result)
         result['args'] = result.get('args', []) + ['--recover-devices']
-
-    result = self.update_and_cleanup_test(
-        result, test_name, tester_name, tester_config, waterfall)
     self.add_common_test_properties(result, tester_config)
     self.substitute_magic_args(result, tester_name, tester_config)
 
@@ -788,14 +784,13 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result.setdefault('test', test_name)
     self.initialize_swarming_dictionary_for_test(result, tester_config)
     self.initialize_args_for_test(result, tester_config)
-    if self.is_android(tester_config) and tester_config.get(
-        'use_swarming', True):
+    result = self.update_and_cleanup_test(result, test_name, tester_name,
+                                          tester_config, waterfall)
+    if self.is_android(tester_config) and 'swarming' in result:
       if tester_config.get('use_android_presentation', False):
         # TODO(https://crbug.com/1137998) make Android presentation work with
         # isolated scripts in test_results_presentation.py merge script
         self.add_android_presentation_args(tester_config, result)
-    result = self.update_and_cleanup_test(
-        result, test_name, tester_name, tester_config, waterfall)
     self.add_common_test_properties(result, tester_config)
     self.substitute_magic_args(result, tester_name, tester_config)
 
