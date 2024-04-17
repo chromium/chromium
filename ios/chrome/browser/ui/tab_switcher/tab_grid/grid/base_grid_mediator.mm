@@ -119,23 +119,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   return nullptr;
 }
 
-// Returns the Browser with `group` in its WebStateList. Returns `nullptr`
-// if not found.
-Browser* GetBrowserForGroup(BrowserList* browser_list,
-                            const TabGroup* group,
-                            bool is_otr_tab) {
-  std::set<Browser*> browsers = is_otr_tab
-                                    ? browser_list->AllIncognitoBrowsers()
-                                    : browser_list->AllRegularBrowsers();
-  for (Browser* browser : browsers) {
-    WebStateList* web_state_list = browser->GetWebStateList();
-    if (web_state_list->ContainsGroup(group)) {
-      return browser;
-    }
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 @interface BaseGridMediator () <CRWWebStateObserver, SnapshotStorageObserver>

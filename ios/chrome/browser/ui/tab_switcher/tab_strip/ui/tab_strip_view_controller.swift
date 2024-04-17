@@ -70,10 +70,10 @@ class TabStripViewController: UIViewController,
 
   /// Handles model updates.
   public weak var mutator: TabStripMutator?
-  /// Tab strip delegate.
-  public weak var delegate: TabStripViewControllerDelegate?
   /// Handles drag and drop interactions.
   public weak var dragDropHandler: TabCollectionDragDropHandler?
+  /// Provides context menu for tab strip items.
+  public weak var contextMenuProvider: TabStripContextMenuProvider?
 
   /// The LayoutGuideCenter.
   @objc public var layoutGuideCenter: LayoutGuideCenter? {
@@ -576,103 +576,6 @@ class TabStripViewController: UIViewController,
     }
   }
 
-  /// Returns a UIMenu for the context menu to be displayed at `indexPath`.
-  private func contextMenuForIndexPath(_ indexPath: IndexPath) -> UIMenu {
-    let selectedItem = dataSource.itemIdentifier(for: indexPath)
-    switch selectedItem?.item {
-    case .tab(let tabSwitcherItem):
-      return contextMenuForTabSwitcherItem(tabSwitcherItem, at: indexPath)
-    case .group(let tabGroupItem):
-      return contextMenuForTabGroupItem(tabGroupItem, at: indexPath)
-    case nil:
-      return UIMenu()
-    }
-
-  }
-
-  /// Returns a UIMenu for the context menu to be displayed at `indexPath` for a tab item.
-  private func contextMenuForTabSwitcherItem(
-    _ tabSwitcherItem: TabSwitcherItem, at indexPath: IndexPath
-  )
-    -> UIMenu
-  {
-    let selectedItem = tabSwitcherItem
-    let actionFactory = ActionFactory(scenario: kMenuScenarioHistogramTabStripEntry)
-    var menuElements: [UIMenuElement?] = []
-    weak var weakSelf = self
-
-    /// Action to add tab to new group.
-    if TabStripFeaturesUtils.isModernTabStripWithTabGroups() {
-      let addToNewGroup = actionFactory?.actionToAddTabsToNewGroup(
-        withTabsNumber: 1, inSubmenu: false
-      ) {
-        weakSelf?.mutator?.createNewGroup(with: tabSwitcherItem)
-      }
-      menuElements.append(addToNewGroup)
-    }
-
-    /// Action to share tab.
-    let share = actionFactory?.actionToShare {
-      let cell = weakSelf?.collectionView.cellForItem(at: indexPath)
-      weakSelf?.delegate?.tabStrip(weakSelf, shareItem: selectedItem, originView: cell)
-    }
-    menuElements.append(share)
-
-    /// Actions to close this tab or other tabs.
-    var closeMenuElements: [UIMenuElement?] = []
-    let close = actionFactory?.actionToCloseRegularTab {
-      weakSelf?.mutator?.close(selectedItem)
-    }
-    closeMenuElements.append(close)
-    let closeOthers = actionFactory?.actionToCloseAllOtherTabs {
-      weakSelf?.mutator?.closeAllItemsExcept(selectedItem)
-    }
-    closeMenuElements.append(closeOthers)
-    let closeMenu = UIMenu(options: .displayInline, children: closeMenuElements.compactMap { $0 })
-    menuElements.append(closeMenu)
-
-    return UIMenu(children: menuElements.compactMap { $0 })
-  }
-
-  /// Returns a UIMenu for the context menu to be displayed at `indexPath` for a group item.
-  private func contextMenuForTabGroupItem(_ tabGroupItem: TabGroupItem, at indexPath: IndexPath)
-    -> UIMenu
-  {
-    let actionFactory = ActionFactory(scenario: kMenuScenarioHistogramTabStripEntry)
-    weak var weakSelf = self
-    var menuElements: [UIMenuElement?] = []
-
-    /// Add edit group menu.
-    var editGroupMenuElements: [UIMenuElement?] = []
-    let renameGroup = actionFactory?.actionToRenameTabGroup {
-      weakSelf?.mutator?.renameGroup(tabGroupItem)
-    }
-    editGroupMenuElements.append(renameGroup)
-    let addNewTabToGroup = actionFactory?.actionToAddNewTabInGroup {
-      weakSelf?.mutator?.addNewTabInGroup(tabGroupItem)
-    }
-    editGroupMenuElements.append(addNewTabToGroup)
-    let ungroupGroup = actionFactory?.actionToUngroupTabGroup {
-      weakSelf?.mutator?.ungroupGroup(tabGroupItem)
-    }
-    editGroupMenuElements.append(ungroupGroup)
-    let editGroupMenu = UIMenu(
-      options: .displayInline, children: editGroupMenuElements.compactMap { $0 })
-    menuElements.append(editGroupMenu)
-
-    /// Close group menu.
-    var closeGroupMenuElements: [UIMenuElement?] = []
-    let closeGroup = actionFactory?.actionToDeleteTabGroup {
-      weakSelf?.mutator?.deleteGroup(tabGroupItem)
-    }
-    closeGroupMenuElements.append(closeGroup)
-    let closeGroupMenu = UIMenu(
-      options: .displayInline, children: closeGroupMenuElements.compactMap { $0 })
-    menuElements.append(closeGroupMenu)
-
-    return UIMenu(children: menuElements.compactMap { $0 })
-  }
-
   // Update visible cells identifier, following a reorg of cells.
   func updateVisibleCellIdentifiers() {
     for indexPath in collectionView.indexPathsForVisibleItems {
@@ -859,14 +762,20 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     _ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
     point: CGPoint
   ) -> UIContextMenuConfiguration? {
-    if indexPaths.count != 1 {
+    guard let indexPath = indexPaths.first,
+      let itemIdentifier = dataSource.itemIdentifier(for: indexPath),
+      let cell = collectionView.cellForItem(at: indexPath)
+    else {
       return nil
     }
-
-    weak var weakSelf = self
-    return UIContextMenuConfiguration(actionProvider: { suggestedActions in
-      return weakSelf?.contextMenuForIndexPath(indexPaths[0])
-    })
+    switch itemIdentifier.item {
+    case .tab(let tabSwitcherItem):
+      return contextMenuProvider?.contextMenuConfiguration(
+        for: tabSwitcherItem, originView: cell, menuScenario: kMenuScenarioHistogramTabStripEntry)
+    case .group(let tabGroupItem):
+      return contextMenuProvider?.contextMenuConfiguration(
+        for: tabGroupItem, originView: cell, menuScenario: kMenuScenarioHistogramTabStripEntry)
+    }
   }
 
   func collectionView(

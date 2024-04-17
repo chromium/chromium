@@ -24679,6 +24679,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabStripAddItemToGroup">
+  <owner>qpubert@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User opened the context menu for a tab cell in the tab strip and tapped an
+    existing group in the &quot;Add Tab to Group&quot; menu, to move this tab to
+    an existing group (iPad only).
+  </description>
+</action>
+
 <action name="MobileTabStripCloseTab">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>

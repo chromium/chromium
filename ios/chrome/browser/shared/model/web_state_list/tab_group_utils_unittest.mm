@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -173,8 +174,13 @@ TEST_F(GroupUtilsTest, AllGroupsSingleWindow) {
       u"Third title", tab_groups::TabGroupColorId::kCyan);
   incognito_web_state_list_->CreateGroup({3}, visual_data3);
 
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state_.get());
+  const bool incognito = browser_state_->IsOffTheRecord();
   std::set<const TabGroup*> groups =
-      GetAllGroupsForBrowserState(browser_state_.get());
+      GetAllGroupsForBrowserList(browser_list, incognito);
+  EXPECT_EQ(groups, GetAllGroupsForBrowserState(browser_state_.get()));
+
   std::vector<tab_groups::TabGroupVisualData> visual_data;
   for (const TabGroup* group : groups) {
     visual_data.push_back(group->visual_data());
@@ -186,8 +192,13 @@ TEST_F(GroupUtilsTest, AllGroupsSingleWindow) {
   EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data2) !=
               visual_data.end());
 
-  std::set<const TabGroup*> incognito_groups = GetAllGroupsForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState());
+  ChromeBrowserState* otr_browser_state =
+      browser_state_->GetOffTheRecordChromeBrowserState();
+  BrowserList* incognito_browser_list =
+      BrowserListFactory::GetForBrowserState(otr_browser_state);
+  std::set<const TabGroup*> incognito_groups =
+      GetAllGroupsForBrowserList(incognito_browser_list, true);
+  EXPECT_EQ(incognito_groups, GetAllGroupsForBrowserState(otr_browser_state));
 
   EXPECT_EQ(1u, incognito_groups.size());
   for (const TabGroup* group : incognito_groups) {
@@ -220,8 +231,12 @@ TEST_F(GroupUtilsTest, AllGroupsMultipleWindows) {
       u"Fifth title", tab_groups::TabGroupColorId::kYellow);
   other_web_state_list_->CreateGroup({0}, visual_data5);
 
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state_.get());
+  const bool incognito = browser_state_->IsOffTheRecord();
   std::set<const TabGroup*> groups =
-      GetAllGroupsForBrowserState(browser_state_.get());
+      GetAllGroupsForBrowserList(browser_list, incognito);
+  EXPECT_EQ(groups, GetAllGroupsForBrowserState(browser_state_.get()));
   std::vector<tab_groups::TabGroupVisualData> visual_data;
   for (const TabGroup* group : groups) {
     visual_data.push_back(group->visual_data());
@@ -237,8 +252,13 @@ TEST_F(GroupUtilsTest, AllGroupsMultipleWindows) {
   EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data5) !=
               visual_data.end());
 
-  std::set<const TabGroup*> incognito_groups = GetAllGroupsForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState());
+  ChromeBrowserState* otr_browser_state =
+      browser_state_->GetOffTheRecordChromeBrowserState();
+  BrowserList* incognito_browser_list =
+      BrowserListFactory::GetForBrowserState(otr_browser_state);
+  std::set<const TabGroup*> incognito_groups =
+      GetAllGroupsForBrowserList(incognito_browser_list, true);
+  EXPECT_EQ(incognito_groups, GetAllGroupsForBrowserState(otr_browser_state));
 
   EXPECT_EQ(1u, incognito_groups.size());
   for (const TabGroup* group : incognito_groups) {
@@ -317,4 +337,89 @@ TEST_F(GroupUtilsTest, MoveToGroupMultipleWindow) {
   EXPECT_EQ(3, other_web_state_list_->count());
   EXPECT_EQ(destination_group,
             other_web_state_list_->GetGroupOfWebStateAt(index_in_other_list));
+}
+
+// Tests finding the Browser with a group in its WebStateList, with a single
+// window.
+TEST_F(GroupUtilsTest, GetBrowserForGroupSingleWindow) {
+  AddDefaultWebStates();
+
+  tab_groups::TabGroupVisualData visual_data1(
+      u"First title", tab_groups::TabGroupColorId::kGreen);
+  const TabGroup* group1 = web_state_list_->CreateGroup({0}, visual_data1);
+
+  tab_groups::TabGroupVisualData visual_data2(
+      u"Second title", tab_groups::TabGroupColorId::kPink);
+  const TabGroup* group2 = web_state_list_->CreateGroup({1}, visual_data2);
+
+  tab_groups::TabGroupVisualData visual_data3(
+      u"Third title", tab_groups::TabGroupColorId::kCyan);
+  const TabGroup* incognito_group3 =
+      incognito_web_state_list_->CreateGroup({3}, visual_data3);
+
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state_.get());
+
+  // Looking in the correct location should return the expected browser.
+  EXPECT_EQ(browser_.get(), GetBrowserForGroup(browser_list, group1, false));
+  EXPECT_EQ(browser_.get(), GetBrowserForGroup(browser_list, group2, false));
+  EXPECT_EQ(incognito_browser_.get(),
+            GetBrowserForGroup(browser_list, incognito_group3, true));
+
+  // Looking in the wrong location e.g. Incognito group inside regular browsers
+  // should return `nullptr`.
+  EXPECT_EQ(nullptr, GetBrowserForGroup(browser_list, group1, true));
+  EXPECT_EQ(nullptr, GetBrowserForGroup(browser_list, group2, true));
+  EXPECT_EQ(nullptr, GetBrowserForGroup(browser_list, incognito_group3, false));
+}
+
+// Tests finding the Browser with a group in its WebStateList, with a multiple
+// windows.
+TEST_F(GroupUtilsTest, GetBrowserForGroupMultipleWindows) {
+  AddOtherBrowsers();
+  AddDefaultWebStates();
+
+  tab_groups::TabGroupVisualData visual_data1(
+      u"First title", tab_groups::TabGroupColorId::kGreen);
+  const TabGroup* group1 = web_state_list_->CreateGroup({0}, visual_data1);
+
+  tab_groups::TabGroupVisualData visual_data2(
+      u"Second title", tab_groups::TabGroupColorId::kPink);
+  const TabGroup* group2 = web_state_list_->CreateGroup({1}, visual_data2);
+
+  tab_groups::TabGroupVisualData visual_data3(
+      u"Third title", tab_groups::TabGroupColorId::kCyan);
+  const TabGroup* incognito_group3 =
+      incognito_web_state_list_->CreateGroup({3}, visual_data3);
+
+  tab_groups::TabGroupVisualData visual_data4(
+      u"Fourth title", tab_groups::TabGroupColorId::kPurple);
+  const TabGroup* other_group4 =
+      other_web_state_list_->CreateGroup({1}, visual_data4);
+
+  tab_groups::TabGroupVisualData visual_data5(
+      u"Fifth title", tab_groups::TabGroupColorId::kYellow);
+  const TabGroup* other_group5 =
+      other_web_state_list_->CreateGroup({0}, visual_data5);
+
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state_.get());
+
+  // Looking in the correct location should return the expected browser.
+  EXPECT_EQ(browser_.get(), GetBrowserForGroup(browser_list, group1, false));
+  EXPECT_EQ(browser_.get(), GetBrowserForGroup(browser_list, group2, false));
+  EXPECT_EQ(incognito_browser_.get(),
+            GetBrowserForGroup(browser_list, incognito_group3, true));
+  EXPECT_EQ(other_browser_.get(),
+            GetBrowserForGroup(browser_list, other_group4, false));
+  EXPECT_EQ(other_browser_.get(),
+            GetBrowserForGroup(browser_list, other_group5, false));
+
+  // Looking in the wrong location e.g. Incognito group inside regular browsers
+  // should return `nullptr`.
+  EXPECT_EQ(nullptr, GetBrowserForGroup(browser_list, group1, true));
+  EXPECT_EQ(nullptr, GetBrowserForGroup(browser_list, group2, true));
+  EXPECT_EQ(nullptr, GetBrowserForGroup(browser_list, incognito_group3, false));
+  EXPECT_EQ(nullptr, GetBrowserForGroup(browser_list, other_group4, true));
+  EXPECT_EQ(nullptr, GetBrowserForGroup(browser_list, other_group5, true));
 }

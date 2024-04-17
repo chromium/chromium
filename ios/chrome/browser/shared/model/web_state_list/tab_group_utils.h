@@ -7,12 +7,19 @@
 
 #import <set>
 
+class Browser;
+class BrowserList;
 class ChromeBrowserState;
 class TabGroup;
 
 namespace web {
 class WebStateID;
 }
+
+// Returns all the TabGroups on all windows for the chosen mode (`incognito`).
+std::set<const TabGroup*> GetAllGroupsForBrowserList(BrowserList* browser_list,
+                                                     bool incognito);
+
 // Returns all the TabGroups on all windows for the chosen mode (`incognito`).
 std::set<const TabGroup*> GetAllGroupsForBrowserState(
     ChromeBrowserState* browser_state);
@@ -22,5 +29,12 @@ std::set<const TabGroup*> GetAllGroupsForBrowserState(
 void MoveTabToGroup(web::WebStateID web_state_identifier,
                     const TabGroup* destination_group,
                     ChromeBrowserState* browser_state);
+
+// Returns the Browser with `group` in its WebStateList. If `is_otr_group` is
+// `true` then this will look for `group` inside Incognito browsers - otherwise
+// it will look inside regular browsers. Returns `nullptr` if not found.
+Browser* GetBrowserForGroup(BrowserList* browser_list,
+                            const TabGroup* group,
+                            bool is_otr_group);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TAB_GROUP_UTILS_H_

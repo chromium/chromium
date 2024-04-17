@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -198,6 +199,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // FaviconObserver for each all webstates.
   std::unique_ptr<WebStateListFaviconDriverObserver>
       _webStateListFaviconObserver;
+  // Browser list.
+  BrowserList* _browserList;
 
   // ItemID of the dragged tab. Used to check if the dropped tab is from the
   // same Chrome window.
@@ -211,8 +214,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
 @implementation TabStripMediator
 
-- (instancetype)initWithConsumer:(id<TabStripConsumer>)consumer {
+- (instancetype)initWithConsumer:(id<TabStripConsumer>)consumer
+                     browserList:(BrowserList*)browserList {
   if (self = [super init]) {
+    CHECK(browserList);
+    _browserList = browserList;
     _consumer = consumer;
   }
   return self;
@@ -227,6 +233,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     _webStateList = nullptr;
   }
   _tabStripHandler = nil;
+  _browserList = nullptr;
 }
 
 #pragma mark - Public properties
@@ -605,6 +612,30 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   base::RecordAction(
       base::UserMetricsAction("MobileTabStripCreateGroupWithItem"));
   [_tabStripHandler showTabStripGroupCreationForTabs:{item.identifier}];
+}
+
+- (void)addItem:(TabSwitcherItem*)item
+        toGroup:(const TabGroup*)destinationGroup {
+  if (!self.webStateList || !self.browserState) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileTabStripAddItemToGroup"));
+
+  const bool incognito = self.browserState->IsOffTheRecord();
+  Browser* browserOfGroup =
+      GetBrowserForGroup(_browserList, destinationGroup, incognito);
+
+  if (self.browser == browserOfGroup) {
+    int indexOfWebState =
+        GetWebStateIndex(self.webStateList,
+                         WebStateSearchCriteria{.identifier = item.identifier});
+    self.webStateList->MoveToGroup({indexOfWebState}, destinationGroup);
+    return;
+  }
+
+  MoveTabToBrowser(
+      item.identifier, browserOfGroup,
+      WebStateList::InsertionParams::Automatic().InGroup(destinationGroup));
 }
 
 - (void)renameGroup:(TabGroupItem*)tabGroupItem {

@@ -14,6 +14,7 @@
 @protocol TabStripConsumer;
 
 class Browser;
+class BrowserList;
 class ChromeBrowserState;
 class WebStateList;
 
@@ -36,6 +37,7 @@ class WebStateList;
 
 // Designated initializer. Initializer with a TabStripConsumer.
 - (instancetype)initWithConsumer:(id<TabStripConsumer>)consumer
+                     browserList:(BrowserList*)browserList
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

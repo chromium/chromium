@@ -10,6 +10,7 @@
 #import <set>
 
 class TabGroup;
+@class TabSwitcherItem;
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -29,6 +30,10 @@ class WebStateID;
 
 // Hides the tab group creation view.
 - (void)hideTabStripGroupCreation;
+
+// Shares `tabSwitcherItem`.
+- (void)shareItem:(TabSwitcherItem*)tabSwitcherItem
+       originView:(UIView*)originView;
 
 @end
 

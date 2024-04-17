@@ -15,7 +15,6 @@ swift_source_set("swift") {
     "tab_strip_new_tab_button.swift",
     "tab_strip_new_tab_button_delegate.swift",
     "tab_strip_view_controller.swift",
-    "tab_strip_view_controller_delegate.swift",
   ]
   deps = [
     ":swift_constants",
@@ -31,6 +30,7 @@ swift_source_set("swift") {
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui/context_menu",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ui/base",

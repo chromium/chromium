@@ -13,6 +13,8 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -58,6 +60,10 @@
 }
 
 - (void)hideTabStripGroupCreation {
+}
+
+- (void)shareItem:(TabSwitcherItem*)tabSwitcherItem
+       originView:(UIView*)originView {
 }
 
 @end
@@ -265,7 +271,11 @@ class TabStripMediatorTest : public PlatformTest {
   ~TabStripMediatorTest() override { [mediator_ disconnect]; }
 
   void InitializeMediator() {
-    mediator_ = [[TabStripMediator alloc] initWithConsumer:consumer_];
+    BrowserList* browserList =
+        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browserList->AddBrowser(browser_.get());
+    mediator_ = [[TabStripMediator alloc] initWithConsumer:consumer_
+                                               browserList:browserList];
     mediator_.browserState = browser_state_.get();
     mediator_.webStateList = web_state_list_;
     mediator_.browser = browser_.get();
@@ -1116,4 +1126,28 @@ TEST_F(TabStripMediatorTest, DeleteGroup) {
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_->active_index());
   EXPECT_EQ(0, web_state_list_->count());
   EXPECT_FALSE(web_state_list_->ContainsGroup(group));
+}
+
+// Tests that adding a tab to a group works.
+TEST_F(TabStripMediatorTest, AddTabToGroup) {
+  AddWebState();
+  AddWebState();
+  const TabGroup* group = web_state_list_->CreateGroup({0}, {});
+
+  InitializeMediator();
+
+  ASSERT_EQ(1, web_state_list_->active_index());
+  ASSERT_EQ(2, web_state_list_->count());
+  ASSERT_TRUE(web_state_list_->ContainsGroup(group));
+  EXPECT_EQ(nullptr, web_state_list_->GetGroupOfWebStateAt(1));
+  EXPECT_EQ(1, group->range().count());
+
+  web::WebState* web_state_1 = web_state_list_->GetWebStateAt(1);
+  TabSwitcherItem* item_for_web_state_1 =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_1];
+  [mediator_ addItem:item_for_web_state_1 toGroup:group];
+
+  // Check model is updated.
+  EXPECT_EQ(group, web_state_list_->GetGroupOfWebStateAt(1));
+  EXPECT_EQ(2, group->range().count());
 }
