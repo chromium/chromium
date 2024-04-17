@@ -1311,6 +1311,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/androidx:androidx_appcompat_appcompat_java",
       "//third_party/androidx:androidx_browser_browser_java",
       "//third_party/androidx:androidx_collection_collection_java",
+      "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
       "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
       "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
       "//third_party/androidx:androidx_mediarouter_mediarouter_java",

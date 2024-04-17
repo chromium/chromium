@@ -105,6 +105,12 @@ found in the LICENSE file.
     <dimen name="tab_group_color_icon_item_size">16dp</dimen>
     <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
 
+    <!-- Dimens for TabGroupSync features -->
+    <dimen name="tab_group_start_icon_size">34dp</dimen>
+    <dimen name="tab_group_favicon_image_size">16dp</dimen>
+    <dimen name="tab_group_quarter_inner_radius">4dp</dimen>
+    <dimen name="tab_group_quarter_outer_radius">12dp</dimen>
+
     <!-- Dimens for DataSharing within TabGridDialog -->
     <!-- TODO(b/325082444): This dimension should be removed and set by PeopleKit UI. -->
     <dimen name="share_share_sheet_height">300dp</dimen>

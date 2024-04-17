@@ -6,9 +6,7 @@ found in the LICENSE file.
 -->
 <org.chromium.components.browser_ui.widget.SurfaceColorDrawable xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
   android:shape="rectangle"
-  app:surfaceElevation="@dimen/default_elevation_2"
-  tools:ignore="UnusedResources">
-  <corners android:radius="16dp" />
+  app:surfaceElevation="@dimen/default_elevation_1">
+  <corners android:radius="@dimen/tab_group_quarter_inner_radius"/>
 </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>

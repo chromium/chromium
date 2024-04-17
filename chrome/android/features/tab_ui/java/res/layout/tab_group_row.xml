@@ -7,19 +7,25 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
-  tools:ignore="UnusedResources"
   android:layout_width="match_parent"
   android:layout_height="96dp"
   android:orientation="horizontal"
   android:paddingHorizontal="16dp"
-  android:paddingVertical="8dp">
+  android:paddingVertical="8dp"
+  tools:ignore="UnusedResources">
 
-  <ImageView
-    android:id="@+id/tab_group_start_image"
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/tab_group_start_icon"
     android:layout_width="80dp"
     android:layout_height="80dp"
     android:background="@drawable/tab_group_start_icon_bg"
-    android:importantForAccessibility="no" />
+    android:importantForAccessibility="no">
+    <!-- Code will later adjust these to each occupy different corners. -->
+    <include layout="@layout/tab_group_favicon_quarter" />
+    <include layout="@layout/tab_group_favicon_quarter" />
+    <include layout="@layout/tab_group_favicon_quarter" />
+    <include layout="@layout/tab_group_favicon_quarter" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
   <Space
     android:layout_width="24dp"

@@ -10,7 +10,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,7 +26,7 @@ import java.time.Clock;
 
 /** Displays a horizontal row for a single tab group. */
 public class TabGroupRowView extends LinearLayout {
-    private ImageView mStartImage;
+    private ViewGroup mTabGroupStartIconParent;
     private View mColorView;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
@@ -41,20 +41,21 @@ public class TabGroupRowView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mStartImage = findViewById(R.id.tab_group_start_image);
+        mTabGroupStartIconParent = findViewById(R.id.tab_group_start_icon);
         mColorView = findViewById(R.id.tab_group_color);
         mTitleTextView = findViewById(R.id.tab_group_title);
         mSubtitleTextView = findViewById(R.id.tab_group_subtitle);
         mListMenuButton = findViewById(R.id.more);
         mTimeAgoResolver = new TabGroupTimeAgoResolver(getResources(), Clock.systemUTC());
+
+        for (int corner = Corner.TOP_LEFT; corner <= Corner.BOTTOM_LEFT; corner++) {
+            TabGroupFaviconQuarter quarter = getTabGroupFaviconQuarter(corner);
+            quarter.setCorner(corner, mTabGroupStartIconParent.getId());
+        }
     }
 
-    void setTimeAgoResolverForTesting(TabGroupTimeAgoResolver timeAgoResolver) {
-        mTimeAgoResolver = timeAgoResolver;
-    }
-
-    void setStartImage(Drawable startImage) {
-        mStartImage.setImageDrawable(startImage);
+    void setFavicon(Drawable favicon, int plusCount, @Corner int corner) {
+        getTabGroupFaviconQuarter(corner).setIconOrText(favicon, plusCount);
     }
 
     void setTitleData(Pair<String, Integer> titleData) {
@@ -87,5 +88,13 @@ public class TabGroupRowView extends LinearLayout {
 
     void setDeleteRunnable(@Nullable Runnable deleteRunnable) {
         // TODO(b:324934166): Adjust the more button menu.
+    }
+
+    private TabGroupFaviconQuarter getTabGroupFaviconQuarter(@Corner int corner) {
+        return (TabGroupFaviconQuarter) mTabGroupStartIconParent.getChildAt(corner);
+    }
+
+    void setTimeAgoResolverForTesting(TabGroupTimeAgoResolver timeAgoResolver) {
+        mTimeAgoResolver = timeAgoResolver;
     }
 }
