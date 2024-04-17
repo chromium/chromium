@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<span>base</span><br>
+<ruby>base<rt>annotation annotation</ruby>
+
+<script>
+// As of April 2024, all major browsers don't add ruby-text boxes to
+// getClientRects() for the container ruby.
+// It seems neither of css-ruby nor cssom-view mention this behavior.
+test(() => {
+  const reference = document.querySelector('span').getClientRects();
+  const target = document.querySelector('ruby').getClientRects();
+  assert_equals(target.length, 1);
+  assert_equals(target[0].height, reference[0].height);
+  assert_greater_than(target[0].width, reference[0].width);
+}, 'getClientRects() for <ruby> should not contain ruby-text boxes.');
+</script>

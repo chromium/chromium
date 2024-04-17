@@ -70,6 +70,18 @@ bool CanBeHitTestTargetPseudoNodeStyle(const ComputedStyle& style) {
   }
 }
 
+bool IsInChildRubyText(const LayoutInline& start_object,
+                       const LayoutObject* target) {
+  if (!target || !start_object.IsInlineRuby() || &start_object == target) {
+    return false;
+  }
+  const LayoutObject* start_child = target;
+  while (start_child->Parent() != &start_object) {
+    start_child = start_child->Parent();
+  }
+  return start_child->IsInlineRubyText();
+}
+
 }  // anonymous namespace
 
 struct SameSizeAsLayoutInline : public LayoutBoxModelObject {
@@ -434,7 +446,9 @@ void LayoutInline::CollectLineBoxRects(
   InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-    yield(cursor.CurrentRectInBlockFlow());
+    if (!IsInChildRubyText(*this, cursor.Current().GetLayoutObject())) {
+      yield(cursor.CurrentRectInBlockFlow());
+    }
   }
 }
 
