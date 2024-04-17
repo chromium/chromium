@@ -182,6 +182,7 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.fake_interaction_response_.set_encoded_response(
       kTestSuggestSignals);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(bitmap);
   task_environment_.RunUntilIdle();
 
@@ -189,7 +190,8 @@ TEST_F(LensOverlayQueryControllerTest,
   region->box = gfx::RectF(30, 40, 50, 60);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
-  query_controller.SendRegionSearch(std::move(region));
+  query_controller.SendRegionSearch(std::move(region),
+                                    additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
@@ -267,6 +269,7 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.fake_interaction_response_.set_encoded_response(
       kTestSuggestSignals);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(bitmap);
   task_environment_.RunUntilIdle();
 
@@ -274,7 +277,8 @@ TEST_F(LensOverlayQueryControllerTest,
   region->box = gfx::RectF(30, 40, 50, 60);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
-  query_controller.SendMultimodalRequest(std::move(region), kTestQueryText);
+  query_controller.SendMultimodalRequest(std::move(region), kTestQueryText,
+                                         additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
@@ -355,10 +359,12 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.fake_interaction_response_.set_encoded_response(
       kTestSuggestSignals);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(bitmap);
   task_environment_.RunUntilIdle();
 
-  query_controller.SendObjectSelection(kTestObjectId);
+  query_controller.SendObjectSelection(kTestObjectId,
+                                       additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
@@ -418,10 +424,11 @@ TEST_F(LensOverlayQueryControllerTest,
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()));
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(bitmap);
   task_environment_.RunUntilIdle();
 
-  query_controller.SendTextOnlyQuery("");
+  query_controller.SendTextOnlyQuery("", additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 

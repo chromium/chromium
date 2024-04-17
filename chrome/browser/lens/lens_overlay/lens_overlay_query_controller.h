@@ -62,18 +62,26 @@ class LensOverlayQueryController {
   void EndQuery();
 
   // Sends a region search interaction. Expected to be called multiple times.
-  void SendRegionSearch(lens::mojom::CenterRotatedBoxPtr region);
+  void SendRegionSearch(
+      lens::mojom::CenterRotatedBoxPtr region,
+      std::map<std::string, std::string> additional_search_query_params);
 
   // Sends an object selection interaction. Expected to be called multiple
   // times.
-  void SendObjectSelection(const std::string& object_id);
+  void SendObjectSelection(
+      const std::string& object_id,
+      std::map<std::string, std::string> additional_search_query_params);
 
   // Sends a text-only interaction. Expected to be called multiple times.
-  void SendTextOnlyQuery(const std::string& query_text);
+  void SendTextOnlyQuery(
+      const std::string& query_text,
+      std::map<std::string, std::string> additional_search_query_params);
 
   // Sends a multimodal interaction. Expected to be called multiple times.
-  void SendMultimodalRequest(lens::mojom::CenterRotatedBoxPtr region,
-                             const std::string& query_text);
+  void SendMultimodalRequest(
+      lens::mojom::CenterRotatedBoxPtr region,
+      const std::string& query_text,
+      std::map<std::string, std::string> additional_search_query_params);
 
  protected:
   // Creates an endpoint fetcher for fetching the request data and fetches
@@ -105,9 +113,11 @@ class LensOverlayQueryController {
 
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.
-  void SendInteraction(lens::mojom::CenterRotatedBoxPtr region,
-                       std::optional<std::string> query_text,
-                       std::optional<std::string> object_id);
+  void SendInteraction(
+      lens::mojom::CenterRotatedBoxPtr region,
+      std::optional<std::string> query_text,
+      std::optional<std::string> object_id,
+      std::map<std::string, std::string> additional_search_query_params);
 
   // Fetches the endpoint using the initial image data.
   void FetchFullImageRequest(
@@ -136,6 +146,7 @@ class LensOverlayQueryController {
       lens::mojom::CenterRotatedBoxPtr region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
+      std::map<std::string, std::string> additional_search_query_params,
       std::optional<lens::ImageCrop> image_crop);
 
   // Fetches the endpoint for an interaction request and creates a Lens search
@@ -145,6 +156,7 @@ class LensOverlayQueryController {
       lens::mojom::CenterRotatedBoxPtr region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
+      std::map<std::string, std::string> additional_search_query_params,
       std::optional<lens::ImageCrop> image_crop,
       lens::LensOverlayClusterInfo cluster_info);
 

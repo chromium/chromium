@@ -14,11 +14,15 @@
 namespace lens {
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify);
 
-GURL BuildTextOnlySearchURL(const std::string& text_query);
+GURL BuildTextOnlySearchURL(
+    const std::string& text_query,
+    std::map<std::string, std::string> additional_search_query_params);
 
-GURL BuildLensSearchURL(std::optional<std::string> text_query,
-                        std::unique_ptr<lens::LensOverlayRequestId> request_id,
-                        lens::LensOverlayClusterInfo cluster_info);
+GURL BuildLensSearchURL(
+    std::optional<std::string> text_query,
+    std::unique_ptr<lens::LensOverlayRequestId> request_id,
+    lens::LensOverlayClusterInfo cluster_info,
+    std::map<std::string, std::string> additional_search_query_params);
 
 }  // namespace lens
 

@@ -43,6 +43,9 @@
 
 namespace {
 
+// The url query param key for the search query.
+inline constexpr char kTextQueryParameterKey[] = "q";
+
 // When a WebUIController for lens overlay is created, we need a mechanism to
 // glue that instance to the LensOverlayController that spawned it. This class
 // is that glue. The lifetime of this instance is scoped to the lifetime of the
@@ -242,6 +245,9 @@ void LensOverlayController::CloseUI() {
   lens_overlay_query_controller_.reset();
   scoped_tab_modal_ui_.reset();
   latest_interaction_response_.Clear();
+  selected_region_.reset();
+  last_search_box_text_.reset();
+  additional_search_query_params_.clear();
   // In the future we may want a hibernate state. In this case we would stop
   // showing the UI but persist enough information to defrost the original UI
   // state when the tab is foregrounded.
@@ -550,13 +556,23 @@ void LensOverlayController::OnThumbnailRemoved() const {
 }
 
 void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
-  // TODO(b/332787629): Append the 'mactx' param.
-  GURL url = lens::AppendCommonSearchParametersToURL(destination_url);
-  if (side_panel_page_) {
-    side_panel_page_->LoadResultsInFrame(url);
-  } else {
-    pending_side_panel_url_ = std::make_optional<GURL>(url);
+  std::string query_text = "";
+  std::map<std::string, std::string> additional_query_parameters;
+
+  net::QueryIterator query_iterator(destination_url);
+  while (!query_iterator.IsAtEnd()) {
+    std::string_view key = query_iterator.GetKey();
+    std::string_view value = query_iterator.GetValue();
+    if (kTextQueryParameterKey == key) {
+      query_text = value;
+    } else {
+      additional_query_parameters.insert(std::make_pair(
+          query_iterator.GetKey(), query_iterator.GetUnescapedValue()));
+    }
+    query_iterator.Advance();
   }
+
+  IssueSearchBoxRequest(query_text, additional_query_parameters);
 }
 
 void LensOverlayController::OnPageBound() {
@@ -607,21 +623,35 @@ void LensOverlayController::IssueLensRequest(
     lens::mojom::CenterRotatedBoxPtr region) {
   DCHECK(region);
   selected_region_ = region.Clone();
-  lens_overlay_query_controller_->SendRegionSearch(region.Clone());
+  // TODO(b/332787629): Append the 'mactx' param.
+  if (last_search_box_text_.has_value()) {
+    lens_overlay_query_controller_->SendMultimodalRequest(
+        region.Clone(), *last_search_box_text_,
+        additional_search_query_params_);
+  } else {
+    lens_overlay_query_controller_->SendRegionSearch(
+        region.Clone(), additional_search_query_params_);
+  }
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
 }
 
 void LensOverlayController::IssueObjectSelectionRequest(
     const std::string& object_id) {
+  last_search_box_text_.reset();
+  // TODO(b/332787629): Append the 'mactx' param.
+  additional_search_query_params_.clear();
   selected_region_.reset();
-  lens_overlay_query_controller_->SendObjectSelection(object_id);
+  lens_overlay_query_controller_->SendObjectSelection(
+      object_id, additional_search_query_params_);
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
 }
 
 void LensOverlayController::IssueTextSelectionRequest(
     const std::string& query) {
+  last_search_box_text_.reset();
+  additional_search_query_params_.clear();
   selected_region_.reset();
 
   if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
@@ -632,7 +662,27 @@ void LensOverlayController::IssueTextSelectionRequest(
     pending_text_query_ = query;
   }
 
-  lens_overlay_query_controller_->SendTextOnlyQuery(query);
+  // TODO(b/332787629): Append the 'mactx' param.
+  lens_overlay_query_controller_->SendTextOnlyQuery(
+      query, additional_search_query_params_);
+  results_side_panel_coordinator_->RegisterEntryAndShow();
+  state_ = State::kOverlayAndResults;
+}
+
+void LensOverlayController::IssueSearchBoxRequest(
+    const std::string& search_box_text,
+    std::map<std::string, std::string> additional_query_params) {
+  // TODO(b/332787629): Append the 'mactx' param.
+  last_search_box_text_ = std::make_optional<std::string>(search_box_text);
+  additional_search_query_params_ = additional_query_params;
+  if (selected_region_.is_null()) {
+    lens_overlay_query_controller_->SendTextOnlyQuery(
+        search_box_text, additional_search_query_params_);
+  } else {
+    lens_overlay_query_controller_->SendMultimodalRequest(
+        selected_region_.Clone(), search_box_text,
+        additional_search_query_params_);
+  }
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
 }

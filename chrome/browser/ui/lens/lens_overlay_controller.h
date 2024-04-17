@@ -252,6 +252,12 @@ class LensOverlayController : public LensSearchboxClient,
   // controller and to the search box.
   void IssueTextSelectionRequest(const std::string& text_query) override;
 
+  // Handles a request (either region or multimodal) trigger by sending
+  // the request to the query controller.
+  void IssueSearchBoxRequest(
+      const std::string& search_box_text,
+      std::map<std::string, std::string> additional_query_params);
+
   // Calls CloseUI() asynchronously.
   void CloseUIAsync();
 
@@ -296,6 +302,14 @@ class LensOverlayController : public LensSearchboxClient,
   // A pending text query to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.
   std::optional<std::string> pending_text_query_ = std::nullopt;
+
+  // The last search box text, used in conjunction with the current region
+  // to construct Lens requests.
+  std::optional<std::string> last_search_box_text_ = std::nullopt;
+
+  // The additional query parameters to pass to the query controller for
+  // generating urls, set by the search box.
+  std::map<std::string, std::string> additional_search_query_params_;
 
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_widget_` is showing, and after the WebUI has started executing JS

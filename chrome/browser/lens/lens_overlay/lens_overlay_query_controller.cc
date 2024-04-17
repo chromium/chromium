@@ -232,37 +232,43 @@ void LensOverlayQueryController::EndQuery() {
 }
 
 void LensOverlayQueryController::SendRegionSearch(
-    lens::mojom::CenterRotatedBoxPtr region) {
+    lens::mojom::CenterRotatedBoxPtr region,
+    std::map<std::string, std::string> additional_search_query_params) {
   SendInteraction(/*region=*/std::move(region), /*query_text=*/std::nullopt,
-                  /*object_id=*/std::nullopt);
+                  /*object_id=*/std::nullopt, additional_search_query_params);
 }
 
 void LensOverlayQueryController::SendObjectSelection(
-    const std::string& object_id) {
+    const std::string& object_id,
+    std::map<std::string, std::string> additional_search_query_params) {
   SendInteraction(/*region=*/lens::mojom::CenterRotatedBoxPtr(),
                   /*query_text=*/std::nullopt,
-                  /*object_id=*/std::make_optional<std::string>(object_id));
+                  /*object_id=*/std::make_optional<std::string>(object_id),
+                  additional_search_query_params);
 }
 
 void LensOverlayQueryController::SendMultimodalRequest(
     lens::mojom::CenterRotatedBoxPtr region,
-    const std::string& query_text) {
+    const std::string& query_text,
+    std::map<std::string, std::string> additional_search_query_params) {
   if (base::TrimWhitespaceASCII(query_text, base::TRIM_ALL).empty()) {
     return;
   }
 
   SendInteraction(/*region=*/std::move(region),
                   /*query_text=*/std::make_optional<std::string>(query_text),
-                  /*object_id=*/std::nullopt);
+                  /*object_id=*/std::nullopt, additional_search_query_params);
 }
 
 void LensOverlayQueryController::SendTextOnlyQuery(
-    const std::string& query_text) {
+    const std::string& query_text,
+    std::map<std::string, std::string> additional_search_query_params) {
   // Increment the request counter to cancel previously issued fetches.
   request_counter_++;
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
   lens_overlay_url_response.set_url(
-      lens::BuildTextOnlySearchURL(query_text).spec());
+      lens::BuildTextOnlySearchURL(query_text, additional_search_query_params)
+          .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));
 }
@@ -270,7 +276,8 @@ void LensOverlayQueryController::SendTextOnlyQuery(
 void LensOverlayQueryController::SendInteraction(
     lens::mojom::CenterRotatedBoxPtr region,
     std::optional<std::string> query_text,
-    std::optional<std::string> object_id) {
+    std::optional<std::string> object_id,
+    std::map<std::string, std::string> additional_search_query_params) {
   request_counter_++;
   int request_index = request_counter_;
 
@@ -284,7 +291,7 @@ void LensOverlayQueryController::SendInteraction(
                   &LensOverlayQueryController::
                       FetchInteractionRequestAndGenerateUrlIfClusterInfoReady,
                   weak_ptr_factory_.GetWeakPtr(), request_index, region.Clone(),
-                  query_text, object_id))));
+                  query_text, object_id, additional_search_query_params))));
 }
 
 void LensOverlayQueryController::
@@ -293,18 +300,19 @@ void LensOverlayQueryController::
         lens::mojom::CenterRotatedBoxPtr region,
         std::optional<std::string> query_text,
         std::optional<std::string> object_id,
+        std::map<std::string, std::string> additional_search_query_params,
         std::optional<lens::ImageCrop> image_crop) {
   if (cluster_info_.has_value()) {
     FetchInteractionRequestAndGenerateLensSearchUrl(
-        request_index, std::move(region), query_text, object_id, image_crop,
-        *cluster_info_);
+        request_index, std::move(region), query_text, object_id,
+        additional_search_query_params, image_crop, *cluster_info_);
     return;
   }
-  cluster_info_received_callback_ =
-      base::BindOnce(&LensOverlayQueryController::
-                         FetchInteractionRequestAndGenerateLensSearchUrl,
-                     weak_ptr_factory_.GetWeakPtr(), request_index,
-                     std::move(region), query_text, object_id, image_crop);
+  cluster_info_received_callback_ = base::BindOnce(
+      &LensOverlayQueryController::
+          FetchInteractionRequestAndGenerateLensSearchUrl,
+      weak_ptr_factory_.GetWeakPtr(), request_index, std::move(region),
+      query_text, object_id, additional_search_query_params, image_crop);
 }
 
 lens::LensOverlayServerRequest
@@ -365,6 +373,7 @@ void LensOverlayQueryController::
         lens::mojom::CenterRotatedBoxPtr region,
         std::optional<std::string> query_text,
         std::optional<std::string> object_id,
+        std::map<std::string, std::string> additional_search_query_params,
         std::optional<lens::ImageCrop> image_crop,
         lens::LensOverlayClusterInfo cluster_info) {
   if (request_index != request_counter_) {
@@ -387,8 +396,9 @@ void LensOverlayQueryController::
   // Generate and send the Lens search url.
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
   lens_overlay_url_response.set_url(
-      lens::BuildLensSearchURL(
-          query_text, request_id_generator_->GetNextRequestId(), cluster_info)
+      lens::BuildLensSearchURL(query_text,
+                               request_id_generator_->GetNextRequestId(),
+                               cluster_info, additional_search_query_params)
           .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));

@@ -34,6 +34,18 @@ inline constexpr char kModeParameterKey[] = "udm";
 inline constexpr char kUnimodalModeParameterValue[] = "26";
 inline constexpr char kMultimodalModeParameterValue[] = "24";
 
+// Appends the url params from the map to the url.
+GURL AppendUrlParamsFromMap(
+    const GURL& url_to_modify,
+    std::map<std::string, std::string> additional_params) {
+  GURL url_with_params = GURL(url_to_modify);
+  for (auto const& param : additional_params) {
+    url_with_params = net::AppendOrReplaceQueryParameter(
+        url_with_params, param.first, param.second);
+  }
+  return url_with_params;
+}
+
 }  // namespace
 
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
@@ -45,9 +57,13 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
   return new_url;
 }
 
-GURL BuildTextOnlySearchURL(const std::string& text_query) {
+GURL BuildTextOnlySearchURL(
+    const std::string& text_query,
+    std::map<std::string, std::string> additional_search_query_params) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params = AppendUrlParamsFromMap(
+      url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey, text_query);
   url_with_query_params =
@@ -55,11 +71,15 @@ GURL BuildTextOnlySearchURL(const std::string& text_query) {
   return url_with_query_params;
 }
 
-GURL BuildLensSearchURL(std::optional<std::string> text_query,
-                        std::unique_ptr<lens::LensOverlayRequestId> request_id,
-                        lens::LensOverlayClusterInfo cluster_info) {
+GURL BuildLensSearchURL(
+    std::optional<std::string> text_query,
+    std::unique_ptr<lens::LensOverlayRequestId> request_id,
+    lens::LensOverlayClusterInfo cluster_info,
+    std::map<std::string, std::string> additional_search_query_params) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params = AppendUrlParamsFromMap(
+      url_with_query_params, additional_search_query_params);
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
