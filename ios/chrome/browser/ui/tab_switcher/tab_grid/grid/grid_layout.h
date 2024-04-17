@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
+
 enum class TabsSectionHeaderType {
   kNone,          // No header is shown.
   kSearch,        // The Search header is shown, with the number of matches.
@@ -37,7 +39,10 @@ enum class TabsSectionHeaderType {
 // The insets to add to the different sections. Defaults to UIEdgeInsetsZero.
 @property(nonatomic, assign) NSDirectionalEdgeInsets sectionInsets;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+// The current mode of the grid.
+@property(nonatomic, assign) TabGridMode mode;
+
+- (instancetype)initWithTabGridMode:(TabGridMode)mode NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - Unavailable initializers
 
