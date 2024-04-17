@@ -18,7 +18,6 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/android/view_android.h"
 
@@ -32,10 +31,6 @@ class StrikeDatabase;
 
 namespace content {
 class WebContents;
-}
-
-namespace gfx {
-class RectF;
 }
 
 namespace syncer {
@@ -67,18 +62,11 @@ namespace android_autofill {
 // Neither WebView nor Chrome can control whether e.g. a dropdown or
 // keyboard-inlined suggestion are served to the user.
 //
-// Lifetime is the same as the WebContents object it's attachted to.
+// It is created by either AwContents or ChromeAutofillClient and owned by the
+// WebContents that it is attached to.
 class AndroidAutofillClient : public autofill::ContentAutofillClient {
  public:
-  static void CreateForWebContents(
-      content::WebContents* contents,
-      base::FunctionRef<void(const base::android::JavaRef<jobject>&)>
-          notify_client_created);
-
-  // Checks whether the AutofillService selected in Android settings works for
-  // the browser. Autofill With Google should never fill Chrome since the
-  // built-in filling mechanism is the preferred way.
-  static bool AllowedForAutofillService();
+  static void CreateForWebContents(content::WebContents* contents);
 
   AndroidAutofillClient(const AndroidAutofillClient&) = delete;
   AndroidAutofillClient& operator=(const AndroidAutofillClient&) = delete;
@@ -158,22 +146,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
  private:
   friend class content::WebContentsUserData<AndroidAutofillClient>;
 
-  // Ownership: The native object is created by either AwContents or
-  // ChromeAutofillClient and owned by the WebContents it's attached to.
-  // The native object creates the Java peer which delegates autofill
-  // functionality at the Java side to the Android Autofill API. The Java peer
-  // is owned by Java AwContents or the ContentView. The native object only
-  // maintains a weak ref to it.
-  // TODO(b/322164882): Use the WebContentsUserData template or return the Ref.
-  explicit AndroidAutofillClient(
-      content::WebContents* web_contents,
-      base::FunctionRef<void(const base::android::JavaRef<jobject>&)>
-          notify_client_created);
-
-  void ShowAutofillPopupImpl(
-      const gfx::RectF& element_bounds,
-      bool is_rtl,
-      const std::vector<autofill::Suggestion>& suggestions);
+  explicit AndroidAutofillClient(content::WebContents* web_contents);
 
   content::WebContents& GetWebContents() const;
 

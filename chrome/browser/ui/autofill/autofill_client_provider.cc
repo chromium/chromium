@@ -12,6 +12,8 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "chrome/browser/autofill/android/jni_headers/AutofillClientProviderUtils_jni.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "components/android_autofill/browser/android_autofill_client.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -25,9 +27,13 @@ bool UsesVirtualViewStructureForAutofill(const PrefService* prefs) {
           features::kAutofillVirtualViewStructureAndroid)) {
     return false;
   }
-
-  return prefs->GetBoolean(prefs::kAutofillUsingVirtualViewStructure) &&
-         android_autofill::AndroidAutofillClient::AllowedForAutofillService();
+  if (!prefs->GetBoolean(prefs::kAutofillUsingVirtualViewStructure)) {
+    return false;
+  }
+  return features::kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
+             .Get() ||
+         Java_AutofillClientProviderUtils_isAllowedToUseAndroidAutofillFramework(
+             base::android::AttachCurrentThread());
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -50,8 +56,7 @@ void AutofillClientProvider::CreateClientForWebContents(
     content::WebContents* web_contents) {
   if (uses_platform_autofill()) {
 #if BUILDFLAG(IS_ANDROID)
-    android_autofill::AndroidAutofillClient::CreateForWebContents(
-        web_contents, [](const base::android::JavaRef<jobject>& jobj) {});
+    android_autofill::AndroidAutofillClient::CreateForWebContents(web_contents);
 #else
     NOTREACHED();
 #endif

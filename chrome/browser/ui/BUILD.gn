@@ -1013,6 +1013,7 @@ static_library("ui") {
       "//chrome/android/features/dev_ui:buildflags",
       "//chrome/app:branded_strings",
       "//chrome/browser/android/webapk:webapk_sources",
+      "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/facilitated_payments",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/image_decoder",

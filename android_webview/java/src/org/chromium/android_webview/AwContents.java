@@ -94,7 +94,6 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.components.autofill.AndroidAutofillClient;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillSelectionMenuItemHelper;
 import org.chromium.components.content_capture.OnscreenContentProvider;
@@ -490,8 +489,6 @@ public class AwContents implements SmartClipProvider {
     private float mMaxPageScaleFactor = 1.0f;
     private float mContentWidthDip;
     private float mContentHeightDip;
-
-    private AndroidAutofillClient mAndroidAutofillClient;
 
     private AwPdfExporter mAwPdfExporter;
 
@@ -4154,16 +4151,6 @@ public class AwContents implements SmartClipProvider {
         mScrollOffsetManager.setMaxScrollOffset(
                 maxContainerViewScrollOffsetX, maxContainerViewScrollOffsetY);
         setPageScaleFactorAndLimits(pageScaleFactor, minPageScaleFactor, maxPageScaleFactor);
-    }
-
-    @CalledByNative
-    private void setAndroidAutofillClient(AndroidAutofillClient client) {
-        mAndroidAutofillClient = client;
-    }
-
-    @VisibleForTesting
-    public AndroidAutofillClient getAutofillClient() {
-        return mAndroidAutofillClient;
     }
 
     @CalledByNative

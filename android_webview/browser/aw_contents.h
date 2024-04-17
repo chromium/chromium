@@ -287,9 +287,6 @@ class AwContents : public FindHelper::Listener,
   base::android::ScopedJavaLocalRef<jstring> GetScheme(JNIEnv* env);
   void OnInputEvent(JNIEnv* env);
 
-  // Sets the java client
-  void SetAndroidAutofillClient(const base::android::JavaRef<jobject>& client);
-
   void SetJsOnlineProperty(JNIEnv* env, jboolean network_up);
   void TrimMemory(JNIEnv* env, jint level, jboolean visible);
 

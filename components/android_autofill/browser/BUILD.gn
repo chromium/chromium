@@ -34,7 +34,6 @@ android_library("java") {
   ]
 
   sources = [
-    "java/src/org/chromium/components/autofill/AndroidAutofillClient.java",
     "java/src/org/chromium/components/autofill/AutofillHintsService.java",
     "java/src/org/chromium/components/autofill/AutofillManagerWrapper.java",
     "java/src/org/chromium/components/autofill/AutofillProvider.java",
@@ -52,7 +51,6 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/components/autofill/AndroidAutofillClient.java",
     "java/src/org/chromium/components/autofill/AutofillProvider.java",
     "java/src/org/chromium/components/autofill/FormData.java",
     "java/src/org/chromium/components/autofill/FormFieldData.java",
