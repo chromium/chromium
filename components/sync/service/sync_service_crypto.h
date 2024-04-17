@@ -97,7 +97,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
 
   // DataTypeEncryptionHandler implementation.
   bool HasCryptoError() const override;
-  ModelTypeSet GetEncryptedDataTypes() const override;
+  ModelTypeSet GetAllEncryptedDataTypes() const override;
 
   // TrustedVaultClient::Observer implementation.
   void OnTrustedVaultKeysChanged() override;

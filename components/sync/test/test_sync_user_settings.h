@@ -69,7 +69,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
 
-  syncer::ModelTypeSet GetEncryptedDataTypes() const override;
+  syncer::ModelTypeSet GetAllEncryptedDataTypes() const override;
   bool IsPassphraseRequired() const override;
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;

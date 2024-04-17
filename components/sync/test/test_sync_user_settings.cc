@@ -204,7 +204,7 @@ bool TestSyncUserSettings::IsEncryptEverythingEnabled() const {
   return IsExplicitPassphrase(passphrase_type_);
 }
 
-ModelTypeSet TestSyncUserSettings::GetEncryptedDataTypes() const {
+ModelTypeSet TestSyncUserSettings::GetAllEncryptedDataTypes() const {
   return IsUsingExplicitPassphrase() ? EncryptableUserTypes()
                                      : AlwaysEncryptedUserTypes();
 }
@@ -348,7 +348,7 @@ const std::string& TestSyncUserSettings::GetEncryptionPassphrase() const {
 }
 
 bool TestSyncUserSettings::IsEncryptedDatatypePreferred() const {
-  return !Intersection(GetPreferredDataTypes(), GetEncryptedDataTypes())
+  return !Intersection(GetPreferredDataTypes(), GetAllEncryptedDataTypes())
               .empty();
 }
 

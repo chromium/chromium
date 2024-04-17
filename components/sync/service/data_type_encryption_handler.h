@@ -22,7 +22,7 @@ class DataTypeEncryptionHandler {
   virtual bool HasCryptoError() const = 0;
 
   // Returns the current set of encrypted data types.
-  virtual ModelTypeSet GetEncryptedDataTypes() const = 0;
+  virtual ModelTypeSet GetAllEncryptedDataTypes() const = 0;
 };
 
 }  // namespace syncer

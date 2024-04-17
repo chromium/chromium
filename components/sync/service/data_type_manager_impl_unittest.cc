@@ -165,7 +165,7 @@ class FakeDataTypeEncryptionHandler : public DataTypeEncryptionHandler {
   ~FakeDataTypeEncryptionHandler() override = default;
 
   bool HasCryptoError() const override;
-  ModelTypeSet GetEncryptedDataTypes() const override;
+  ModelTypeSet GetAllEncryptedDataTypes() const override;
 
   void set_crypto_error(bool crypto_error) { crypto_error_ = crypto_error; }
   void set_encrypted_types(ModelTypeSet encrypted_types) {
@@ -181,7 +181,7 @@ bool FakeDataTypeEncryptionHandler::HasCryptoError() const {
   return crypto_error_;
 }
 
-ModelTypeSet FakeDataTypeEncryptionHandler::GetEncryptedDataTypes() const {
+ModelTypeSet FakeDataTypeEncryptionHandler::GetAllEncryptedDataTypes() const {
   return encrypted_types_;
 }
 

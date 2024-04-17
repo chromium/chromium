@@ -430,13 +430,13 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   return types;
 }
 
-ModelTypeSet SyncUserSettingsImpl::GetEncryptedDataTypes() const {
-  return crypto_->GetEncryptedDataTypes();
+ModelTypeSet SyncUserSettingsImpl::GetAllEncryptedDataTypes() const {
+  return crypto_->GetAllEncryptedDataTypes();
 }
 
 bool SyncUserSettingsImpl::IsEncryptedDatatypePreferred() const {
   ModelTypeSet preferred_types = GetPreferredDataTypes();
-  const ModelTypeSet encrypted_types = GetEncryptedDataTypes();
+  const ModelTypeSet encrypted_types = GetAllEncryptedDataTypes();
   DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
   if (ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType(*prefs_)) {
     // Remove AUTOFILL_WALLET_CREDENTIAL from the set to avoid that the

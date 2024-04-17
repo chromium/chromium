@@ -89,7 +89,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
 
   MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (const override));
   MOCK_METHOD(bool, IsEncryptEverythingEnabled, (), (const override));
-  MOCK_METHOD(ModelTypeSet, GetEncryptedDataTypes, (), (const override));
+  MOCK_METHOD(ModelTypeSet, GetAllEncryptedDataTypes, (), (const override));
   MOCK_METHOD(bool, IsPassphraseRequired, (), (const override));
   MOCK_METHOD(bool,
               IsPassphraseRequiredForPreferredDataTypes,

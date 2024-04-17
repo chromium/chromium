@@ -405,7 +405,7 @@ SyncServiceCrypto::GetEncryptionObserverProxy() {
       base::SequencedTaskRunner::GetCurrentDefault());
 }
 
-ModelTypeSet SyncServiceCrypto::GetEncryptedDataTypes() const {
+ModelTypeSet SyncServiceCrypto::GetAllEncryptedDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_.encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
   // We may be called during the setup process before we're

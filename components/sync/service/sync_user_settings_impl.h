@@ -93,7 +93,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
 #endif
   bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
-  ModelTypeSet GetEncryptedDataTypes() const override;
+  ModelTypeSet GetAllEncryptedDataTypes() const override;
   bool IsPassphraseRequired() const override;
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;

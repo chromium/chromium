@@ -154,7 +154,7 @@ class SyncUserSettings {
   // Whether we are currently set to encrypt all the Sync data.
   virtual bool IsEncryptEverythingEnabled() const = 0;
   // The current set of encrypted data types.
-  virtual ModelTypeSet GetEncryptedDataTypes() const = 0;
+  virtual ModelTypeSet GetAllEncryptedDataTypes() const = 0;
   // Whether a passphrase is required for encryption or decryption to proceed.
   // Note that Sync might still be working fine if the user has disabled all
   // encrypted data types.

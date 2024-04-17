@@ -31,7 +31,7 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
   // encrypted, but not necessarily with a custom passphrase. On the other hand,
   // some data types are never encrypted (e.g. DEVICE_INFO), even if the
   // "encrypt everything" setting is enabled.
-  if (sync_service->GetUserSettings()->GetEncryptedDataTypes().Has(type) &&
+  if (sync_service->GetUserSettings()->GetAllEncryptedDataTypes().Has(type) &&
       sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return UploadState::NOT_ACTIVE;
   }
@@ -97,7 +97,7 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
   }
 
   const ModelTypeSet encrypted_types =
-      service->GetUserSettings()->GetEncryptedDataTypes();
+      service->GetUserSettings()->GetAllEncryptedDataTypes();
   if (Intersection(service->GetActiveDataTypes(), encrypted_types).empty()) {
     // No point in offering the user a new encryption method if they are not
     // syncing any encrypted types.

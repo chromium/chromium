@@ -410,7 +410,8 @@ void DataTypeManagerImpl::Restart() {
 
   // Check for new or resolved data type crypto errors.
   if (encryption_handler_->HasCryptoError()) {
-    ModelTypeSet encrypted_types = encryption_handler_->GetEncryptedDataTypes();
+    ModelTypeSet encrypted_types =
+        encryption_handler_->GetAllEncryptedDataTypes();
     encrypted_types.RetainAll(preferred_types_);
     encrypted_types.RemoveAll(data_type_status_table_.GetCryptoErrorTypes());
     DataTypeStatusTable::TypeErrorMap crypto_errors =

@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(
   // with the single key known to this client. This happens after SetupSync(),
   // so it's an incremental update.
   ASSERT_FALSE(
-      GetSyncService(0)->GetUserSettings()->GetEncryptedDataTypes().Has(
+      GetSyncService(0)->GetUserSettings()->GetAllEncryptedDataTypes().Has(
           syncer::ModelType::BOOKMARKS));
   const std::string kTitle = "Bookmark title";
   const GURL kUrl = GURL("https://g.com");
