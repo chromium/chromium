@@ -48,7 +48,8 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
 #endif
   bool HasCreatedDownloadManager() override;
   int BlockingShutdownCount() const override;
-  void CancelDownloads() override;
+  void CancelDownloads(
+      DownloadCoreService::CancelDownloadsTrigger trigger) override;
   void SetDownloadManagerDelegateForTesting(
       std::unique_ptr<ChromeDownloadManagerDelegate> delegate) override;
   bool IsDownloadUiEnabled() override;

@@ -145,7 +145,8 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
     // (crbug.com/336725).
     DownloadCoreService* service =
         DownloadCoreServiceFactory::GetForBrowserContext(profile);
-    service->CancelDownloads();
+    service->CancelDownloads(
+        DownloadCoreService::CancelDownloadsTrigger::kProfileDeletion);
     DCHECK_EQ(0, service->BlockingShutdownCount());
 
     // Take a ScopedProfileKeepAlive for the the deletion process to avoid the

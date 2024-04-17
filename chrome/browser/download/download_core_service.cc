@@ -42,7 +42,7 @@ int DownloadCoreService::BlockingShutdownCountAllProfiles() {
 }
 
 // static
-void DownloadCoreService::CancelAllDownloads() {
+void DownloadCoreService::CancelAllDownloads(CancelDownloadsTrigger trigger) {
   std::vector<Profile*> profiles(
       g_browser_process->profile_manager()->GetLoadedProfiles());
   for (auto it = profiles.begin(); it < profiles.end(); ++it) {
@@ -50,7 +50,7 @@ void DownloadCoreService::CancelAllDownloads() {
     // profiles, like the System Profile.
     if (DownloadCoreService* service =
             DownloadCoreServiceFactory::GetForBrowserContext(*it)) {
-      service->CancelDownloads();
+      service->CancelDownloads(trigger);
     }
   }
 }
