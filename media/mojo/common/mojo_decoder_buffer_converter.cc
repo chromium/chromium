@@ -253,9 +253,10 @@ void MojoDecoderBufferReader::ProcessPendingReads() {
   while (!pending_buffers_.empty()) {
     DecoderBuffer* buffer = pending_buffers_.front().get();
 
-    uint32_t buffer_size = 0u;
-    if (!pending_buffers_.front()->end_of_stream())
-      buffer_size = base::checked_cast<uint32_t>(buffer->size());
+    size_t buffer_size = 0u;
+    if (!pending_buffers_.front()->end_of_stream()) {
+      buffer_size = buffer->size();
+    }
 
     // Immediately complete empty reads.
     // A non-EOS buffer can have zero size. See http://crbug.com/663438
@@ -269,7 +270,7 @@ void MojoDecoderBufferReader::ProcessPendingReads() {
     // We may be starting to read a new buffer (|bytes_read_| == 0), or
     // recovering from a previous partial read (|bytes_read_| > 0).
     DCHECK_GT(buffer_size, bytes_read_);
-    uint32_t num_bytes = buffer_size - bytes_read_;
+    size_t num_bytes = buffer_size - bytes_read_;
 
     MojoResult result =
         consumer_handle_->ReadData(buffer->writable_data() + bytes_read_,
@@ -435,12 +436,12 @@ void MojoDecoderBufferWriter::ProcessPendingWrites() {
   while (!pending_buffers_.empty()) {
     DecoderBuffer* buffer = pending_buffers_.front().get();
 
-    uint32_t buffer_size = base::checked_cast<uint32_t>(buffer->size());
+    size_t buffer_size = buffer->size();
     DCHECK_GT(buffer_size, 0u) << "Unexpected EOS or empty buffer";
 
     // We may be starting to write a new buffer (|bytes_written_| == 0), or
     // recovering from a previous partial write (|bytes_written_| > 0).
-    uint32_t num_bytes = buffer_size - bytes_written_;
+    size_t num_bytes = buffer_size - bytes_written_;
     DCHECK_GT(num_bytes, 0u);
 
     MojoResult result = producer_handle_->WriteData(

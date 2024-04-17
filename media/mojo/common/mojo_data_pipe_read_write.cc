@@ -82,7 +82,7 @@ void MojoDataPipeReader::TryReadData(MojoResult result) {
   }
 
   DCHECK_GT(current_buffer_size_, bytes_read_);
-  uint32_t num_bytes = current_buffer_size_ - bytes_read_;
+  size_t num_bytes = current_buffer_size_ - bytes_read_;
   if (current_buffer_) {
     result = consumer_handle_->ReadData(current_buffer_ + bytes_read_,
                                         &num_bytes, MOJO_READ_DATA_FLAG_NONE);
@@ -179,7 +179,7 @@ void MojoDataPipeWriter::Write(const uint8_t* buffer,
   }
 
   current_buffer_ = buffer;
-  current_buffer_size_ = buffer_size;
+  current_buffer_size_ = size_t{buffer_size};
   bytes_written_ = 0;
   done_cb_ = std::move(done_cb);
   // Try writing data immediately to reduce latency.
@@ -194,7 +194,7 @@ void MojoDataPipeWriter::TryWriteData(MojoResult result) {
 
   DCHECK(current_buffer_);
   DCHECK_GT(current_buffer_size_, bytes_written_);
-  uint32_t num_bytes = current_buffer_size_ - bytes_written_;
+  size_t num_bytes = current_buffer_size_ - bytes_written_;
 
   result = producer_handle_->WriteData(current_buffer_ + bytes_written_,
                                        &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);

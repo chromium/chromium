@@ -98,7 +98,7 @@ class MojoDecoderBufferReader {
   base::OnceClosure flush_cb_;
 
   // Number of bytes already read into the current buffer.
-  uint32_t bytes_read_;
+  size_t bytes_read_;
 };
 
 // Converts media::DecoderBuffers to mojom::DecoderBuffers, writing the data
@@ -152,7 +152,7 @@ class MojoDecoderBufferWriter {
   base::circular_deque<scoped_refptr<DecoderBuffer>> pending_buffers_;
 
   // Number of bytes already written from the current buffer.
-  uint32_t bytes_written_;
+  size_t bytes_written_;
 };
 
 }  // namespace media
