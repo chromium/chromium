@@ -37,6 +37,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".AppInstallUriLauncher"
       summary="URI navigation from Launcher"/>
   <variant name=".AppInstallUriMall" summary="URI navigation from Mall"/>
+  <variant name=".AppInstallUriPeripherals"
+      summary="URI navigation from peripherals"/>
   <variant name=".AppInstallUriShowoff" summary="URI navigation from Showoff"/>
   <variant name=".AppInstallUriUnknown" summary="URI navigation from unknown"/>
   <variant name=".AppPreloadServiceDefault" summary="Default preload"/>

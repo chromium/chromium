@@ -67,6 +67,9 @@ AppInstallSurface SourceParamToAppInstallSurface(std::string_view source) {
   if (base::EqualsCaseInsensitiveASCII(source, "launcher")) {
     return AppInstallSurface::kAppInstallUriLauncher;
   }
+  if (base::EqualsCaseInsensitiveASCII(source, "peripherals")) {
+    return AppInstallSurface::kAppInstallUriPeripherals;
+  }
   return AppInstallSurface::kAppInstallUriUnknown;
 }
 

@@ -52,6 +52,8 @@ std::optional<AppInstallSurface> AppInstallSurfaceFromCrosapi(
       return AppInstallSurface::kAppInstallUriGetit;
     case Surface::kAppInstallUriLauncher:
       return AppInstallSurface::kAppInstallUriLauncher;
+    case Surface::kAppInstallUriPeripherals:
+      return AppInstallSurface::kAppInstallUriPeripherals;
   }
 }
 

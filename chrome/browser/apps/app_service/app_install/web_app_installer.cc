@@ -201,6 +201,7 @@ void WebAppInstaller::OnManifestRetrieved(
         case AppInstallSurface::kAppInstallUriMall:
         case AppInstallSurface::kAppInstallUriGetit:
         case AppInstallSurface::kAppInstallUriLauncher:
+        case AppInstallSurface::kAppInstallUriPeripherals:
           return crosapi::mojom::PreloadWebAppInstallSource::
               kAlmanacInstallAppUri;
         case AppInstallSurface::kAppPreloadServiceOem:
@@ -225,6 +226,7 @@ void WebAppInstaller::OnManifestRetrieved(
         case AppInstallSurface::kAppInstallUriMall:
         case AppInstallSurface::kAppInstallUriGetit:
         case AppInstallSurface::kAppInstallUriLauncher:
+        case AppInstallSurface::kAppInstallUriPeripherals:
           return webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI;
         case AppInstallSurface::kAppPreloadServiceOem:
           return webapps::WebappInstallSource::PRELOADED_OEM;

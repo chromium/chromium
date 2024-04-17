@@ -30,6 +30,7 @@ enum class AppInstallSurface {
   kAppInstallUriMall,
   kAppInstallUriGetit,
   kAppInstallUriLauncher,
+  kAppInstallUriPeripherals,
 };
 
 std::ostream& operator<<(std::ostream& out, AppInstallSurface surface);

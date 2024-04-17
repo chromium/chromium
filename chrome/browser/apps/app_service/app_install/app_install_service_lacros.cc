@@ -38,6 +38,8 @@ void AppInstallServiceLacros::InstallApp(
         return Surface::kAppInstallUriGetit;
       case AppInstallSurface::kAppInstallUriLauncher:
         return Surface::kAppInstallUriLauncher;
+      case AppInstallSurface::kAppInstallUriPeripherals:
+        return Surface::kAppInstallUriPeripherals;
       case AppInstallSurface::kAppPreloadServiceOem:
       case AppInstallSurface::kAppPreloadServiceDefault:
         // Preloads should be installed from Ash, not Lacros.
