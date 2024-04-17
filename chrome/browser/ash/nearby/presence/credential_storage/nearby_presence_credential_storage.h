@@ -114,12 +114,15 @@ class NearbyPresenceCredentialStorage
 
   void OnPrivateDatabaseInitialized(
       base::OnceCallback<void(bool)> on_fully_initialized,
+      base::TimeTicks initialization_start_time,
       leveldb_proto::Enums::InitStatus private_db_initialization_status);
   void OnLocalPublicDatabaseInitialized(
       base::OnceCallback<void(bool)> on_fully_initialized,
+      base::TimeTicks initialization_start_time,
       leveldb_proto::Enums::InitStatus local_public_db_initialization_status);
   void OnRemotePublicDatabaseInitialized(
       base::OnceCallback<void(bool)> on_fully_initialized,
+      base::TimeTicks initialization_start_time,
       leveldb_proto::Enums::InitStatus remote_public_db_initialization_status);
 
   std::unique_ptr<

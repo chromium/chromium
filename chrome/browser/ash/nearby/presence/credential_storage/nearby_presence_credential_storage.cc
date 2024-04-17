@@ -102,7 +102,8 @@ void NearbyPresenceCredentialStorage::Initialize(
   // true.
   private_db_->Init(base::BindOnce(
       &NearbyPresenceCredentialStorage::OnPrivateDatabaseInitialized,
-      weak_ptr_factory_.GetWeakPtr(), std::move(on_fully_initialized)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_fully_initialized),
+      /*initialization_start_time=*/base::TimeTicks::Now()));
 }
 
 void NearbyPresenceCredentialStorage::SaveCredentials(
@@ -382,11 +383,20 @@ void NearbyPresenceCredentialStorage::OnPrivateCredentialsSaved(
 
 void NearbyPresenceCredentialStorage::OnPrivateDatabaseInitialized(
     base::OnceCallback<void(bool)> on_fully_initialized,
+    base::TimeTicks initialization_start_time,
     leveldb_proto::Enums::InitStatus private_db_initialization_status) {
-  // If the private initialization failed, do not attempt to initialize the
-  // public databases.
-  if (private_db_initialization_status !=
+  if (private_db_initialization_status ==
       leveldb_proto::Enums::InitStatus::kOK) {
+    metrics::RecordCredentialStoragePrivateInitializationResult(
+        /*success=*/true);
+
+    base::TimeDelta initialization_duration =
+        base::TimeTicks::Now() - initialization_start_time;
+    metrics::RecordCredentialStoragePrivateDatabaseInitializationDuration(
+        initialization_duration);
+  } else {
+    // If the private initialization failed, do not attempt to initialize the
+    // public databases.
     metrics::RecordCredentialStoragePrivateInitializationResult(
         /*success=*/false);
     LOG(ERROR) << __func__
@@ -397,23 +407,30 @@ void NearbyPresenceCredentialStorage::OnPrivateDatabaseInitialized(
     return;
   }
 
-  metrics::RecordCredentialStoragePrivateInitializationResult(
-      /*success=*/true);
-
   // Attempt to initialize the local public credential database. Iff successful,
   // then attempt to initialize the remote public credential database.
   local_public_db_->Init(base::BindOnce(
       &NearbyPresenceCredentialStorage::OnLocalPublicDatabaseInitialized,
-      weak_ptr_factory_.GetWeakPtr(), std::move(on_fully_initialized)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_fully_initialized),
+      /*initialization_start_time=*/base::TimeTicks::Now()));
 }
 
 void NearbyPresenceCredentialStorage::OnLocalPublicDatabaseInitialized(
     base::OnceCallback<void(bool)> on_fully_initialized,
+    base::TimeTicks initialization_start_time,
     leveldb_proto::Enums::InitStatus local_public_db_initialization_status) {
-  // If the local public initialization failed, do not attempt to initialize the
-  // remote public database.
-  if (local_public_db_initialization_status !=
+  if (local_public_db_initialization_status ==
       leveldb_proto::Enums::InitStatus::kOK) {
+    metrics::RecordCredentialStorageLocalPublicInitializationResult(
+        /*success=*/true);
+
+    base::TimeDelta initialization_duration =
+        base::TimeTicks::Now() - initialization_start_time;
+    metrics::RecordCredentialStorageLocalPublicDatabaseInitializationDuration(
+        initialization_duration);
+  } else {
+    // If the local public initialization failed, do not attempt to initialize
+    // the remote public database.
     metrics::RecordCredentialStorageLocalPublicInitializationResult(
         /*success=*/false);
     LOG(ERROR) << __func__
@@ -424,19 +441,26 @@ void NearbyPresenceCredentialStorage::OnLocalPublicDatabaseInitialized(
     return;
   }
 
-  metrics::RecordCredentialStorageLocalPublicInitializationResult(
-      /*success=*/true);
-
   remote_public_db_->Init(base::BindOnce(
       &NearbyPresenceCredentialStorage::OnRemotePublicDatabaseInitialized,
-      weak_ptr_factory_.GetWeakPtr(), std::move(on_fully_initialized)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_fully_initialized),
+      /*initialization_start_time=*/base::TimeTicks::Now()));
 }
 
 void NearbyPresenceCredentialStorage::OnRemotePublicDatabaseInitialized(
     base::OnceCallback<void(bool)> on_fully_initialized,
+    base::TimeTicks initialization_start_time,
     leveldb_proto::Enums::InitStatus remote_public_db_initialization_status) {
-  if (remote_public_db_initialization_status !=
+  if (remote_public_db_initialization_status ==
       leveldb_proto::Enums::InitStatus::kOK) {
+    metrics::RecordCredentialStorageRemotePublicInitializationResult(
+        /*success=*/true);
+
+    base::TimeDelta initialization_duration =
+        base::TimeTicks::Now() - initialization_start_time;
+    metrics::RecordCredentialStorageRemotePublicDatabaseInitializationDuration(
+        initialization_duration);
+  } else {
     metrics::RecordCredentialStorageRemotePublicInitializationResult(
         /*success=*/false);
     LOG(ERROR) << __func__
@@ -446,9 +470,6 @@ void NearbyPresenceCredentialStorage::OnRemotePublicDatabaseInitialized(
     std::move(on_fully_initialized).Run(/*success=*/false);
     return;
   }
-
-  metrics::RecordCredentialStorageRemotePublicInitializationResult(
-      /*success=*/true);
 
   CHECK(pending_receiver_);
   // All databases were successfully initialized, so it's safe to process

@@ -15,6 +15,13 @@ void RecordCredentialStorageLocalPublicInitializationResult(bool success);
 void RecordCredentialStorageRemotePublicInitializationResult(bool success);
 void RecordCredentialStoragePrivateInitializationResult(bool success);
 
+void RecordCredentialStorageLocalPublicDatabaseInitializationDuration(
+    base::TimeDelta duration);
+void RecordCredentialStorageRemotePublicDatabaseInitializationDuration(
+    base::TimeDelta duration);
+void RecordCredentialStoragePrivateDatabaseInitializationDuration(
+    base::TimeDelta duration);
+
 void RecordCredentialStorageSaveLocalPublicCredentialsResult(bool success);
 void RecordCredentialStorageSaveRemotePublicCredentialsResult(bool success);
 void RecordCredentialStorageSavePrivateCredentialsResult(bool success);

@@ -26,10 +26,35 @@ void RecordCredentialStorageRemotePublicInitializationResult(bool success) {
       "RemotePublicDatabaseInitializationResult",
       success);
 }
+
 void RecordCredentialStoragePrivateInitializationResult(bool success) {
   base::UmaHistogramBoolean(
       "Nearby.Presence.Credentials.Storage.PrivateDatabaseInitializationResult",
       success);
+}
+
+void RecordCredentialStorageLocalPublicDatabaseInitializationDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramMicrosecondsTimes(
+      "Nearby.Presence.Credentials.Storage."
+      "LocalPublicDatabaseInitializationDuration",
+      duration);
+}
+
+void RecordCredentialStorageRemotePublicDatabaseInitializationDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramMicrosecondsTimes(
+      "Nearby.Presence.Credentials.Storage."
+      "RemotePublicDatabaseInitializationDuration",
+      duration);
+}
+
+void RecordCredentialStoragePrivateDatabaseInitializationDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramMicrosecondsTimes(
+      "Nearby.Presence.Credentials.Storage."
+      "PrivateDatabaseInitializationDuration",
+      duration);
 }
 
 void RecordCredentialStorageSaveLocalPublicCredentialsResult(bool success) {
