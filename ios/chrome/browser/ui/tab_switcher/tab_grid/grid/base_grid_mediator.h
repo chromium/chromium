@@ -103,6 +103,9 @@ class WebState;
 // Inserts a new WebState at the given WebStateList `index`.
 - (void)insertNewWebStateAtIndex:(int)index withURL:(const GURL&)newTabURL;
 
+// Inserts `item` before the WebState at `nextWebStateIndex`.
+- (void)insertItem:(GridItemIdentifier*)item
+    beforeWebStateIndex:(int)nextWebStateIndex;
 // Moves `item` before the WebState at `nextWebStateIndex`.
 - (void)moveItem:(GridItemIdentifier*)item
     beforeWebStateIndex:(int)nextWebStateIndex;
