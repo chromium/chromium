@@ -1736,6 +1736,9 @@ void ShoppingService::GetProductIdentifierForUrl(
 
 const std::vector<ProductSpecificationsSet>
 ShoppingService::GetAllProductSpecificationSets() {
+  if (!product_specifications_service_) {
+    return {};
+  }
   return product_specifications_service_->GetAllProductSpecifications();
 }
 
