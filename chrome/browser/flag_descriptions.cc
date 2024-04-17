@@ -5352,11 +5352,6 @@ const char kMacImeLiveConversionFixName[] = "Mac IME Live Conversion";
 const char kMacImeLiveConversionFixDescription[] =
     "A fix for the Live Conversion feature of Japanese IME.";
 
-const char kMacLoopbackAudioForCastName[] =
-    "Mac System Audio Loopback for Cast";
-const char kMacLoopbackAudioForCastDescription[] =
-    "Enable system audio mirroring when casting a screen on macOS 13.0+.";
-
 const char kMacLoopbackAudioForScreenShareName[] =
     "Mac System Audio Loopback for Screen Sharing";
 const char kMacLoopbackAudioForScreenShareDescription[] =

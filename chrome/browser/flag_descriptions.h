@@ -3115,9 +3115,6 @@ extern const char kImmersiveFullscreenDescription[];
 extern const char kMacImeLiveConversionFixName[];
 extern const char kMacImeLiveConversionFixDescription[];
 
-extern const char kMacLoopbackAudioForCastName[];
-extern const char kMacLoopbackAudioForCastDescription[];
-
 extern const char kMacLoopbackAudioForScreenShareName[];
 extern const char kMacLoopbackAudioForScreenShareDescription[];
 

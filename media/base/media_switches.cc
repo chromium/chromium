@@ -351,12 +351,6 @@ BASE_FEATURE(kResumeBackgroundVideo,
 );
 
 #if BUILDFLAG(IS_MAC)
-// Enables system audio mirroring using ScreenCaptureKit when casting the
-// screen on macOS 13.0+.
-BASE_FEATURE(kMacLoopbackAudioForCast,
-             "MacLoopbackAudioForCast",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables system audio sharing using ScreenCaptureKit when screen sharing on
 // macOS 13.0+.
 BASE_FEATURE(kMacLoopbackAudioForScreenShare,
