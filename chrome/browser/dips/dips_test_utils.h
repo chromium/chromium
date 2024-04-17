@@ -180,9 +180,7 @@ class FrameCookieAccessObserver : public content::WebContentsObserver {
 
 class RedirectChainObserver : public DIPSService::Observer {
  public:
-  explicit RedirectChainObserver(DIPSService* service,
-                                 GURL final_url,
-                                 size_t expected_match_count = 1);
+  explicit RedirectChainObserver(DIPSService* service, GURL final_url);
   ~RedirectChainObserver() override;
 
   void OnChainHandled(const DIPSRedirectChainInfoPtr& chain) override;
@@ -193,8 +191,6 @@ class RedirectChainObserver : public DIPSService::Observer {
 
  private:
   GURL final_url_;
-  size_t match_count_ = 0;
-  size_t expected_match_count_;
   base::RunLoop run_loop_;
   base::ScopedObservation<DIPSService, Observer> obs_{this};
 };
