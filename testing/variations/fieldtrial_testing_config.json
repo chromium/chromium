@@ -19601,6 +19601,22 @@
             ]
         }
     ],
+    "TouchpadFastClickStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFastTouchpadClick"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrackingProtection3pcd": [
         {
             "platforms": [
