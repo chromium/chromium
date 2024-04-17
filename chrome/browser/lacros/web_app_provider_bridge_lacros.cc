@@ -13,7 +13,7 @@
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 #include "chrome/browser/lacros/profile_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
+#include "chrome/browser/web_applications/commands/install_app_from_verified_manifest_command.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -37,14 +37,14 @@ namespace crosapi {
 
 namespace {
 
-webapps::WebappInstallSource GetInstallSourceForPreload(
-    mojom::PreloadWebAppInstallSource source) {
+webapps::WebappInstallSource ConvertInstallSourceFromMojom(
+    mojom::WebAppInstallSource source) {
   switch (source) {
-    case mojom::PreloadWebAppInstallSource::kOemPreload:
+    case mojom::WebAppInstallSource::kOemPreload:
       return webapps::WebappInstallSource::PRELOADED_OEM;
-    case mojom::PreloadWebAppInstallSource::kDefaultPreload:
+    case mojom::WebAppInstallSource::kDefaultPreload:
       return webapps::WebappInstallSource::PRELOADED_DEFAULT;
-    case mojom::PreloadWebAppInstallSource::kAlmanacInstallAppUri:
+    case mojom::WebAppInstallSource::kAlmanacInstallAppUri:
       return webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI;
   }
 }
@@ -122,12 +122,13 @@ void WebAppProviderBridgeLacros::GetSubAppToParentMap(
       /*can_trigger_fre=*/false);
 }
 
-void WebAppProviderBridgeLacros::InstallPreloadWebApp(
-    mojom::PreloadWebAppInstallInfoPtr preload_install_info,
-    InstallPreloadWebAppCallback callback) {
+void WebAppProviderBridgeLacros::InstallWebAppFromVerifiedManifest(
+    mojom::WebAppVerifiedManifestInstallInfoPtr install_info,
+    InstallWebAppFromVerifiedManifestCallback callback) {
   LoadMainProfile(
-      base::BindOnce(&WebAppProviderBridgeLacros::InstallPreloadWebAppImpl,
-                     std::move(preload_install_info), std::move(callback)),
+      base::BindOnce(
+          &WebAppProviderBridgeLacros::InstallWebAppFromVerifiedManifestImpl,
+          std::move(install_info), std::move(callback)),
       /*can_trigger_fre=*/false);
 }
 
@@ -246,19 +247,19 @@ void WebAppProviderBridgeLacros::GetSubAppToParentMapImpl(
 }
 
 // static
-void WebAppProviderBridgeLacros::InstallPreloadWebAppImpl(
-    mojom::PreloadWebAppInstallInfoPtr preload_install_info,
-    InstallPreloadWebAppCallback callback,
+void WebAppProviderBridgeLacros::InstallWebAppFromVerifiedManifestImpl(
+    mojom::WebAppVerifiedManifestInstallInfoPtr install_info,
+    InstallWebAppFromVerifiedManifestCallback callback,
     Profile* profile) {
   CHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
 
   provider->command_manager().ScheduleCommand(
-      std::make_unique<web_app::InstallPreloadedVerifiedAppCommand>(
-          GetInstallSourceForPreload(preload_install_info->install_source),
-          preload_install_info->document_url,
-          preload_install_info->manifest_url, preload_install_info->manifest,
-          preload_install_info->expected_app_id, std::move(callback)));
+      std::make_unique<web_app::InstallAppFromVerifiedManifestCommand>(
+          ConvertInstallSourceFromMojom(install_info->install_source),
+          install_info->document_url, install_info->verified_manifest_url,
+          install_info->verified_manifest_contents,
+          install_info->expected_app_id, std::move(callback)));
 }
 
 // static

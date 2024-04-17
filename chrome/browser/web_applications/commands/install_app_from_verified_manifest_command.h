@@ -1,9 +1,9 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_PRELOADED_VERIFIED_APP_COMMAND_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_PRELOADED_VERIFIED_APP_COMMAND_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_APP_FROM_VERIFIED_MANIFEST_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_APP_FROM_VERIFIED_MANIFEST_COMMAND_H_
 
 #include <memory>
 #include <string>
@@ -32,10 +32,11 @@ namespace web_app {
 
 class SharedWebContentsWithAppLock;
 
-// Installs a web app using a raw manifest JSON string, which is interpreted as
-// if it was loaded from the renderer for a given URL. This does not attempt to
-// verify all the normal installability criteria of the manifest, instead it
-// just checks limited criteria needed to successfully install the app:
+// Installs a web app using a raw manifest JSON string, bypassing the usual
+// network fetch that ensures the provided manifest is representative of what
+// is rel="mainfest" linked to by `document_url`.
+//
+// A limited set of checks must pass for the app to to successfully install:
 // - The manifest must be valid JSON
 // - The manifest must have a valid start URL and name/short_name
 // - The manifest must have a valid icon from an allowlisted host
@@ -45,7 +46,7 @@ class SharedWebContentsWithAppLock;
 //
 // The web app can be simultaneously installed from multiple sources. If the
 // web app already exists, the manifest contents will be ignored.
-class InstallPreloadedVerifiedAppCommand
+class InstallAppFromVerifiedManifestCommand
     : public WebAppCommand<SharedWebContentsLock,
                            const webapps::AppId&,
                            webapps::InstallResultCode> {
@@ -55,21 +56,21 @@ class InstallPreloadedVerifiedAppCommand
   // `install_source`: Source of this web app installation
   // `document_url`: URL of the HTML document where the manifest was found. Used
   // for manifest parsing.
-  // `manifest_url`: URL that the manifest content was retrieved from. Used for
-  // manifest parsing.
-  // `manifest_contents`: JSON string of a web app manifest to install.
+  // `verified_manifest_url`: URL that the manifest content was retrieved from.
+  // Used for manifest parsing.
+  // `verified_manifest_contents`: JSON string of a web app manifest to install.
   // `expected_id`: Expected hashed App ID for the installed app. If the ID does
   // not match, installation will abort with an error.
   // `callback`: Called when installation completes.
-  InstallPreloadedVerifiedAppCommand(
+  InstallAppFromVerifiedManifestCommand(
       webapps::WebappInstallSource install_source,
       GURL document_url,
-      GURL manifest_url,
-      std::string manifest_contents,
+      GURL verified_manifest_url,
+      std::string verified_manifest_contents,
       webapps::AppId expected_id,
       OnceInstallCallback callback);
 
-  ~InstallPreloadedVerifiedAppCommand() override;
+  ~InstallAppFromVerifiedManifestCommand() override;
 
  protected:
   // WebAppCommand:
@@ -90,8 +91,8 @@ class InstallPreloadedVerifiedAppCommand
 
   webapps::WebappInstallSource install_source_;
   GURL document_url_;
-  GURL manifest_url_;
-  std::string manifest_contents_;
+  GURL verified_manifest_url_;
+  std::string verified_manifest_contents_;
   webapps::AppId expected_id_;
 
   // SharedWebContentsLock is held while parsing the manifest.
@@ -107,10 +108,10 @@ class InstallPreloadedVerifiedAppCommand
 
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;
 
-  base::WeakPtrFactory<InstallPreloadedVerifiedAppCommand> weak_ptr_factory_{
+  base::WeakPtrFactory<InstallAppFromVerifiedManifestCommand> weak_ptr_factory_{
       this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_PRELOADED_VERIFIED_APP_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_APP_FROM_VERIFIED_MANIFEST_COMMAND_H_

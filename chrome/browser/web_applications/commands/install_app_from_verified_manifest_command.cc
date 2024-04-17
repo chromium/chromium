@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
+#include "chrome/browser/web_applications/commands/install_app_from_verified_manifest_command.h"
 
 #include <memory>
 #include <string>
@@ -64,17 +64,17 @@ bool HasRequiredManifestFields(const blink::mojom::ManifestPtr& manifest) {
 
 }  // namespace
 
-InstallPreloadedVerifiedAppCommand::InstallPreloadedVerifiedAppCommand(
+InstallAppFromVerifiedManifestCommand::InstallAppFromVerifiedManifestCommand(
     webapps::WebappInstallSource install_source,
     GURL document_url,
-    GURL manifest_url,
-    std::string manifest_contents,
+    GURL verified_manifest_url,
+    std::string verified_manifest_contents,
     webapps::AppId expected_id,
     OnceInstallCallback callback)
     : WebAppCommand<SharedWebContentsLock,
                     const webapps::AppId&,
                     webapps::InstallResultCode>(
-          "InstallPreloadedVerifiedAppCommand",
+          "InstallAppFromVerifiedManifestCommand",
           SharedWebContentsLockDescription(),
           std::move(callback),
           /*args_for_shutdown=*/
@@ -83,19 +83,21 @@ InstallPreloadedVerifiedAppCommand::InstallPreloadedVerifiedAppCommand(
                               kCancelledOnWebAppProviderShuttingDown)),
       install_source_(install_source),
       document_url_(std::move(document_url)),
-      manifest_url_(std::move(manifest_url)),
-      manifest_contents_(std::move(manifest_contents)),
+      verified_manifest_url_(std::move(verified_manifest_url)),
+      verified_manifest_contents_(std::move(verified_manifest_contents)),
       expected_id_(std::move(expected_id)) {
   GetMutableDebugValue().Set("document_url", document_url_.spec());
-  GetMutableDebugValue().Set("manifest_url", manifest_url_.spec());
+  GetMutableDebugValue().Set("verified_manifest_url",
+                             verified_manifest_url_.spec());
   GetMutableDebugValue().Set("expected_id", expected_id_);
-  GetMutableDebugValue().Set("manifest_contents", manifest_contents_);
+  GetMutableDebugValue().Set("verified_manifest_contents",
+                             verified_manifest_contents_);
 }
 
-InstallPreloadedVerifiedAppCommand::~InstallPreloadedVerifiedAppCommand() =
-    default;
+InstallAppFromVerifiedManifestCommand::
+    ~InstallAppFromVerifiedManifestCommand() = default;
 
-void InstallPreloadedVerifiedAppCommand::StartWithLock(
+void InstallAppFromVerifiedManifestCommand::StartWithLock(
     std::unique_ptr<SharedWebContentsLock> lock) {
   web_contents_lock_ = std::move(lock);
 
@@ -105,11 +107,11 @@ void InstallPreloadedVerifiedAppCommand::StartWithLock(
   url_loader_->LoadUrl(
       GURL(url::kAboutBlankURL), &web_contents_lock_->shared_web_contents(),
       webapps::WebAppUrlLoader::UrlComparison::kExact,
-      base::BindOnce(&InstallPreloadedVerifiedAppCommand::OnAboutBlankLoaded,
+      base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnAboutBlankLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void InstallPreloadedVerifiedAppCommand::OnAboutBlankLoaded(
+void InstallAppFromVerifiedManifestCommand::OnAboutBlankLoaded(
     webapps::WebAppUrlLoaderResult result) {
   // The shared web contents must have been reset to about:blank before command
   // execution.
@@ -121,17 +123,17 @@ void InstallPreloadedVerifiedAppCommand::OnAboutBlankLoaded(
       ->GetRemoteInterfaces()
       ->GetInterface(manifest_manager_.BindNewPipeAndPassReceiver());
   manifest_manager_.set_disconnect_handler(
-      base::BindOnce(&InstallPreloadedVerifiedAppCommand::Abort,
+      base::BindOnce(&InstallAppFromVerifiedManifestCommand::Abort,
                      weak_ptr_factory_.GetWeakPtr(), CommandResult::kFailure,
                      webapps::InstallResultCode::kWebContentsDestroyed));
 
   manifest_manager_->ParseManifestFromString(
-      document_url_, manifest_url_, manifest_contents_,
-      base::BindOnce(&InstallPreloadedVerifiedAppCommand::OnManifestParsed,
+      document_url_, verified_manifest_url_, verified_manifest_contents_,
+      base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnManifestParsed,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
+void InstallAppFromVerifiedManifestCommand::OnManifestParsed(
     blink::mojom::ManifestPtr manifest) {
   // Note that most errors during parsing (e.g. errors to do with parsing a
   // particular field) are silently ignored. As long as the manifest is valid
@@ -147,7 +149,8 @@ void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
   web_app_info_ = std::make_unique<WebAppInstallInfo>(manifest->id);
   web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
-  UpdateWebAppInfoFromManifest(*manifest, manifest_url_, web_app_info_.get());
+  UpdateWebAppInfoFromManifest(*manifest, verified_manifest_url_,
+                               web_app_info_.get());
 
   IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
   base::EraseIf(icon_urls, [](const IconUrlWithSize& url_with_size) {
@@ -174,11 +177,11 @@ void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
       &web_contents_lock_->shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
       /*fail_all_if_any_fail=*/false,
-      base::BindOnce(&InstallPreloadedVerifiedAppCommand::OnIconsRetrieved,
+      base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnIconsRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void InstallPreloadedVerifiedAppCommand::OnIconsRetrieved(
+void InstallAppFromVerifiedManifestCommand::OnIconsRetrieved(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
@@ -207,11 +210,11 @@ void InstallPreloadedVerifiedAppCommand::OnIconsRetrieved(
 
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(web_contents_lock_), {app_id},
-      base::BindOnce(&InstallPreloadedVerifiedAppCommand::OnAppLockAcquired,
+      base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnAppLockAcquired,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void InstallPreloadedVerifiedAppCommand::OnAppLockAcquired(
+void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired(
     std::unique_ptr<SharedWebContentsWithAppLock> app_lock) {
   app_lock_ = std::move(app_lock);
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_source_);
@@ -223,11 +226,11 @@ void InstallPreloadedVerifiedAppCommand::OnAppLockAcquired(
 
   app_lock_->install_finalizer().FinalizeInstall(
       *web_app_info_, finalize_options,
-      base::BindOnce(&InstallPreloadedVerifiedAppCommand::OnInstallFinalized,
+      base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnInstallFinalized,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void InstallPreloadedVerifiedAppCommand::OnInstallFinalized(
+void InstallAppFromVerifiedManifestCommand::OnInstallFinalized(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
@@ -235,7 +238,7 @@ void InstallPreloadedVerifiedAppCommand::OnInstallFinalized(
                           app_id, code);
 }
 
-void InstallPreloadedVerifiedAppCommand::Abort(
+void InstallAppFromVerifiedManifestCommand::Abort(
     CommandResult result,
     webapps::InstallResultCode code) {
   GetMutableDebugValue().Set("error_code", base::ToString(code));

@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
+#include "chrome/browser/web_applications/commands/install_app_from_verified_manifest_command.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -189,11 +189,13 @@ void WebAppInstaller::OnManifestRetrieved(
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
 
   if (web_app::IsWebAppsCrosapiEnabled()) {
-    auto web_app_install_info = crosapi::mojom::PreloadWebAppInstallInfo::New();
+    auto web_app_install_info =
+        crosapi::mojom::WebAppVerifiedManifestInstallInfo::New();
     web_app_install_info->document_url = web_app_data.document_url;
-    web_app_install_info->manifest_url = web_app_data.original_manifest_url;
+    web_app_install_info->verified_manifest_url =
+        web_app_data.original_manifest_url;
     web_app_install_info->expected_app_id = expected_app_id;
-    web_app_install_info->manifest = std::move(*response);
+    web_app_install_info->verified_manifest_contents = std::move(*response);
     web_app_install_info->install_source = [&] {
       switch (surface) {
         case AppInstallSurface::kAppInstallUriUnknown:
@@ -202,12 +204,11 @@ void WebAppInstaller::OnManifestRetrieved(
         case AppInstallSurface::kAppInstallUriGetit:
         case AppInstallSurface::kAppInstallUriLauncher:
         case AppInstallSurface::kAppInstallUriPeripherals:
-          return crosapi::mojom::PreloadWebAppInstallSource::
-              kAlmanacInstallAppUri;
+          return crosapi::mojom::WebAppInstallSource::kAlmanacInstallAppUri;
         case AppInstallSurface::kAppPreloadServiceOem:
-          return crosapi::mojom::PreloadWebAppInstallSource::kOemPreload;
+          return crosapi::mojom::WebAppInstallSource::kOemPreload;
         case AppInstallSurface::kAppPreloadServiceDefault:
-          return crosapi::mojom::PreloadWebAppInstallSource::kDefaultPreload;
+          return crosapi::mojom::WebAppInstallSource::kDefaultPreload;
       }
     }();
 
@@ -235,14 +236,13 @@ void WebAppInstaller::OnManifestRetrieved(
       }
     }();
 
-    // TODO(b/315077087): Rename this command to be more generic than just for
-    // preloads.
     provider->command_manager().ScheduleCommand(
-        std::make_unique<web_app::InstallPreloadedVerifiedAppCommand>(
+        std::make_unique<web_app::InstallAppFromVerifiedManifestCommand>(
             install_source,
             /*document_url=*/web_app_data.document_url,
-            /*manifest_url=*/web_app_data.original_manifest_url,
-            std::move(*response), expected_app_id,
+            /*verified_manifest_url=*/web_app_data.original_manifest_url,
+            /*verified_manifest_contents=*/std::move(*response),
+            expected_app_id,
             base::BindOnce(&WebAppInstaller::OnAppInstalled,
                            weak_ptr_factory_.GetWeakPtr(), surface,
                            std::move(callback))));
@@ -263,8 +263,8 @@ void WebAppInstaller::MaybeSendPendingCrosapiRequests() {
 
   for (PendingCrosapiRequest& request :
        std::exchange(pending_crosapi_requests_, {})) {
-    web_app_provider_bridge->InstallPreloadWebApp(std::move(request.info),
-                                                  std::move(request.callback));
+    web_app_provider_bridge->InstallWebAppFromVerifiedManifest(
+        std::move(request.info), std::move(request.callback));
   }
   CHECK(pending_crosapi_requests_.empty());
 }
@@ -283,8 +283,9 @@ void WebAppInstaller::OnAppInstalled(AppInstallSurface surface,
 }
 
 WebAppInstaller::PendingCrosapiRequest::PendingCrosapiRequest(
-    crosapi::mojom::PreloadWebAppInstallInfoPtr info,
-    crosapi::mojom::WebAppProviderBridge::InstallPreloadWebAppCallback callback)
+    crosapi::mojom::WebAppVerifiedManifestInstallInfoPtr info,
+    crosapi::mojom::WebAppProviderBridge::
+        InstallWebAppFromVerifiedManifestCallback callback)
     : info(std::move(info)), callback(std::move(callback)) {}
 
 WebAppInstaller::PendingCrosapiRequest::PendingCrosapiRequest(

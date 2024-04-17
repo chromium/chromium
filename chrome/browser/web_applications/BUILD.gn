@@ -341,8 +341,8 @@ source_set("web_applications") {
     sources += [
       "chromeos_web_app_experiments.cc",
       "chromeos_web_app_experiments.h",
-      "commands/install_preloaded_verified_app_command.cc",
-      "commands/install_preloaded_verified_app_command.h",
+      "commands/install_app_from_verified_manifest_command.cc",
+      "commands/install_app_from_verified_manifest_command.h",
       "isolated_web_apps/policy/isolated_web_app_external_install_options.cc",
       "isolated_web_apps/policy/isolated_web_app_external_install_options.h",
       "isolated_web_apps/policy/isolated_web_app_policy_constants.cc",
@@ -1028,7 +1028,7 @@ source_set("web_applications_browser_tests") {
 
   if (is_chromeos) {
     sources += [
-      "commands/install_preloaded_verified_app_command_browsertest.cc",
+      "commands/install_app_from_verified_manifest_command_browsertest.cc",
       "migrations/adobe_express_oem_to_default_migration_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
 
