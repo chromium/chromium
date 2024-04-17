@@ -241,6 +241,7 @@ source_set("requesters") {
     "manual_fill_full_card_requester.mm",
   ]
   deps = [
+    ":manual_fill_constants",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",

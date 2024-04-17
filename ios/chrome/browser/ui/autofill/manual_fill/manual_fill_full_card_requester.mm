@@ -13,6 +13,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_request_result_delegate_bridge.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -55,7 +56,8 @@ class CreditCard;
 
 - (void)requestFullCreditCard:(const autofill::CreditCard)card
        withBaseViewController:(UIViewController*)viewController
-                   recordType:(autofill::CreditCard::RecordType)recordType {
+                   recordType:(autofill::CreditCard::RecordType)recordType
+                    fieldType:(manual_fill::PaymentFieldType)fieldType {
   // Payment Request is only enabled in main frame.
   web::WebState* webState = self.webStateList->GetActiveWebState();
   web::WebFramesManager* frames_manager =
@@ -80,7 +82,9 @@ class CreditCard;
       (recordType == kVirtualCard ? &virtualCard : &card),
       base::BindOnce(^(autofill::CreditCardFetchResult result,
                        const autofill::CreditCard* fetchedCard) {
-        [weakSelf onCreditCardFetched:result fetchedCard:fetchedCard];
+        [weakSelf onCreditCardFetched:result
+                          fetchedCard:fetchedCard
+                            fieldType:fieldType];
       }));
 
   // TODO(crbug.com/845472): closing CVC requester doesn't restore icon bar
@@ -93,9 +97,10 @@ class CreditCard;
 // delegate the result of the card retrieval process and provides the card if
 // the process succeeded.
 - (void)onCreditCardFetched:(autofill::CreditCardFetchResult)result
-                fetchedCard:(const autofill::CreditCard*)fetchedCard {
+                fetchedCard:(const autofill::CreditCard*)fetchedCard
+                  fieldType:(manual_fill::PaymentFieldType)fieldType {
   if (result == autofill::CreditCardFetchResult::kSuccess && fetchedCard) {
-    [_delegate onFullCardRequestSucceeded:*fetchedCard];
+    [_delegate onFullCardRequestSucceeded:*fetchedCard fieldType:fieldType];
   } else {
     [_delegate onFullCardRequestFailed];
   }

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_card_mediator.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_full_card_requester.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -130,7 +131,8 @@
   }];
 }
 
-- (void)requestFullCreditCard:(ManualFillCreditCard*)card {
+- (void)requestFullCreditCard:(ManualFillCreditCard*)card
+                    fieldType:(manual_fill::PaymentFieldType)fieldType {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
     if (!weakSelf)
@@ -141,7 +143,8 @@
       return;
     [weakSelf.cardRequester requestFullCreditCard:*autofillCreditCard
                            withBaseViewController:weakSelf.baseViewController
-                                       recordType:card.recordType];
+                                       recordType:card.recordType
+                                        fieldType:fieldType];
   }];
 }
 

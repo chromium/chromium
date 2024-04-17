@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_labeled_chip.h"
@@ -446,7 +447,9 @@ using base::SysNSStringToUTF8;
                                passwordField:NO
                                requiresHTTPS:YES];
   } else {
-    [self.navigationDelegate requestFullCreditCard:self.card];
+    [self.navigationDelegate
+        requestFullCreditCard:self.card
+                    fieldType:manual_fill::PaymentFieldType::kCardNumber];
   }
 }
 
@@ -480,17 +483,29 @@ using base::SysNSStringToUTF8;
 - (void)userDidTapExpirationMonth:(UIButton*)sender {
   base::RecordAction(base::UserMetricsAction(
       [self createMetricsAction:@"SelectExpirationMonth"]));
-  [self.contentInjector userDidPickContent:sender.titleLabel.text
-                             passwordField:NO
-                             requiresHTTPS:NO];
+  if (self.card.recordType == kVirtualCard) {
+    [self.navigationDelegate
+        requestFullCreditCard:self.card
+                    fieldType:manual_fill::PaymentFieldType::kExpirationMonth];
+  } else {
+    [self.contentInjector userDidPickContent:sender.titleLabel.text
+                               passwordField:NO
+                               requiresHTTPS:NO];
+  }
 }
 
 - (void)userDidTapExpirationYear:(UIButton*)sender {
   base::RecordAction(base::UserMetricsAction(
       [self createMetricsAction:@"SelectExpirationYear"]));
-  [self.contentInjector userDidPickContent:sender.titleLabel.text
-                             passwordField:NO
-                             requiresHTTPS:NO];
+  if (self.card.recordType == kVirtualCard) {
+    [self.navigationDelegate
+        requestFullCreditCard:self.card
+                    fieldType:manual_fill::PaymentFieldType::kExpirationYear];
+  } else {
+    [self.contentInjector userDidPickContent:sender.titleLabel.text
+                               passwordField:NO
+                               requiresHTTPS:NO];
+  }
 }
 
 - (const char*)createMetricsAction:(NSString*)selectedChip {

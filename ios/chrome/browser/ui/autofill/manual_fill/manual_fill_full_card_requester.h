@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 
 namespace autofill {
 class CreditCard;
@@ -34,7 +35,8 @@ class WebStateList;
 // result of the operation.
 - (void)requestFullCreditCard:(const autofill::CreditCard)card
        withBaseViewController:(UIViewController*)viewController
-                   recordType:(autofill::CreditCard::RecordType)recordType;
+                   recordType:(autofill::CreditCard::RecordType)recordType
+                    fieldType:(manual_fill::PaymentFieldType)fieldType;
 
 @end
 

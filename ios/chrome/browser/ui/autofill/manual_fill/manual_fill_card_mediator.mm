@@ -28,6 +28,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
+using manual_fill::PaymentFieldType;
+
 namespace autofill {
 class CreditCard;
 }  // namespace autofill
@@ -161,13 +163,32 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
 
 #pragma mark - FullCardRequestResultDelegateObserving
 
-- (void)onFullCardRequestSucceeded:(const autofill::CreditCard&)card {
+- (void)onFullCardRequestSucceeded:(const autofill::CreditCard&)card
+                         fieldType:(manual_fill::PaymentFieldType)fieldType {
   // Credit card are not shown as 'Secure'.
   ManualFillCreditCard* manualFillCreditCard =
       [[ManualFillCreditCard alloc] initWithCreditCard:card];
+  NSString* fillValue;
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVirtualCards)) {
+    switch (fieldType) {
+      case PaymentFieldType::kCardNumber:
+        fillValue = manualFillCreditCard.number;
+        break;
+      case PaymentFieldType::kExpirationMonth:
+        fillValue = manualFillCreditCard.expirationMonth;
+        break;
+      case PaymentFieldType::kExpirationYear:
+        fillValue = manualFillCreditCard.expirationYear;
+        break;
+    }
+  } else {
+    fillValue = manualFillCreditCard.number;
+  }
+
   // Don't replace the locked card with the unlocked one, so the user will
   // have to unlock it again, if needed.
-  [self.contentInjector userDidPickContent:manualFillCreditCard.number
+  [self.contentInjector userDidPickContent:fillValue
                              passwordField:NO
                              requiresHTTPS:YES];
 }
