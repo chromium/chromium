@@ -295379,7 +295379,7 @@
       []
      ],
      "set_cookie.headers": [
-      "4226ff4c9975cccb5ea799b769a6e797eea12b8b",
+      "ddeb0bb3d6d81088f63178a2d8ffb7de001b736b",
       []
      ]
     }
@@ -367103,7 +367103,7 @@
         []
        ],
        "img-sizes-auto-expected.txt": [
-        "e7778d2f7330c670b92ca46cbede2f87c884d0d4",
+        "57d5088a8a938afc23f19798bf728837df6efeae",
         []
        ],
        "input-image-content-ref.html": [
@@ -368925,10 +368925,6 @@
           []
          ]
         },
-        "sizes-auto-expected.txt": [
-         "d8660751fc83489bd85da99ac811c761e8c5c69d",
-         []
-        ],
         "sizes-dynamic-001-ref.html": [
          "68466ae94d4e5c44b07f6eac52d71119a9d1a657",
          []
@@ -473016,7 +473012,7 @@
       ]
      ],
      "event-pseudo-name.html": [
-      "a57c1d51087625b5ba1951cccdbfca6fb1e66467",
+      "d77c8173456d6190c8d663656fa7b94958100b91",
       [
        null,
        {}
@@ -473351,7 +473347,14 @@
          {}
         ]
        ]
-      }
+      },
+      "scroll-top-test-with-zoom.html": [
+       "290fa602af677f6fb394c3b79a9bb25c2158d23d",
+       [
+        null,
+        {}
+       ]
+      ]
      }
     },
     "css-will-change": {
