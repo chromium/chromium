@@ -240,6 +240,7 @@ chromium-metrics-reviews@google.com.
   <int value="69" label="AutofillPaymentCardBenefits"/>
   <int value="70" label="(obsolete) CloseTabs"/>
   <int value="71" label="ShowTabGroupsInBookmarkBar"/>
+  <int value="72" label="FacilitatedPaymentsPix"/>
   <int value="100000" label="AppLanguagePromptShown"/>
   <int value="100001" label="(Obsolete) PrefExplicitLanguageAskShown"/>
   <int value="100002" label="ContextualSearchEnabled_Android"/>

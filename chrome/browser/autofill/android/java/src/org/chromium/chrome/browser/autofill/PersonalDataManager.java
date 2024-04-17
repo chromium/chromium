@@ -1161,6 +1161,16 @@ public class PersonalDataManager implements Destroyable {
         ResettersForTesting.register(() -> this.mImageFetcher = oldValue);
     }
 
+    /** Sets the preference value for supporting payments using Pix. */
+    public void setFacilitatedPaymentsPixPref(boolean value) {
+        mPrefService.setBoolean(Pref.FACILITATED_PAYMENTS_PIX, value);
+    }
+
+    /** Returns the preference value for supporting payments using Pix. */
+    public boolean getFacilitatedPaymentsPixPref() {
+        return mPrefService.getBoolean(Pref.FACILITATED_PAYMENTS_PIX);
+    }
+
     @NativeMethods
     interface Natives {
         long init(PersonalDataManager caller, @JniType("Profile*") Profile profile);

@@ -156,5 +156,11 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_CanBeSetAndReadFromJSON) {
   EXPECT_EQ(dictionary, *base::JSONReader::Read(output_js));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AutofillPrefsTest, FacilitatedPaymentsPixPref_DefaultValueSetToTrue) {
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kFacilitatedPaymentsPix));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace prefs
 }  // namespace autofill

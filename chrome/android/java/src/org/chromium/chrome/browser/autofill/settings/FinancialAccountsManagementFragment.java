@@ -30,7 +30,7 @@ import java.util.Optional;
 
 /** Fragment showing management options for financial accounts like Pix, e-Wallets etc. */
 public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragment
-        implements PersonalDataManagerObserver {
+        implements PersonalDataManagerObserver, Preference.OnPreferenceChangeListener {
     private static Callback<Fragment> sObserverForTest;
 
     @VisibleForTesting static final String PREFERENCE_KEY_PIX = "pix";
@@ -39,6 +39,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     static final String TITLE_KEY = "financial_accounts_management_title";
 
     private PersonalDataManager mPersonalDataManager;
+    private BankAccount[] mBankAccounts;
 
     // ChromeBaseSettingsFramgent override.
     @Override
@@ -89,15 +90,42 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         getPreferenceScreen().removeAll();
         getPreferenceScreen().setOrderingAsAdded(true);
 
-        BankAccount[] bankAccounts = mPersonalDataManager.getMaskedBankAccounts();
-        if (bankAccounts.length > 0) {
-            ChromeSwitchPreference pixSwitch = new ChromeSwitchPreference(getStyledContext());
-            pixSwitch.setKey(PREFERENCE_KEY_PIX);
-            pixSwitch.setTitle(R.string.settings_manage_other_financial_accounts_pix);
-            getPreferenceScreen().addPreference(pixSwitch);
-            for (BankAccount bankAccount : bankAccounts) {
-                getPreferenceScreen().addPreference(getPreferenceForBankAccount(bankAccount));
+        mBankAccounts = mPersonalDataManager.getMaskedBankAccounts();
+        if (mBankAccounts.length == 0) {
+            return;
+        }
+
+        boolean isFacilitatedPaymentsPixEnabled =
+                mPersonalDataManager.getFacilitatedPaymentsPixPref();
+        ChromeSwitchPreference pixSwitch = new ChromeSwitchPreference(getStyledContext());
+        pixSwitch.setChecked(isFacilitatedPaymentsPixEnabled);
+        pixSwitch.setKey(PREFERENCE_KEY_PIX);
+        pixSwitch.setTitle(R.string.settings_manage_other_financial_accounts_pix);
+        getPreferenceScreen().addPreference(pixSwitch);
+        if (isFacilitatedPaymentsPixEnabled) {
+            // Show bank accounts only if the Pix switch is enabled.
+            addPixAccountPreferences();
+        }
+        pixSwitch.setOnPreferenceChangeListener(this);
+    }
+
+    private void removePixAccountPreferences() {
+        for (BankAccount bankAccount : mBankAccounts) {
+            Preference bankAccountPref =
+                    getPreferenceScreen()
+                            .findPreference(
+                                    String.format(
+                                            PREFERENCE_KEY_PIX_BANK_ACCOUNT,
+                                            bankAccount.getInstrumentId()));
+            if (bankAccountPref != null) {
+                getPreferenceScreen().removePreference(bankAccountPref);
             }
+        }
+    }
+
+    private void addPixAccountPreferences() {
+        for (BankAccount bankAccount : mBankAccounts) {
+            getPreferenceScreen().addPreference(getPreferenceForBankAccount(bankAccount));
         }
     }
 
@@ -147,6 +175,22 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    // Preference.OnPreferenceChangeListener override.
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (preference.getKey().equals(PREFERENCE_KEY_PIX)) {
+            boolean isPixEnabled = (boolean) newValue;
+            mPersonalDataManager.setFacilitatedPaymentsPixPref(isPixEnabled);
+            if (isPixEnabled) {
+                addPixAccountPreferences();
+            } else {
+                removePixAccountPreferences();
+            }
+            return true;
+        }
+        return false;
     }
 
     // PersonalDataManagerObserver implementation.

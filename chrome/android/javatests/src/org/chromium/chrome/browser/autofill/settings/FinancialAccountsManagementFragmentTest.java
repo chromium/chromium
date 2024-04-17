@@ -30,6 +30,8 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSize;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -40,6 +42,8 @@ import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.image_fetcher.test.TestImageFetcher;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
@@ -47,8 +51,8 @@ import java.util.concurrent.TimeoutException;
 
 /** Instrumentation tests for FinancialAccountsManagementFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
+@Batch(Batch.PER_CLASS)
 public class FinancialAccountsManagementFragmentTest {
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Rule public final AutofillTestRule rule = new AutofillTestRule();
@@ -98,6 +102,8 @@ public class FinancialAccountsManagementFragmentTest {
                                     CardIconSpecs.create(
                                             ContextUtils.getApplicationContext(),
                                             CardIconSize.LARGE));
+                    // Set the Pix pref to true.
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, true);
                 });
     }
 
@@ -112,44 +118,68 @@ public class FinancialAccountsManagementFragmentTest {
                 });
     }
 
+    // Test that when Pix accounts are available the Pix preference toggle is shown.
     @Test
     @MediumTest
-    public void testPixAccountAvailable_PixPrefShown() throws Exception {
+    public void testPixAccountAvailable_pixSwitchShown() throws Exception {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the switch preference for Pix is displayed.
-        ChromeSwitchPreference pixSwitch =
-                (ChromeSwitchPreference)
-                        getPreferenceScreen(activity)
-                                .findPreference(
-                                        FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX);
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
         assertThat(pixSwitch).isNotNull();
     }
 
+    // Test that when Pix accounts are not available the Pix preference toggle is not shown.
     @Test
     @MediumTest
-    public void testPixAccountNotAvailable_PixPrefNotShown() throws Exception {
+    public void testPixAccountNotAvailable_pixSwitchNotShown() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the switch preference for Pix is not displayed.
-        ChromeSwitchPreference pixSwitch =
-                (ChromeSwitchPreference)
-                        getPreferenceScreen(activity)
-                                .findPreference(
-                                        FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX);
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
         assertThat(pixSwitch).isNull();
+    }
+
+    // Test that when Pix profile preference is set to true, the Pix toggle is checked.
+    @Test
+    @MediumTest
+    public void testPixPrefEnabled_pixSwitchEnabled() throws Exception {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the switch preference for Pix is displayed and is checked.
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+        assertThat(pixSwitch.isChecked()).isTrue();
+    }
+
+    // Test that when the Pix profile preference is set to false, the Pix toggle is not checked.
+    @Test
+    @MediumTest
+    public void testPixPrefDisabled_pixSwitchDisabled() throws Exception {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, false);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the switch preference for Pix is displayed the is not checked.
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+        assertThat(pixSwitch.isChecked()).isFalse();
     }
 
     @Test
     @MediumTest
     public void testPixAccountShown() {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
-        String bankAccountPrefKey =
-                String.format(
-                        FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX_BANK_ACCOUNT,
-                        PIX_BANK_ACCOUNT.getInstrumentId());
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -158,8 +188,7 @@ public class FinancialAccountsManagementFragmentTest {
                         "Pix  •  %s •• %s",
                         activity.getString(R.string.bank_account_type_checking),
                         PIX_BANK_ACCOUNT.getAccountNumberSuffix());
-        Preference bankAccountPref =
-                getPreferenceScreen(activity).findPreference(bankAccountPrefKey);
+        Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
         assertThat(bankAccountPref.getTitle()).isEqualTo(PIX_BANK_ACCOUNT.getBankName());
         assertThat(bankAccountPref.getSummary()).isEqualTo(expectedPrefSummary);
         assertThat(bankAccountPref.getWidgetLayoutResource())
@@ -246,8 +275,74 @@ public class FinancialAccountsManagementFragmentTest {
         assertThat(bankAccountPref.getIcon()).isNull();
     }
 
+    // Test that Pix bank accounts are removed when the Pix toggle is turned off.
+    @Test
+    @MediumTest
+    public void testPixSwitchDisabled_bankAccountPrefsRemoved() {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+        Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
+        assertThat(bankAccountPref).isNotNull();
+
+        // Set the Pix toggle to off.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    pixSwitch.performClick();
+                });
+
+        // Verify that the bank account preference is now null.
+        bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
+        assertThat(bankAccountPref).isNull();
+    }
+
+    // Test that Pix bank accounts are added when the Pix toggle is turned on.
+    @Test
+    @MediumTest
+    public void testPixSwitchEnabled_bankAccountPrefsAdded() {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, false);
+                });
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+
+        Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
+        assertThat(bankAccountPref).isNull();
+
+        // Set the Pix toggle to on.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    pixSwitch.performClick();
+                });
+
+        // Verify that the bank account preference is now not null.
+        bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
+        assertThat(bankAccountPref).isNotNull();
+    }
+
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {
         return ((FinancialAccountsManagementFragment) activity.getMainFragment())
                 .getPreferenceScreen();
+    }
+
+    private static PrefService getPrefService() {
+        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+    }
+
+    private static ChromeSwitchPreference getPixSwitchPreference(SettingsActivity activity) {
+        return (ChromeSwitchPreference)
+                getPreferenceScreen(activity)
+                        .findPreference(FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX);
+    }
+
+    private static Preference getBankAccountPreference(
+            SettingsActivity activity, BankAccount bankAccount) {
+        String bankAccountPrefKey =
+                String.format(
+                        FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX_BANK_ACCOUNT,
+                        bankAccount.getInstrumentId());
+        return getPreferenceScreen(activity).findPreference(bankAccountPrefKey);
     }
 }

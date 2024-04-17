@@ -110,6 +110,7 @@ enum {
   kAutofillPaymentCardBenefits = 69,
   // kCloseTabs = 70, (no longer synced)
   kShowTabGroupsInBookmarkBar = 71,
+  kFacilitatedPaymentsPix = 72,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -280,6 +281,11 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {autofill::prefs::kAutofillPaymentCardBenefits,
          {syncable_prefs_ids::kAutofillPaymentCardBenefits, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
+#if BUILDFLAG(IS_ANDROID)
+        {autofill::prefs::kFacilitatedPaymentsPix,
+         {syncable_prefs_ids::kFacilitatedPaymentsPix, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
+#endif  // BUILDFLAG(IS_ANDROID)
     });
 
 }  // namespace

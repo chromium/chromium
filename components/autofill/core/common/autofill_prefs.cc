@@ -106,6 +106,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kAutofillUsingVirtualViewStructure,
                                 false);
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(
+      prefs::kFacilitatedPaymentsPix, /*default_value=*/true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#endif
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {

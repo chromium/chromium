@@ -115,6 +115,10 @@ inline constexpr char kAutofillUsingVirtualViewStructure[] =
     "autofill.using_virtual_view_structure";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // The maximum value for the
 // `kAutofillPaymentMethodsMandatoryReauthPromoShownCounter` pref. If this
 // value is reached, we should not show a mandatory re-auth promo.
@@ -193,6 +197,10 @@ bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
 void ClearSyncTransportOptIns(PrefService* prefs);
 
 bool UsesVirtualViewStructureForAutofill(const PrefService* prefs);
+
+void SetFacilitatedPaymentsPix(PrefService* prefs, bool value);
+
+bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs);
 
 }  // namespace autofill::prefs
 
