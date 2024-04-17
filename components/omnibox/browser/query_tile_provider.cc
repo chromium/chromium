@@ -134,15 +134,15 @@ void QueryTileProvider::BuildSuggestions() {
     AutocompleteMatch match(
         this, kQueryTilesMatchRelevanceScore + *shuffled_relevance_iter, false,
         AutocompleteMatchType::TILE_SUGGESTION);
-    match.contents = base::ASCIIToUTF16(tile.display_text);
+    match.contents = base::UTF8ToUTF16(tile.display_text);
     match.contents_class = ClassifyTermMatches({}, match.contents.size(),
                                                ACMatchClassification::MATCH,
                                                ACMatchClassification::URL);
-    match.fill_into_edit = base::ASCIIToUTF16(tile.query_text);
+    match.fill_into_edit = base::UTF8ToUTF16(tile.query_text);
     match.suggestion_group_id = omnibox::GROUP_MOBILE_QUERY_TILES;
     match.keyword = keyword;
     match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
-        base::ASCIIToUTF16(base::ToLowerASCII(tile.query_text)));
+        base::UTF8ToUTF16(tile.query_text));
     match.search_terms_args->additional_query_params =
         base::JoinString(tile.search_params, "&");
     if (!tile.image_metadatas.empty()) {
