@@ -5296,8 +5296,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the time from when a specific educational nudge is shown to when it's
     interacted with. Starts measuring time when the nudge is shown and records
-    the Nudge catalog name in one of the time buckets available if the user
-    performs the nudge's suggested action.
+    the Nudge catalog name in one of the `TimeRange` buckets if the user
+    performs the nudge's suggested action. These buckets are all exclusive.
   </summary>
   <token key="TimeRange">
     <variant name="Within1h"/>
