@@ -15,14 +15,14 @@ dangerous, Chrome shows a warning to the user:
 
 ![warning page](warning_screenshot.png)
 
-Chrome can perform two types of Safe Browsing checks during navigation:
+Chrome can perform three types of Safe Browsing checks during navigation:
 
-*   The well-known "hash-based" check
+*   The well-known hash-based database check
     ([Safe Browsing Update API (v4)](https://developers.google.com/safe-browsing/v4/update-api)).
-*   The advanced
-    ["real-time" check](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/browser/realtime/).
+*   The [URL-based real-time check](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/browser/realtime/).
+*   The [hash-based real-time check](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/browser/hashprefix_realtime/).
 
-Both of these checks are on the blocking path of navigation. Before the check is
+All of these checks are on the blocking path of navigation. Before the check is
 completed, the navigation is not committed, the page body is not read by the
 renderer, and the user won’t see any page content in their browser.
 
@@ -41,9 +41,12 @@ navigation into two phases:
 *   **Navigation phase**: From the time the network request is sent to the time
     the a navigation is committed. Note that at this point, nothing is rendered
     on the page.
-    *   "Hash-based" check and "real-time" check can both be performed in this
-        phase, depending on the user consent. "Real-time" check is only
-        performed if the user has agreed to share URLs with Google.
+    *   Any of the three Safe Browsing checks above may be performed in this
+        phase, depending on user consent. The URL-based real-time check is only
+        performed if the user has agreed to share URLs with Google. The
+        hash-based real-time check is used in most other scenarios, but in
+        incognito mode or other cases when the real-time checks are
+        unavailable, the hash-based database check will be performed instead.
 *   **Loading phase**: Consists of reading the response body from the server,
     parsing it, rendering the document so it is visible to the user, executing
     any script, and loading any subresources (images, scripts, CSS files)
