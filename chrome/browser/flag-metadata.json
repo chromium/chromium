@@ -4764,7 +4764,7 @@
     "owners": [
       "//chrome/browser/ui/hats/OWNERS"
     ],
-    "expiry_milestone": 125
+    "expiry_milestone": 126
   },
   {
     "name": "heavy-ad-privacy-mitigations",
