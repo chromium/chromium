@@ -46,7 +46,7 @@ void TraceEventAnalyzerTest::OnTraceDataCollected(
     base::WaitableEvent* flush_complete_event,
     const scoped_refptr<base::RefCountedString>& json_events_str,
     bool has_more_events) {
-  buffer_.AddFragment(json_events_str->data());
+  buffer_.AddFragment(json_events_str->as_string());
   if (!has_more_events)
     flush_complete_event->Signal();
 }

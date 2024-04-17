@@ -181,8 +181,8 @@ TEST(GoogleNewLogoApiTest, ParsesStaticImage) {
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
-  EXPECT_EQ("abc", logo->encoded_image->data());
-  EXPECT_EQ("xyz", logo->dark_encoded_image->data());
+  EXPECT_EQ("abc", logo->encoded_image->as_string());
+  EXPECT_EQ("xyz", logo->dark_encoded_image->as_string());
   EXPECT_EQ(LogoType::SIMPLE, logo->metadata.type);
 }
 
@@ -218,7 +218,7 @@ TEST(GoogleNewLogoApiTest, ParsesShareButtonForSimpleDoodle) {
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
-  EXPECT_EQ("abc", logo->encoded_image->data());
+  EXPECT_EQ("abc", logo->encoded_image->as_string());
   EXPECT_EQ(LogoType::SIMPLE, logo->metadata.type);
   EXPECT_EQ("https://g.co/", logo->metadata.short_link);
 
@@ -266,7 +266,7 @@ TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfWrongShortLinkFormat) {
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
-  EXPECT_EQ("abc", logo->encoded_image->data());
+  EXPECT_EQ("abc", logo->encoded_image->as_string());
   EXPECT_EQ(LogoType::SIMPLE, logo->metadata.type);
   ASSERT_TRUE(logo->metadata.short_link.is_empty());
   ASSERT_TRUE(logo->metadata.share_button_icon.empty());
@@ -311,7 +311,7 @@ TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfShortLinkInvalid) {
 
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
-  EXPECT_EQ("abc", logo->encoded_image->data());
+  EXPECT_EQ("abc", logo->encoded_image->as_string());
   EXPECT_EQ(LogoType::SIMPLE, logo->metadata.type);
   ASSERT_FALSE(logo->metadata.short_link.is_valid());
   ASSERT_TRUE(logo->metadata.share_button_icon.empty());
@@ -363,7 +363,7 @@ TEST(GoogleNewLogoApiTest, ParsesShareButtonForAnimatedDoodle) {
   ASSERT_TRUE(logo);
   EXPECT_EQ(GURL("https://www.doodle.com/image.gif"),
             logo->metadata.animated_url);
-  EXPECT_EQ("abc", logo->encoded_image->data());
+  EXPECT_EQ("abc", logo->encoded_image->as_string());
   EXPECT_EQ(LogoType::ANIMATED, logo->metadata.type);
   EXPECT_EQ("https://g.co/", logo->metadata.short_link);
 
@@ -413,8 +413,8 @@ TEST(GoogleNewLogoApiTest, ParsesAnimatedImage) {
   EXPECT_EQ(GURL("https://www.doodle.com/dark_image.gif"),
             logo->metadata.dark_animated_url);
   EXPECT_EQ("#ABCDEF", logo->metadata.dark_background_color);
-  EXPECT_EQ("abc", logo->encoded_image->data());
-  EXPECT_EQ("xyz", logo->dark_encoded_image->data());
+  EXPECT_EQ("abc", logo->encoded_image->as_string());
+  EXPECT_EQ("xyz", logo->dark_encoded_image->as_string());
   EXPECT_EQ(LogoType::ANIMATED, logo->metadata.type);
 }
 
@@ -529,7 +529,7 @@ TEST(GoogleNewLogoApiTest, ParsesInteractiveDoodleWithNewWindowAsSimple) {
   EXPECT_EQ(GURL("https://base.doo/play"), logo->metadata.full_page_url);
   EXPECT_EQ(0, logo->metadata.iframe_width_px);
   EXPECT_EQ(0, logo->metadata.iframe_height_px);
-  EXPECT_EQ("abc", logo->encoded_image->data());
+  EXPECT_EQ("abc", logo->encoded_image->as_string());
 }
 
 TEST(GoogleNewLogoApiTest, DefaultsInteractiveIframeSize) {

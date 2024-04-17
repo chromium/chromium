@@ -701,11 +701,10 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
   scoped_refptr<base::RefCountedMemory> bytes =
       GetContentClient()->GetDataResourceBytes(kCcompressedProtocolJSON);
   CHECK(bytes) << "Could not load protocol";
-  std::string json_protocol(reinterpret_cast<const char*>(bytes->front()),
-                            bytes->size());
 
   net::HttpServerResponseInfo response(net::HTTP_OK);
-  response.SetBody(json_protocol, "application/json; charset=UTF-8");
+  response.SetBody(std::string(base::as_string_view(*bytes)),
+                   "application/json; charset=UTF-8");
 
   thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,

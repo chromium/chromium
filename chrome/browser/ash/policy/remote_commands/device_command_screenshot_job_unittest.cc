@@ -124,7 +124,7 @@ scoped_refptr<base::RefCountedBytes> GenerateTestPNG(const int& width,
           reinterpret_cast<const unsigned char*>(bmp.getPixels()), color_format,
           gfx::Size(bmp.width(), bmp.height()),
           static_cast<int>(bmp.rowBytes()), false,
-          std::vector<gfx::PNGCodec::Comment>(), &png_bytes->data())) {
+          std::vector<gfx::PNGCodec::Comment>(), &png_bytes->as_vector())) {
     LOG(ERROR) << "Failed to encode image";
   }
   return png_bytes;

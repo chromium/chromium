@@ -38,7 +38,7 @@ bool EncodeImage(const gfx::ImageSkia& image_skia,
 
   if (image_metadata.empty()) {
     return gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality,
-                                  &(*output)->data());
+                                  &(*output)->as_vector());
   }
 
   SkPixmap pixmap;
@@ -51,7 +51,7 @@ bool EncodeImage(const gfx::ImageSkia& image_skia,
 
   return gfx::JPEGCodec::Encode(pixmap, kDefaultEncodingQuality,
                                 SkJpegEncoder::Downsample::k420,
-                                &(*output)->data(), xmpMetadata.get());
+                                &(*output)->as_vector(), xmpMetadata.get());
 }
 
 // Resizes `image` to a resolution which is nearest to `preferred_width` and

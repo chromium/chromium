@@ -97,11 +97,12 @@ class OversizedWebUIDataSource final : public URLDataSource {
         delete;
 
     // base::RefCountedMemory implementation:
-    const unsigned char* front() const override {
-      NOTREACHED();
-      return nullptr;
+    base::span<const uint8_t> AsSpan() const override {
+      // SAFETY: This is unsound, but any use of the pointer will crash as the
+      // first page is not mapped. The test does not actually use the pointer.
+      return UNSAFE_BUFFERS(base::span<const uint8_t>(
+          static_cast<const uint8_t*>(nullptr), size_));
     }
-    size_t size() const override { return size_; }
 
    private:
     ~OversizedRefCountedMemory() override = default;

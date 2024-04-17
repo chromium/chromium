@@ -268,7 +268,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
 void SelectionOwner::ProcessIncrementalTransfer(IncrementalTransfer* transfer) {
   size_t remaining = transfer->data->size() - transfer->offset;
   size_t chunk_length = std::min(remaining, GetMaxIncrementalTransferSize());
-  const uint8_t* data = transfer->data->front() + transfer->offset;
+  const uint8_t* data = transfer->data->data() + transfer->offset;
   std::vector<uint8_t> buf(data, data + chunk_length);
   connection_->SetArrayProperty(transfer->window, transfer->property,
                                 transfer->target, buf);

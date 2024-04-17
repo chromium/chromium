@@ -124,7 +124,7 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
       bool has_more_events) {
     DCHECK(trace_events_.empty());
     trace_buffer_.Start();
-    trace_buffer_.AddFragment(events_str->data());
+    trace_buffer_.AddFragment(events_str->as_string());
     trace_buffer_.Finish();
 
     std::optional<base::Value> trace_value;

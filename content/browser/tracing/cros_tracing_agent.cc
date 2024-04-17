@@ -196,7 +196,7 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   // Called on any thread.
   void OnTraceData(base::OnceClosure stop_complete_callback,
                    const scoped_refptr<base::RefCountedString>& events) {
-    if (!events || events->data().empty()) {
+    if (!events || events->as_string().empty()) {
       OnTraceDataCommitted(std::move(stop_complete_callback));
       return;
     }

@@ -444,7 +444,7 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
     return;
   }
   current_screenshot_data_uri_ =
-      webui::MakeDataURIForImage(data->data(), "jpeg");
+      webui::MakeDataURIForImage(data->as_vector(), "jpeg");
 
   ShowOverlayWidget();
 

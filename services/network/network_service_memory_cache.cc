@@ -135,8 +135,8 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
   if (decision == orb::ResponseAnalyzer::Decision::kSniffMore) {
     const size_t size =
         std::min(static_cast<size_t>(net::kMaxBytesToSniff), content.size());
-    decision = analyzer->Sniff(
-        std::string_view(reinterpret_cast<const char*>(content.front()), size));
+    decision =
+        analyzer->Sniff(base::as_string_view(base::span(content).first(size)));
     if (decision == orb::ResponseAnalyzer::Decision::kSniffMore) {
       decision = analyzer->HandleEndOfSniffableResponseBody();
     }

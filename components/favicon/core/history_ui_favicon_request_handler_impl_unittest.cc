@@ -39,7 +39,7 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmapResult(
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
   gfx::PNGCodec::EncodeBGRASkBitmap(
       gfx::test::CreateBitmap(desired_size_in_pixel, SK_ColorRED), false,
-      &data->data());
+      &data->as_vector());
   favicon_base::FaviconRawBitmapResult result;
   result.bitmap_data = data;
   result.icon_url = icon_url;

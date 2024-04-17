@@ -379,7 +379,7 @@ class GenXproto(FileWriter):
         else:
             self.write('auto& %s = %s.%s;' % (field_name, obj, field_name))
 
-        if field.type.is_list:
+        if field.type.is_list and field.type.is_sized:
             len_name = field_name + '_len'
             if not self.field_from_scope(len_name):
                 len_expr = list_size(field_name, field.type)
@@ -573,7 +573,7 @@ class GenXproto(FileWriter):
                     self.copy_field(case_field)
 
     def declare_switch(self, field):
-        return [('absl::optional<%s>' % field_type, field_name)
+        return [('std::optional<%s>' % field_type, field_name)
                 for case in field.type.bitcases
                 for field_type, field_name in self.declare_case(case)]
 
@@ -592,7 +592,10 @@ class GenXproto(FileWriter):
 
         assert (t.nmemb not in (0, 1))
         if t.is_ref_counted_memory:
-            type_name = 'scoped_refptr<base::RefCountedMemory>'
+            if t.is_sized:
+                type_name = 'scoped_refptr<base::RefCountedMemory>'
+            else:
+                type_name = 'scoped_refptr<UnsizedRefCountedMemory>'
         elif t.nmemb:
             type_name = 'std::array<%s, %d>' % (type_name, t.nmemb)
         elif type_name == 'char':
@@ -609,6 +612,8 @@ class GenXproto(FileWriter):
         if t.is_ref_counted_memory:
             if self.is_read:
                 self.write('%s = buffer->ReadAndAdvance(%s);' % (name, size))
+            elif t.is_sized:
+                self.write('buf.AppendSizedBuffer(%s);' % (name))
             else:
                 self.write('buf.AppendBuffer(%s, %s);' % (name, size))
             return
@@ -850,7 +855,7 @@ class GenXproto(FileWriter):
             return []
 
         if field.type.is_switch:
-            return ['absl::nullopt'] * len(self.declare_switch(field))
+            return ['std::nullopt'] * len(self.declare_switch(field))
         if field.type.is_list or not field.type.is_container:
             return ['{}']
 
@@ -1100,6 +1105,7 @@ class GenXproto(FileWriter):
                 # xcb uses void* in some places to represent arbitrary data.
                 field.type.is_ref_counted_memory = (
                     not field.type.nmemb and field.field_type[0] == 'void')
+                field.type.is_sized = isinstance(t, self.xcbgen.xtypes.Request)
 
             # |for_list| and |for_switch| may have already been set when
             # processing other fields in this structure.
@@ -1225,15 +1231,15 @@ class GenXproto(FileWriter):
         self.write('#include <cstddef>')
         self.write('#include <cstdint>')
         self.write('#include <cstring>')
+        self.write('#include <optional>')
         self.write('#include <vector>')
         self.write()
         self.write('#include "base/component_export.h"')
-        self.write('#include "base/memory/ref_counted_memory.h"')
         self.write('#include "base/memory/scoped_refptr.h"')
-        self.write('#include "third_party/abseil-cpp/absl/types/optional.h"')
         self.write('#include "base/files/scoped_file.h"')
         self.write('#include "ui/gfx/x/ref_counted_fd.h"')
         self.write('#include "ui/gfx/x/error.h"')
+        self.write('#include "ui/gfx/x/xproto_types.h"')
         imports = set(self.module.direct_imports)
         if self.module.namespace.is_ext:
             imports.add(('xproto', 'xproto'))

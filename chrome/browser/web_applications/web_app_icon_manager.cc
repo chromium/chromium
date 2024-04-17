@@ -242,14 +242,14 @@ TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconBlocking");
   base::FilePath icon_file = GetIconFileName(web_apps_directory, icon_id);
   auto icon_data = base::MakeRefCounted<base::RefCountedString>();
-  if (!utils->ReadFileToString(icon_file, &icon_data->data())) {
+  if (!utils->ReadFileToString(icon_file, &icon_data->as_string())) {
     return {.error_log = {CreateError(
                 {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
   }
 
   TypedResult<SkBitmap> result;
 
-  if (!gfx::PNGCodec::Decode(icon_data->front(), icon_data->size(),
+  if (!gfx::PNGCodec::Decode(icon_data->data(), icon_data->size(),
                              &result.value)) {
     return {.error_log = {CreateError({"Could not decode icon data for file: ",
                                        icon_file.AsUTF8Unsafe()})}};

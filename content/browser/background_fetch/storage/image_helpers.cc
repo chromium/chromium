@@ -21,11 +21,8 @@ namespace {
 constexpr int kMaxIconResolution = 256 * 256;
 
 std::string ConvertAndSerializeIcon(const SkBitmap& icon) {
-  std::string serialized_icon;
   auto icon_bytes = gfx::Image::CreateFrom1xBitmap(icon).As1xPNGBytes();
-  serialized_icon.assign(icon_bytes->front_as<char>(),
-                         icon_bytes->front_as<char>() + icon_bytes->size());
-  return serialized_icon;
+  return std::string(base::as_string_view(*icon_bytes));
 }
 
 SkBitmap DeserializeAndConvertIcon(

@@ -41,7 +41,7 @@ class AudioPipeReaderTest : public testing::Test,
 
   // AudioPipeReader::StreamObserver interface.
   void OnDataRead(scoped_refptr<base::RefCountedString> data) override {
-    read_data_ += data->data();
+    read_data_ += data->as_string();
     if (stop_at_position_ > 0 &&
         static_cast<int>(read_data_.size()) >= stop_at_position_) {
       stop_at_position_ = -1;

@@ -25,7 +25,34 @@ struct ReplyHeader {
 
 }  // namespace
 
-ReadBuffer::ReadBuffer(scoped_refptr<base::RefCountedMemory> data,
+ThrowAwaySizeRefCountedMemory::ThrowAwaySizeRefCountedMemory(
+    std::vector<uint8_t> data)
+    : data_(std::move(data)) {}
+
+ThrowAwaySizeRefCountedMemory::~ThrowAwaySizeRefCountedMemory() = default;
+
+void* ThrowAwaySizeRefCountedMemory::data() {
+  return data_.data();
+}
+
+const void* ThrowAwaySizeRefCountedMemory::data() const {
+  return data_.data();
+}
+
+SizedRefCountedMemory::SizedRefCountedMemory(
+    scoped_refptr<UnsizedRefCountedMemory> mem,
+    size_t size)
+    : mem_(std::move(mem)), size_(size) {}
+
+SizedRefCountedMemory::~SizedRefCountedMemory() = default;
+
+base::span<const uint8_t> SizedRefCountedMemory::AsSpan() const {
+  // SAFETY: This relies on the constructor being called with a valid buffer
+  // and size pair.
+  return UNSAFE_BUFFERS(base::span(mem_->bytes(), size_));
+}
+
+ReadBuffer::ReadBuffer(scoped_refptr<UnsizedRefCountedMemory> data,
                        bool setup_message)
     : data(data) {
   // X connection setup uses a special reply without the standard header, see:
@@ -34,7 +61,7 @@ ReadBuffer::ReadBuffer(scoped_refptr<base::RefCountedMemory> data,
   if (setup_message)
     return;
 
-  const auto* reply_header = reinterpret_cast<const ReplyHeader*>(data->data());
+  const ReplyHeader* reply_header = data->cast_to<const ReplyHeader>();
 
   // Only replies can have FDs, not events or errors.
   if (reply_header->response_type == kResponseTypeReply) {
@@ -43,7 +70,7 @@ ReadBuffer::ReadBuffer(scoped_refptr<base::RefCountedMemory> data,
     size_t reply_length = 32 + 4 * reply_header->length;
 
     // libxcb stores the fds after the reply data.
-    fds = reinterpret_cast<const int*>(data->data() + reply_length);
+    fds = reinterpret_cast<const int*>(data->bytes() + reply_length);
   }
 }
 
@@ -51,7 +78,7 @@ ReadBuffer::ReadBuffer(ReadBuffer&&) = default;
 
 ReadBuffer::~ReadBuffer() = default;
 
-scoped_refptr<base::RefCountedMemory> ReadBuffer::ReadAndAdvance(
+scoped_refptr<UnsizedRefCountedMemory> ReadBuffer::ReadAndAdvance(
     size_t length) {
   auto buf = base::MakeRefCounted<OffsetRefCountedMemory>(data, offset, length);
   offset += length;
@@ -68,21 +95,41 @@ WriteBuffer::WriteBuffer(WriteBuffer&&) = default;
 
 WriteBuffer::~WriteBuffer() = default;
 
-void WriteBuffer::AppendBuffer(scoped_refptr<base::RefCountedMemory> buffer,
+void WriteBuffer::AppendBuffer(scoped_refptr<UnsizedRefCountedMemory> buffer,
                                size_t size) {
   AppendCurrentBuffer();
-  buffers_.push_back(buffer);
+  sized_buffers_.push_back(
+      // SAFETY: This relies on the caller to pass a correct size.
+      UNSAFE_BUFFERS(base::span(buffer->bytes(), size)));
+  owned_buffers_.push_back(buffer);
   offset_ += size;
 }
 
-std::vector<scoped_refptr<base::RefCountedMemory>>& WriteBuffer::GetBuffers() {
+void WriteBuffer::AppendSizedBuffer(
+    scoped_refptr<base::RefCountedMemory> buffer) {
+  AppendCurrentBuffer();
+  std::vector<uint8_t> v(buffer->size());
+  base::span(v).copy_from(*buffer);
+  sized_buffers_.push_back(v);
+  owned_buffers_.push_back(ThrowAwaySizeRefCountedMemory::From(std::move(v)));
+  offset_ += buffer->size();
+}
+
+base::span<base::span<uint8_t>> WriteBuffer::GetBuffers() {
   if (!current_buffer_.empty())
     AppendCurrentBuffer();
-  return buffers_;
+  return sized_buffers_;
+}
+
+void WriteBuffer::OffsetFirstBuffer(size_t offset) {
+  sized_buffers_[0u] = sized_buffers_[0u].subspan(offset);
 }
 
 void WriteBuffer::AppendCurrentBuffer() {
-  buffers_.push_back(base::RefCountedBytes::TakeVector(&current_buffer_));
+  sized_buffers_.push_back(base::span(current_buffer_));
+  owned_buffers_.push_back(
+      ThrowAwaySizeRefCountedMemory::From(std::move(current_buffer_)));
+  current_buffer_.clear();
 }
 
 }  // namespace x11

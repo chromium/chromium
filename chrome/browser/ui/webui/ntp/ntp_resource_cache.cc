@@ -87,10 +87,8 @@ const char kLearnMoreGuestSessionUrl[] =
 std::string ReplaceTemplateExpressions(
     const scoped_refptr<base::RefCountedMemory>& bytes,
     const ui::TemplateReplacements& replacements) {
-  return ui::ReplaceTemplateExpressions(
-      base::StringPiece(reinterpret_cast<const char*>(bytes->front()),
-                        bytes->size()),
-      replacements);
+  return ui::ReplaceTemplateExpressions(base::as_string_view(*bytes),
+                                        replacements);
 }
 
 }  // namespace

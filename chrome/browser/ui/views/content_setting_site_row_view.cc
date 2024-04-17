@@ -84,7 +84,7 @@ void ContentSettingSiteRowView::OnFaviconLoaded(
     const favicon_base::FaviconRawBitmapResult& favicon_result) {
   if (favicon_result.is_valid()) {
     favicon_->SetImage(ui::ImageModel::FromImage(
-        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->front(),
+        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->data(),
                                          favicon_result.bitmap_data->size())));
   } else {
     favicon_->SetImage(ui::ImageModel::FromVectorIcon(

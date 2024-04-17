@@ -189,9 +189,7 @@ PrinterProviderInternalGetPrintDataFunction::Run() {
   // |job->document_bytes| are passed to the callback to make sure the ref
   // counted memory does not go away before the memory backed blob is created.
   browser_context()->CreateMemoryBackedBlob(
-      base::make_span(job->document_bytes->front(),
-                      job->document_bytes->size()),
-      job->content_type,
+      base::span(*job->document_bytes), job->content_type,
       base::BindOnce(&PrinterProviderInternalGetPrintDataFunction::OnBlob, this,
                      job->document_bytes));
   return RespondLater();

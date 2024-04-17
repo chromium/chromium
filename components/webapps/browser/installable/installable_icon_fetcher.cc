@@ -99,7 +99,7 @@ void ProcessFaviconInBackground(
   SkBitmap decoded;
   if (bitmap_result.is_valid()) {
     base::AssertLongCPUWorkAllowed();
-    gfx::PNGCodec::Decode(bitmap_result.bitmap_data->front(),
+    gfx::PNGCodec::Decode(bitmap_result.bitmap_data->data(),
                           bitmap_result.bitmap_data->size(), &decoded);
   }
 

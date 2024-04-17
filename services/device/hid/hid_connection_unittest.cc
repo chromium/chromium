@@ -210,9 +210,9 @@ TEST_F(HidConnectionTest, ReadWrite) {
   const char kBufferSize = 9;
   for (char i = 0; i < 8; ++i) {
     auto buffer = base::MakeRefCounted<base::RefCountedBytes>(kBufferSize);
-    buffer->data()[0] = 0;
+    buffer->as_vector()[0] = 0;
     for (unsigned char j = 1; j < kBufferSize; ++j) {
-      buffer->data()[j] = i + j - 1;
+      buffer->as_vector()[j] = i + j - 1;
     }
 
     TestIoCallback write_callback;
@@ -223,9 +223,9 @@ TEST_F(HidConnectionTest, ReadWrite) {
     conn->Read(read_callback.GetReadCallback());
     ASSERT_TRUE(read_callback.WaitForResult());
     ASSERT_EQ(9UL, read_callback.size());
-    ASSERT_EQ(0, read_callback.buffer()->data()[0]);
+    ASSERT_EQ(0, read_callback.buffer()->as_vector()[0]);
     for (unsigned char j = 1; j < kBufferSize; ++j) {
-      ASSERT_EQ(i + j - 1, read_callback.buffer()->data()[j]);
+      ASSERT_EQ(i + j - 1, read_callback.buffer()->as_vector()[j]);
     }
   }
 

@@ -28,7 +28,7 @@ void OnTraceDataCollected(base::OnceClosure quit_closure,
                           base::trace_event::TraceResultBuffer* buffer,
                           const scoped_refptr<base::RefCountedString>& json,
                           bool has_more_events) {
-  buffer->AddFragment(json->data());
+  buffer->AddFragment(json->as_string());
   if (!has_more_events)
     std::move(quit_closure).Run();
 }

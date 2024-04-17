@@ -19,7 +19,7 @@ void RunCallbackWithImage(
   favicon_base::FaviconImageResult result;
   if (bitmap_result.is_valid()) {
     result.image = gfx::Image::CreateFrom1xPNGBytes(
-        bitmap_result.bitmap_data->front(), bitmap_result.bitmap_data->size());
+        bitmap_result.bitmap_data->data(), bitmap_result.bitmap_data->size());
     result.icon_url = bitmap_result.icon_url;
     std::move(callback).Run(result);
     return;

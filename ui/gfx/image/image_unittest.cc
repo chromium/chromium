@@ -402,7 +402,7 @@ TEST_F(ImageTest, PNGEncodeFromPlatformDecodeToSkia) {
 TEST_F(ImageTest, PNGDecodeToSkiaFailure) {
   scoped_refptr<base::RefCountedBytes> invalid_bytes(
       new base::RefCountedBytes());
-  invalid_bytes->data().push_back('0');
+  invalid_bytes->as_vector().push_back('0');
   std::vector<gfx::ImagePNGRep> image_png_reps;
   image_png_reps.push_back(gfx::ImagePNGRep(
       invalid_bytes, 1.0f));
@@ -413,7 +413,7 @@ TEST_F(ImageTest, PNGDecodeToSkiaFailure) {
 TEST_F(ImageTest, PNGDecodeToPlatformFailure) {
   scoped_refptr<base::RefCountedBytes> invalid_bytes(
       new base::RefCountedBytes());
-  invalid_bytes->data().push_back('0');
+  invalid_bytes->as_vector().push_back('0');
   std::vector<gfx::ImagePNGRep> image_png_reps;
   image_png_reps.push_back(gfx::ImagePNGRep(
       invalid_bytes, 1.0f));

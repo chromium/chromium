@@ -109,5 +109,5 @@ TEST_F(ScreenshotDataCollectorTest, SetAndExportImage) {
   ReadFileContents(output_dir.Append(FILE_PATH_LITERAL("screenshot"))
                        .AddExtension(FILE_PATH_LITERAL(".jpg")),
                    output_file_contents);
-  EXPECT_EQ(output_file_contents, jpeg_data_->data());
+  EXPECT_EQ(output_file_contents, jpeg_data_->as_string());
 }

@@ -37,7 +37,7 @@ void OnTransferIn(mojom::UsbDevice::GenericTransferInCallback callback,
                   UsbTransferStatus status,
                   scoped_refptr<base::RefCountedBytes> buffer,
                   size_t buffer_size) {
-  auto data = buffer ? base::make_span(buffer->front(), buffer_size)
+  auto data = buffer ? base::span(*buffer).first(buffer_size)
                      : base::span<const uint8_t>();
   std::move(callback).Run(mojo::ConvertTo<mojom::UsbTransferStatus>(status),
                           data);
@@ -59,7 +59,7 @@ void OnIsochronousTransferIn(
       [](const uint32_t& a, const UsbIsochronousPacketPtr& packet) {
         return a + packet->length;
       });
-  auto data = buffer ? base::make_span(buffer->front(), buffer_size)
+  auto data = buffer ? base::span(*buffer).first(buffer_size)
                      : base::span<const uint8_t>();
   std::move(callback).Run(data, std::move(packets));
 }

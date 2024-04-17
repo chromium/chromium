@@ -745,9 +745,8 @@ void ClipboardAndroid::WriteBitmap(const SkBitmap& sk_bitmap) {
   // background sequence.
   scoped_refptr<base::RefCountedMemory> image_memory =
       gfx::Image::CreateFrom1xBitmap(sk_bitmap).As1xPNGBytes();
-  std::string packed(image_memory->front_as<char>(), image_memory->size());
-
-  g_map.Get().Set(ClipboardFormatType::PngType(), packed);
+  g_map.Get().Set(ClipboardFormatType::PngType(),
+                  std::string(base::as_string_view(*image_memory)));
 }
 
 void ClipboardAndroid::WriteData(const ClipboardFormatType& format,

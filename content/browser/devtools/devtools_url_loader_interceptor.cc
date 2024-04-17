@@ -217,7 +217,7 @@ class BodyReader : public mojo::DataPipeDrainer::Client {
  private:
   void OnDataAvailable(const void* data, size_t num_bytes) override {
     DCHECK(!data_complete_);
-    body_->data().append(
+    body_->as_string().append(
         std::string(static_cast<const char*>(data), num_bytes));
   }
 
@@ -245,7 +245,7 @@ void BodyReader::OnDataComplete() {
   data_complete_ = true;
   body_pipe_drainer_.reset();
   // TODO(caseq): only encode if necessary.
-  encoded_body_ = base::Base64Encode(body_->data());
+  encoded_body_ = base::Base64Encode(*body_);
   for (auto& cb : callbacks_)
     cb->sendSuccess(encoded_body_, true);
   callbacks_.clear();
@@ -1229,11 +1229,10 @@ Response InterceptionJob::ProcessResponseOverride(
       size_t bytes_to_sniff =
           std::min(body_size, static_cast<size_t>(net::kMaxBytesToSniff));
       const std::string hint = head->mime_type;
-      net::SniffMimeType(
-          std::string_view(body->front_as<const char>() + response_body_offset,
-                           bytes_to_sniff),
-          url, hint, net::ForceSniffFileUrlsForHtml::kDisabled,
-          &head->mime_type);
+      net::SniffMimeType(base::as_string_view(*body).substr(
+                             response_body_offset, bytes_to_sniff),
+                         url, hint, net::ForceSniffFileUrlsForHtml::kDisabled,
+                         &head->mime_type);
       head->did_mime_sniff = true;
     } else if (head->mime_type.empty()) {
       head->mime_type.assign("text/plain");
@@ -1373,7 +1372,7 @@ void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
   if (body) {
     size_t num_bytes = body_size;
     MojoResult res = producer_handle->WriteData(
-        body->front() + offset, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+        body->data() + offset, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
     DCHECK_EQ(0u, res);
     DCHECK_EQ(num_bytes, body_size);
   }

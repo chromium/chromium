@@ -76,7 +76,7 @@ LogoMetadata GetExampleMetadata2() {
 
 base::RefCountedString* CreateExampleImage(size_t num_bytes) {
   base::RefCountedString* encoded_image_str = new base::RefCountedString();
-  std::string& str = encoded_image_str->data();
+  std::string& str = encoded_image_str->as_string();
   str.resize(num_bytes);
   for (size_t i = 0; i < num_bytes; ++i)
     str[i] = static_cast<char>(i);

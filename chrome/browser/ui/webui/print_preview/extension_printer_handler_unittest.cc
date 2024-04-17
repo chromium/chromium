@@ -288,7 +288,7 @@ void RecordPrinterInfo(size_t* call_count,
 
 std::string RefCountedMemoryToString(
     scoped_refptr<base::RefCountedMemory> memory) {
-  return std::string(memory->front_as<char>(), memory->size());
+  return std::string(base::as_string_view(*memory));
 }
 
 // Fake PwgRasterConverter used in the tests.
@@ -322,7 +322,7 @@ class FakePwgRasterConverter : public PwgRasterConverter {
       return;
     }
 
-    memcpy(memory.mapping.memory(), data->front(), data->size());
+    memory.mapping.GetMemoryAsSpan<uint8_t>().copy_from(*data);
     conversion_settings_ = conversion_settings;
     bitmap_settings_ = bitmap_settings;
     std::move(callback).Run(std::move(memory.region));

@@ -66,7 +66,7 @@ scoped_refptr<base::RefCountedMemory> CreatePNGBytes(int edge_size,
                                                      SkColor color) {
   SkBitmap bitmap = CreateBitmap(edge_size, edge_size, color);
   scoped_refptr<base::RefCountedBytes> bytes(new base::RefCountedBytes());
-  PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bytes->data());
+  PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bytes->as_vector());
   return bytes;
 }
 

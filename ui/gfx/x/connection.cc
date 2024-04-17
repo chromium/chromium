@@ -73,7 +73,7 @@ class UnknownError : public Error {
     // Errors are always a fixed 32 bytes.
     for (size_t i = 0; i < 32; i++) {
       char buf[3];
-      sprintf(buf, "%02x", error_bytes_->data()[i]);
+      sprintf(buf, "%02x", error_bytes_->bytes()[i]);
       ss << "0x" << buf;
       if (i != 31) {
         ss << ", ";
@@ -131,9 +131,12 @@ Connection::Connection(const std::string& address)
       window_event_manager_(this) {
   CHECK(connection_);
   if (Ready()) {
-    auto buf = ReadBuffer(base::MakeRefCounted<UnretainedRefCountedMemory>(
-                              xcb_get_setup(XcbConnection())),
-                          true);
+    auto buf = ReadBuffer(
+        base::MakeRefCounted<UnretainedRefCountedMemory>(
+            // ReadBuffer doesn't use write access but we don't have a const
+            // UnsizedRefCountedMemory type for ReadBuffer to use.
+            const_cast<xcb_setup_t*>(xcb_get_setup(XcbConnection()))),
+        true);
     setup_ = Read<Setup>(&buf);
     default_screen_ = &setup_.roots[DefaultScreenId()];
     InitRootDepthAndVisual();
@@ -658,6 +661,21 @@ void Connection::ProcessNextResponse() {
   }
 }
 
+Future<void> Connection::SetArrayPropertyImpl(
+    Window window,
+    Atom name,
+    Atom type,
+    uint8_t format,
+    base::span<const uint8_t> values) {
+  return ChangeProperty(ChangePropertyRequest{
+      .window = static_cast<Window>(window),
+      .property = name,
+      .type = type,
+      .format = format,
+      .data_len = static_cast<uint32_t>(values.size()) / (format / 8u),
+      .data = base::MakeRefCounted<base::RefCountedBytes>(values)});
+}
+
 std::unique_ptr<FutureImpl> Connection::SendRequestImpl(
     WriteBuffer* buf,
     const char* request_name_for_tracing,
@@ -682,10 +700,9 @@ std::unique_ptr<FutureImpl> Connection::SendRequestImpl(
   };
   static_assert(sizeof(ExtendedRequestHeader) == 8, "");
 
-  auto& first_buffer = buf->GetBuffers()[0];
-  CHECK_GE(first_buffer->size(), sizeof(RequestHeader));
-  auto* old_header = reinterpret_cast<RequestHeader*>(
-      const_cast<uint8_t*>(first_buffer->data()));
+  base::span<uint8_t> first_buffer = buf->GetBuffers()[0];
+  CHECK_GE(first_buffer.size(), sizeof(RequestHeader));
+  auto* old_header = reinterpret_cast<RequestHeader*>(first_buffer.data());
   ExtendedRequestHeader new_header{*old_header, 0};
 
   // Requests are always a multiple of 4 bytes on the wire.  Because of this,
@@ -704,16 +721,14 @@ std::unique_ptr<FutureImpl> Connection::SendRequestImpl(
     new_header.long_length = size32 + 1;
 
     io.push_back({&new_header, sizeof(ExtendedRequestHeader)});
-    first_buffer = base::MakeRefCounted<OffsetRefCountedMemory>(
-        first_buffer, sizeof(RequestHeader),
-        first_buffer->size() - sizeof(RequestHeader));
+    buf->OffsetFirstBuffer(sizeof(RequestHeader));
   } else {
     LOG(ERROR) << "Cannot send request of length " << buf->offset();
     return nullptr;
   }
 
-  for (auto& buffer : buf->GetBuffers()) {
-    io.push_back({const_cast<uint8_t*>(buffer->data()), buffer->size()});
+  for (base::span<uint8_t> buffer : buf->GetBuffers()) {
+    io.push_back({buffer.data(), buffer.size()});
   }
   xpr.count = io.size() - 2;
 
@@ -898,7 +913,7 @@ std::unique_ptr<Error> Connection::ParseError(RawError error_bytes) {
     uint8_t error_code;
     uint16_t sequence;
   };
-  auto error_code = error_bytes->front_as<ErrorHeader>()->error_code;
+  auto error_code = error_bytes->cast_to<ErrorHeader>()->error_code;
   if (auto parser = error_parsers_[error_code]) {
     return parser(error_bytes);
   }

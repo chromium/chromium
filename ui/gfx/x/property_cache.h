@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
     if (size) {
       *size = response->value_len;
     }
-    return response->value->front_as<T>();
+    return response->value->cast_to<T>();
   }
 
   template <typename T>

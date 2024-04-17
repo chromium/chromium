@@ -1576,7 +1576,6 @@ std::unique_ptr<Glx::GetVisualConfigsReply> detail::ReadReply<
   auto& num_visuals = (*reply).num_visuals;
   auto& num_properties = (*reply).num_properties;
   auto& property_list = (*reply).property_list;
-  size_t property_list_len = property_list.size();
 
   // response_type
   uint8_t response_type;
@@ -1756,9 +1755,7 @@ std::unique_ptr<Glx::VendorPrivateWithReplyReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& retval = (*reply).retval;
   auto& data1 = (*reply).data1;
-  size_t data1_len = data1.size();
   auto& data2 = (*reply).data2;
-  size_t data2_len = data2.size();
 
   // response_type
   uint8_t response_type;
@@ -1920,7 +1917,6 @@ std::unique_ptr<Glx::QueryServerStringReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint32_t str_len{};
   auto& string = (*reply).string;
-  size_t string_len = string.size();
 
   // response_type
   uint8_t response_type;
@@ -2056,7 +2052,6 @@ std::unique_ptr<Glx::GetFBConfigsReply> detail::ReadReply<
   auto& num_FB_configs = (*reply).num_FB_configs;
   auto& num_properties = (*reply).num_properties;
   auto& property_list = (*reply).property_list;
-  size_t property_list_len = property_list.size();
 
   // response_type
   uint8_t response_type;
@@ -2295,7 +2290,6 @@ std::unique_ptr<Glx::QueryContextReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& num_attribs = (*reply).num_attribs;
   auto& attribs = (*reply).attribs;
-  size_t attribs_len = attribs.size();
 
   // response_type
   uint8_t response_type;
@@ -2553,7 +2547,6 @@ std::unique_ptr<Glx::GetDrawableAttributesReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& num_attribs = (*reply).num_attribs;
   auto& attribs = (*reply).attribs;
-  size_t attribs_len = attribs.size();
 
   // response_type
   uint8_t response_type;
@@ -3302,7 +3295,6 @@ std::unique_ptr<Glx::RenderModeReply> detail::ReadReply<Glx::RenderModeReply>(
   uint32_t n{};
   auto& new_mode = (*reply).new_mode;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -3572,7 +3564,6 @@ std::unique_ptr<Glx::ReadPixelsReply> detail::ReadReply<Glx::ReadPixelsReply>(
 
   auto& sequence = (*reply).sequence;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -3654,7 +3645,6 @@ std::unique_ptr<Glx::GetBooleanvReply> detail::ReadReply<Glx::GetBooleanvReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -3743,7 +3733,6 @@ std::unique_ptr<Glx::GetClipPlaneReply> detail::ReadReply<
 
   auto& sequence = (*reply).sequence;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -3825,7 +3814,6 @@ std::unique_ptr<Glx::GetDoublevReply> detail::ReadReply<Glx::GetDoublevReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -3982,7 +3970,6 @@ std::unique_ptr<Glx::GetFloatvReply> detail::ReadReply<Glx::GetFloatvReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4073,7 +4060,6 @@ std::unique_ptr<Glx::GetIntegervReply> detail::ReadReply<Glx::GetIntegervReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4169,7 +4155,6 @@ std::unique_ptr<Glx::GetLightfvReply> detail::ReadReply<Glx::GetLightfvReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4265,7 +4250,6 @@ std::unique_ptr<Glx::GetLightivReply> detail::ReadReply<Glx::GetLightivReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4360,7 +4344,6 @@ std::unique_ptr<Glx::GetMapdvReply> detail::ReadReply<Glx::GetMapdvReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4455,7 +4438,6 @@ std::unique_ptr<Glx::GetMapfvReply> detail::ReadReply<Glx::GetMapfvReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4550,7 +4532,6 @@ std::unique_ptr<Glx::GetMapivReply> detail::ReadReply<Glx::GetMapivReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4648,7 +4629,6 @@ std::unique_ptr<Glx::GetMaterialfvReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4746,7 +4726,6 @@ std::unique_ptr<Glx::GetMaterialivReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4838,7 +4817,6 @@ std::unique_ptr<Glx::GetPixelMapfvReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -4930,7 +4908,6 @@ std::unique_ptr<Glx::GetPixelMapuivReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5022,7 +4999,6 @@ std::unique_ptr<Glx::GetPixelMapusvReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5113,7 +5089,6 @@ std::unique_ptr<Glx::GetPolygonStippleReply> detail::ReadReply<
 
   auto& sequence = (*reply).sequence;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5194,7 +5169,6 @@ std::unique_ptr<Glx::GetStringReply> detail::ReadReply<Glx::GetStringReply>(
   auto& sequence = (*reply).sequence;
   uint32_t n{};
   auto& string = (*reply).string;
-  size_t string_len = string.size();
 
   // response_type
   uint8_t response_type;
@@ -5287,7 +5261,6 @@ std::unique_ptr<Glx::GetTexEnvfvReply> detail::ReadReply<Glx::GetTexEnvfvReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5383,7 +5356,6 @@ std::unique_ptr<Glx::GetTexEnvivReply> detail::ReadReply<Glx::GetTexEnvivReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5479,7 +5451,6 @@ std::unique_ptr<Glx::GetTexGendvReply> detail::ReadReply<Glx::GetTexGendvReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5575,7 +5546,6 @@ std::unique_ptr<Glx::GetTexGenfvReply> detail::ReadReply<Glx::GetTexGenfvReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5671,7 +5641,6 @@ std::unique_ptr<Glx::GetTexGenivReply> detail::ReadReply<Glx::GetTexGenivReply>(
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5784,7 +5753,6 @@ std::unique_ptr<Glx::GetTexImageReply> detail::ReadReply<Glx::GetTexImageReply>(
   auto& height = (*reply).height;
   auto& depth = (*reply).depth;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5885,7 +5853,6 @@ std::unique_ptr<Glx::GetTexParameterfvReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -5983,7 +5950,6 @@ std::unique_ptr<Glx::GetTexParameterivReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -6086,7 +6052,6 @@ std::unique_ptr<Glx::GetTexLevelParameterfvReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -6189,7 +6154,6 @@ std::unique_ptr<Glx::GetTexLevelParameterivReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -6465,7 +6429,6 @@ std::unique_ptr<Glx::AreTexturesResidentReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& ret_val = (*reply).ret_val;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -6595,7 +6558,6 @@ std::unique_ptr<Glx::GenTexturesReply> detail::ReadReply<Glx::GenTexturesReply>(
 
   auto& sequence = (*reply).sequence;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -6765,7 +6727,6 @@ std::unique_ptr<Glx::GetColorTableReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& width = (*reply).width;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -6860,7 +6821,6 @@ std::unique_ptr<Glx::GetColorTableParameterfvReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -6958,7 +6918,6 @@ std::unique_ptr<Glx::GetColorTableParameterivReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -7066,7 +7025,6 @@ std::unique_ptr<Glx::GetConvolutionFilterReply> detail::ReadReply<
   auto& width = (*reply).width;
   auto& height = (*reply).height;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -7164,7 +7122,6 @@ std::unique_ptr<Glx::GetConvolutionParameterfvReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -7262,7 +7219,6 @@ std::unique_ptr<Glx::GetConvolutionParameterivReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -7370,7 +7326,6 @@ std::unique_ptr<Glx::GetSeparableFilterReply> detail::ReadReply<
   auto& row_w = (*reply).row_w;
   auto& col_h = (*reply).col_h;
   auto& rows_and_cols = (*reply).rows_and_cols;
-  size_t rows_and_cols_len = rows_and_cols.size();
 
   // response_type
   uint8_t response_type;
@@ -7481,7 +7436,6 @@ std::unique_ptr<Glx::GetHistogramReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& width = (*reply).width;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -7576,7 +7530,6 @@ std::unique_ptr<Glx::GetHistogramParameterfvReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -7674,7 +7627,6 @@ std::unique_ptr<Glx::GetHistogramParameterivReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -7784,7 +7736,6 @@ std::unique_ptr<Glx::GetMinmaxReply> detail::ReadReply<Glx::GetMinmaxReply>(
 
   auto& sequence = (*reply).sequence;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -7873,7 +7824,6 @@ std::unique_ptr<Glx::GetMinmaxParameterfvReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -7971,7 +7921,6 @@ std::unique_ptr<Glx::GetMinmaxParameterivReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -8068,7 +8017,6 @@ std::unique_ptr<Glx::GetCompressedTexImageARBReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& size = (*reply).size;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -8203,7 +8151,6 @@ std::unique_ptr<Glx::GenQueriesARBReply> detail::ReadReply<
 
   auto& sequence = (*reply).sequence;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -8364,7 +8311,6 @@ std::unique_ptr<Glx::GetQueryivARBReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -8462,7 +8408,6 @@ std::unique_ptr<Glx::GetQueryObjectivARBReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -8560,7 +8505,6 @@ std::unique_ptr<Glx::GetQueryObjectuivARBReply> detail::ReadReply<
   uint32_t n{};
   auto& datum = (*reply).datum;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;

@@ -161,17 +161,15 @@ void WriteNavigationEntryToPickle(uint32_t state_version,
   pickle->WriteString(entry.GetBaseURLForDataURL().spec());
 
   if (state_version >= internal::AW_STATE_VERSION_DATA_URL) {
-    const char* data = nullptr;
-    size_t size = 0;
+    std::string_view view;
     const scoped_refptr<const base::RefCountedString>& s =
         entry.GetDataURLAsString();
     if (s) {
-      data = s->front_as<char>();
-      size = s->size();
+      view = base::as_string_view(*s);
     }
     // Even when |entry.GetDataForDataURL()| is null we still need to write a
     // zero-length entry to ensure the fields all line up when read back in.
-    pickle->WriteData(data, size);
+    pickle->WriteData(view.data(), view.size());
   }
 
   pickle->WriteBool(static_cast<int>(entry.GetIsOverridingUserAgent()));
@@ -316,7 +314,7 @@ bool RestoreNavigationEntryFromPickle(
       return false;
     if (size > 0) {
       scoped_refptr<base::RefCountedString> ref = new base::RefCountedString();
-      ref->data().assign(data, size);
+      ref->as_string().assign(data, size);
       entry->SetDataURLAsString(ref);
     }
   }

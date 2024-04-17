@@ -58,7 +58,7 @@ void OnGotCategories(WebUIDataSource::GotDataCallback callback,
   }
 
   auto res = base::MakeRefCounted<base::RefCountedString>();
-  base::JSONWriter::Write(category_list, &res->data());
+  base::JSONWriter::Write(category_list, &res->as_string());
   std::move(callback).Run(res);
 }
 
@@ -144,7 +144,7 @@ void ReadProtobufTraceData(
 void TracingCallbackWrapperBase64(WebUIDataSource::GotDataCallback callback,
                                   std::unique_ptr<std::string> data) {
   base::RefCountedString* data_base64 = new base::RefCountedString();
-  data_base64->data() = base::Base64Encode(*data);
+  data_base64->as_string() = base::Base64Encode(*data);
   std::move(callback).Run(data_base64);
 }
 

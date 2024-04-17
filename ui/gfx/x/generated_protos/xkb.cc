@@ -787,7 +787,6 @@ void ReadEvent<Xkb::ActionMessageEvent>(Xkb::ActionMessageEvent* event_,
   auto& mods = (*event_).mods;
   auto& group = (*event_).group;
   auto& message = (*event_).message;
-  size_t message_len = message.size();
 
   // response_type
   uint8_t response_type;
@@ -1700,7 +1699,6 @@ std::unique_ptr<Xkb::GetControlsReply> detail::ReadReply<Xkb::GetControlsReply>(
   auto& accessXTimeoutValues = (*reply).accessXTimeoutValues;
   auto& enabledControls = (*reply).enabledControls;
   auto& perKeyRepeat = (*reply).perKeyRepeat;
-  size_t perKeyRepeat_len = perKeyRepeat.size();
 
   // response_type
   uint8_t response_type;
@@ -2348,7 +2346,6 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
   if (CaseAnd(map_expr, Xkb::MapPart::KeyTypes)) {
     map.types_rtrn.emplace();
     auto& types_rtrn = *map.types_rtrn;
-    size_t types_rtrn_len = types_rtrn.size();
 
     // types_rtrn
     types_rtrn.resize(nTypes);
@@ -2362,9 +2359,7 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
         uint8_t nMapEntries{};
         auto& hasPreserve = types_rtrn_elem.hasPreserve;
         auto& map = types_rtrn_elem.map;
-        size_t map_len = map.size();
         auto& preserve = types_rtrn_elem.preserve;
-        size_t preserve_len = preserve.size();
 
         // mods_mask
         uint8_t tmp99;
@@ -2461,7 +2456,6 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
   if (CaseAnd(map_expr, Xkb::MapPart::KeySyms)) {
     map.syms_rtrn.emplace();
     auto& syms_rtrn = *map.syms_rtrn;
-    size_t syms_rtrn_len = syms_rtrn.size();
 
     // syms_rtrn
     syms_rtrn.resize(nKeySyms);
@@ -2469,12 +2463,10 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
       // syms_rtrn_elem
       {
         auto& kt_index = syms_rtrn_elem.kt_index;
-        size_t kt_index_len = kt_index.size();
         auto& groupInfo = syms_rtrn_elem.groupInfo;
         auto& width = syms_rtrn_elem.width;
         uint16_t nSyms{};
         auto& syms = syms_rtrn_elem.syms;
-        size_t syms_len = syms.size();
 
         // kt_index
         for (auto& kt_index_elem : kt_index) {
@@ -2504,9 +2496,7 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
     map.acts_rtrn_count.emplace();
     map.acts_rtrn_acts.emplace();
     auto& acts_rtrn_count = *map.acts_rtrn_count;
-    size_t acts_rtrn_count_len = acts_rtrn_count.size();
     auto& acts_rtrn_acts = *map.acts_rtrn_acts;
-    size_t acts_rtrn_acts_len = acts_rtrn_acts.size();
 
     // acts_rtrn_count
     acts_rtrn_count.resize(nKeyActions);
@@ -2528,7 +2518,6 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
   if (CaseAnd(map_expr, Xkb::MapPart::KeyBehaviors)) {
     map.behaviors_rtrn.emplace();
     auto& behaviors_rtrn = *map.behaviors_rtrn;
-    size_t behaviors_rtrn_len = behaviors_rtrn.size();
 
     // behaviors_rtrn
     behaviors_rtrn.resize(totalKeyBehaviors);
@@ -2552,7 +2541,6 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
   if (CaseAnd(map_expr, Xkb::MapPart::VirtualMods)) {
     map.vmods_rtrn.emplace();
     auto& vmods_rtrn = *map.vmods_rtrn;
-    size_t vmods_rtrn_len = vmods_rtrn.size();
 
     // vmods_rtrn
     vmods_rtrn.resize(PopCount(virtualMods));
@@ -2569,7 +2557,6 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
   if (CaseAnd(map_expr, Xkb::MapPart::ExplicitComponents)) {
     map.explicit_rtrn.emplace();
     auto& explicit_rtrn = *map.explicit_rtrn;
-    size_t explicit_rtrn_len = explicit_rtrn.size();
 
     // explicit_rtrn
     explicit_rtrn.resize(totalKeyExplicit);
@@ -2595,7 +2582,6 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
   if (CaseAnd(map_expr, Xkb::MapPart::ModifierMap)) {
     map.modmap_rtrn.emplace();
     auto& modmap_rtrn = *map.modmap_rtrn;
-    size_t modmap_rtrn_len = modmap_rtrn.size();
 
     // modmap_rtrn
     modmap_rtrn.resize(totalModMapKeys);
@@ -2621,7 +2607,6 @@ std::unique_ptr<Xkb::GetMapReply> detail::ReadReply<Xkb::GetMapReply>(
   if (CaseAnd(map_expr, Xkb::MapPart::VirtualModMap)) {
     map.vmodmap_rtrn.emplace();
     auto& vmodmap_rtrn = *map.vmodmap_rtrn;
-    size_t vmodmap_rtrn_len = vmodmap_rtrn.size();
 
     // vmodmap_rtrn
     vmodmap_rtrn.resize(totalVModMapKeys);
@@ -2796,7 +2781,6 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
   auto values_expr = present;
   if (CaseAnd(values_expr, MapPart::KeyTypes)) {
     auto& types = *values.types;
-    size_t types_len = types.size();
 
     // types
     CHECK_EQ(static_cast<size_t>(nTypes), types.size());
@@ -2810,9 +2794,7 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
         uint8_t nMapEntries{};
         auto& preserve = types_elem.preserve;
         auto& entries = types_elem.entries;
-        size_t entries_len = entries.size();
         auto& preserve_entries = types_elem.preserve_entries;
-        size_t preserve_entries_len = preserve_entries.size();
 
         // mask
         uint8_t tmp115;
@@ -2895,7 +2877,6 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
   }
   if (CaseAnd(values_expr, MapPart::KeySyms)) {
     auto& syms = *values.syms;
-    size_t syms_len = syms.size();
 
     // syms
     CHECK_EQ(static_cast<size_t>(nKeySyms), syms.size());
@@ -2903,12 +2884,10 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
       // syms_elem
       {
         auto& kt_index = syms_elem.kt_index;
-        size_t kt_index_len = kt_index.size();
         auto& groupInfo = syms_elem.groupInfo;
         auto& width = syms_elem.width;
         uint16_t nSyms{};
         auto& syms = syms_elem.syms;
-        size_t syms_len = syms.size();
 
         // kt_index
         for (auto& kt_index_elem : kt_index) {
@@ -2937,9 +2916,7 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
   }
   if (CaseAnd(values_expr, MapPart::KeyActions)) {
     auto& actionsCount = *values.actionsCount;
-    size_t actionsCount_len = actionsCount.size();
     auto& actions = *values.actions;
-    size_t actions_len = actions.size();
 
     // actionsCount
     CHECK_EQ(static_cast<size_t>(nKeyActions), actionsCount.size());
@@ -2960,7 +2937,6 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
   }
   if (CaseAnd(values_expr, MapPart::KeyBehaviors)) {
     auto& behaviors = *values.behaviors;
-    size_t behaviors_len = behaviors.size();
 
     // behaviors
     CHECK_EQ(static_cast<size_t>(totalKeyBehaviors), behaviors.size());
@@ -2983,7 +2959,6 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
   }
   if (CaseAnd(values_expr, MapPart::VirtualMods)) {
     auto& vmods = *values.vmods;
-    size_t vmods_len = vmods.size();
 
     // vmods
     CHECK_EQ(static_cast<size_t>(PopCount(virtualMods)), vmods.size());
@@ -2997,7 +2972,6 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
   }
   if (CaseAnd(values_expr, MapPart::ExplicitComponents)) {
     auto& c_explicit = *values.c_explicit;
-    size_t c_explicit_len = c_explicit.size();
 
     // c_explicit
     CHECK_EQ(static_cast<size_t>(totalKeyExplicit), c_explicit.size());
@@ -3019,7 +2993,6 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
   }
   if (CaseAnd(values_expr, MapPart::ModifierMap)) {
     auto& modmap = *values.modmap;
-    size_t modmap_len = modmap.size();
 
     // modmap
     CHECK_EQ(static_cast<size_t>(totalModMapKeys), modmap.size());
@@ -3041,7 +3014,6 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
   }
   if (CaseAnd(values_expr, MapPart::VirtualModMap)) {
     auto& vmodmap = *values.vmodmap;
-    size_t vmodmap_len = vmodmap.size();
 
     // vmodmap
     CHECK_EQ(static_cast<size_t>(totalVModMapKeys), vmodmap.size());
@@ -3212,9 +3184,7 @@ std::unique_ptr<Xkb::GetCompatMapReply> detail::ReadReply<
   uint16_t nSIRtrn{};
   auto& nTotalSI = (*reply).nTotalSI;
   auto& si_rtrn = (*reply).si_rtrn;
-  size_t si_rtrn_len = si_rtrn.size();
   auto& group_rtrn = (*reply).group_rtrn;
-  size_t group_rtrn_len = group_rtrn.size();
 
   // response_type
   uint8_t response_type;
@@ -3285,7 +3255,6 @@ std::unique_ptr<Xkb::GetCompatMapReply> detail::ReadReply<
       {
         auto& type = action.type;
         auto& data = action.data;
-        size_t data_len = data.size();
 
         // type
         uint8_t tmp129;
@@ -3424,7 +3393,6 @@ Future<void> Xkb::SetCompatMap(const Xkb::SetCompatMapRequest& request) {
       {
         auto& type = action.type;
         auto& data = action.data;
-        size_t data_len = data.size();
 
         // type
         uint8_t tmp136;
@@ -3614,7 +3582,6 @@ std::unique_ptr<Xkb::GetIndicatorMapReply> detail::ReadReply<
   auto& realIndicators = (*reply).realIndicators;
   auto& nIndicators = (*reply).nIndicators;
   auto& maps = (*reply).maps;
-  size_t maps_len = maps.size();
 
   // response_type
   uint8_t response_type;
@@ -4265,7 +4232,6 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
   if (CaseAnd(valueList_expr, Xkb::NameDetail::KeyTypeNames)) {
     valueList.typeNames.emplace();
     auto& typeNames = *valueList.typeNames;
-    size_t typeNames_len = typeNames.size();
 
     // typeNames
     typeNames.resize(nTypes);
@@ -4278,9 +4244,7 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
     valueList.nLevelsPerType.emplace();
     valueList.ktLevelNames.emplace();
     auto& nLevelsPerType = *valueList.nLevelsPerType;
-    size_t nLevelsPerType_len = nLevelsPerType.size();
     auto& ktLevelNames = *valueList.ktLevelNames;
-    size_t ktLevelNames_len = ktLevelNames.size();
 
     // nLevelsPerType
     nLevelsPerType.resize(nTypes);
@@ -4304,7 +4268,6 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
   if (CaseAnd(valueList_expr, Xkb::NameDetail::IndicatorNames)) {
     valueList.indicatorNames.emplace();
     auto& indicatorNames = *valueList.indicatorNames;
-    size_t indicatorNames_len = indicatorNames.size();
 
     // indicatorNames
     indicatorNames.resize(PopCount(indicators));
@@ -4316,7 +4279,6 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
   if (CaseAnd(valueList_expr, Xkb::NameDetail::VirtualModNames)) {
     valueList.virtualModNames.emplace();
     auto& virtualModNames = *valueList.virtualModNames;
-    size_t virtualModNames_len = virtualModNames.size();
 
     // virtualModNames
     virtualModNames.resize(PopCount(virtualMods));
@@ -4328,7 +4290,6 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
   if (CaseAnd(valueList_expr, Xkb::NameDetail::GroupNames)) {
     valueList.groups.emplace();
     auto& groups = *valueList.groups;
-    size_t groups_len = groups.size();
 
     // groups
     groups.resize(PopCount(groupNames));
@@ -4340,7 +4301,6 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
   if (CaseAnd(valueList_expr, Xkb::NameDetail::KeyNames)) {
     valueList.keyNames.emplace();
     auto& keyNames = *valueList.keyNames;
-    size_t keyNames_len = keyNames.size();
 
     // keyNames
     keyNames.resize(nKeys);
@@ -4348,7 +4308,6 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
       // keyNames_elem
       {
         auto& name = keyNames_elem.name;
-        size_t name_len = name.size();
 
         // name
         for (auto& name_elem : name) {
@@ -4361,7 +4320,6 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
   if (CaseAnd(valueList_expr, Xkb::NameDetail::KeyAliases)) {
     valueList.keyAliases.emplace();
     auto& keyAliases = *valueList.keyAliases;
-    size_t keyAliases_len = keyAliases.size();
 
     // keyAliases
     keyAliases.resize(nKeyAliases);
@@ -4369,9 +4327,7 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
       // keyAliases_elem
       {
         auto& real = keyAliases_elem.real;
-        size_t real_len = real.size();
         auto& alias = keyAliases_elem.alias;
-        size_t alias_len = alias.size();
 
         // real
         for (auto& real_elem : real) {
@@ -4390,7 +4346,6 @@ std::unique_ptr<Xkb::GetNamesReply> detail::ReadReply<Xkb::GetNamesReply>(
   if (CaseAnd(valueList_expr, Xkb::NameDetail::RGNames)) {
     valueList.radioGroupNames.emplace();
     auto& radioGroupNames = *valueList.radioGroupNames;
-    size_t radioGroupNames_len = radioGroupNames.size();
 
     // radioGroupNames
     radioGroupNames.resize(nRadioGroups);
@@ -4554,7 +4509,6 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
   }
   if (CaseAnd(values_expr, NameDetail::KeyTypeNames)) {
     auto& typeNames = *values.typeNames;
-    size_t typeNames_len = typeNames.size();
 
     // typeNames
     CHECK_EQ(static_cast<size_t>(nTypes), typeNames.size());
@@ -4565,9 +4519,7 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
   }
   if (CaseAnd(values_expr, NameDetail::KTLevelNames)) {
     auto& nLevelsPerType = *values.nLevelsPerType;
-    size_t nLevelsPerType_len = nLevelsPerType.size();
     auto& ktLevelNames = *values.ktLevelNames;
-    size_t ktLevelNames_len = ktLevelNames.size();
 
     // nLevelsPerType
     CHECK_EQ(static_cast<size_t>(nTypes), nLevelsPerType.size());
@@ -4590,7 +4542,6 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
   }
   if (CaseAnd(values_expr, NameDetail::IndicatorNames)) {
     auto& indicatorNames = *values.indicatorNames;
-    size_t indicatorNames_len = indicatorNames.size();
 
     // indicatorNames
     CHECK_EQ(static_cast<size_t>(PopCount(indicators)), indicatorNames.size());
@@ -4601,7 +4552,6 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
   }
   if (CaseAnd(values_expr, NameDetail::VirtualModNames)) {
     auto& virtualModNames = *values.virtualModNames;
-    size_t virtualModNames_len = virtualModNames.size();
 
     // virtualModNames
     CHECK_EQ(static_cast<size_t>(PopCount(virtualMods)),
@@ -4613,7 +4563,6 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
   }
   if (CaseAnd(values_expr, NameDetail::GroupNames)) {
     auto& groups = *values.groups;
-    size_t groups_len = groups.size();
 
     // groups
     CHECK_EQ(static_cast<size_t>(PopCount(groupNames)), groups.size());
@@ -4624,7 +4573,6 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
   }
   if (CaseAnd(values_expr, NameDetail::KeyNames)) {
     auto& keyNames = *values.keyNames;
-    size_t keyNames_len = keyNames.size();
 
     // keyNames
     CHECK_EQ(static_cast<size_t>(nKeys), keyNames.size());
@@ -4632,7 +4580,6 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
       // keyNames_elem
       {
         auto& name = keyNames_elem.name;
-        size_t name_len = name.size();
 
         // name
         for (auto& name_elem : name) {
@@ -4644,7 +4591,6 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
   }
   if (CaseAnd(values_expr, NameDetail::KeyAliases)) {
     auto& keyAliases = *values.keyAliases;
-    size_t keyAliases_len = keyAliases.size();
 
     // keyAliases
     CHECK_EQ(static_cast<size_t>(nKeyAliases), keyAliases.size());
@@ -4652,9 +4598,7 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
       // keyAliases_elem
       {
         auto& real = keyAliases_elem.real;
-        size_t real_len = real.size();
         auto& alias = keyAliases_elem.alias;
-        size_t alias_len = alias.size();
 
         // real
         for (auto& real_elem : real) {
@@ -4672,7 +4616,6 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
   }
   if (CaseAnd(values_expr, NameDetail::RGNames)) {
     auto& radioGroupNames = *values.radioGroupNames;
-    size_t radioGroupNames_len = radioGroupNames.size();
 
     // radioGroupNames
     CHECK_EQ(static_cast<size_t>(nRadioGroups), radioGroupNames.size());
@@ -4934,17 +4877,11 @@ std::unique_ptr<Xkb::ListComponentsReply> detail::ReadReply<
   uint16_t nGeometries{};
   auto& extra = (*reply).extra;
   auto& keymaps = (*reply).keymaps;
-  size_t keymaps_len = keymaps.size();
   auto& keycodes = (*reply).keycodes;
-  size_t keycodes_len = keycodes.size();
   auto& types = (*reply).types;
-  size_t types_len = types.size();
   auto& compatMaps = (*reply).compatMaps;
-  size_t compatMaps_len = compatMaps.size();
   auto& symbols = (*reply).symbols;
-  size_t symbols_len = symbols.size();
   auto& geometries = (*reply).geometries;
-  size_t geometries_len = geometries.size();
 
   // response_type
   uint8_t response_type;
@@ -4992,7 +4929,6 @@ std::unique_ptr<Xkb::ListComponentsReply> detail::ReadReply<
       auto& flags = keymaps_elem.flags;
       uint16_t length{};
       auto& string = keymaps_elem.string;
-      size_t string_len = string.size();
 
       // flags
       Read(&flags, &buf);
@@ -5020,7 +4956,6 @@ std::unique_ptr<Xkb::ListComponentsReply> detail::ReadReply<
       auto& flags = keycodes_elem.flags;
       uint16_t length{};
       auto& string = keycodes_elem.string;
-      size_t string_len = string.size();
 
       // flags
       Read(&flags, &buf);
@@ -5048,7 +4983,6 @@ std::unique_ptr<Xkb::ListComponentsReply> detail::ReadReply<
       auto& flags = types_elem.flags;
       uint16_t length{};
       auto& string = types_elem.string;
-      size_t string_len = string.size();
 
       // flags
       Read(&flags, &buf);
@@ -5076,7 +5010,6 @@ std::unique_ptr<Xkb::ListComponentsReply> detail::ReadReply<
       auto& flags = compatMaps_elem.flags;
       uint16_t length{};
       auto& string = compatMaps_elem.string;
-      size_t string_len = string.size();
 
       // flags
       Read(&flags, &buf);
@@ -5104,7 +5037,6 @@ std::unique_ptr<Xkb::ListComponentsReply> detail::ReadReply<
       auto& flags = symbols_elem.flags;
       uint16_t length{};
       auto& string = symbols_elem.string;
-      size_t string_len = string.size();
 
       // flags
       Read(&flags, &buf);
@@ -5132,7 +5064,6 @@ std::unique_ptr<Xkb::ListComponentsReply> detail::ReadReply<
       auto& flags = geometries_elem.flags;
       uint16_t length{};
       auto& string = geometries_elem.string;
-      size_t string_len = string.size();
 
       // flags
       Read(&flags, &buf);
@@ -5410,7 +5341,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(map_expr, Xkb::MapPart::KeyTypes)) {
       map.types_rtrn.emplace();
       auto& types_rtrn = *map.types_rtrn;
-      size_t types_rtrn_len = types_rtrn.size();
 
       // types_rtrn
       types_rtrn.resize(nTypes);
@@ -5424,9 +5354,7 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
           uint8_t nMapEntries{};
           auto& hasPreserve = types_rtrn_elem.hasPreserve;
           auto& map = types_rtrn_elem.map;
-          size_t map_len = map.size();
           auto& preserve = types_rtrn_elem.preserve;
-          size_t preserve_len = preserve.size();
 
           // mods_mask
           uint8_t tmp197;
@@ -5523,7 +5451,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(map_expr, Xkb::MapPart::KeySyms)) {
       map.syms_rtrn.emplace();
       auto& syms_rtrn = *map.syms_rtrn;
-      size_t syms_rtrn_len = syms_rtrn.size();
 
       // syms_rtrn
       syms_rtrn.resize(nKeySyms);
@@ -5531,12 +5458,10 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
         // syms_rtrn_elem
         {
           auto& kt_index = syms_rtrn_elem.kt_index;
-          size_t kt_index_len = kt_index.size();
           auto& groupInfo = syms_rtrn_elem.groupInfo;
           auto& width = syms_rtrn_elem.width;
           uint16_t nSyms{};
           auto& syms = syms_rtrn_elem.syms;
-          size_t syms_len = syms.size();
 
           // kt_index
           for (auto& kt_index_elem : kt_index) {
@@ -5566,9 +5491,7 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
       map.acts_rtrn_count.emplace();
       map.acts_rtrn_acts.emplace();
       auto& acts_rtrn_count = *map.acts_rtrn_count;
-      size_t acts_rtrn_count_len = acts_rtrn_count.size();
       auto& acts_rtrn_acts = *map.acts_rtrn_acts;
-      size_t acts_rtrn_acts_len = acts_rtrn_acts.size();
 
       // acts_rtrn_count
       acts_rtrn_count.resize(nKeyActions);
@@ -5590,7 +5513,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(map_expr, Xkb::MapPart::KeyBehaviors)) {
       map.behaviors_rtrn.emplace();
       auto& behaviors_rtrn = *map.behaviors_rtrn;
-      size_t behaviors_rtrn_len = behaviors_rtrn.size();
 
       // behaviors_rtrn
       behaviors_rtrn.resize(totalKeyBehaviors);
@@ -5614,7 +5536,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(map_expr, Xkb::MapPart::VirtualMods)) {
       map.vmods_rtrn.emplace();
       auto& vmods_rtrn = *map.vmods_rtrn;
-      size_t vmods_rtrn_len = vmods_rtrn.size();
 
       // vmods_rtrn
       vmods_rtrn.resize(PopCount(virtualMods));
@@ -5631,7 +5552,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(map_expr, Xkb::MapPart::ExplicitComponents)) {
       map.explicit_rtrn.emplace();
       auto& explicit_rtrn = *map.explicit_rtrn;
-      size_t explicit_rtrn_len = explicit_rtrn.size();
 
       // explicit_rtrn
       explicit_rtrn.resize(totalKeyExplicit);
@@ -5657,7 +5577,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(map_expr, Xkb::MapPart::ModifierMap)) {
       map.modmap_rtrn.emplace();
       auto& modmap_rtrn = *map.modmap_rtrn;
-      size_t modmap_rtrn_len = modmap_rtrn.size();
 
       // modmap_rtrn
       modmap_rtrn.resize(totalModMapKeys);
@@ -5683,7 +5602,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(map_expr, Xkb::MapPart::VirtualModMap)) {
       map.vmodmap_rtrn.emplace();
       auto& vmodmap_rtrn = *map.vmodmap_rtrn;
-      size_t vmodmap_rtrn_len = vmodmap_rtrn.size();
 
       // vmodmap_rtrn
       vmodmap_rtrn.resize(totalVModMapKeys);
@@ -5718,9 +5636,7 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     uint16_t nSIRtrn{};
     auto& nTotalSI = (*replies.compat_map).nTotalSI;
     auto& si_rtrn = (*replies.compat_map).si_rtrn;
-    size_t si_rtrn_len = si_rtrn.size();
     auto& group_rtrn = (*replies.compat_map).group_rtrn;
-    size_t group_rtrn_len = group_rtrn.size();
 
     // compatmap_type
     Read(&compatmap_type, &buf);
@@ -5789,7 +5705,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
         {
           auto& type = action.type;
           auto& data = action.data;
-          size_t data_len = data.size();
 
           // type
           uint8_t tmp213;
@@ -5842,7 +5757,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     auto& realIndicators = (*replies.indicator_maps).realIndicators;
     uint8_t nIndicators{};
     auto& maps = (*replies.indicator_maps).maps;
-    size_t maps_len = maps.size();
 
     // indicatormap_type
     Read(&indicatormap_type, &buf);
@@ -6049,7 +5963,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(valueList_expr, Xkb::NameDetail::KeyTypeNames)) {
       valueList.typeNames.emplace();
       auto& typeNames = *valueList.typeNames;
-      size_t typeNames_len = typeNames.size();
 
       // typeNames
       typeNames.resize(nTypes);
@@ -6062,9 +5975,7 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
       valueList.nLevelsPerType.emplace();
       valueList.ktLevelNames.emplace();
       auto& nLevelsPerType = *valueList.nLevelsPerType;
-      size_t nLevelsPerType_len = nLevelsPerType.size();
       auto& ktLevelNames = *valueList.ktLevelNames;
-      size_t ktLevelNames_len = ktLevelNames.size();
 
       // nLevelsPerType
       nLevelsPerType.resize(nTypes);
@@ -6088,7 +5999,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(valueList_expr, Xkb::NameDetail::IndicatorNames)) {
       valueList.indicatorNames.emplace();
       auto& indicatorNames = *valueList.indicatorNames;
-      size_t indicatorNames_len = indicatorNames.size();
 
       // indicatorNames
       indicatorNames.resize(PopCount(indicators));
@@ -6100,7 +6010,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(valueList_expr, Xkb::NameDetail::VirtualModNames)) {
       valueList.virtualModNames.emplace();
       auto& virtualModNames = *valueList.virtualModNames;
-      size_t virtualModNames_len = virtualModNames.size();
 
       // virtualModNames
       virtualModNames.resize(PopCount(virtualMods));
@@ -6112,7 +6021,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(valueList_expr, Xkb::NameDetail::GroupNames)) {
       valueList.groups.emplace();
       auto& groups = *valueList.groups;
-      size_t groups_len = groups.size();
 
       // groups
       groups.resize(PopCount(groupNames));
@@ -6124,7 +6032,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(valueList_expr, Xkb::NameDetail::KeyNames)) {
       valueList.keyNames.emplace();
       auto& keyNames = *valueList.keyNames;
-      size_t keyNames_len = keyNames.size();
 
       // keyNames
       keyNames.resize(nKeys);
@@ -6132,7 +6039,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
         // keyNames_elem
         {
           auto& name = keyNames_elem.name;
-          size_t name_len = name.size();
 
           // name
           for (auto& name_elem : name) {
@@ -6145,7 +6051,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(valueList_expr, Xkb::NameDetail::KeyAliases)) {
       valueList.keyAliases.emplace();
       auto& keyAliases = *valueList.keyAliases;
-      size_t keyAliases_len = keyAliases.size();
 
       // keyAliases
       keyAliases.resize(nKeyAliases);
@@ -6153,9 +6058,7 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
         // keyAliases_elem
         {
           auto& real = keyAliases_elem.real;
-          size_t real_len = real.size();
           auto& alias = keyAliases_elem.alias;
-          size_t alias_len = alias.size();
 
           // real
           for (auto& real_elem : real) {
@@ -6174,7 +6077,6 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     if (CaseAnd(valueList_expr, Xkb::NameDetail::RGNames)) {
       valueList.radioGroupNames.emplace();
       auto& radioGroupNames = *valueList.radioGroupNames;
-      size_t radioGroupNames_len = radioGroupNames.size();
 
       // radioGroupNames
       radioGroupNames.resize(nRadioGroups);
@@ -6259,9 +6161,7 @@ std::unique_ptr<Xkb::GetKbdByNameReply> detail::ReadReply<
     {
       uint16_t length{};
       auto& string = labelFont.string;
-      size_t string_len = string.size();
       auto& alignment_pad = labelFont.alignment_pad;
-      size_t alignment_pad_len = alignment_pad ? alignment_pad->size() : 0;
 
       // length
       Read(&length, &buf);
@@ -6381,11 +6281,8 @@ std::unique_ptr<Xkb::GetDeviceInfoReply> detail::ReadReply<
   auto& devType = (*reply).devType;
   uint16_t nameLen{};
   auto& name = (*reply).name;
-  size_t name_len = name.size();
   auto& btnActions = (*reply).btnActions;
-  size_t btnActions_len = btnActions.size();
   auto& leds = (*reply).leds;
-  size_t leds_len = leds.size();
 
   // response_type
   uint8_t response_type;
@@ -6481,9 +6378,7 @@ std::unique_ptr<Xkb::GetDeviceInfoReply> detail::ReadReply<
       auto& physIndicators = leds_elem.physIndicators;
       auto& state = leds_elem.state;
       auto& names = leds_elem.names;
-      size_t names_len = names.size();
       auto& maps = leds_elem.maps;
-      size_t maps_len = maps.size();
 
       // ledClass
       uint16_t tmp234;
@@ -6642,9 +6537,7 @@ Future<void> Xkb::SetDeviceInfo(const Xkb::SetDeviceInfoRequest& request) {
       auto& physIndicators = leds_elem.physIndicators;
       auto& state = leds_elem.state;
       auto& names = leds_elem.names;
-      size_t names_len = names.size();
       auto& maps = leds_elem.maps;
-      size_t maps_len = maps.size();
 
       // ledClass
       uint16_t tmp244;

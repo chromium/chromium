@@ -13,100 +13,76 @@ namespace base {
 
 bool RefCountedMemory::Equals(
     const scoped_refptr<RefCountedMemory>& other) const {
-  return other.get() && size() == other->size() &&
-         (size() == 0 || (memcmp(front(), other->front(), size()) == 0));
+  return other && AsSpan() == other->AsSpan();
 }
 
 RefCountedMemory::RefCountedMemory() = default;
-
 RefCountedMemory::~RefCountedMemory() = default;
 
-const unsigned char* RefCountedStaticMemory::front() const {
-  return data_;
-}
-
-size_t RefCountedStaticMemory::size() const {
-  return length_;
-}
-
+RefCountedStaticMemory::RefCountedStaticMemory() = default;
 RefCountedStaticMemory::~RefCountedStaticMemory() = default;
 
+RefCountedStaticMemory::RefCountedStaticMemory(base::span<const uint8_t> bytes)
+    : bytes_(bytes) {}
+
+base::span<const uint8_t> RefCountedStaticMemory::AsSpan() const {
+  return bytes_;
+}
+
 RefCountedBytes::RefCountedBytes() = default;
+RefCountedBytes::~RefCountedBytes() = default;
 
-RefCountedBytes::RefCountedBytes(const std::vector<unsigned char>& initializer)
-    : data_(initializer) {}
+RefCountedBytes::RefCountedBytes(std::vector<uint8_t> initializer)
+    : bytes_(std::move(initializer)) {}
 
-RefCountedBytes::RefCountedBytes(base::span<const unsigned char> initializer)
-    : data_(initializer.begin(), initializer.end()) {}
+RefCountedBytes::RefCountedBytes(base::span<const uint8_t> initializer)
+    : bytes_(initializer.begin(), initializer.end()) {}
 
-RefCountedBytes::RefCountedBytes(const unsigned char* p, size_t size)
-    : data_(p, p + size) {}
+RefCountedBytes::RefCountedBytes(const uint8_t* p, size_t size)
+    : bytes_(p, p + size) {}
 
-RefCountedBytes::RefCountedBytes(size_t size) : data_(size, 0) {}
+RefCountedBytes::RefCountedBytes(size_t size) : bytes_(size, 0u) {}
 
 scoped_refptr<RefCountedBytes> RefCountedBytes::TakeVector(
-    std::vector<unsigned char>* to_destroy) {
+    std::vector<uint8_t>* to_destroy) {
   auto bytes = MakeRefCounted<RefCountedBytes>();
-  bytes->data_.swap(*to_destroy);
+  bytes->bytes_.swap(*to_destroy);
   return bytes;
 }
 
-const unsigned char* RefCountedBytes::front() const {
-  // STL will assert if we do front() on an empty vector, but calling code
-  // expects a NULL.
-  return size() ? &data_.front() : nullptr;
+base::span<const uint8_t> RefCountedBytes::AsSpan() const {
+  return bytes_;
 }
-
-size_t RefCountedBytes::size() const {
-  return data_.size();
-}
-
-RefCountedBytes::~RefCountedBytes() = default;
 
 RefCountedString::RefCountedString() = default;
-
 RefCountedString::~RefCountedString() = default;
 
-RefCountedString::RefCountedString(std::string str) : data_(std::move(str)) {}
+RefCountedString::RefCountedString(std::string str) : string_(std::move(str)) {}
 
-const unsigned char* RefCountedString::front() const {
-  return data_.empty() ? nullptr
-                       : reinterpret_cast<const unsigned char*>(data_.data());
-}
-
-size_t RefCountedString::size() const {
-  return data_.size();
+base::span<const uint8_t> RefCountedString::AsSpan() const {
+  return base::as_byte_span(string_);
 }
 
 RefCountedString16::RefCountedString16() = default;
-
 RefCountedString16::~RefCountedString16() = default;
 
 RefCountedString16::RefCountedString16(std::u16string str)
-    : data_(std::move(str)) {}
+    : string_(std::move(str)) {}
 
-const unsigned char* RefCountedString16::front() const {
-  return reinterpret_cast<const unsigned char*>(data_.data());
-}
-
-size_t RefCountedString16::size() const {
-  return data_.size() * sizeof(char16_t);
+base::span<const uint8_t> RefCountedString16::AsSpan() const {
+  return base::as_byte_span(string_);
 }
 
 RefCountedSharedMemoryMapping::RefCountedSharedMemoryMapping(
     ReadOnlySharedMemoryMapping mapping)
-    : mapping_(std::move(mapping)), size_(mapping_.size()) {
-  DCHECK_GT(size_, 0U);
+    : mapping_(std::move(mapping)) {
+  DCHECK_GT(mapping_.size(), 0u);
 }
 
 RefCountedSharedMemoryMapping::~RefCountedSharedMemoryMapping() = default;
 
-const unsigned char* RefCountedSharedMemoryMapping::front() const {
-  return static_cast<const unsigned char*>(mapping_.memory());
-}
-
-size_t RefCountedSharedMemoryMapping::size() const {
-  return size_;
+base::span<const uint8_t> RefCountedSharedMemoryMapping::AsSpan() const {
+  return mapping_.GetMemoryAsSpan<const uint8_t>();
 }
 
 // static

@@ -143,12 +143,10 @@ std::vector<unsigned char> CoreTabHelper::EncodeImage(
 
   // Get the front and end of the image bytes in order to store them in the
   // search_args to be sent as part of the PostContent in the request
-  size_t image_bytes_size = image.As1xPNGBytes()->size();
-  const unsigned char* image_bytes_begin = image.As1xPNGBytes()->front();
-  const unsigned char* image_bytes_end = image_bytes_begin + image_bytes_size;
   content_type = "image/png";
   image_format = lens::mojom::ImageFormat::PNG;
-  data.assign(image_bytes_begin, image_bytes_end);
+  auto bytes = image.As1xPNGBytes();
+  data.assign(bytes->begin(), bytes->end());
   return data;
 }
 

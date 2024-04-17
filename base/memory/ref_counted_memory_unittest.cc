@@ -13,27 +13,24 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Each;
 using testing::ElementsAre;
 
 namespace base {
 
-namespace {
-
-void ConvertToByteSpanAndCheckSize(span<const uint8_t> data,
-                                   size_t expected_size) {
-  EXPECT_EQ(expected_size, data.size());
-}
-
-}  // namespace
-
 TEST(RefCountedMemoryUnitTest, RefCountedStaticMemory) {
-  auto mem = MakeRefCounted<RefCountedStaticMemory>("static mem00", 10);
+  {
+    auto mem = MakeRefCounted<RefCountedStaticMemory>(
+        base::byte_span_from_cstring("static mem"));
 
-  EXPECT_EQ(10U, mem->size());
-  EXPECT_EQ("static mem", std::string(mem->front_as<char>(), mem->size()));
+    EXPECT_THAT(base::span(*mem),
+                ElementsAre('s', 't', 'a', 't', 'i', 'c', ' ', 'm', 'e', 'm'));
+  }
+  {
+    auto mem = MakeRefCounted<RefCountedStaticMemory>("static mem00", 10);
 
-  ConvertToByteSpanAndCheckSize(*mem, 10);
+    EXPECT_THAT(base::span(*mem),
+                ElementsAre('s', 't', 'a', 't', 'i', 'c', ' ', 'm', 'e', 'm'));
+  }
 }
 
 TEST(RefCountedMemoryUnitTest, RefCountedBytes) {
@@ -44,54 +41,40 @@ TEST(RefCountedMemoryUnitTest, RefCountedBytes) {
 
   EXPECT_EQ(0U, data.size());
 
-  ASSERT_EQ(2U, mem->size());
-  EXPECT_EQ(45U, mem->front()[0]);
-  EXPECT_EQ(99U, mem->front()[1]);
+  EXPECT_THAT(base::span(*mem), ElementsAre(45, 99));
 
   scoped_refptr<RefCountedMemory> mem2;
   {
-    const unsigned char kData[] = {12, 11, 99};
-    mem2 = MakeRefCounted<RefCountedBytes>(kData, std::size(kData));
+    const uint8_t kData[] = {12, 11, 99};
+    mem2 = MakeRefCounted<RefCountedBytes>(base::span(kData));
   }
-  ASSERT_EQ(3U, mem2->size());
-  EXPECT_EQ(12U, mem2->front()[0]);
-  EXPECT_EQ(11U, mem2->front()[1]);
-  EXPECT_EQ(99U, mem2->front()[2]);
 
-  ConvertToByteSpanAndCheckSize(*mem2, 3);
+  EXPECT_THAT(base::span(*mem2), ElementsAre(12, 11, 99));
 }
 
 TEST(RefCountedMemoryUnitTest, RefCountedBytesMutable) {
   auto mem = MakeRefCounted<RefCountedBytes>(10);
 
-  ASSERT_EQ(10U, mem->size());
-  EXPECT_THAT(mem->data(), Each(0U));
+  EXPECT_THAT(base::span(*mem), ElementsAre(0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
-  // Test non-const versions of data(), front() and front_as<>().
-  mem->data()[0] = 1;
-  mem->front()[1] = 2;
-  mem->front_as<char>()[2] = 3;
+  // Test non-const version of as_vector().
+  mem->as_vector()[1u] = 1;
 
-  EXPECT_THAT(mem->data(), ElementsAre(1, 2, 3, 0, 0, 0, 0, 0, 0, 0));
+  EXPECT_THAT(base::span(*mem), ElementsAre(0, 1, 0, 0, 0, 0, 0, 0, 0, 0));
 }
 
 TEST(RefCountedMemoryUnitTest, RefCountedString) {
   scoped_refptr<RefCountedMemory> mem =
       base::MakeRefCounted<base::RefCountedString>(std::string("destroy me"));
 
-  ASSERT_EQ(10U, mem->size());
-  EXPECT_EQ('d', mem->front()[0]);
-  EXPECT_EQ('e', mem->front()[1]);
-  EXPECT_EQ('e', mem->front()[9]);
-
-  ConvertToByteSpanAndCheckSize(*mem, 10);
+  EXPECT_EQ(base::span(*mem), base::span_from_cstring("destroy me"));
 }
 
 TEST(RefCountedMemoryUnitTest, Equals) {
   scoped_refptr<RefCountedMemory> mem1 =
       base::MakeRefCounted<base::RefCountedString>(std::string("same"));
 
-  std::vector<unsigned char> d2 = {'s', 'a', 'm', 'e'};
+  std::vector<uint8_t> d2 = {'s', 'a', 'm', 'e'};
   scoped_refptr<RefCountedMemory> mem2 = RefCountedBytes::TakeVector(&d2);
 
   EXPECT_TRUE(mem1->Equals(mem2));

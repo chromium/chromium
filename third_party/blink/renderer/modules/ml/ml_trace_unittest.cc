@@ -53,7 +53,7 @@ class ScopedMLTraceTest : public testing::Test {
     base::trace_event::TraceResultBuffer trace_buffer;
     trace_buffer.SetOutputCallback(json_output->GetCallback());
     trace_buffer.Start();
-    trace_buffer.AddFragment(json_events_str->data());
+    trace_buffer.AddFragment(json_events_str->as_string());
     trace_buffer.Finish();
     if (!has_more_events) {
       std::move(quit_closure).Run();

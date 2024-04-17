@@ -56,8 +56,7 @@ nearby::fastpair::FastPairInfo BuildFastPairInfo(
                                StoredDiscoveryItem_State_STATE_ENABLED);
 
   auto image_memory = device_metadata->image().As1xPNGBytes();
-  std::string png_encoded_image(image_memory->front_as<char>(),
-                                image_memory->size());
+  std::string png_encoded_image(base::as_string_view(*image_memory));
   discovery_item.set_icon_png(png_encoded_image);
 
   discovery_item.add_stored_relevances()->mutable_relevance()->set_evaluation(

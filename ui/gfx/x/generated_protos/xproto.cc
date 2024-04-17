@@ -820,7 +820,6 @@ void ReadEvent<KeymapNotifyEvent>(KeymapNotifyEvent* event_,
   auto& buf = *buffer;
 
   auto& keys = (*event_).keys;
-  size_t keys_len = keys.size();
 
   // response_type
   uint8_t response_type;
@@ -4126,7 +4125,7 @@ Future<void> XProto::ChangeProperty(const ChangePropertyRequest& request) {
   buf.Write(&data_len);
 
   // data
-  buf.AppendBuffer(data, ((data_len) * (format)) / (8));
+  buf.AppendSizedBuffer(data);
 
   Align(&buf, 4);
 
@@ -5695,7 +5694,6 @@ std::unique_ptr<QueryKeymapReply> detail::ReadReply<QueryKeymapReply>(
 
   auto& sequence = (*reply).sequence;
   auto& keys = (*reply).keys;
-  size_t keys_len = keys.size();
 
   // response_type
   uint8_t response_type;
@@ -8244,7 +8242,7 @@ Future<void> XProto::PutImage(const PutImageRequest& request) {
   Pad(&buf, 2);
 
   // data
-  buf.AppendBuffer(data, data_len);
+  buf.AppendSizedBuffer(data);
 
   Align(&buf, 4);
 
@@ -8338,7 +8336,6 @@ std::unique_ptr<GetImageReply> detail::ReadReply<GetImageReply>(
   auto& sequence = (*reply).sequence;
   auto& visual = (*reply).visual;
   auto& data = (*reply).data;
-  size_t data_len = data ? data->size() : 0;
 
   // response_type
   uint8_t response_type;
@@ -10279,7 +10276,6 @@ std::unique_ptr<GetKeyboardMappingReply> detail::ReadReply<
   auto& keysyms_per_keycode = (*reply).keysyms_per_keycode;
   auto& sequence = (*reply).sequence;
   auto& keysyms = (*reply).keysyms;
-  size_t keysyms_len = keysyms.size();
 
   // response_type
   uint8_t response_type;
@@ -10468,7 +10464,6 @@ std::unique_ptr<GetKeyboardControlReply> detail::ReadReply<
   auto& bell_pitch = (*reply).bell_pitch;
   auto& bell_duration = (*reply).bell_duration;
   auto& auto_repeats = (*reply).auto_repeats;
-  size_t auto_repeats_len = auto_repeats.size();
 
   // response_type
   uint8_t response_type;
@@ -11379,7 +11374,6 @@ std::unique_ptr<GetModifierMappingReply> detail::ReadReply<
   auto& keycodes_per_modifier = (*reply).keycodes_per_modifier;
   auto& sequence = (*reply).sequence;
   auto& keycodes = (*reply).keycodes;
-  size_t keycodes_len = keycodes.size();
 
   // response_type
   uint8_t response_type;

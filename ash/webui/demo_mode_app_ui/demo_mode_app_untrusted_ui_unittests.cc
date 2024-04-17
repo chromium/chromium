@@ -42,8 +42,7 @@ class DemoModeAppUntrustedUITest : public testing::Test {
 void VerifyDataResponse(std::string expected_response,
                         base::OnceClosure quit_closure,
                         scoped_refptr<base::RefCountedMemory> data_response) {
-  std::string result(data_response->front_as<char>(), data_response->size());
-  EXPECT_EQ(result, expected_response);
+  EXPECT_EQ(base::as_string_view(*data_response), expected_response);
   std::move(quit_closure).Run();
 }
 
