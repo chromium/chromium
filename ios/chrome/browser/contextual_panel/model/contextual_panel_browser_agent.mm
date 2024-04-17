@@ -26,6 +26,14 @@ ContextualPanelBrowserAgent::~ContextualPanelBrowserAgent() {
   web_state_list_observation_.Reset();
   contextual_panel_tab_helper_observation_.Reset();
   browser_ = nullptr;
+  entrypoint_commands_handler_ = nil;
+}
+
+void ContextualPanelBrowserAgent::SetEntrypointCommandsHandler(
+    id<ContextualPanelEntrypointCommands> handler) {
+  DCHECK(handler);
+  DCHECK(!entrypoint_commands_handler_);
+  entrypoint_commands_handler_ = handler;
 }
 
 bool ContextualPanelBrowserAgent::
@@ -88,12 +96,11 @@ void ContextualPanelBrowserAgent::WebStateListDidChange(
   contextual_panel_tab_helper_observation_.Observe(
       ContextualPanelTabHelper::FromWebState(status.new_active_web_state));
 
-  id<ContextualPanelEntrypointCommands> contextual_panel_entrypoint_handler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(),
-                         ContextualPanelEntrypointCommands);
+  if (!entrypoint_commands_handler_) {
+    return;
+  }
 
-  [contextual_panel_entrypoint_handler
-      updateContextualPanelEntrypointForNewModelData];
+  [entrypoint_commands_handler_ updateContextualPanelEntrypointForNewModelData];
 }
 
 void ContextualPanelBrowserAgent::WebStateListDestroyed(
@@ -109,22 +116,20 @@ void ContextualPanelBrowserAgent::ContextualPanelHasNewData(
     ContextualPanelTabHelper* tab_helper,
     std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
         item_configurations) {
-  id<ContextualPanelEntrypointCommands> contextual_panel_entrypoint_handler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(),
-                         ContextualPanelEntrypointCommands);
+  if (!entrypoint_commands_handler_) {
+    return;
+  }
 
-  [contextual_panel_entrypoint_handler
-      updateContextualPanelEntrypointForNewModelData];
+  [entrypoint_commands_handler_ updateContextualPanelEntrypointForNewModelData];
 }
 
 void ContextualPanelBrowserAgent::ContextualPanelTabHelperDestroyed(
     ContextualPanelTabHelper* tab_helper) {
   contextual_panel_tab_helper_observation_.Reset();
 
-  id<ContextualPanelEntrypointCommands> contextual_panel_entrypoint_handler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(),
-                         ContextualPanelEntrypointCommands);
+  if (!entrypoint_commands_handler_) {
+    return;
+  }
 
-  [contextual_panel_entrypoint_handler
-      updateContextualPanelEntrypointForNewModelData];
+  [entrypoint_commands_handler_ updateContextualPanelEntrypointForNewModelData];
 }

@@ -15,6 +15,7 @@
 
 class Browser;
 class WebStateList;
+@protocol ContextualPanelEntrypointCommands;
 
 // Browser agent that is responsible for observing the WebStateList to listen to
 // the current contextual panel model for updates, and updating the entrypoint
@@ -29,6 +30,11 @@ class ContextualPanelBrowserAgent
       delete;
 
   ~ContextualPanelBrowserAgent() override;
+
+  // Sets the entrypoint UI commands handler needed by the Browser Agent to
+  // communicate when there are model updates back down to the entrypoint UI.
+  void SetEntrypointCommandsHandler(
+      id<ContextualPanelEntrypointCommands> handler);
 
   // Whether the currently observed ContextualPanelTabHelper has an entrypoint
   // config available.
@@ -77,6 +83,9 @@ class ContextualPanelBrowserAgent
 
   // The owning Browser.
   raw_ptr<Browser> browser_;
+
+  // Handler to send commands to the Contextual Panel entrypoint UI.
+  id<ContextualPanelEntrypointCommands> entrypoint_commands_handler_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_BROWSER_AGENT_H_

@@ -40,9 +40,11 @@
   [super start];
   _viewController = [[ContextualPanelEntrypointViewController alloc] init];
 
+  ContextualPanelBrowserAgent* browser_agent =
+      ContextualPanelBrowserAgent::FromBrowser(self.browser);
+
   _mediator = [[ContextualPanelEntrypointMediator alloc]
-      initWithBrowserAgent:ContextualPanelBrowserAgent::FromBrowser(
-                               self.browser)];
+      initWithBrowserAgent:browser_agent];
   _mediator.delegate = self;
 
   _mediator.consumer = _viewController;
@@ -52,6 +54,10 @@
   [dispatcher
       startDispatchingToTarget:_mediator
                    forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+
+  id<ContextualPanelEntrypointCommands> entrypoint_handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ContextualPanelEntrypointCommands);
+  browser_agent->SetEntrypointCommandsHandler(entrypoint_handler);
 
   _contextualPanelEntrypointFullscreenUIUpdater =
       std::make_unique<FullscreenUIUpdater>(
