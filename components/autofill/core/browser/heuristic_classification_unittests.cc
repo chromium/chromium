@@ -336,7 +336,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   }
 
   if (const std::string* label = field_dict.FindString("label_attr")) {
-    field.label = base::UTF8ToUTF16(*label);
+    field.set_label(base::UTF8ToUTF16(*label));
   }
   field.set_form_control_type(FormControlType::kInputText);
   if (const std::string* json_type = field_dict.FindString("type_attr")) {

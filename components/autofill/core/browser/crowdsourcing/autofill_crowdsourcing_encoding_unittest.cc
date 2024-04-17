@@ -1184,7 +1184,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     field.id_attribute = ASCIIToUTF16(f.id);
     field.name_attribute = ASCIIToUTF16(f.name);
     field.set_name(field.name_attribute);
-    field.label = ASCIIToUTF16(f.label);
+    field.set_label(ASCIIToUTF16(f.label));
     field.placeholder = ASCIIToUTF16(f.placeholder);
     field.aria_label = ASCIIToUTF16(f.aria_label);
     field.aria_description = ASCIIToUTF16(f.aria_description);
@@ -1274,13 +1274,13 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
         encoder.Encode(form_signature, field_signature,
                        RandomizedEncoder::FIELD_CONTROL_TYPE,
                        FormControlTypeToString(field.form_control_type())));
-    if (field.label.empty()) {
+    if (field.label().empty()) {
       EXPECT_FALSE(metadata.has_label());
     } else {
       EXPECT_EQ(metadata.label().encoded_bits(),
                 encoder.EncodeForTesting(form_signature, field_signature,
                                          RandomizedEncoder::FIELD_LABEL,
-                                         field.label));
+                                         field.label()));
     }
     if (field.aria_label.empty()) {
       EXPECT_FALSE(metadata.has_aria_label());
@@ -1338,7 +1338,7 @@ TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {
     // One form field needed to be valid form.
     FormFieldData field;
     field.set_form_control_type(FormControlType::kInputText);
-    field.label = u"email";
+    field.set_label(u"email");
     field.set_name(u"email");
     field.set_renderer_id(test::MakeFieldRendererId());
     form.fields.push_back(field);
@@ -1563,31 +1563,31 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
 
-  field.label = u"Name on Card";
+  field.set_label(u"Name on Card");
   field.set_name(u"name_on_card");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.host_form_signature = form_signature;
   form.fields.push_back(field);
 
-  field.label = u"Address";
+  field.set_label(u"Address");
   field.set_name(u"billing_address");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.host_form_signature = FormSignature(12345UL);
   form.fields.push_back(field);
 
-  field.label = u"Card Number";
+  field.set_label(u"Card Number");
   field.set_name(u"card_number");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.host_form_signature = FormSignature(67890UL);
   form.fields.push_back(field);
 
-  field.label = u"Expiration Date";
+  field.set_label(u"Expiration Date");
   field.set_name(u"expiration_month");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.host_form_signature = FormSignature(12345UL);
   form.fields.push_back(field);
 
-  field.label = u"Expiration Year";
+  field.set_label(u"Expiration Year");
   field.set_name(u"expiration_year");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.host_form_signature = FormSignature(12345UL);
@@ -1597,7 +1597,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   FormFieldData checkable_field;
   checkable_field.check_status =
       FormFieldData::CheckStatus::kCheckableButUnchecked;
-  checkable_field.label = u"Checkable1";
+  checkable_field.set_label(u"Checkable1");
   checkable_field.set_name(u"Checkable1");
   checkable_field.set_renderer_id(test::MakeFieldRendererId());
   checkable_field.host_form_signature = form_signature;
@@ -1666,7 +1666,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
     }
   }
   for (size_t i = 0; i < 5; ++i) {
-    field.label = u"Address";
+    field.set_label(u"Address");
     field.set_name(u"address");
     field.set_renderer_id(test::MakeFieldRendererId());
     field.host_form_signature = form_signature3;
@@ -1717,7 +1717,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   // Add 300 address fields - the form is not valid anymore, but previous ones
   // are. The result should be the same as in previous test.
   for (size_t i = 0; i < 300; ++i) {
-    field.label = u"Address";
+    field.set_label(u"Address");
     field.set_name(u"address");
     field.set_renderer_id(test::MakeFieldRendererId());
     malformed_form.fields.push_back(field);
@@ -3293,7 +3293,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
     FormFieldData field;
     field.set_form_control_type(FormControlType::kInputText);
     field.set_name(base::NumberToString16(i));
-    field.label = (base::NumberToString16(i));
+    field.set_label((base::NumberToString16(i)));
     field.set_renderer_id(test::MakeFieldRendererId());
     form_data.fields.push_back(field);
   }

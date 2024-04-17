@@ -29,7 +29,7 @@ namespace {
 void SanitizeFormData(FormData* form) {
   form->main_frame_origin = url::Origin();
   for (FormFieldData& field : form->fields) {
-    field.label = {};
+    field.set_label({});
     field.set_value({});
     field.autocomplete_attribute = {};
     field.options.clear();

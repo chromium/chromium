@@ -487,7 +487,7 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
     field.set_server_predictions({prediction});
   }
   if (test_case.opt_label) {
-    field.label = base::UTF8ToUTF16(test_case.opt_label);
+    field.set_label(base::UTF8ToUTF16(test_case.opt_label));
   }
 
   CreditCard credit_card = test::GetCreditCard();

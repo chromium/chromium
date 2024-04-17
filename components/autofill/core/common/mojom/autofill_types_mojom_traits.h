@@ -190,7 +190,7 @@ template <>
 struct StructTraits<autofill::mojom::FormFieldDataDataView,
                     autofill::FormFieldData> {
   static const std::u16string& label(const autofill::FormFieldData& r) {
-    return r.label;
+    return r.label();
   }
 
   static const std::u16string& name(const autofill::FormFieldData& r) {

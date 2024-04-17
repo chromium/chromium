@@ -284,7 +284,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   FormData CreateAndAttachUnclassifiedForm() {
     FormData form = test::CreateTestAddressFormData();
     for (FormFieldData& field : form.fields) {
-      field.label = u"unclassifiable";
+      field.set_label(u"unclassifiable");
       field.set_name(u"unclassifiable");
     }
     AttachForm(form);

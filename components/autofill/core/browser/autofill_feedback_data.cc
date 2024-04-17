@@ -41,7 +41,7 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("idAttribute", field->id_attribute);
   field_data.Set("parseableNameAttribute", field->name_attribute);
   field_data.Set("autocompleteAttribute", field->autocomplete_attribute);
-  field_data.Set("labelAttribute", field->label);
+  field_data.Set("labelAttribute", field->label());
   field_data.Set("placeholderAttribute", field->placeholder);
   field_data.Set("fieldType", field->Type().ToStringView());
   field_data.Set("heuristicType",

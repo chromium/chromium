@@ -198,7 +198,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       base::ReplaceFirstSubstringAfterOffset(&value, 0, u"\\n", u"\n");
 
       FormFieldData field;
-      field.label = field_type;
+      field.set_label(field_type);
       field.set_name(field_type);
       field.set_value(value);
       field.set_form_control_type(FormControlType::kInputText);

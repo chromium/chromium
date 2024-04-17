@@ -1486,7 +1486,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.id_attribute = u"field-id-attribute-1";
   field.name_attribute = u"field-name-attribute-1";
   field.set_name(field.name_attribute);
-  field.label = u"field-label";
+  field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-description";
   field.set_form_control_type(FormControlType::kInputText);
@@ -1498,7 +1498,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.id_attribute = u"field-id-attribute-2";
   field.name_attribute = u"field-name-attribute-2";
   field.set_name(field.name_attribute);
-  field.label = u"field-label";
+  field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-description";
   field.set_form_control_type(FormControlType::kInputText);
@@ -1510,7 +1510,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.id_attribute = u"field-id-attribute-3";
   field.name_attribute = u"field-name-attribute-3";
   field.set_name(field.name_attribute);
-  field.label = u"field-label";
+  field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-description";
   field.set_form_control_type(FormControlType::kInputText);
@@ -1573,7 +1573,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.id_attribute = u"field-id-attribute-1";
   field.name_attribute = u"field-name-attribute-1";
   field.set_name(field.name_attribute);
-  field.label = u"field-label";
+  field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-descriptionm";
   field.set_form_control_type(FormControlType::kInputText);
@@ -1584,7 +1584,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.id_attribute = u"field-id-attribute-2";
   field.name_attribute = u"field-name-attribute-2";
   field.set_name(field.name_attribute);
-  field.label = u"field-label";
+  field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-descriptionm";
   field.set_form_control_type(FormControlType::kInputText);
@@ -1595,7 +1595,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.id_attribute = u"field-id-attribute-3";
   field.name_attribute = u"field-name-attribute-3";
   field.set_name(field.name_attribute);
-  field.label = u"field-label";
+  field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-descriptionm";
   field.set_form_control_type(FormControlType::kInputText);

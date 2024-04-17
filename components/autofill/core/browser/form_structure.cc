@@ -1071,7 +1071,7 @@ void FormStructure::ExtractParseableFieldLabels() {
     if (!field->IsTextInputElement() || !field->IsFocusable()) {
       continue;
     }
-    field_labels.push_back(field->label);
+    field_labels.push_back(field->label());
   }
 
   // Determine the parsable labels and write them back.
@@ -1087,7 +1087,7 @@ void FormStructure::ExtractParseableFieldLabels() {
   for (auto& field : *this) {
     if (!field->IsTextInputElement() || !field->IsFocusable()) {
       // For those fields, set the original label.
-      field->set_parseable_label(field->label);
+      field->set_parseable_label(field->label());
       continue;
     }
     DCHECK(idx < parsable_labels->size());
@@ -1211,8 +1211,8 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     buffer << "\n  Section: " << field->section;
 
     constexpr size_t kMaxLabelSize = 100;
-    const std::u16string truncated_label =
-        field->label.substr(0, std::min(field->label.length(), kMaxLabelSize));
+    const std::u16string truncated_label = field->label().substr(
+        0, std::min(field->label().length(), kMaxLabelSize));
     buffer << "\n  Label: " << truncated_label;
 
     buffer << "\n  Is empty: " << (field->IsEmpty() ? "Yes" : "No");
@@ -1297,7 +1297,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
         base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForParsingWithSharedLabels)
             ? field->parseable_label()
-            : field->label;
+            : field->label();
     const std::u16string truncated_label =
         label.substr(0, std::min(label.length(), kMaxLabelSize));
     buffer << Tr{} << "Label:" << truncated_label;

@@ -276,7 +276,8 @@ struct FormFieldData {
 
   std::u16string id_attribute;
   std::u16string name_attribute;
-  std::u16string label;
+  const std::u16string& label() const { return label_; }
+  void set_label(std::u16string label) { label_ = std::move(label); }
 
   // The form control element's value or the contenteditable's text content,
   // depending on the `form_control_type`.
@@ -430,6 +431,7 @@ struct FormFieldData {
 
  private:
   std::u16string name_;
+  std::u16string label_;
   std::u16string value_;
   FormControlType form_control_type_ = FormControlType::kInputText;
   FieldRendererId renderer_id_;
@@ -509,7 +511,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
 // TODO(crbug.com/40765988): Replace this with FormData::DeepEqual().
 #define EXPECT_FORM_FIELD_DATA_EQUALS(expected, actual)                        \
   do {                                                                         \
-    EXPECT_EQ(expected.label, actual.label);                                   \
+    EXPECT_EQ(expected.label(), actual.label());                               \
     EXPECT_EQ(expected.name(), actual.name());                                 \
     EXPECT_EQ(expected.value(), actual.value());                               \
     EXPECT_EQ(expected.form_control_type(), actual.form_control_type());       \

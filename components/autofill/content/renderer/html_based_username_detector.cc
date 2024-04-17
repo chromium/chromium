@@ -110,7 +110,7 @@ UsernameFieldData ComputeUsernameFieldData(
                             &field_data.developer_short_tokens);
   AppendValueAndShortTokens(field.id_attribute, &field_data.developer_value,
                             &field_data.developer_short_tokens);
-  AppendValueAndShortTokens(field.label, &field_data.user_value,
+  AppendValueAndShortTokens(field.label(), &field_data.user_value,
                             &field_data.user_short_tokens);
   return field_data;
 }

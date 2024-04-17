@@ -342,8 +342,9 @@ ProcessedField* FindField(std::vector<ProcessedField>* processed_fields,
 }
 
 bool CanBeConsideredAsSingleUsernameField(const FormFieldData* field) {
-  return field && util::CanFieldBeConsideredAsSingleUsername(
-                      field->name_attribute, field->id_attribute, field->label);
+  return field &&
+         util::CanFieldBeConsideredAsSingleUsername(
+             field->name_attribute, field->id_attribute, field->label());
 }
 
 // Given a `new_password` field tries to find a matching confirmation_password

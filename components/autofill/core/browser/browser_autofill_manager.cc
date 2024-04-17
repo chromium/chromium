@@ -2793,7 +2793,8 @@ bool BrowserAutofillManager::ShouldUploadUkm(
             std::string::npos ||
         base::ToLowerASCII((*it)->name()).find(u"search") !=
             std::string::npos ||
-        base::ToLowerASCII((*it)->label).find(u"search") != std::string::npos ||
+        base::ToLowerASCII((*it)->label()).find(u"search") !=
+            std::string::npos ||
         base::ToLowerASCII((*it)->aria_label).find(u"search") !=
             std::string::npos) {
       return false;

@@ -525,7 +525,7 @@ void ExpectFilledField(const char* expected_label,
                        FormControlType expected_form_control_type,
                        const FormFieldData& field) {
   SCOPED_TRACE(expected_label);
-  EXPECT_EQ(UTF8ToUTF16(expected_label), field.label);
+  EXPECT_EQ(UTF8ToUTF16(expected_label), field.label());
   EXPECT_EQ(UTF8ToUTF16(expected_name), field.name());
   EXPECT_EQ(UTF8ToUTF16(expected_value), field.value());
   EXPECT_EQ(expected_form_control_type, field.form_control_type());
@@ -1473,7 +1473,7 @@ TEST_F(BrowserAutofillManagerTest,
       features::kAutofillForUnclassifiedFieldsAvailable);
   // Create a form where the first field is unclassifiable.
   FormData form = CreateTestAddressFormData();
-  form.fields[0].label = u"unclassified";
+  form.fields[0].set_label(u"unclassified");
   form.fields[0].set_name(u"unclassified");
   FormsSeen({form});
 
@@ -1546,7 +1546,7 @@ TEST_F(BrowserAutofillManagerTest,
     // empty, except for the country. This is the only case when a suggestion is
     // generated for it.
     external_delegate()->CheckSuggestionCount(
-        field.global_id(), field.label == u"Country" ? 5 : 4);
+        field.global_id(), field.label() == u"Country" ? 5 : 4);
     EXPECT_TRUE(base::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
           // The field is classified, therefore the suggestion can be accepted.

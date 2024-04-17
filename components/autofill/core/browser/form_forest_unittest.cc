@@ -80,7 +80,7 @@ auto Equals(const FormFieldData& exp) {
       Property("form_control_type", &FormFieldData::form_control_type,
                exp.form_control_type()),
       Property("value", &FormFieldData::value, exp.value()),
-      Field("label", &FormFieldData::label, exp.label),
+      Property("label", &FormFieldData::label, exp.label()),
       Field("host_form_signature", &FormFieldData::host_form_signature,
             exp.host_form_signature));
 }

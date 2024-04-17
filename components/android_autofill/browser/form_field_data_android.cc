@@ -98,7 +98,7 @@ bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {
   // 2. The labels were inferred from the same type of source and that source
   //    was not `LabelSource::kLabelTag`.
   auto LabelsAreSimilar = [](const FormFieldData& f1, const FormFieldData& f2) {
-    return f1.label == f2.label ||
+    return f1.label() == f2.label() ||
            (f1.label_source != FormFieldData::LabelSource::kLabelTag &&
             f1.label_source == f2.label_source);
   };

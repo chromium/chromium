@@ -1256,10 +1256,10 @@ void MatchLabelsAndFields(
     }
     // Concatenate labels because some sites might have multiple label
     // candidates.
-    if (!field_data->label.empty()) {
-      field_data->label += u" ";
+    if (!field_data->label().empty()) {
+      field_data->set_label(field_data->label() + u" ");
     }
-    field_data->label += label_text;
+    field_data->set_label(field_data->label() + label_text);
     field_data->label_source = label_source;
   }
 }
@@ -1461,10 +1461,11 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const WebFormControlElement& control_element =
         control_elements[element_index];
     FormFieldData& field = form.fields[field_index++];
-    if (field.label.empty()) {
-      field.label = InferLabelForElement(control_element, field.label_source);
+    if (field.label().empty()) {
+      field.set_label(
+          InferLabelForElement(control_element, field.label_source));
     }
-    field.label = std::move(field.label).substr(0, kMaxStringLength);
+    field.set_label(std::move(field.label()).substr(0, kMaxStringLength));
   }
 
   // Extracts the frame tokens of |iframe_elements|.

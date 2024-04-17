@@ -119,7 +119,7 @@ autofill::FieldGlobalId PhoneFieldParserTest::AppendField(
     const TestFieldData& field_data) {
   FormFieldData field;
   field.set_form_control_type(field_data.type);
-  field.label = field_data.label;
+  field.set_label(field_data.label);
   field.set_name(field_data.name);
   field.max_length = field_data.max_length;
   for (auto* const element : field_data.options) {

@@ -153,7 +153,7 @@ TEST_F(AutofillAgentTests,
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
-  field.label = u"Card number";
+  field.set_label(u"Card number");
   field.set_name(u"number");
   field.name_attribute = field.name();
   field.id_attribute = u"number";
@@ -161,7 +161,7 @@ TEST_F(AutofillAgentTests,
   field.is_autofilled = true;
   field.set_renderer_id(FieldRendererId(2));
   form.fields.push_back(field);
-  field.label = u"Name on Card";
+  field.set_label(u"Name on Card");
   field.set_name(u"name");
   field.name_attribute = field.name();
   field.id_attribute = u"name";
@@ -169,7 +169,7 @@ TEST_F(AutofillAgentTests,
   field.is_autofilled = true;
   field.set_renderer_id(FieldRendererId(3));
   form.fields.push_back(field);
-  field.label = u"Expiry Month";
+  field.set_label(u"Expiry Month");
   field.set_name(u"expiry_month");
   field.name_attribute = field.name();
   field.id_attribute = u"expiry_month";
@@ -177,7 +177,7 @@ TEST_F(AutofillAgentTests,
   field.is_autofilled = false;
   field.set_renderer_id(FieldRendererId(4));
   form.fields.push_back(field);
-  field.label = u"Unknown field";
+  field.set_label(u"Unknown field");
   field.set_name(u"unknown");
   field.name_attribute = field.name();
   field.id_attribute = u"unknown";
@@ -204,7 +204,7 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
-  field.label = u"Card number";
+  field.set_label(u"Card number");
   field.set_name(u"number");
   field.name_attribute = field.name();
   field.id_attribute = u"number";
@@ -231,7 +231,7 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
-  field.label = u"Card number";
+  field.set_label(u"Card number");
   field.set_name(u"number");
   field.name_attribute = field.name();
   field.id_attribute = u"number";
@@ -262,7 +262,7 @@ TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
-  field.label = u"Card number";
+  field.set_label(u"Card number");
   field.set_name(u"number");
   field.name_attribute = field.name();
   field.id_attribute = u"number";

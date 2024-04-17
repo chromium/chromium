@@ -18,7 +18,7 @@ testing::Message DescribeFormData(const FormData& form_data) {
   result << "Form contains " << form_data.fields.size() << " fields:\n";
   for (const FormFieldData& field : form_data.fields) {
     result << "type=" << FormControlTypeToString(field.form_control_type())
-           << ", name=" << field.name() << ", label=" << field.label << "\n";
+           << ", name=" << field.name() << ", label=" << field.label() << "\n";
   }
   return result;
 }
@@ -27,55 +27,55 @@ FormFieldData CreateFieldByRole(FieldType role) {
   FormFieldData field;
   switch (role) {
     case FieldType::USERNAME:
-      field.label = u"Username";
+      field.set_label(u"Username");
       field.set_name(u"username");
       break;
     case FieldType::NAME_FULL:
-      field.label = u"Full name";
+      field.set_label(u"Full name");
       field.set_name(u"fullname");
       break;
     case FieldType::NAME_FIRST:
-      field.label = u"First Name";
+      field.set_label(u"First Name");
       field.set_name(u"firstName");
       break;
     case FieldType::NAME_LAST:
-      field.label = u"Last Name";
+      field.set_label(u"Last Name");
       field.set_name(u"lastName");
       break;
     case FieldType::EMAIL_ADDRESS:
-      field.label = u"E-mail address";
+      field.set_label(u"E-mail address");
       field.set_name(u"email");
       break;
     case FieldType::ADDRESS_HOME_LINE1:
-      field.label = u"Address";
+      field.set_label(u"Address");
       field.set_name(u"home_line_one");
       break;
     case FieldType::ADDRESS_HOME_CITY:
-      field.label = u"City";
+      field.set_label(u"City");
       field.set_name(u"city");
       break;
     case FieldType::ADDRESS_HOME_STATE:
-      field.label = u"State";
+      field.set_label(u"State");
       field.set_name(u"state");
       break;
     case FieldType::ADDRESS_HOME_COUNTRY:
-      field.label = u"Country";
+      field.set_label(u"Country");
       field.set_name(u"country");
       break;
     case FieldType::ADDRESS_HOME_ZIP:
-      field.label = u"Zip Code";
+      field.set_label(u"Zip Code");
       field.set_name(u"zipCode");
       break;
     case FieldType::PHONE_HOME_NUMBER:
-      field.label = u"Phone";
+      field.set_label(u"Phone");
       field.set_name(u"phone");
       break;
     case FieldType::COMPANY_NAME:
-      field.label = u"Company";
+      field.set_label(u"Company");
       field.set_name(u"company");
       break;
     case FieldType::CREDIT_CARD_NUMBER:
-      field.label = u"Card Number";
+      field.set_label(u"Card Number");
       field.set_name(u"cardNumber");
       break;
     case FieldType::EMPTY_TYPE:
@@ -109,7 +109,7 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
     ff.host_form_signature = *fd.host_form_signature;
   }
   if (fd.label) {
-    ff.label = *fd.label;
+    ff.set_label(*fd.label);
   }
   if (fd.name) {
     ff.set_name(*fd.name);

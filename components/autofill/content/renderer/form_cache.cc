@@ -359,7 +359,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
       // TODO(crbug/1165780): Use `parseable_label()` once the feature is
       // launched.
       std::u16string truncated_label =
-          field_data.label.substr(0, kMaxLabelSize);
+          field_data.label().substr(0, kMaxLabelSize);
       // The label may be derived from the placeholder attribute and may contain
       // line wraps which are normalized here.
       base::ReplaceChars(truncated_label, u"\n", u"|", &truncated_label);

@@ -1647,7 +1647,7 @@ TEST_F(FormFillerTest, TrackFillingOriginWithUsingMultipleProfiles) {
   FormData filled_form = FillAutofillFormData(form, form.fields[0], &profile1);
 
   // Check that the email field has no filling source.
-  ASSERT_EQ(form.fields[2].label, u"E-mail address");
+  ASSERT_EQ(form.fields[2].label(), u"E-mail address");
   EXPECT_EQ(form_structure->field(2)->autofill_source_profile_guid(),
             std::nullopt);
 

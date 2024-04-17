@@ -70,7 +70,7 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
 
   ScopedJavaLocalRef<jobject> obj = Java_FormFieldData_createFormFieldData(
       env, ConvertUTF16ToJavaString(env, field.name()),
-      ConvertUTF16ToJavaString(env, field.label),
+      ConvertUTF16ToJavaString(env, field.label()),
       ConvertUTF16ToJavaString(env, field.value()),
       ConvertUTF8ToJavaString(env, field.autocomplete_attribute),
       field.should_autocomplete,

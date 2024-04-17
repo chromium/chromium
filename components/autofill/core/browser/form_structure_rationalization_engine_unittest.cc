@@ -39,7 +39,7 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
     const auto& f =
         result.emplace_back(std::make_unique<AutofillField>(FormFieldData()));
     f->set_name(t.name);
-    f->label = t.label;
+    f->set_label(t.label);
     f->SetTypeTo(AutofillType(t.field_type));
     DCHECK_EQ(f->Type().GetStorableType(), t.field_type);
   }
@@ -232,7 +232,7 @@ TEST(FormStructureRationalizationEngine,
   };
 
   AutofillField field;
-  field.label = u"";
+  field.set_label(u"");
 
   // Empty label.
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
@@ -241,21 +241,21 @@ TEST(FormStructureRationalizationEngine,
       kMXContext, requires_dependent_locality_match, field));
 
   // Non-matching label.
-  field.label = u"foobar";
+  field.set_label(u"foobar");
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_regex_match_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, requires_dependent_locality_match, field));
 
   // Matching label.
-  field.label = u"colonia";
+  field.set_label(u"colonia");
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_regex_match_required, field));
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, requires_dependent_locality_match, field));
 
   // Matching label but incorrect type.
-  field.label = u"colonia";
+  field.set_label(u"colonia");
   field.set_form_control_type(FormControlType::kInputMonth);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_regex_match_required, field));
@@ -268,7 +268,7 @@ TEST(FormStructureRationalizationEngine,
   // This matches the positive pattern due to "nombre.*dirección" but also
   // the negataive pattern due to "correo". Therefore, the condition should not
   // be considered fulfilled.
-  field.label = u"nombre de usuario/dirección de correo electrónico";
+  field.set_label(u"nombre de usuario/dirección de correo electrónico");
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, regex_with_negative_pattern, field));
 }

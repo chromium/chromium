@@ -67,7 +67,7 @@ void FormFieldParserTestBase::AddFormFieldDataWithLength(
   FormFieldData field_data;
   field_data.set_form_control_type(control_type);
   field_data.set_name(base::UTF8ToUTF16(name));
-  field_data.label = base::UTF8ToUTF16(label);
+  field_data.set_label(base::UTF8ToUTF16(label));
   field_data.max_length = max_length;
   field_data.set_renderer_id(MakeFieldRendererId());
   fields_.push_back(std::make_unique<AutofillField>(field_data));

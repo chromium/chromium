@@ -197,15 +197,15 @@ TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs_Labels) {
   FormFieldData f2 = CreateTestField();
   FormFieldDataAndroid af(&f1);
 
-  f1.label = u"SomeLabel";
+  f1.set_label(u"SomeLabel");
   f1.label_source = FormFieldData::LabelSource::kTdTag;
-  f2.label = f1.label;
+  f2.set_label(f1.label());
   f2.label_source = FormFieldData::LabelSource::kAriaLabel;
 
   EXPECT_TRUE(af.SimilarFieldAs(f2));
 
   // Not similar because both label text and label source differ.
-  f2.label = f1.label + u"x";
+  f2.set_label(f1.label() + u"x");
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 
   // Similar because the label source are equal not not a label tag.

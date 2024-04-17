@@ -126,7 +126,7 @@ TEST_P(MatchTest, Match) {
   const auto& [label, positive_patterns, negative_patterns] = GetParam();
   AutofillField field;
   SCOPED_TRACE("label = " + base::UTF16ToUTF8(label));
-  field.label = label;
+  field.set_label(label);
   field.set_parseable_label(label);
   for (const auto& pattern : positive_patterns) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),

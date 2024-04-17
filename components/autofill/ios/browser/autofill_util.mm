@@ -302,7 +302,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
     field_data->id_attribute = base::UTF8ToUTF16(*id_attribute);
   }
   if (const std::string* label = field.FindString("label")) {
-    field_data->label = base::UTF8ToUTF16(*label);
+    field_data->set_label(base::UTF8ToUTF16(*label));
   }
   if (const std::string* value = field.FindString("value")) {
     field_data->set_value(base::UTF8ToUTF16(*value));

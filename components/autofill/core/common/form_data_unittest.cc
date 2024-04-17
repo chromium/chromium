@@ -151,7 +151,7 @@ void FillInDummyFormData(FormData* data) {
       url::Origin::Create(GURL("https://origin-example.com"));
 
   FormFieldData field_data;
-  field_data.label = u"label";
+  field_data.set_label(u"label");
   field_data.set_name(u"name");
   field_data.set_value(u"value");
   field_data.set_form_control_type(FormControlType::kInputPassword);

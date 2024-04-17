@@ -106,7 +106,7 @@ bool DeserializeSection1(base::PickleIterator* iter,
       iter->ReadString(&autocomplete_attribute) &&
       iter->ReadUInt64(&max_length) && iter->ReadBool(&is_autofilled);
   if (success) {
-    field_data->label = std::move(label);
+    field_data->set_label(std::move(label));
     field_data->set_name(std::move(name));
     field_data->set_value(std::move(value));
     field_data->autocomplete_attribute = std::move(autocomplete_attribute);
@@ -252,7 +252,7 @@ bool DeserializeSection11(base::PickleIterator* iter,
 
 auto IdentityTuple(const FormFieldData& f) {
   return std::tuple_cat(
-      std::tie(f.label, f.name(), f.name_attribute, f.id_attribute,
+      std::tie(f.label(), f.name(), f.name_attribute, f.id_attribute,
                f.form_control_type(), f.autocomplete_attribute, f.placeholder,
                f.max_length, f.css_classes, f.is_focusable,
                f.should_autocomplete, f.role, f.text_direction, f.options),
@@ -482,7 +482,7 @@ FormControlType StringToFormControlTypeDiscouraged(
 void SerializeFormFieldData(const FormFieldData& field_data,
                             base::Pickle* pickle) {
   pickle->WriteInt(kFormFieldDataPickleVersion);
-  pickle->WriteString16(field_data.label);
+  pickle->WriteString16(field_data.label());
   pickle->WriteString16(field_data.name());
   pickle->WriteString16(field_data.value());
   pickle->WriteString(FormControlTypeToString(field_data.form_control_type()));
@@ -642,7 +642,7 @@ bool DeserializeFormFieldData(base::PickleIterator* iter,
 }
 
 std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
-  return os << "label='" << field.label << "' "
+  return os << "label='" << field.label() << "' "
             << "unique_Id=" << field.global_id() << " " << "origin='"
             << field.origin.Serialize() << "' " << "name='" << field.name()
             << "' " << "id_attribute='" << field.id_attribute << "' "
@@ -685,7 +685,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tr{} << "Id attribute:" << field.id_attribute;
   constexpr size_t kMaxLabelSize = 100;
   const std::u16string truncated_label =
-      field.label.substr(0, std::min(field.label.length(), kMaxLabelSize));
+      field.label().substr(0, std::min(field.label().length(), kMaxLabelSize));
   buffer << Tr{} << "Label:" << truncated_label;
   buffer << Tr{} << "Form control type:" << field.form_control_type();
   buffer << Tr{} << "Autocomplete attribute:" << field.autocomplete_attribute;

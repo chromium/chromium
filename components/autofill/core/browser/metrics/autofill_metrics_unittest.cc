@@ -441,16 +441,16 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
 
-  field.label = u"fullname";
+  field.set_label(u"fullname");
   field.set_name(u"fullname");
   form.fields.push_back(field);
 
-  field.label = u"Street 1";
+  field.set_label(u"Street 1");
   field.set_name(u"street1");
   form.fields.push_back(field);
   field_signature[0] = Collapse(CalculateFieldSignatureForField(field));
 
-  field.label = u"Street 2";
+  field.set_label(u"Street 2");
   field.set_name(u"street2");
   form.fields.push_back(field);
   field_signature[1] = Collapse(CalculateFieldSignatureForField(field));
@@ -539,21 +539,21 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
 
-  field.label = u"Country";
+  field.set_label(u"Country");
   field.set_name(u"country");
   form.fields.push_back(field);
   field_signature[0] = Collapse(CalculateFieldSignatureForField(field));
 
-  field.label = u"fullname";
+  field.set_label(u"fullname");
   field.set_name(u"fullname");
   form.fields.push_back(field);
 
-  field.label = u"State";
+  field.set_label(u"State");
   field.set_name(u"state");
   form.fields.push_back(field);
   field_signature[2] = Collapse(CalculateFieldSignatureForField(field));
 
-  field.label = u"State";
+  field.set_label(u"State");
   field.set_name(u"state");
   field.is_focusable = false;
   field.set_form_control_type(FormControlType::kSelectOne);
@@ -5342,17 +5342,17 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     FormFieldData field;
     field.set_form_control_type(FormControlType::kInputText);
 
-    field.label = u"fullname";
+    field.set_label(u"fullname");
     field.set_name(u"fullname");
     form.fields.push_back(field);
 
-    field.label = u"address";
+    field.set_label(u"address");
     field.set_name(u"address");
     form.fields.push_back(field);
 
     // Checkable fields should be ignored in parsing.
     FormFieldData checkable_field;
-    checkable_field.label = u"radio_button";
+    checkable_field.set_label(u"radio_button");
     checkable_field.set_form_control_type(FormControlType::kInputRadio);
     checkable_field.check_status =
         FormFieldData::CheckStatus::kCheckableButUnchecked;
@@ -5361,11 +5361,11 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     owned_forms_.push_back(std::make_unique<FormStructure>(form));
     forms_.push_back(owned_forms_.back().get());
 
-    field.label = u"email";
+    field.set_label(u"email");
     field.set_name(u"email");
     form.fields.push_back(field);
 
-    field.label = u"password";
+    field.set_label(u"password");
     field.set_name(u"password");
     field.set_form_control_type(FormControlType::kInputPassword);
     form.fields.push_back(field);

@@ -110,9 +110,9 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
     if (!field.value().empty()) {
       os << prefix << "    Value " << field.value() << std::endl;
     }
-    if (!field.label.empty()) {
+    if (!field.label().empty()) {
       os << prefix << "    Label "
-         << field.label.substr(0, field.label.find('\n')) << std::endl;
+         << field.label().substr(0, field.label().find('\n')) << std::endl;
     }
   }
   return os;

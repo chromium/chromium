@@ -115,7 +115,7 @@ AutofillMlPredictionModelHandler::VectorizeForm(
   CHECK(state_);
   AutofillModelExecutor::ModelInput vectorized_form(form.fields().size());
   for (size_t i = 0; i < form.field_count(); ++i) {
-    vectorized_form[i] = state_->vectorizer.Vectorize(form.field(i)->label);
+    vectorized_form[i] = state_->vectorizer.Vectorize(form.field(i)->label());
   }
   return vectorized_form;
 }

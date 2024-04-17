@@ -594,7 +594,7 @@ bool FormFieldParser::Match(ParsingContext& context,
   const std::u16string& label =
       context.autofill_enable_support_for_parsing_with_shared_labels
           ? field->parseable_label()
-          : field->label;
+          : field->label();
 
   const std::u16string& name = field->parseable_name();
 

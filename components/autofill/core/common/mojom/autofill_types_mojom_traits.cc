@@ -172,7 +172,7 @@ bool StructTraits<
     if (!data.ReadLabel(&label)) {
       return false;
     }
-    out->label = std::move(label);
+    out->set_label(std::move(label));
   }
   {
     std::u16string name;

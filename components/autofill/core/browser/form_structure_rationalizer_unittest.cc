@@ -93,7 +93,7 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
   // Build the fields for the form.
   for (const auto& field_template : fields) {
     FormFieldData field;
-    field.label = base::UTF8ToUTF16(field_template.label);
+    field.set_label(base::UTF8ToUTF16(field_template.label));
     field.set_name(base::UTF8ToUTF16(field_template.name));
     if (!field_template.section.empty()) {
       field.section = Section::FromAutocomplete(

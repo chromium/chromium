@@ -190,7 +190,7 @@ AutofillField::AutofillField(const FormFieldData& field)
       field_signature_(
           CalculateFieldSignatureByNameAndType(name(), form_control_type())),
       parseable_name_(name()),
-      parseable_label_(label) {
+      parseable_label_(label()) {
   local_type_predictions_.fill(NO_SERVER_DATA);
 }
 

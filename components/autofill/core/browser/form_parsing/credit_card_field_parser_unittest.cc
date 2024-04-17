@@ -735,7 +735,7 @@ TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
 
   AutofillField field;
   field.max_length = test_case().max_length;
-  field.label = base::UTF8ToUTF16(test_case().label);
+  field.set_label(base::UTF8ToUTF16(test_case().label));
 
   FieldType fallback_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
 

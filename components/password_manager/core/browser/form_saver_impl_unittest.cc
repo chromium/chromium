@@ -290,7 +290,7 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   field.set_name(u"name");
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.set_value(u"value");
-  field.label = u"label";
+  field.set_label(u"label");
   field.placeholder = u"placeholder";
   field.id_attribute = u"id";
   field.name_attribute = field.name();
@@ -319,7 +319,7 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   EXPECT_EQ(autofill::FormControlType::kInputPassword,
             saved_field.form_control_type());
   EXPECT_TRUE(saved_field.value().empty());
-  EXPECT_TRUE(saved_field.label.empty());
+  EXPECT_TRUE(saved_field.label().empty());
   EXPECT_TRUE(saved_field.placeholder.empty());
   EXPECT_TRUE(saved_field.id_attribute.empty());
   EXPECT_TRUE(saved_field.name_attribute.empty());
