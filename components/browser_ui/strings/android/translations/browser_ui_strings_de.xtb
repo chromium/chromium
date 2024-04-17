@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Zoom zwingend aktivieren</translation>
 <translation id="3908288065506437185">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="3918378745482005425">Einige Funktionen sind möglicherweise nicht verfügbar. Ähnliche Websites können weiterhin Drittanbieter-Cookies verwenden.</translation>
+<translation id="3933121352599513978">Unerwünschte Anfragen minimieren (empfohlen)</translation>
 <translation id="3955193568934677022">Wiedergabe geschützter Inhalte auf Websites zulassen (empfohlen)</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3974105241379491420">Websites dürfen darum bitten, Informationen nutzen zu dürfen, die sie zu deiner Person gespeichert haben</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Navigation nicht möglich: <ph name="URL" /> ist nicht erreichbar.</translation>
 <translation id="8986362086234534611">Entfernen</translation>
 <translation id="8990043154272859344">Du wirst von allen Websites abgemeldet</translation>
+<translation id="8993853206419610596">Alle Anfragen maximieren</translation>
 <translation id="9002538116239926534">Wenn dieser Schalter aktiviert ist, können Websites Daten auf deinem Gerät speichern. Wenn er deaktiviert ist, können Websites keine Daten auf deinem Gerät speichern.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> zugelassen</translation>
 <translation id="9019902583201351841">Von deinen Eltern verwaltet</translation>

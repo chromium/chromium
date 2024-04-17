@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">লিঙ্ক ঠিওকানা কপি করুন</translation>
 <translation id="1085064499066015002">সব সাইটে সবসময় অ্যাক্সেস পাবে</translation>
 <translation id="1085697365578766383">ভার্চুয়াল মেশিন চালাতে সমস্যা হচ্ছে। অনুগ্রহ করে আবার চেষ্টা করুন।</translation>
-<translation id="1088659085457112967">রিডার মোডে যান</translation>
 <translation id="1090126737595388931">কোনো পৃষ্ঠভূমি অ্যাপ্লিকেশান চলছে না</translation>
 <translation id="1090541560108055381">পেয়ার করার আগে, এই কোডটি দুটি ডিভাইসে একই আছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="1091767800771861448">ছেড়ে যেতে ESCAPE টিপুন (কেবল নন-অফিশিয়াল বিল্ড)৷</translation>
@@ -2178,7 +2177,6 @@
 <translation id="2587922766792651800">সময় শেষ হয়ে গেছে</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" />-এর ডিভাইসের নাম</translation>
 <translation id="2589658397149952302">Drive-এ থাকা ফাইল কখনই দেখাবেন না</translation>
-<translation id="25899519884572181">রিডার মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="2593499352046705383">চালু করার আগে, আপনার ডেটার ব্যাক-আপ নেওয়া আছে কিনা তা নিশ্চিত করুন। <ph name="DEVICE_OS" /> ইনস্টল করলে আপনার হার্ড ড্রাইভে থাকা সব ডেটা মুছে যাবে। g.co/flex/InstallGuide থেকে আরও জানুন।</translation>
 <translation id="2594832159966169099">ভি৮ সুরক্ষা ম্যানেজ করুন</translation>
 <translation id="2594999711683503743">Google এ খুঁজুন বা URL টাইপ করুন</translation>
@@ -2479,7 +2477,6 @@
 <translation id="2806372837663997957">আপনি যে ডিভাইসের সাথে শেয়ার করার চেষ্টা করছেন সেটিতে এই অনুরোধ গ্রহণ করা হয়নি</translation>
 <translation id="2806891468525657116">শর্টকাটটি আগে থেকেই আছে</translation>
 <translation id="2807517655263062534">ডাউনলোড করা ফাইল এখানে দেখা যাবে</translation>
-<translation id="2809586584051668049">এবং আরও <ph name="NUMBER_ADDITIONAL_DISABLED" />টি</translation>
 <translation id="2811205483104563968">অ্যাকাউন্ট</translation>
 <translation id="2812049959647166806">Thunderbolt কাজ করে না</translation>
 <translation id="2812171980080389735">সেভ করা নেটওয়ার্ক এবং পাসওয়ার্ড, যাতে আপনি ঝটপট কানেক্ট করতে পারেন</translation>
@@ -3068,7 +3065,6 @@
 <translation id="3285465040399788513">সেট-আপ সম্পূর্ণ করার জন্য ডিভাইসে পর্যাপ্ত স্টোরেজ উপলভ্য নেই। স্পেস খালি করে আবার চেষ্টা করুন।</translation>
 <translation id="3285500645985761267">গ্রুপে আপনার অ্যাক্টিভিটি দেখতে সম্পর্কিত সাইটগুলিকে অনুমতি দিন</translation>
 <translation id="328571385944182268">আপনার পাসওয়ার্ড সেভ করবেন?</translation>
-<translation id="3288047731229977326">ডেভেলপার মোডে চলমান এক্সটেনশনগুলি আপনার কম্পিউটারের ক্ষতি করতে পারে৷ যদি আপনি একজন ডেভেলপার না হন, তবে সুরক্ষিত থাকার জন্য আপনার এই এক্সটেনশনগুলিকে ডেভেলপার মোডে চালানো বন্ধ করা উচিৎ৷</translation>
 <translation id="3289668031376215426">অটো-ক্যাপিটালাইজেশন</translation>
 <translation id="3289856944988573801">আপডেটগুলি পরীক্ষা করার জন্য, অনুগ্রহ করে Ethernet বা ওয়াই-ফাই ব্যবহার করুন৷</translation>
 <translation id="3289886661311231677">আপনি যেসব বিষয় সাইটের সাথে শেয়ার করতে চান না সেগুলি ব্লক করতে পারবেন। এছাড়া, Chrome ৪ সপ্তাহের বেশি পুরনো বিষয়গুলি অটোমেটিক মুছে দেয়।</translation>
@@ -3108,7 +3104,6 @@
 <translation id="3313622045786997898">সার্টিফিকেট স্বাক্ষর মান</translation>
 <translation id="3313950410573257029">কানেকশন পরীক্ষা করে নিন</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> লুকান</translation>
-<translation id="3315442055907669208">রিডার মোডে যান</translation>
 <translation id="3317459757438853210">দ্বি-পার্শ্বযুক্ত</translation>
 <translation id="3317521105713541270">গ্রুপ তৈরি করুন</translation>
 <translation id="3317678681329786349">ক্যামেরা এবং মাইক্রোফোনের ব্যবহার ব্লক করা হয়েছে</translation>
@@ -3431,6 +3426,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফাইল এবং ফোল্ডারগুলি দেখতে পারবে</translation>
 <translation id="3571734092741541777">সেট-আপ করুন</translation>
 <translation id="3575121482199441727">এই সাইটের জন্য অনুমতি দিন</translation>
+<translation id="3575224072358507281">গোপনীয়তা নীতি (measurementlab.net/privacy) অনুযায়ী Measurement Lab-এর জন্য IP অ্যাড্রেস ও নেটওয়ার্ক পরিমাপ করার ফলাফল সংগ্রহ করে</translation>
 <translation id="3577473026931028326">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="3577487026101678864">ফাইল সিঙ্ক করা চালু আছে</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />-এর হার্ডওয়্যার সংক্রান্ত ডেটা সংগ্রহ</translation>
@@ -3513,7 +3509,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> বাকি আছে</translation>
 <translation id="3636940436873918441">পছন্দের ভাষা</translation>
 <translation id="3637203148990213388">অতিরিক্ত অ্যাকাউন্ট</translation>
-<translation id="3639220004740062347">রিডার মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> এর জন্য "<ph name="EXTENSION_NAME" />" জুড়বেন?</translation>
 <translation id="3640347231390550691">ফিশিং থেকে আপনার পাসওয়ার্ড সুরক্ষিত রাখুন</translation>
 <translation id="3640613767643722554">অ্যাসিস্ট্যান্টকে আপনার ভয়েস চিনতে শেখান</translation>
@@ -4155,7 +4150,6 @@
 <translation id="4095483462103784441">নতুন ট্যাব গ্রুপ তৈরি করুন</translation>
 <translation id="4095507791297118304">প্রাথমিক প্রদর্শন</translation>
 <translation id="4096421352214844684">আপনার ফোনের হটস্পটে অটোমেটিক কানেক্ট করুন।</translation>
-<translation id="4096508467498758490">ডেভেলপার মোড এক্সটেনশন বন্ধ করুন</translation>
 <translation id="4096797685681362305">গত সপ্তাহে দেখা হয়েছে</translation>
 <translation id="4097406557126260163">অ্যাপ ও এক্সটেনশন</translation>
 <translation id="409742781329613461">Chrome ব্যবহারের জন্য পরামর্শ</translation>
@@ -5489,7 +5483,6 @@
 <translation id="5146896637028965135">সিস্টেম ভয়েস</translation>
 <translation id="5147097165869384760">OS সিস্টেম পৃষ্ঠা খুঁজছেন? <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />ভিজিট করুন।</translation>
 <translation id="5147113439721488265">সাজেশন</translation>
-<translation id="5147516217412920887">কোড যাচাই করার জন্য আপনার ফোনের নির্দেশাবলী ফলো করুন</translation>
 <translation id="5147992672778369947">সাজেস্ট করা পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="5148285448107770349">পাসওয়ার্ড অন্তত ৮টি অক্ষরের হতে হবে</translation>
 <translation id="5149602533174716626">ভিডিও ফ্রেম কপি করুন</translation>
@@ -6749,10 +6742,6 @@
 <translation id="6143186082490678276">সাহায্য পান</translation>
 <translation id="6143366292569327983">যে পৃষ্ঠার ভাষা অনুবাদ করতে চান, সেটি বেছে নিন</translation>
 <translation id="6144938890088808325">আমাদের Chromebooks উন্নত করতে সাহায্য করুন</translation>
-<translation id="6145480071052696715">আপনার ফোনের মাধ্যমে সহজেই নিজের <ph name="DEVICE_TYPE" /> সেট-আপ করুন। আপনি ম্যানুয়ালি নিজের পাসওয়ার্ড না লিখেই ওয়াই-ফাই ও Google অ্যাকাউন্ট যোগ করতে পারবেন।
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> হিসেবে দেখা যাচ্ছে...</translation>
 <translation id="6146409560350811147">সিঙ্ক কাজ করছে না। আবার সাইন-ইন করে দেখুন।</translation>
 <translation id="6147020289383635445">প্রিন্ট প্রিভিউ করা যায়নি৷</translation>
 <translation id="6147253937684562370">প্রোফাইল আনলক করতে আপনার মূল অ্যাকাউন্ট ইমেল ব্যবহার করে সাইন-ইন করুন: <ph name="EMAIL" /></translation>
@@ -6977,7 +6966,6 @@
 <translation id="6310141306111263820">ই-সিম প্রোফাইল ইনস্টল করা যায়নি। সাহায্যের জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="6311220991371174222">আপনার প্রোফাইল খোলার সময় কোনো সমস্যা হওয়ার কারণে Chrome চালু করা যাচ্ছে না। Chrome আবার চালু করার চেষ্টা করুন।</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{১ দিন আগে নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে}one{{NUM_DAYS} দিন আগে নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে}other{{NUM_DAYS} দিন আগে নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে}}</translation>
-<translation id="6312638141433622592">পড়া গেলে আর্টিকেলগুলি রিডার মোডে দেখানোর সাজেশন দিন</translation>
 <translation id="6313950457058510656">ইনস্ট্যান্ট টিথারিং বন্ধ করুন</translation>
 <translation id="6314819609899340042">আপনি সফলভাবে এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইসে ডিবাগিং বৈশিষ্ট্যগুলি চালু করেছেন৷</translation>
 <translation id="6315170314923504164">ভয়েস</translation>
@@ -8062,6 +8050,7 @@
 <translation id="7180865173735832675">কাস্টমাইজ করুন</translation>
 <translation id="7181117767881540376">বুকমার্ক বার &amp;লুকান</translation>
 <translation id="7181329571386134105">আপনার অনুমোদন ছাড়া <ph name="CHILD_NAME" />-কে ভবিষ্যতের এক্সটেনশন ইনস্টল করার অনুমতি দেওয়ার জন্য, আপনার ডিভাইসে Family Link অ্যাপ খুলুন ও <ph name="CHILD_NAME" />-এর Google Chrome সেটিংস আপডেট করুন।</translation>
+<translation id="7182051712900867547">অন্য কোনও অ্যাকাউন্ট ব্যবহার করুন</translation>
 <translation id="7182063559013288142">ইনস্ট্যান্ট হটস্পট</translation>
 <translation id="7182791023900310535">পাসওয়ার্ড সরান</translation>
 <translation id="718427252411067142">আপনার পাসওয়ার্ড অন্যরা যাতে ব্যবহার করতে না পারে তার জন্য আপনার পাসওয়ার্ড পরিবর্তন করতে অ্যাপ খুলুন</translation>
@@ -8625,6 +8614,7 @@
 <translation id="7617263010641145920">Play Store অ্যাপ চালু করুন</translation>
 <translation id="7617648809369507487">'কম শব্দযুক্ত মেসেজিং' বিকল্প ব্যবহার করুন</translation>
 <translation id="7619937211696316184">রক্ষণাবেক্ষণ করা হয়েছে</translation>
+<translation id="7620616707541471029">চালিয়ে যেতে একটি অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="7621382409404463535">সিস্টেমটি ডিভাইস কনফিগারেশন সেভ করতে পারেনি।</translation>
 <translation id="7621480263311228380">আপনার সম্পর্কে এইসব সাইট যে তথ্য সেভ করেছে সেগুলি ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="7621595347123595643">আপনার পাসওয়ার্ড বা পিন ভুলে গেলে আপনি স্থানীয় ডেটা আগের অবস্থায় ফেরাতে পারবেন না।</translation>
@@ -9390,7 +9380,6 @@
 <translation id="8160775796528709999">সেটিংসে গিয়ে 'লাইভ ক্যাপশন' ফিচার চালু করে আপনার অডিও এবং ভিডিওতে ক্যাপশন দেখুন</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">ব্রাউজিং চালু করুন</translation>
-<translation id="8161293209665121583">ওয়েব পৃষ্ঠার রিডার মোড</translation>
 <translation id="8161604891089629425">আউটলাইন ফন্ট</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ট্যাবটি নতুন উইন্ডোতে খুলুন}one{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}other{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}}</translation>
 <translation id="8163152278172770963">'ছবির-মধ্যে-ছবি' মোডে অটোমেটিক প্রবেশ করার জন্য সাইটকে অনুমতি দেবেন না</translation>

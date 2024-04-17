@@ -1043,6 +1043,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6363526231572697780">Geen gebruikersnaam</translation>
 <translation id="6366190659675876144">Standaardbeveiliging</translation>
 <translation id="6366663624406569102">Uitloggen en synchronisatie uitzetten</translation>
+<translation id="6368038301482806847">Selecteer een zoekmachine in de lijst.</translation>
 <translation id="6374469231428023295">Opnieuw proberen</translation>
 <translation id="6377118281273296434">Sitebeveiliging</translation>
 <translation id="6383719166112032471">Locatie openen…</translation>
@@ -1202,6 +1203,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7161230316646448869">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="7162168282402939716">Incognitotabbladen ontgrendelen met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Instellingen openen</translation>
+<translation id="7186568385131859684">Bepaal hoe de browsegeschiedenis wordt gebruikt met je andere gegevens in Google-services</translation>
 <translation id="7189598951263744875">Delen</translation>
 <translation id="719133302483559673">Beheer je interesses en voorkeuren.</translation>
 <translation id="7192050974311852563">Logboekregistratie starten</translation>
@@ -1245,6 +1247,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7438481509621345350">Je ziet nu artikelen van <ph name="CHANNEL_NAME" /> als je een nieuw tabblad opent.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bookmark opgeslagen in {title}}other{Bookmarks opgeslagen in {title}}}</translation>
 <translation id="7454057999980797137">Provincie</translation>
+<translation id="7458706065921255639">Personalisatie en koppelen</translation>
 <translation id="745899714366929493">Hele dag</translation>
 <translation id="7459628154744868585">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="7465351360025415755">Krijg content die belangrijk voor je is</translation>

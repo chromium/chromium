@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />，Play 商店应用</translation>
 <translation id="1225748608451425081">由于发生了一个已知问题，您的 Chromebook 已被锁定。您可以在 <ph name="TIME_LEFT" />后重新登录。</translation>
 <translation id="1229194443904279055">停止选择</translation>
+<translation id="1230853660706736937">搜索图片中的文字并查看图片预览</translation>
 <translation id="1235458158152011030">已知网络</translation>
 <translation id="1239161794459865856">已连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1240638468526743569">某个应用</translation>
@@ -715,11 +716,13 @@
 <translation id="3824784079442479685">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头。您可能需要刷新网页或重启应用。</translation>
 <translation id="3826099427150913765">切换到密码</translation>
 <translation id="383058930331066723">省电模式已开启</translation>
+<translation id="3831226344927851293">退出教程视图</translation>
 <translation id="383629559565718788">显示键盘设置</translation>
 <translation id="384082539148746321">删除此模板？</translation>
 <translation id="3844627820291068572">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />，然后按 <ph name="KEY_ONE" /> 或 <ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /> 或 <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">没有可用的网络信息</translation>
+<translation id="3848526302597027234">访问以下权限：</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">开头</translation>
 <translation id="3859364108019690">无法流式传输应用</translation>
@@ -1289,7 +1292,6 @@
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
 <translation id="5998374579424866922">关闭游戏控件</translation>
 <translation id="6000279412553873020">按键、按钮等</translation>
-<translation id="6002122790816966947">您的设备</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 页（共 <ph name="TOTAL_PAGE_NUM" /> 页）</translation>
 <translation id="601304062528754300">突出显示任务栏上的后一项</translation>
 <translation id="6015573907265691211">标为已完成</translation>

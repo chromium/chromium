@@ -340,6 +340,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="160851722280695521">Jouer au jeu du dino dans Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">2e rouleau</translation>
+<translation id="1611854593425834707">Fermer la liste des appareils de diffusion</translation>
 <translation id="1612199629998703524">Gérer les thèmes</translation>
 <translation id="1615178538289490617">Révoquer l'accès de <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Une règle définie par l'administrateur a désactivé la capture d'écran lorsqu'un contenu confidentiel est affiché</translation>
@@ -826,6 +827,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2526280916094749336">Vous pouvez utiliser les adresses enregistrées dans les produits Google. Celle-ci sera enregistrée dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">Votre code CVC figure au recto de votre carte. Il s'agit du code à quatre chiffres en haut à droite, au-dessus du numéro de votre carte.</translation>
 <translation id="2529899080962247600">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Les entrées supplémentaires seront ignorées.</translation>
+<translation id="2533649878691950253">Votre position exacte est bloquée pour ce site, car vous refusez habituellement de la communiquer</translation>
 <translation id="253493526287553278">Voir les détails du code promotionnel</translation>
 <translation id="2535585790302968248">Ouvrez un nouvel onglet de navigation privée pour naviguer de manière anonyme</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
@@ -1918,6 +1920,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4691093235373904540">Couverture de toits</translation>
 <translation id="4692623383562244444">Moteurs de recherche</translation>
 <translation id="4698692901173737941">Sports de combat</translation>
+<translation id="4701307090948589984">Caster sur...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Côté</translation>
 <translation id="4702656508969495934">Sous-titres instantanés visibles, utilisez le permuteur de fenêtres pour déplacer le curseur</translation>
@@ -2167,6 +2170,8 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5161334686036120870">Sujet :</translation>
 <translation id="5161506081086828129">Empileur 9</translation>
 <translation id="5164798890604758545">Texte saisi</translation>
+<translation id="5164928537947209380">Cet outil d'IA expérimental n'est pas infaillible. Pour l'améliorer, votre contenu est envoyé à Google.
+    <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Saisissez le code CVC de la carte <ph name="CREDIT_CARD" />. Une fois la validation effectuée, les informations relatives à la carte de votre compte Google seront partagées avec ce site.</translation>
 <translation id="5169827969064885044">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'usurpation d'identité. L'équipe Chrome vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="5171045022955879922">Rechercher ou saisir une URL</translation>
@@ -3303,6 +3308,7 @@ Informations supplémentaires :
 <translation id="7392089738299859607">Mettre à jour l'adresse</translation>
 <translation id="7393161616326137353">Jeux d'aventure</translation>
 <translation id="739728382607845710">Icône du gestionnaire de paiement</translation>
+<translation id="7399616692258236448">Les demandes de localisation sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="7399802613464275309">Contrôle de sécurité</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Partagez cet onglet en le castant, en créant un code QR, en partageant le lien, etc.</translation>
@@ -4063,6 +4069,7 @@ Informations supplémentaires :
 <translation id="8807160976559152894">Couper après chaque page</translation>
 <translation id="8809203544698246977">Les thèmes bloqués s'affichent ici</translation>
 <translation id="8811470563853401328">Enregistrer l'adresse dans le compte ?</translation>
+<translation id="8811725516933141693">Saisissez @gemini pour discuter avec Gemini</translation>
 <translation id="8813277370772331957">Plus tard</translation>
 <translation id="8814707942599948500">Enveloppe C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis Entrée pour mettre à jour Chrome depuis les paramètres du navigateur</translation>

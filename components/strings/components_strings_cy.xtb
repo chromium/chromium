@@ -340,6 +340,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="160851722280695521">Chwarae'r gêm Dino Run yn Chrome</translation>
 <translation id="161042844686301425">Gwyrddlas</translation>
 <translation id="1611101756749861742">Ail Rôl</translation>
+<translation id="1611854593425834707">Cau'r rhestr dyfeisiau ar gyfer castio</translation>
 <translation id="1612199629998703524">Rheoli pynciau</translation>
 <translation id="1615178538289490617">Dirymu mynediad at <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Mae polisi gweinyddwr yn analluogi tynnu sgrinlun pan fydd cynnwys cyfrinachol yn weladwy</translation>
@@ -826,6 +827,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2526280916094749336">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Bydd y cyfeiriad hwn yn cael ei gadw yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Mae eich CVC ar flaen eich cerdyn. Dyma'r cod 4 digid ar y dde uchaf, uwchben rhif eich cerdyn.</translation>
 <translation id="2529899080962247600">Ni ddylai'r maes hwn gynnwys mwy na <ph name="MAX_ITEMS_LIMIT" /> o gofnodion. Bydd pob cofnod arall yn cael ei anwybyddu.</translation>
+<translation id="2533649878691950253">Cafodd y wefan hon ei rhwystro rhag gwybod eich union leoliad oherwydd fel rheol nid ydych yn caniatáu hyn</translation>
 <translation id="253493526287553278">Gweld manylion y cod hyrwyddo</translation>
 <translation id="2535585790302968248">Agor tab Anhysbys newydd i bori'n breifat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ac 1 arall}zero{a # arall}two{a # arall}few{a # arall}many{a # arall}other{a # arall}}</translation>
@@ -1918,6 +1920,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4691093235373904540">To</translation>
 <translation id="4692623383562244444">Peiriant chwilio</translation>
 <translation id="4698692901173737941">Chwaraeon Gornest</translation>
+<translation id="4701307090948589984">Castio i</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Ochr</translation>
 <translation id="4702656508969495934">Mae Capsiynau Byw yn weladwy, defnyddiwch y newidiwr ffenestri i ffocysu</translation>
@@ -2167,6 +2170,8 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5161334686036120870">Pwnc:</translation>
 <translation id="5161506081086828129">Pentyrrwr 9</translation>
 <translation id="5164798890604758545">Nodir y testun</translation>
+<translation id="5164928537947209380">Ni fydd yr offeryn AI arbrofol hwn bob amser yn iawn. Er mwyn ei wella, anfonir eich cynnwys i Google.
+    <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Rhowch y CVC ar gyfer <ph name="CREDIT_CARD" />. Ar ôl i chi gadarnhau, bydd manylion cardiau o'ch Cyfrif Google yn cael eu rhannu â'r wefan hon.</translation>
 <translation id="5169827969064885044">Mae'n bosib y byddwch yn colli mynediad at gyfrif eich sefydliad neu brofi dwyn hunaniaeth. Mae Chrome yn argymell newid eich cyfrinair nawr.</translation>
 <translation id="5171045022955879922">Chwiliwch neu teipiwch URL</translation>
@@ -3302,6 +3307,7 @@ Manylion ychwanegol:
 <translation id="7392089738299859607">Diweddaru'r Cyfeiriad</translation>
 <translation id="7393161616326137353">Gemau Antur</translation>
 <translation id="739728382607845710">Eicon trinydd taliadau</translation>
+<translation id="7399616692258236448">Mae ceisiadau lleoliad yn cael eu rhwystro'n awtomatig ar gyfer pob gwefan ac eithrio'r rhai rydych yn eu caniatáu</translation>
 <translation id="7399802613464275309">Gwiriad Diogelwch</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Gallwch rannu'r tab hwn drwy rannu'r ddolen, creu cod QR, castio, a rhagor</translation>
@@ -4062,6 +4068,7 @@ Manylion ychwanegol:
 <translation id="8807160976559152894">Tocio ar ôl pob tudalen</translation>
 <translation id="8809203544698246977">Bydd pynciau sydd wedi'u rhwystro yn ymddangos yma</translation>
 <translation id="8811470563853401328">Cadw'r cyfeiriad yn y cyfrif?</translation>
+<translation id="8811725516933141693">Teipiwch @gemini i Sgwrsio gyda Gemini</translation>
 <translation id="8813277370772331957">Atgoffa fi yn nes ymlaen</translation>
 <translation id="8814707942599948500">Amlen C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i ddiweddaru Chrome o'ch gosodiadau Chrome</translation>

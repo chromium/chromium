@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Forçar zoom</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no modo de navegação anônima</translation>
 <translation id="3918378745482005425">É possível que alguns recursos não funcionem. Os sites relacionados ainda podem usar cookies de terceiros.</translation>
+<translation id="3933121352599513978">Recolher solicitações indesejadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que os sites mostrem conteúdo protegido (recomendado)</translation>
 <translation id="3967822245660637423">Download concluído</translation>
 <translation id="3974105241379491420">Os sites podem pedir para usar informações que salvaram sobre você</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">A Navegação GPS está inacessível: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Esquecer</translation>
 <translation id="8990043154272859344">Sua conta vai ser desconectada de todos os sites</translation>
+<translation id="8993853206419610596">Abrir todas as solicitações</translation>
 <translation id="9002538116239926534">Quando essa configuração está ativada, os sites podem salvar dados no seu dispositivo. Quando está desativada, os sites não podem salvar dados no seu dispositivo.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> permitido</translation>
 <translation id="9019902583201351841">Gerenciado pelos seus pais</translation>

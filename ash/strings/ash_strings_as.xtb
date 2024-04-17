@@ -160,6 +160,7 @@
 <translation id="1569384531973824928">এইটোৱে কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
 <translation id="1571697193564730395">অসুবিধা নিদিব ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">বিৱৰ্ধক অন কৰা থাকিলে জুম আউট কৰক</translation>
+<translation id="1582946770779745370">গে’ম ডেশ্বব’ৰ্ড উপলব্ধ। খুলিবলৈ যিকোনো সময়তে <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape আৰু তাৰ পাছত <ph name="LAUNCHER_KEY_NAME" /> + g টিপক</translation>
 <translation id="1586324912145647027">ডেস্ক ১ৰ পৰা ৮লৈ যাওক</translation>
 <translation id="158838227375272121">Google Classroomৰ ৱেবছাইট</translation>
 <translation id="1589090746204042747">এই ছেশ্বনত আপোনাৰ সকলো কার্যকলাপ এক্সেছ কৰে</translation>
@@ -1291,7 +1292,6 @@
 <translation id="598882571027504733">আপডে’টটো পাবলৈ সংলগ্ন কীব’ৰ্ডখন ব্যৱহাৰ কৰি আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰক।</translation>
 <translation id="5998374579424866922">গে’মৰ নিয়ন্ত্ৰণসমূহ অফ কৰক</translation>
 <translation id="6000279412553873020">কী, বুটাম আৰু অধিক</translation>
-<translation id="6002122790816966947">আপোনাৰ ডিভাইচ</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />ৰ <ph name="SELECTED_PAGE" /> পৃষ্ঠা</translation>
 <translation id="601304062528754300">শ্বেল্ফত থকা পৰৱৰ্তী বস্তুটো হাইলাইট কৰক</translation>
 <translation id="6015573907265691211">সম্পূৰ্ণ হৈছে বুলি চিহ্নিত কৰক</translation>

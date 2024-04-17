@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Tving zoom på</translation>
 <translation id="3908288065506437185">Blokker informasjonskapsler fra tredjeparter i Inkognitomodus</translation>
 <translation id="3918378745482005425">Enkelte funksjoner vil kanskje ikke fungere. Relaterte nettsteder kan fortsatt bruke informasjonskapsler fra tredjepart.</translation>
+<translation id="3933121352599513978">Skjul uønskede forespørsler (anbefales)</translation>
 <translation id="3955193568934677022">Gi nettsteder tillatelse til å spille av beskyttet innhold (anbefales)</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
 <translation id="3974105241379491420">Nettsteder kan be om å få bruke informasjon de har lagret om deg</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Nettadressen er utilgjengelig: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8990043154272859344">Du blir logget av alle nettsteder</translation>
+<translation id="8993853206419610596">Vis alle forespørsler</translation>
 <translation id="9002538116239926534">Når dette er på, kan nettsteder lagre data på enheten din. Når dette er av, kan ikke nettsteder lagre data på enheten din.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> er tillatt</translation>
 <translation id="9019902583201351841">Administrert av foreldrene dine</translation>

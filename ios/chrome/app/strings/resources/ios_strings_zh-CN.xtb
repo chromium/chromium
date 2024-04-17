@@ -1043,6 +1043,7 @@
 <translation id="6363526231572697780">无用户名</translation>
 <translation id="6366190659675876144">标准保护</translation>
 <translation id="6366663624406569102">退出账号并关闭同步功能</translation>
+<translation id="6368038301482806847">从列表中选择搜索引擎。</translation>
 <translation id="6374469231428023295">重试</translation>
 <translation id="6377118281273296434">网站安全性</translation>
 <translation id="6383719166112032471">打开位置信息…</translation>
@@ -1202,6 +1203,7 @@
 <translation id="7161230316646448869">将您的书签、历史记录等信息同步到所有设备上</translation>
 <translation id="7162168282402939716">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁无痕式标签页</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
+<translation id="7186568385131859684">控制 Google 服务如何使用浏览记录及您的其他数据</translation>
 <translation id="7189598951263744875">分享...</translation>
 <translation id="719133302483559673">管理您的兴趣和偏好设置。</translation>
 <translation id="7192050974311852563">开始生成日志</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7438481509621345350">现在，当打开新标签页时，您会看到来自 <ph name="CHANNEL_NAME" /> 的故事。</translation>
 <translation id="7451023311965289370">{count,plural, =1{书签已保存至“{title}”}other{书签已保存至“{title}”}}</translation>
 <translation id="7454057999980797137">省/区/县</translation>
+<translation id="7458706065921255639">个性化和关联</translation>
 <translation id="745899714366929493">全天</translation>
 <translation id="7459628154744868585">已开启增强型保护</translation>
 <translation id="7465351360025415755">随时掌握重要资讯</translation>

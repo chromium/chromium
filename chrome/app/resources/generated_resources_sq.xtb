@@ -127,7 +127,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1084824384139382525">Kopjo adr&amp;esën e lidhjes</translation>
 <translation id="1085064499066015002">Gjithmonë në të gjitha sajtet</translation>
 <translation id="1085697365578766383">Gabim me hapjen e pajisjes virtuale. Provo sërish.</translation>
-<translation id="1088659085457112967">Hyr në modalitetin e lexuesit</translation>
 <translation id="1090126737595388931">Nuk ka aplikacione sfondi në punë</translation>
 <translation id="1090541560108055381">Para çiftimit, sigurohu që ky kod të jetë i njëjtë në të dyja pajisjet</translation>
 <translation id="1091767800771861448">Shtyp ESCAPE për të kapërcyer (vetëm ndërtime jo zyrtare).</translation>
@@ -2160,7 +2159,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2587922766792651800">Skadoi</translation>
 <translation id="2588636910004461974">Pajisjet nga <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Mos i shfaq asnjëherë skedarët e "Diskut"</translation>
-<translation id="25899519884572181">Dil nga modaliteti i lexuesit</translation>
 <translation id="2593499352046705383">Përpara se të fillosh, sigurohu që të kesh rezervuar të dhënat e tua. Instalimi i <ph name="DEVICE_OS" /> do të mbishkruajë diskun e ngurtë. Mëso më shumë në g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Menaxho sigurinë e V8</translation>
 <translation id="2594999711683503743">Kërko në Google ose shkruaj URL-në</translation>
@@ -2461,7 +2459,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2806372837663997957">Pajisja me të cilën po përpiqesh të ndash nuk pranoi</translation>
 <translation id="2806891468525657116">Shkurtorja ekziston tashmë</translation>
 <translation id="2807517655263062534">Skedarët që shkarkon shfaqen këtu</translation>
-<translation id="2809586584051668049">dhe <ph name="NUMBER_ADDITIONAL_DISABLED" /> të tjerë</translation>
 <translation id="2811205483104563968">Llogaritë</translation>
 <translation id="2812049959647166806">Thunderbolt nuk mbështetet</translation>
 <translation id="2812171980080389735">Ruaj rrjetet dhe fjalëkalimet që të mund të lidhesh në çast</translation>
@@ -3050,7 +3047,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3285465040399788513">Nuk ka hapësirë ruajtëse të mjaftueshme në pajisje për të përfunduar konfigurimin. Liro hapësirë dhe provo përsëri.</translation>
 <translation id="3285500645985761267">Lejo që sajtet e lidhura të shikojnë aktivitetin tënd te grupi</translation>
 <translation id="328571385944182268">Ruaj fjalëkalimet e tua</translation>
-<translation id="3288047731229977326">Shtesat që ekzekutohen në modalitetin e zhvilluesit mund ta dëmtojnë kompjuterin tënd. Nëse nuk je zhvillues, duhet t'i çaktivizosh këto shtesa që ekzekutohen në modalitetin "si zhvillues" për të qenë i sigurt.</translation>
 <translation id="3289668031376215426">Kapitalizim automatik</translation>
 <translation id="3289856944988573801">Për të kontrolluar për përditësime, përdor rrjetin Ethernet ose Wi-Fi.</translation>
 <translation id="3289886661311231677">Mund t'i bllokosh temat që nuk dëshiron të ndahen me sajtet. Chrome gjithashtu i fshin automatikisht temat më të vjetra se 4 javë.</translation>
@@ -3090,7 +3086,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3313622045786997898">Vlera e nënshkrimit të certifikatës</translation>
 <translation id="3313950410573257029">Kontrollo lidhjen</translation>
 <translation id="3315158641124845231">Fshih <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Hyr në modalitetin e lexuesit</translation>
 <translation id="3317459757438853210">Me dy anë</translation>
 <translation id="3317521105713541270">Krijo grupe</translation>
 <translation id="3317678681329786349">Kamera dhe mikrofoni lejohen</translation>
@@ -3495,7 +3490,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> të mbetura</translation>
 <translation id="3636940436873918441">Gjuhët e preferuara</translation>
 <translation id="3637203148990213388">Llogaritë shtesë</translation>
-<translation id="3639220004740062347">Dil nga modaliteti i lexuesit</translation>
 <translation id="3640214691812501263">Shto "<ph name="EXTENSION_NAME" />" për <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Mbro fjalëkalimet e tua nga mashtrimet</translation>
 <translation id="3640613767643722554">Mësoje "Asistentin" të njohë zërin tënd</translation>
@@ -4138,7 +4132,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4095483462103784441">Krijo një grup të ri skedash</translation>
 <translation id="4095507791297118304">Ekrani kryesor</translation>
 <translation id="4096421352214844684">Lidh automatikisht me zonën e qasjes për internet të telefonit tënd.</translation>
-<translation id="4096508467498758490">Çaktivizo shtesat e modalitetit "si zhvillues"</translation>
 <translation id="4096797685681362305">Shikuar javën e kaluar</translation>
 <translation id="4097406557126260163">Aplikacionet dhe shtesat</translation>
 <translation id="409742781329613461">Këshilla për Chrome</translation>
@@ -5469,7 +5462,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5146896637028965135">Zëri i sistemit</translation>
 <translation id="5147097165869384760">Po kërkon për faqen e sistemit operativ? Vizito <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Rekomandim</translation>
-<translation id="5147516217412920887">Ndiq udhëzimet në telefon për të verifikuar kodin</translation>
 <translation id="5147992672778369947">Përdor fjalëkalimin e rekomanduar</translation>
 <translation id="5148285448107770349">Fjalëkalimi duhet të ketë të paktën 8 karaktere</translation>
 <translation id="5149602533174716626">Kopj&amp;o kuadrin e videos</translation>
@@ -6727,10 +6719,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6143186082490678276">Merr ndihmë</translation>
 <translation id="6143366292569327983">Zgjidh gjuhën e faqes nga e cila do të përkthehet</translation>
 <translation id="6144938890088808325">Na ndihmo të përmirësojmë pajisjet Chromebook</translation>
-<translation id="6145480071052696715">Konfiguro me lehtësi pajisjen tënde <ph name="DEVICE_TYPE" /> me telefonin tënd. Mund të shtosh rrjetin Wi-Fi dhe "Llogarinë tënde të Google" pa futur fjalëkalimet e tua në mënyrë manuale.
-    <ph name="BR" />
-    <ph name="BR" />
-    E dukshme si <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Sinkronizimi nuk po punon. Provo të identifikohesh sërish.</translation>
 <translation id="6147020289383635445">Pamja paraprake e printimit dështoi.</translation>
 <translation id="6147253937684562370">Për ta shkyçur profilin, identifikohu me email-in e llogarisë kryesore: <ph name="EMAIL" /></translation>
@@ -6955,7 +6943,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6310141306111263820">Profili i kartës eSIM nuk mund të instalohej. Për ndihmë, kontakto me operatorin celular.</translation>
 <translation id="6311220991371174222">Chrome nuk mund të niset sepse ka ndodhur një gabim gjatë hapjes së profilit tënd. Provo ta rinisësh Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Kontrolli i sigurisë u ekzekutua 1 ditë më parë}other{Kontrolli i sigurisë u ekzekutua {NUM_DAYS} ditë më parë}}</translation>
-<translation id="6312638141433622592">Ofro shfaqjen e artikujve në modalitetin e lexuesit, kur mbështetet</translation>
 <translation id="6313950457058510656">Çaktivizo "Ndarjen e internetit në çast"</translation>
 <translation id="6314819609899340042">Ke aktivizuar me sukses funksionet e korrigjimit në këtë pajisje të <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -9364,7 +9351,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8160775796528709999">Merr titrat për audion dhe videon tënde duke aktivizuar "Titrat në çast" te cilësimet</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Vazhdo të shfletosh</translation>
-<translation id="8161293209665121583">Modaliteti i lexuesit për faqet e uebit</translation>
 <translation id="8161604891089629425">Fonti me kontur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Zhvendose skedën në një dritare të re}other{Zhvendosi skedat në një dritare të re}}</translation>
 <translation id="8163152278172770963">Mos lejo që sajtet të kalojnë automatikisht në modalitetin "figurë brenda figurës"</translation>

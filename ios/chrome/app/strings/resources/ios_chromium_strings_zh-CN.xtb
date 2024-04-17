@@ -29,6 +29,7 @@
 <translation id="1722370509450468186">您的密码将会保存到您的账号 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1736662517232558588">已清除 Chromium 数据</translation>
 <translation id="1791845338122684020">打开 Chromium 历史记录页面。</translation>
+<translation id="1811860791247653035">若要获得个性化体验和其他功能，请在 <ph name="FEATURE_NAME_1" /> 和 <ph name="FEATURE_NAME_2" /> 中包含 Chromium</translation>
 <translation id="1838412507805038478">Chromium 已证实：此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="1843424232666537147">Chromium 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -91,6 +92,7 @@
 <translation id="3639997914391704523">您需要先登录 Google 账号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="3688710892786762883">Chromium 将检测您所访问的网站上的包裹跟踪编号，并在新标签页中向您显示包裹动态。您的数据将分享给 Google，以便系统提供此功能和改进 Google 购物，让所有人都受益。</translation>
 <translation id="372658070733623520">如要将 Chromium 数据保存在您的 Google 账号中并使用这些数据，请确认是您本人在操作。</translation>
+<translation id="3728124580182886854">关联 Chromium 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="3780779443901618967">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chromium 警告。</translation>
 <translation id="3784369638459513223">打开新的 Chromium 无痕式标签页。</translation>
 <translation id="3805899903892079518">Chromium 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>

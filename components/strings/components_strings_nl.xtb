@@ -136,6 +136,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1243027604378859286">Auteur:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Bovenkleding</translation>
+<translation id="1253096324252841344">Betalen met <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (gesynchroniseerd)</translation>
 <translation id="1255086252236620440">Mixers</translation>
 <translation id="1256368399071562588">&lt;p&gt;Als je een website wilt bezoeken en deze niet wordt geopend, kun je eerst zelf proberen het probleem op te lossen aan de hand van de volgende stappen:&lt;/p&gt;
@@ -340,6 +341,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="160851722280695521">Speel de Dino Run-game in Chrome</translation>
 <translation id="161042844686301425">Cyaan</translation>
 <translation id="1611101756749861742">2e rol</translation>
+<translation id="1611854593425834707">Apparaatlijst voor casten sluiten</translation>
 <translation id="1612199629998703524">Onderwerpen beheren</translation>
 <translation id="1615178538289490617">Toegang voor <ph name="PORT_NAME" /> intrekken</translation>
 <translation id="1615402009686901181">Op basis van het beheerdersbeleid worden schermopnamen uitgezet als er vertrouwelijke content zichtbaar is</translation>
@@ -826,6 +828,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2526280916094749336">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres wordt opgeslagen in je Google-account (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">De CVC-code staat voor op je kaart. Het is de 4-cijferige code rechtsboven het kaartnummer.</translation>
 <translation id="2529899080962247600">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Alle andere items worden genegeerd.</translation>
+<translation id="2533649878691950253">Deze site heeft geen toegang tot je exacte locatie omdat je dit gewoonlijk niet toestaat</translation>
 <translation id="253493526287553278">Details van promotiecode bekijken</translation>
 <translation id="2535585790302968248">Een nieuw incognitotabblad openen om privé te browsen</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
@@ -1507,6 +1510,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="385489333361351399">Camera- en fotoapparatuur</translation>
 <translation id="3858027520442213535">Datum en tijd updaten</translation>
 <translation id="3858860766373142691">Naam</translation>
+<translation id="3865339060090354361">Bekijk hier de voorwaarden voor <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Wetenschap</translation>
 <translation id="3875783148670536197">Laten zien</translation>
 <translation id="3880456882942693779">Kunst en entertainment</translation>
@@ -1913,6 +1917,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4691093235373904540">Dakbedekking</translation>
 <translation id="4692623383562244444">Zoekmachines</translation>
 <translation id="4698692901173737941">Vechtsporten</translation>
+<translation id="4701307090948589984">Casten naar…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Team</translation>
 <translation id="4702656508969495934">Live ondertiteling zichtbaar. Gebruik de knop Vensters schakelen om hier de focus op te plaatsen.</translation>
@@ -2162,6 +2167,8 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5161334686036120870">Onderwerp:</translation>
 <translation id="5161506081086828129">Stapeleenheid 9</translation>
 <translation id="5164798890604758545">Tekst wordt ingevoerd</translation>
+<translation id="5164928537947209380">Deze experimentele AI-tool kan er soms naast zitten. Je content wordt naar Google gestuurd om de kwaliteit te verbeteren.
+    <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Geef de CVC-code voor <ph name="CREDIT_CARD" /> op. Nadat je hebt bevestigd, worden de creditcardgegevens uit je Google-account gedeeld met deze site.</translation>
 <translation id="5169827969064885044">Je kunt de toegang tot het account van je organisatie kwijtraken of slachtoffer worden van identiteitsdiefstal. Chrome raadt je aan je wachtwoord nu te wijzigen.</translation>
 <translation id="5171045022955879922">Zoek of typ een URL</translation>
@@ -2343,6 +2350,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="553377674408670169">Banen in het onderwijs</translation>
 <translation id="5536214594743852365">Gedeelte <ph name="SECTION" /> bekijken</translation>
 <translation id="553782666181800029">Envelop Chou 2</translation>
+<translation id="5538270463355278784">automatisch volledig scherm</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">Kan het gevraagde artikel niet vinden.</translation>
 <translation id="5540969246441091044">Paardensport</translation>
@@ -2706,6 +2714,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om bestanden te beheren die je in Chrome hebt gedownload</translation>
 <translation id="6254436959401408446">Onvoldoende geheugen om deze pagina te openen</translation>
 <translation id="625463612687472648">Niet meer toestaan</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Als je aankopen doet in Chrome, zie je <ph name="FINANCIAL_ACCOUNT_TYPES" /> als optie}other{Als je aankopen doet in Chrome, zie je <ph name="FINANCIAL_ACCOUNT_TYPES" /> als opties}}</translation>
 <translation id="6259156558325130047">&amp;Opnieuw volgorde wijzigen</translation>
 <translation id="6263376278284652872">Bookmarks voor <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
@@ -3296,6 +3305,7 @@ Aanvullende informatie:
 <translation id="7392089738299859607">Adres updaten</translation>
 <translation id="7393161616326137353">Avonturengames</translation>
 <translation id="739728382607845710">Icoon van betalingshandler</translation>
+<translation id="7399616692258236448">Locatieverzoeken worden automatisch geblokkeerd voor alle sites, behalve de sites die je toestaat</translation>
 <translation id="7399802613464275309">Veiligheidscheck</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Deel dit tabblad door bijvoorbeeld de link te delen, een QR-code te maken en te casten</translation>
@@ -3840,6 +3850,7 @@ Aanvullende informatie:
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8380941800586852976">Gevaarlijk</translation>
 <translation id="8381674639488873545">Deze kosten kunnen eenmalig of terugkerend zijn en zijn mogelijk niet duidelijk aangegeven. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automatisch volledig scherm</translation>
 <translation id="838307841291975086">Stationcars</translation>
 <translation id="8389532092404711541">Normaal <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Aangepaste en bijzondere voertuigen</translation>
@@ -4056,6 +4067,7 @@ Aanvullende informatie:
 <translation id="8807160976559152894">Bijsnijden na elke pagina</translation>
 <translation id="8809203544698246977">Hier staan je geblokkeerde onderwerpen</translation>
 <translation id="8811470563853401328">Adres opslaan in account?</translation>
+<translation id="8811725516933141693">Typ @gemini om te chatten met Gemini</translation>
 <translation id="8813277370772331957">Later herinneren</translation>
 <translation id="8814707942599948500">Envelop C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om Chrome te updaten via je Chrome-instellingen</translation>

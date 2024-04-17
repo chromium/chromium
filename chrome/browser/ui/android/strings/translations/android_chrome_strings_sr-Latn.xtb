@@ -496,6 +496,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="3631987586758005671">Deli se sa: <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatski se prijavljujte na veb-sajtove pomoću sačuvanih akreditiva. Kada je ova funkcija isključena, tražićemo vam da se verifikujete pre svakog prijavljivanja na veb-sajt.</translation>
 <translation id="3636940436873918441">Željeni jezici</translation>
+<translation id="368329460027487650">Odjavljeni ste. Otvara opcije za prijavljivanje.</translation>
 <translation id="3687645719033307815">Pregledate ovu stranicu</translation>
 <translation id="3690369331356918524">Upozorava vas ako su lozinke otkrivene pri upadu u podatke</translation>
 <translation id="3692944402865947621">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zato što lokacija memorijskog prostora nije dostupna.</translation>
@@ -1057,6 +1058,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6477928892249167417">Izgleda da su vam ovi sajtovi važni:</translation>
 <translation id="6481963882741794338">Povežite Chrome i druge Google usluge radi personalizacije i drugih svrha</translation>
 <translation id="6482749332252372425">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog nedostatka memorijskog prostora.</translation>
+<translation id="6495590690749880440">Želite da otvorite grupu kartica?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Fajl je preuzet}one{# preuzimanje je dovršeno}few{# preuzimanja su dovršena}other{# preuzimanja je dovršeno}}</translation>
 <translation id="6508722015517270189">Ponovo pokrenite Chrome</translation>
 <translation id="6518133107902771759">Verifikuj</translation>

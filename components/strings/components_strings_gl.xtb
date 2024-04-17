@@ -340,6 +340,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="160851722280695521">Xogar a Dino Run en Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611101756749861742">Segundo rolo</translation>
+<translation id="1611854593425834707">Pechar a lista de dispositivos de emisión</translation>
 <translation id="1612199629998703524">Xestionar temas</translation>
 <translation id="1615178538289490617">Revogar o acceso a <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">A política do administrador desactiva o modo de captura de pantalla cando nela se mostra contido confidencial</translation>
@@ -826,6 +827,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2526280916094749336">Podes usar os enderezos gardados nos produtos de Google. Este enderezo gardarase na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">O CVC está na parte dianteira da tarxeta. É un código de 4 díxitos que está no recanto superior dereito, enriba do número da tarxeta.</translation>
 <translation id="2529899080962247600">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Unha vez alcanzada esa cantidade, ignoraranse as demais entradas.</translation>
+<translation id="2533649878691950253">Impediuse que este sitio accedese á túa localización precisa porque non adoitas conceder este permiso</translation>
 <translation id="253493526287553278">Ver detalles do código promocional</translation>
 <translation id="2535585790302968248">Abrir unha nova pestana do modo de incógnito para navegar de forma privada</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
@@ -1918,6 +1920,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4691093235373904540">Servizos de tellados</translation>
 <translation id="4692623383562244444">Motores de busca</translation>
 <translation id="4698692901173737941">Deportes de contacto</translation>
+<translation id="4701307090948589984">Emitir en...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
 <translation id="4702656508969495934">Subtítulos instantáneos visibles. Usa o conmutador de ventás para enfocalos</translation>
@@ -2167,6 +2170,8 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5161334686036120870">Asunto:</translation>
 <translation id="5161506081086828129">Amontoador 9</translation>
 <translation id="5164798890604758545">Escríbese texto</translation>
+<translation id="5164928537947209380">Esta ferramenta de IA experimental non sempre acerta. Para mellorala, o teu contido envíase a Google
+    <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Introduce o código CVC da tarxeta <ph name="CREDIT_CARD" />. Unha vez que confirmes os datos, os detalles da tarxeta da túa Conta de Google compartiranse con este sitio.</translation>
 <translation id="5169827969064885044">Poderías perder o acceso á conta da túa organización ou alguén podería roubarche a identidade. Chrome recoméndache que cambies de contrasinal agora.</translation>
 <translation id="5171045022955879922">Buscar ou escribir o URL</translation>
@@ -3302,6 +3307,7 @@ Detalles adicionais:
 <translation id="7392089738299859607">Actualizar enderezo</translation>
 <translation id="7393161616326137353">Xogos de aventura</translation>
 <translation id="739728382607845710">Icona do controlador de pagos</translation>
+<translation id="7399616692258236448">Bloquéanse automaticamente as solicitudes de localización para todos os sitios, excepto para os que permitas</translation>
 <translation id="7399802613464275309">Revisión de seguranza</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartir esta pestana mediante unha ligazón, a través da creación dun código QR, coa súa emisión e outras opcións</translation>
@@ -4062,6 +4068,7 @@ Detalles adicionais:
 <translation id="8807160976559152894">Recorte despois de cada páxina</translation>
 <translation id="8809203544698246977">Os temas bloqueados aparecen aquí</translation>
 <translation id="8811470563853401328">Queres gardar o enderezo na conta?</translation>
+<translation id="8811725516933141693">Escribe @gemini para chatear con Gemini</translation>
 <translation id="8813277370772331957">Lembrarmo máis tarde</translation>
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para actualizar Chrome desde a configuración do navegador</translation>

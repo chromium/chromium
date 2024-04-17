@@ -826,6 +826,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2526280916094749336">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë do të ruhet në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Numri CVC është në pjesën e përparme të kartës sate. Ai është kodi me 4 shifra në krye djathtas mbi numrin e kartës sate.</translation>
 <translation id="2529899080962247600">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha hyrjet e mëtejshme do të shpërfillen.</translation>
+<translation id="2533649878691950253">Ky sajt u bllokua nga zbulimi i vendndodhjes sate të saktë pasi ti zakonisht nuk e lejon këtë</translation>
 <translation id="253493526287553278">Shiko detajet e kodit promocional</translation>
 <translation id="2535585790302968248">Hap një skedë të re "të fshehtë" për të shfletuar në mënyrë private</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
@@ -3301,6 +3302,7 @@ Detaje shtesë:
 <translation id="7392089738299859607">Përditëso adresën</translation>
 <translation id="7393161616326137353">Lojëra aventure</translation>
 <translation id="739728382607845710">Ikona e përpunuesit të pagesave</translation>
+<translation id="7399616692258236448">Kërkesat për vendndodhjen bllokohen automatikisht për të gjitha sajtet, përveçse për ato që lejon ti</translation>
 <translation id="7399802613464275309">Kontrolli i sigurisë</translation>
 <translation id="7400418766976504921">URL-ja</translation>
 <translation id="7403392780200267761">Ndaje këtë skedë duke ndarë lidhjen, duke krijuar një kod QR, duke transmetuar etj.</translation>

@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Buộc bật thu phóng</translation>
 <translation id="3908288065506437185">Chặn cookie của bên thứ ba ở Chế độ ẩn danh</translation>
 <translation id="3918378745482005425">Một số tính năng có thể không hoạt động. Các trang web có liên quan vẫn có thể sử dụng cookie của bên thứ ba.</translation>
+<translation id="3933121352599513978">Thu gọn các yêu cầu không mong muốn (nên dùng)</translation>
 <translation id="3955193568934677022">Cho phép trang web phát nội dung được bảo vệ (được đề xuất)</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3974105241379491420">Các trang web có thể yêu cầu bạn cho phép sử dụng thông tin mà họ đã lưu về bạn</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Không thể tiếp cận điều hướng: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Quên</translation>
 <translation id="8990043154272859344">Bạn sẽ bị đăng xuất khỏi tất cả các trang web</translation>
+<translation id="8993853206419610596">Mở rộng tất cả yêu cầu</translation>
 <translation id="9002538116239926534">Khi bạn bật tuỳ chọn này, các trang web có thể lưu dữ liệu trên thiết bị của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể lưu dữ liệu trên thiết bị của bạn.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> được cho phép</translation>
 <translation id="9019902583201351841">Do cha mẹ của bạn quản lý</translation>

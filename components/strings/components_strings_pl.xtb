@@ -340,6 +340,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="160851722280695521">Zagraj w grę Dino Run w Chrome</translation>
 <translation id="161042844686301425">Cyjan</translation>
 <translation id="1611101756749861742">Rolka 2</translation>
+<translation id="1611854593425834707">Zamknij listę urządzeń do przesyłania</translation>
 <translation id="1612199629998703524">Zarządzanie tematami</translation>
 <translation id="1615178538289490617">Unieważnij dostęp dla portu <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Zasada administratora wyłącza zrzut ekranu, gdy widoczne są treści poufne</translation>
@@ -826,6 +827,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2526280916094749336">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres zostanie zapisany na Twoim koncie Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Kod CVC znajduje się z przodu karty. To 4-cyfrowy kod widoczny w prawym górnym rogu, nad numerem karty.</translation>
 <translation id="2529899080962247600">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Wszystkie następne wpisy będą ignorowane.</translation>
+<translation id="2533649878691950253">Tej witrynie zablokowaliśmy możliwość sprawdzania Twojej dokładnej lokalizacji, bo zazwyczaj na to nie zezwalasz</translation>
 <translation id="253493526287553278">Zobacz szczegóły kodu promocyjnego</translation>
 <translation id="2535585790302968248">Otwórz nową kartę incognito, aby przeglądać prywatnie</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}many{i jeszcze #}other{i jeszcze #}}</translation>
@@ -1918,6 +1920,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4691093235373904540">Dekarstwo</translation>
 <translation id="4692623383562244444">Wyszukiwarki</translation>
 <translation id="4698692901173737941">Sporty walki</translation>
+<translation id="4701307090948589984">Prześlij na…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Strona</translation>
 <translation id="4702656508969495934">Napisy na żywo są widoczne. Użyj przełącznika okien, aby zaznaczyć.</translation>
@@ -2168,6 +2171,8 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5161334686036120870">Temat:</translation>
 <translation id="5161506081086828129">Układarka 9</translation>
 <translation id="5164798890604758545">Wpisano tekst</translation>
+<translation id="5164928537947209380">To eksperymentalne narzędzie AI nie zawsze działa poprawnie. Abyśmy mogli je ulepszyć, Twoje treści są wysyłane do Google.
+    <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Wpisz kod CVC karty <ph name="CREDIT_CARD" />. Po potwierdzeniu dane karty z Twojego konta Google zostaną udostępnione tej stronie.</translation>
 <translation id="5169827969064885044">Możesz stracić dostęp do swojego konta organizacji lub paść ofiarą kradzieży tożsamości. Chrome zaleca natychmiastową zmianę hasła.</translation>
 <translation id="5171045022955879922">Wyszukaj lub wpisz URL</translation>
@@ -3304,6 +3309,7 @@ Dodatkowe informacje:
 <translation id="7392089738299859607">Zmień adres</translation>
 <translation id="7393161616326137353">Gry przygodowe</translation>
 <translation id="739728382607845710">Ikona modułu obsługi płatności</translation>
+<translation id="7399616692258236448">Prośby o lokalizację są automatycznie blokowane w przypadku wszystkich stron oprócz tych, którym na nie zezwolisz</translation>
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
 <translation id="7400418766976504921">Adres URL</translation>
 <translation id="7403392780200267761">Udostępnij tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji</translation>
@@ -4064,6 +4070,7 @@ Dodatkowe informacje:
 <translation id="8807160976559152894">Przycięcie po każdej stronie</translation>
 <translation id="8809203544698246977">Tutaj pojawią się zablokowane tematy</translation>
 <translation id="8811470563853401328">Zapisać adres na koncie?</translation>
+<translation id="8811725516933141693">Aby porozmawiać z Gemini, wpisz @gemini</translation>
 <translation id="8813277370772331957">Przypomnij później</translation>
 <translation id="8814707942599948500">Koperta C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by zaktualizować przeglądarkę Chrome z poziomu jej ustawień.</translation>

@@ -91,7 +91,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="234869673307233423">Chrome ne može da vam proverava lozinke. Probajte ponovo kasnije.</translation>
 <translation id="235650106824528204">Administrator poslovnog profila može da ukloni sve podatke Chrome-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Nastavi</translation>
-<translation id="2389730170785586152">Chrome ne može da proveri odakle potiče ovaj dodatak</translation>
 <translation id="2401189691232800402">Sistem ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Jedan ili više dodataka za Chrome su pristupali 1 HID uređaju}=1{Jedan ili više dodataka za Chrome pristupaju 1 HID uređaju}one{Jedan ili više dodataka za Chrome pristupaju # HID uređaju}few{Jedan ili više dodataka za Chrome pristupaju HID uređajima (#)}other{Jedan ili više dodataka za Chrome pristupaju HID uređajima (#)}}</translation>
 <translation id="2424440923901031101">Ovaj dodatak krši smernice Chrome veb-prodavnice i možda nije bezbedan. Uklonite ga iz Chrome-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
@@ -252,6 +251,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4793679854893018356">Saznajte kako vas Chrome štiti</translation>
 <translation id="4828579605166583682">Google Chrome pokušava da zameni postojeće lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="4842397268809523050">Chrome OS Flex ne može da sinhronizuje podatke jer sinhronizacija nije dostupna za domen.</translation>
+<translation id="4862446263930606916">Organizacija može da vidi podatke pregledanja na poslovnom profilu, poput obeleživača, istorije i lozinki, i da upravlja njima. Ne može da vidi podatke pregledanja na ličnim Chrome profilima.</translation>
 <translation id="4873692836499071887">Da biste dobijali buduća Google Chrome ažuriranja, treba vam macOS 11 ili novija verzija. Ovaj računar koristi macOS 10.15.</translation>
 <translation id="4873783916118289636">Pregledajte ključne kontrole privatnosti i bezbednosti u Chrome-u</translation>
 <translation id="4891791193823137474">Neka Google Chrome radi u pozadini</translation>
@@ -332,6 +332,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6251759518630934363">Upozorava vas na opasne sajtove, čak i na one za koje Google ranije nije znao, analizirajući više podataka sa sajtova nego standardna zaštita. Možete da odaberete da preskočite upozorenja Chrome-a.</translation>
 <translation id="6273793429163604305">Pripremate se...</translation>
 <translation id="6277547788421725101">Roditelj je isključio „Dozvole za sajtove, aplikacije i dodatke“ za Chrome</translation>
+<translation id="627882678981830918">Prilagodite i kontrolišite Chrome. Podesite Chrome kao podrazumevani pregledač.</translation>
 <translation id="6291089322031436445">Chrome aplikacije za programerski kanal</translation>
 <translation id="6291549208091401781">Google Chrome je već instaliran za sve korisnike na računaru.</translation>
 <translation id="6326175484149238433">Ukloni iz Chrome-a</translation>
@@ -499,6 +500,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8989968390305463310">Istorija pregledanja utiče na oglase koji vam se prikazuju i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome automatski briše interesovanja svakog meseca čim postanu dostupna. Interesovanja mogu da se osvežavaju ako ih ne uklonite.</translation>
 <translation id="8999117580775242387">Kada HTTPS nije dostupan, Chrome će koristiti nebezbednu vezu bez upozorenja</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ažuriranje za Chrome je dostupno}=1{Ažuriranje za Chrome je dostupno}one{Ažuriranje za Chrome je dostupno već # dan}few{Ažuriranje za Chrome je dostupno već # dana}other{Ažuriranje za Chrome je dostupno već # dana}}</translation>
+<translation id="9024318700713112071">Podesite Chrome kao podrazumevani pregledač</translation>
 <translation id="9053892488859122171">Chrome OS Flex sistem</translation>
 <translation id="9054037008353851982">Ponovo pokrenite radi ažuriranja – kartice će se ponovo otvoriti</translation>
 <translation id="9090566250983691233">Saznajte zašto Chrome blokira neke fajlove</translation>

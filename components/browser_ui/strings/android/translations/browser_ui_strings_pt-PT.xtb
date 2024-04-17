@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Forçar ativação do zoom</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no Modo de navegação anónima</translation>
 <translation id="3918378745482005425">Algumas funcionalidades podem não funcionar. Os sites relacionados ainda podem usar cookies de terceiros.</translation>
+<translation id="3933121352599513978">Reduzir pedidos indesejados (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que os sites reproduzam conteúdo protegido (recomendado)</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="3974105241379491420">Os sites podem pedir para usar as informações guardadas sobre si</translation>
@@ -289,6 +290,7 @@
 <translation id="5853982612236235577">Quando esta opção está ativada, os sites podem pedir para enviar notificações. Quando esta opção está desativada, os sites não podem enviar notificações.</translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5876056640971328065">Colocar vídeo em pausa</translation>
+<translation id="5877248419911025165">Reduzir todos os pedidos</translation>
 <translation id="5884085660368669834">Preferência do site</translation>
 <translation id="5887687176710214216">Última visita ontem</translation>
 <translation id="5916664084637901428">Ativado</translation>
@@ -496,6 +498,7 @@
 <translation id="8959122750345127698">A navegação está inacessível: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Esquecer</translation>
 <translation id="8990043154272859344">A sua sessão vai ser terminada em todos os sites</translation>
+<translation id="8993853206419610596">Expandir todos os pedidos</translation>
 <translation id="9002538116239926534">Quando esta opção está ativada, os sites podem guardar dados no seu dispositivo. Quando esta opção está desativada, os sites não podem guardar dados no seu dispositivo.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> autorizado</translation>
 <translation id="9019902583201351841">Gerido pelos teus pais</translation>

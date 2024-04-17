@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1247030632403369975">铝</translation>
 <translation id="1252209483516427155">外套</translation>
+<translation id="1253096324252841344">使用<ph name="FINANCIAL_ACCOUNT_TYPES" />付款</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（已同步）</translation>
 <translation id="1255086252236620440">食物搅拌机</translation>
 <translation id="1256368399071562588">&lt;p&gt;如果您尝试访问某个网站，但无法打开它，可以按照以下问题排查步骤操作，尝试解决问题：&lt;/p&gt;
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">您可在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2527451058878391043">您的银行卡验证码 (CVC) 位于银行卡的正面，即卡号右上角的 4 位数代码。</translation>
 <translation id="2529899080962247600">此字段最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，在达到这一上限后添加的所有条目都将被忽略。</translation>
+<translation id="2533649878691950253">已禁止此网站获取您的精确位置信息，因为您通常不会授予这种权限</translation>
 <translation id="253493526287553278">查看促销代码详细信息</translation>
 <translation id="2535585790302968248">打开新的无痕式标签页即可进行无痕浏览</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{以及另外 1 个网域}other{以及另外 # 个网域}}</translation>
@@ -1508,6 +1510,7 @@
 <translation id="385489333361351399">相机及摄影器材</translation>
 <translation id="3858027520442213535">更新日期和时间</translation>
 <translation id="3858860766373142691">名称</translation>
+<translation id="3865339060090354361">在此处查看<ph name="CREDIT_CARD_NAME" />的相关条款</translation>
 <translation id="3872834068356954457">科学</translation>
 <translation id="3875783148670536197">操作步骤</translation>
 <translation id="3880456882942693779">艺术与娱乐</translation>
@@ -2344,6 +2347,7 @@
 <translation id="553377674408670169">教育职位</translation>
 <translation id="5536214594743852365">显示“<ph name="SECTION" />”部分</translation>
 <translation id="553782666181800029">Chou 2 信封</translation>
+<translation id="5538270463355278784">自动全屏</translation>
 <translation id="5539243836947087108">筏式</translation>
 <translation id="5540224163453853">找不到请求的文章。</translation>
 <translation id="5540969246441091044">马术</translation>
@@ -2707,6 +2711,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可管理您已在 Chrome 中下载的文件</translation>
 <translation id="6254436959401408446">内存不足，无法打开此网页</translation>
 <translation id="625463612687472648">不再授予权限</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{当您在 Chrome 上购物时，可看到<ph name="FINANCIAL_ACCOUNT_TYPES" />选项}other{当您在 Chrome 上购物时，可看到<ph name="FINANCIAL_ACCOUNT_TYPES" />选项}}</translation>
 <translation id="6259156558325130047">恢复顺序调整(&amp;R)</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 书签</translation>
 <translation id="6264376385120300461">仍然下载</translation>
@@ -3297,6 +3302,7 @@
 <translation id="7392089738299859607">更新地址</translation>
 <translation id="7393161616326137353">冒险游戏</translation>
 <translation id="739728382607845710">付款处理程序图标</translation>
+<translation id="7399616692258236448">系统会自动屏蔽除您允许的网站之外的其他所有网站的位置信息请求</translation>
 <translation id="7399802613464275309">安全检查</translation>
 <translation id="7400418766976504921">网址</translation>
 <translation id="7403392780200267761">通过分享链接、创建二维码、投放等操作分享此标签页</translation>
@@ -3841,6 +3847,7 @@
 <translation id="8378714024927312812">由贵组织管理</translation>
 <translation id="8380941800586852976">危险</translation>
 <translation id="8381674639488873545">这些费用可能会一次性收取，也可能会周期性收取，而且可能不易察觉。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">自动全屏</translation>
 <translation id="838307841291975086">旅行车</translation>
 <translation id="8389532092404711541">一般价格为 <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">定制车与高性能车</translation>

@@ -109,6 +109,7 @@
 <translation id="1513858653616922153">ລຶບລະຫັດຜ່ານ</translation>
 <translation id="1521774566618522728">ເປີດນຳໃຊ້ມື້ນີ້</translation>
 <translation id="1544826120773021464">ເພື່ອຈັດການບັນຊີ Google ຂອງທ່ານ, ກະລຸນາແຕະປຸ່ມ "ຈັດການບັນຊີ"</translation>
+<translation id="154513667535157406">ປຸ່ມຍົກໂປ້ຈະສົ່ງຄຳຕິຊົມວ່າທ່ານຖືກໃຈຂໍ້ມູນສະຫຼຸບນີ້</translation>
 <translation id="1549000191223877751">ຍ້າຍໄປຫາໜ້າຈໍອື່ນ</translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
 <translation id="1554532453982918912">ຊ່ວຍເຮັດໃຫ້ Chrome ດີຂຶ້ນສຳລັບຄົນທີ່ໃຊ້ມັນໃນແບບທີ່ທ່ານໃຊ້</translation>
@@ -309,6 +310,7 @@
 <translation id="2669454659051515572">ໃຜກໍຕາມທີ່ໃຊ້ອຸປະກອນນີ້ຈະສາມາດເບິ່ງເຫັນໄຟລ໌ທີ່ດາວໂຫຼດແລ້ວໄດ້</translation>
 <translation id="2673169232805572412">ຫາກເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ທີ່ເປັນອັນຕະລາຍ, Chrome ອາດສົ່ງ URL ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Google</translation>
 <translation id="2702516483241149200">ໃໝ່: ແບ່ງປັນລິ້ງທີ່ເລື່ອນຫາຂໍ້ຄວາມນີ້</translation>
+<translation id="2705073298859543115">ສ້າງຂໍ້ມູນສະຫຼຸບ</translation>
 <translation id="2708051474374549906">ການປົກປ້ອງເຊີງບຸກແບບສົດໆຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ ເຊິ່ງອີງຕາມຂໍ້ມູນການທ່ອງເວັບຂອງທ່ານທີ່ສົ່ງໄປຫາ Google</translation>
 <translation id="2708226184420201102">ເປີດໃນໂປຣແກຣມທ່ອງເວັບ <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">ໃຫມ່</translation>
@@ -394,6 +396,7 @@
 <translation id="3046945242843292318">ເຂົ້າເວັບໄຊນີ້ໄດ້ໄວຂຶ້ນໃນເທື່ອຕໍ່ໄປ</translation>
 <translation id="3055259925215945098">ຍ້າຍບຸກມາກແລ້ວ</translation>
 <translation id="3055841435094910999">ຂໍ້ມູນຈະຖືກສົ່ງໄປໃຫ້ Google ກ່ຽວກັບການໃຊ້ Chrome ຂອງທ່ານ, ແຕ່ມັນບໍ່ໄດ້ຖືກຜູກມັດຫາທ່ານ\n\nຫາກ Chrome ຫຼົ້ມ, ລາຍລະອຽດຕ່າງໆກ່ຽວກັບການຫຼົ້ມອາດຮວມມີຂໍ້ມູນສ່ວນຕົວບາງຢ່າງ\n\nຫາກທ່ານເປີດໃຊ້ການຊິ້ງຂໍ້ມູນ, ການວັດແທກຕ່າງໆອາດຮວມມີຂໍ້ມູນກ່ຽວກັບ URL ທີ່ທ່ານເຂົ້າເບິ່ງນຳ</translation>
+<translation id="3059531648236115056">ເພີ່ມຂໍ້ມູນສະຫຼຸບ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ບຸກມາກ}other{<ph name="BOOKMARKS_COUNT_MANY" /> ບຸກມາກ}}</translation>
 <translation id="3062802207422175757">ບົດຄວາມທີ່ທ່ານສົນໃຈໃນ Chrome</translation>
 <translation id="3066573403916685335">ຍ້າຍ​ລົງ</translation>
@@ -493,6 +496,7 @@
 <translation id="3631987586758005671">ກຳລັງແບ່ງປັນໃສ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">ເຂົ້າສູ່ລະບົບເວັບ​ໄຊ​ໂດຍ​ອັດຕະ​ໂນ​ມັດໂດຍ​ໃຊ້​ຂໍ້​ມູນ​ປະ​ຈໍາ​ຕົວ​ທີ່​ຮັກສາ​ໄວ້. ​ເມື່ອຄຸນສົມບັດນີ້ຖືກປິດການນຳໃຊ້, ທ່ານ​ຈະ​ຖືກ​ຮ້ອງ​ຂໍ​ໃຫ້​ກວດ​ສອບ​ໃນ​ທຸກໆເທື່ອ ກ່ອນ​ທີ່​ຈະ​ລົງ​ຊື່​ເຂົ້າ​ເວັບ​ໄຊໃດ​ໜຶ່ງ.</translation>
 <translation id="3636940436873918441">ພາສາທີ່ຕ້ອງການ</translation>
+<translation id="368329460027487650">ອອກຈາກລະບົບແລ້ວ. ເປີດຕົວເລືອກເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3687645719033307815">ທ່ານກຳລັງເບິ່ງຕົວຢ່າງຂອງໜ້ານີ້</translation>
 <translation id="3690369331356918524">ເຕືອນບອກທ່ານຖ້າລະຫັດຜ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ</translation>
 <translation id="3692944402865947621">ການດາວໂຫຼດ <ph name="FILE_NAME" /> ບໍ່ສຳເລັດ ເນື່ອງຈາກບໍ່ສາມາດຕິດຕໍ່ຫາບ່ອນຈັດເກັບຂໍ້ມູນໄດ້.</translation>
@@ -686,6 +690,7 @@
 <translation id="465657074423018424">Safe Browsing ປົກປ້ອງທ່ານຈາກເວັບໄຊຫຼອກລວງ. ຖ້າທ່ານປິດມັນໄວ້, ກະລຸນາລະມັດລະວັງເພີ່ມເຕີມໃນເວລາທ່ອງເວັບ ໂດຍສະເພາະກ່ອນທີ່ຈະປ້ອນລະຫັດຜ່ານ.</translation>
 <translation id="4662373422909645029">ຊື່ຫຼິ້ນບໍ່ສາມາດຮວມມີຕົວເລກໄດ້</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> ບຸກ​ມາກ​ຖືກ​ລຶບ​ໄປ​ແລ້ວ</translation>
+<translation id="4664020984660113387">ລຶບຂໍ້ມູນສະຫຼຸບ</translation>
 <translation id="4668279686271488041">ຂໍ້ມູນການວັດແທກການໂຄສະນາຖືກລຶບຢ່າງເປັນປົກກະຕິຈາກອຸປະກອນຂອງທ່ານ</translation>
 <translation id="4668347365065281350">ຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໂດຍເວັບໄຊ, ຮວມທັງຄຸກກີ້ ແລະ ຂໍ້ມູນອື່ນທີ່ເກັບໄວ້ໃນເຄື່ອງ</translation>
 <translation id="4678082183394354975">ຮູບແບບສີສັນມືດສຳລັບເວັບໄຊແມ່ນຖືກເປີດໃຊ້ໃນ Chrome ແລ້ວ</translation>
@@ -825,6 +830,7 @@
 <translation id="5342314432463739672">ຄຳຂໍການອະນຸຍາດ</translation>
 <translation id="534580735623577507">ບໍ່ມີເວັບໄຊຈາກ <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
+<translation id="5364112109233799727">ລະບົບຈະສົ່ງ URL ຂອງໜ້າທີ່ທ່ານສະແດງຄຳຕິຊົມໄປຫາ Google ແລະ ທີມງານອາດກວດສອບ URL ດັ່ງກ່າວເພື່ອປັບປຸງຄຸນສົມບັດນີ້</translation>
 <translation id="5375577065097716013">ຊອກຫາຮູບພາບດ້ວຍ Google Lens <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">ກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານສາມາດໃຊ້ຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ສະເໝີ</translation>
 <translation id="539881862970320163">ແນະນຳລະຫັດຜ່ານຍາກແລ້ວ. ເຊື່ອງແປ້ນພິມໄວ້ແລ້ວ.</translation>
@@ -1050,7 +1056,9 @@
 <translation id="6473086018775716761">ເປີດລາຍຊື່ຂອງຕົວເລືອກການແບ່ງປັນໃນຄວາມສູງແບບເຕັມແລ້ວ.</translation>
 <translation id="6475951671322991020">ດາວໂຫຼດວິດີໂອ</translation>
 <translation id="6477928892249167417">ເວັບໄຊເຫຼົ່ານີ້ປາກົດວ່າສຳຄັນຕໍ່ກັບທ່ານ:</translation>
+<translation id="6481963882741794338">ລິ້ງ Chrome ແລະ ບໍລິການອື່ນໆຂອງ Google ເພື່ອການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ຈຸດປະສົງອື່ນໆ</translation>
 <translation id="6482749332252372425">ການ​ດາວ​ໂຫຼ​ດ <ph name="FILE_NAME" /> ລົ້ມເຫລວ​ເນື່ອງ​ຈາກ​ບໍ່​ມີ​ພື້ນ​ທີ່​ຈັດເກັບຂໍ້ມູນ.</translation>
+<translation id="6495590690749880440">ເປີດກຸ່ມແຖບບໍ?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ດາວໂຫຼດໄຟລ໌ແລ້ວ}other{ດາວໂຫຼດ # ໄຟລ໌ສຳເລັດແລ້ວ}}</translation>
 <translation id="6508722015517270189">ປິດເປີດ Chrome ຄືນໃໝ່</translation>
 <translation id="6518133107902771759">ກວດສອບ</translation>
@@ -1156,6 +1164,7 @@
 <translation id="6910211073230771657">ລຶບແລ້ວ</translation>
 <translation id="6918398787259831832">ຫາກບັນຫານີ້ຍັງເກີດຂຶ້ນຢູ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເບິ່ງຂໍ້ມູນເພີ່ມເຕີມ<ph name="END_LINK" /> ຈາກ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">ລະຫັດຄວາມປອດໄພທັງໝົດທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນຂອງທ່ານ ແລະ ໃນບັນຊີ Google ຂອງທ່ານຈະຖືກລຶບອອກ</translation>
+<translation id="6937524809504266803">ການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ການລິ້ງ</translation>
 <translation id="6942665639005891494">ປ່ຽນບ່ອນຈັດເກັບການດາວໂຫຼດເລີ່ມຕົ້ນໄດ້ທຸກເວລາ ໂດຍໃຊ້ຕົວເລືອກເມນູການຕັ້ງຄ່າ</translation>
 <translation id="694267552845942083">ທ່ານກຳລັງປັບແຕ່ງການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນຂອງທ່ານໃນຂະນະນີ້. ເພື່ອສຳເລັດການເປີດການຊິ້ງຂໍ້ມູນ, ກະລຸນາແຕະປຸ່ມຢືນຢັນຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ. ເລື່ອນຂຶ້ນ</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
@@ -1173,6 +1182,7 @@
 <translation id="7013762323294215682">ກະແຈຜ່ານນີ້ຈະຖືກບັນທຶກໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານຂອງທ່ານ. ທຸກຄົນທີ່ມີສິດເຂົ້າເຖິງຈະສາມາດໃຊ້ກະແຈຜ່ານນີ້ໄດ້.</translation>
 <translation id="7020741890149022655">ເພີ່ມໃສ່ລາຍຊື່ການອ່ານ <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ເປີດໃນໂປຣແກຣມທ່ອງເວັບ</translation>
+<translation id="7025769836128625875">ນີ້ແມ່ນຄຸນສົມບັດ AI ເວີຊັນທົດລອງ ແລະ ອາດບໍ່ຖືກຕ້ອງສະເໝີໄປ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="7027549951530753705">ກູ້ຂໍ້ມູນເມື່ອ <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="7030304022046916278">ສົ່ງ URL ໄປໃຫ້ Safe Browsing ກວດເບິ່ງພວກມັນ</translation>
@@ -1204,6 +1214,7 @@
 <translation id="7177873915659574692">ບໍ່ສາມາດສ້າງລະຫັດ QR ໄດ້. URL ຫຼາຍກວ່າ <ph name="CHARACTER_LIMIT" /> ຕົວອັກສອນ.</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7183693674623539380">ກຸ່ມແຖບ - <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="7186568385131859684">ຄວບຄຸມການໃຊ້ປະຫວັດການທ່ອງເວັບກັບຂໍ້ມູນອື່ນໆຂອງທ່ານໃນບໍລິການຕ່າງໆຂອງ Google</translation>
 <translation id="7187993566681480880">ຮັກສາໃຫ້ທ່ານປອດໄພໃນ Chrome ແລະ ອາດຈະຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພໃນແອັບອື່ນຂອງ Google ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="7191430249889272776">ແຖບທີ່ເປີດຢູ່ໃນພື້ນຫຼັງ.</translation>
 <translation id="7196215469483532480">ເປີດຄຳອະທິບາຍຄູ່ມືຄວາມເປັນສ່ວນຕົວແບບເຕັມຄວາມສູງແລ້ວ</translation>
@@ -1493,6 +1504,7 @@
 <translation id="8512053371384421952">ທ່ານຈະບໍ່ໄດ້ຮັບການແຈ້ງເຕືອນຈາກ <ph name="DOMAIN" /> ອີກຕໍ່ໄປ.</translation>
 <translation id="8514477925623180633">ສົ່ງອອກລະຫັດຜ່ານທີ່ເກັບໄວ້ນຳ Chrome</translation>
 <translation id="8516012719330875537">ໂປຣແກຣມແກ້ໄຂຮູບພາບ</translation>
+<translation id="8521833595674902532">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ບໍ່ສາມາດສ້າງຂໍ້ມູນສະຫຼຸບໄດ້</translation>
 <translation id="8523928698583292556">ລຶບລະຫັດຜ່ານທີ່ເກັບໄວ້</translation>
 <translation id="8526855376374973824">ຂັ້ນຕອນການອະນຸຍາດການແຈ້ງເຕືອນ</translation>
 <translation id="8540136935098276800">ປ້ອນ URL ທີ່ມີຮູບແບບຖືກຕ້ອງ</translation>
@@ -1568,6 +1580,7 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ <ph name="INCOGNITO_TAB_COUNT" /> ແລະ ແຖບອື່ນໆ <ph name="TAB_COUNT_ONE" /> ແຖບຈະຖືກປິດ}other{ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ <ph name="INCOGNITO_TAB_COUNT" /> ແລະ ແຖບອື່ນໆ <ph name="TAB_COUNT_MANY" /> ແຖບຈະຖືກປິດ}}</translation>
 <translation id="8970887620466824814">ມີບາງຢ່າງຜິດພາດ.</translation>
 <translation id="8972098258593396643">ດາວໂຫຼດໃສ່ໂຟນເດີເລີ່ມຕົ້ນບໍ?</translation>
+<translation id="8982113230057126145">ປຸ່ມບໍ່ມັກຈະສົ່ງຄຳຕິຊົມວ່າທ່ານບໍ່ຖືກໃຈຂໍ້ມູນສະຫຼຸບນີ້</translation>
 <translation id="8992769679401294069">ຂໍ້ມູນຂອງທ່ານໄດ້ຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍລະຫັດຜ່ານຂອງທ່ານ. ລະບຸລະຫັດຜ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="8993760627012879038">ເປີດແຖບໃໝ່ໃນໂໝດ Incognito</translation>
 <translation id="8996847606757455498">ເລືອກຜູ້ໃຫ້ບໍລິການອື່ນ</translation>

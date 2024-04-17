@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chrome-да Dino Run ойынын ойнау</translation>
 <translation id="161042844686301425">Көгілдір</translation>
 <translation id="1611101756749861742">Екінші орам</translation>
+<translation id="1611854593425834707">Трансляциялауға арналған құрылғылар тізімін жабу</translation>
 <translation id="1612199629998703524">Тақырыптарды басқару</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> портына кіру рұқсатын қайтару</translation>
 <translation id="1615402009686901181">Құпия контент көрініп тұрғанда, әкімші саясаты экранды түсіру функциясын өшіреді.</translation>
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">Google өнімдерінде сақталған мекенжайларды пайдалана аласыз. Бұл мекенжай Google аккаунтыңызда (<ph name="ACCOUNT" />) сақталады.</translation>
 <translation id="2527451058878391043">CVC коды картаңыздың алдыңғы жағында. Бұл – карта нөмірінің жоғарғы оң жағындағы 4 цифрлық код.</translation>
 <translation id="2529899080962247600">Бұл өрістегі жазбалардың максималды саны: <ph name="MAX_ITEMS_LIMIT" />. Қалған жазбалар еленбейтін болады.</translation>
+<translation id="2533649878691950253">Бұл сайттың нақты локацияңызды анықтауына тыйым салынған, себебі әдетте сіз оған рұқсат бермейсіз.</translation>
 <translation id="253493526287553278">Промокод туралы мәліметтерді көру</translation>
 <translation id="2535585790302968248">Құпия шарлау үшін жаңа инкогнито қойындысын ашыңыз.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{және тағы 1}other{және тағы #}}</translation>
@@ -1917,6 +1919,7 @@
 <translation id="4691093235373904540">Шатырларды жөндеу</translation>
 <translation id="4692623383562244444">Іздеу жүйелері</translation>
 <translation id="4698692901173737941">Спорттық жекпе-жек</translation>
+<translation id="4701307090948589984">Келесі құрылғыға трансляциялау...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Бүйірлік</translation>
 <translation id="4702656508969495934">Live Caption көрінеді, ерекшелеу үшін терезе ауыстырғышты пайдаланыңыз.</translation>
@@ -2166,6 +2169,8 @@
 <translation id="5161334686036120870">Тақырыбы:</translation>
 <translation id="5161506081086828129">9-жинастырушы</translation>
 <translation id="5164798890604758545">Мәтін енгізілді</translation>
+<translation id="5164928537947209380">Бұл эксперименттік AI құралы кейде қателесуі мүмкін. Оны жақсарту үшін контентіңіз Google-ға жіберіледі.
+    <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> картасының CVC кодын енгізіңіз. Растағаннан кейін, Google аккаунтындағы карта мәліметтері осы сайтқа беріледі.</translation>
 <translation id="5169827969064885044">Ұйымның аккаунтына кіре алмай қалуыңыз мүмкін немесе жеке деректеріңіз ұрлануы ықтимал. Chrome құпия сөзіңізді қазір өзгертуге кеңес береді.</translation>
 <translation id="5171045022955879922">Іздеңіз не URL теріңіз</translation>
@@ -3301,6 +3306,7 @@
 <translation id="7392089738299859607">Мекенжайды жаңарту</translation>
 <translation id="7393161616326137353">Шытырман ойындар</translation>
 <translation id="739728382607845710">Төлемді өңдегіш белгішесі</translation>
+<translation id="7399616692258236448">Сіз рұқсат еткеннен басқа барлық сайт үшін локация сұраулары автоматты түрде блокталады.</translation>
 <translation id="7399802613464275309">Қауіпсіздік тексерісі</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Сілтемені бөлісу, QR кодын жасау, трансляциялау және т.б. арқылы осы қойындыны бөлісу</translation>
@@ -4061,6 +4067,7 @@
 <translation id="8807160976559152894">Әр беттен кейін кесу</translation>
 <translation id="8809203544698246977">Бөгелген тақырыптар осы жерде пайда болады</translation>
 <translation id="8811470563853401328">Мекенжайды аккаунтта сақтау керек пе?</translation>
+<translation id="8811725516933141693">Gemini-мен чатта сөйлесу үшін @gemini деп теріңіз.</translation>
 <translation id="8813277370772331957">Кейінірек еске салу</translation>
 <translation id="8814707942599948500">C8 хатқалтасы</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде Chrome-ды жаңарту үшін Tab, одан кейін Enter пернесін басыңыз.</translation>

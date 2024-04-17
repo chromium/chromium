@@ -127,7 +127,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1084824384139382525">Kopírovat a&amp;dresu odkazu</translation>
 <translation id="1085064499066015002">Vždy na všech webech</translation>
 <translation id="1085697365578766383">Při spouštění virtuálního počítače došlo k chybě. Zkuste to znovu.</translation>
-<translation id="1088659085457112967">Zapnout režim čtečky</translation>
 <translation id="1090126737595388931">Na pozadí nejsou spuštěny žádné aplikace</translation>
 <translation id="1090541560108055381">Před spárováním se ujistěte, zda se tento kód na obou zařízeních shoduje</translation>
 <translation id="1091767800771861448">Akci přeskočíte stisknutím klávesy Esc (pouze neoficiální sestavení).</translation>
@@ -2164,7 +2163,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2587922766792651800">Časový limit vypršel</translation>
 <translation id="2588636910004461974">Zařízení od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Soubory na Disku nikdy nezobrazovat</translation>
-<translation id="25899519884572181">Ukončit režim čtečky</translation>
 <translation id="2593499352046705383">Před zahájením se ujistěte, zda máte zálohu dat. Při instalaci systému <ph name="DEVICE_OS" /> se pevný disk přepíše. Další informace najdete na stránce g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Spravovat zabezpečení modulu V8</translation>
 <translation id="2594999711683503743">Vyhledávejte na Googlu nebo zadejte adresu URL</translation>
@@ -2465,7 +2463,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2806372837663997957">Cílové zařízení sdílený soubor nepřijalo</translation>
 <translation id="2806891468525657116">Zkratka už existuje</translation>
 <translation id="2807517655263062534">Zde se zobrazují stažené soubory</translation>
-<translation id="2809586584051668049">a další (<ph name="NUMBER_ADDITIONAL_DISABLED" />)</translation>
 <translation id="2811205483104563968">Účty</translation>
 <translation id="2812049959647166806">Rozhraní Thunderbolt není podporováno</translation>
 <translation id="2812171980080389735">Uložené sítě a hesla k okamžitému připojení</translation>
@@ -3054,7 +3051,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3285465040399788513">K dokončení instalace nemáte dost místa v úložišti. Uvolněte místo a zkuste to znovu.</translation>
 <translation id="3285500645985761267">Povolit souvisejícím webům sledovat vaši aktivitu ve skupině</translation>
 <translation id="328571385944182268">Ukládat hesla?</translation>
-<translation id="3288047731229977326">Rozšíření spuštěná v režimu pro vývojáře mohou poškodit počítač. Pokud nejste vývojář, měli byste s ohledem na svou bezpečnost rozšíření spuštěná v tomto režimu deaktivovat.</translation>
 <translation id="3289668031376215426">Velká písmena automaticky</translation>
 <translation id="3289856944988573801">Chcete-li zkontrolovat dostupnost aktualizací, použijte síť Ethernet nebo Wi-Fi.</translation>
 <translation id="3289886661311231677">Témata, která nechcete sdílet s weby, můžete zablokovat. Chrome také automaticky maže témata starší než 4 týdny.</translation>
@@ -3094,7 +3090,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3313622045786997898">Hodnota podpisu certifikátu</translation>
 <translation id="3313950410573257029">Zkontrolovat připojení</translation>
 <translation id="3315158641124845231">Skrýt <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Zapnout režim čtečky</translation>
 <translation id="3317459757438853210">Oboustranně</translation>
 <translation id="3317521105713541270">Vytvořit skupiny</translation>
 <translation id="3317678681329786349">Kamera a mikrofon jsou blokovány</translation>
@@ -3417,6 +3412,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3569682580018832495">Web <ph name="ORIGIN" /> může číst následující soubory a složky</translation>
 <translation id="3571734092741541777">Nastavit</translation>
 <translation id="3575121482199441727">Povolit pro tento web</translation>
+<translation id="3575224072358507281">Shromažďovat IP adresy a výsledky měření sítě pro platformu Measurement Lab podle jejích zásad ochrany soukromí (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="3577487026101678864">Synchronizace souborů je zapnutá</translation>
 <translation id="3577745545227000795">Shromažďování dat o hardwaru systémem <ph name="DEVICE_OS" /></translation>
@@ -3499,7 +3495,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> %, zbývá <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Preferované jazyky</translation>
 <translation id="3637203148990213388">Další účty</translation>
-<translation id="3639220004740062347">Ukončit režim čtečky</translation>
 <translation id="3640214691812501263">Přidat aplikaci <ph name="EXTENSION_NAME" /> pro uživatele <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Ochraňte svá hesla před phishingem</translation>
 <translation id="3640613767643722554">Naučte Asistenta rozpoznávat váš hlas</translation>
@@ -4141,7 +4136,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4095483462103784441">Vytvořit novou skupinu karet</translation>
 <translation id="4095507791297118304">Primární obrazovka</translation>
 <translation id="4096421352214844684">Automaticky se připojit k hotspotu telefonu.</translation>
-<translation id="4096508467498758490">Deaktivovat rozšíření v režimu pro vývojáře</translation>
 <translation id="4096797685681362305">Zobrazeno minulý týden</translation>
 <translation id="4097406557126260163">Aplikace a rozšíření</translation>
 <translation id="409742781329613461">Tipy pro Chrome</translation>
@@ -5472,7 +5466,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5146896637028965135">Systémový hlas</translation>
 <translation id="5147097165869384760">Hledáte systémovou stránku operačního systému? Přejděte na adresu <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Doporučení</translation>
-<translation id="5147516217412920887">Ověřte kód podle pokynů na telefonu</translation>
 <translation id="5147992672778369947">Použijte doporučené heslo</translation>
 <translation id="5148285448107770349">Heslo musí obsahovat alespoň 8 znaků</translation>
 <translation id="5149602533174716626">&amp;Kopírovat snímek videa</translation>
@@ -6727,10 +6720,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6143186082490678276">Zobrazit nápovědu</translation>
 <translation id="6143366292569327983">Vyberte jazyk stránky, ze kterého chcete překládat</translation>
 <translation id="6144938890088808325">Pomozte nám Chromebooky zlepšit</translation>
-<translation id="6145480071052696715"><ph name="DEVICE_TYPE" /> můžete snadno nastavit pomocí telefonu. Svou síť Wi-Fi a účet Google můžete přidat bez ručního zadávání hesel.
-    <ph name="BR" />
-    <ph name="BR" />
-    Viditelné jako <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">Synchronizace nefunguje. Zkuste se přihlásit znovu.</translation>
 <translation id="6147020289383635445">Náhledu tisku se nezdařil.</translation>
 <translation id="6147253937684562370">Pokud profil chcete odemknout, přihlaste se pomocí hlavního e‑mailu účtu: <ph name="EMAIL" /></translation>
@@ -6955,7 +6944,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6310141306111263820">Profil eSIM karty se nepodařilo nainstalovat. Nápovědu vám poskytne operátor.</translation>
 <translation id="6311220991371174222">Chrome nelze spustit, protože při otevírání vašeho profilu došlo k chybě. Zkuste Chrome restartovat.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Bezpečnostní kontrola proběhla před jedním dnem}few{Bezpečnostní kontrola proběhla před {NUM_DAYS} dny}many{Bezpečnostní kontrola proběhla před {NUM_DAYS} dne}other{Bezpečnostní kontrola proběhla před {NUM_DAYS} dny}}</translation>
-<translation id="6312638141433622592">Nabízet zobrazení článků v režimu čtečky (pokud je podporováno)</translation>
 <translation id="6313950457058510656">Vypnout dynamický tethering</translation>
 <translation id="6314819609899340042">V tomto zařízení <ph name="IDS_SHORT_PRODUCT_NAME" /> jste úspěšně aktivovali funkce ladění.</translation>
 <translation id="6315170314923504164">Hlas</translation>
@@ -8042,6 +8030,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7180865173735832675">Personalizovat</translation>
 <translation id="7181117767881540376">&amp;Skrýt lištu záložek</translation>
 <translation id="7181329571386134105">Pokud chcete, aby uživatel <ph name="CHILD_NAME" /> v budoucnu mohl instalovat rozšíření, aniž byste je museli schvalovat, spusťte na svém zařízení aplikaci Family Link a aktualizujte nastavení Google Chrome uživatele <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Použít jiný účet</translation>
 <translation id="7182063559013288142">Okamžitý hotspot</translation>
 <translation id="7182791023900310535">Přesunout heslo</translation>
 <translation id="718427252411067142">Pokud ostatním v používání vašeho hesla budete chtít zabránit, otevřete aplikaci a své heslo změňte</translation>
@@ -8604,6 +8593,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7617263010641145920">Zapnout Obchod Play</translation>
 <translation id="7617648809369507487">Použít tišší zprávy</translation>
 <translation id="7619937211696316184">Je prováděna údržba</translation>
+<translation id="7620616707541471029">Pokud chcete pokračovat, vyberte účet</translation>
 <translation id="7621382409404463535">Systému se nepodařilo uložit konfiguraci zařízení.</translation>
 <translation id="7621480263311228380">Zakázáno používat uložené informace o vás</translation>
 <translation id="7621595347123595643">Pokud zapomenete heslo nebo PIN, místní data nebude možné obnovit.</translation>
@@ -9370,7 +9360,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8160775796528709999">Když v nastavení povolíte živý přepis, budou se u zvuku a videí zobrazovat titulky</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Vrátit se k procházení</translation>
-<translation id="8161293209665121583">Režim čtečky pro webové stránky</translation>
 <translation id="8161604891089629425">Obrysové písmo</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Přesunout kartu do nového okna}few{Přesunout karty do nového okna}many{Přesunout karty do nového okna}other{Přesunout karty do nového okna}}</translation>
 <translation id="8163152278172770963">Nepovolovat webům automaticky aktivovat režim obrazu v obraze</translation>

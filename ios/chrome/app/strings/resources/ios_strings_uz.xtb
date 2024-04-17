@@ -1043,6 +1043,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6363526231572697780">Kiritilmagan</translation>
 <translation id="6366190659675876144">Standart himoya</translation>
 <translation id="6366663624406569102">Chiqish va sinxronizatsiyani uzish</translation>
+<translation id="6368038301482806847">Qidiruv tizimini tanlang.</translation>
 <translation id="6374469231428023295">Qaytadan</translation>
 <translation id="6377118281273296434">Sayt xavfsizligi</translation>
 <translation id="6383719166112032471">Joylashuvni ochish…</translation>
@@ -1202,6 +1203,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7161230316646448869">Bukmarklar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
 <translation id="7162168282402939716">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan ochish</translation>
 <translation id="7173114856073700355">Sozlamalarni ochish</translation>
+<translation id="7186568385131859684">Brauzer tarixi va boshqa maʼlumotlaringiz Google xizmatlarida qanday ishlatilishini boshqaring</translation>
 <translation id="7189598951263744875">Ulashish…</translation>
 <translation id="719133302483559673">Qiziqish va sozlamalaringizni boshqaring</translation>
 <translation id="7192050974311852563">Yozib olishni boshlash</translation>
@@ -1245,6 +1247,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7438481509621345350">Endi yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bukmark “{title}” jildiga saqlandi}other{Bukmarklar “{title}” jildiga saqlandi}}</translation>
 <translation id="7454057999980797137">Hudud</translation>
+<translation id="7458706065921255639">Moslashtirish va xizmat ulash</translation>
 <translation id="745899714366929493">Butun kun</translation>
 <translation id="7459628154744868585">Kuchaytirilgan himoya yoniq</translation>
 <translation id="7465351360025415755">Oʻzingizga muhim kontentni oling</translation>

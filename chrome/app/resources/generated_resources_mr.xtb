@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">लिंक पत्ता कॉपी करा</translation>
 <translation id="1085064499066015002">सर्व साइटसाठी नेहमी सुरू</translation>
 <translation id="1085697365578766383">व्हर्च्युअल मशीन सुरू करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
-<translation id="1088659085457112967">वाचक मोडमध्ये एंटर करा</translation>
 <translation id="1090126737595388931">कोणतेही पार्श्वभूमी ॲप्लिकेशन चालत नाहीत</translation>
 <translation id="1090541560108055381">पेअर करण्यापूर्वी, हा कोड दोन्ही डिव्हाइसवर समान असल्याची खात्री करा</translation>
 <translation id="1091767800771861448">वगळण्यासाठी ESCAPE प्रेस करा (केवळ अनधिकृत नसलेल्या बिल्डसाठी).</translation>
@@ -1122,6 +1121,7 @@
 <translation id="1823768272150895732">फॉंट</translation>
 <translation id="1823781806707127806">व्यवस्थापित प्रोफाइलमध्ये आधीपासून असलेला ब्राउझिंग डेटा जोडा</translation>
 <translation id="18245044880483936">बॅकअप डेटा तुमच्या मुलाच्या ड्राइव्ह स्टोरेजच्या कोट्यामध्ये मोजला जाणार नाही.</translation>
+<translation id="1824870205483790748">बुकमार्क बारवर गट पिन करा</translation>
 <translation id="1825073796163165618">लिंक सुरू करा</translation>
 <translation id="1825565032302550710">पोर्ट १०२४ आणि ६५५३५ यांच्या मधले असणे आवश्यक आहे</translation>
 <translation id="182577151972096764">अलीकडे पाहिलेल्या पाककृती</translation>
@@ -1144,6 +1144,7 @@
 <translation id="1834503245783133039">डाउनलोड करता आले नाही: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux अपग्रेड करत आहे</translation>
 <translation id="1835612721186505600">कॅमेराची परवानगी असलेल्या अ‍ॅप्स आणि वेबसाइटच्या अ‍ॅक्सेसला अनुमती द्या</translation>
+<translation id="1837441256780906162">Microsoft OneDrive ने विनंती नाकारली आहे. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="1838374766361614909">शोध साफ करा</translation>
 <translation id="1839021455997460752">तुमचा ईमेल अ‍ॅड्रेस</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" /> मध्ये दाखवा</translation>
@@ -1646,6 +1647,7 @@
 <translation id="2204387456724731099">ही निवड भाषांतरित करता आली नाही</translation>
 <translation id="2207116775853792104">हे एक्स्टेंशन ठेवा</translation>
 <translation id="2210462644007531147">इंस्टॉलेशन पूर्ण करता आले नाही</translation>
+<translation id="2211043920024403606">प्रोफाइल माहिती</translation>
 <translation id="2211245494465528624">सिंकचे पर्याय व्यवस्थापित करा</translation>
 <translation id="2214018885812055163">शेअर केलेली फोल्डर</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;एक ओळ दाखवलेली नाही&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ओळी दाखवलेल्या नाहीत&gt;}}</translation>
@@ -2176,7 +2178,6 @@
 <translation id="2587922766792651800">वेळ संपली</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> कडील डिव्हाइस</translation>
 <translation id="2589658397149952302">Drive मधील फाइल कधीही दाखवू नका</translation>
-<translation id="25899519884572181">वाचक मोडमधून बाहेर पडा</translation>
 <translation id="2593499352046705383">सुरुवात करण्यापूर्वी, तुम्ही तुमच्या सर्व डेटाचा बॅकअप घेतला आहे याची खात्री करा. <ph name="DEVICE_OS" /> हे इंस्टॉल केल्याने, तुमची हार्ड ड्राइव्ह ओव्हरराइट होईल. g.co/flex/InstallGuide येथे अधिक जाणून घ्या.</translation>
 <translation id="2594832159966169099">V8 सुरक्षा व्यवस्थापित करणे</translation>
 <translation id="2594999711683503743">Google वर शोधा किंवा URL टाइप करा</translation>
@@ -2477,7 +2478,6 @@
 <translation id="2806372837663997957">तुम्ही ज्या डिव्हाइससह शेअर करण्याचा प्रयत्न करत आहात त्याने स्वीकारले नाही</translation>
 <translation id="2806891468525657116">शॉर्टकट आधीच अस्तित्वात आहे</translation>
 <translation id="2807517655263062534">तुम्ही डाउनलोड केलेल्या फाइल येथे दिसतात</translation>
-<translation id="2809586584051668049">आणि <ph name="NUMBER_ADDITIONAL_DISABLED" /> अधिक</translation>
 <translation id="2811205483104563968">खाती</translation>
 <translation id="2812049959647166806">थंडरबोल्टला सपोर्ट करत नाही</translation>
 <translation id="2812171980080389735">तुम्हाला तात्काळ कनेक्ट करता येण्यासाठी नेटवर्क आणि पासवर्ड सेव्ह केले</translation>
@@ -2869,6 +2869,11 @@
 <translation id="311394601889664316">साइटना तुमच्या डिव्हाइसवरील फाइल किंवा फोल्डर संपादित करण्याची अनुमती देऊ नका</translation>
 <translation id="3115147772012638511">कॅशेसाठी प्रतीक्षा करत आहे...</translation>
 <translation id="3115580024857770654">सर्व कोलॅप्‍स करा</translation>
+<translation id="3115728370128632723">वेबने तुमच्यासाठी सर्वोत्तम काम करणे याचा अर्थ काय आहे:
+      &lt;ul&gt;
+        &lt;li&gt;तुम्ही ब्राउझ करत असताना तुम्हाला सुरक्षित ठेवणे, आणि&lt;/li&gt;
+         &lt;li&gt;वेब सुरक्षित, मुक्त, जलद आणि विनामूल्य ठेवणाऱ्या भरभराटीच्या व्यवस्थेला सपोर्ट करणे&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="3115743155098198207">Google खाते ची भाषा व्यवस्थापित करा</translation>
 <translation id="3117362587799608430">डॉक पूर्ण कंपॅटिबल नाहीये</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ला <ph name="ATTACHMENTS" /> पाठवता आला नाही}other{<ph name="DEVICE_NAME" /> ला <ph name="ATTACHMENTS" /> पाठवता आले नाहीत}}</translation>
@@ -3066,7 +3071,6 @@
 <translation id="3285465040399788513">सेटअप पूर्ण करण्यासाठी डिव्हाइस स्टोरेज पुरेसे नाही. जागा मोकळी करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3285500645985761267">संबंधित साइटना गटामधील तुमच्या अ‍ॅक्टिव्हिटी पाहण्याची अनुमती द्या</translation>
 <translation id="328571385944182268">तुमचे पासवर्ड सेव्ह करायचे आहेत का?</translation>
-<translation id="3288047731229977326">डेव्हलपर मोडमध्‍ये चालणारे विस्‍तार तुमच्या कॉंप्युटरास हानी पोहचवू शकतात. तुम्ही डेव्हलपर नसल्‍यास, सुरक्षित राहाण्‍यासाठी डेव्हलपर मोडमध्‍ये चालणारे हे विस्‍तार तुम्ही अक्षम करावे.</translation>
 <translation id="3289668031376215426">ऑटो-कॅपिटलायझेशन</translation>
 <translation id="3289856944988573801">अपडेट तपासण्यासाठी, कृपया इथरनेट किंवा वाय-फाय वापरा.</translation>
 <translation id="3289886661311231677">तुम्हाला साइटसोबत शेअर करायचे नसलेले विषय तुम्ही ब्लॉक करू शकता. Chrome तुमचे चार आठवड्यांपेक्षा जुने विषयदेखील ऑटो-डिलीट करते.</translation>
@@ -3106,7 +3110,6 @@
 <translation id="3313622045786997898">सर्टिफिकेट स्वाक्षरी मूल्य</translation>
 <translation id="3313950410573257029">कनेक्शन तपासा</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> लपवा</translation>
-<translation id="3315442055907669208">वाचक मोडमध्ये एंटर करा</translation>
 <translation id="3317459757438853210">दोन्ही बाजूंनी</translation>
 <translation id="3317521105713541270">गट तयार करा</translation>
 <translation id="3317678681329786349">कॅमेरा आणि मायक्रोफोन ब्लॉक केले आहेत</translation>
@@ -3429,6 +3432,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ला पुढील फाइल आणि फोल्डर पाहता येतात</translation>
 <translation id="3571734092741541777">सेट अप</translation>
 <translation id="3575121482199441727">या साइटला अनुमती द्या</translation>
+<translation id="3575224072358507281">Measurement Lab साठी, त्यांचे गोपनीयता धोरण (measurementlab.net/privacy) यानुसार आयपी अ‍ॅड्रेस आणि नेटवर्क मापनासंबंधित परिणाम गोळा करा</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3577487026101678864">फाइल सिंक सुरू आहे</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> हार्डवेअर डेटा संग्रह</translation>
@@ -3511,7 +3515,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> शिल्लक</translation>
 <translation id="3636940436873918441">प्राधान्य दिलेल्या भाषा</translation>
 <translation id="3637203148990213388">अतिरिक्त खाती</translation>
-<translation id="3639220004740062347">वाचक मोडमधून बाहेर पडा</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> साठी "<ph name="EXTENSION_NAME" />" जोडायचे?</translation>
 <translation id="3640347231390550691">फिशिंगपासून तुमच्या पासवर्डचे संरक्षण करा</translation>
 <translation id="3640613767643722554">तुमच्या असिस्टंटला तुमचा आवाज ओळखण्यास शिकवा</translation>
@@ -3694,6 +3697,7 @@
 <translation id="3760460896538743390">&amp;पार्श्वभूमी पृष्ठाचे निरीक्षण करा</translation>
 <translation id="37613671848467444">&amp;गुप्त विंडोमध्ये उघडा</translation>
 <translation id="3761556954875533505">साइटला फाइल संपादित करू द्यायच्या?</translation>
+<translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> साठी आणखी कृती, CVC सेव्ह केला आहे</translation>
 <translation id="3763433740586298940">तुम्हाला नको असलेल्या साइट तुम्ही ब्लॉक करू शकता. Chrome हे ३० दिवसांपेक्षा जुन्या असलेल्या साइटदेखील सूचीमधून ऑटो-डिलीट करते.</translation>
 <translation id="3763549179847864476">गोपनीयता मार्गदर्शक यावर परत जा</translation>
 <translation id="3764314093345384080">तपशीलवार बिल्ड माहिती</translation>
@@ -4152,7 +4156,6 @@
 <translation id="4095483462103784441">नवीन टॅब गट तयार करा</translation>
 <translation id="4095507791297118304">प्राथमिक डिस्प्ले</translation>
 <translation id="4096421352214844684">तुमच्या फोनच्या हॉटस्पॉटशी आपोआप कनेक्ट करणे.</translation>
-<translation id="4096508467498758490">डेव्हलपर मोड एक्स्टेंशन अक्षम करा</translation>
 <translation id="4096797685681362305">मागील आठवड्यामध्ये पाहिला होता</translation>
 <translation id="4097406557126260163">अ‍ॅप्स आणि एक्स्टेंशन</translation>
 <translation id="409742781329613461">Chrome साठी टिपा</translation>
@@ -5484,7 +5487,6 @@
 <translation id="5146896637028965135">सिस्टीम आवाज</translation>
 <translation id="5147097165869384760">OS सिस्टीम पेज शोधत आहात का? <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /> ला भेट द्या.</translation>
 <translation id="5147113439721488265">शिफारस</translation>
-<translation id="5147516217412920887">कोडची पडताळणी करण्यासाठी तुमच्या फोनवरील सूचना फॉलो करा</translation>
 <translation id="5147992672778369947">शिफारस केलेले पासवर्ड वापरा</translation>
 <translation id="5148285448107770349">पासवर्ड किमान ८ वर्णांचा असावा</translation>
 <translation id="5149602533174716626">व्हिडिओ फ्रेम कॉपी करा</translation>
@@ -5721,6 +5723,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (उजवे)</translation>
 <translation id="534449933710420173">निनावी फोल्डर</translation>
 <translation id="5345916423802287046">तुम्ही साइन इन केल्यानंतर अ‍ॅप सुरू करा</translation>
+<translation id="5347920333985823270">Chrome हे विनामूल्य वेबला सपोर्ट करते</translation>
 <translation id="5350293332385664455">Google Assistant बंद करा</translation>
 <translation id="535123479159372765">दुसर्‍या डिव्हाइसवरून कॉपी केलेला मजकूर</translation>
 <translation id="5352033265844765294">वेळ स्टॅम्पिंग</translation>
@@ -5913,6 +5916,7 @@
 <translation id="5493792505296048976">स्क्रीन सुरू</translation>
 <translation id="5494016731375030300">अलीकडे बंद केलेले टॅब</translation>
 <translation id="5494362494988149300">&amp;पूर्ण झाल्यानंतर उघडा</translation>
+<translation id="5494843939447324326">Chrome तुम्हाला निवडू देते</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
 <translation id="5495466433285976480">तुम्हाला पुढील रीस्टार्टनंतर हे सर्व स्थानिक वापरकर्ते, फाइल, डेटा आणि अन्य सेटिंग्ज काढेल. सर्व वापरकर्त्यांना पुन्हा साइन इन करण्याची आवश्यकता असेल.</translation>
 <translation id="5495597166260341369">डिस्प्ले सुरू ठेवा</translation>
@@ -5969,6 +5973,12 @@
 <translation id="5542132724887566711">प्रोफाइल</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> वरील कुकीज ब्‍लॉक केल्‍या आहेत</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> शी कनेक्ट करत आहे</translation>
+<translation id="5543901591855628053">बऱ्याच ऑनलाइन व्यवसायांसाठी जाहिराती महत्त्वाच्या असतात. त्या ऑनलाइन आशय विनामूल्य ठेवण्यात मदत करतात, ज्यामुळे कोणीही आशय ॲक्सेस करू शकते याची खात्री करण्यात मदत होते. Chrome हे तुमच्या गोपनीयतेचे संरक्षण करताना साइटने तुम्हाला पर्सनलाइझ केलेल्या जाहिराती दाखवू देण्यासाठी मार्ग विकसित करते.  छान, जाहिरातीमुळे वेबवरील प्रत्येकाला फायदा होतो, कारण तुम्ही जाहिरात पाहता, तेव्हा पुढील गोष्टी होऊ शकतात:
+      &lt;ul&gt;
+        &lt;li&gt;तुम्हाला काहीतरी नवीन किंवा मनोरंजक आढळू शकते&lt;/li&gt;
+        &lt;li&gt;जाहिरातदारांना नवीन ग्राहक मिळू शकतो&lt;/li&gt;
+        &lt;li&gt;तुम्ही भेट देता ती साइट जाहिरात होस्ट करून आणखी कमाई करू शकते&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="5543983818738093899">स्थिती तपासत आहे...</translation>
 <translation id="5544482392629385159"><ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /> पैकी <ph name="DEVICE_INDEX" /> डिव्हाइस</translation>
 <translation id="554517701842997186">रेंडरर</translation>
@@ -6067,6 +6077,7 @@
 <translation id="5616571005307953937">सर्वात जुने</translation>
 <translation id="5616726534702877126">आकार आरक्षित करा</translation>
 <translation id="561698261642843490">Firefox बंद करा</translation>
+<translation id="5616991717083739666">बुकमार्क बारवर गट पिन करा</translation>
 <translation id="5620163320393916465">सेव्ह केलेले पासवर्ड नाहीत</translation>
 <translation id="5620540760831960151">या सूचीवर <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
           , <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" />
@@ -6667,6 +6678,12 @@
 <translation id="6082877069782862752">की मॅपिंग</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - नाव नसलेल्या गटाचा भाग आहे</translation>
 <translation id="6086004606538989567">तुम्ही पडताळणी केलेल्या खात्याला हे डिव्हाइस अ‍ॅक्सेस करण्याची परवानगी नाही.</translation>
+<translation id="6086366524552602071">तुम्ही तुम्हाला हवे तसे Chrome कस्टमाइझ करू शकता:
+      &lt;ul&gt;
+        &lt;li&gt;&lt;em&gt;Google चे सर्वोत्तम&lt;/em&gt;, ज्यांना वापरायचे आहे त्यांच्यासाठी. उदाहरणार्थ, तुम्ही Chrome चे डीफॉल्ट शोध इंजीन म्हणून Google Search निवडू शकता आणि तुमचे सर्व पासवर्ड कोणत्याही डिव्हाइसवर मिळवण्यासाठी Google Password Manager वापरू शकता. &lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;अर्थपूर्ण निवड&lt;/em&gt;: तुम्हाला अर्थपूर्ण निर्णय घेण्यात मदत व्हावी यासाठी Chrome हे तुम्हाला सेटिंग्जसह निवड आणि नियंत्रण व माहिती देते.&lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;एक्स्टेंशन&lt;/em&gt;: तुम्ही Chrome वेब स्टोअर मधील १,००,००० एक्स्टेंशनसह Chrome ची कार्यक्षमता वाढवू शकता.&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">तुमच्या ॲडमिनिस्ट्रेटरद्वारे इंस्टॉल केले</translation>
 <translation id="6087746524533454243">ब्राउझरच्या पेजविषयी माहिती शोधत आहात का? भेट द्या</translation>
 <translation id="6087960857463881712">छान चेहरा</translation>
@@ -6743,10 +6760,6 @@
 <translation id="6143186082490678276">मदत मिळवा</translation>
 <translation id="6143366292569327983">ज्यातून भाषांतर करायचे आहे ती पेज भाषा निवडा</translation>
 <translation id="6144938890088808325">Chromebooks सुधारण्यात आम्हाला मदत करा</translation>
-<translation id="6145480071052696715">तुमचा फोन वापरून तुमचे <ph name="DEVICE_TYPE" /> सहजपणे सेट करा. तुम्ही तुमचे पासवर्ड मॅन्युअली एंटर न करता तुमचा वाय-फाय आणि Google खाते जोडू शकता.
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> म्हणून दृश्यमान आहे...</translation>
 <translation id="6146409560350811147">सिंक काम करत नाही. पुन्हा साइन इन करून पहा.</translation>
 <translation id="6147020289383635445">प्रिंट पूर्वावलोकन अयशस्वी.</translation>
 <translation id="6147253937684562370">प्रोफाइल अनलॉक करण्यासाठी तुमच्या मुख्य खात्याचा ईमेल वापरून साइन इन करा: <ph name="EMAIL" /></translation>
@@ -6765,6 +6778,7 @@
 <translation id="6154240335466762404">सर्व पोर्ट काढून टाका</translation>
 <translation id="615436196126345398">प्रोटोकॉल</translation>
 <translation id="6154739047827675957">OneDrive सेटअप करता आले नाही</translation>
+<translation id="6154820449290823443">या Chromebook वर अ‍ॅक्सेस व्यवस्थापित करा आणि ॲप्स ब्लॉक करा.</translation>
 <translation id="6155141482566063812">बॅकग्राउंड टॅब तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="6156323911414505561">बुकमार्क बार दर्शवा</translation>
 <translation id="6156863943908443225">स्क्रिप्ट कॅशे </translation>
@@ -6854,6 +6868,7 @@
 <translation id="6226777517901268232">प्रायव्हेट की फाईल (पर्यायी)</translation>
 <translation id="6227002569366039565">या बबलवर फोकस करण्यासाठी |<ph name="ACCELERATOR" />| प्रेस करा, त्यानंतर तो ज्या घटकाकडे निर्देश करत आहे त्यावर फोकस करण्याकरिता ते पुन्हा प्रेस करा.</translation>
 <translation id="6227280783235722609">एक्स्टेंशन</translation>
+<translation id="622902691730729894">बुकमार्क बार वरून गट अनपिन करा</translation>
 <translation id="6229062790325126537">ApnMigrator रीसेट करा</translation>
 <translation id="6229849828796482487">वाय-फाय नेटवर्क डिस्‍कनेक्‍ट करा</translation>
 <translation id="6231782223312638214">सूचित</translation>
@@ -6971,7 +6986,6 @@
 <translation id="6310141306111263820">eSIM प्रोफाइल इंस्टॉल करता आली नाही. कृपया मदतीसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="6311220991371174222">तुमचे प्रोफाइल उघडताना काहीतरी चूक झाल्याने Chrome सुरू करू शकत नाही. Chrome रीस्टार्ट करून पहा.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{सुरक्षा तपासणी एका दिवसापूर्वी रन केली गेली}other{सुरक्षा तपासणी {NUM_DAYS} दिवसांपूर्वी रन केली गेली}}</translation>
-<translation id="6312638141433622592">सपोर्ट असल्यास, वाचक मोडमध्ये लेख दाखवण्‍याची ऑफर द्या</translation>
 <translation id="6313950457058510656">इंस्टंट टेदरिंग बंद करा</translation>
 <translation id="6314819609899340042">तुम्ही या <ph name="IDS_SHORT_PRODUCT_NAME" /> डिव्‍हाइसवर यशस्‍वीरित्या डीबग वैशिष्‍ट्ये सक्षम केली आहेत.</translation>
 <translation id="6315170314923504164">व्हॉइस</translation>
@@ -7686,6 +7700,7 @@
 <translation id="686831807558000905">साइन इन करू नका</translation>
 <translation id="686839242150793617">चित्रात-चित्र यामध्ये आपोआप प्रवेश करण्याची अनुमती आहे</translation>
 <translation id="6868934826811377550">तपशील पहा</translation>
+<translation id="6869093950561306644">हे डिव्हाइस सुरक्षितपणे वापरले जाऊ शकते याची खात्री करण्यासाठी, तुमच्या संस्थेला त्याची ऑपरेटिंग सिस्टीम, ब्राउझर आणि सेटिंग्ज व डिव्हाइसवर कोणते सॉफ्टवेअर इंस्टॉल केले आहे ही माहिती पाहण्याची आवश्यकता असू शकते.</translation>
 <translation id="6871644448911473373">OCSP प्रतिसादकर्ता: <ph name="LOCATION" /></translation>
 <translation id="6873571253135628430">साइटच्या परवानग्या बदला</translation>
 <translation id="6876155724392614295">सायकल</translation>
@@ -8054,6 +8069,7 @@
 <translation id="7180865173735832675">कस्टमाइझ करा</translation>
 <translation id="7181117767881540376">&amp;बुकमार्क बार लपवा</translation>
 <translation id="7181329571386134105"><ph name="CHILD_NAME" /> यांना तुमच्या मंजुरीशिवाय भविष्यामधील एक्स्टेंशन इंस्टॉल करण्याची अनुमती देण्यासाठी, तुमच्या डिव्हाइसवर Family Link ॲप उघडा आणि <ph name="CHILD_NAME" /> यांची Google Chrome सेटिंग्ज अपडेट करा.</translation>
+<translation id="7182051712900867547">वेगळे खाते वापरा</translation>
 <translation id="7182063559013288142">इंस्टंट हॉटस्पॉट</translation>
 <translation id="7182791023900310535">तुमचा पासवर्ड हलवा</translation>
 <translation id="718427252411067142">तुमचा पासवर्ड वापरण्यापासून इतरांना थांबवण्यासाठी, तुमचा पासवर्ड बदलण्यासाठी ॲप उघडा</translation>
@@ -8617,6 +8633,7 @@
 <translation id="7617263010641145920">Play स्टोअर सुरू करा</translation>
 <translation id="7617648809369507487">व्यत्यय न आणणारे मेसेजिंग वापरा</translation>
 <translation id="7619937211696316184">देखभाल केली गेली आहे</translation>
+<translation id="7620616707541471029">पुढे सुरू ठेवण्यासाठी खाते निवडा</translation>
 <translation id="7621382409404463535">सिस्टमला डिव्हाइस काँफिगरेशन सेव्ह करता आले नाही.</translation>
 <translation id="7621480263311228380">वापरकर्त्याने तुमच्याबद्दल सेव्ह केलेली माहिती वापरण्याची अनुमती दिलेली नाही</translation>
 <translation id="7621595347123595643">तुम्ही तुमचा पासवर्ड किंवा पिन विसरल्यास, तुम्हाला स्थानिक डेटा रिकव्‍हर करता येणार नाही.</translation>
@@ -9381,7 +9398,6 @@
 <translation id="8160775796528709999">सेटिंग्जमध्ये लाइव्ह कॅप्शन सुरू करून तुमच्या ऑडिओ आणि व्हिडिओसाठी कॅप्शन मिळवा</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">ब्राउझिंग पुन्‍हा सुरू करा</translation>
-<translation id="8161293209665121583">वेब पेजसाठी वाचक मोड</translation>
 <translation id="8161604891089629425">आउटलाइन फॉंट</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{टॅब नवीन विंडो वर हलवा}other{टॅब नवीन विंडो वर हलवा}}</translation>
 <translation id="8163152278172770963">साइटना चित्रात-चित्र यामध्ये आपोआप प्रवेश करण्याची अनुमती देऊ नका</translation>
@@ -10268,6 +10284,7 @@
 <translation id="8838601485495657486">अपारदर्शक</translation>
 <translation id="8838770651474809439">हॅमबर्गर</translation>
 <translation id="8838778928843281408">फोन व्यवस्थापित करा</translation>
+<translation id="8838841425230629509">बुकमार्क बार वरून गट अनपिन करा</translation>
 <translation id="883924185304953854">इमेजनुसार शोधा</translation>
 <translation id="8841786407272321022">पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तुमच्या Google खाते मध्ये नवीन पासवर्ड सेव्ह करण्यासाठी, Google Play सेवा अपडेट करा.</translation>
 <translation id="8841843049738266382">अनुमती दिलेल्या सूची मधील वापरकर्ते पहा आणि बदला</translation>
@@ -10276,6 +10293,7 @@
 <translation id="8846132060409673887">या कॉंप्युटरची उत्पादक आणि मॉडेल माहिती वाचा</translation>
 <translation id="8846163936679269230">eSIM प्रोफाइल रीसेट करा</translation>
 <translation id="8846239054091760429">मोनो ऑडिओ, स्टार्टअप, लाइव्ह कॅप्शन आणि बरेच काही</translation>
+<translation id="8847459600640933659">जाहिरात कमाई Google ची बहुतांश विनामूल्य उत्पादने आणि सेवांनादेखील सपोर्ट करते, जसे की Chrome, Gmail, Maps व YouTube.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">लपवलेली</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> हे नाव असलेली eSIM प्रोफाइल काढून टाकणे रद्द करा</translation>

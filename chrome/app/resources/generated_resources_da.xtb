@@ -127,7 +127,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1084824384139382525">Kopier linkadr&amp;esse</translation>
 <translation id="1085064499066015002">Altid på alle websites</translation>
 <translation id="1085697365578766383">Der opstod en fejl ved opstarten af den virtuelle maskine. Prøv igen.</translation>
-<translation id="1088659085457112967">Start Læser-tilstand</translation>
 <translation id="1090126737595388931">Ingen apps kører i baggrunden</translation>
 <translation id="1090541560108055381">Inden du parrer, skal du sørge for, at koden er den samme på begge enheder</translation>
 <translation id="1091767800771861448">Tryk på ESC for at springe over (kun uofficielle builds).</translation>
@@ -2178,7 +2177,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2587922766792651800">Der opstod timeout</translation>
 <translation id="2588636910004461974">Enheder fra <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Vis aldrig Drev-filer</translation>
-<translation id="25899519884572181">Afslut Læser-tilstand</translation>
 <translation id="2593499352046705383">Før du går i gang, skal du sørge for, at du har sikkerhedskopieret dine data. Hvis du installerer <ph name="DEVICE_OS" />, overskrives din harddisk. Få flere oplysninger på g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Administrer V8-sikkerhed</translation>
 <translation id="2594999711683503743">Søg på Google, eller angiv webadressen</translation>
@@ -2479,7 +2477,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2806372837663997957">Den enhed, du forsøger at dele med, accepterede ikke</translation>
 <translation id="2806891468525657116">Genvejen findes allerede</translation>
 <translation id="2807517655263062534">Dine downloadede filer vises her</translation>
-<translation id="2809586584051668049">og <ph name="NUMBER_ADDITIONAL_DISABLED" /> mere</translation>
 <translation id="2811205483104563968">Konti</translation>
 <translation id="2812049959647166806">Thunderbolt understøttes ikke</translation>
 <translation id="2812171980080389735">Gemte netværk og adgangskoder, så du kan oprette forbindelse med det samme</translation>
@@ -3068,7 +3065,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3285465040399788513">Der er ikke nok ledig lagerplads på enheden til at fuldføre konfigurationen. Frigør plads, og prøv igen.</translation>
 <translation id="3285500645985761267">Giv relaterede websites tilladelse til at se din aktivitet i gruppen</translation>
 <translation id="328571385944182268">Vil du gemme dine adgangskoder?</translation>
-<translation id="3288047731229977326">Udvidelser, der kører i udviklertilstand, kan skade din computer. Hvis du ikke er udvikler, skal du deaktivere udvidelserne, der kører i udviklertilstand, af hensyn til sikkerheden.</translation>
 <translation id="3289668031376215426">Skriv automatisk med stort</translation>
 <translation id="3289856944988573801">Du kan søge efter opdateringer via Ethernet eller Wi-Fi.</translation>
 <translation id="3289886661311231677">Du kan blokere de emner, som du ikke vil have skal deles med websites. Chrome sletter også automatisk dine emner, som er mere end 4 uger gamle.</translation>
@@ -3108,7 +3104,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3313622045786997898">Signaturværdi for certifikat</translation>
 <translation id="3313950410573257029">Tjek forbindelse</translation>
 <translation id="3315158641124845231">Skjul <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Start Læser-tilstand</translation>
 <translation id="3317459757438853210">Tosidet</translation>
 <translation id="3317521105713541270">Opret grupper</translation>
 <translation id="3317678681329786349">Der er blokeret for adgang til kameraet og mikrofonen</translation>
@@ -3431,6 +3426,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan se følgende filer og mapper</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
 <translation id="3575121482199441727">Tillad for dette website</translation>
+<translation id="3575224072358507281">Indhente oplysninger om IP-adresser og netværksmålinger til Measurement Lab i henhold til deres privatlivspolitik (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Der opstod en fejl. Prøv igen.</translation>
 <translation id="3577487026101678864">Filsynkronisering er aktiveret</translation>
 <translation id="3577745545227000795">Indsamling af hardwaredata for <ph name="DEVICE_OS" /></translation>
@@ -3513,7 +3509,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> tilbage</translation>
 <translation id="3636940436873918441">Foretrukne sprog</translation>
 <translation id="3637203148990213388">Ekstra konti</translation>
-<translation id="3639220004740062347">Afslut Læser-tilstand</translation>
 <translation id="3640214691812501263">Vil du tilføje "<ph name="EXTENSION_NAME" />" for <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Beskyt dine adgangskoder mod phishing</translation>
 <translation id="3640613767643722554">Lær din assistent at genkende din stemme</translation>
@@ -4156,7 +4151,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4095483462103784441">Opret ny fanegruppe</translation>
 <translation id="4095507791297118304">Primær skærm</translation>
 <translation id="4096421352214844684">Oprette automatisk forbindelse til din telefons hotspot.</translation>
-<translation id="4096508467498758490">Deaktiver udvidelser, der kører i udviklertilstand</translation>
 <translation id="4096797685681362305">Set inden for den seneste uge</translation>
 <translation id="4097406557126260163">Apps og udvidelser</translation>
 <translation id="409742781329613461">Tips til Chrome</translation>
@@ -5488,7 +5482,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5146896637028965135">Systemstemme</translation>
 <translation id="5147097165869384760">Leder du efter OS-systemsiden? Gå til <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Anbefaling</translation>
-<translation id="5147516217412920887">Følg vejledningen på din telefon for at verificere koden</translation>
 <translation id="5147992672778369947">Brug anbefalet adgangskode</translation>
 <translation id="5148285448107770349">Adgangskoden skal bestå af mindst 8 tegn</translation>
 <translation id="5149602533174716626">Kopiér videoramme</translation>
@@ -6746,10 +6739,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6143186082490678276">Få hjælp</translation>
 <translation id="6143366292569327983">Vælg det sidesprog, der skal oversættes fra</translation>
 <translation id="6144938890088808325">Hjælp os med at forbedre Chromebooks</translation>
-<translation id="6145480071052696715">Konfigurer nemt din <ph name="DEVICE_TYPE" /> ved hjælp af din telefon. Du kan tilføje dit Wi-Fi-netværk og din Google-konto uden at indtaste dine adgangskoder manuelt.
-    <ph name="BR" />
-    <ph name="BR" />
-    Synlig som <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">Der kunne ikke synkroniseres. Prøv at logge ind igen.</translation>
 <translation id="6147020289383635445">Visning af udskrift mislykkedes.</translation>
 <translation id="6147253937684562370">Hvis du vil låse profilen op, skal du logge ind med kontoens primære mailadresse: <ph name="EMAIL" /></translation>
@@ -6974,7 +6963,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6310141306111263820">eSIM-profilen kunne ikke installeres. Kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="6311220991371174222">Chrome kan ikke startes, da der gik noget galt ved åbningen af din profil. Prøv at genstarte Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Sikkerhedstjekket blev udført for 1 dag siden}one{Sikkerhedstjekket blev udført for {NUM_DAYS} dag siden}other{Sikkerhedstjekket blev udført for {NUM_DAYS} dage siden}}</translation>
-<translation id="6312638141433622592">Tilbyd at vise artikler i Læser-tilstand, når dette understøttes</translation>
 <translation id="6313950457058510656">Deaktiver Automatisk netdeling</translation>
 <translation id="6314819609899340042">Du har aktiveret fejlretningsfunktioner på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enhed.</translation>
 <translation id="6315170314923504164">Stemme</translation>
@@ -8059,6 +8047,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7180865173735832675">Tilpas</translation>
 <translation id="7181117767881540376">Skjul bogmærkelinjen</translation>
 <translation id="7181329571386134105">Hvis du vil give <ph name="CHILD_NAME" /> tilladelse til at installere fremtidige udvidelser uden din godkendelse, skal du åbne Family Link-appen på din enhed og opdatere Google Chrome-indstillingerne for <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Brug en anden konto</translation>
 <translation id="7182063559013288142">Automatisk hotspot</translation>
 <translation id="7182791023900310535">Flyt din adgangskode</translation>
 <translation id="718427252411067142">Du kan forhindre andre i at bruge din adgangskode ved at åbne appen og ændre din adgangskode</translation>
@@ -8622,6 +8611,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7617263010641145920">Slå Play Butik til</translation>
 <translation id="7617648809369507487">Få lydløse meddelelser</translation>
 <translation id="7619937211696316184">Vedligeholdelse er fuldført</translation>
+<translation id="7620616707541471029">Vælg en konto for at fortsætte</translation>
 <translation id="7621382409404463535">Systemet kunne ikke gemme enhedskonfigurationen.</translation>
 <translation id="7621480263311228380">Har ikke tilladelse til at bruge oplysninger, der er gemt om dig</translation>
 <translation id="7621595347123595643">Du kan ikke gendanne lokale data, hvis du glemmer din adgangskode eller pinkode.</translation>
@@ -9387,7 +9377,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8160775796528709999">Få undertekster til dit lyd- og videoindhold ved at aktivere Livetekstning i indstillingerne</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Genoptag søgning</translation>
-<translation id="8161293209665121583">Læser-tilstand for websider</translation>
 <translation id="8161604891089629425">Skrifttype med kontur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flyt fanen til et nyt vindue}one{Flyt fanen til et nyt vindue}other{Flyt fanerne til et nyt vindue}}</translation>
 <translation id="8163152278172770963">Tillad ikke, at websites automatisk åbner integreret billede</translation>

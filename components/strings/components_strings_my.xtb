@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">စာရေးသူ-</translation>
 <translation id="1247030632403369975">အလူမီနီယံ</translation>
 <translation id="1252209483516427155">အပေါ်ရုံ</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> ဖြင့် ပေးချေရန်</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />၊ <ph name="TYPE_2" /> (စင့်ခ်လုပ်ထားသည်)</translation>
 <translation id="1255086252236620440">အစားအသောက် မွှေစက်</translation>
 <translation id="1256368399071562588">&lt;p&gt;သင်သည် ဝဘ်ဆိုက်သို့ ဝင်ကြည့်သည့်အခါ ၎င်းက ပွင့်မလာလျှင် အောက်ပါ အမှားရှာဖွေဖြေရှင်းခြင်း အဆင့်များဖြင့် အမှားအယွင်းများကို ဖြေရှင်းကြည့်ပါ−&lt;/p&gt;
@@ -340,6 +341,7 @@
 <translation id="160851722280695521">Chrome တွင် Dino Run ဂိမ်းကစားရန်</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">နှစ်ခုမြောက်အလိပ်</translation>
+<translation id="1611854593425834707">ကာစ်လုပ်ရန်အတွက် အနီးရှိ စက်စာရင်း</translation>
 <translation id="1612199629998703524">အကြောင်းအရာများ စီမံရန်</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> အတွက် သုံးခွင့်ကို ရုပ်သိမ်းရန်</translation>
 <translation id="1615402009686901181">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ပုံဖမ်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
@@ -827,6 +829,7 @@
 <translation id="2526280916094749336">သိမ်းထားသောလိပ်စာများကို Google ထုတ်ကုန်များအနှံ့တွင် သုံးနိုင်သည်။ ဤလိပ်စာကို သင့် Google Account <ph name="ACCOUNT" /> တွင် သိမ်းမည်။</translation>
 <translation id="2527451058878391043">သင့်ကတ်၏ ရှေ့ခြမ်းတွင် CVC ရှိသည်။ ၎င်းသည် ကတ်နံပါတ်၏ ညာဘက်ထိပ်ရှိ ဂဏန်း ၄ လုံးပါကုဒ် ဖြစ်သည်။</translation>
 <translation id="2529899080962247600">ဤအကွက်တွင် ထည့်သွင်းမှု <ph name="MAX_ITEMS_LIMIT" /> ခုထက်မပိုရပါ။ နောက်ထပ် ထည့်သွင်းမှုအားလုံးကို လျစ်လျူရှုပါမည်။</translation>
+<translation id="2533649878691950253">ပုံမှန်အားဖြင့် သင် ခွင့်ပြုလေ့မရှိသောကြောင့် ဤဝဘ်ဆိုက်အား သင့်တည်နေရာအတိအကျကို သိခွင့်မပြုခဲ့ပါ။</translation>
 <translation id="253493526287553278">ပရိုမိုးရှင်းကုဒ်အသေးစိတ် ကြည့်ရန်</translation>
 <translation id="2535585790302968248">သီးသန့်ကြည့်ရှုရန် ရုပ်ဖျက်တဘ် အသစ်တစ်ခုဖွင့်နိုင်သည်</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{နှင့် နောက်ထပ် ၁ ခု}other{နှင့် နောက်ထပ် # ခု}}</translation>
@@ -1512,6 +1515,7 @@
 <translation id="385489333361351399">ကင်မရာနှင့် ဓာတ်ပုံ စက်ပစ္စည်း</translation>
 <translation id="3858027520442213535">ရက်စွဲ နှင့် အချိန်ကို မွမ်းမံပါ</translation>
 <translation id="3858860766373142691">အမည်</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> အတွက် စည်းမျဉ်းများကို ဤနေရာတွင် ကြည့်ပါ</translation>
 <translation id="3872834068356954457">သိပွံ</translation>
 <translation id="3875783148670536197">လုပ်နည်း ပြရန်</translation>
 <translation id="3880456882942693779">အနုပညာ၊ ဖျော်ဖြေရေး</translation>
@@ -1919,6 +1923,7 @@
 <translation id="4691093235373904540">အမိုး ပြုပြင်ခြင်း</translation>
 <translation id="4692623383562244444">ရှာဖွေမှု အင်ဂျင်</translation>
 <translation id="4698692901173737941">တိုက်ခိုက်ရေးအားကစား</translation>
+<translation id="4701307090948589984">ဤသို့ ကာစ်လုပ်ရန်…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ဘေး</translation>
 <translation id="4702656508969495934">'တိုက်ရိုက်စာတန်း' မြင်ရသည်၊ အထူးဖော်ပြရန် ဝင်းဒိုးပြောင်းခလုတ် သုံးပါ</translation>
@@ -2168,6 +2173,8 @@
 <translation id="5161334686036120870">အကြောင်းအရာ-</translation>
 <translation id="5161506081086828129">စီထည့်သည့်ပုံး ၉</translation>
 <translation id="5164798890604758545">စာသား ထည့်လိုက်သည်</translation>
+<translation id="5164928537947209380">ဤစမ်းသပ် AI တူးလ်သည် အမြဲတမ်း မမှန်ကန်နိုင်ပါ။ ၎င်းပိုမိုကောင်းမွန်စေရန် သင့်အကြောင်းအရာကို Google သို့ ပို့သည်။
+    <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> အတွက် CVC ကိုထည့်ပါ။ အတည်ပြုပြီးနောက်တွင် သင်၏ Google အကောင့်ရှိ ကဒ်အသေးစိတ် အချက်အလက်များကို ဤဆိုက်အား မျှဝေသွားပါမည်။</translation>
 <translation id="5169827969064885044">သင်သည် သင့်အဖွဲ့အစည်း၏အကောင့်ကို အသုံးပြုခွင့် ဆုံးရှုံးနိုင်သည် သို့မဟုတ် အထောက်အထား အခိုးခံနိုင်သည်။ သင့်စကားဝှက်ကို ယခုပင်ပြောင်းလဲရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="5171045022955879922">ရှာကြည့်ရန် သို့မဟုတ် URL ရိုက်ထည့်ရန်</translation>
@@ -2349,6 +2356,7 @@
 <translation id="553377674408670169">ပညာရေးဆိုင်ရာ အလုပ်</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" ကဏ္ဍကို ပြရန်</translation>
 <translation id="553782666181800029">Chou 2 စာအိတ်</translation>
+<translation id="5538270463355278784">အလိုအလျောက် ဖန်သားပြင်အပြည့်</translation>
 <translation id="5539243836947087108">အောက်ခြေ</translation>
 <translation id="5540224163453853">တောင်းဆိုထားသည့် အကြောင်းအရာ မတွေ့ပါ။</translation>
 <translation id="5540969246441091044">မြင်းစီးအားကစား</translation>
@@ -2712,6 +2720,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome တွင် သင် ဒေါင်းလုဒ်လုပ်ခဲ့သည့်ဖိုင်များကို စီမံရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="6254436959401408446">ဤစာမျက်နှာကို ဖွင့်ရန် မှတ်ဉာဏ် အလုံအလောက်မရှိပါ</translation>
 <translation id="625463612687472648">ခွင့်ပြုခြင်း ရပ်ရန်</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ ရွေးစရာအနေဖြင့် <ph name="FINANCIAL_ACCOUNT_TYPES" /> ကိုကြည့်ပါ}other{Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ ရွေးစရာများအနေဖြင့် <ph name="FINANCIAL_ACCOUNT_TYPES" /> ကိုကြည့်ပါ}}</translation>
 <translation id="6259156558325130047">&amp;ပြန်လည်မှာယူမှုကို ပြန်လုပ်ရန်</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> စာညှပ်များ</translation>
 <translation id="6264376385120300461">မည်သို့ပင်ဖြစ်စေ ဒေါင်းလုဒ်လုပ်ရန်</translation>
@@ -3303,6 +3312,7 @@
 <translation id="7392089738299859607">လိပ်စာ အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="7393161616326137353">စွန့်စားခန်းဂိမ်း</translation>
 <translation id="739728382607845710">ငွေပေးချေမှုစီမံသူ သင်္ကေတ</translation>
+<translation id="7399616692258236448">သင်ခွင့်ပြုထားသည့် ဝဘ်ဆိုက်များအတွက်မှလွဲ၍ တည်နေရာတောင်းဆိုချက်များကို အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="7399802613464275309">လုံခြုံရေး စစ်ဆေးမှု</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">လင့်ခ်ကို မျှဝေခြင်း၊ QR ကုဒ် ပြုလုပ်ခြင်း၊ ကာစ်လုပ်ခြင်းစသည်တို့ဖြင့် ဤတဘ်ကို မျှဝေနိုင်သည်</translation>
@@ -3848,6 +3858,7 @@
 <translation id="8378714024927312812">သင်၏ 'အဖွဲ့အစည်း' က စီမံခန့်ခွဲထားသည်</translation>
 <translation id="8380941800586852976">အန္တရာယ်ရှိသော</translation>
 <translation id="8381674639488873545">ဤငွေကောက်ခံမှုများသည် တစ်ချိန်တစ်ခါတည်း ဖြစ်နိုင်သလို ထပ်တလဲလဲကောက်ခံမှုလည်း ဖြစ်နိုင်ပြီး သိသာမှုမရှိနိုင်ပါ။ <ph name="BEGIN_LINK" />မည်သို့ပင်ဖြစ်စေ ပြရန်<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">အလိုအလျောက် ဖန်သားပြင်အပြည့်</translation>
 <translation id="838307841291975086">စတေရှင်ဝက်ဂွန်ကား</translation>
 <translation id="8389532092404711541">ပုံမှန်အားဖြင့် <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">စိတ်ကြိုက်စွမ်းဆောင်ရည်ယာဉ်</translation>
@@ -4064,6 +4075,7 @@
 <translation id="8807160976559152894">တစ်မျက်နှာအပြီး ဖြတ်ထုတ်ရန်</translation>
 <translation id="8809203544698246977">ပိတ်ထားသည့် အကြောင်းအရာများကို ဤနေရာတွင်ပြသည်</translation>
 <translation id="8811470563853401328">အကောင့်တွင် လိပ်စာသိမ်းမလား။</translation>
+<translation id="8811725516933141693">Gemini နှင့် ချတ်လုပ်ရန် @gemini ဟုရိုက်ပါ</translation>
 <translation id="8813277370772331957">နောက်မှ သတိပေးရန်</translation>
 <translation id="8814707942599948500">C8 စာအိတ်</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင့် Chrome ဆက်တင်များမှတစ်ဆင့် Chrome ကို အပ်ဒိတ်လုပ်ရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>

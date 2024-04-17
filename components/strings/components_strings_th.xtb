@@ -340,6 +340,7 @@
 <translation id="160851722280695521">เล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="161042844686301425">สีฟ้า</translation>
 <translation id="1611101756749861742">ม้วนกระดาษ 2</translation>
+<translation id="1611854593425834707">ปิดรายการอุปกรณ์สําหรับการแคสต์</translation>
 <translation id="1612199629998703524">จัดการหัวข้อ</translation>
 <translation id="1615178538289490617">เพิกถอนสิทธิ์เข้าถึง <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="2527451058878391043">CVC จะแสดงอยู่บนด้านหน้าของบัตร โดยเป็นรหัส 4 หลักที่ด้านขวาบนเหนือหมายเลขบัตร</translation>
 <translation id="2529899080962247600">ช่องนี้ต้องมีข้อมูลไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ ระบบจะไม่สนใจรายการอื่นๆ ทั้งหมด</translation>
+<translation id="2533649878691950253">เว็บไซต์ถูกบล็อกไม่ให้ทราบตำแหน่งที่แน่นอนเนื่องจากโดยปกติแล้วคุณไม่อนุญาตสิทธิ์นี้</translation>
 <translation id="253493526287553278">ดูรายละเอียดรหัสโปรโมชัน</translation>
 <translation id="2535585790302968248">เปิดแท็บที่ไม่ระบุตัวตนแท็บใหม่เพื่อท่องเว็บแบบส่วนตัว</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{และอีก 1 โดเมน}other{และอีก # โดเมน}}</translation>
@@ -1917,6 +1919,7 @@
 <translation id="4691093235373904540">การมุงหลังคา</translation>
 <translation id="4692623383562244444">เครื่องมือค้นหา</translation>
 <translation id="4698692901173737941">กีฬาต่อสู้</translation>
+<translation id="4701307090948589984">แคสต์ไปยัง...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ด้านข้าง</translation>
 <translation id="4702656508969495934">มองเห็นคำบรรยายสดอยู่ ใช้ปุ่มสลับหน้าต่างเพื่อโฟกัส</translation>
@@ -2166,6 +2169,8 @@
 <translation id="5161334686036120870">เรื่อง:</translation>
 <translation id="5161506081086828129">สแต็กเกอร์ 9</translation>
 <translation id="5164798890604758545">มีการป้อนข้อความ</translation>
+<translation id="5164928537947209380">เครื่องมือ AI เวอร์ชันทดลองนี้อาจไม่ถูกต้องเสมอไป ระบบจะส่งเนื้อหาของคุณไปยัง Google เพื่อปรับปรุงประสิทธิภาพ
+    <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">ป้อน CVC ของ <ph name="CREDIT_CARD" /> เมื่อยืนยันแล้ว ระบบจะแชร์รายละเอียดของบัตรจากบัญชี Google กับเว็บไซต์นี้</translation>
 <translation id="5169827969064885044">คุณอาจเข้าถึงบัญชีขององค์กรไม่ได้หรือถูกโจรกรรมข้อมูลประจำตัว Chrome ขอแนะนำให้เปลี่ยนรหัสผ่านตอนนี้เลย</translation>
 <translation id="5171045022955879922">ค้นหาหรือพิมพ์ URL</translation>
@@ -3301,6 +3306,7 @@
 <translation id="7392089738299859607">อัปเดตที่อยู่</translation>
 <translation id="7393161616326137353">เกมผจญภัย</translation>
 <translation id="739728382607845710">ไอคอนเครื่องจัดการการชําระเงิน</translation>
+<translation id="7399616692258236448">ระบบจะบล็อกคำขอตำแหน่งจากทุกเว็บไซต์โดยอัตโนมัติ ยกเว้นเว็บไซต์ที่คุณอนุญาต</translation>
 <translation id="7399802613464275309">การตรวจสอบความปลอดภัย</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">แชร์แท็บนี้โดยการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
@@ -4062,6 +4068,7 @@
 <translation id="8807160976559152894">ตัดออกหลังหน้าแต่ละหน้า</translation>
 <translation id="8809203544698246977">หัวข้อที่บล็อกจะปรากฏที่นี่</translation>
 <translation id="8811470563853401328">บันทึกที่อยู่ในบัญชีไหม</translation>
+<translation id="8811725516933141693">พิมพ์ @gemini เพื่อแชทกับ Gemini</translation>
 <translation id="8813277370772331957">เตือนฉันภายหลัง</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>

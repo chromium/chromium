@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Forzar habilitación de zoom</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceros en el modo Incógnito</translation>
 <translation id="3918378745482005425">Es posible que no puedas usar algunas funciones. Los sitios relacionados también pueden usar cookies de terceros.</translation>
+<translation id="3933121352599513978">Contraer solicitudes no deseadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que los sitios reproduzcan contenido protegido (recomendado)</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3974105241379491420">Los sitios pueden solicitar permiso para usar la información que guardaron sobre ti</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Navegación inaccesible: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Borrar</translation>
 <translation id="8990043154272859344">Saldrás de todos los sitios</translation>
+<translation id="8993853206419610596">Expandir todas las solicitudes</translation>
 <translation id="9002538116239926534">Cuando esta opción está activada, los sitios pueden guardar datos en tu dispositivo. Cuando está desactivada, los sitios no pueden guardar datos en tu dispositivo.</translation>
 <translation id="9011903857143958461">Se permitió <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Administrado por tus padres</translation>

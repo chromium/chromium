@@ -68,6 +68,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1218444235442067213"><ph name="APP_NAME" />, application Play Store</translation>
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
+<translation id="1230853660706736937">Rechercher du texte dans les images et consulter les aperçus des images</translation>
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
 <translation id="1240638468526743569">Une application</translation>
@@ -715,11 +716,13 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3824784079442479685">Cela autorise l'accès à l'appareil photo pour <ph name="APP_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="3826099427150913765">Passer au mot de passe</translation>
 <translation id="383058930331066723">Le mode Économiseur de pile est activé</translation>
+<translation id="3831226344927851293">Quitter l'affichage de tutoriel</translation>
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
 <translation id="384082539148746321">Supprimer le modèle?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, puis <ph name="KEY_ONE" /> ou <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94/5</translation>
 <translation id="3846575436967432996">Aucune information concernant le réseau</translation>
+<translation id="3848526302597027234">Accédez aux autorisations suivantes :</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="385300504083504382">Début</translation>
 <translation id="3859364108019690">Impossible de diffuser des applications</translation>
@@ -1290,7 +1293,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier associé.</translation>
 <translation id="5998374579424866922">Désactiver les commandes de jeu</translation>
 <translation id="6000279412553873020">Touches, boutons et plus</translation>
-<translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> sur <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Mettre en évidence l'article suivant sur l'étagère</translation>
 <translation id="6015573907265691211">Marquer comme terminée</translation>

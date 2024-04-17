@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chrome मध्ये Dino Run गेम खेळा</translation>
 <translation id="161042844686301425">निळसर</translation>
 <translation id="1611101756749861742">दुसरा रोल</translation>
+<translation id="1611854593425834707">कास्ट करण्यासाठी डिव्हाइस सूची बंद करा</translation>
 <translation id="1612199629998703524">विषय व्यवस्थापित करा</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> साठी अ‍ॅक्सेस मागे घ्या</translation>
 <translation id="1615402009686901181">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्‍क्रीन कॅप्‍चर बंद करते</translation>
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">तुम्ही संपूर्ण Google उत्पादनांवर सेव्ह केलेले पत्ते वापरू शकता. हा पत्ता तुमच्या Google खाते <ph name="ACCOUNT" /> मध्ये सेव्ह केला जाईल.</translation>
 <translation id="2527451058878391043">तुमचा CVC हा तुमच्या कार्डच्या समोरील बाजूस असतो. तुमच्या कार्ड नंबरच्या सर्वात वरती हा चार अंकी कोड आहे.</translation>
 <translation id="2529899080962247600">या भागात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत. उरलेल्या सर्व नोंदी दुर्लक्षित केल्या जातील.</translation>
+<translation id="2533649878691950253">तुम्ही सहसा यास परवानगी देत नसल्याने, या साइटला तुमचे अचूक स्थान जाणून घेण्यापासून ब्लॉक केले गेले</translation>
 <translation id="253493526287553278">प्रोमो कोडचे तपशील पहा</translation>
 <translation id="2535585790302968248">खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त टॅब उघडा</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{आणि आणखी एक}other{आणि आणखी #}}</translation>
@@ -1917,6 +1919,7 @@
 <translation id="4691093235373904540">रूफिंग</translation>
 <translation id="4692623383562244444">शोध इंजिने</translation>
 <translation id="4698692901173737941">द्वंद्व क्रीडा</translation>
+<translation id="4701307090948589984">यावर कास्ट करा...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">साइड</translation>
 <translation id="4702656508969495934">लाइव्ह कॅप्शन दिसत आहे, फोकस करण्यासाठी विंडो स्विचर वापरा</translation>
@@ -2107,6 +2110,7 @@
 <translation id="5040262127954254034">गोपनीयता</translation>
 <translation id="5043480802608081735">तुम्ही कॉपी केलेली लिंक</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
+<translation id="5048293684454354469">जाहिराती पर्सनलाइझ करण्यासाठी साइट वापरू शकत असलेल्या अनेक गोष्टींपैकी जाहिरातीचे विषय ही फक्त एक गोष्ट आहे. जाहिरातीच्या विषयांशिवायदेखील साइट तुम्हाला जाहिराती दाखवू शकतात, पण त्या कमी पर्सनलाइझ केलेल्या असतील. <ph name="BEGIN_LINK" />तुमची जाहिरातीसंबंधित गोपनीयता व्यवस्थापित करणे<ph name="LINK_END" /> याबद्दल अधिक जाणून घ्या.</translation>
 <translation id="5052517576853118371">ॲक्टिव्ह विषय</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby सह शेअरिंग वापरून ही फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}other{Nearby सह शेअरिंग वापरून या फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}}</translation>
 <translation id="505757197798929356">उघड्याचे कारण द्या (आवश्यक)</translation>
@@ -2166,6 +2170,8 @@
 <translation id="5161334686036120870">विषय:</translation>
 <translation id="5161506081086828129">स्टॅकर ९</translation>
 <translation id="5164798890604758545">मजकूर एंटर केला गेला</translation>
+<translation id="5164928537947209380">हे प्रायोगिक AI टूल नेहमी बरोबर असेल असे नाही. त्यामध्ये सुधारणा करण्यासाठी, तुमचा आशय Google कडे पाठवला जातो.
+    <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> चा CVC टाका. तुम्ही निश्चित केल्यानंतर तुमच्या Google खात्यामधील कार्डाचा तपशील या साइटसोबत शेअर केला जाईल.</translation>
 <translation id="5169827969064885044">तुम्ही तुमच्या संस्थेच्या खात्याचा ॲक्सेस गमावू शकता किंवा तुमची संवेदनशील माहिती चोरीला जाऊ शकते. Chrome लगेच तुमचा पासवर्ड बदलण्याची शिफारस करत आहे.</translation>
 <translation id="5171045022955879922">URL शोधा किंवा टाइप करा</translation>
@@ -2324,6 +2330,7 @@
     <ph name="LINE_BREAK" />
     सिस्टम ॲडमिनिस्ट्रेटरशी संपर्क साधण्याचा प्रयत्न करा.</translation>
 <translation id="549333378215107354">आकार ३</translation>
+<translation id="5496804587179176046">सुरक्षा कोड सेव्ह करा, सध्या कोणतेही सुरक्षा कोड नाहीत</translation>
 <translation id="550365051221576010">सर्व फील्ड</translation>
 <translation id="5508443345185481044">कॅमेरा आणि कॅमकॉर्डर</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3302,6 +3309,7 @@
 <translation id="7392089738299859607">पत्ता अपडेट करा</translation>
 <translation id="7393161616326137353">साहसपर गेम</translation>
 <translation id="739728382607845710">पेमेंट हँडलरचा आयकन</translation>
+<translation id="7399616692258236448">तुम्ही अनुमती दिलेली साइट वगळता सर्व साइटसाठी स्थानाशी संबंधित विनंत्या या आपोआप ब्लॉक केल्या आहेत</translation>
 <translation id="7399802613464275309">सुरक्षितता तपासणी</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">लिंक शेअर करून, QR कोड तयार करून, कास्ट करून आणि आणखी बऱ्याच पर्यायांद्वारे हा टॅब शेअर करा</translation>
@@ -4062,6 +4070,7 @@
 <translation id="8807160976559152894">प्रत्येक पेजनंतर ट्रिम करा</translation>
 <translation id="8809203544698246977">ब्लॉक केलेले विषय येथे दिसतात</translation>
 <translation id="8811470563853401328">खात्यामध्ये पत्ता सेव्ह करायचा का?</translation>
+<translation id="8811725516933141693">Gemini सोबत चॅट करण्यासाठी @gemini टाइप करा</translation>
 <translation id="8813277370772331957">मला नंतर आठवण करून द्या</translation>
 <translation id="8814707942599948500">एन्व्हलप सी८</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Chrome सेटिंग्जमधून Chrome अपडेट करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>

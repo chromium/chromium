@@ -340,6 +340,7 @@
 <translation id="160851722280695521">በChrome ውስጥ የDino አሂድ ጨዋታ አጫውት</translation>
 <translation id="161042844686301425">ውሃ ሰማያዊ</translation>
 <translation id="1611101756749861742">ሁለተኛ ጥቅልል</translation>
+<translation id="1611854593425834707">cast ለማድረግ የመሣሪያ ዝርዝርን ይዝጉ</translation>
 <translation id="1612199629998703524">ርዕሶችን አስተዳድር</translation>
 <translation id="1615178538289490617">ለ<ph name="PORT_NAME" /> መዳረሻን ሻር</translation>
 <translation id="1615402009686901181">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገፅ ማንሳትን ያሰናክላል</translation>
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">በመላው የGoogle ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ አድራሻ በGoogle መለያዎ፣ <ph name="ACCOUNT" /> ውስጥ ይቀመጣል።</translation>
 <translation id="2527451058878391043">ካርድ ማረጋገጫ ኮድዎ በካርድዎ ፊት ለፊት ላይ ነው። ከላይ በስተቀኝ በኩል ከካርድዎ ቁጥር በላይ ባለ4 አሃዙ ኮድ ነው።</translation>
 <translation id="2529899080962247600">ይህ መስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሁሉም ተጨማሪ ግቤቶች ችላ ይባላሉ።</translation>
+<translation id="2533649878691950253">እርስዎ ይህን አብዛኛው ጊዜ ስለማይፈቅዱ ይህ ጣቢያ ትክክለኛ አካባቢዎን እንዳያውቅ ታግዷል</translation>
 <translation id="253493526287553278">የማስተዋወቂያ ኮድ ዝርዝሮችን ይመልከቱ</translation>
 <translation id="2535585790302968248">በግል ለማሰስ አዲስ ማንነትን የማያሳውቅ ትርን ክፈት</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{እና 1 ተጨማሪ}one{እና # ተጨማሪ}other{እና # ተጨማሪ}}</translation>
@@ -1917,6 +1919,7 @@
 <translation id="4691093235373904540">የጣሪያ ሥራ</translation>
 <translation id="4692623383562244444">የፍለጋ ፕሮግራሞች</translation>
 <translation id="4698692901173737941">የትግል ስፖርት</translation>
+<translation id="4701307090948589984">Cast አድርግ ወደ...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ጎን</translation>
 <translation id="4702656508969495934">የቀጥታ መግለጫ ጽሁፍ ይታያል፣ ለትኩረት መስኮት መቀየሪያን ይጠቀሙ</translation>
@@ -2107,6 +2110,7 @@
 <translation id="5040262127954254034">ግላዊነት</translation>
 <translation id="5043480802608081735">የቀዱት አገናኝ</translation>
 <translation id="5045550434625856497">ትክክል ያልሆነ የይለፍ ቃል</translation>
+<translation id="5048293684454354469">የማስታወቂያ ርዕሶች አንድ ጣቢያ ማስታወቂያዎችን ግላዊ ለማድረግ ከሚጠቀምባቸው ብዙ ነገሮች ውስጥ አንዱ ብቻ ነው። የማስታወቂያ ርዕሶች ባይኖሩም እንኳ ጣቢያዎች አሁንም ማስታወቂያዎችን ሊያሳዩዎት ይችላሉ፣ ነገር ግን እነሱ ግላዊነት የተላበሱ ላይሆኑ ይችላሉ። <ph name="BEGIN_LINK" />የእርስዎን የማስታወቂያ ግላዊነት ስለማስተዳደር<ph name="LINK_END" /> የበለጠ ይወቁ።</translation>
 <translation id="5052517576853118371">ንቁ ርዕሶች</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{አቅራቢያ አጋራን በመጠቀም ይህንን ፋይል ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}one{አቅራቢያ አጋራን በመጠቀም እነዚህን ፋይሎች ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />)ን ያስለቅቁ}other{አቅራቢያ አጋራን በመጠቀም እነዚህን ፋይሎች ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />)ን ያስለቅቁ}}</translation>
 <translation id="505757197798929356">የመክፈቻ ምክንያት ያቅርቡ (አስፈላጊ)</translation>
@@ -2166,6 +2170,8 @@
 <translation id="5161334686036120870">ርዕሰ ጉዳይ፦</translation>
 <translation id="5161506081086828129">ቁልል 9</translation>
 <translation id="5164798890604758545">ጽሁፍ ገብቷል</translation>
+<translation id="5164928537947209380">ይህ የሙከራ AI መሣሪያ ሁልጊዜ ትክክል አይሆንም። እሱን ለማሻሻል፣ የእርስዎ ይዘት ወደ Google ይላካል።
+    <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">የ<ph name="CREDIT_CARD" /> CVC ያስገቡ። ካረጋገጡ በኋላ የGoogle መለያዎ ካርድ ዝርዝሮች ለዚህ ጣቢያ ይጋራሉ።</translation>
 <translation id="5169827969064885044">የድርጅት መለያዎን መዳረሻ ሊያጡ ወይም የማንነት ስርቆት ሊያጋጥመዎት ይችላሉ። Chrome የይለፍ ቃልዎን አሁን እንዲቀይሩ ይመክራል።</translation>
 <translation id="5171045022955879922">ይፈልጉ ወይም ዩአርኤል ይጻፉ</translation>
@@ -2324,6 +2330,7 @@
     <ph name="LINE_BREAK" />
     የእርስዎን የስርዓት አስተዳዳሪ ለማነጋገር ይሞክሩ።</translation>
 <translation id="549333378215107354">መጠን 3</translation>
+<translation id="5496804587179176046">የደኅንነት ኮዶችን ያስቀምጡ፣ በአሁኑ ጊዜ ምንም የደኅንነት ኮዶች አልተቀመጡም</translation>
 <translation id="550365051221576010">ሁሉንም ነገር ይሙሉ</translation>
 <translation id="5508443345185481044">ካሜራዎች እና ካምኮርደሮች</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3301,6 +3308,7 @@
 <translation id="7392089738299859607">አድራሻን ያዘምኑ</translation>
 <translation id="7393161616326137353">የጀብዱ ጨዋታዎች</translation>
 <translation id="739728382607845710">የክፍያ መያዣ አዶ</translation>
+<translation id="7399616692258236448">እርስዎ ከፈቀዱላቸው ውጭ ለሁሉም ጣቢያዎች የአካባቢ ጥያቄዎች በራስ-ሰር ይታገዳሉ</translation>
 <translation id="7399802613464275309">የደህንነት ፍተሻ</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">አገናኙን በማጋራት፣ የQR ኮድ በመፍጠር፣ ካስት እና ሌሎችንም በማድረግ ይህን ትር ያጋሩ</translation>
@@ -4062,6 +4070,7 @@
 <translation id="8807160976559152894">ከእያንዳንዱ ገፅ በኋላ ከርክም</translation>
 <translation id="8809203544698246977">የታገዱ ርዕሶች እዚህ ላይ ይታያሉ</translation>
 <translation id="8811470563853401328">አድራሻ በመለያ ውስጥ ይቀመጥ?</translation>
+<translation id="8811725516933141693">ከGemini ጋር ለመወያየት @gemini ብለው ይተይቡ</translation>
 <translation id="8813277370772331957">ቆይተህ አስታውሰኝ</translation>
 <translation id="8814707942599948500">ሲ8 ፖስታ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ይጫኑ እና ከእርስዎ Chrome ቅንብሮች Chromeን ለማዘመን አስገባን ይጫኑ</translation>

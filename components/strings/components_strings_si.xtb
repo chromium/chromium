@@ -341,6 +341,7 @@
 <translation id="160851722280695521">Chrome තුළ Dino Run ක්‍රීඩා කරන්න</translation>
 <translation id="161042844686301425">සියන්</translation>
 <translation id="1611101756749861742">Second Roll</translation>
+<translation id="1611854593425834707">විකාශය කිරීම සඳහා උපාංග ලැයිස්තුව වසන්න</translation>
 <translation id="1612199629998703524">මාතෘකා කළමනාකරණය කරන්න</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> සඳහා ප්‍රවේශය අහෝසි කරන්න</translation>
 <translation id="1615402009686901181">රහසිගත අන්තර්ගතය දෘශ්‍යමාන විට පරිපාලක ප්‍රතිපත්තිය තිර ග්‍රහණය අබල කරයි</translation>
@@ -827,6 +828,7 @@
 <translation id="2526280916094749336">ඔබට Google නිෂ්පාදන හරහා සුරැකි ලිපින භාවිත කළ හැක. මෙම ලිපිනය ඔබේ Google ගිණුමේ, <ph name="ACCOUNT" /> සුරකිනු ලැබේ.</translation>
 <translation id="2527451058878391043">ඔබේ CVC ඔබේ කාඩ්පතෙහි ඉදිරිපස ඇත. එය ඔබේ කාඩ්පත් අංකයට ඉහළින් ඉහළ දකුණේ ඇති සංඛ්‍යා 4 කේතයයි.</translation>
 <translation id="2529899080962247600">මෙම ක්ෂේත්‍රයට <ph name="MAX_ITEMS_LIMIT" />කට වඩා වැඩි ඇතුළත් කිරීම් තිබිය යුතුය. සියලු වැඩිදුර ඇතුළත් කිරීම් නොසලකා හරිනු ඇත.</translation>
+<translation id="2533649878691950253">ඔබ සාමාන්‍යයෙන් මෙයට ඉඩ නොදෙන නිසා ඔබගේ ඉතා නිවැරදි ස්ථානය දැන ගැනීමෙන් මෙම අඩවිය අවහිර කර ඇත</translation>
 <translation id="253493526287553278">ප්‍රවර්ධන කේත විස්තර බලන්න</translation>
 <translation id="2535585790302968248">පුද්ගලිකව බ්‍රවුස් කිරීමට නව අප්‍රකට ටැබයක් විවෘත කරන්න</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{සහ තව 1 ක්}one{සහ තව #ක්}other{සහ තව #ක්}}</translation>
@@ -1920,6 +1922,7 @@
 <translation id="4691093235373904540">වහල සැදීම</translation>
 <translation id="4692623383562244444">සෙවුම් යන්ත්‍ර</translation>
 <translation id="4698692901173737941">සටන් ක්‍රීඩා</translation>
+<translation id="4701307090948589984">වෙතට විකාශය කරන්න...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">පැත්ත</translation>
 <translation id="4702656508969495934">සජීවී සිරස්තල දෘශ්‍යමාන වේ, නාභිගත කිරීමට කවුළු මාරු කරන්නා භාවිත කරන්න</translation>
@@ -2169,6 +2172,8 @@
 <translation id="5161334686036120870">මාතෘකාව:</translation>
 <translation id="5161506081086828129">අට්ටිය 9</translation>
 <translation id="5164798890604758545">පෙළ ඇතුළු කර නැත</translation>
+<translation id="5164928537947209380">මෙම පර්යේෂණාත්මක AI මෙවලම සැම විට ම නිවැරදි නොවනු ඇත. එය වැඩි දියුණු කිරීමට, ඔබේ අන්තර්ගතය Google වෙත යවනු ලැබේ.
+    <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> සඳහා CVC ඇතුළත් කරන්න. ඔබ තහවුරු කළ පසු, ඔබේ Google ගිණුමෙන් කාඩ්පත් විස්තර මෙම අඩවිය සමඟ බෙදා ගනු ලැබේ.</translation>
 <translation id="5169827969064885044">ඔබට ඔබේ සංවිධානයේ ගිණුමට ප්‍රවේශය අහිමි වීමට හෝ අනන්‍යතා සොරකමක් අත්විඳීමට සිදු විය හැකිය. දැන් ඔබේ මුරපදය වෙනස් කිරීම සඳහා Chrome නිර්දේශ කරයි.</translation>
 <translation id="5171045022955879922">සොයන්න හෝ ලිපිනය යොදන්න</translation>
@@ -3306,6 +3311,7 @@
 <translation id="7392089738299859607">ලිපිනය යාවත්කාලීන කරන්න</translation>
 <translation id="7393161616326137353">වික්‍රමාන්විත ක්‍රීඩා</translation>
 <translation id="739728382607845710">ගෙවීම් හසුරුවන්නාගේ නිරූපකය</translation>
+<translation id="7399616692258236448">ඔබ ඉඩ දෙන ඒවා හැර අනෙකුත් සියලු ම අඩවි සඳහා ස්ථාන ඉල්ලීම් ස්වයංක්‍රීයව අවහිර වේ</translation>
 <translation id="7399802613464275309">ආරක්ෂක පරීක්ෂාව</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">සබැඳිය බෙදා ගැනීමෙන්, QR කේතයක් තැනීමෙන්, විකාශය කිරීමෙන් සහ තවත් දේ මඟින් මෙම ටැබය බෙදා ගන්න</translation>
@@ -4067,6 +4073,7 @@
 <translation id="8807160976559152894">සෑම පිටුවකටම පසුව කප්පාදු කරන්න</translation>
 <translation id="8809203544698246977">අවහිර කළ මාතෘකා මෙහි දිස් වේ</translation>
 <translation id="8811470563853401328">ගිණුමේ ලිපිනය සුරකින්න ද?</translation>
+<translation id="8811725516933141693">Gemini සමග කතාබස් කිරීමට @gemini ටයිප් කරන්න</translation>
 <translation id="8813277370772331957">මට පසුව සිහිකැඳවන්න</translation>
 <translation id="8814707942599948500">ලියුම් කවරය C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>

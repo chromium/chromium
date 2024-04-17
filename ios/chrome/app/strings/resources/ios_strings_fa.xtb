@@ -847,6 +847,7 @@
 <translation id="5407969256130905701">صرف‌نظر کردن از تغییرات</translation>
 <translation id="5414763847370083940">اگر قیمت در سایتی کاهش پیدا کند، هشداری دریافت می‌کنید.</translation>
 <translation id="5416022985862681400">۷ روز گذشته</translation>
+<translation id="5416455648658732408">انتقال به گروه برگه</translation>
 <translation id="5423269318075950257">پیگیری قیمت</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
 <translation id="5433691172869980887">نام کاربری کپی شد</translation>
@@ -1043,6 +1044,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6363526231572697780">بدون نام کاربری</translation>
 <translation id="6366190659675876144">محافظت استاندارد</translation>
 <translation id="6366663624406569102">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
+<translation id="6368038301482806847">موتور جستجویی از فهرست انتخاب کنید.</translation>
 <translation id="6374469231428023295">دوباره امتحان کنید</translation>
 <translation id="6377118281273296434">امنیت سایت</translation>
 <translation id="6383719166112032471">باز کردن مکان…</translation>
@@ -1202,6 +1204,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7161230316646448869">همگام‌سازی نشانک‌ها، سابقه، و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="7162168282402939716">باز کردن قفل «برگه‌های ناشناس» با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>
+<translation id="7186568385131859684">‏کنترل کنید چگونه از سابقه مرور شما با دیگر داده‌هایتان از همه سرویس‌های Google استفاده شود</translation>
 <translation id="7189598951263744875">در حال اشتراک‌گذاری...</translation>
 <translation id="719133302483559673">علایق و اولویت‌هایتان را مدیریت کنید.</translation>
 <translation id="7192050974311852563">شروع گزارش‌گیری</translation>
@@ -1245,6 +1248,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7438481509621345350">اکنون وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="7451023311965289370">{count,plural, =1{نشانک در «{title}» ذخیره شد}one{نشانک در «{title}» ذخیره شد}other{نشانک‌ها در «{title}» ذخیره شد}}</translation>
 <translation id="7454057999980797137">ایالت / استان</translation>
+<translation id="7458706065921255639">شخصی‌سازی و پیونددهی</translation>
 <translation id="745899714366929493">تمام روز</translation>
 <translation id="7459628154744868585">«محافظت بهبودیافته» روشن است</translation>
 <translation id="7465351360025415755">محتوایی را که برایتان مهم است دریافت کنید</translation>
@@ -1332,6 +1336,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7853202427316060426">فعالیت</translation>
 <translation id="7856733331829174190">بارگیری نشد</translation>
 <translation id="7859704718976024901">سابقه مرور</translation>
+<translation id="7860900259978879139">برداشتن از گروه</translation>
 <translation id="7866501058614003444">ردیابی این بسته باموفقیت لغو شد.</translation>
 <translation id="7866872729285243843">برای دریافت فهرست خواندن در همه دستگاه‌هایتان، «فهرست خواندن» را در تنظیمات روشن کنید.</translation>
 <translation id="7866993391592926595">پنهان کردن این کارت باعث می‌شود پیگیری بسته غیرفعال شود و همه داده‌هایتان پاک شود</translation>
@@ -1419,9 +1424,11 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8273982424131314219">اطلاعات را در <ph name="URL" /> تکمیل خواهید کرد</translation>
 <translation id="8281781826761538115">پیش‌فرض - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">رد شدن</translation>
+<translation id="8282657446819506217">باز کردن در گروه برگه</translation>
 <translation id="828291969289324795">{count,plural, =1{افزودن برگه به گروه جدید}one{افزودن برگه‌ها به گروه جدید}other{افزودن برگه‌ها به گروه جدید}}</translation>
 <translation id="8283172974887967105">تنظیم…</translation>
 <translation id="8286036467436129157">ورود به سیستم</translation>
+<translation id="8289930144142009940">اعلان‌های <ph name="FEATURE_NAME" /> خاموش شد</translation>
 <translation id="8292843446079898078">دریافت هشدارهای کاهش قیمت برای محصولاتی که پیگیری می‌کنید.</translation>
 <translation id="8299417921174340354">برای استفاده از گذرواژه‌ها، ابتدا باید گذرنویسه‌ای در دستگاه تنظیم کنید.</translation>
 <translation id="8299613349954694191">برای مرور وب به‌صورت خصوصی، «برگه ناشناس» باز کنید.</translation>
@@ -1429,6 +1436,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8313645224014086262">ذخیره کردن فایل</translation>
 <translation id="8319076807703933069">جستجوی جدید</translation>
 <translation id="8328777765163860529">بستن همه</translation>
+<translation id="8343286328361420468">خاموش کردن اعلان‌های <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">از داده‌هایتان پشتیبان بگیرید و در هر دستگاهی از آن‌ها استفاده کنید.</translation>
 <translation id="834783239627985533">پربازدیدترین سایت‌ها</translation>
 <translation id="8358401059263985056">روشن کردن اعلان‌ها</translation>

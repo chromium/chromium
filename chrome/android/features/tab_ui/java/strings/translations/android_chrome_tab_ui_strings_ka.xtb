@@ -49,6 +49,7 @@
 <translation id="3996880007329611795">შეტყობინებების მიღება</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{შეიქმნა <ph name="NUM_DAYS_ONE" /> დღის წინ}other{შეიქმნა <ph name="NUM_DAYS_MANY" /> დღის წინ}}</translation>
 <translation id="4133493477912226187">როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{დახურეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი „<ph name="TITLE_OF_GROUP" />“.}other{დახურეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი „<ph name="TITLE_OF_GROUP" />“.}}</translation>
 <translation id="4159784952369912983">მეწამული</translation>
 <translation id="4212246570487010370">დათვალიერების გაგრძელება</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ გაფართოება.}other{ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ გაფართოება.}}</translation>
@@ -72,6 +73,7 @@
 <translation id="5490235265819901748">ჩანართების ჯგუფი გაფართოვდა</translation>
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
 <translation id="5545379293264651575">შემოწმების გარეშე დახურვა</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{დახურეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}other{დახურეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}}</translation>
 <translation id="5556417849629758491">მაღაზიის ინფორმაციის ნახვა, ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ბმული Chrome-იდან}other{<ph name="TABS_COUNT_MANY" /> ბმული Chrome-იდან}}</translation>
 <translation id="575494663145460764">გსურთ, მიიღოთ გაფრთხილებები ფასის დაწევის შესახებ?</translation>
@@ -113,6 +115,7 @@
 <translation id="7942349550061667556">წითელი</translation>
 <translation id="7966321538264951561">შემოთავაზებების დახურვა.</translation>
 <translation id="8029301326595421733">ამ მაღაზიის შესახებ ინფორმაცია გახსნილია სრულ სიმაღლეზე</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი „<ph name="TITLE_OF_GROUP" />“.}other{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი „<ph name="TITLE_OF_GROUP" />“.}}</translation>
 <translation id="8205266828577616993">ჩანართის ზემოთ გადატანა</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დახურვა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დახურვა}}</translation>
 <translation id="8398929769197326728">ახალი საქაღალდე — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -125,6 +128,7 @@
 <translation id="9090098097337832354">ამ მაღაზიის შესახებ ინფორმაცია დახურულია</translation>
 <translation id="9150694013019234766">გადაერთეთ ჩანართებს შორის თქვენს ჩანართების ჯგუფში, ეკრანის ქვედა ნაწილში</translation>
 <translation id="9169594135889675189">ჯგუფში ახალი ჩანართის დამატება</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}other{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}}</translation>
 <translation id="955558140275419384">შეამოწმეთ დასალაგებლად დაარქივებული ყველა ჩანართი ამ რედაქტორზე გადასვლით.</translation>
 <translation id="959682366969460160">იყავით ორგანიზებული</translation>
 <translation id="992256792861109788">ვარდისფერი</translation>

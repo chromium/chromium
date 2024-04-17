@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="4301151630239508244">Umfjöllunarefni auglýsinga er aðeins einn þáttur af mörgum sem vefsvæði geta notað til að sérsníða auglýsingar. Vefsvæði geta birt þér auglýsingar jafnvel þótt lokað sé fyrir umfjöllunarefni auglýsinga en þær munu hugsanlega eiga síður við þig. Nánar um <ph name="BEGIN_LINK_1" />umsjón með persónuvernd auglýsinga<ph name="END_LINK_1" />.</translation>
 </translationbundle>

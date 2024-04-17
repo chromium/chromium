@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3918378745482005425">部分功能可能無法正常運作。相關網站仍可使用第三方 Cookie。</translation>
+<translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3974105241379491420">網站可要求使用與你相關的既有資料</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">無法存取瀏覽網址：<ph name="URL" /></translation>
 <translation id="8986362086234534611">清除</translation>
 <translation id="8990043154272859344">您將會從所有網站登出</translation>
+<translation id="8993853206419610596">展開所有要求</translation>
 <translation id="9002538116239926534">開咗之後，網站可以喺裝置度儲存資料。閂咗之後，網站唔可以喺裝置度儲存資料。</translation>
 <translation id="9011903857143958461">已允許 <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">由您的家長管理</translation>

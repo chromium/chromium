@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />၊ Play Store အက်ပ်</translation>
 <translation id="1225748608451425081">သိထားသည့် ပြဿနာတစ်ခုကြောင့် သင့် Chromebook လော့ခ်ကျသွားသည်။ <ph name="TIME_LEFT" /> နောက်ပိုင်းတွင် လက်မှတ်ထိုးဝင်နိုင်ပါမည်။</translation>
 <translation id="1229194443904279055">ရွေးချယ်ခြင်းကို ရပ်ရန်</translation>
+<translation id="1230853660706736937">ပုံထဲရှိ စာသားကိုရှာနိုင်ပြီး ပုံအစမ်းကြည့်ရှုခြင်းများကို ကြည့်နိုင်သည်</translation>
 <translation id="1235458158152011030">သိထားသည့် ကွန်ရက်များ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ချိတ်ဆက်ထားသည်။</translation>
 <translation id="1240638468526743569">အက်ပ်တစ်ခု</translation>
@@ -715,11 +716,13 @@
 <translation id="3824784079442479685">၎င်းက <ph name="APP_NAME" /> နှင့် ကင်မရာခွင့်ပြုချက်တောင်းသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်။ အင်တာနက်စာမျက်နှာကို ပြန်လည်စတင်ရမည် (သို့) အက်ပ်ကို ပြန်စရမည်။</translation>
 <translation id="3826099427150913765">စကားဝှက်သို့ ပြောင်းရန်</translation>
 <translation id="383058930331066723">ဘက်ထရီအားထိန်းမုဒ် ဖွင့်ထားသည်</translation>
+<translation id="3831226344927851293">ရှင်းလင်းပို့ချချက်မြင်ကွင်းမှ ထွက်ရန်</translation>
 <translation id="383629559565718788">ကီးဘုတ်ဆက်တင်များကို ပြရန်</translation>
 <translation id="384082539148746321">နမူနာ ပုံစံကို ဖျက်မလား။</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> ထို့နောက် <ph name="KEY_ONE" /> (သို့) <ph name="KEY_TWO" /> (သို့) <ph name="KEY_THREE" /> (သို့) <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">၅၀+၉၄/၅</translation>
 <translation id="3846575436967432996">မည်သည့် ကွန်ရက် အချက်လက်မျှ မရနိုင်</translation>
+<translation id="3848526302597027234">အောက်ပါတို့ကို ခွင့်ပြုပါ-</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="385300504083504382">အစ</translation>
 <translation id="3859364108019690">အက်ပ်များ တိုက်ရိုက်မလွှင့်နိုင်ပါ</translation>
@@ -1291,7 +1294,6 @@
 <translation id="598882571027504733">အပ်ဒိတ်ရယူနိုင်ရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ပါ။</translation>
 <translation id="5998374579424866922">ဂိမ်းထိန်းချုပ်ကိရိယာများ ပိတ်ရန်</translation>
 <translation id="6000279412553873020">ကီး၊ ခလုတ် စသည်</translation>
-<translation id="6002122790816966947">သင်၏စက်များ</translation>
 <translation id="6012623610530968780">စာမျက်နှာ <ph name="TOTAL_PAGE_NUM" /> အနက် <ph name="SELECTED_PAGE" /></translation>
 <translation id="601304062528754300">စင်ပေါ်ရှိ နောက်အက်ပ်တစ်ခုကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="6015573907265691211">လုပ်ပြီးဟု မှတ်ရန်</translation>

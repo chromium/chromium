@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">強制的にズームを有効にする</translation>
 <translation id="3908288065506437185">シークレット モードでサードパーティ Cookie をブロックする</translation>
 <translation id="3918378745482005425">一部の機能が動作しない可能性があります。関連サイトでは引き続きサードパーティ Cookie を使用できます。</translation>
+<translation id="3933121352599513978">不要なリクエストを閉じる（推奨）</translation>
 <translation id="3955193568934677022">保護されたコンテンツの再生をサイトに許可する（推奨）</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3974105241379491420">保存したあなたに関する情報の使用をサイトが求めることを許可する</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698"><ph name="URL" /> にアクセスできません</translation>
 <translation id="8986362086234534611">削除</translation>
 <translation id="8990043154272859344">すべてのサイトからログアウトします</translation>
+<translation id="8993853206419610596">すべてのリクエストを開く</translation>
 <translation id="9002538116239926534">オンにすると、サイトはデバイスにデータを保存できます。オフにすると、サイトはデバイスにデータを保存できません。</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> を許可しました</translation>
 <translation id="9019902583201351841">保護者により管理されています</translation>

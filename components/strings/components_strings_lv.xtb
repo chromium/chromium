@@ -340,6 +340,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="160851722280695521">Spēlēt dinozaura skriešanas spēli pārlūkā Chrome</translation>
 <translation id="161042844686301425">Ciānzila</translation>
 <translation id="1611101756749861742">Otrais rullis</translation>
+<translation id="1611854593425834707">Aizvērt apraidei pieejamo ierīču sarakstu</translation>
 <translation id="1612199629998703524">Tēmu pārvaldība</translation>
 <translation id="1615178538289490617">Atsaukt vietnes <ph name="PORT_NAME" /> piekļuves atļauju</translation>
 <translation id="1615402009686901181">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna uzņemšanu</translation>
@@ -826,6 +827,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2526280916094749336">Saglabātās adreses varat izmantot dažādos Google produktos. Šī adrese tiks saglabāta jūsu Google kontā (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">CVC kods ir norādīts kartes priekšpusē. Tas ir četrciparu kods augšējā labajā stūrī virs kartes numura.</translation>
 <translation id="2529899080962247600">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks ignorēti.</translation>
+<translation id="2533649878691950253">Šai vietnei tika bloķēta piekļuve informācijai par precīzu jūsu atrašanās vietu, jo jūs parasti to neatļaujat.</translation>
 <translation id="253493526287553278">Skatīt akcijas koda informāciju</translation>
 <translation id="2535585790302968248">Atvērt jaunu inkognito cilni privātai pārlūkošanai</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{un vēl 1}zero{un vēl #}one{un vēl #}other{un vēl #}}</translation>
@@ -1917,6 +1919,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4691093235373904540">Jumta seguma darbi</translation>
 <translation id="4692623383562244444">Meklētājprogrammas</translation>
 <translation id="4698692901173737941">Cīņas sporta veidi</translation>
+<translation id="4701307090948589984">Izvēlieties ierīci apraidei…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">sānu</translation>
 <translation id="4702656508969495934">Subtitri reāllaikā ir redzami. Lai izceltu, izmantojiet logu pārslēdzēju.</translation>
@@ -2166,6 +2169,8 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5161334686036120870">Temats:</translation>
 <translation id="5161506081086828129">9. izvades vieta</translation>
 <translation id="5164798890604758545">Tiek ievadīts teksts</translation>
+<translation id="5164928537947209380">Dažkārt šī eksperimentālā MI rīka rezultāti ir nepareizi. Lai to uzlabotu, jūsu saturs tiek sūtīts uzņēmumam Google.
+    <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="516920405563544094">Ievadiet kredītkartes <ph name="CREDIT_CARD" /> CVC kodu. Pēc apstiprināšanas kartes informācija no Google konta tiks kopīgota ar šo vietni.</translation>
 <translation id="5169827969064885044">Varat zaudēt piekļuvi savam organizācijas kontam, vai jūsu identitāte var tikt nozagta. Chrome iesaka nekavējoties nomainīt paroli.</translation>
 <translation id="5171045022955879922">Meklējiet vai ievadiet URL.</translation>
@@ -3301,6 +3306,7 @@ Papildu informācija:
 <translation id="7392089738299859607">Adreses atjaunināšana</translation>
 <translation id="7393161616326137353">Piedzīvojumu spēles</translation>
 <translation id="739728382607845710">Maksājumu apstrādātāja ikona</translation>
+<translation id="7399616692258236448">Atrašanās vietu pieprasījumi tiek automātiski bloķēti visās vietnēs, izņemot tās, kurās atļāvāt to rādīšanu.</translation>
 <translation id="7399802613464275309">Drošības pārbaude</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Kopīgojiet šo cilni, piemēram, kopīgojot saiti, izveidojot kvadrātkodu, sākot apraidi vai citā veidā.</translation>
@@ -4062,6 +4068,7 @@ Papildu informācija:
 <translation id="8807160976559152894">Apgriešana pēc katras lapas</translation>
 <translation id="8809203544698246977">Bloķētās tēmas ir redzamas šeit</translation>
 <translation id="8811470563853401328">Vai saglabāt adresi kontā?</translation>
+<translation id="8811725516933141693">Lai tērzētu ar Gemini, rakstiet “@gemini”.</translation>
 <translation id="8813277370772331957">Atgādināt vēlāk</translation>
 <translation id="8814707942599948500">Aploksne C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome iestatījumos atjauninātu pārlūkprogrammu Chrome, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu.</translation>

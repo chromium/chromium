@@ -493,6 +493,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />에 공유하는 중</translation>
 <translation id="363596933471559332">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 인증 요청 메시지가 표시됩니다.</translation>
 <translation id="3636940436873918441">기본 언어</translation>
+<translation id="368329460027487650">로그아웃했습니다. 로그인 옵션을 엽니다.</translation>
 <translation id="3687645719033307815">페이지의 미리보기를 보는 중입니다.</translation>
 <translation id="3690369331356918524">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
 <translation id="3692944402865947621">저장 위치에 연결할 수 없어 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>

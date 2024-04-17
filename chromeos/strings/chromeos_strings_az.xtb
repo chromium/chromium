@@ -24,6 +24,7 @@
 <translation id="1119447706177454957">Daxili xəta</translation>
 <translation id="1124772482545689468">İstifadəçi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1135805404083530719">Nizamlayıcılar paneli</translation>
 <translation id="1145018782460575098">"Proqramı xarici cihazlar üçün güncəlləyin" pəncərəsi açıqdır. <ph name="NUM_UPDATES" /> güncəlləmə əlçatandır.</translation>
 <translation id="1145516343487477149">Ümumi Chromebook suallarına yardım məqalələri və cavablar tapın</translation>
 <translation id="1154390310959620237">Yalnız 5 qısayol fərdiləşdirmək olar. Yeni qısayol əlavə etmək üçün birini silin.</translation>
@@ -32,6 +33,7 @@
 <translation id="1167755866710282443">Düymələri fərdiləşdirmək üçün menyunu açın. Hərəkət etdirmək üçün menyunu sürüşdürün.</translation>
 <translation id="1171349345463658120">qumlu göl</translation>
 <translation id="1174073918202301297">Qısayol əlavə edildi</translation>
+<translation id="11743817593307477">Ox düymələrindən istifadə edərək bu nizamlayıcını istədiyiniz oyun əməliyyatına gətirin. Nizamlayıcını yerləşdirmək üçün enter düyməsindən istifadə edin. Ləğv etmək üçün escape düyməsindən istifadə edin.</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur.</translation>
 <translation id="1175951029573070619">Orta (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">rahat</translation>
@@ -101,6 +103,7 @@
 <translation id="1515129336378114413">brauzerin əsas səhifəsi</translation>
 <translation id="1526389707933164996">Ekran qoruyucu animasiyası</translation>
 <translation id="152892567002884378">Səsi artırın</translation>
+<translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="155865706765934889">Taçped</translation>
 <translation id="1561927818299383735">fon işığı rəngi</translation>
@@ -109,6 +112,7 @@
 <translation id="1567064801249837505">Albomlar</translation>
 <translation id="1572585716423026576">Divar kağızı kimi ayarlayın</translation>
 <translation id="1578784163189013834">Ekran qoruyucusu üçün arxa fon seçin</translation>
+<translation id="1593528591614229756">Mobil təminatçı və ya administrator tərəfindən təqdim edilən APN-ləri seçin. APN seçdikdə fərdi APN-lər deaktiv ediləcək. Yanlış APN-lər mobil bağlantıya mane ola bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Şəkli Önizləyin</translation>
 <translation id="1611649489706141841">irəli</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> tarixindən bəri data istifadəsi</translation>
@@ -161,6 +165,7 @@
 <translation id="1801418420130173017">Qaranlıq temanı deaktiv edin</translation>
 <translation id="1807246157184219062">Yüngül</translation>
 <translation id="1808803439260407870">Klassik incəsənət</translation>
+<translation id="1815850098929213707">Seçilmiş düymə: <ph name="KEYS" />. Nizamlayıcını redaktə etmək üçün düyməyə toxunun</translation>
 <translation id="1823120442877418684">Simvollar</translation>
 <translation id="1827738518074806965">İncəsənət qalereyası</translation>
 <translation id="1836553715834333258">Sistem rəngi</translation>
@@ -215,6 +220,7 @@
 <translation id="2105810540595158374">Cihaz oyun nizamlayıcısıdır.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB əlçatandır</translation>
+<translation id="2135668738111962377">Redaktə edin: <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Üzmə</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
@@ -227,6 +233,7 @@
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
 <translation id="2180197493692062006">Xəta oldu. Tətbiqi yenidən açmağa çalışın.</translation>
 <translation id="2189104374785738357">APN detallarını redaktə edin</translation>
+<translation id="2195732836444333448">Hazırda doludur. Sonra yoxlayın.</translation>
 <translation id="2201758491318984023">velosiped</translation>
 <translation id="2203222757805818543">Cari cədvəl: <ph name="SUNRISE" /> - <ph name="SUNSET" />. Qaranlıq rejim cədvəlini avtomatik güncəlləmək üçün <ph name="BEGIN_LINK" />məkana girişi yandırın<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">termal su</translation>
@@ -287,6 +294,7 @@
 <translation id="2517472476991765520">Skan edin</translation>
 <translation id="2521835766824839541">əvvəlki trek</translation>
 <translation id="2526590354069164005">Masaüstü</translation>
+<translation id="2529641961800709867">Düymə seçimləri</translation>
 <translation id="253029298928638905">Yenidən başladılır...</translation>
 <translation id="2531772459602846206">hortenziya</translation>
 <translation id="2533048460510040082">Təklif olunan yardım məzmunu</translation>
@@ -297,6 +305,7 @@
 <translation id="2584547424703650812">Parıldayan mənzərələr</translation>
 <translation id="2584559707064218956">Ayarlamaq üçün Ayarlara keçin</translation>
 <translation id="2586146417912237930">mavi və indiqo</translation>
+<translation id="2589921777872778654">Redaktə və silmə menyusu</translation>
 <translation id="2597774443162333062">Fayllar sazlama üçün Google'a göndəriləcək</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanlama tamamlanıb. 1 səhifə skanlanıb}other{Skanlama tamamlanıb. {NUMBER_OF_PAGES} səhifə skanlanıb}}</translation>
 <translation id="2617397783536231890">pambıq</translation>
@@ -428,6 +437,7 @@
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izləmə datasını<ph name="END_LINK1" /> göndərin</translation>
 <translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
+<translation id="353214771040290298">Redaktəni bitirin</translation>
 <translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
 <translation id="3533790840489634638">hovuz</translation>
 <translation id="3547264467365135390">Düstur</translation>
@@ -530,6 +540,7 @@
 <translation id="4130035430755296270">Digər düzən seçimləri üçün mausla tuşlamağa davam edin</translation>
 <translation id="4130750466177569591">Razıyam</translation>
 <translation id="4131410914670010031">Ağ və qara</translation>
+<translation id="4143226836069425823">Əvəzləmək üçün başqa klaviatura düyməsinə toxunun</translation>
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -624,6 +635,7 @@
 <translation id="4665014895760275686">İstehsalçı</translation>
 <translation id="467510802200863975">Parollar üst-üstə düşmür</translation>
 <translation id="467715984478005772">Qoruyucu divar şübhəsi var</translation>
+<translation id="4683762547447150570">Düymə təyinini fokuslamaq üçün düyməyə toxunun</translation>
 <translation id="4691278870498629773">Dayanıb - Altlıq yoxdur</translation>
 <translation id="469379815867856270">Siqnal Gücü</translation>
 <translation id="4697260493945012995">Nizamlayıcı növü seçin</translation>
@@ -705,6 +717,7 @@
 <translation id="5130848777448318809">ponilər</translation>
 <translation id="5137451382116112100">Tam</translation>
 <translation id="5142961317498132443">İdentifikasiya</translation>
+<translation id="5144311987923128508">Təsdiq düyməsi deaktiv edilib</translation>
 <translation id="5144887194300568405">Tərcüməni kopyalayın</translation>
 <translation id="5145081769226915336">Qaranlıq rejim avtomatik aktiv edilsin?</translation>
 <translation id="5154917547274118687">Yaddaş</translation>
@@ -824,6 +837,7 @@
 <translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5876385649737594562">Seçim etmək üçün aktiv edin</translation>
 <translation id="588258955323874662">Tam ekran</translation>
+<translation id="5893975327266416093">Təyin etmək üçün klaviatura düyməsinə toxunun</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5903200662178656908">Cihaz klaviatura və maus kombinidir.</translation>
@@ -896,6 +910,7 @@
 <translation id="6243280677745499710">Hazırda ayarlanıb</translation>
 <translation id="6250316632541035980">donuz əti və yumurtalar</translation>
 <translation id="6255213378196499011">Yazı yardımı ayarları</translation>
+<translation id="6265268291107409527">Seçilmiş düymə: <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Sağ ox</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -957,6 +972,7 @@
 <translation id="6535178685492749208">Oflaynsınız. Rəy sonra göndəriləcək.</translation>
 <translation id="6543412779435705598">takolar</translation>
 <translation id="6551839203326557324">almalar</translation>
+<translation id="65526652485742171">Təsdiq düyməsi aktivləşdirilib</translation>
 <translation id="6557784757915238407">APN növü: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Yastı</translation>
 <translation id="6560196641871357166">Canlı</translation>
@@ -1031,6 +1047,16 @@
 <translation id="6975981640379148271">koalalar</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>
+<translation id="698242338298293034">Tema seçdikdən sonra Sİ şəkillərini fərdiləşdirmək üçün altından xətt çəkilən sözləri seçin.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Unikal və müxtəlif Sİ şəkilləri üçün "Təsadüfi" seçin.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Sİ ilə yaradıcılıq zamanı <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Məxfilik Siyasətinə<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> uyğun olaraq şəkil yaratmaq və məhsul təkmilləşdirmək sorğusu Google Sİ serverlərinə göndərilir.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Yaradan Sİ təcrübidir, ilkin hazırlanma mərhələsindədir və məhdud əlçatanlığa malikdir.</translation>
 <translation id="6982462588253070448">qum təpələri</translation>
 <translation id="7005833343836210400">Cihaz oflayndır</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
@@ -1051,6 +1077,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> adlı cihaz <ph name="INDEX" />/<ph name="COUNT" />.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> üçün eksklüziv illüstrasiya seçin</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7118522231018231199">Mobil təminatçı və ya administrator tərəfindən təqdim edilən APN-ləri seçin. APN seçdikdə fərdi APN-lər deaktiv ediləcək. Yanlış APN-lər mobil bağlantıya mane ola bilər.</translation>
 <translation id="7119389851461848805">qidalanma</translation>
 <translation id="7129287270910503851">Data istifadəsi hər ayın bu günü sıfırlanacaq</translation>
 <translation id="7130438335435247835">Giriş nöqtəsi adı (APN)</translation>
@@ -1173,6 +1200,7 @@
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="779591286616261875">Yeni hesabat göndərin</translation>
 <translation id="7799817062559422778">İşıqlı rejim</translation>
+<translation id="7802764839223122985">Düymə yoxdur. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7813073042185856802">dağ</translation>
@@ -1219,6 +1247,7 @@
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> arxa fonunda <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8067126283828232460">APN qoşulub.</translation>
 <translation id="8067208048261192356">qəhvəyi</translation>
+<translation id="8067224607978179455">Silin: <ph name="ACTION_NAME" /></translation>
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="8076492880354921740">Tablar</translation>
 <translation id="8079860070590459552">gül tarlası</translation>
@@ -1244,6 +1273,7 @@
 <translation id="8226628635270268143">Sevimli fotolarınızı və albomlarınızı seçin</translation>
 <translation id="8227119283605456246">Fayl qoşun</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
+<translation id="8238771987802558562">APN seçin</translation>
 <translation id="8246209727385807362">Naməlum operator</translation>
 <translation id="8250926778281121244">pas</translation>
 <translation id="8257572018929862473">Cəld cavablar ayarlarını açın</translation>
@@ -1366,6 +1396,7 @@
 <translation id="8928727111548978589">Alınmadı - Kağız yoxdur</translation>
 <translation id="8930521118335213258">Eynisəviyyəli tətbiq</translation>
 <translation id="8930622219860340959">Simsiz</translation>
+<translation id="8933650076320258356"><ph name="DIRECTION" /> üçün seçilmiş düymə: <ph name="KEYS" /> <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Müştərinin IP ünvanı</translation>
 <translation id="8944651180182756621">Başladıcı rəngi</translation>
 <translation id="8945308580158685341">arılar</translation>
@@ -1416,18 +1447,22 @@
 <translation id="9149391708638971077">Yaddaş Testi icra edin</translation>
 <translation id="9159524746324788320">hamburgerlər</translation>
 <translation id="9161276708550942948">boşluq</translation>
+<translation id="9169345239923038539">Hələ qoşulmamısınız. Mobil operator fərdi APN tövsiyə edirsə, <ph name="BEGIN_LINK" />APN məlumatını daxil edin.<ph name="END_LINK" /></translation>
 <translation id="9173638680043580060">Bir dəqiqədən az qalıb</translation>
 <translation id="9174334653006917325">UI rəngi</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klaviaturanız avtomatik olaraq divar kağızı ilə uyğunlaşa bilər</translation>
 <translation id="9189000703457422362">Avtomatik aşkarlanan APN ilə bu şəbəkəyə qoşulmaq olmur. Ətraflı məlumat üçün mobil operator ilə əlaqə saxlayın.</translation>
 <translation id="9193744392140377127">APN*</translation>
+<translation id="9195918315673527512">Seçilmiş coystik düymələri: <ph name="KEYS" />. Nizamlayıcını redaktə etmək üçün düyməyə toxunun</translation>
 <translation id="9204237731135241582">Android tətbiqlərindən giriş ilə əlaqə saxlamaq olmur</translation>
 <translation id="921080052717160800">Şəkil kamera arxa fonu kimi təyin edildi</translation>
 <translation id="9211490828691860325">Bütün masalar</translation>
+<translation id="9218016617214286986">Məlum APN-ləri göstərin</translation>
 <translation id="932327136139879170">Ev</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
+<translation id="950520315903467048"><ph name="DIRECTION" /> üçün düymə yoxdur. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="952992212772159698">Aktiv edilməyib</translation>
 <translation id="95718197892796296">gil</translation>
 <translation id="960719561871045870">Operator kodu</translation>

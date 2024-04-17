@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Tvinga aktivering av zoom</translation>
 <translation id="3908288065506437185">Blockera tredjepartscookies i inkognitoläge</translation>
 <translation id="3918378745482005425">En del funktioner fungerar eventuellt inte. Relaterade webbplatser kan fortfarande använda tredjepartscookies.</translation>
+<translation id="3933121352599513978">Komprimera oönskade förfrågningar (rekommenderas)</translation>
 <translation id="3955193568934677022">Tillåt att skyddat innehåll spelas upp på webbplatser (rekommenderas)</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3974105241379491420">Webbplatser får begära tillstånd att använda uppgifter som de har sparat om dig</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Det går inte att nå webbadressen: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Glöm</translation>
 <translation id="8990043154272859344">Du loggas ut från alla webbplatser</translation>
+<translation id="8993853206419610596">Utöka alla begäranden</translation>
 <translation id="9002538116239926534">När detta är aktiverat kan webbplatser spara data på enheten. När detta är inaktiverat får webbplatser inte spara data på enheten.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> tillåts</translation>
 <translation id="9019902583201351841">Hanteras av dina föräldrar</translation>

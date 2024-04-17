@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Força l'activació del zoom</translation>
 <translation id="3908288065506437185">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="3918378745482005425">És possible que algunes funcions no estiguin operatives. Els llocs web relacionats podran continuar utilitzant galetes de tercers.</translation>
+<translation id="3933121352599513978">Replega les sol·licituds no desitjades (opció recomanada)</translation>
 <translation id="3955193568934677022">Permet que els llocs web reprodueixin contingut protegit (opció recomanada)</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3974105241379491420">Els llocs web poden demanar-te permís per utilitzar la informació que han desat sobre tu</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">No es pot accedir a la navegació: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Oblida</translation>
 <translation id="8990043154272859344">Se't tancarà la sessió de tots els llocs web</translation>
+<translation id="8993853206419610596">Desplega totes les sol·licituds</translation>
 <translation id="9002538116239926534">Quan aquesta opció està activada, els llocs web poden desar dades al teu dispositiu. Quan aquesta opció està desactivada, els llocs web no poden desar dades al teu dispositiu.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> permès</translation>
 <translation id="9019902583201351841">Gestionat pels pares</translation>

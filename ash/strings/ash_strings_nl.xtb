@@ -68,6 +68,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store-app</translation>
 <translation id="1225748608451425081">Je Chromebook is vergrendeld vanwege een bekend probleem. Je kunt inloggen over: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Selecteren stoppen</translation>
+<translation id="1230853660706736937">Zoek tekst in afbeeldingen en bekijk afbeeldingsvoorbeelden</translation>
 <translation id="1235458158152011030">Bekende netwerken</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is verbonden.</translation>
 <translation id="1240638468526743569">Een app</translation>
@@ -715,11 +716,13 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3824784079442479685">Hiermee geef je <ph name="APP_NAME" /> en alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="3826099427150913765">Overschakelen naar wachtwoord</translation>
 <translation id="383058930331066723">Batterijbesparing staat aan</translation>
+<translation id="3831226344927851293">Tutorialweergave sluiten</translation>
 <translation id="383629559565718788">Toetsenbordinstellingen bekijken</translation>
 <translation id="384082539148746321">Template verwijderen?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> en dan <ph name="KEY_ONE" /> of <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /> of <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Geen netwerkinformatie beschikbaar</translation>
+<translation id="3848526302597027234">Krijg toegang tot de volgende rechten:</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3859364108019690">Kan geen apps streamen</translation>
@@ -1291,7 +1294,6 @@ Geen apparaten verbonden.</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
 <translation id="5998374579424866922">Gamebediening uitzetten</translation>
 <translation id="6000279412553873020">Toetsen, knoppen en meer</translation>
-<translation id="6002122790816966947">Je apparaten</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Het volgende item op de plank markeren</translation>
 <translation id="6015573907265691211">Markeren als klaar</translation>

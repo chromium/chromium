@@ -340,6 +340,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="160851722280695521">Jugar al juego del dinosaurio de Chrome</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611101756749861742">Segundo rollo</translation>
+<translation id="1611854593425834707">Cerrar la lista de dispositivos para transmitir</translation>
 <translation id="1612199629998703524">Administración de temas</translation>
 <translation id="1615178538289490617">Revocar el acceso a <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">La política del administrador inhabilita la captura de pantalla cuando hay contenido confidencial a la vista.</translation>
@@ -618,7 +619,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2126374524350484896">Generador de PDF:</translation>
 <translation id="2130448033692577677">Debido a que no se estableció la política DnsOverHttpsMode, es posible que no se apliquen las plantillas que especificaste.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Las opciones se muestran en orden aleatorio. Puedes cambiar el motor de búsqueda predeterminado en cualquier momento.</translation>
+<translation id="2132825047782982803">Las opciones se muestran en orden aleatorio. Puedes cambiar la opción predeterminada en cualquier momento.</translation>
 <translation id="2137891579555018930">Esperando el permiso…</translation>
 <translation id="213826338245044447">Favoritos del celular</translation>
 <translation id="2141000681034340397">Editar tu entrada</translation>
@@ -826,6 +827,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2526280916094749336">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guardará en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC está en el frente de la tarjeta. Es el código de 4 dígitos que se encuentra en la parte superior derecha sobre el número de la tarjeta.</translation>
 <translation id="2529899080962247600">Esta campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán todas las entradas posteriores.</translation>
+<translation id="2533649878691950253">No se permitió que este sitio acceda a tu ubicación precisa porque generalmente no otorgas este permiso.</translation>
 <translation id="253493526287553278">Ver los detalles del código promocional</translation>
 <translation id="2535585790302968248">Abre una nueva pestaña de incógnito para navegar de forma privada</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{y 1 más}other{y # más}}</translation>
@@ -1919,6 +1921,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4691093235373904540">Tejados</translation>
 <translation id="4692623383562244444">Motores de búsqueda</translation>
 <translation id="4698692901173737941">Deportes de combate</translation>
+<translation id="4701307090948589984">Transmitir a…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
 <translation id="4702656508969495934">El Subtitulado instantáneo está visible; utiliza el botón de cambio de ventana para enfocar</translation>
@@ -2168,6 +2171,8 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5161334686036120870">Asunto:</translation>
 <translation id="5161506081086828129">Apilador 9</translation>
 <translation id="5164798890604758545">Se ingresó texto</translation>
+<translation id="5164928537947209380">Esta herramienta de IA experimental puede cometer errores. Para mejorarla, se envía tu contenido a Google.
+    <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Ingresa el CVC de la tarjeta <ph name="CREDIT_CARD" />. Después de confirmarla, los datos de la tarjeta en tu Cuenta de Google se compartirán con este sitio.</translation>
 <translation id="5169827969064885044">Es posible que hayas perdido el acceso a la cuenta de tu organización o sufrido un robo de identidad. Chrome te recomienda que cambies la contraseña ahora.</translation>
 <translation id="5171045022955879922">Buscar o escribir URL</translation>
@@ -3303,6 +3308,7 @@ Detalles adicionales:
 <translation id="7392089738299859607">Actualizar dirección</translation>
 <translation id="7393161616326137353">Juegos de aventura</translation>
 <translation id="739728382607845710">Ícono del controlador de pagos</translation>
+<translation id="7399616692258236448">Las solicitudes de ubicación se bloquean automáticamente en todos los sitios, excepto en los que las permites</translation>
 <translation id="7399802613464275309">Verificación de seguridad</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartir esta pestaña con el vínculo, creando un código QR, transmitiendo la pestaña y más</translation>
@@ -4064,6 +4070,7 @@ Detalles adicionales:
 <translation id="8807160976559152894">Cortar después de cada página</translation>
 <translation id="8809203544698246977">Los temas que bloqueaste aparecen aquí</translation>
 <translation id="8811470563853401328">¿Quieres guardar la dirección en la cuenta?</translation>
+<translation id="8811725516933141693">Escribe @gemini para chatear con Gemini</translation>
 <translation id="8813277370772331957">Recordarme más tarde</translation>
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para actualizar Chrome desde la configuración del navegador</translation>

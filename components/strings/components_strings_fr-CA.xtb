@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Auteur :</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Vêtements d'extérieur</translation>
+<translation id="1253096324252841344">Payer au moyen de <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisés)</translation>
 <translation id="1255086252236620440">Batteurs</translation>
 <translation id="1256368399071562588">&lt;p&gt;Si vous essayez de consulter un site Web et si celui-ci ne s'ouvre pas, essayez de corriger l'erreur à l'aide des étapes de dépannage suivantes :&lt;/p&gt;
@@ -340,6 +341,7 @@
 <translation id="160851722280695521">Jouer au jeu du dinosaure dans Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Deuxième rouleau</translation>
+<translation id="1611854593425834707">Fermer la liste des appareils pour la diffusion</translation>
 <translation id="1612199629998703524">Gérer les sujets</translation>
 <translation id="1615178538289490617">Révoquer l'accès pour <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">La politique définie par l'administrateur désactive les captures d'écran lorsque du contenu confidentiel est visible</translation>
@@ -618,7 +620,7 @@
 <translation id="2126374524350484896">Outil de conversion en PDF :</translation>
 <translation id="2130448033692577677">Les modèles que vous avez indiqués pourraient ne pas être appliqués si la politique DnsOverHttpsMode n'est pas définie.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
-<translation id="2132825047782982803">Ceux-ci sont présentés dans un ordre aléatoire. Vous pouvez modifier votre navigateur par défaut à tout moment.</translation>
+<translation id="2132825047782982803">Ceux-ci sont présentés dans un ordre aléatoire. Vous pouvez modifier votre moteur de recherche par défaut à tout moment.</translation>
 <translation id="2137891579555018930">En attente d'autorisation…</translation>
 <translation id="213826338245044447">Favoris d'appareil mobile</translation>
 <translation id="2141000681034340397">Modifier votre entrée</translation>
@@ -826,6 +828,7 @@
 <translation id="2526280916094749336">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Cette adresse sera enregistrée dans votre compte Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Votre code CVC se trouve au recto de votre carte. Il s'agit du code à 4 chiffres en haut à droite au-dessus de votre numéro de carte.</translation>
 <translation id="2529899080962247600">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront ignorées.</translation>
+<translation id="2533649878691950253">Votre position exacte est bloquée pour ce site parce que vous refusez habituellement de la communiquer</translation>
 <translation id="253493526287553278">Voir les détails du code promotionnel</translation>
 <translation id="2535585790302968248">Ouvrir une nouvelle fenêtre en mode de navigation privée pour naviguer en mode privé</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
@@ -1512,6 +1515,7 @@
 <translation id="385489333361351399">Caméra et matériel photographique</translation>
 <translation id="3858027520442213535">Mettre à jour la date et l'heure</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3865339060090354361">Consultez les conditions ici pour <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Sciences</translation>
 <translation id="3875783148670536197">Afficher la marche à suivre</translation>
 <translation id="3880456882942693779">Arts et spectacles</translation>
@@ -1918,6 +1922,7 @@
 <translation id="4691093235373904540">Toiture</translation>
 <translation id="4692623383562244444">Moteurs de recherche</translation>
 <translation id="4698692901173737941">Sports de combat</translation>
+<translation id="4701307090948589984">Diffuser sur…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Côté</translation>
 <translation id="4702656508969495934">Les sous-titres instantanés sont visibles; servez-vous du commutateur de fenêtre pour y accéder</translation>
@@ -2167,6 +2172,8 @@
 <translation id="5161334686036120870">Sujet :</translation>
 <translation id="5161506081086828129">Empileur 9</translation>
 <translation id="5164798890604758545">Du texte est entré</translation>
+<translation id="5164928537947209380">Cet outil d'IA expérimental ne sera pas toujours correct. Pour l'améliorer, votre contenu est envoyé à Google.
+    <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Entrez le code de vérification de carte (CVC) de votre carte <ph name="CREDIT_CARD" />. Après votre confirmation, les détails de la carte provenant de votre compte Google seront partagés avec ce site.</translation>
 <translation id="5169827969064885044">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'un vol d'identité. Chrome recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="5171045022955879922">Effectuez une recherche ou entrez une adresse URL</translation>
@@ -2348,6 +2355,7 @@
 <translation id="553377674408670169">Emplois dans le domaine de l'éducation</translation>
 <translation id="5536214594743852365">Afficher la section « <ph name="SECTION" /> »</translation>
 <translation id="553782666181800029">Enveloppe Chou nᵒ 2</translation>
+<translation id="5538270463355278784">plein écran automatique</translation>
 <translation id="5539243836947087108">Radeau</translation>
 <translation id="5540224163453853">Impossible de trouver l'article demandé.</translation>
 <translation id="5540969246441091044">Sports équestres</translation>
@@ -2712,6 +2720,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="6254436959401408446">Mémoire insuffisante pour ouvrir cette page</translation>
 <translation id="625463612687472648">Arrêter l'autorisation</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Lorsque vous effectuez des achats sur Chrome, consultez <ph name="FINANCIAL_ACCOUNT_TYPES" /> comme option}one{Lorsque vous effectuez des achats sur Chrome, consultez <ph name="FINANCIAL_ACCOUNT_TYPES" /> comme option}other{Lorsque vous effectuez des achats sur Chrome, consultez <ph name="FINANCIAL_ACCOUNT_TYPES" /> comme options}}</translation>
 <translation id="6259156558325130047">&amp;Rétablir la réorganisation</translation>
 <translation id="6263376278284652872">Favoris de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
@@ -3302,6 +3311,7 @@ Détails supplémentaires :
 <translation id="7392089738299859607">Mettre à jour l'adresse</translation>
 <translation id="7393161616326137353">Jeux d'aventure</translation>
 <translation id="739728382607845710">Icône du module de traitement du paiement</translation>
+<translation id="7399616692258236448">Les demandes de localisation sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="7399802613464275309">Vérification de sécurité</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Partager cet onglet en partageant le lien, en créant un code QR, en diffusant du contenu et plus</translation>
@@ -3846,6 +3856,7 @@ Détails supplémentaires :
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8380941800586852976">Dangereux</translation>
 <translation id="8381674639488873545">Ces frais peuvent être facturés une seule fois ou de manière récurrente et peuvent être cachés. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Plein écran automatique</translation>
 <translation id="838307841291975086">Voitures familiales</translation>
 <translation id="8389532092404711541">Prix habituel : <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Véhicules sur mesure et de performance</translation>
@@ -4062,6 +4073,7 @@ Détails supplémentaires :
 <translation id="8807160976559152894">Couper après chaque page</translation>
 <translation id="8809203544698246977">Les sujets bloqués apparaissent ici</translation>
 <translation id="8811470563853401328">Enregistrer l'adresse dans le compte?</translation>
+<translation id="8811725516933141693">Tapez @gemini pour clavarder avec Gemini</translation>
 <translation id="8813277370772331957">Me le rappeler plus tard</translation>
 <translation id="8814707942599948500">Enveloppe C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour mettre à jour Chrome dans les paramètres de Chrome</translation>

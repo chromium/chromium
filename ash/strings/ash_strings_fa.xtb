@@ -68,6 +68,7 @@
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />، برنامه فروشگاه Play</translation>
 <translation id="1225748608451425081">‏Chromebook شما به‌دلیل مشکل شناخته‌شده‌ای قفل شده است. پس از <ph name="TIME_LEFT" /> می‌توانید به سیستم وارد شوید.</translation>
 <translation id="1229194443904279055">توقف انتخاب</translation>
+<translation id="1230853660706736937">جستجوی نوشتار در تصاویر و دیدن پیش‌نمایش تصاویر</translation>
 <translation id="1235458158152011030">شبکه‌های شناخته‌شده</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> متصل است.</translation>
 <translation id="1240638468526743569">برنامه‌ای</translation>
@@ -160,6 +161,7 @@
 <translation id="1569384531973824928">با این کار، دسترسی برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین و میکروفون مجاز می‌شود. ممکن است لازم باشد صفحه وب را بازآوری کنید یا برنامه را دوباره راه‌اندازی کنید.</translation>
 <translation id="1571697193564730395">روشن/خاموش کردن «مزاحم نشوید». <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">زوم‌پس کردن هنگام روشن بودن ذره‌بین</translation>
+<translation id="1582946770779745370">‏«داشبورد بازی‌ها» دردسترس است. هرزمان خواستید برای باز کردن آن، کلید <ph name="LAUNCHER_KEY_NAME" /> + تبدیل + گریز و سپس <ph name="LAUNCHER_KEY_NAME" /> + g را فشار دهید</translation>
 <translation id="1586324912145647027">رفتن به میزکار ۱ تا ۸</translation>
 <translation id="158838227375272121">‏وب‌سایت Google Classroom</translation>
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
@@ -715,11 +717,13 @@
 <translation id="3824784079442479685">با این کار، دسترسی به دوربین برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود. ممکن است لازم باشد صفحه وب را بازآوری کنید یا برنامه را دوباره راه‌اندازی کنید.</translation>
 <translation id="3826099427150913765">رفتن به گذرواژه</translation>
 <translation id="383058930331066723">حالت «بهینه‌سازی باتری» روشن است</translation>
+<translation id="3831226344927851293">خروج از نمای آموزش گام‌به‌گام</translation>
 <translation id="383629559565718788">نمایش تنظیمات صفحه‌کلید</translation>
 <translation id="384082539148746321">الگو حذف شود؟</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> سپس <ph name="KEY_ONE" /> یا <ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /> یا <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">۵۰+۹۴٫۵</translation>
 <translation id="3846575436967432996">اطلاعات شبکه در دسترس نیست</translation>
+<translation id="3848526302597027234">دسترسی به اجازه‌های زیر:</translation>
 <translation id="385051799172605136">برگشتن</translation>
 <translation id="385300504083504382">آغاز</translation>
 <translation id="3859364108019690">برنامه‌ها جاری‌سازی نشدند</translation>
@@ -1291,7 +1295,6 @@
 <translation id="598882571027504733">‏برای دریافت به‌روزرسانی، Chromebook را با صفحه‌کلید متصل بازراه‌اندازی کنید.</translation>
 <translation id="5998374579424866922">خاموش کردن کنترل‌های بازی</translation>
 <translation id="6000279412553873020">کلیدها، دکمه‌ها، و غیره</translation>
-<translation id="6002122790816966947">دستگاه‌های شما</translation>
 <translation id="6012623610530968780">صفحه <ph name="SELECTED_PAGE" /> از <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">برجسته کردن مورد بعدی در قفسه</translation>
 <translation id="6015573907265691211">علامت‌گذاری به‌عنوان تکمیل‌شده</translation>

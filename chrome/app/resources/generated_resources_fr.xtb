@@ -127,7 +127,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1084824384139382525">Copier l'adr&amp;esse du lien</translation>
 <translation id="1085064499066015002">Toujours sur tous les sites</translation>
 <translation id="1085697365578766383">Impossible de démarrer la machine virtuelle. Veuillez réessayer.</translation>
-<translation id="1088659085457112967">Accéder au mode Lecteur</translation>
 <translation id="1090126737595388931">Aucune application active en arrière plan</translation>
 <translation id="1090541560108055381">Avant d'associer les appareils, assurez-vous que ce code est le même sur les deux</translation>
 <translation id="1091767800771861448">Appuyez sur ECHAP pour ignorer (versions non officielles uniquement).</translation>
@@ -2163,7 +2162,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2587922766792651800">Délai dépassé</translation>
 <translation id="2588636910004461974">Appareils de <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Ne jamais afficher les fichiers Drive</translation>
-<translation id="25899519884572181">Quitter le mode Lecteur</translation>
 <translation id="2593499352046705383">Avant de commencer, vérifiez que vous avez une copie de sauvegarde de vos données. L'installation de <ph name="DEVICE_OS" /> va écraser les données de votre disque dur. En savoir plus : g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Gérer la sécurité de V8</translation>
 <translation id="2594999711683503743">Rechercher sur Google ou saisir une URL</translation>
@@ -2464,7 +2462,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2806372837663997957">L'appareil avec lequel vous tentez de partager le fichier n'a pas accepté cette opération</translation>
 <translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers téléchargés s'affichent ici</translation>
-<translation id="2809586584051668049">ainsi que <ph name="NUMBER_ADDITIONAL_DISABLED" /> autre(s) extension(s)</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Le format Thunderbolt n'est pas compatible</translation>
 <translation id="2812171980080389735">Réseaux et mots de passe enregistrés afin que vous puissiez vous connecter instantanément</translation>
@@ -3053,7 +3050,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3285465040399788513">Espace de stockage insuffisant pour terminer la configuration. Libérez de l'espace, puis réessayez.</translation>
 <translation id="3285500645985761267">Autoriser les sites associés à voir votre activité dans le groupe</translation>
 <translation id="328571385944182268">Enregistrer vos mots de passe ?</translation>
-<translation id="3288047731229977326">Les extensions exécutées en mode développeur peuvent nuire à votre ordinateur. Si vous n'êtes pas un développeur, nous vous recommandons de désactiver celles-ci afin d'assurer la sécurité de votre ordinateur.</translation>
 <translation id="3289668031376215426">Majuscules automatiques</translation>
 <translation id="3289856944988573801">Pour rechercher des mises à jour, veuillez utiliser une connexion Ethernet ou Wi-Fi.</translation>
 <translation id="3289886661311231677">Vous pouvez bloquer les thèmes que vous ne souhaitez pas partager avec des sites. De plus, Chrome supprime automatiquement les thèmes datant de plus de quatre semaines.</translation>
@@ -3093,7 +3089,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3313622045786997898">Valeur de signature du certificat</translation>
 <translation id="3313950410573257029">Vérifier la connexion</translation>
 <translation id="3315158641124845231">Masquer <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Accéder au mode Lecteur</translation>
 <translation id="3317459757438853210">Recto verso</translation>
 <translation id="3317521105713541270">Créer des groupes</translation>
 <translation id="3317678681329786349">Caméra et micro bloqués</translation>
@@ -3416,6 +3411,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3569682580018832495"><ph name="ORIGIN" /> peut accéder aux fichiers et dossiers suivants :</translation>
 <translation id="3571734092741541777">Configurer</translation>
 <translation id="3575121482199441727">Autoriser pour ce site</translation>
+<translation id="3575224072358507281">Collecter les résultats des mesures du réseau et de l'adresse IP pour Measurement Lab conformément à ses règles de confidentialité (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577487026101678864">Synchronisation des fichiers activée</translation>
 <translation id="3577745545227000795">Collecte des données matérielles par <ph name="DEVICE_OS" /></translation>
@@ -3498,7 +3494,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> restantes</translation>
 <translation id="3636940436873918441">Langues préférées</translation>
 <translation id="3637203148990213388">Comptes supplémentaires</translation>
-<translation id="3639220004740062347">Quitter le mode Lecteur</translation>
 <translation id="3640214691812501263">Ajouter <ph name="EXTENSION_NAME" /> pour <ph name="USER_NAME" /> ?</translation>
 <translation id="3640347231390550691">Protégez vos mots de passe contre l'hameçonnage</translation>
 <translation id="3640613767643722554">Apprendre à l'Assistant à reconnaître votre voix</translation>
@@ -4141,7 +4136,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4095483462103784441">Créer un groupe d'onglets</translation>
 <translation id="4095507791297118304">Affichage principal</translation>
 <translation id="4096421352214844684">Connectez-vous automatiquement au point d'accès de votre téléphone.</translation>
-<translation id="4096508467498758490">Désactiver les extensions exécutées en mode développeur ?</translation>
 <translation id="4096797685681362305">Consulté la semaine passée</translation>
 <translation id="4097406557126260163">Applications et extensions</translation>
 <translation id="409742781329613461">Conseils pour Chrome</translation>
@@ -5472,7 +5466,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5146896637028965135">Voix du système</translation>
 <translation id="5147097165869384760">Vous recherchez la page du système d'exploitation ? Consultez <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Recommandation</translation>
-<translation id="5147516217412920887">Suivez les instructions sur votre téléphone pour valider le code</translation>
 <translation id="5147992672778369947">Utilisez le mot de passe recommandé</translation>
 <translation id="5148285448107770349">Le mot de passe doit comporter au moins huit caractères</translation>
 <translation id="5149602533174716626">Cop&amp;ier l'image vidéo</translation>
@@ -6731,10 +6724,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6143186082490678276">Aide</translation>
 <translation id="6143366292569327983">Choisir la langue source de la page</translation>
 <translation id="6144938890088808325">Aidez-nous à améliorer les Chromebooks</translation>
-<translation id="6145480071052696715">Configurez facilement votre <ph name="DEVICE_TYPE" /> avec votre téléphone. Vous pouvez ajouter votre Wi-Fi et votre compte Google sans saisir manuellement vos mots de passe.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visible en tant que <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">La synchronisation ne fonctionne pas. Essayez à nouveau de vous connecter.</translation>
 <translation id="6147020289383635445">Échec de l'aperçu avant impression.</translation>
 <translation id="6147253937684562370">Pour déverrouiller le profil, connectez-vous avec l'adresse e-mail associée à votre compte principal : <ph name="EMAIL" /></translation>
@@ -6959,7 +6948,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6310141306111263820">Impossible d'installer le profil eSIM. Pour obtenir de l'aide, veuillez contacter votre opérateur.</translation>
 <translation id="6311220991371174222">Impossible de démarrer Chrome, car une erreur s'est produite lors de l'ouverture de votre profil. Essayez de relancer Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Contrôle de sécurité effectué il y a 1 jour}one{Contrôle de sécurité effectué il y a {NUM_DAYS} jour}other{Contrôle de sécurité effectué il y a {NUM_DAYS} jours}}</translation>
-<translation id="6312638141433622592">Proposer d'afficher les articles en mode Lecteur, s'il est disponible</translation>
 <translation id="6313950457058510656">Désactiver le partage de connexion instantané</translation>
 <translation id="6314819609899340042">Les fonctionnalités de débogage ont été activées sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Voix</translation>
@@ -8044,6 +8032,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7181117767881540376">Masquer la barre de favoris</translation>
 <translation id="7181329571386134105">Pour autoriser <ph name="CHILD_NAME" /> à installer de futures extensions sans votre approbation, ouvrez l'appli Family Link sur votre appareil et mettez à jour les paramètres Google Chrome de <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Utiliser un autre compte</translation>
 <translation id="7182063559013288142">Point d'accès instantané</translation>
 <translation id="7182791023900310535">Transférer votre mot de passe</translation>
 <translation id="718427252411067142">Pour empêcher d'autres personnes d'utiliser votre mot de passe, modifiez-le en ouvrant l'appli</translation>
@@ -8607,6 +8596,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7617263010641145920">Activer le Play Store</translation>
 <translation id="7617648809369507487">Activer les notifications discrètes</translation>
 <translation id="7619937211696316184">Maintenance terminée</translation>
+<translation id="7620616707541471029">Sélectionnez un compte pour continuer</translation>
 <translation id="7621382409404463535">Échec de l'enregistrement de la configuration de l'appareil.</translation>
 <translation id="7621480263311228380">Non autorisé à utiliser les informations qu'il a enregistrées vous concernant</translation>
 <translation id="7621595347123595643">Vous ne pourrez pas récupérer de données locales si vous oubliez votre mot de passe ou votre code.</translation>
@@ -9373,7 +9363,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8160775796528709999">Activez l'option "Sous-titres instantanés" dans les paramètres afin de bénéficier de sous-titres pour vos contenus vidéo et audio</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Reprendre la navigation</translation>
-<translation id="8161293209665121583">Mode Lecteur pour les pages Web</translation>
 <translation id="8161604891089629425">Police avec contour</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
 <translation id="8163152278172770963">Ne pas autoriser les sites à passer en Picture-in-picture automatiquement</translation>

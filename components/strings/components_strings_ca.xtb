@@ -340,6 +340,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="160851722280695521">Juga al joc del dinosaure de Chrome</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611101756749861742">Segon corró</translation>
+<translation id="1611854593425834707">Tanca la llista de dispositius per a l'emissió</translation>
 <translation id="1612199629998703524">Gestiona els temes</translation>
 <translation id="1615178538289490617">Revoca l'accés a <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">La política de l'administrador desactiva la captura de pantalla quan es mostra contingut confidencial</translation>
@@ -826,6 +827,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2526280916094749336">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça es desarà al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC és a l'anvers de la targeta. És el codi de 4 dígits que hi ha a la part superior dreta sobre el número de la targeta.</translation>
 <translation id="2529899080962247600">Aquest camp no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades. Totes les altres entrades s'ignoraran.</translation>
+<translation id="2533649878691950253">S'ha impedit que aquest lloc web sabés la teva ubicació precisa perquè normalment no ho permets</translation>
 <translation id="253493526287553278">Mostra els detalls del codi promocional</translation>
 <translation id="2535585790302968248">Obre una pestanya d'incògnit nova per navegar en privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i 1 més}other{i # més}}</translation>
@@ -1918,6 +1920,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4691093235373904540">Teulats</translation>
 <translation id="4692623383562244444">Motors de cerca</translation>
 <translation id="4698692901173737941">Esports de combat</translation>
+<translation id="4701307090948589984">Emet a...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Costat</translation>
 <translation id="4702656508969495934">Els subtítols instantanis estan visibles; utilitza el botó de canvi de finestra per posar el focus</translation>
@@ -2167,6 +2170,8 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5161334686036120870">Assumpte:</translation>
 <translation id="5161506081086828129">Apiladora 9</translation>
 <translation id="5164798890604758545">S'introdueix text</translation>
+<translation id="5164928537947209380">Aquesta eina experimental d'IA no sempre ho fa bé. Per millorar-la, el teu contingut s'envia a Google.
+    <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Introdueix el CVC de la targeta <ph name="CREDIT_CARD" />. Un cop confirmada, la informació de la targeta del Compte de Google es compartirà amb aquest lloc web.</translation>
 <translation id="5169827969064885044">Podries perdre l'accés al compte de la teva organització o ser víctima d'un robatori d'identitat. Chrome et recomana que canviïs la contrasenya ara.</translation>
 <translation id="5171045022955879922">Cerqueu o escriviu l'URL</translation>
@@ -3302,6 +3307,7 @@ Detalls addicionals:
 <translation id="7392089738299859607">Actualitza l'adreça</translation>
 <translation id="7393161616326137353">Jocs d'aventura</translation>
 <translation id="739728382607845710">Icona de gestor de pagaments</translation>
+<translation id="7399616692258236448">Les sol·licituds d'ubicació es bloquegen automàticament en tots els llocs web, excepte els que permetis</translation>
 <translation id="7399802613464275309">Comprovació de seguretat</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Pots compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres</translation>
@@ -4062,6 +4068,7 @@ Detalls addicionals:
 <translation id="8807160976559152894">Retalla després de cada pàgina</translation>
 <translation id="8809203544698246977">Els temes bloquejats es mostren aquí</translation>
 <translation id="8811470563853401328">Vols desar l'adreça al compte?</translation>
+<translation id="8811725516933141693">Escriu @gemini per xatejar amb Gemini</translation>
 <translation id="8813277370772331957">Recorda-m'ho més tard</translation>
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per actualitzar Chrome des de la configuració de Chrome</translation>

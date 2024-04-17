@@ -1043,6 +1043,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6363526231572697780">Sem nome de utilizador</translation>
 <translation id="6366190659675876144">Proteção padrão</translation>
 <translation id="6366663624406569102">Terminar sessão e desativar sincronização</translation>
+<translation id="6368038301482806847">Selecione um motor de pesquisa na lista.</translation>
 <translation id="6374469231428023295">Tentar novamente</translation>
 <translation id="6377118281273296434">Segurança do site</translation>
 <translation id="6383719166112032471">Abrir localização…</translation>
@@ -1202,6 +1203,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7161230316646448869">Sincronize os seus marcadores, histórico e muito mais em todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear separadores de navegação anónima com <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Abrir Definições</translation>
+<translation id="7186568385131859684">Controle a forma como o histórico de navegação é usado com os seus outros dados nos serviços Google</translation>
 <translation id="7189598951263744875">Partilhar...</translation>
 <translation id="719133302483559673">Faça a gestão dos seus interesses e preferências.</translation>
 <translation id="7192050974311852563">Iniciar registo</translation>
@@ -1245,6 +1247,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7438481509621345350">Vão ser apresentadas notícias de <ph name="CHANNEL_NAME" /> quando abrir um novo separador.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Marcador guardado em "{title}"}other{Marcadores guardados em "{title}"}}</translation>
 <translation id="7454057999980797137">Distrito/concelho</translation>
+<translation id="7458706065921255639">Personalização e associação</translation>
 <translation id="745899714366929493">Todo o dia</translation>
 <translation id="7459628154744868585">A Proteção melhorada está ativada</translation>
 <translation id="7465351360025415755">Receba conteúdo que lhe interessa</translation>

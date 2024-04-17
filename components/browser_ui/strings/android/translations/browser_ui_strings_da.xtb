@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Tving aktivering af zoom</translation>
 <translation id="3908288065506437185">Bloker tredjepartscookies i inkognitotilstand</translation>
 <translation id="3918378745482005425">Nogle funktioner virker muligvis ikke. Relaterede websites kan stadig bruge tredjepartscookies.</translation>
+<translation id="3933121352599513978">Skjul uønskede anmodninger (anbefales)</translation>
 <translation id="3955193568934677022">Tillad, at websites afspiller beskyttet indhold (anbefales)</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3974105241379491420">Websites kan anmode om at bruge oplysninger, de har gemt om dig</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Navigationen er ikke mulig: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8990043154272859344">Du bliver logget ud af alle websites</translation>
+<translation id="8993853206419610596">Udvid alle anmodninger</translation>
 <translation id="9002538116239926534">Når dette er slået til, kan websites gemme data på din enhed. Når dette er slået fra, kan websites ikke gemme data på din enhed.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> er tilladt</translation>
 <translation id="9019902583201351841">Administreret af dine forældre</translation>

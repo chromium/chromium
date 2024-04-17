@@ -493,6 +493,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="3631987586758005671">Udostępniam urządzeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatycznie loguj się na stronach, używając zapisanych danych logowania. Gdy ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o weryfikację.</translation>
 <translation id="3636940436873918441">Preferowane języki</translation>
+<translation id="368329460027487650">Wylogowano. Otwiera opcje logowania.</translation>
 <translation id="3687645719033307815">Widzisz podgląd strony</translation>
 <translation id="3690369331356918524">Ostrzega, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
 <translation id="3692944402865947621">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu niedostępności pamięci.</translation>
@@ -700,6 +701,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4732120983431207637">Moduł rozwijania stosu</translation>
 <translation id="4736934858538408121">Karta wirtualna</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
+<translation id="4738065825338914557">Anuluję subskrypcję…</translation>
 <translation id="4738836084190194332">Ostatnia synchronizacja: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Będziesz otrzymywać ulepszone sugestie na pasku adresu.</translation>
 <translation id="4742970037960872810">Usuń podświetlenie</translation>
@@ -1333,6 +1335,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7780645209293383778">Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, aby chronić Cię we wszystkich aplikacjach Google</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Liczba przywróconych kart: <ph name="TAB_COUNT" /></translation>
+<translation id="780287761701992588">Korzystaj z zakładek, haseł i innych ustawień na wszystkich urządzeniach</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7808889146555843082">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="SITE" />. Aby uniemożliwić innym osobom dostęp do konta w serwisie <ph name="SITE" />, usuń je lub zmień do niego hasło.</translation>
 <translation id="7810647596859435254">Otwórz za pomocą…</translation>

@@ -847,6 +847,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5407969256130905701">Buang Perubahan</translation>
 <translation id="5414763847370083940">Anda akan menerima makluman jika harga turun pada mana-mana laman.</translation>
 <translation id="5416022985862681400">7 Hari Lalu</translation>
+<translation id="5416455648658732408">Beralih kepada Kumpulan Tab</translation>
 <translation id="5423269318075950257">Jejaki Harga</translation>
 <translation id="543338862236136125">Edit kata laluan</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
@@ -1332,6 +1333,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7853202427316060426">Aktiviti</translation>
 <translation id="7856733331829174190">Tidak Dapat Memuat Turun</translation>
 <translation id="7859704718976024901">Sejarah Penyemakan Imbas</translation>
+<translation id="7860900259978879139">Alih keluar daripada Kumpulan</translation>
 <translation id="7866501058614003444">Pakej ini telah berjaya dinyahjejak.</translation>
 <translation id="7866872729285243843">Untuk mendapatkan senarai bacaan pada semua peranti anda, hidupkan “Senarai Bacaan” dalam tetapan.</translation>
 <translation id="7866993391592926595">Menyembunyikan Kad Ini Akan Mematikan Penjejakan Bungkusan dan Mengalih Keluar Semua Data Anda</translation>
@@ -1419,9 +1421,11 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8273982424131314219">Anda akan mengisi maklumat pada <ph name="URL" /></translation>
 <translation id="8281781826761538115">Lalai - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Langkau</translation>
+<translation id="8282657446819506217">Buka dalam Kumpulan Tab</translation>
 <translation id="828291969289324795">{count,plural, =1{Tambahkan Tab pada Kumpulan Baharu}other{Tambahkan Tab pada Kumpulan Baharu}}</translation>
 <translation id="8283172974887967105">Tetapkan…</translation>
 <translation id="8286036467436129157">Log Masuk</translation>
+<translation id="8289930144142009940">Pemberitahuan <ph name="FEATURE_NAME" /> dimatikan</translation>
 <translation id="8292843446079898078">Terima makluman penurunan harga untuk produk yang anda jejaki.</translation>
 <translation id="8299417921174340354">Untuk menggunakan kata laluan, anda mesti menetapkan kod laluan pada peranti anda dahulu.</translation>
 <translation id="8299613349954694191">Buka tab Inkognito untuk menyemak imbas web secara tertutup.</translation>
@@ -1429,6 +1433,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8313645224014086262">Simpan fail</translation>
 <translation id="8319076807703933069">Carian Baharu</translation>
 <translation id="8328777765163860529">Tutup Semua</translation>
+<translation id="8343286328361420468">Matikan Pemberitahuan untuk <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
 <translation id="834783239627985533">Laman yang Paling Kerap Dilawati</translation>
 <translation id="8358401059263985056">Hidupkan Pemberitahuan</translation>

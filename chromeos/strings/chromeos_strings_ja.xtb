@@ -372,6 +372,7 @@
 <translation id="3170673040743561620">スキャナにドキュメントを置いてください</translation>
 <translation id="3174321110679064523">「夜明けから夜更けまで」の壁紙</translation>
 <translation id="3178532070248519384">アバンギャルド</translation>
+<translation id="3182676044300231689">「自信のある文体に」などのプロンプトを入力</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="319101249942218879">アバター画像を変更しました</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
@@ -575,6 +576,7 @@
 <translation id="4394049700291259645">無効にする</translation>
 <translation id="439429847087949098">「<ph name="DEVICE_NAME" />」を再起動しています</translation>
 <translation id="4395835743215824109">キーボードのカスタマイズ</translation>
+<translation id="439946595190720558">この背景は「<ph name="PROMPT" />」というテキストを使用して AI で作成されました。</translation>
 <translation id="4415951057168511744">現在のアバター</translation>
 <translation id="4417830657741848074">いくつかのアプリは、自動的に起動するよう管理者によって設定されています。これらのアプリの一部は終了できません。</translation>
 <translation id="4422041425070339732">下矢印</translation>
@@ -1018,6 +1020,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> に戻る</translation>
 <translation id="6910312834584889076">スキャナのカバーが開いています。カバーを閉じてから、もう一度お試しください。</translation>
 <translation id="6911383237894364323">メディア サーバーに接続できません</translation>
+<translation id="6930597342185648547">背景について</translation>
 <translation id="6939766318048400022">カフェ</translation>
 <translation id="6943893908656559156">リモート ID（オプション）</translation>
 <translation id="6953137545147683679">金色</translation>

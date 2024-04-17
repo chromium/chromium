@@ -847,6 +847,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5407969256130905701">Forkast endringer</translation>
 <translation id="5414763847370083940">Du får varsler hvis prisen settes ned på noe nettsted.</translation>
 <translation id="5416022985862681400">De siste 7 dagene</translation>
+<translation id="5416455648658732408">Flytt til fanegruppe</translation>
 <translation id="5423269318075950257">Spor prisen</translation>
 <translation id="543338862236136125">Endre passordet</translation>
 <translation id="5433691172869980887">Brukernavnet er kopiert</translation>
@@ -1335,6 +1336,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7856733331829174190">Kunne ikke laste ned</translation>
 <translation id="7859704718976024901">Nettleserlogg</translation>
+<translation id="7860900259978879139">Fjern fra gruppen</translation>
 <translation id="7866501058614003444">Denne pakken spores ikke lenger.</translation>
 <translation id="7866872729285243843">For å få leselisten din på alle enhetene dine, slå på «Leseliste» i innstillingene.</translation>
 <translation id="7866993391592926595">Hvis du skjuler dette kortet, blir pakkesporing slått av, og alle dataene dine blir fjernet</translation>
@@ -1422,9 +1424,11 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8273982424131314219">Du fyller ut informasjon på <ph name="URL" /></translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hopp over</translation>
+<translation id="8282657446819506217">Åpne i fanegruppe</translation>
 <translation id="828291969289324795">{count,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
 <translation id="8283172974887967105">Angi…</translation>
 <translation id="8286036467436129157">Logg på</translation>
+<translation id="8289930144142009940">Varsler for <ph name="FEATURE_NAME" /> er slått av</translation>
 <translation id="8292843446079898078">Få varsler om prisfall for produkter du sporer.</translation>
 <translation id="8299417921174340354">For å bruke passord må du først angi en adgangskode på enheten din.</translation>
 <translation id="8299613349954694191">Åpne en inkognitofane for å surfe privat på nettet.</translation>
@@ -1432,6 +1436,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8313645224014086262">Lagre fil</translation>
 <translation id="8319076807703933069">Nytt søk</translation>
 <translation id="8328777765163860529">Lukk alle</translation>
+<translation id="8343286328361420468">Slå av varsler for <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
 <translation id="834783239627985533">Mest besøkte nettsteder</translation>
 <translation id="8358401059263985056">Slå på varsler</translation>

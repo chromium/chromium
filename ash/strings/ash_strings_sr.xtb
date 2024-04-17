@@ -161,6 +161,7 @@
 <translation id="1569384531973824928">Ово омогућава приступ свим апликацијама и веб-сајтовима који имају дозволе за камеру и микрофон. Можда ћете морати да освежите веб-страницу или рестартујете апликацију.</translation>
 <translation id="1571697193564730395">Укључите/искључите режим Не узнемиравај. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Умањите приказ када је лупа укључена</translation>
+<translation id="1582946770779745370">Доступна је контролна табла игре. Притисните <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, па <ph name="LAUNCHER_KEY_NAME" /> + g у било ком тренутку да бисте отворили</translation>
 <translation id="1586324912145647027">Идите на радне површине од 1 до 8</translation>
 <translation id="158838227375272121">Веб-сајт Google учионице</translation>
 <translation id="1589090746204042747">Приступите свим активностима у овој сесији</translation>
@@ -1295,7 +1296,6 @@
 <translation id="598882571027504733">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастастуром.</translation>
 <translation id="5998374579424866922">Искључиte контроле игара</translation>
 <translation id="6000279412553873020">Тастери, дугмад и друго</translation>
-<translation id="6002122790816966947">Уређаји</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. страница од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Истакните следећу ставку на полици</translation>
 <translation id="6015573907265691211">Означите као завршено</translation>

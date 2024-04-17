@@ -147,6 +147,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="3702352323269013324">Saiba mais sobre a personalização de anúncios no Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita.}=1{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita. Sua janela anônima não será aberta novamente.}one{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita. Sua janela anônima não será aberta novamente.}other{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="3713809861844741608">Abrir link em nova &amp;guia do Chromium</translation>
+<translation id="3728124580182886854">Vincule o Chromium e outros Serviços do Google para personalização e outras finalidades</translation>
 <translation id="3788675262216168505">Gerenciar perfis do Chromium</translation>
 <translation id="378917192836375108">O Chromium permite que você clique em um número de telefone na web e ligue para ele com o Skype!</translation>
 <translation id="3790262771324122253">Saiba por que o Chromium bloqueia alguns downloads</translation>
@@ -228,6 +229,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5352361688875342522">Outros perfis do Chromium</translation>
 <translation id="5358375970380395591">Você está fazendo login com uma conta gerenciada e concedendo ao administrador da conta o controle sobre seu perfil do Chromium. Seus dados do Chromium, como aplicativos, favoritos, histórico, senhas e outras configurações serão permanentemente vinculados a <ph name="USER_NAME" />. Você pode excluir esses dados pelo painel das Contas do Google, mas não pode associá-los a outra conta. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Código extra: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5377622451696208284">Para acessar a personalização, inclua o Chromium na Atividade na Web e de apps</translation>
 <translation id="5383439451358640070">Saiba por que o Chromium bloqueia alguns arquivos</translation>
 <translation id="5386450000063123300">Atualizando o Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permitir login no Chromium</translation>
@@ -248,6 +250,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Exibir Chromium neste idioma</translation>
 <translation id="569897634095159764">Não foi possível se conectar à Internet. O servidor proxy requer autenticação.</translation>
+<translation id="5800158606660203929">Personalize e controle o Chromium. Defina esse navegador como o padrão.</translation>
 <translation id="5809516625706423866">Não foi possível conectar à Internet. HTTP 401 Não autorizado. Verifique sua configuração do proxy.</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5883558403894052917">O Chromium encontrou malware nestes itens:</translation>
@@ -270,6 +273,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="608006075545470555">Adicionar um perfil de trabalho a este navegador</translation>
 <translation id="6096348254544841612">Personalize e controle o Chromium. Uma atualização está disponível.</translation>
 <translation id="6102072151902574948">Quando essa opção está ativada, o Chromium economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos.</translation>
+<translation id="6107893135096467929">Ativada: o Chromium não pode conferir a origem dessa extensão</translation>
 <translation id="6119438414301547735">Permitir que a extensão mostre solicitações de acesso na barra de ferramentas do Chromium</translation>
 <translation id="6120345080069858279">O Chromium salvará essa senha na sua Conta do Google. Você não precisará se lembrar dela.</translation>
 <translation id="6129621093834146363">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chromium.</translation>
@@ -304,6 +308,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6403826409255603130">O Chromium é um navegador que executa páginas e aplicativos da web com alta velocidade. É rápido, estável e fácil de usar. Navegue na web com mais segurança com a proteção contra malware e phishing incorporada ao Chromium.</translation>
 <translation id="6442900851116057561">Reiniciar o ChromiumOS</translation>
 <translation id="6443470774889161065">O Chromium pré-carrega mais páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas</translation>
+<translation id="645458117210240797">Desativada: o Chromium não pode conferir a origem dessa extensão</translation>
 <translation id="6455857529632101747">Conheça os perfis do Chromium</translation>
 <translation id="6475912303565314141">Controla também qual página deve ser exibida quando você inicia o Chromium.</translation>
 <translation id="648319183876919572">O recurso "Navegação segura com maior proteção" protege você ainda mais contra sites e downloads perigosos</translation>
@@ -324,6 +329,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6709350901466051922">O Chromium precisa da permissão de acesso ao microfone para este site</translation>
 <translation id="6712881677154121168">Erro no download: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">Seu perfil não pode ser usado porque é de uma versão mais recente do Chromium. Alguns recursos podem não estar disponíveis. Especifique outro diretório de perfil ou use uma versão mais recente do Chromium.</translation>
+<translation id="6729124504294600478">Para acessar a personalização e outros recursos, inclua o Chromium na Atividade na Web e de apps e os Serviços do Google vinculados</translation>
 <translation id="6734291798041940871">O Chromium já está instalado para todos os usuários do seu computador.</translation>
 <translation id="673636774878526923">Para ter acesso aos recursos do Chromium em todos os seus dispositivos, faça login e ative a sincronização.</translation>
 <translation id="67706546131546258">O Chromium recomenda verificar esse arquivo, porque ele pode ser perigoso.</translation>
@@ -352,9 +358,11 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="718435575166326686">O Chromium precisa da permissão de acesso à câmera para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
 <translation id="7197677400338048821">Não foi possível verificar suas senhas. Tente novamente em 24 horas.</translation>
+<translation id="7198365860059291213">O Chromium precisa de permissões de compreensão de cena e de rastreamento da mão para iniciar uma sessão imersiva</translation>
 <translation id="7213407614656404070">Usar o Chromium sempre que clicar em links em mensagens, documentos e outros apps</translation>
 <translation id="7223968959479464213">Gerenciador de tarefas - Chromium</translation>
 <translation id="7246575524853130370">Seus interesses estimados pelo Chromium</translation>
+<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{O Chromium recomenda que você a remova}one{O Chromium recomenda que você a remova}other{O Chromium recomenda que você as remova}}</translation>
 <translation id="7309928523159922338">A medição de anúncios permite que os sites que você visita solicitem informações do Chromium, ajudando a medir o desempenho dos anúncios. Ela também restringe o rastreamento entre sites transferindo o mínimo de informações possível entre eles.</translation>
 <translation id="731795002583552498">Atualizando o Chromium</translation>
 <translation id="7318036098707714271">Seu arquivo de preferências foi corrompido ou não é válido. O Chromium não conseguiu recuperar suas configurações.</translation>

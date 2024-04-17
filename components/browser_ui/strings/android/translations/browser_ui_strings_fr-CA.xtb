@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Forcer l'activation du zoom</translation>
 <translation id="3908288065506437185">Bloquer les témoins tiers en mode de navigation privée</translation>
 <translation id="3918378745482005425">Certaines fonctionnalités pourraient ne pas fonctionner. Les sites associés peuvent toujours utiliser des témoins tiers.</translation>
+<translation id="3933121352599513978">Réduire les requêtes indésirables (recommandé)</translation>
 <translation id="3955193568934677022">Autoriser les sites à lire le contenu protégé (recommandé)</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3974105241379491420">Les sites peuvent demander d'utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Navigation inaccessible : <ph name="URL" /></translation>
 <translation id="8986362086234534611">Supprimer</translation>
 <translation id="8990043154272859344">Vous serez déconnecté de tous les sites</translation>
+<translation id="8993853206419610596">Développer toutes les requêtes</translation>
 <translation id="9002538116239926534">Lorsque cette option est activée, les sites peuvent enregistrer des données sur votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas enregistrer de données sur votre appareil.</translation>
 <translation id="9011903857143958461">Autorisation de <ph name="SITE_NAME" /> accordée</translation>
 <translation id="9019902583201351841">Géré par tes parents</translation>

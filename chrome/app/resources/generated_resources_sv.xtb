@@ -127,7 +127,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1084824384139382525">Kopiera länk&amp;adress</translation>
 <translation id="1085064499066015002">Alltid på alla webbplatser</translation>
 <translation id="1085697365578766383">Det gick inte att starta den virtuella maskinen. Försök igen.</translation>
-<translation id="1088659085457112967">Aktivera läsarläge</translation>
 <translation id="1090126737595388931">Inga bakgrundsprogram körs</translation>
 <translation id="1090541560108055381">Kontrollera att samma kod visas på båda enheterna innan du parkopplar</translation>
 <translation id="1091767800771861448">Tryck på Esc om du vill hoppa över (endast versioner som inte är officiella).</translation>
@@ -2177,7 +2176,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2587922766792651800">Tidsgränsen överskreds</translation>
 <translation id="2588636910004461974">Enheter från <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Visa aldrig Drive-filer</translation>
-<translation id="25899519884572181">Avsluta läsarläget</translation>
 <translation id="2593499352046705383">Kontrollera att du har en säkerhetskopia av din data innan du börjar. All data på hårddisken skrivs över när du installerar <ph name="DEVICE_OS" />. Läs mer på g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Hantera V8-säkerhet</translation>
 <translation id="2594999711683503743">Sök på Google eller skriv webbadressen</translation>
@@ -2478,7 +2476,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2806372837663997957">Enheten som du försökte att dela med godkände inte delningsförsöket</translation>
 <translation id="2806891468525657116">Genvägen finns redan</translation>
 <translation id="2807517655263062534">Filer som du laddar ned visas här</translation>
-<translation id="2809586584051668049">och ytterligare <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Konton</translation>
 <translation id="2812049959647166806">Thunderbolt stöds inte</translation>
 <translation id="2812171980080389735">Spara nätverk och lösenord så att du kan ansluta direkt</translation>
@@ -3067,7 +3064,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3285465040399788513">Det finns inte tillräckligt med lagringsutrymme på enheten för att slutföra konfigureringen. Frigör utrymme och försök igen.</translation>
 <translation id="3285500645985761267">Tillåt att relaterade webbplatser ser din aktivitet i gruppen</translation>
 <translation id="328571385944182268">Vill du spara lösenorden?</translation>
-<translation id="3288047731229977326">Tillägg som körs i utvecklarläge kan skada datorn. Om du inte är en utvecklare bör du inaktivera tillägg som körs i utvecklarläge för att skydda dig.</translation>
 <translation id="3289668031376215426">Automatiska versaler</translation>
 <translation id="3289856944988573801">Använd Ethernet eller wifi om du vill söka efter uppdateringar.</translation>
 <translation id="3289886661311231677">Du kan blockera ämnen som du inte vill dela med webbplatser. I Chrome raderas även ämnen som är äldre än fyra veckor automatiskt.</translation>
@@ -3107,7 +3103,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3313622045786997898">Certifikatets signaturvärde</translation>
 <translation id="3313950410573257029">Kontrollera anslutningen</translation>
 <translation id="3315158641124845231">Dölj <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Aktivera läsarläge</translation>
 <translation id="3317459757438853210">Dubbelsidig</translation>
 <translation id="3317521105713541270">Skapa grupper</translation>
 <translation id="3317678681329786349">Kamera och mikrofon är blockerade</translation>
@@ -3430,6 +3425,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3569682580018832495"><ph name="ORIGIN" /> har visningsbehörighet till följande filer och mappar</translation>
 <translation id="3571734092741541777">Konfigurera</translation>
 <translation id="3575121482199441727">Tillåt för den här webbplatsen</translation>
+<translation id="3575224072358507281">samla in resultat från IP-adresser och nätverksmätningar för Measurement Lab enligt deras integritetspolicy (measurementlab.net/privacy).</translation>
 <translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="3577487026101678864">Filsynkronisering på</translation>
 <translation id="3577745545227000795">Insamling av maskinvarudata för <ph name="DEVICE_OS" /></translation>
@@ -3512,7 +3508,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> kvar</translation>
 <translation id="3636940436873918441">Föredragna språk</translation>
 <translation id="3637203148990213388">Ytterligare konton</translation>
-<translation id="3639220004740062347">Avsluta läsarläget</translation>
 <translation id="3640214691812501263">Vill du lägga till <ph name="EXTENSION_NAME" /> för <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Skydda dina lösenord mot nätfiske</translation>
 <translation id="3640613767643722554">Lär assistenten att känna igen din röst</translation>
@@ -4155,7 +4150,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4095483462103784441">Skapa en ny flikgrupp</translation>
 <translation id="4095507791297118304">Primär skärm</translation>
 <translation id="4096421352214844684">Anslut automatiskt till telefonens surfzon.</translation>
-<translation id="4096508467498758490">Inaktivera tillägg i utvecklarläge</translation>
 <translation id="4096797685681362305">Visades under den senaste veckan</translation>
 <translation id="4097406557126260163">Appar och tillägg</translation>
 <translation id="409742781329613461">Tips för Chrome</translation>
@@ -5487,7 +5481,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5146896637028965135">Systemröst</translation>
 <translation id="5147097165869384760">Letar du efter operativsystemsidan? Besök <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Rekommendation</translation>
-<translation id="5147516217412920887">Följ anvisningarna på telefonen för att verifiera koden</translation>
 <translation id="5147992672778369947">Använd rekommenderat lösenord</translation>
 <translation id="5148285448107770349">Lösenordet måste vara minst fyra tecken långt</translation>
 <translation id="5149602533174716626">Kopiera videobildrutan</translation>
@@ -6745,10 +6738,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6143186082490678276">Få hjälp</translation>
 <translation id="6143366292569327983">Välj vilket språk på sidan som ska översättas</translation>
 <translation id="6144938890088808325">Hjälp oss att göra Chromebook bättre</translation>
-<translation id="6145480071052696715">Konfigurera enkelt <ph name="DEVICE_TYPE" /> med telefonen. Du kan lägga till ditt wifi och ditt Google-konto utan att ange lösenorden manuellt.
-    <ph name="BR" />
-    <ph name="BR" />
-    Synlig som <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> …</translation>
 <translation id="6146409560350811147">Det går inte att synkronisera. Testa att logga in igen.</translation>
 <translation id="6147020289383635445">Förhandsgranskning misslyckades.</translation>
 <translation id="6147253937684562370">Lås upp profilen genom att logga in med din huvudsakliga e-postadress: <ph name="EMAIL" /></translation>
@@ -6973,7 +6962,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6310141306111263820">Det gick inte att installera eSIM-profilen. Kontakta operatören och be om hjälp.</translation>
 <translation id="6311220991371174222">Det gick inte att starta Chrome eftersom något gick snett när profilen skulle öppnas. Testa att starta om Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Säkerhetskontrollen kördes för 1 dag sedan}other{Säkerhetskontrollen kördes för {NUM_DAYS} dagar sedan}}</translation>
-<translation id="6312638141433622592">Erbjud att visa artiklar i läsläge när det stöds</translation>
 <translation id="6313950457058510656">Inaktivera direktinternetdelning</translation>
 <translation id="6314819609899340042">Du har aktiverat felsökningsfunktioner på den här <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten.</translation>
 <translation id="6315170314923504164">Mikrofon</translation>
@@ -8056,6 +8044,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7180865173735832675">Anpassa</translation>
 <translation id="7181117767881540376">Dölj bokmärkesfältet</translation>
 <translation id="7181329571386134105">Om du vill tillåta att <ph name="CHILD_NAME" /> installerar framtida tillägg utan ditt godkännande ska du öppna Family Link-appen på din enhet och uppdatera Google Chrome-inställningarna för <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Använd ett annat konto</translation>
 <translation id="7182063559013288142">Snabb surfzon</translation>
 <translation id="7182791023900310535">Flytta lösenordet</translation>
 <translation id="718427252411067142">Om du vill hindra andra från att använda ditt lösenord öppnar du appen och ändrar lösenordet</translation>
@@ -8619,6 +8608,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7617263010641145920">Aktivera Play Butik</translation>
 <translation id="7617648809369507487">Få mer diskreta meddelanden</translation>
 <translation id="7619937211696316184">Underhållet är klart</translation>
+<translation id="7620616707541471029">Välj ett konto för att fortsätta</translation>
 <translation id="7621382409404463535">Det gick inte att spara enhetskonfigurationen.</translation>
 <translation id="7621480263311228380">Har inte tillåtelse att använda uppgifter som webbplatsen har sparat om dig</translation>
 <translation id="7621595347123595643">Du kan inte återställa lokal data om du glömmer lösenordet eller pinkoden.</translation>
@@ -9385,7 +9375,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8160775796528709999">Få ljud- och videouppspelning textad genom att aktivera Live Caption i inställningarna</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Fortsätt surfa</translation>
-<translation id="8161293209665121583">Läsläge för webbsidor</translation>
 <translation id="8161604891089629425">Konturteckensnitt</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flytta fliken till ett nytt fönster}other{Flytta flikarna till ett nytt fönster}}</translation>
 <translation id="8163152278172770963">Tillåt inte webbplatser att öppna bild-i-bild automatiskt</translation>

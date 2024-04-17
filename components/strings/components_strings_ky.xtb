@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1247030632403369975">Алюминий</translation>
 <translation id="1252209483516427155">Сырт кийим</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> менен төлөө</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (шайкештирилген)</translation>
 <translation id="1255086252236620440">Тамак-аш чалгычы</translation>
 <translation id="1256368399071562588">&lt;p&gt;Эгер вебсайтты ачууга аракет кылганда ал ачылбай жатса, каталарды оңдоо боюнча төмөнкүдөй аракеттерди аткарып көрүңүз:&lt;/p&gt;
@@ -340,6 +341,7 @@
 <translation id="160851722280695521">Dino Run оюнун Chrome'до ойноо</translation>
 <translation id="161042844686301425">Көгүлтүр</translation>
 <translation id="1611101756749861742">Экинчи барабан</translation>
+<translation id="1611854593425834707">Экранына чыгара турган түзмөктөрдүн тизмесин жабуу</translation>
 <translation id="1612199629998703524">Темаларды тескөө</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> портун пайдалануу мүмкүнчүлүгүн жоюу</translation>
 <translation id="1615402009686901181">Купуя нерселер көрүнүп турганда, Администратордун эрежеси боюнча экрандагыны сүрөткө тартып алууга болбойт</translation>
@@ -826,6 +828,7 @@
 <translation id="2526280916094749336">Сакталган даректериңизди Google кызматтарында колдоно аласыз. Бул дарек Google аккаунтуңузда (<ph name="ACCOUNT" />) сакталат.</translation>
 <translation id="2527451058878391043">CVC кодуңуз картаңыздын маңдайкы бетинде жайгашкан. Ал картанын номеринен өйдө турган оң жактагы 4 орундуу сан.</translation>
 <translation id="2529899080962247600">Бул талаага киргизилген маанилердин саны <ph name="MAX_ITEMS_LIMIT" /> ашпашы керек. Бардык андан кийинки жазмалар четке кагылат.</translation>
+<translation id="2533649878691950253">Адатта уруксат бербегениңизден улам, бул сайттын так жайгашкан жериңизди көрүү мүмкүнчүлүгү бөгөттөлдү</translation>
 <translation id="253493526287553278">Промокоддун чоо-жайын көрүү</translation>
 <translation id="2535585790302968248">Жаңы Жашыруун өтмөктү ачып, купуя серептеңиз</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{жана дагы 1}other{жана дагы #}}</translation>
@@ -1511,6 +1514,7 @@
 <translation id="385489333361351399">Камера жана фотоаппарат жабдуулары</translation>
 <translation id="3858027520442213535">Күн менен убакытты жаңыртуу</translation>
 <translation id="3858860766373142691">Аталышы</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> үчүн шарттарды бул жерден көрүңүз</translation>
 <translation id="3872834068356954457">Илим</translation>
 <translation id="3875783148670536197">Кантип?</translation>
 <translation id="3880456882942693779">Көркөм өнөр жана көңүл ачуу</translation>
@@ -1917,6 +1921,7 @@
 <translation id="4691093235373904540">Чатырды оңдоо кызматы</translation>
 <translation id="4692623383562244444">Издөө каражаттары</translation>
 <translation id="4698692901173737941">Күрөш спорту</translation>
+<translation id="4701307090948589984">Тышкы экранга чыгаруу…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Каптал</translation>
 <translation id="4702656508969495934">Ыкчам коштомо жазуулар көрүнүп турат, фокустоо үчүн терезелерди которуштургучту колдонуңуз</translation>
@@ -2166,6 +2171,8 @@
 <translation id="5161334686036120870">Тема:</translation>
 <translation id="5161506081086828129">9-төшөгүч</translation>
 <translation id="5164798890604758545">Текст киргизилди</translation>
+<translation id="5164928537947209380">Бул сынамык ЖИ куралы кээде жаңылып калышы мүмкүн. Аны жакшыртуу үчүн контентиңиз Google'га жөнөтүлөт.
+    <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> картаңыздын CVC кодун киргизиңиз. Сиз ырастагандан кийин, Google аккаунтуңуздагы картанын реквизиттери бул сайтка жөнөтүлөт.</translation>
 <translation id="5169827969064885044">Кимдир бирөө сиздин жеке дайындарыңызга же уюмуңуздун аккаунтуна кирип алган окшойт. Chrome сырсөзүңүздү азыр өзгөртүүнү сунуштайт.</translation>
 <translation id="5171045022955879922">URL издеңиз же териңиз</translation>
@@ -2347,6 +2354,7 @@
 <translation id="553377674408670169">Билим берүү жумуштары</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" бөлүгүн көрсөтүү</translation>
 <translation id="553782666181800029">Конверт Чоу 2</translation>
+<translation id="5538270463355278784">автоматтык толук экран</translation>
 <translation id="5539243836947087108">Сал</translation>
 <translation id="5540224163453853">Суралган макала табылган жок.</translation>
 <translation id="5540969246441091044">Ат спорту</translation>
@@ -2711,6 +2719,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'до жүктөлүп алынган файлдарды башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="6254436959401408446">Бул баракчаны ачууга эстутум жетишсиз</translation>
 <translation id="625463612687472648">Төмөнкүнү колдонууга тыюу салуу:</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome'до нерселерди сатып алганда, <ph name="FINANCIAL_ACCOUNT_TYPES" /> эсебин мүмкүнчүлүк катары караңыз}other{Chrome'до нерселерди сатып алганда, <ph name="FINANCIAL_ACCOUNT_TYPES" /> эсебин мүмкүнчүлүк катары караңыз}}</translation>
 <translation id="6259156558325130047">Иреттештирүүнү &amp;кайталоо</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> кыстармалар</translation>
 <translation id="6264376385120300461">Баары бир жүктөп алуу</translation>
@@ -3301,6 +3310,7 @@
 <translation id="7392089738299859607">Даректи жаңыртуу</translation>
 <translation id="7393161616326137353">Укмуштуу окуялар оюндары</translation>
 <translation id="739728382607845710">Төлөм иштеткичтин сүрөтчөсү</translation>
+<translation id="7399616692258236448">Жайгашкан жер боюнча сурамдар өзүңүз уруксат бергенден башка сайттар үчүн автоматтык түрдө бөгөттөлөт</translation>
 <translation id="7399802613464275309">Коопсуздукту текшерүү</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Бул өтмөктү шилтемени бөлүшүү, QR кодду түзүү, тышкы экранга чыгаруу жана башка жолдор менен бөлүшүү</translation>
@@ -3845,6 +3855,7 @@
 <translation id="8378714024927312812">Уюмуңуз тарабынан башкарылат</translation>
 <translation id="8380941800586852976">Коркунучтуу</translation>
 <translation id="8381674639488873545">Алар бир жолу төлөнүүчү же кайталануучу төлөмдөр болушу мүмкүн, бирок алар ачык көрүнбөйт. <ph name="BEGIN_LINK" />Баары бир көрсөтүү<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Автоматтык толук экран</translation>
 <translation id="838307841291975086">Станция вагондору</translation>
 <translation id="8389532092404711541">Адатта <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Жеке жана спорт унаалары</translation>
@@ -4061,6 +4072,7 @@
 <translation id="8807160976559152894">Ар бир барактан кийин кыркуу</translation>
 <translation id="8809203544698246977">Бөгөттөлгөн темалар ушул жерде көрүнөт</translation>
 <translation id="8811470563853401328">Дарек аккаунтка сакталсынбы?</translation>
+<translation id="8811725516933141693">Gemini менен маектешүү үчүн @gemini деп териңиз</translation>
 <translation id="8813277370772331957">Кийинчерээк эскертүү</translation>
 <translation id="8814707942599948500">Конверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлериңизден Chrome'ду жаңыртуу үчүн, Tab, андан соң Enter баскычын басыңыз</translation>

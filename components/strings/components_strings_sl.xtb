@@ -340,6 +340,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="160851722280695521">Igranje igre Dino Run v Chromu</translation>
 <translation id="161042844686301425">Cianova</translation>
 <translation id="1611101756749861742">Kolut 2</translation>
+<translation id="1611854593425834707">Zapiranje seznama naprav za predvajanje</translation>
 <translation id="1612199629998703524">Upravljanje tem</translation>
 <translation id="1615178538289490617">Umik dostopa za vrata <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Pravilnik skrbnika onemogoča zajem zaslona, če je vidna zaupna vsebina.</translation>
@@ -826,6 +827,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2526280916094749336">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov bo shranjen v računu Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Koda CVC je na sprednji strani kartice. To je 4-mestna koda v zgornjem desnem kotu nad številko kartice.</translation>
 <translation id="2529899080962247600">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo prezrti.</translation>
+<translation id="2533649878691950253">Temu spletnemu mestu je onemogočen dostop do vaše natančne lokacije, ker običajno tega ne dovolite.</translation>
 <translation id="253493526287553278">Ogled podrobnosti o promocijskih kodah</translation>
 <translation id="2535585790302968248">Odpiranje novega anonimnega zavihka za zasebno brskanje</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{in še 1}one{in še #}two{in še #}few{in še #}other{in še #}}</translation>
@@ -1918,6 +1920,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4691093235373904540">Krovstvo</translation>
 <translation id="4692623383562244444">Iskalniki</translation>
 <translation id="4698692901173737941">Borilni športi</translation>
+<translation id="4701307090948589984">Predvajanje prek …</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Stran</translation>
 <translation id="4702656508969495934">Samodejni podnapisi so vidni, za preklapljanje uporabite izbirnik oken</translation>
@@ -2167,6 +2170,8 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5161334686036120870">Zadeva:</translation>
 <translation id="5161506081086828129">Zlagalnik 9</translation>
 <translation id="5164798890604758545">Besedilo je vneseno</translation>
+<translation id="5164928537947209380">To preizkusno orodje z umetno inteligenco ne bo vedno pravilno. Zaradi izboljšanja se vaša vsebina pošlje Googlu.
+    <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Vnesite CVC za kreditno kartico <ph name="CREDIT_CARD" />. Ko potrdite, bodo temu spletnemu mestu razkriti podatki o kreditni kartici iz Google Računa.</translation>
 <translation id="5169827969064885044">Izgubite lahko dostop do računa za organizacijo ali postanete žrtev kraje identitete. Chrome priporoča, da spremenite geslo.</translation>
 <translation id="5171045022955879922">Poiščite ali vnesite URL</translation>
@@ -3302,6 +3307,7 @@ Dodatne podrobnosti:
 <translation id="7392089738299859607">Posodobitev naslova</translation>
 <translation id="7393161616326137353">Pustolovske igre</translation>
 <translation id="739728382607845710">Ikona rutine za obravnavo plačil</translation>
+<translation id="7399616692258236448">Zahteve za lokacijo so samodejno blokirane za vsa spletna mesta, razen tiste z vašim dovoljenjem</translation>
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Delite ta zavihek z drugimi tako, da delite povezavo, ustvarite kodo QR, ga predvajate oziroma na kak drug način.</translation>
@@ -4062,6 +4068,7 @@ Dodatne podrobnosti:
 <translation id="8807160976559152894">Obrezovanje po vsaki strani</translation>
 <translation id="8809203544698246977">Blokirane teme so prikazane tukaj.</translation>
 <translation id="8811470563853401328">Želite shraniti naslov v račun?</translation>
+<translation id="8811725516933141693">Vnesite @gemini, če želite klepetati z Geminijem</translation>
 <translation id="8813277370772331957">Opomni me pozneje</translation>
 <translation id="8814707942599948500">Kuverta C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite posodobiti Chrome v Chromovih nastavitvah</translation>

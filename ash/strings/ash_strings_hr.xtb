@@ -68,6 +68,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacija Trgovina Play</translation>
 <translation id="1225748608451425081">Vaš je Chromebook zaključan zbog poznatog problema. Moći ćete se prijaviti za: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Prekini odabir</translation>
+<translation id="1230853660706736937">Pretražite tekst na slikama i pogledajte pregled slika</translation>
 <translation id="1235458158152011030">Poznate mreže</translation>
 <translation id="1239161794459865856">Značajka <ph name="FEATURE_NAME" /> je povezana.</translation>
 <translation id="1240638468526743569">Aplikacija</translation>
@@ -715,11 +716,13 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3824784079442479685">To omogućuje pristup kameri za aplikaciju <ph name="APP_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za kameru. Možda ćete morati osvježiti web-stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="3826099427150913765">Prelazak na zaporku</translation>
 <translation id="383058930331066723">Uključen je način štednje baterije</translation>
+<translation id="3831226344927851293">Zatvorite prikaz vodiča</translation>
 <translation id="383629559565718788">Prikaz postavki tipkovnice</translation>
 <translation id="384082539148746321">Želite li izbrisati predložak?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, a zatim <ph name="KEY_ONE" /> ili <ph name="KEY_TWO" /> ili <ph name="KEY_THREE" /> ili <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Informacije o mreži nisu dostupne</translation>
+<translation id="3848526302597027234">pristupiti sljedećim dopuštenjima:</translation>
 <translation id="385051799172605136">Natrag</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3859364108019690">Aplikacije se ne mogu emitirati</translation>
@@ -1291,7 +1294,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, ponovo pokrenite Chromebook dok je tipkovnica priključena.</translation>
 <translation id="5998374579424866922">Isključite kontrole igre</translation>
 <translation id="6000279412553873020">Tipke, gumbi i ostalo</translation>
-<translation id="6002122790816966947">Vaši uređaji</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stranica od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Isticanje sljedeće stavke na traci</translation>
 <translation id="6015573907265691211">Označi kao dovršeno</translation>

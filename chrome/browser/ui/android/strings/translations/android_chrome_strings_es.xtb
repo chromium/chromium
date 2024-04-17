@@ -493,6 +493,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="3631987586758005671">Compartiendo con <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está desactivada, se solicitará la verificación cada vez que se intente iniciar sesión en un sitio web.</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
+<translation id="368329460027487650">Has cerrado sesión. Abre las opciones para iniciar sesión.</translation>
 <translation id="3687645719033307815">Estás viendo una vista previa de esta página</translation>
 <translation id="3690369331356918524">Te avisa si tus contraseñas se ven expuestas en una brecha de seguridad de datos</translation>
 <translation id="3692944402865947621">No se ha podido descargar <ph name="FILE_NAME" /> porque no se puede acceder a la ubicación del almacenamiento.</translation>

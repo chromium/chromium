@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">نویسنده:</translation>
 <translation id="1247030632403369975">آلومینیوم</translation>
 <translation id="1252209483516427155">لباس بیرون</translation>
+<translation id="1253096324252841344">پرداخت با <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (همگام‌سازی‌شده)</translation>
 <translation id="1255086252236620440">مخلوط‌کن غذا</translation>
 <translation id="1256368399071562588">‏&lt;p&gt;اگر می‌خواهید از وب‌سایتی بازدید کنید و باز نمی‌شود، ابتدا سعی کنید با این مراحل عیب‌یابی خطا را برطرف کنید:&lt;/p&gt;
@@ -340,6 +341,7 @@
 <translation id="160851722280695521">‏بازی کردن بازی دویدن دایناسور در Chrome</translation>
 <translation id="161042844686301425">فیروزه‌ای</translation>
 <translation id="1611101756749861742">رول دوم</translation>
+<translation id="1611854593425834707">بستن فهرست دستگاه‌ها برای پخش محتوا</translation>
 <translation id="1612199629998703524">مدیریت موضوع‌ها</translation>
 <translation id="1615178538289490617">لغو دسترسی برای <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">خط‌مشی سرپرست ضبط صفحه‌نمایش را هنگامی که محتوای محرمانه نمایان باشد غیرفعال می‌کند</translation>
@@ -826,6 +828,7 @@
 <translation id="2526280916094749336">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="ACCOUNT" />) ذخیره خواهد شد.</translation>
 <translation id="2527451058878391043">‏کد تأیید کارت (CVC) روی کارتتان درج شده است. این کد ۴ رقمی در بالا سمت راست شماره کارت قرار دارد.</translation>
 <translation id="2529899080962247600">این فیلد نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی داشته باشد. همه ورودی‌های بعدی نادیده گرفته خواهند شد.</translation>
+<translation id="2533649878691950253">اجازه دسترسی به مکان دقیق شما به این سایت داده نشد چون شما معمولاً این اجازه را اعطا نمی‌کنید</translation>
 <translation id="253493526287553278">دیدن جزئیات کد ترویجی</translation>
 <translation id="2535585790302968248">برگه ناشناس جدیدی برای مرور خصوصی باز می‌شود</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{و ۱ مورد دیگر}one{و # مورد دیگر}other{و # مورد دیگر}}</translation>
@@ -1512,6 +1515,7 @@
 <translation id="385489333361351399">دوربین و تجهیزات عکاسی</translation>
 <translation id="3858027520442213535">به‌روزرسانی تاریخ و زمان</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="3865339060090354361">شرایط <ph name="CREDIT_CARD_NAME" /> را در اینجا ببینید</translation>
 <translation id="3872834068356954457">علم</translation>
 <translation id="3875783148670536197">نمایش روش انجام کار</translation>
 <translation id="3880456882942693779">هنر و سرگرمی</translation>
@@ -1918,6 +1922,7 @@
 <translation id="4691093235373904540">خدمات سقف</translation>
 <translation id="4692623383562244444">موتورهای جستجو</translation>
 <translation id="4698692901173737941">ورزش‌های رزمی</translation>
+<translation id="4701307090948589984">پخش محتوا در…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">رو</translation>
 <translation id="4702656508969495934">«زیرنویس ناشنوایان زنده» نمایان است، برای کانونی کردن آن از تعویض‌کننده پنجره استفاده کنید</translation>
@@ -2108,6 +2113,7 @@
 <translation id="5040262127954254034">حریم خصوصی</translation>
 <translation id="5043480802608081735">پیوندی که کپی کرده‌اید</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
+<translation id="5048293684454354469">موضوع‌های آگهی صرفاً یکی از چیزهایی است که سایت می‌تواند برای شخصی‌سازی آگهی‌ها استفاده کند. حتی بدون موضوع‌های آگهی، سایت‌ها می‌توانند همچنان آگهی نمایش دهند اما ممکن است این آگهی‌ها کمتر شخصی‌سازی شده باشند. درباره <ph name="BEGIN_LINK" />مدیریت حریم خصوصی آگهی<ph name="LINK_END" /> بیشتر بدانید.</translation>
 <translation id="5052517576853118371">موضوع‌های فعال</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}one{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}other{برای ارسال این فایل‌ها ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}}</translation>
 <translation id="505757197798929356">دلیلی برای باز کردن ارائه دهید (الزامی)</translation>
@@ -2167,6 +2173,8 @@
 <translation id="5161334686036120870">موضوع:</translation>
 <translation id="5161506081086828129">پشته‌ساز ۹</translation>
 <translation id="5164798890604758545">نوشتار وارد شده است</translation>
+<translation id="5164928537947209380">‏نتایج این ابزار هوش مصنوعی آزمایشی همیشه صحیح نیست. برای بهبود آن، محتوایتان به Google ارسال می‌شود.
+    <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">‏CVC کارت <ph name="CREDIT_CARD" /> را وارد کنید. بعد از تأیید کردن، جزئیات کارت از حساب Google شما با این سایت هم‌رسانی می‌شود.</translation>
 <translation id="5169827969064885044">‏ممکن است دسترسی به حساب سازمانتان را از دست بدهید یا به سرقت هویت دچار شوید. Chrome توصیه می‌کند هم‌اکنون گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="5171045022955879922">‏جستجو یا تایپ URL</translation>
@@ -2325,6 +2333,7 @@
     <ph name="LINE_BREAK" />
     با سرپرست سیستم تماس بگیرید.</translation>
 <translation id="549333378215107354">اندازه ۳</translation>
+<translation id="5496804587179176046">کدهای امنیتی را ذخیره کنید، فعلاً هیچ کد امنیتی ذخیره نشده است</translation>
 <translation id="550365051221576010">تکمیل همه موارد</translation>
 <translation id="5508443345185481044">دوربین عکس‌برداری و فیلم‌برداری</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2348,6 +2357,7 @@
 <translation id="553377674408670169">مشاغل آموزشی</translation>
 <translation id="5536214594743852365">نمایش بخش «<ph name="SECTION" />»</translation>
 <translation id="553782666181800029">پاکت چو ۲</translation>
+<translation id="5538270463355278784">تمام‌صفحه خودکار</translation>
 <translation id="5539243836947087108">«رفت»</translation>
 <translation id="5540224163453853">مقاله درخواستی یافت نشد.</translation>
 <translation id="5540969246441091044">اسب‌سواری</translation>
@@ -2712,6 +2722,7 @@
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="6254436959401408446">حافظه کافی برای باز کردن این صفحه وجود ندارد</translation>
 <translation id="625463612687472648">توقف دسترسی</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}one{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}other{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان گزینه‌های پرداخت می‌بینید}}</translation>
 <translation id="6259156558325130047">&amp;انجام مجدد ترتیب‌بندی مجدد</translation>
 <translation id="6263376278284652872">نشانک‌های <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
@@ -3302,6 +3313,7 @@
 <translation id="7392089738299859607">به‌روزرسانی نشانی</translation>
 <translation id="7393161616326137353">بازی‌های ماجراجویی</translation>
 <translation id="739728382607845710">نماد کنترل‌كننده پرداخت</translation>
+<translation id="7399616692258236448">درخواست‌های مکان به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="7399802613464275309">بررسی ایمنی</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
 <translation id="7403392780200267761">هم‌رسانی این برگه ازطریق هم‌رسانی پیوند، ایجاد رمزینه پاسخ‌سریع، پخش محتوا، و موارد دیگر</translation>
@@ -3846,6 +3858,7 @@
 <translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>
 <translation id="8380941800586852976">خطرناک</translation>
 <translation id="8381674639488873545">ممکن است این هزینه‌ها یک‌باره یا تکرارشونده باشند و واضح نباشند. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">تمام‌صفحه خودکار</translation>
 <translation id="838307841291975086">استیشن واگن</translation>
 <translation id="8389532092404711541">قیمت معمول: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">خودرو سفارشی و با عملکرد بالا</translation>
@@ -3924,7 +3937,7 @@
 <translation id="8528149813106025610">لباس کودکانه</translation>
 <translation id="8530813470445476232">‏سابقه مرور، کوکی، حافظه پنهان و موارد دیگر را در تنظیمات Chrome پاک کنید.</translation>
 <translation id="853246364274116957">برادوی و تئاتر موزیکال</translation>
-<translation id="8533411848724153701">Gemini Chat</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏برای دیدن فهرست نشانی‌های وب مسدودشده و دیگر خط‌مشی‌های اعمال‌شده توسط سرپرست سیستم، از &lt;strong&gt;chrome://policy&lt;/strong&gt; بازدید کنید.</translation>
 <translation id="8534934518812659742">‏<ph name="PERMISSION" /> را برای Chrome خاموش کرده‌اید.</translation>
 <translation id="8536234749087605613">پاکت (پنجره‌دار)</translation>
@@ -4062,6 +4075,7 @@
 <translation id="8807160976559152894">برش دادن بعد از چاپ هر صفحه</translation>
 <translation id="8809203544698246977">موضوعات مسدودشده در اینجا نشان داده می‌شود</translation>
 <translation id="8811470563853401328">نشانی در حساب ذخیره شود؟</translation>
+<translation id="8811725516933141693">‏برای گپ زدن با Gemini، عبارت ‎@gemini را تایپ کنید</translation>
 <translation id="8813277370772331957">بعداً به من یادآوری شود</translation>
 <translation id="8814707942599948500">پاکت سی۸</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای به‌روزرسانی Chrome ازطریق تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>

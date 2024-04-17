@@ -491,6 +491,7 @@
 <translation id="3631987586758005671">正在分享至「<ph name="DEVICE_NAME" />」</translation>
 <translation id="363596933471559332">自動使用已儲存的憑證登入網站。如果關閉這項功能，每次在您登入網站之前，網站一律會要求驗證。</translation>
 <translation id="3636940436873918441">偏好語言</translation>
+<translation id="368329460027487650">已登出。開啟登入選項。</translation>
 <translation id="3687645719033307815">目前顯示的是這個網頁的預覽畫面</translation>
 <translation id="3690369331356918524">可在發生資料侵害事件導致密碼外洩時顯示警告訊息</translation>
 <translation id="3692944402865947621">無法連線至儲存位置，因此無法下載 <ph name="FILE_NAME" />。</translation>

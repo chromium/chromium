@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Vsili povečavo</translation>
 <translation id="3908288065506437185">Blokiranje piškotkov tretjih oseb v anonimnem načinu.</translation>
 <translation id="3918378745482005425">Nekatere funkcije morda ne bodo delovale. Povezana spletna mesta lahko še vedno uporabljajo piškotke tretjih oseb.</translation>
+<translation id="3933121352599513978">Strni neželene zahteve (priporočeno)</translation>
 <translation id="3955193568934677022">Dovoli spletnim mestom predvajanje zaščitene vsebine (priporočeno)</translation>
 <translation id="3967822245660637423">Prenos končan</translation>
 <translation id="3974105241379491420">Spletna mesta lahko zahtevajo uporabo podatkov, ki so jih shranila o vas</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Krmarjenje ni dosegljivo: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Pozabi</translation>
 <translation id="8990043154272859344">Odjavljeni boste z vseh spletnih mest.</translation>
+<translation id="8993853206419610596">Razširi vse zahteve</translation>
 <translation id="9002538116239926534">Če je ta možnost vklopljena, spletna mesta lahko shranjujejo podatke v napravi. Če je ta možnost izklopljena, spletna mesta ne smejo shranjevati podatkov v napravi.</translation>
 <translation id="9011903857143958461">Dovoljeno: <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Upravljajo starši</translation>

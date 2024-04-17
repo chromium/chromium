@@ -1043,6 +1043,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6363526231572697780">Sem nome de usuário</translation>
 <translation id="6366190659675876144">Proteção padrão</translation>
 <translation id="6366663624406569102">Sair e desativar a sincronização</translation>
+<translation id="6368038301482806847">Selecione um mecanismo de pesquisa na lista.</translation>
 <translation id="6374469231428023295">Repetir</translation>
 <translation id="6377118281273296434">Segurança do site</translation>
 <translation id="6383719166112032471">Abrir local…</translation>
@@ -1202,6 +1203,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7161230316646448869">Sincronize seus favoritos, histórico e muito mais em todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Configurações</translation>
+<translation id="7186568385131859684">Controle como o histórico de navegação é usado com seus outros dados nos Serviços do Google</translation>
 <translation id="7189598951263744875">Compartilhar...</translation>
 <translation id="719133302483559673">Gerencie seus interesses e suas preferências.</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
@@ -1245,6 +1247,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7438481509621345350">Agora, você verá stories de <ph name="CHANNEL_NAME" /> quando abrir uma nova guia.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
 <translation id="7454057999980797137">Estado/Prov.</translation>
+<translation id="7458706065921255639">Personalização e vinculação</translation>
 <translation id="745899714366929493">O dia todo</translation>
 <translation id="7459628154744868585">A proteção reforçada está ativa</translation>
 <translation id="7465351360025415755">Receba conteúdo importante para você</translation>

@@ -136,6 +136,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Alumínio</translation>
 <translation id="1252209483516427155">Roupas</translation>
+<translation id="1253096324252841344">Pagar com <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1255086252236620440">Centrífugas de alimentos</translation>
 <translation id="1256368399071562588">&lt;p&gt;Se você tentar visitar um site e ele não abrir, primeiro tente corrigir o erro com estas etapas de solução de problemas:&lt;/p&gt;
@@ -340,6 +341,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="160851722280695521">Iniciar o jogo do Dinossauro do Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611101756749861742">Segundo rolo</translation>
+<translation id="1611854593425834707">Fechar lista de dispositivos para transmissão</translation>
 <translation id="1612199629998703524">Gerenciar temas</translation>
 <translation id="1615178538289490617">Revogue o acesso à porta <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">A captura da tela é desativada pela política do administrador quando há conteúdo protegido visível</translation>
@@ -826,6 +828,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2526280916094749336">Os endereços salvos podem ser usados em vários produtos do Google. Esse será salvo na sua conta <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">O CVC é um código de quatro dígitos que fica no canto superior direito da parte da frente do cartão, logo acima do número dele.</translation>
 <translation id="2529899080962247600">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as entradas futuras serão ignoradas.</translation>
+<translation id="2533649878691950253">Este site foi impedido de saber seu local exato porque você normalmente não permite esse acesso</translation>
 <translation id="253493526287553278">Consulte os detalhes do código promocional</translation>
 <translation id="2535585790302968248">Abra uma nova guia anônima para navegar com privacidade</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}one{e mais #}other{e mais #}}</translation>
@@ -1512,6 +1515,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="385489333361351399">Equipamento de foto e vídeo</translation>
 <translation id="3858027520442213535">Atualizar data e hora</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3865339060090354361">Confira aqui os termos do cartão <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Ciência</translation>
 <translation id="3875783148670536197">Me ajude a fazer isso</translation>
 <translation id="3880456882942693779">Artes e entretenimento</translation>
@@ -1918,6 +1922,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4691093235373904540">Serviços de telhadista</translation>
 <translation id="4692623383562244444">Mecanismos de pesquisa</translation>
 <translation id="4698692901173737941">Lutas</translation>
+<translation id="4701307090948589984">Transmitir para…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
 <translation id="4702656508969495934">Legenda instantânea visível. Use o seletor de janelas para definir o foco</translation>
@@ -2167,6 +2172,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5161334686036120870">Assunto:</translation>
 <translation id="5161506081086828129">Empilhador 9</translation>
 <translation id="5164798890604758545">Um texto é inserido</translation>
+<translation id="5164928537947209380">Esta ferramenta experimental de IA nem sempre acerta. Para melhorar as respostas, seu conteúdo é enviado ao Google.
+    <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Informe o CVC do <ph name="CREDIT_CARD" />. Depois da confirmação, os detalhes do cartão da sua Conta do Google serão compartilhados com este site.</translation>
 <translation id="5169827969064885044">Você pode perder o acesso à conta da sua organização ou sofrer roubo de identidade. O Chrome recomenda que você altere sua senha agora.</translation>
 <translation id="5171045022955879922">Pesquisar ou digitar URL</translation>
@@ -2348,6 +2355,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="553377674408670169">Empregos na área de educação</translation>
 <translation id="5536214594743852365">Mostrar a seção "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
+<translation id="5538270463355278784">tela cheia automática</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">Não foi possível encontrar o artigo solicitado.</translation>
 <translation id="5540969246441091044">Hipismo</translation>
@@ -2712,6 +2720,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar arquivos baixados no Chrome</translation>
 <translation id="6254436959401408446">Não há memória suficiente para abrir essa página</translation>
 <translation id="625463612687472648">Parar de permitir</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Ao fazer compras no Chrome, acesse <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opção}one{Ao fazer compras no Chrome, acesse <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opção}other{Ao fazer compras no Chrome, acesse <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opções}}</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenar</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Fazer o download mesmo assim</translation>
@@ -3303,6 +3312,7 @@ Mais detalhes:
 <translation id="7392089738299859607">Atualizar endereço</translation>
 <translation id="7393161616326137353">Jogos de aventura</translation>
 <translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>
+<translation id="7399616692258236448">As solicitações de localização são bloqueadas automaticamente para todos os sites, exceto os que você permitir</translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
@@ -3847,6 +3857,7 @@ Mais detalhes:
 <translation id="8378714024927312812">Gerenciado pela sua organização</translation>
 <translation id="8380941800586852976">Perigoso</translation>
 <translation id="8381674639488873545">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Tela cheia automática</translation>
 <translation id="838307841291975086">Peruas</translation>
 <translation id="8389532092404711541">Normalmente: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Veículos personalizados e de alta performance</translation>
@@ -4064,6 +4075,7 @@ Mais detalhes:
 <translation id="8807160976559152894">Cortar depois de cada página</translation>
 <translation id="8809203544698246977">Os temas bloqueados aparecem aqui</translation>
 <translation id="8811470563853401328">Salvar endereço na conta?</translation>
+<translation id="8811725516933141693">Digite @gemini para conversar com o Gemini</translation>
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para atualizar o Chrome pelas configurações dele</translation>

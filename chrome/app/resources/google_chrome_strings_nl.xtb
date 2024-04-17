@@ -218,9 +218,11 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4293420128516039005">Log in om Chrome op al je apparaten te synchroniseren en te personaliseren</translation>
 <translation id="430327780270213103">Toestaan dat de extensie toegangsverzoeken toont op de Chrome-werkbalk</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
+<translation id="4329315893554541805">Als je personalisatie en andere functies wilt krijgen, neem je Chrome op in Web- en app-activiteit en gekoppelde Google-services</translation>
 <translation id="4334294535648607276">Downloaden voltooid.</translation>
 <translation id="4335235004908507846">Chrome kan je beschermen tegen gegevenslekken, schadelijke extensies en meer</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> is toegevoegd aan Chrome</translation>
+<translation id="4348548358339558429">Neem Chrome op in Web- en app-activiteit om personalisatie te krijgen</translation>
 <translation id="436060642166082913">Chrome heeft deze download geblokkeerd, omdat het bestand schadelijk kan zijn voor je persoonlijke en socialmedia-accounts</translation>
 <translation id="4384570495110188418">Chrome kan je wachtwoorden niet checken omdat je niet bent ingelogd.</translation>
 <translation id="4389991535395284064">Als je browst in de incognitomodus, waarschuwt Chrome je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
@@ -326,6 +328,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6251759518630934363">Geeft je waarschuwingen over gevaarlijke sites, zelfs sites die Google niet eerder kende, door meer gegevens van sites te analyseren dan de standaardbeveiliging. Je kunt ervoor kiezen Chrome-waarschuwingen over te slaan.</translation>
 <translation id="6273793429163604305">Op je plaats...</translation>
 <translation id="6277547788421725101">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chrome</translation>
+<translation id="627882678981830918">Pas Chrome aan en beheer de instellingen. Stel Chrome in als je standaardbrowser.</translation>
 <translation id="6291089322031436445">Chrome Dev-apps</translation>
 <translation id="6291549208091401781">Google Chrome is al geïnstalleerd voor alle gebruikers op je computer.</translation>
 <translation id="6326175484149238433">Verwijderen uit Chrome</translation>
@@ -334,7 +337,9 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6412673304250309937">Controleert URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Je organisatie sluit Chrome automatisch als deze 1 minuut niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}other{Je organisatie sluit Chrome automatisch als deze # minuten niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}}</translation>
 <translation id="6418662306461808273">Overschakelen naar bestaand Chrome-profiel?</translation>
+<translation id="6481963882741794338">Koppel Chrome en andere Google-services voor personalisatie en andere doeleinden</translation>
 <translation id="648319183876919572">De uitgebreide versie van Safe Browsing doet meer om je te beschermen tegen gevaarlijke websites en downloads</translation>
+<translation id="6489302989675808168">Aan • Chrome kan niet verifiëren waar deze extensie vandaan komt</translation>
 <translation id="6493527311031785448">Google Chrome probeert het volgende te doen: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome is automatisch gesloten</translation>
 <translation id="6506909944137591434">Chrome heeft camerarechten nodig om een 3D-kaart van je omgeving te maken</translation>
@@ -359,6 +364,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6933858244219479645">ChromeOS-systeem</translation>
 <translation id="6938166777909186039">Als je toekomstige Google Chrome-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 8.1.</translation>
 <translation id="6943584222992551122">De browsegegevens van deze persoon worden verwijderd van dit apparaat. Als je de gegevens wilt herstellen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
+<translation id="6944202724043006419">Chrome heeft rechten voor scène-begrip en handtracking nodig om een immersieve sessie te starten</translation>
 <translation id="6967962315388095737">Inkomende regel zodat Google Chrome Bèta mDNS-verkeer toestaat.</translation>
 <translation id="6989339256997917931">Google Chrome is bijgewerkt, maar je hebt het programma minstens 30 dagen niet gebruikt.</translation>
 <translation id="7011190694940573312">De installatie is mislukt omdat deze versie van het besturingssysteem niet wordt ondersteund.</translation>
@@ -393,6 +399,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7477130805345743099">Chrome waarschuwt je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
 <translation id="7481213027396403996">Gebruik het hoogste beveiligingsniveau van Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7572537927358445944">Uit • Chrome kan niet verifiëren waar deze extensie vandaan komt</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installatieprogramma</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Welkom bij Chrome</translation>
@@ -481,6 +488,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8823341990149967727">Chrome is verouderd</translation>
 <translation id="8825634023950448068">Ter bescherming van je privacy verwijderen we automatisch interesses die ouder zijn dan 4 weken. Het kan gebeuren dat een interesse weer in de lijst komt te staan als je blijft browsen. Je kunt interesses ook verwijderen als Chrome die verkeerd inschat of je bepaalde advertenties niet wilt zien.</translation>
 <translation id="8834965163890861871">Google Chrome probeert wachtwoorden te bewerken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome raadt je aan deze te verwijderen.}other{Chrome raadt je aan deze te verwijderen.}}</translation>
 <translation id="8862326446509486874">Je hebt geen rechten om op systeemniveau te installeren. Meld je aan als beheerder en voer het installatieprogramma opnieuw uit.</translation>
 <translation id="8914504000324227558">Chrome opnieuw starten</translation>
 <translation id="8922193594870374009">Als je een nummer vanaf <ph name="ORIGIN" /> naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>

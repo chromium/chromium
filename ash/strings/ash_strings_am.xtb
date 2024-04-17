@@ -160,6 +160,7 @@
 <translation id="1569384531973824928">ይህ የካሜራ እና የማይክሮፎን ፈቃዶች ላሏቸው ለሁሉም መተግበሪያዎች እና ድር ጣቢያዎች መዳረሻ ይፈቅዳል። ድረ-ገጹን ማደስ ወይም መተግበሪያውን እንደገና ማስጀመር ሊኖርብዎት ይችላል።</translation>
 <translation id="1571697193564730395">አትረብሽን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ማጉያ ሲበራ አሳንሥ</translation>
+<translation id="1582946770779745370">የጨዋታ ዳሽቦርድ ይገኛል። በማንኛውም ጊዜ ለመክፈት <ph name="LAUNCHER_KEY_NAME" /> + ቀያይር + ዝለልን ይጫኑ፣ ከዚያ <ph name="LAUNCHER_KEY_NAME" /> + gን ይጫኑ</translation>
 <translation id="1586324912145647027">ወደ ዴስክ 1 እስከ 8 ይሂዱ</translation>
 <translation id="158838227375272121">Google የትምህርት ክፍል ድር ጣቢያ</translation>
 <translation id="1589090746204042747">በዚህ ክፍለ-ጊዜ ውስጥ ያለው ሁሉንም እንቅስቃሴዎን ይድረሱ</translation>
@@ -1291,7 +1292,6 @@
 <translation id="598882571027504733">ዝማኔውን ለማግኘት፣ ከተያያዘው የቁልፍ ሰሌዳ ጋር የእርስዎን Chromebook ዳግም ያስጀምሩ።</translation>
 <translation id="5998374579424866922">የጨዋታ መቆጣጠሪያዎችን ያጥፉ</translation>
 <translation id="6000279412553873020">ቁልፎች፣ አዝራሮች እና ሌሎች</translation>
-<translation id="6002122790816966947">የእርስዎ መሣሪያዎች</translation>
 <translation id="6012623610530968780">ገፅ <ph name="SELECTED_PAGE" /> ከ<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ቀጣይ ንጥል በመደርደሪያ ላይ ያደምቃል</translation>
 <translation id="6015573907265691211">እንደተጠናቀቀ ምልክት አድርግ</translation>

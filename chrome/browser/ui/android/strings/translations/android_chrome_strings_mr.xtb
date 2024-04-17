@@ -493,6 +493,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> शी शेअर करत आहे</translation>
 <translation id="363596933471559332">स्टोअर क्रेडेंशियल वापरून वेबसाइटवर आपोआप साइन इन करा. वैशिष्ट्य बंद असते तेव्हा, वेबसाइटवर साइन इन करण्यापूर्वी दरवेळी तुम्हाला पडताळणीसाठी विचारले जाईल.</translation>
 <translation id="3636940436873918441">प्राधान्य दिलेल्या भाषा</translation>
+<translation id="368329460027487650">साइन आउट केले आहे. साइन इन करण्यासाठी पर्याय उघडते.</translation>
 <translation id="3687645719033307815">तुम्ही या पेजचे पूर्वावलोकन पाहत आहात</translation>
 <translation id="3690369331356918524">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी देते</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
@@ -1051,6 +1052,7 @@
 <translation id="6475951671322991020">व्हिडिओ डाउनलोड करा</translation>
 <translation id="6477928892249167417">या साइट तुमच्यासाठी महत्त्वाच्या आहेत असे दिसते:</translation>
 <translation id="6482749332252372425">स्टोरेज स्थानाच्या अभावामुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
+<translation id="6495590690749880440">टॅब गट उघडायचा आहे का?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{फाइल डाउनलोड केली}other{# डाउनलोड पूर्ण झाले}}</translation>
 <translation id="6508722015517270189">Chrome रीस्टार्ट करा</translation>
 <translation id="6518133107902771759">सत्यापित करा</translation>

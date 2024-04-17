@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">ຜູ້ຂຽນ:</translation>
 <translation id="1247030632403369975">ອະລູມິນຽມ</translation>
 <translation id="1252209483516427155">ເຄື່ອງນຸ່ງຊັ້ນນອກ</translation>
+<translation id="1253096324252841344">ຈ່າຍດ້ວຍ <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ຊິ້ງຂໍ້ມູນແລ້ວ)</translation>
 <translation id="1255086252236620440">ເຄື່ອງປະສົມອາຫານ</translation>
 <translation id="1256368399071562588">&lt;p&gt;ຖ້າທ່ານພະຍາຍາເຂົ້າເບິ່ງເວັບໄຊ ແລະ ມັນບໍ່ເປີດຂຶ້ນມາ, ກ່ອນອື່ນກະລຸນາລອງແກ້ໄຂຂໍ້ຜິດພາດດ້ວຍຂັ້ນຕອນແກ້ໄຂບັນຫາເຫຼົ່ານີ້:&lt;/p&gt;
@@ -340,6 +341,7 @@
 <translation id="160851722280695521">ຫຼິ້ນເກມ Dino Run ໃນ Chrome</translation>
 <translation id="161042844686301425">ສີຟ້າຂຽວ</translation>
 <translation id="1611101756749861742">ມ້ວນທີສອງ</translation>
+<translation id="1611854593425834707">ປິດລາຍຊື່ອຸປະກອນເພື່ອສົ່ງສັນຍານ</translation>
 <translation id="1612199629998703524">ຈັດການຫົວຂໍ້</translation>
 <translation id="1615178538289490617">ຖອດຖອນສິດເຂົ້າເຖິງ <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການຖ່າຍຮູບໜ້າຈໍໄວ້ເມື່ອສະແດງເນື້ອຫາທີ່ເປັນຄວາມລັບຢູ່</translation>
@@ -826,6 +828,7 @@
 <translation id="2526280916094749336">ທ່ານສາມາດໃຊ້ທີ່ຢູ່ທີ່ບັນທຶກໄວ້ທົ່ວຜະລິດຕະພັນ Google ໄດ້. ທີ່ຢູ່ນີ້ຈະຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC ຂອງທ່ານແມ່ນສະແດງຢູ່ດ້ານໜ້າບັດຂອງທ່ານ. ໂດຍເປັນລະຫັດ 4 ຕົວເລກທີ່ຢູ່ດ້ານຂວາເທິງເລກບັດຂອງທ່ານ.</translation>
 <translation id="2529899080962247600">ຊ່ອງຂໍ້ມູນນີ້ບໍ່ຄວນມີຫຼາຍກວ່າ <ph name="MAX_ITEMS_LIMIT" /> ລາຍການ. ລາຍການເພີ່ມເຕີມທັງໝົດຈະຖືກລະເວັ້ນ.</translation>
+<translation id="2533649878691950253">ເວັບໄຊນີ້ຖືກບລັອກບໍ່ໃຫ້ຮູ້ສະຖານທີ່ແບບລະອຽດຂອງທ່ານເນື່ອງຈາກປົກກະຕິທ່ານບໍ່ອະນຸຍາດສິ່ງນີ້</translation>
 <translation id="253493526287553278">ເບິ່ງລາຍລະອຽດລະຫັດໂປຣໂມຊັນ</translation>
 <translation id="2535585790302968248">ເປີດແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ເພື່ອທ່ອງເວັບແບບສ່ວນຕົວ</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ແລະ ອີກ 1 ລາຍການ}other{ແລະ ອີກ # ລາຍການ}}</translation>
@@ -1512,6 +1515,7 @@
 <translation id="385489333361351399">ອຸປະກອນກ້ອງຖ່າຍຮູບ ແລະ ຮູບພາບ</translation>
 <translation id="3858027520442213535">ອັບ​ເດດ​ວັນ​ທີ ແລະ​ເວ​ລາ</translation>
 <translation id="3858860766373142691">ຊື່</translation>
+<translation id="3865339060090354361">ເບິ່ງຂໍ້ກຳນົດກ່ຽວກັບ <ph name="CREDIT_CARD_NAME" /> ຢູ່ບ່ອນນີ້</translation>
 <translation id="3872834068356954457">ວິທະຍາສາດ</translation>
 <translation id="3875783148670536197">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
 <translation id="3880456882942693779">ສິນລະປະ ແລະ ຄວາມບັນເທີງ</translation>
@@ -1918,6 +1922,7 @@
 <translation id="4691093235373904540">ມຸງຫຼັງຄາ</translation>
 <translation id="4692623383562244444">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
 <translation id="4698692901173737941">ກິລາຕໍ່ສູ້</translation>
+<translation id="4701307090948589984">ສົ່ງສັນຍານຫາ...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ດ້ານຂ້າງ</translation>
 <translation id="4702656508969495934">ສະແດງຄຳບັນຍາຍສົດແລ້ວ, ໃຊ້ປຸ່ມສະຫຼັບໜ້າຈໍເພື່ອໂຟກັສ</translation>
@@ -2108,6 +2113,7 @@
 <translation id="5040262127954254034">ຄວາມ​ເປັນ​ສ່ວນ​ຕົວ</translation>
 <translation id="5043480802608081735">ລິ້ງທີ່ທ່ານສຳເນົາ</translation>
 <translation id="5045550434625856497">ລະ​ຫັດ​ຜ່ານ​ບໍ່​ຖືກ​ຕ້ອງ​</translation>
+<translation id="5048293684454354469">ຫົວຂໍ້ໂຄສະນາເປັນພຽງໜຶ່ງໃນຫຼາຍໆສິ່ງທີ່ເວັບໄຊສາມາດໃຊ້ເພື່ອປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ. ເຖິງແມ່ນວ່າຈະບໍ່ມີຫົວຂໍ້ໂຄສະນາກໍຕາມ, ເວັບໄຊກໍຍັງສາມາດສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນໄດ້ ແຕ່ໂຄສະນາອາດໄດ້ຮັບການປັບແຕ່ງສ່ວນຕົວໜ້ອຍລົງ. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK" />ການຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາຂອງທ່ານ<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">ຫົວຂໍ້ທີ່ນຳໃຊ້ຢູ່</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ເພື່ອສົ່ງໄຟລ໌ນີ້ໂດຍໃຊ້ການແບ່ງປັນໃກ້ຄຽງ, ໃຫ້ສ້າງພື້ນທີ່ຫວ່າງ (<ph name="DISK_SPACE_SIZE" />) ຢູ່ອຸປະກອນຂອງທ່ານກ່ອນ}other{ເພື່ອສົ່ງໄຟລ໌ເຫຼົ່ານີ້ໂດຍໃຊ້ການແບ່ງປັນໃກ້ຄຽງ, ໃຫ້ສ້າງພື້ນທີ່ຫວ່າງ (<ph name="DISK_SPACE_SIZE" />) ຢູ່ອຸປະກອນຂອງທ່ານກ່ອນ}}</translation>
 <translation id="505757197798929356">ໃຫ້ເຫດຜົນສໍາລັບການເປີດ (ຈຳເປັນ)</translation>
@@ -2167,6 +2173,8 @@
 <translation id="5161334686036120870">ຫົວຂໍ້:</translation>
 <translation id="5161506081086828129">ສະແຕັກເກີ້ 9</translation>
 <translation id="5164798890604758545">ມີການປ້ອນຂໍ້ຄວາມ</translation>
+<translation id="5164928537947209380">ເຄື່ອງມື AI ທົດລອງນີ້ຈະບໍ່ຖືກຕ້ອງສະເໝີໄປ. ເພື່ອປັບປຸງມັນ, ເນື້ອຫາຂອງທ່ານໄດ້ຖືກສົ່ງໃຫ້ Google.
+    <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">ປ້ອນ CVC ສຳລັບ <ph name="CREDIT_CARD" />. ຫຼັງຈາກທີ່ທ່ານຢືນຢັນ, ລະບົບຈະແບ່ງປັນລາຍລະອຽດບັດຈາກບັນຊີ Google ຂອງທ່ານກັບເວັບໄຊນີ້.</translation>
 <translation id="5169827969064885044">ທ່ານອາດຈະສູນເສຍການເຂົ້າເຖິງບັນຊີຂອງອົງການຂອງທ່ານ ຫຼື ປະສົບກັບການລັກໃຊ້ຕົວຕົນ. Chrome ແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານຂອງທ່ານດຽວນີ້.</translation>
 <translation id="5171045022955879922">ຊອກຫາ ຫຼື ພິມ URL</translation>
@@ -2325,6 +2333,7 @@
     <ph name="LINE_BREAK" />
     ໃຫ້ລອງຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="549333378215107354">ຂະໜາດ 3</translation>
+<translation id="5496804587179176046">ບັນທຶກລະຫັດຄວາມປອດໄພ, ບໍ່ມີລະຫັດຄວາມປອດໄພທີ່ບັນທຶກໄວ້ໃນປັດຈຸບັນ</translation>
 <translation id="550365051221576010">ຕື່ມຂໍ້ມູນທຸກຢ່າງ</translation>
 <translation id="5508443345185481044">ກ້ອງຖ່າຍຮູບ ແລະ ກ້ອງຖ່າຍວິດີໂອ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2348,6 +2357,7 @@
 <translation id="553377674408670169">ວຽກການສຶກສາ</translation>
 <translation id="5536214594743852365">ສະແດງຂໍ້ "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
+<translation id="5538270463355278784">ເຕັມຈໍອັດຕະໂນມັດ</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">ບໍ່ສາມາດຊອກຫາບົດຄວາມທີ່ຂໍໄດ້.</translation>
 <translation id="5540969246441091044">ຄົນຂີ່ມ້າ</translation>
@@ -2712,6 +2722,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການໄຟລ໌ທີ່ທ່ານດາວໂຫຼດໄວ້ໃນ Chrome</translation>
 <translation id="6254436959401408446">ບໍ່ມີຄວາມຈຳພຽງພໍເພື່ອເປີດໜ້ານີ້</translation>
 <translation id="625463612687472648">ຢຸດການອະນຸຍາດ</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{ເມື່ອທ່ານດຳເນີນການຊື້ໃນ Chrome, ທ່ານຈະເຫັນ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ເປັນຕົວເລືອກ}other{ເມື່ອທ່ານດຳເນີນການຊື້ໃນ Chrome, ທ່ານຈະເຫັນ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ເປັນຕົວເລືອກ}}</translation>
 <translation id="6259156558325130047">ເຮັດຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="6263376278284652872">ບຸກມາກສ໌ <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">ຢືນຢັນການດາວໂຫຼດ</translation>
@@ -3302,6 +3313,7 @@
 <translation id="7392089738299859607">ອັບເດດທີ່ຢູ່</translation>
 <translation id="7393161616326137353">ເກມຜະຈົນໄພ</translation>
 <translation id="739728382607845710">ໄອຄອນຕົວຈັດການການຈ່າຍເງິນ</translation>
+<translation id="7399616692258236448">ຄຳຮ້ອງຂໍສະຖານທີ່ຖືກບລັອກໄວ້ໂດຍອັດຕະໂນມັດສຳລັບທຸກເວັບໄຊ ຍົກເວັ້ນເວັບໄຊທີ່ທ່ານອະນຸຍາດ</translation>
 <translation id="7399802613464275309">ກວດສອບຄວາມປອດໄພ</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">ແບ່ງປັນແຖບນີ້ໂດຍການແບ່ງປັນລິ້ງ, ການສ້າງລະຫັດ QR, ການສົ່ງສັນຍານ ແລະ ອື່ນໆ</translation>
@@ -3846,6 +3858,7 @@
 <translation id="8378714024927312812">ຈັດການໂດຍອົງການຂອງທ່ານ</translation>
 <translation id="8380941800586852976">ອັນຕະລາຍ</translation>
 <translation id="8381674639488873545">ການຮຽກເກັບເງິນເຫຼົ່ານີ້ອາດຈະເກັບຄັ້ງດຽວ ຫຼື ເປັນປະຈຳຫຼາຍຄັ້ງ ແລະ ອາດຈະບໍ່ເຫັນໄດ້ຈະແຈ້ງ. <ph name="BEGIN_LINK" />ຢືນຢັນໃຫ້ສະແດງ<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">ເຕັມຈໍອັດຕະໂນມັດ</translation>
 <translation id="838307841291975086">ລົດສະເຕຊັນແວກອນ</translation>
 <translation id="8389532092404711541">ປົກກະຕິ <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">ລົດຍົນສັ່ງຜະລິດ ແລະ ປະສິດທິພາບສູງ</translation>
@@ -4062,6 +4075,7 @@
 <translation id="8807160976559152894">ຕັດອອກຫຼັງຈາກແຕ່ລະໜ້າ</translation>
 <translation id="8809203544698246977">ຫົວຂໍ້ທີ່ບລັອກຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="8811470563853401328">ບັນທຶກທີ່ຢູ່ໃນບັນຊີບໍ?</translation>
+<translation id="8811725516933141693">ພິມ @gemini ເພື່ອສົນທະນາກັບ Gemini</translation>
 <translation id="8813277370772331957">ແຈ້ງເຕືອນຂ້ອຍໃນພາຍຫຼັງ</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນ Enter ເພື່ອອັບເດດ Chrome ຈາກການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>

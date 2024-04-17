@@ -127,7 +127,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1084824384139382525">Copiar dir&amp;ección del vínculo</translation>
 <translation id="1085064499066015002">Siempre en todos los sitios</translation>
 <translation id="1085697365578766383">Se produjo un error al iniciar la máquina virtual. Vuelve a intentarlo.</translation>
-<translation id="1088659085457112967">Ingresar al modo de lectura</translation>
 <translation id="1090126737595388931">No se ejecutan aplicaciones de fondo</translation>
 <translation id="1090541560108055381">Verifica que este código sea igual en ambos dispositivos para poder vincularlos</translation>
 <translation id="1091767800771861448">Presiona ESCAPE para omitir (solo compilaciones no oficiales).</translation>
@@ -2159,7 +2158,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2587922766792651800">Se agotó el tiempo de espera</translation>
 <translation id="2588636910004461974">Dispositivos del proveedor <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">No mostrar nunca archivos de Drive</translation>
-<translation id="25899519884572181">Salir del modo de lectura</translation>
 <translation id="2593499352046705383">Antes de comenzar, asegúrate de tener una copia de seguridad de los datos. Cuando instales <ph name="DEVICE_OS" />, se reemplazarán todos los datos de tu disco duro. Obtén más información en g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Administrar la seguridad de V8</translation>
 <translation id="2594999711683503743">Buscar en Google o escribir una URL</translation>
@@ -2460,7 +2458,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2806372837663997957">El dispositivo con el que quieres compartir contenido no lo aceptó.</translation>
 <translation id="2806891468525657116">El acceso directo ya existe</translation>
 <translation id="2807517655263062534">Los archivos que descargas aparecen aquí</translation>
-<translation id="2809586584051668049">y <ph name="NUMBER_ADDITIONAL_DISABLED" /> más</translation>
 <translation id="2811205483104563968">Cuentas</translation>
 <translation id="2812049959647166806">No se admite Thunderbolt</translation>
 <translation id="2812171980080389735">Redes y contraseñas guardadas para que puedas conectarte al instante</translation>
@@ -3049,7 +3046,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3285465040399788513">No hay suficiente espacio de almacenamiento en el dispositivo para completar la configuración. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="3285500645985761267">Permitir que los sitios relacionados vean tu actividad en el grupo</translation>
 <translation id="328571385944182268">¿Quieres guardar tus contraseñas?</translation>
-<translation id="3288047731229977326">Las extensiones que se ejecutan en modo de programador pueden dañar tu computadora. Si no eres programador, debes inhabilitar las extensiones que se ejecutan en modo de programador para mantenerte protegido.</translation>
 <translation id="3289668031376215426">Mayúsculas automáticas</translation>
 <translation id="3289856944988573801">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet o Wi-Fi.</translation>
 <translation id="3289886661311231677">Puedes bloquear los temas que no quieres compartir con los sitios. Chrome también borra los temas de forma automática luego de 4 semanas.</translation>
@@ -3089,7 +3085,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3313622045786997898">Valor de firma del certificado</translation>
 <translation id="3313950410573257029">Verificar conexión</translation>
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Ingresar al modo de lectura</translation>
 <translation id="3317459757438853210">Doble cara</translation>
 <translation id="3317521105713541270">Crear grupos</translation>
 <translation id="3317678681329786349">Cámara y micrófono bloqueados</translation>
@@ -3412,6 +3407,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3569682580018832495"><ph name="ORIGIN" /> puede ver los siguientes archivos y carpetas</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
+<translation id="3575224072358507281">Recopilar los resultados de mediciones de red y dirección IP para Measurement Lab, según su política de privacidad (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="3577487026101678864">Se activó la sincronización de archivos</translation>
 <translation id="3577745545227000795">Recopilación de datos de hardware de <ph name="DEVICE_OS" /></translation>
@@ -3494,7 +3490,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - Queda(n) <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637203148990213388">Cuentas adicionales</translation>
-<translation id="3639220004740062347">Salir del modo de lectura</translation>
 <translation id="3640214691812501263">¿Quieres agregar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Protege tus contraseñas contra los ataques de phishing.</translation>
 <translation id="3640613767643722554">Enséñale al Asistente a reconocer tu voz</translation>
@@ -4137,7 +4132,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4095483462103784441">Crear un nuevo grupo de pestañas</translation>
 <translation id="4095507791297118304">Pantalla principal</translation>
 <translation id="4096421352214844684">Conéctate automáticamente al hotspot de tu teléfono.</translation>
-<translation id="4096508467498758490">Inhabilitar extensiones en modo de programador</translation>
 <translation id="4096797685681362305">Visto durante la semana pasada</translation>
 <translation id="4097406557126260163">Apps y extensiones</translation>
 <translation id="409742781329613461">Sugerencias para Chrome</translation>
@@ -5468,7 +5462,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5146896637028965135">Voz del sistema</translation>
 <translation id="5147097165869384760">¿Buscas la página del sistema del SO? Visita <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Recomendación</translation>
-<translation id="5147516217412920887">Sigue las instrucciones que se muestran en tu teléfono para verificar el código</translation>
 <translation id="5147992672778369947">Usa la contraseña recomendada</translation>
 <translation id="5148285448107770349">La contraseña debe tener como mínimo 8 caracteres</translation>
 <translation id="5149602533174716626">Copia&amp;r fotograma</translation>
@@ -6726,10 +6719,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6143186082490678276">Obtener ayuda</translation>
 <translation id="6143366292569327983">Elige el idioma del que desees traducir la página</translation>
 <translation id="6144938890088808325">Ayúdanos a mejorar las Chromebook</translation>
-<translation id="6145480071052696715">Configura fácilmente tu <ph name="DEVICE_TYPE" /> con tu teléfono. Puedes agregar tu red Wi-Fi y tu Cuenta de Google sin tener que ingresar las contraseñas manualmente.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visible como <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">La sincronización no funciona. Inténtalo de nuevo.</translation>
 <translation id="6147020289383635445">Error al imprimir vista previa</translation>
 <translation id="6147253937684562370">Para desbloquear el perfil, accede con la dirección de correo electrónico de tu cuenta principal: <ph name="EMAIL" /></translation>
@@ -6954,7 +6943,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6310141306111263820">No fue posible instalar el perfil de eSIM. Para obtener ayuda, comunícate con el proveedor.</translation>
 <translation id="6311220991371174222">No se puede iniciar Chrome porque se produjo un error al abrir tu perfil. Intenta reiniciar Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Se ejecutó hace 1 día la Verificación de seguridad}other{Se ejecutó hace {NUM_DAYS} días la Verificación de seguridad}}</translation>
-<translation id="6312638141433622592">Ofrece mostrar artículos en el modo de lectura, cuando sea compatible</translation>
 <translation id="6313950457058510656">Desactivar la Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="6314819609899340042">Habilitaste correctamente las funciones de depuración en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Voz</translation>
@@ -8037,6 +8025,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7181117767881540376">&amp;Ocultar la barra de favoritos</translation>
 <translation id="7181329571386134105">Para permitir que <ph name="CHILD_NAME" /> instale extensiones futuras sin tu aprobación, abre la app de Family Link en tu dispositivo y actualiza la configuración de Google Chrome de <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Usar otra cuenta</translation>
 <translation id="7182063559013288142">Hotspot instantáneo</translation>
 <translation id="7182791023900310535">Mover tu contraseña</translation>
 <translation id="718427252411067142">Si quieres evitar que otras personas usen tu contraseña, abre la app para cambiarla</translation>
@@ -8600,6 +8589,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7617263010641145920">Activar Play Store</translation>
 <translation id="7617648809369507487">Usar notificaciones más discretas</translation>
 <translation id="7619937211696316184">Se completó el mantenimiento</translation>
+<translation id="7620616707541471029">Elige una cuenta para continuar</translation>
 <translation id="7621382409404463535">El sistema no pudo guardar la configuración del dispositivo.</translation>
 <translation id="7621480263311228380">No pueden usar la información que guardaron sobre ti</translation>
 <translation id="7621595347123595643">No podrás recuperar datos locales si olvidas tu contraseña o PIN.</translation>
@@ -9366,7 +9356,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8160775796528709999">Si quieres obtener subtítulos para el audio y el video, habilita el Subtitulado instantáneo en la configuración</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Reanudar la navegación</translation>
-<translation id="8161293209665121583">Modo de lectura para páginas web</translation>
 <translation id="8161604891089629425">Fuente con contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover la pestaña a una ventana nueva}other{Mover las pestañas a una ventana nueva}}</translation>
 <translation id="8163152278172770963">No permitir que los sitios ingresen automáticamente al modo de pantalla en pantalla</translation>

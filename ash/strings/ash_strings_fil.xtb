@@ -68,6 +68,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store App</translation>
 <translation id="1225748608451425081">Na-lock ang iyong Chromebook dahil sa hindi alam na isyu. Makakapag-sign in ka pagkalipas ng: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ihinto ang pagpili</translation>
+<translation id="1230853660706736937">Maghanap ng text sa mga larawan at tingnan ang mga preview ng larawan</translation>
 <translation id="1235458158152011030">Mga kilalang network</translation>
 <translation id="1239161794459865856">Nakakonekta ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">Isang app</translation>
@@ -160,6 +161,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1569384531973824928">Pinapayagan nito ang access para sa lahat ng app at website na may mga pahintulot sa camera at mikropono. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
 <translation id="1571697193564730395">I-toggle ang Huwag Istorbohin. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Mag-zoom out kapag naka-on ang magnifier</translation>
+<translation id="1582946770779745370">Available ang Dashboard ng Game. Pindutin ang <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, pagkatapos ay ang <ph name="LAUNCHER_KEY_NAME" /> + g anumang oras para buksan ito</translation>
 <translation id="1586324912145647027">Pumunta sa desk 1 hanggang 8</translation>
 <translation id="158838227375272121">Website ng Google Classroom</translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
@@ -715,11 +717,13 @@ Isaksak ang iyong device.</translation>
 <translation id="3824784079442479685">Pinapayagan nito ang access sa camera para sa <ph name="APP_NAME" /> at lahat ng app at website na may pahintulot sa camera. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
 <translation id="3826099427150913765">Lumipat sa password</translation>
 <translation id="383058930331066723">Naka-on ang battery saver mode</translation>
+<translation id="3831226344927851293">Lumabas sa view ng tutorial</translation>
 <translation id="383629559565718788">Ipakita ang mga setting ng keyboard</translation>
 <translation id="384082539148746321">I-delete ang template?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> pagkatapos ay <ph name="KEY_ONE" /> o <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Walang available na impormasyon sa network</translation>
+<translation id="3848526302597027234">I-access ang mga sumusunod na pahintulot:</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="385300504083504382">Simula</translation>
 <translation id="3859364108019690">Hindi makapag-stream ng mga app</translation>
@@ -1291,7 +1295,6 @@ Walang nakakonektang device.</translation>
 <translation id="598882571027504733">Para makuha ang update, i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
 <translation id="5998374579424866922">I-off ang mga kontrol ng laro</translation>
 <translation id="6000279412553873020">Mga key, button, at higit pa</translation>
-<translation id="6002122790816966947">Ang iyong mga device</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> ng <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">I-highlight ang susunod na item sa shelf</translation>
 <translation id="6015573907265691211">Markahang nakumpleto na</translation>

@@ -125,6 +125,7 @@ Considerações:
 <translation id="4633328489441962921">Não é possível verificar se há atualizações</translation>
 <translation id="4636900170638246267">Faça login neste site e no Chrome.</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
+<translation id="4798859546468762093">Para acessar a personalização e outros recursos, inclua o Chrome na <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google.
 
@@ -181,6 +182,7 @@ Considerações:
 <translation id="6389317667633680932">Conheça novos recursos que ajudam você a aproveitar o Chrome ao máximo.</translation>
 <translation id="6412673304250309937">Verifica se os URLs estão em uma lista de sites não seguros armazenada no Chrome. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar URLs, incluindo partes do conteúdo da página, para o "Navegação segura".</translation>
 <translation id="6427126399757991875">Sua organização está configurando o Chrome…</translation>
+<translation id="6481963882741794338">Vincular o Chrome e outros Serviços do Google para personalização e outras finalidades</translation>
 <translation id="6484712497741564393">Login feito como <ph name="EMAIL" />.
 
 Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>

@@ -340,6 +340,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="160851722280695521">Žaisti žaidimą „Dino Run“ naršyklėje „Chrome“</translation>
 <translation id="161042844686301425">Žydra</translation>
 <translation id="1611101756749861742">Antras ritinėlis</translation>
+<translation id="1611854593425834707">Uždaryti perdavimo įrenginių sąrašą</translation>
 <translation id="1612199629998703524">Valdyti temas</translation>
 <translation id="1615178538289490617">Anuliuoti prieigą prie „<ph name="PORT_NAME" />“</translation>
 <translation id="1615402009686901181">Remiantis administratoriaus politika, negalima užfiksuoti ekrano, jei matomas konfidencialus turinys</translation>
@@ -826,6 +827,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2526280916094749336">Išsaugotus adresus galite naudoti „Google“ produktuose. Šis adresas bus išsaugotas jūsų „Google“ paskyroje (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">Jūsų kortelės saugos kodas (CVC) yra priekinėje kortelės pusėje. Tai yra keturių skaitmenų kodas, pateiktas viršuje dešinėje virš kortelės numerio.</translation>
 <translation id="2529899080962247600">Šiame lauke gali būti ne daugiau nei <ph name="MAX_ITEMS_LIMIT" /> įraš. Į visus kitus įrašus nebus atsižvelgiama.</translation>
+<translation id="2533649878691950253">Ši svetainė užblokuota, kad nežinotų tikslios vietovės, nes paprastai jūs to neleidžiate</translation>
 <translation id="253493526287553278">Žr. išsamią reklamos kredito kodo informaciją</translation>
 <translation id="2535585790302968248">Naršykite privačiai, atidarę naują inkognito skirtuką</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ir dar 1}one{ir dar #}few{ir dar #}many{ir dar #}other{ir dar #}}</translation>
@@ -1919,6 +1921,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4691093235373904540">Stogų remontas ir priežiūra</translation>
 <translation id="4692623383562244444">Paieškos varikliai</translation>
 <translation id="4698692901173737941">Imtynių sportas</translation>
+<translation id="4701307090948589984">Perduoti į...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Šonas</translation>
 <translation id="4702656508969495934">Matomi subtitrai realiuoju laiku; naudokite langų perjungiklį, kad suaktyvintumėte juos</translation>
@@ -2168,6 +2171,8 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5161334686036120870">Tema:</translation>
 <translation id="5161506081086828129">9 dėtuvė</translation>
 <translation id="5164798890604758545">Įvestas tekstas</translation>
+<translation id="5164928537947209380">Šis eksperimentinis DI įrankis ne visada veiks tinkamai. Siekiant jį patobulinti, turinys siunčiamas į sistemą „Google“.
+    <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Įveskite „<ph name="CREDIT_CARD" />“ kortelės saugos kodą (CVC). Kai patvirtinsite, „Google“ paskyroje nurodyta išsami kortelės informacija bus bendrinama su šia svetaine.</translation>
 <translation id="5169827969064885044">Galite prarasti prieigą prie organizacijos paskyros arba gali būti pavogta tapatybė. „Chrome“ rekomenduoja pakeisti slaptažodį dabar.</translation>
 <translation id="5171045022955879922">Ieškokite ar įveskite URL</translation>
@@ -3303,6 +3308,7 @@ Papildoma išsami informacija:
 <translation id="7392089738299859607">Adreso atnaujinimas</translation>
 <translation id="7393161616326137353">Nuotykių žaidimai</translation>
 <translation id="739728382607845710">Mokėjimo doroklės piktograma</translation>
+<translation id="7399616692258236448">Vietovės užklausos automatiškai blokuojamos visose svetainėse, išskyrus svetaines, kuriose leidote tai daryti</translation>
 <translation id="7399802613464275309">Saugos patikra</translation>
 <translation id="7400418766976504921">URL adresas</translation>
 <translation id="7403392780200267761">Bendrinkite šį skirtuką bendrindami nuorodą, sukurdami QR kodą, perduodami ir kt.</translation>
@@ -4064,6 +4070,7 @@ Papildoma išsami informacija:
 <translation id="8807160976559152894">Apkarpymas po kiekvieno puslapio</translation>
 <translation id="8809203544698246977">Čia rodomos užblokuotos temos</translation>
 <translation id="8811470563853401328">Išsaugoti adresą paskyroje?</translation>
+<translation id="8811725516933141693">Įveskite @gemini, kad galėtumėte kalbėti su „Gemini“</translation>
 <translation id="8813277370772331957">Priminti vėliau</translation>
 <translation id="8814707942599948500">C8 vokas</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad „Chrome“ nustatymuose būtų atnaujinta naršyklė „Chrome“</translation>

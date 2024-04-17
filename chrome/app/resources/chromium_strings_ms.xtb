@@ -175,6 +175,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasi anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="4118474109249235144">Inkognito Chromium</translation>
 <translation id="4148957013307229264">Memasang...</translation>
+<translation id="4149336151887611710">Organisasi anda dapat melihat dan mengurus data penyemakan imbas dalam profil kerja anda, seperti penanda halaman, sejarah dan kata laluan anda. Organisasi anda tidak dapat melihat data semakan imbas dalam profil Chromium peribadi.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Log Masuk Rangkaian - Chromium</translation>
 <translation id="421369550622382712">Temui apl, permainan, sambungan dan tema yang hebat untuk Chromium.</translation>
 <translation id="4216212958613226427">Bahasa ini digunakan untuk memaparkan UI Chromium</translation>
@@ -250,6 +251,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Paparkan Chromium dalam bahasa ini</translation>
 <translation id="569897634095159764">Tidak dapat disambungkan kepada Internet. Pelayan proksi memerlukan pengesahan.</translation>
+<translation id="5800158606660203929">Sesuaikan dan kawal Chromium. Tetapkan Chromium sebagai lalai anda.</translation>
 <translation id="5809516625706423866">Tidak dapat disambungkan kepada Internet. HTTP 401 Tidak Dibenarkan. Sila semak konfigurasi proksi anda.</translation>
 <translation id="5862307444128926510">Selamat datang ke Chromium</translation>
 <translation id="5883558403894052917">Chromium mendapati bahawa item ini mengandungi perisian hasad:</translation>
@@ -396,6 +398,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7867198900892795913">Chromium tidak dapat mengemas kini kepada versi terkini, maka anda terlepas ciri baharu dan penyelesaian keselamatan.</translation>
 <translation id="7872446069773932638">Memuat turun... <ph name="SECONDS" /> saat lagi</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Cara anda boleh mengurus data anda:<ph name="END_BOLD" /> Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Anda juga boleh mengalih keluar minat yang anda tidak mahu dipertimbangkan Chromium.</translation>
+<translation id="7888981273428720788">Tetapkan Chromium sebagai lalai anda</translation>
 <translation id="7937630085815544518">Anda telah log masuk ke Chromium sebagai <ph name="USER_EMAIL_ADDRESS" />. Sila gunakan akaun yang sama untuk log masuk lagi.</translation>
 <translation id="7975919845073681630">Ini adalah pemasangan kedua Chromium dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
 <translation id="7997934263947464652">Sambungan, apl dan tema daripada sumber yang tidak diketahui boleh membahayakan peranti anda. Chrome mengesyorkan agar memasang fail daripada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sahaja</translation>

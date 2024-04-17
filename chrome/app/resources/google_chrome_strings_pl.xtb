@@ -196,6 +196,7 @@
 <translation id="4053720452172726777">Dostosowywanie i kontrolowanie Google Chrome</translation>
 <translation id="4106587138345390261">Testujemy nowe funkcje Chrome, dzięki którym witryny będą mogły zapewniać użytkownikom taką samą wygodę przeglądania treści przy wykorzystaniu mniejszej ilości informacji</translation>
 <translation id="4110895483821904099">Skonfiguruj nowy profil w Chrome</translation>
+<translation id="4111566860456076004">Chrome nie może zweryfikować, skąd pochodzi to rozszerzenie, które może być niebezpieczne. Usuń je z Chrome, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to też danych osobowych.</translation>
 <translation id="4128488089242627000">Chrome działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami (zalecane)</translation>
 <translation id="4147555960264124640">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Google Chrome. Twoje dane Chrome, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Trwa instalowanie...</translation>
@@ -321,6 +322,7 @@
 <translation id="6251759518630934363">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chrome.</translation>
 <translation id="6273793429163604305">Na miejsca…</translation>
 <translation id="6277547788421725101">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” w Chrome</translation>
+<translation id="627882678981830918">Dostosuj i kontroluj Chrome. Ustaw Chrome jako przeglądarkę domyślną.</translation>
 <translation id="6291089322031436445">Aplikacje do Chrome w wersji deweloperskiej</translation>
 <translation id="6291549208091401781">Google Chrome jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="6326175484149238433">Usuń z Chrome</translation>

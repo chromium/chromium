@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">Копіювати адр&amp;есу посилання</translation>
 <translation id="1085064499066015002">Завжди на всіх сайтах</translation>
 <translation id="1085697365578766383">Не вдалося запустити віртуальну машину. Повторіть спробу.</translation>
-<translation id="1088659085457112967">Перейти в режим читання</translation>
 <translation id="1090126737595388931">Не запущено жодну фонову програму</translation>
 <translation id="1090541560108055381">Перед підключенням переконайтеся, що ввели один код на обох пристроях</translation>
 <translation id="1091767800771861448">Натисніть ESCAPE, щоб пропустити (лише в неофіційних версіях складання).</translation>
@@ -2180,7 +2179,6 @@
 <translation id="2587922766792651800">Час очікування минув</translation>
 <translation id="2588636910004461974">Пристрої від <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Ніколи не показувати файли з Диска</translation>
-<translation id="25899519884572181">Вийти з режиму читання</translation>
 <translation id="2593499352046705383">Перш ніж почати, переконайтеся, що ви створили резервну копію даних. Під час встановлення ОС <ph name="DEVICE_OS" /> буде перезаписано всі дані жорсткого диска. Докладніше: g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Керувати безпекою V8</translation>
 <translation id="2594999711683503743">Пошукайте в Google або введіть URL-адресу</translation>
@@ -2481,7 +2479,6 @@
 <translation id="2806372837663997957">Пристрій, на який ви намагаєтеся надіслати файл, не прийняв його</translation>
 <translation id="2806891468525657116">Ярлик уже є</translation>
 <translation id="2807517655263062534">Тут відображаються завантажені файли</translation>
-<translation id="2809586584051668049">і ще <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Облікові записи</translation>
 <translation id="2812049959647166806">Thunderbolt не підтримується</translation>
 <translation id="2812171980080389735">Зберігати мережі й паролі, щоб ви могли миттєво підключатися</translation>
@@ -3070,7 +3067,6 @@
 <translation id="3285465040399788513">На пристрої недостатньо вільного місця, щоб завершити налаштування. Звільніть місце й повторіть спробу.</translation>
 <translation id="3285500645985761267">Дозволити пов’язаним сайтам переглядати ваші дії в групі</translation>
 <translation id="328571385944182268">Зберігати паролі?</translation>
-<translation id="3288047731229977326">Розширення, які працюють у режимі розробника, можуть пошкодити ваш комп’ютер. Якщо ви не розробник, вимкніть їх заради безпеки.</translation>
 <translation id="3289668031376215426">Автоматичне використання великих літер</translation>
 <translation id="3289856944988573801">Щоб перевірити наявність оновлень, скористайтеся мережею Ethernet чи Wi-Fi.</translation>
 <translation id="3289886661311231677">Ви можете блокувати теми, до яких не хочете надавати сайтам доступ. Chrome також автоматично видаляє теми через 4 тижні.</translation>
@@ -3110,7 +3106,6 @@
 <translation id="3313622045786997898">Значення підпису сертифіката</translation>
 <translation id="3313950410573257029">Перевірити з’єднання</translation>
 <translation id="3315158641124845231">Сховати <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Перейти в режим читання</translation>
 <translation id="3317459757438853210">Двосторонній</translation>
 <translation id="3317521105713541270">Створити групи</translation>
 <translation id="3317678681329786349">Заборонено використовувати камеру та мікрофон</translation>
@@ -3433,6 +3428,7 @@
 <translation id="3569682580018832495">Сайт <ph name="ORIGIN" /> може переглядати вказані нижче файли й папки</translation>
 <translation id="3571734092741541777">Налаштувати</translation>
 <translation id="3575121482199441727">Дозволити для цього сайту</translation>
+<translation id="3575224072358507281">збирати ІР-адреси й результати вимірювань мережі для Measurement Lab відповідно до політики конфіденційності (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Сталася помилка. Повторіть спробу.</translation>
 <translation id="3577487026101678864">Синхронізацію файлів увімкнено</translation>
 <translation id="3577745545227000795">Збір даних із пристрою "<ph name="DEVICE_OS" />"</translation>
@@ -3515,7 +3511,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – залишилося <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Вибрані мови</translation>
 <translation id="3637203148990213388">Додаткові облікові записи</translation>
-<translation id="3639220004740062347">Вийти з режиму читання</translation>
 <translation id="3640214691812501263">Додати розширення <ph name="EXTENSION_NAME" /> для користувача <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Захистіть паролі від фішингу</translation>
 <translation id="3640613767643722554">Навчіть Асистент розпізнавати ваш голос</translation>
@@ -4158,7 +4153,6 @@
 <translation id="4095483462103784441">Створити нову групу вкладок</translation>
 <translation id="4095507791297118304">Основний дисплей</translation>
 <translation id="4096421352214844684">Автоматично підключатися до точки доступу свого телефона.</translation>
-<translation id="4096508467498758490">Вимкнути розширення в режимі розробника</translation>
 <translation id="4096797685681362305">Переглянуто минулого тижня</translation>
 <translation id="4097406557126260163">Додатки та розширення</translation>
 <translation id="409742781329613461">Поради для Chrome</translation>
@@ -5490,7 +5484,6 @@
 <translation id="5146896637028965135">Системний голос</translation>
 <translation id="5147097165869384760">Якщо ви шукаєте системну сторінку ОС, перейдіть за посиланням <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Рекомендація</translation>
-<translation id="5147516217412920887">Щоб підтвердити код, дотримуйтеся вказівок на телефоні</translation>
 <translation id="5147992672778369947">Використовуйте рекомендований пароль</translation>
 <translation id="5148285448107770349">Пароль має складатися з принаймні 8 символів</translation>
 <translation id="5149602533174716626">Копіюват&amp;и кадр відео</translation>
@@ -6745,10 +6738,6 @@
 <translation id="6143186082490678276">Довідка</translation>
 <translation id="6143366292569327983">Виберіть, з якої мови потрібно перекласти сторінку</translation>
 <translation id="6144938890088808325">Допоможіть нам покращити Chromebook</translation>
-<translation id="6145480071052696715">Швидко налаштуйте пристрій <ph name="DEVICE_TYPE" /> за допомогою телефона. Можна додати мережу Wi-Fi і обліковий запис Google, не вводячи паролі вручну.
-    <ph name="BR" />
-    <ph name="BR" />
-    Ваш пристрій: <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">Синхронізація не працює. Повторіть спробу.</translation>
 <translation id="6147020289383635445">Помилка попереднього перегляду друку.</translation>
 <translation id="6147253937684562370">Щоб розблокувати профіль, увійдіть за допомогою основної електронної адреси облікового запису: <ph name="EMAIL" /></translation>
@@ -6973,7 +6962,6 @@
 <translation id="6310141306111263820">Не вдалося встановити профіль eSIM-карти. Щоб отримати допомогу, зверніться до оператора.</translation>
 <translation id="6311220991371174222">Не вдається запустити Chrome, оскільки сталася помилка під час відкривання профілю. Спробуйте перезапустити Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Перевірку безпеки виконано 1 день тому}one{Перевірку безпеки виконано {NUM_DAYS} день тому}few{Перевірку безпеки виконано {NUM_DAYS} дні тому}many{Перевірку безпеки виконано {NUM_DAYS} днів тому}other{Перевірку безпеки виконано {NUM_DAYS} дня тому}}</translation>
-<translation id="6312638141433622592">Пропонувати статті в режимі читання, якщо ця функція підтримується</translation>
 <translation id="6313950457058510656">Вимкнути миттєву точку доступу</translation>
 <translation id="6314819609899340042">Функції налагодження ввімкнено на цьому пристрої <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Голос</translation>
@@ -8062,6 +8050,7 @@
 <translation id="7180865173735832675">Налаштувати</translation>
 <translation id="7181117767881540376">Сховати панель закладок</translation>
 <translation id="7181329571386134105">Якщо ви вважаєте, що <ph name="CHILD_NAME" /> може надалі встановлювати розширення без вашого схвалення, відкрийте додаток Family Link на своєму пристрої і оновіть налаштування вебпереглядача Google Chrome, яким користується <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Вибрати інший обліковий запис</translation>
 <translation id="7182063559013288142">Миттєва точка доступу</translation>
 <translation id="7182791023900310535">Перемістити пароль</translation>
 <translation id="718427252411067142">Щоб заборонити іншим користувачам використовувати ваш пароль, відкрийте додаток і змініть пароль</translation>
@@ -8624,6 +8613,7 @@
 <translation id="7617263010641145920">Увімкнути Play Маркет</translation>
 <translation id="7617648809369507487">Показувати лише значок повідомлення</translation>
 <translation id="7619937211696316184">Технічне обслуговування завершено</translation>
+<translation id="7620616707541471029">Щоб продовжити, виберіть обліковий запис</translation>
 <translation id="7621382409404463535">Системі не вдалося зберегти конфігурацію пристрою.</translation>
 <translation id="7621480263311228380">Заборонено використовувати збережену про вас інформацію</translation>
 <translation id="7621595347123595643">Якщо ви забудете пароль або PIN-код, то не зможете відновити локальні дані.</translation>
@@ -9390,7 +9380,6 @@
 <translation id="8160775796528709999">Щоб переглядати живі субтитри до аудіо чи відео, увімкніть їх у налаштуваннях</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Відновити перегляд</translation>
-<translation id="8161293209665121583">Режим читання для веб-сторінок</translation>
 <translation id="8161604891089629425">Шрифт із контуром</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перемістити вкладку в нове вікно}one{Перемістити вкладки в нове вікно}few{Перемістити вкладки в нове вікно}many{Перемістити вкладки в нове вікно}other{Перемістити вкладки в нове вікно}}</translation>
 <translation id="8163152278172770963">Заборонити сайтам автоматично вмикати режим "Картинка в картинці"</translation>

@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
 <translation id="1611101756749861742">Другий рулон</translation>
+<translation id="1611854593425834707">Закрити список пристроїв для трансляції</translation>
 <translation id="1612199629998703524">Керувати темами</translation>
 <translation id="1615178538289490617">Скасувати доступ для порту <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">Ви можете використовувати збережені адреси в усіх продуктах Google. Цю адресу буде збережено у вашому обліковому записі Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">Код CVC вказується на лицьовій стороні картки. Це – 4-значний код, розташований угорі праворуч над номером вашої картки.</translation>
 <translation id="2529899080962247600">Максимальна кількість записів у цьому полі: <ph name="MAX_ITEMS_LIMIT" />. Усі подальші записи ігноруватимуться.</translation>
+<translation id="2533649878691950253">Цьому сайту заблоковано доступ до даних про ваше точне місцезнаходження, оскільки ви зазвичай вибираєте такі налаштування</translation>
 <translation id="253493526287553278">Переглянути деталі промокоду</translation>
 <translation id="2535585790302968248">Відкрийте нову анонімну вкладку</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{і ще 1}one{і ще #}few{і ще #}many{і ще #}other{і ще #}}</translation>
@@ -1918,6 +1920,7 @@
 <translation id="4691093235373904540">Покрівельні роботи</translation>
 <translation id="4692623383562244444">Пошукові системи</translation>
 <translation id="4698692901173737941">Спортивні єдиноборства</translation>
+<translation id="4701307090948589984">Транслювати на…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Сторона</translation>
 <translation id="4702656508969495934">Відображаються живі субтитри. Щоб сфокусуватися на них, скористайтеся перемикачем вікон.</translation>
@@ -2167,6 +2170,8 @@
 <translation id="5161334686036120870">Тема:</translation>
 <translation id="5161506081086828129">Накопичувач 9</translation>
 <translation id="5164798890604758545">Введено текст</translation>
+<translation id="5164928537947209380">Цей експериментальний інструмент на основі ШІ не завжди повертає правильні результати. Щоб покращити його, ваш контент надсилається в Google.
+    <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Введіть код CVC картки <ph name="CREDIT_CARD" />. Щойно ви підтвердите дані картки в обліковому записі Google, цей сайт отримає доступ до них.</translation>
 <translation id="5169827969064885044">Ви можете втратити доступ до облікового запису організації, або хтось може викрасти вашу особисту інформацію. Chrome радить змінити пароль.</translation>
 <translation id="5171045022955879922">Введіть запит або URL-адресу</translation>
@@ -3302,6 +3307,7 @@
 <translation id="7392089738299859607">Оновіть адресу</translation>
 <translation id="7393161616326137353">Пригодницькі ігри</translation>
 <translation id="739728382607845710">Значок "Обробник платежів"</translation>
+<translation id="7399616692258236448">Запити на доступ до геоданих автоматично заблоковано для всіх сайтів, крім тих, які ви дозволили</translation>
 <translation id="7399802613464275309">Перевірка безпеки</translation>
 <translation id="7400418766976504921">URL-адреса</translation>
 <translation id="7403392780200267761">Поділитися цією вкладкою (надіслати посилання, створити QR-код, транслювати її тощо)</translation>
@@ -4063,6 +4069,7 @@
 <translation id="8807160976559152894">Обрізати після кожної сторінки</translation>
 <translation id="8809203544698246977">Тут відображатимуться заблоковані теми</translation>
 <translation id="8811470563853401328">Зберегти адресу в обліковому записі?</translation>
+<translation id="8811725516933141693">Щоб спілкуватися в чаті з Gemini, введіть @gemini</translation>
 <translation id="8813277370772331957">Нагадати пізніше</translation>
 <translation id="8814707942599948500">Конверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>

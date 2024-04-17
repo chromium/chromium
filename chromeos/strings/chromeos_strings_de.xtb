@@ -273,7 +273,7 @@
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
 <translation id="2448312741937722512">Art</translation>
-<translation id="2472215337771558851">Mit der Funktion „Hilfe beim Verfassen“, die auf Google AI basiert, kannst du Entwürfe erstellen oder vorhandene Texte optimieren</translation>
+<translation id="2472215337771558851">Mit der Funktion „Formuliere für mich“, die auf Google AI basiert, kannst du Entwürfe erstellen oder vorhandene Texte optimieren</translation>
 <translation id="2480572840229215612">Krebse</translation>
 <translation id="248546197012830854">Das Gerät ist offline. Stelle eine WLAN-Verbindung her, um Hilfeinhalte zu sehen.</translation>
 <translation id="2486301288428798846">Holz</translation>
@@ -895,7 +895,7 @@
 <translation id="6235460611964961764">Datennutzung manuell zurücksetzen</translation>
 <translation id="6243280677745499710">Derzeit festgelegt</translation>
 <translation id="6250316632541035980">Eier mit Speck</translation>
-<translation id="6255213378196499011">Einstellungen für „Hilfe beim Verfassen“</translation>
+<translation id="6255213378196499011">Einstellungen für „Formuliere für mich“</translation>
 <translation id="6275224645089671689">Rechtspfeil</translation>
 <translation id="6278428485366576908">Design</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -1115,7 +1115,7 @@
 <translation id="7401543881546089382">Verknüpfung löschen</translation>
 <translation id="741244894080940828">Umrechnung</translation>
 <translation id="7415801143053185905">Sehr hohe HTTP-Latenz</translation>
-<translation id="7425037327577270384">Hilfe beim Verfassen</translation>
+<translation id="7425037327577270384">Formuliere für mich</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Dieser APN kann nicht deaktiviert oder entfernt werden. Aktivierte APNs vom Typ „<ph name="ATTACH" />“ müssen deaktiviert oder entfernt werden.</translation>
 <translation id="7458970041932198923">Stelle eine Verbindung zu einem Netzwerk her und lade die Seite neu, um Avatare anzusehen und festzulegen.</translation>

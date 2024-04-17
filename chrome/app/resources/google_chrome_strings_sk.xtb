@@ -89,7 +89,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="234869673307233423">Chrome nemôže skontrolovať heslá. Skúste to neskôr.</translation>
 <translation id="235650106824528204">Všetky údaje prehliadača Chrome vygenerované počas používania tohto profilu (napríklad vytvorenie záložiek, histórie, hesiel a ďalších nastavení) môžu byť odstránené správcom pracovného profilu. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Pokračovať</translation>
-<translation id="2389730170785586152">Chrome nedokáže overiť, odkiaľ toto rozšírenie pochádza</translation>
 <translation id="2401189691232800402">Systém ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{K 1 zariadeniu s ľudským rozhraním malo prístup jedno alebo viac rozšírení pre Chrome}=1{K 1 zariadeniu s ľudským rozhraním má prístup jedno alebo viac rozšírení pre Chrome}few{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre Chrome}many{# HID devices are being accessed by one or more Chrome extensions}other{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre Chrome}}</translation>
 <translation id="2424440923901031101">Toto rozšírenie porušuje pravidlá Internetového obchodu Chrome a môže byť nebezpečné. Odstráňte ho z Chromu, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
@@ -330,6 +329,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6251759518630934363">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z Chromu môžete preskočiť.</translation>
 <translation id="6273793429163604305">Príprava na štart…</translation>
 <translation id="6277547788421725101">Váš nadradený účet vypol Povolenia pre weby, aplikácie a rozšírenia v Chrome</translation>
+<translation id="627882678981830918">Prispôsobte si a ovládajte Chrome. Nastavte Chrome ako predvolený prehliadač.</translation>
 <translation id="6291089322031436445">Aplikácie pre Chrome vo verzii pre vývojárov</translation>
 <translation id="6291549208091401781">Google Chrome už majú nainštalovaný všetci používatelia na vašom počítači.</translation>
 <translation id="6326175484149238433">Odstrániť z Chromu</translation>

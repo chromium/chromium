@@ -493,6 +493,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="3631987586758005671">S'està compartint amb <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Inicia la sessió automàticament als llocs web amb les credencials emmagatzemades. Si la funció està desactivada, se us demana sempre que les verifiqueu per iniciar la sessió en un lloc web.</translation>
 <translation id="3636940436873918441">Idiomes preferits</translation>
+<translation id="368329460027487650">Has tancat la sessió. Obre les opcions per iniciar la sessió.</translation>
 <translation id="3687645719033307815">Estàs veient una previsualització d'aquesta pàgina</translation>
 <translation id="3690369331356918524">T'avisa si les contrasenyes queden exposades a causa d'una violació de les dades.</translation>
 <translation id="3692944402865947621">No s'ha pogut baixar <ph name="FILE_NAME" /> perquè no es pot trobar la ubicació d'emmagatzematge.</translation>

@@ -847,6 +847,7 @@
 <translation id="5407969256130905701">সালসলনিবোৰ অগ্ৰাহ্য কৰক</translation>
 <translation id="5414763847370083940">কোনো ছাইটত মূল্য কমিলে আপুনি এটা সতৰ্কবাৰ্তা পাব।</translation>
 <translation id="5416022985862681400">যোৱা ৭দিনৰ</translation>
+<translation id="5416455648658732408">টেবৰ গোটলৈ স্থানান্তৰ কৰক</translation>
 <translation id="5423269318075950257">মূল্য ট্ৰেক কৰক</translation>
 <translation id="543338862236136125">পাছৱৰ্ড সম্পাদনা কৰক</translation>
 <translation id="5433691172869980887">ব্যৱহাৰকাৰীৰ নাম প্ৰতিলিপি কৰা হ’ল</translation>
@@ -1332,6 +1333,7 @@
 <translation id="7853202427316060426">কাৰ্যকলাপ</translation>
 <translation id="7856733331829174190">ডাউনল'ড কৰিব পৰা নগ'ল</translation>
 <translation id="7859704718976024901">ব্ৰাউজিঙৰ ইতিহাস</translation>
+<translation id="7860900259978879139">গোটৰ পৰা আঁতৰাওক</translation>
 <translation id="7866501058614003444">এই পেকেজটো সফলভাৱে আনট্ৰেক কৰা হৈছে।</translation>
 <translation id="7866872729285243843">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ পঢ়াৰ সূচী পাবলৈ ছেটিঙত “পঢ়াৰ সূচী” অন কৰক।</translation>
 <translation id="7866993391592926595">এই কাৰ্ডখন লুকুওৱাটোৱে পেকেজ ট্ৰেক কৰাটো অফ কৰিব আৰু আপোনাৰ আটাইবোৰ ডেটা আঁতৰাব</translation>
@@ -1419,9 +1421,11 @@
 <translation id="8273982424131314219">আপুনি <ph name="URL" />ত তথ্য পূৰ কৰিব</translation>
 <translation id="8281781826761538115">ডিফ’ল্ট - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">এৰি যাওক</translation>
+<translation id="8282657446819506217">টেবৰ গোটত খোলক</translation>
 <translation id="828291969289324795">{count,plural, =1{নতুন গোটত টেব যোগ দিয়ক}one{নতুন গোটত টেবসমূহ যোগ দিয়ক}other{নতুন গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="8283172974887967105">ছেট কৰক…</translation>
 <translation id="8286036467436129157">ছাইন ইন কৰক</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" />ৰ জাননী অফ কৰা হ’ল</translation>
 <translation id="8292843446079898078">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহৰ বাবে মূল্য কমাৰ সতৰ্কবাৰ্তা লাভ কৰক।</translation>
 <translation id="8299417921174340354">পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিবলৈ আপুনি প্ৰথমে নিজৰ ডিভাইচত এটা পাছক’ড ছেট কৰিবই লাগিব।</translation>
 <translation id="8299613349954694191">ৱেব ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ কোনো ইনক’গনিট‘ টেব খোলক।</translation>
@@ -1429,6 +1433,7 @@
 <translation id="8313645224014086262">ফাইল ছেভ কৰক</translation>
 <translation id="8319076807703933069">নতুন সন্ধান</translation>
 <translation id="8328777765163860529">সকলো বন্ধ কৰক</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" />ৰ বাবে জাননী অফ কৰক</translation>
 <translation id="8343993175958086504">আপোনাৰ বস্তুবোৰৰ বেক আপ লওক আৰু সেইবোৰ যিকোনো ডিভাইচত ব্যৱহাৰ কৰক।</translation>
 <translation id="834783239627985533">আটাইতকৈ বেছিকৈ চোৱা ছাইটসমূহ</translation>
 <translation id="8358401059263985056">জাননী অন কৰক</translation>

@@ -1043,6 +1043,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6363526231572697780">Aucun nom d'utilisateur</translation>
 <translation id="6366190659675876144">Protection standard</translation>
 <translation id="6366663624406569102">Se déconnecter et désactiver la synchronisation</translation>
+<translation id="6368038301482806847">Choisissez un moteur de recherche dans la liste.</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6377118281273296434">Sécurité du site</translation>
 <translation id="6383719166112032471">Ouvrir un emplacement…</translation>
@@ -1202,6 +1203,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7161230316646448869">Synchroniser vos favoris, votre historique et plus encore sur tous vos appareils</translation>
 <translation id="7162168282402939716">Déverrouiller les onglets de navigation privée avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Ouvrir les paramètres</translation>
+<translation id="7186568385131859684">Contrôlez la manière dont l'historique de navigation est utilisé avec vos autres données dans les services Google</translation>
 <translation id="7189598951263744875">Partager…</translation>
 <translation id="719133302483559673">Gérez vos centres d'intérêt et vos préférences.</translation>
 <translation id="7192050974311852563">Commencer la journalisation</translation>
@@ -1245,6 +1247,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7438481509621345350">Vous verrez maintenant des articles de <ph name="CHANNEL_NAME" /> lorsque vous ouvrez un nouvel onglet.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favori enregistré dans « {title} »}one{Favoris enregistré dans « {title} »}other{Favoris enregistrés dans « {title} »}}</translation>
 <translation id="7454057999980797137">État / Comté</translation>
+<translation id="7458706065921255639">Personnalisation, association</translation>
 <translation id="745899714366929493">Toute la journée</translation>
 <translation id="7459628154744868585">La protection renforcée est activée</translation>
 <translation id="7465351360025415755">Obtenez le contenu qui compte pour vous</translation>

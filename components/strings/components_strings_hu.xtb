@@ -340,6 +340,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="160851722280695521">A Dino Run játék elindítása a Chrome-ban</translation>
 <translation id="161042844686301425">Cián</translation>
 <translation id="1611101756749861742">2. tekercs</translation>
+<translation id="1611854593425834707">Az átküldéshez használható eszközök listájának bezárása</translation>
 <translation id="1612199629998703524">Témák kezelése</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> hozzáférésének visszavonása</translation>
 <translation id="1615402009686901181">Rendszergazdai házirend tiltja képernyőfelvétel készítését, ha bizalmas tartalom látható a képernyőn.</translation>
@@ -618,7 +619,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2126374524350484896">PDF-konvertáló:</translation>
 <translation id="2130448033692577677">A megadott sablonok nem alkalmazhatók, mert nincs beállítva a DnsOverHttpsMode házirend.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Ezek véletlenszerű sorrendben jelennek meg. Az alapértelmezett beállítást bármikor módosíthatja.</translation>
+<translation id="2132825047782982803">A sorrend véletlenszerű. Az alapértelmezett választását bármikor módosíthatja.</translation>
 <translation id="2137891579555018930">Várakozás az engedélyre…</translation>
 <translation id="213826338245044447">Mobilos könyvjelzők</translation>
 <translation id="2141000681034340397">Bevitel szerkesztése</translation>
@@ -826,6 +827,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2526280916094749336">A mentett címeket használhatja a Google-termékekben. Ezt a címet az Ön Google-fiókjába (<ph name="ACCOUNT" />) menti a rendszer.</translation>
 <translation id="2527451058878391043">A CVC-kód a kártyája elején található. Ez egy négyjegyű kód a kártyaszám jobb felső sarkában.</translation>
 <translation id="2529899080962247600">Ebben a mezőben legfeljebb <ph name="MAX_ITEMS_LIMIT" /> bejegyzés szerepelhet. A további bejegyzéseket figyelmen kívül hagyja a rendszer.</translation>
+<translation id="2533649878691950253">A webhely nem férhet hozzá a pontos helyadatokhoz, mivel Ön ezt általában nem engedélyezi</translation>
 <translation id="253493526287553278">A promóciós kód részleteinek megtekintése</translation>
 <translation id="2535585790302968248">Privát böngészéshez nyisson új inkognitó lapot</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{és 1 további}other{és # további}}</translation>
@@ -1916,6 +1918,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4691093235373904540">Tetőfedés</translation>
 <translation id="4692623383562244444">Keresők</translation>
 <translation id="4698692901173737941">Küzdősportok</translation>
+<translation id="4701307090948589984">Átküldés a következőre…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Oldal</translation>
 <translation id="4702656508969495934">Az Élő feliratozás látható, a fókuszáláshoz használja az ablakváltót</translation>
@@ -2165,6 +2168,8 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5161334686036120870">Tárgy:</translation>
 <translation id="5161506081086828129">9. kötegelő</translation>
 <translation id="5164798890604758545">Szövegbevitel történt</translation>
+<translation id="5164928537947209380">Ez a kísérleti AI-eszköz nem mindig ad helyes választ. A szolgáltatás javítása érdekében a tartalmat elküldjük a Google-nak.
+    <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="516920405563544094">Adja meg a(z) <ph name="CREDIT_CARD" /> kártya CVC-kódját. A megerősítést követően a böngésző megosztja majd az Ön Google-fiókjából származó kártyaadatokat ezzel a webhellyel.</translation>
 <translation id="5169827969064885044">Elveszítheti a hozzáférést szervezete fiókjához, vagy visszaélhetnek személyes adataival. A Chrome azt javasolja, hogy azonnal módosítsa jelszavát.</translation>
 <translation id="5171045022955879922">Keressen vagy írjon be egy URL-t</translation>
@@ -3300,6 +3305,7 @@ További részletek:
 <translation id="7392089738299859607">Cím frissítése</translation>
 <translation id="7393161616326137353">Kalandjátékok</translation>
 <translation id="739728382607845710">Fizetéskezelő ikonja</translation>
+<translation id="7399616692258236448">Az Ön által engedélyezett webhelyek kivételével a rendszer automatikusan letiltja a helykérelmeket.</translation>
 <translation id="7399802613464275309">Biztonsági ellenőrzés</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Megoszthatja ezt a lapot a link használatával, QR-kód létrehozásával, átküldéssel és egyéb műveletekkel</translation>
@@ -4062,6 +4068,7 @@ További részletek:
 <translation id="8807160976559152894">Vágás minden oldal után</translation>
 <translation id="8809203544698246977">A letiltott témák itt jelennek meg</translation>
 <translation id="8811470563853401328">Menti a címet a fiókba?</translation>
+<translation id="8811725516933141693">A Geminivel való csevegéshez írja be azt, hogy @gemini</translation>
 <translation id="8813277370772331957">Emlékeztessen később</translation>
 <translation id="8814707942599948500">C8 boríték</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a Chrome-nak a Chrome beállításaiban való frissítéséhez</translation>

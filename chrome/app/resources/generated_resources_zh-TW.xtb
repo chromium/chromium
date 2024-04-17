@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">複製連結網址(&amp;E)</translation>
 <translation id="1085064499066015002">一律在所有網站上執行</translation>
 <translation id="1085697365578766383">啟動虛擬機器時發生錯誤，請再試一次。</translation>
-<translation id="1088659085457112967">進入閱讀器模式</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
 <translation id="1090541560108055381">配對前，請確認兩部裝置上均顯示這組代碼</translation>
 <translation id="1091767800771861448">按下 ESCAPE 鍵可略過 (僅限非官方版本)。</translation>
@@ -2162,7 +2161,6 @@
 <translation id="2587922766792651800">作業逾時</translation>
 <translation id="2588636910004461974">來自 <ph name="VENDOR_NAME" /> 的裝置</translation>
 <translation id="2589658397149952302">一律不顯示雲端硬碟檔案</translation>
-<translation id="25899519884572181">結束閱讀器模式</translation>
 <translation id="2593499352046705383">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。如要瞭解詳情，請前往 g.co/flex/InstallGuide。</translation>
 <translation id="2594832159966169099">管理 V8 安全性</translation>
 <translation id="2594999711683503743">搜尋 Google 或輸入網址</translation>
@@ -2463,7 +2461,6 @@
 <translation id="2806372837663997957">你試圖分享檔案的目標裝置並未接受檔案分享</translation>
 <translation id="2806891468525657116">捷徑已經存在</translation>
 <translation id="2807517655263062534">你下載的檔案會顯示在這裡</translation>
-<translation id="2809586584051668049">和另外 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 個</translation>
 <translation id="2811205483104563968">帳戶</translation>
 <translation id="2812049959647166806">系統不支援 Thunderbolt</translation>
 <translation id="2812171980080389735">儲存的網路和密碼，方便即時連線</translation>
@@ -3052,7 +3049,6 @@
 <translation id="3285465040399788513">裝置儲存空間不足，無法完成設定。請先釋出空間，然後再試一次。</translation>
 <translation id="3285500645985761267">允許相關網站查看你在群組中的活動</translation>
 <translation id="328571385944182268">要儲存密碼嗎？</translation>
-<translation id="3288047731229977326">在開發人員模式中執行擴充功能可能會損害你的電腦。如果你不是開發人員，最好在開發人員模式中停用這些擴充功能，以策安全。</translation>
 <translation id="3289668031376215426">自動大寫</translation>
 <translation id="3289856944988573801">如要檢查更新，請使用乙太網路或 Wi-Fi。</translation>
 <translation id="3289886661311231677">你可以封鎖不想與網站分享的主題，Chrome 也會自動刪除 4 週以前的主題。</translation>
@@ -3092,7 +3088,6 @@
 <translation id="3313622045786997898">憑證簽署值</translation>
 <translation id="3313950410573257029">檢查連線狀態</translation>
 <translation id="3315158641124845231">隱藏 <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">進入閱讀器模式</translation>
 <translation id="3317459757438853210">雙面</translation>
 <translation id="3317521105713541270">建立群組</translation>
 <translation id="3317678681329786349">無法使用攝影機和麥克風</translation>
@@ -3415,6 +3410,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可以檢視下列檔案和資料夾</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3575121482199441727">允許這個網站的通知</translation>
+<translation id="3575224072358507281">根據 Measurement Lab 的《隱私權政策》(measurementlab.net/privacy) 收集 IP 位址和 Measurement Lab 的網路評估結果</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577487026101678864">開啟檔案同步處理功能</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬體資料收集聲明</translation>
@@ -3497,7 +3493,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - 還可以使用 <ph name="TIME" /></translation>
 <translation id="3636940436873918441">偏好語言</translation>
 <translation id="3637203148990213388">其他帳戶</translation>
-<translation id="3639220004740062347">結束閱讀器模式</translation>
 <translation id="3640214691812501263">為<ph name="USER_NAME" />新增「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="3640347231390550691">保護密碼，防範網路釣魚</translation>
 <translation id="3640613767643722554">訓練 Google 助理辨識你的聲音</translation>
@@ -4139,7 +4134,6 @@
 <translation id="4095483462103784441">建立新分頁群組</translation>
 <translation id="4095507791297118304">主要顯示畫面</translation>
 <translation id="4096421352214844684">自動連線至手機的無線基地台。</translation>
-<translation id="4096508467498758490">停用開發人員模式擴充功能</translation>
 <translation id="4096797685681362305">過去一週看過</translation>
 <translation id="4097406557126260163">應用程式和擴充功能</translation>
 <translation id="409742781329613461">Chrome 使用提示</translation>
@@ -5470,7 +5464,6 @@
 <translation id="5146896637028965135">系統語音</translation>
 <translation id="5147097165869384760">在尋找作業系統頁面嗎？請造訪 <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />。</translation>
 <translation id="5147113439721488265">建議</translation>
-<translation id="5147516217412920887">按照手機上的操作說明輸入驗證碼</translation>
 <translation id="5147992672778369947">使用建議的密碼</translation>
 <translation id="5148285448107770349">密碼至少要有 8 個半形字元</translation>
 <translation id="5149602533174716626">複製影片影格(&amp;Y)</translation>
@@ -6724,10 +6717,6 @@
 <translation id="6143186082490678276">取得說明</translation>
 <translation id="6143366292569327983">選擇網頁的原文語言</translation>
 <translation id="6144938890088808325">協助我們改善 Chromebook</translation>
-<translation id="6145480071052696715">使用手機輕鬆設定 <ph name="DEVICE_TYPE" />。你可以新增 Wi-Fi 和 Google 帳戶，不必手動輸入密碼。
-    <ph name="BR" />
-    <ph name="BR" />
-    顯示名稱：<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">同步功能無法正常運作。請嘗試重新登入。</translation>
 <translation id="6147020289383635445">列印預覽失敗。</translation>
 <translation id="6147253937684562370">如要解鎖設定檔，請使用你的主要帳戶電子郵件地址登入：<ph name="EMAIL" /></translation>
@@ -6952,7 +6941,6 @@
 <translation id="6310141306111263820">無法安裝 eSIM 卡設定檔。如需協助，請與你的電信業者聯絡。</translation>
 <translation id="6311220991371174222">開啟你的設定檔時發生錯誤，因此無法啟動 Chrome，請嘗試重新啟動。</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前已執行安全檢查}other{{NUM_DAYS} 天前已執行安全檢查}}</translation>
-<translation id="6312638141433622592">詢問是否以閱讀器模式顯示支援這項功能的文章</translation>
 <translation id="6313950457058510656">關閉即時網路共用</translation>
 <translation id="6314819609899340042">你已成功在 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上啟用偵錯功能。</translation>
 <translation id="6315170314923504164">語音</translation>
@@ -8035,6 +8023,7 @@
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>
 <translation id="7181329571386134105">如要讓<ph name="CHILD_NAME" />之後可直接安裝擴充功能，不必經過你的核准，請在你的裝置上開啟 Family Link 應用程式，並更新<ph name="CHILD_NAME" />的 Google Chrome 設定。</translation>
+<translation id="7182051712900867547">使用其他帳戶</translation>
 <translation id="7182063559013288142">即時無線基地台</translation>
 <translation id="7182791023900310535">轉移你的密碼</translation>
 <translation id="718427252411067142">如果不希望他人使用你的密碼，請開啟應用程式變更密碼</translation>
@@ -8598,6 +8587,7 @@
 <translation id="7617263010641145920">開啟 Play 商店</translation>
 <translation id="7617648809369507487">使用低擾式通知</translation>
 <translation id="7619937211696316184">維護作業已完成</translation>
+<translation id="7620616707541471029">請選擇接下來要使用的帳戶</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
 <translation id="7621480263311228380">這些網站不可使用與你相關的既有資訊</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN 碼，就無法復原本機資料。</translation>
@@ -9364,7 +9354,6 @@
 <translation id="8160775796528709999">只要在設定中啟用即時字幕功能，即可取得音訊和視訊的字幕</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">繼續瀏覽</translation>
-<translation id="8161293209665121583">使用閱讀器模式查看網頁</translation>
 <translation id="8161604891089629425">輪廓字型</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移到新視窗}other{將分頁移到新視窗}}</translation>
 <translation id="8163152278172770963">不允許網站自動進入子母畫面</translation>

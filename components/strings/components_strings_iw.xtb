@@ -340,6 +340,7 @@
 <translation id="160851722280695521">‏הפעלת המשחק Dino Run ב-Chrome</translation>
 <translation id="161042844686301425">ציאן</translation>
 <translation id="1611101756749861742">גליל שני</translation>
+<translation id="1611854593425834707">סגירה של רשימת המכשירים הזמינים להעברה</translation>
 <translation id="1612199629998703524">עריכת ההגדרות של הנושאים</translation>
 <translation id="1615178538289490617">ביטול הגישה אל <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הכתובת הזו תישמר בחשבון Google שלך, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">‏קוד האימות (CVC) מופיע בצד הקדמי של הכרטיס. זהו הקוד בן 4 הספרות שמופיע בצד ימין מעל למספר הכרטיס.</translation>
 <translation id="2529899080962247600">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. המערכת תתעלם מרשומות נוספות.</translation>
+<translation id="2533649878691950253">הגישה של האתר הזה למיקום המדויק שלך חסומה כי בחרת פעמים רבות לא לאשר אותה.</translation>
 <translation id="253493526287553278">הצגת הפרטים של קוד ההטבה</translation>
 <translation id="2535585790302968248">כדי לגלוש באופן פרטי, יש לפתוח כרטיסייה פרטית חדשה</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ודומיין אחד נוסף}one{ו-# דומיינים נוספים}two{ו-# דומיינים נוספים}other{ו-# דומיינים נוספים}}</translation>
@@ -1918,6 +1920,7 @@
 <translation id="4691093235373904540">טיפול בגגות</translation>
 <translation id="4692623383562244444">מנועי חיפוש</translation>
 <translation id="4698692901173737941">אומנויות לחימה</translation>
+<translation id="4701307090948589984">העברה אל...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">צד</translation>
 <translation id="4702656508969495934">מוצגות כתוביות מיידיות, ניתן להשתמש במעבר בין החלונות כדי להתמקד</translation>
@@ -2171,6 +2174,8 @@ Del</translation>
 <translation id="5161334686036120870">נושא:</translation>
 <translation id="5161506081086828129">מערים 9</translation>
 <translation id="5164798890604758545">מתבצעת הזנת טקסט</translation>
+<translation id="5164928537947209380">‏כלי ה-AI הניסיוני הזה לא תמיד מתאים. כדי לשפר אותו, התוכן שלך נשלח אל Google.
+    <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">‏יש להזין את קוד האימות של <ph name="CREDIT_CARD" />. אחרי שנקבל ממך אישור, נשתף עם האתר הזה את פרטי הכרטיס מחשבון Google.</translation>
 <translation id="5169827969064885044">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chrome, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="5171045022955879922">טקסט או כתובת אתר לחיפוש</translation>
@@ -3307,6 +3312,7 @@ Del</translation>
 <translation id="7392089738299859607">עדכון הכתובת</translation>
 <translation id="7393161616326137353">משחקי הרפתקאות</translation>
 <translation id="739728382607845710">‏סמל רכיב ה-handler של התשלומים</translation>
+<translation id="7399616692258236448">בקשות המיקום חסומות באופן אוטומטי בכל האתרים, מלבד האתרים שאישרת</translation>
 <translation id="7399802613464275309">בדיקת אבטחה</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>
 <translation id="7403392780200267761">‏שיתוף הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, העברה (cast) ועוד</translation>
@@ -4067,6 +4073,7 @@ Del</translation>
 <translation id="8807160976559152894">חיתוך אחרי כל עמוד</translation>
 <translation id="8809203544698246977">כאן יופיעו נושאים חסומים</translation>
 <translation id="8811470563853401328">לשמור את הכתובת בחשבון?</translation>
+<translation id="8811725516933141693">‏אפשר להקליד ‎@gemini כדי להתכתב עם Gemini</translation>
 <translation id="8813277370772331957">אני רוצה לקבל תזכורת אחר כך</translation>
 <translation id="8814707942599948500">‏מעטפה – C8</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לעדכן את דפדפן Chrome בהגדרות Chrome</translation>

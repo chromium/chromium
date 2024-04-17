@@ -675,10 +675,6 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="1557113199339446336">Se il criterio viene impostato su True, i dispositivi registrati segnalano informazioni relative a eventi di rilevamento e risposta estesi (XDR).
 
       Se il criterio viene impostato su False o se non viene configurato, i dispositivi registrati non segnalano eventi di rilevamento e risposta estesi (XDR).</translation>
-<translation id="1557873444324280490">Le estensioni aziendali possono aggiungere log a un file di log di sistema tramite l'API chrome.enterprise.systemLog.
-
-Se il criterio viene impostato su Enabled, i log saranno mantenuti nel file di log di sistema per un periodo di tempo limitato.
-Se il criterio viene impostato su Disabled o se non viene configurato, i log non possono essere aggiunti al file di log di sistema. Ciò significa che i log non verranno mantenuti tra le sessioni.</translation>
 <translation id="1560279917909364275">App per scrivere note della lista consentita ammesse sulla schermata di blocco di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1561424797596341174">La norma sostituisce le build di debug dell'host di accesso remoto</translation>
 <translation id="1561967320164410511">U2F più estensioni per singola attestazione</translation>
@@ -7207,9 +7203,6 @@ Se il criterio viene attivato, la funzionalità di aggiornamento del client hint
 <translation id="6704515759227307131">Questo criterio è obsoleto ed è stato sostituito dal criterio AdvancedProtectionAllowed.
 
       Questo criterio consente di stabilire se gli utenti iscritti al programma di protezione avanzata possono inviare o meno i propri download a Google per verificare l'eventuale presenza di malware. Se il criterio viene impostato su True o non viene impostato, agli utenti iscritti al programma verrà chiesto di inviare i propri file a Google per una scansione approfondita. Se l'utente seleziona "Scansiona", il download verrà inviato a Google. Se il criterio viene impostato su False, agli utenti non verrà chiesto di inviare i propri download a Google.</translation>
-<translation id="6704994003174661159">Questo criterio consente di stabilire il trattamento dei moduli non sicuri (i moduli inviati tramite HTTP) incorporati in siti protetti (HTTPS) nel browser.
-       Se il criterio viene attivato o non viene impostato, viene mostrato un avviso a pagina intera quando viene inviato un modulo non sicuro. Viene inoltre mostrato un fumetto di avviso accanto ai campi dei moduli quando vengono selezionati e la compilazione automatica viene disattivata per questi moduli.
-       Se il criterio viene disattivato, non vengono mostrati avvisi per i moduli non sicuri e la compilazione automaticamente funzionerà normalmente.</translation>
 <translation id="670597451099978576">Concede automaticamente a questi siti l'autorizzazione a connettersi a dispositivi USB usando gli ID fornitore e prodotto indicati nella schermata di accesso.</translation>
 <translation id="6706330611356546885">Consenti a qualsiasi sito di eseguire JIT di JavaScript</translation>
 <translation id="6706728459859947543">Questo criterio consente di autorizzare Risposte rapide ad accedere ai contenuti selezionati e a inviare le informazioni al server.

@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">คัดลอก&amp;ที่อยู่ลิงก์</translation>
 <translation id="1085064499066015002">ตลอดเวลาในทุกเว็บไซต์</translation>
 <translation id="1085697365578766383">เกิดข้อผิดพลาดขณะเริ่มต้นเครื่องเสมือน โปรดลองอีกครั้ง</translation>
-<translation id="1088659085457112967">เข้าสู่โหมดผู้อ่าน</translation>
 <translation id="1090126737595388931">ไม่มีแอปพลิเคชันทำงานในพื้นหลัง</translation>
 <translation id="1090541560108055381">ตรวจสอบว่ารหัสนี้เหมือนกันในอุปกรณ์ทั้ง 2 เครื่องก่อนที่จะจับคู่</translation>
 <translation id="1091767800771861448">กด ESCAPE เพื่อยกเลิก (รุ่นที่ไม่เป็นทางการเท่านั้น)</translation>
@@ -2162,7 +2161,6 @@
 <translation id="2587922766792651800">หมดเวลา</translation>
 <translation id="2588636910004461974">อุปกรณ์จาก <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">ไม่ต้องแสดงไฟล์ในไดรฟ์</translation>
-<translation id="25899519884572181">ออกจากโหมดผู้อ่าน</translation>
 <translation id="2593499352046705383">ตรวจสอบว่าคุณได้สำรองข้อมูลไว้แล้วก่อนที่จะเริ่ม การติดตั้ง <ph name="DEVICE_OS" /> จะเขียนทับข้อมูลในฮาร์ดไดรฟ์ ดูข้อมูลเพิ่มเติมที่ g.co/flex/InstallGuide</translation>
 <translation id="2594832159966169099">จัดการความปลอดภัย V8</translation>
 <translation id="2594999711683503743">ค้นหาด้วย Google หรือพิมพ์ URL</translation>
@@ -2463,7 +2461,6 @@
 <translation id="2806372837663997957">อุปกรณ์ที่คุณพยายามเชื่อมต่อไม่ยอมรับการแชร์ไฟล์</translation>
 <translation id="2806891468525657116">มีทางลัดนี้อยู่แล้ว</translation>
 <translation id="2807517655263062534">ไฟล์ที่คุณดาวน์โหลดจะปรากฏที่นี่</translation>
-<translation id="2809586584051668049">และอีก <ph name="NUMBER_ADDITIONAL_DISABLED" /> รายการ</translation>
 <translation id="2811205483104563968">บัญชี</translation>
 <translation id="2812049959647166806">ไม่รองรับ Thunderbolt</translation>
 <translation id="2812171980080389735">เครือข่ายและรหัสผ่านที่บันทึกไว้เพื่อให้เชื่อมต่อได้ทันที</translation>
@@ -3052,7 +3049,6 @@
 <translation id="3285465040399788513">มีพื้นที่เก็บข้อมูลในอุปกรณ์ไม่เพียงพอที่จะตั้งค่าให้เสร็จสมบูรณ์ โปรดเพิ่มพื้นที่ว่างแล้วลองอีกครั้ง</translation>
 <translation id="3285500645985761267">อนุญาตให้เว็บไซต์ที่เกี่ยวข้องดูกิจกรรมของคุณในกลุ่ม</translation>
 <translation id="328571385944182268">บันทึกรหัสผ่านไหม</translation>
-<translation id="3288047731229977326">ส่วนขยายที่ทำงานอยู่ในโหมดนักพัฒนาซอฟต์แวร์อาจเป็นอันตรายต่อคอมพิวเตอร์ของคุณ หากคุณไม่ใช่นักพัฒนาซอฟต์แวร์ คุณควรปิดส่วนขยายที่ทำงานอยู่ในโหมดนักพัฒนาซอฟต์แวร์เพื่อรักษาความปลอดภัย</translation>
 <translation id="3289668031376215426">ปรับเป็นตัวพิมพ์ใหญ่อัตโนมัติ</translation>
 <translation id="3289856944988573801">ในการตรวจหาการอัปเดต โปรดใช้อีเทอร์เน็ตหรือ WiFi</translation>
 <translation id="3289886661311231677">คุณบล็อกหัวข้อที่ไม่ต้องการแชร์กับเว็บไซต์ได้ นอกจากนี้ Chrome จะลบหัวข้อที่นานเกิน 4 สัปดาห์โดยอัตโนมัติ</translation>
@@ -3092,7 +3088,6 @@
 <translation id="3313622045786997898">ค่าลายเซ็นใบรับรอง</translation>
 <translation id="3313950410573257029">ตรวจสอบการเชื่อมต่อ</translation>
 <translation id="3315158641124845231">ซ่อน <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">เข้าสู่โหมดผู้อ่าน</translation>
 <translation id="3317459757438853210">สองด้าน</translation>
 <translation id="3317521105713541270">สร้างกลุ่ม</translation>
 <translation id="3317678681329786349">บล็อกกล้องถ่ายรูปและไมโครโฟน</translation>
@@ -3415,6 +3410,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ดูไฟล์และโฟลเดอร์ต่อไปนี้ได้</translation>
 <translation id="3571734092741541777">ตั้งค่า</translation>
 <translation id="3575121482199441727">อนุญาตสำหรับเว็บไซต์นี้</translation>
+<translation id="3575224072358507281">เก็บรวบรวมผลการวัดที่อยู่ IP และเครือข่ายสำหรับ Measurement Lab ตามนโยบายความเป็นส่วนตัว (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="3577487026101678864">การซิงค์ไฟล์เปิดอยู่</translation>
 <translation id="3577745545227000795">การรวบรวมข้อมูลฮาร์ดแวร์ของ <ph name="DEVICE_OS" /></translation>
@@ -3497,7 +3493,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="3636940436873918441">ภาษาที่ต้องการ</translation>
 <translation id="3637203148990213388">บัญชีเสริม</translation>
-<translation id="3639220004740062347">ออกจากโหมดผู้อ่าน</translation>
 <translation id="3640214691812501263">เพิ่ม "<ph name="EXTENSION_NAME" />" สำหรับ <ph name="USER_NAME" /> ไหม</translation>
 <translation id="3640347231390550691">ปกป้องรหัสผ่านของคุณจากฟิชชิง</translation>
 <translation id="3640613767643722554">สอนให้ Assistant รู้จักเสียงของคุณ</translation>
@@ -4140,7 +4135,6 @@
 <translation id="4095483462103784441">สร้างกลุ่มแท็บใหม่</translation>
 <translation id="4095507791297118304">การแสดงผลหลัก</translation>
 <translation id="4096421352214844684">เชื่อมต่อฮอตสปอตของโทรศัพท์โดยอัตโนมัติ</translation>
-<translation id="4096508467498758490">ปิดส่วนขยายโหมดนักพัฒนาซอฟต์แวร์</translation>
 <translation id="4096797685681362305">ดูในสัปดาห์ที่ผ่านมา</translation>
 <translation id="4097406557126260163">แอปและส่วนขยาย</translation>
 <translation id="409742781329613461">เคล็ดลับสำหรับ Chrome</translation>
@@ -5471,7 +5465,6 @@
 <translation id="5146896637028965135">เสียงของระบบ</translation>
 <translation id="5147097165869384760">หากต้องการดูหน้าระบบปฏิบัติการ โปรดไปที่<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /></translation>
 <translation id="5147113439721488265">คำแนะนำ</translation>
-<translation id="5147516217412920887">ทำตามวิธีการในโทรศัพท์เพื่อยืนยันโค้ด</translation>
 <translation id="5147992672778369947">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="5148285448107770349">รหัสผ่านต้องมีอักขระอย่างน้อย 8 ตัว</translation>
 <translation id="5149602533174716626">คัดลอกเฟรมวิดีโอ</translation>
@@ -6726,10 +6719,6 @@
 <translation id="6143186082490678276">รับความช่วยเหลือ</translation>
 <translation id="6143366292569327983">เลือกภาษาต้นทางของหน้า</translation>
 <translation id="6144938890088808325">ช่วยเราปรับปรุง Chromebook</translation>
-<translation id="6145480071052696715">ตั้งค่า <ph name="DEVICE_TYPE" /> ได้ง่ายๆ ด้วยโทรศัพท์ของคุณ คุณเพิ่ม Wi-Fi และบัญชี Google ได้โดยไม่ต้องป้อนรหัสผ่านด้วยตนเอง
-    <ph name="BR" />
-    <ph name="BR" />
-    ปรากฏเป็น <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">การซิงค์ไม่ทำงาน โปรดลองลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6147020289383635445">หน้าตัวอย่างก่อนพิมพ์ล้มเหลว</translation>
 <translation id="6147253937684562370">วิธีปลดล็อกการลงชื่อเข้าใช้โปรไฟล์ด้วยอีเมลบัญชีหลัก <ph name="EMAIL" /></translation>
@@ -6954,7 +6943,6 @@
 <translation id="6310141306111263820">ติดตั้งโปรไฟล์ eSIM ไม่สำเร็จ โปรดติดต่อผู้ให้บริการเพื่อขอความช่วยเหลือ</translation>
 <translation id="6311220991371174222">ไม่สามารถเริ่ม Chrome ได้เนื่องจากเกิดข้อผิดพลาดขณะเปิดโปรไฟล์ ลองเริ่มต้น Chrome ใหม่</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{เรียกใช้การตรวจสอบความปลอดภัยเมื่อ 1 วันที่ผ่านมา}other{เรียกใช้การตรวจสอบความปลอดภัยเมื่อ {NUM_DAYS} วันที่ผ่านมา}}</translation>
-<translation id="6312638141433622592">เสนอการแสดงบทความในโหมดผู้อ่าน ในกรณีที่ทำได้</translation>
 <translation id="6313950457058510656">ปิดการเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="6314819609899340042">คุณได้เปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่องบนอุปกรณ์ <ph name="IDS_SHORT_PRODUCT_NAME" /> นี้เรียบร้อยแล้ว</translation>
 <translation id="6315170314923504164">เสียง</translation>
@@ -8037,6 +8025,7 @@
 <translation id="7180865173735832675">กำหนดค่า</translation>
 <translation id="7181117767881540376">ซ่อนแถบบุ๊กมาร์ก</translation>
 <translation id="7181329571386134105">หากต้องการอนุญาตให้ <ph name="CHILD_NAME" /> ติดตั้งส่วนขยายในอนาคตโดยไม่ต้องให้คุณอนุมัติ ให้เปิดแอป Family Link ในอุปกรณ์และอัปเดตการตั้งค่า Google Chrome ของ <ph name="CHILD_NAME" /></translation>
+<translation id="7182051712900867547">ใช้บัญชีอื่น</translation>
 <translation id="7182063559013288142">ฮอตสปอตด่วน</translation>
 <translation id="7182791023900310535">ย้ายรหัสผ่าน</translation>
 <translation id="718427252411067142">หากไม่ต้องการให้ผู้อื่นใช้รหัสผ่านของคุณ ให้เปิดแอปเพื่อเปลี่ยนรหัสผ่าน</translation>
@@ -8599,6 +8588,7 @@
 <translation id="7617263010641145920">เปิด Play Store</translation>
 <translation id="7617648809369507487">ใช้การส่งข้อความแบบไม่มีการแจ้งเตือน</translation>
 <translation id="7619937211696316184">การบำรุงรักษาเสร็จสิ้นแล้ว</translation>
+<translation id="7620616707541471029">เลือกบัญชีเพื่อดำเนินการต่อ</translation>
 <translation id="7621382409404463535">ระบบบันทึกการกำหนดค่าอุปกรณ์ไม่สำเร็จ</translation>
 <translation id="7621480263311228380">ไม่ได้รับอนุญาตให้ใช้ข้อมูลเกี่ยวกับคุณที่บันทึกไว้</translation>
 <translation id="7621595347123595643">คุณจะกู้คืนข้อมูลในเครื่องไม่ได้หากลืมรหัสผ่านหรือ PIN</translation>
@@ -9365,7 +9355,6 @@
 <translation id="8160775796528709999">รับคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอของคุณโดยเปิดใช้คำบรรยายแทนเสียงแบบสดในการตั้งค่า</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">เรียกดูต่อ</translation>
-<translation id="8161293209665121583">โหมดผู้อ่านสำหรับหน้าเว็บ</translation>
 <translation id="8161604891089629425">แบบอักษรเส้นกรอบ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายแท็บไปที่หน้าต่างใหม่}}</translation>
 <translation id="8163152278172770963">ไม่อนุญาตให้เว็บไซต์เข้าสู่การแสดงภาพซ้อนภาพโดยอัตโนมัติ</translation>

@@ -340,6 +340,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="160851722280695521">Spil Dino Run-spillet i Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Anden papirrulle</translation>
+<translation id="1611854593425834707">Luk listen over enheder til casting</translation>
 <translation id="1612199629998703524">Administrer emner</translation>
 <translation id="1615178538289490617">Tilbagekald adgang for <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Administratorpolitikken deaktiverer screenshots, når fortroligt indhold er synligt</translation>
@@ -826,6 +827,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2526280916094749336">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse gemmes på din Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Din CVC er på forsiden af dit kort. Det er den 4-cifrede kode øverst til højre over dit kortnummer.</translation>
 <translation id="2529899080962247600">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster ignoreres.</translation>
+<translation id="2533649878691950253">Dette websites adgang til din præcise placering blev blokeret, fordi du normalt ikke tillader denne adgang</translation>
 <translation id="253493526287553278">Se oplysninger om promoveringskode</translation>
 <translation id="2535585790302968248">Åbn en ny inkognitofane for at browse privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 mere}one{og # mere}other{og # mere}}</translation>
@@ -1918,6 +1920,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4691093235373904540">Tagdækning</translation>
 <translation id="4692623383562244444">Søgemaskiner</translation>
 <translation id="4698692901173737941">Kampsport</translation>
+<translation id="4701307090948589984">Cast til…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Side</translation>
 <translation id="4702656508969495934">Livetekstning er synlig, brug vindueskifteren for at fokusere</translation>
@@ -2167,6 +2170,8 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5161334686036120870">Emne:</translation>
 <translation id="5161506081086828129">Stabler 9</translation>
 <translation id="5164798890604758545">Tekst indtastes</translation>
+<translation id="5164928537947209380">Dette eksperimentelle AI-værktøj har ikke altid ret. Dit indhold sendes til Google for at forbedre det.
+    <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Angiv CVC for <ph name="CREDIT_CARD" />. Når du bekræfter, deles kortoplysningerne på din Google-konto med dette website.</translation>
 <translation id="5169827969064885044">Du kan miste adgangen til din organisations konto eller udsættes for identitetstyveri. Chrome anbefaler, at du skifter din adgangskode nu.</translation>
 <translation id="5171045022955879922">Søg, eller angiv webadresse</translation>
@@ -3302,6 +3307,7 @@ Yderligere oplysninger:
 <translation id="7392089738299859607">Opdater adresse</translation>
 <translation id="7393161616326137353">Adventurespil</translation>
 <translation id="739728382607845710">Ikon for betalingshandler</translation>
+<translation id="7399616692258236448">Lokationsanmodninger blokeres automatisk for alle websites undtagen dem, hvor du har givet tilladelse</translation>
 <translation id="7399802613464275309">Sikkerhedstjek</translation>
 <translation id="7400418766976504921">Webadresse</translation>
 <translation id="7403392780200267761">Del denne fane ved at dele linket, oprette en QR-kode, caste m.m.</translation>
@@ -4063,6 +4069,7 @@ Yderligere oplysninger:
 <translation id="8807160976559152894">Beskær efter hver side</translation>
 <translation id="8809203544698246977">Blokerede emner vises her</translation>
 <translation id="8811470563853401328">Vil du gemme adressen på kontoen?</translation>
+<translation id="8811725516933141693">Skriv @gemini for at chatte med Gemini</translation>
 <translation id="8813277370772331957">Påmind mig senere</translation>
 <translation id="8814707942599948500">Konvolut C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at opdatere Chrome i dine Chrome-indstillinger</translation>

@@ -128,6 +128,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1420408895951708260">Włącz lub wyłącz Podświetlenie nocne. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Tak</translation>
 <translation id="1435537621343861112">Nie udało się rozpocząć dyktowania. Twój mikrofon jest wyłączony.</translation>
+<translation id="1448963928642384376">Hotspoty Twojego urządzenia</translation>
 <translation id="1455242230282523554">Pokaż ustawienia języka</translation>
 <translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
 <translation id="14648076227129703">Spowoduje to przyznanie dostępu do aparatu aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
@@ -1292,7 +1293,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="598882571027504733">Aby pobrać aktualizację, uruchom Chromebooka ponownie z podłączoną klawiaturą.</translation>
 <translation id="5998374579424866922">Wyłącz sterowanie grą</translation>
 <translation id="6000279412553873020">Klawisze, przyciski i inne elementy</translation>
-<translation id="6002122790816966947">Twoje urządzenia</translation>
 <translation id="6012623610530968780">Strona <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Podświetl następny element na półce</translation>
 <translation id="6015573907265691211">Oznacz jako ukończone</translation>

@@ -68,6 +68,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Market ilovasi</translation>
 <translation id="1225748608451425081">Chromebook qurilmangiz tanish xatolik tufayli qulflanib qoldi. Hisobingizga vaqtincha kira olmaysiz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Matnni tanlashni toʻxtatish</translation>
+<translation id="1230853660706736937">Rasmlar ichida matn qidirish va rasmlarga razm solish</translation>
 <translation id="1235458158152011030">Tanish tarmoqlar</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ulandi.</translation>
 <translation id="1240638468526743569">Ilova</translation>
@@ -715,11 +716,13 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3824784079442479685">Bunda kameraga ruxsat beriladi. <ph name="APP_NAME" /> va barcha ilovalar va saytlar kameradan foydalana oladi Sayt yoki sahifani yangilash yoki ilovani qayta ochish talab etilishi mumkin.</translation>
 <translation id="3826099427150913765">Parol kiritish</translation>
 <translation id="383058930331066723">Quvvat tejash rejimi yoniq</translation>
+<translation id="3831226344927851293">Qoʻllanma rejimidan chiqish</translation>
 <translation id="383629559565718788">Klaviatura sozlamalarini ochish</translation>
 <translation id="384082539148746321">Andoza oʻchirilsinmi?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, keyin <ph name="KEY_ONE" /> yoki <ph name="KEY_TWO" /> yoki <ph name="KEY_THREE" /> yoki <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Tarmoqqa oid ma’lumot mavjud emas</translation>
+<translation id="3848526302597027234">Quyidagilar bilan ishlashga ruxsat:</translation>
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="385300504083504382">Boshi</translation>
 <translation id="3859364108019690">Ilovalar namoyish etilmaydi</translation>
@@ -1291,7 +1294,6 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="598882571027504733">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni tashqi klavuatura orqali o‘chirib yoqing.</translation>
 <translation id="5998374579424866922">Oʻyin kontrollerini faolsizlantirish</translation>
 <translation id="6000279412553873020">Kalitlar, tugmalar va boshqalar</translation>
-<translation id="6002122790816966947">Qurilmalaringiz</translation>
 <translation id="6012623610530968780">Sahifa: <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Paneldagi keyingi elementni ajratish koʻrsatish</translation>
 <translation id="6015573907265691211">Bajarildi deb belgilash</translation>

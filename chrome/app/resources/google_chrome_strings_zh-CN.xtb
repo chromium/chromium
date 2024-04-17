@@ -214,9 +214,11 @@
 <translation id="4293420128516039005">登录即可在您的所有设备上同步并个性化设置 Chrome</translation>
 <translation id="430327780270213103">允许扩展程序在 Chrome 工具栏中显示访问请求</translation>
 <translation id="4328355335528187361">Google Chrome 开发者版 (mDNS-In)</translation>
+<translation id="4329315893554541805">若要获得个性化体验和其他功能，请在“网络与应用活动记录”和关联的 Google 服务中包含 Chrome</translation>
 <translation id="4334294535648607276">下载完毕。</translation>
 <translation id="4335235004908507846">Chrome 有助于保护您免受数据泄露、不良扩展程序等问题的影响</translation>
 <translation id="4343195214584226067">“<ph name="EXTENSION_NAME" />”已添加到 Chrome</translation>
+<translation id="4348548358339558429">若要获得个性化体验，请在“网络与应用活动记录”中包含 Chrome</translation>
 <translation id="436060642166082913">Chrome 阻止了此项下载操作，因为该文件可能会危害您的个人和社交网络账号</translation>
 <translation id="4384570495110188418">Chrome 无法检查您的密码，因为您未登录</translation>
 <translation id="4389991535395284064">当您在无痕模式下浏览内容时，Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
@@ -328,7 +330,9 @@
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="6418662306461808273">切换到现有的 Chrome 个人资料？</translation>
+<translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
+<translation id="6489302989675808168">已开启 • Chrome 无法验证此扩展程序的来源</translation>
 <translation id="6493527311031785448">Google Chrome 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome 已自动关闭</translation>
 <translation id="6506909944137591434">Chrome 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
@@ -353,6 +357,7 @@
 <translation id="6933858244219479645">ChromeOS 系统</translation>
 <translation id="6938166777909186039">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 8.1。</translation>
 <translation id="6943584222992551122">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chrome。</translation>
+<translation id="6944202724043006419">Chrome 需要获得场景理解和手部跟踪权限，才能启动沉浸式会话</translation>
 <translation id="6967962315388095737">Google Chrome 测试版的入站规则，允许 mDNS 流量。</translation>
 <translation id="6989339256997917931">Google Chrome 浏览器已更新，但您已经至少 30 天未使用它了。</translation>
 <translation id="7011190694940573312">安装失败，因为此版本的操作系统不受支持。</translation>
@@ -387,6 +392,7 @@
 <translation id="7477130805345743099">Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="7481213027396403996">获享 Chrome 的最强安全保护</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>
+<translation id="7572537927358445944">已关闭 • Chrome 无法验证此扩展程序的来源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">欢迎使用 Chrome</translation>
@@ -475,6 +481,7 @@
 <translation id="8823341990149967727">Chrome版本太旧</translation>
 <translation id="8825634023950448068">为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。如果 Chrome 的推测不准确，或者您不想看到某些广告，可以移除某项兴趣。</translation>
 <translation id="8834965163890861871">Google Chrome 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome 建议您移除它}other{Chrome 建议您移除它们}}</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8922193594870374009">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>

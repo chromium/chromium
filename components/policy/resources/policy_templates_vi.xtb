@@ -681,10 +681,6 @@ Các mẫu URL không được xung đột với <ph name="WEB_PRINTING_ALLOWED_
 <translation id="1557113199339446336">Nếu bạn đặt chính sách này thành Đúng thì các thiết bị đã đăng ký sẽ báo cáo thông tin liên quan đến các sự kiện phát hiện và phản hồi mở rộng (XDR).
 
       Nếu bạn đặt chính sách này thành Sai hoặc không đặt, các thiết bị đã đăng ký sẽ không báo cáo các sự kiện phát hiện và phản hồi mở rộng (XDR).</translation>
-<translation id="1557873444324280490">Qua API chrome.enterprise.systemLog, các tiện ích dành cho doanh nghiệp có thể thêm nhật ký vào tệp nhật ký hệ thống.
-
-Nếu bạn đặt chính sách này thành Bật, thì hệ thống sẽ cho phép lưu trữ nhật ký trong tệp nhật ký hệ thống trong thời gian hạn chế.
-Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, thì hệ thống sẽ không cho phép thêm nhật ký vào tệp nhật ký hệ thống. Điều này có nghĩa là hệ thống sẽ không lưu trữ nhật ký giữa các phiên.</translation>
 <translation id="1560279917909364275">Đưa các ứng dụng ghi chú được phép xuất hiện trên màn hình khoá của <ph name="PRODUCT_OS_NAME" /> vào danh sách cho phép</translation>
 <translation id="1561424797596341174">Chính sách ghi đè dành cho bản dựng Gỡ lỗi của máy chủ truy cập từ xa</translation>
 <translation id="1561967320164410511">Tiện ích U2F+ để chứng thực cá nhân</translation>
@@ -7302,9 +7298,6 @@ Khi bạn bật chính sách này, tính năng Cập nhật thuật toán GREASE
 <translation id="6704515759227307131">Chính sách này không còn dùng nữa và đã được thay thế bằng AdvancedProtectionAllowed.
 
       Chính sách này kiểm soát liệu người dùng đăng ký chương trình Bảo vệ nâng cao có được phép gửi các tệp đã tải xuống cho Google để quét tìm phần mềm độc hại hay không. Nếu bạn không đặt hoặc đặt thành True, thì người dùng đã đăng ký sẽ được nhắc gửi các tệp của họ cho Google để quét sâu. Nếu người dùng chọn 'Quét' thì tệp họ đã tải xuống sẽ được gửi cho Google. Nếu bạn đặt thành False, thì người dùng sẽ không được nhắc và các tệp họ đã tải xuống sẽ không được gửi cho Google.</translation>
-<translation id="6704994003174661159">Chính sách này kiểm soát cách xử lý các biểu mẫu không an toàn (biểu mẫu gửi qua HTTP) được nhúng vào trang web an toàn (HTTPS) trong trình duyệt.
-       Nếu bạn bật hoặc không đặt chính sách này, thì một cảnh báo toàn trang sẽ xuất hiện khi bạn gửi biểu mẫu không an toàn. Ngoài ra, một bong bóng cảnh báo sẽ xuất hiện bên cạnh các trường biểu mẫu khi bạn trỏ chuột vào các trường đó. Đồng thời, tính năng tự động điền sẽ tắt đối với các biểu mẫu đó.
-       Nếu bạn tắt chính sách này, cảnh báo sẽ không xuất hiện đối với những biểu mẫu không an toàn và tính năng tự động điền sẽ hoạt động bình thường.</translation>
 <translation id="670597451099978576">Tự động cấp quyền cho những trang web này để kết nối với các thiết bị USB bằng mã sản phẩm và mã nhà cung cấp cụ thể trên màn hình đăng nhập.</translation>
 <translation id="6706330611356546885">Chấp nhận mọi trang web chạy JavaScript JIT</translation>
 <translation id="6706728459859947543">Chính sách này cấp cho tính năng Thông tin nhanh quyền truy cập vào nội dung đã chọn và gửi thông tin đó đến máy chủ.

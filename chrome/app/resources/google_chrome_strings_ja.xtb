@@ -244,6 +244,7 @@
 <translation id="4793679854893018356">Chrome のユーザー保護の仕組みについて</translation>
 <translation id="4828579605166583682">Google Chrome が既存のパスワードを置き換えようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="4842397268809523050">お使いのドメインでは同期が利用できないため、ChromeOS Flex はデータを同期できませんでした。</translation>
+<translation id="4862446263930606916">あなたの組織は仕事用プロフィールの閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。個人用の Chrome プロフィールの閲覧データを確認することはできません。</translation>
 <translation id="4873692836499071887">今後、Google Chrome のアップデートを受信するには、macOS 11 以降が必要となります。このコンピュータでは macOS 10.15 が実行されています。</translation>
 <translation id="4873783916118289636">Chrome のプライバシーとセキュリティに関する重要な設定を確認します</translation>
 <translation id="4891791193823137474">Google Chrome のバックグラウンドでの実行を許可する</translation>
@@ -320,6 +321,7 @@
 <translation id="6251759518630934363">標準保護機能より多くのサイトデータを分析して、危険なサイト（Google が認識していなかったサイトも含む）について警告します。Chrome の警告をスキップすることもできます。</translation>
 <translation id="6273793429163604305">位置について...</translation>
 <translation id="6277547788421725101">保護者が Chrome の「サイト、アプリ、拡張機能の権限」をオフにしました</translation>
+<translation id="627882678981830918">Chrome をカスタマイズ、管理します。Chrome をデフォルトに設定します。</translation>
 <translation id="6291089322031436445">Chrome Dev アプリ</translation>
 <translation id="6291549208091401781">Google Chrome は既にパソコンのすべてのユーザー対してインストールされています。</translation>
 <translation id="6326175484149238433">Chrome から削除</translation>
@@ -482,6 +484,7 @@
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するため、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8999117580775242387">HTTPS を使用できない場合、Chrome では警告を表示せずに安全でない接続を使用します</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>
+<translation id="9024318700713112071">Chrome を既定として設定</translation>
 <translation id="9053892488859122171">ChromeOS Flex システム</translation>
 <translation id="9054037008353851982">再起動して更新 - タブは再度開きます</translation>
 <translation id="9090566250983691233">Chrome で一部のファイルがブロックされる理由</translation>

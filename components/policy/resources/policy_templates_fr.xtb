@@ -672,10 +672,6 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cl
 <translation id="1557113199339446336">Si cette règle est définie sur "True", les appareils enregistrés signalent des informations sur les événements de détection et réponse étendues (XDR).
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les appareils enregistrés ne signalent pas les événements de détection et réponse étendues (XDR).</translation>
-<translation id="1557873444324280490">Les extensions d'entreprise permettent d'ajouter des journaux à un fichier journal système à l'aide de l'API chrome.enterprise.systemLog.
-
-Si cette règle est activée, les journaux sont conservés dans le fichier journal système pendant une durée limitée.
-Si cette règle est désactivée ou si elle n'est pas configurée, les journaux ne peuvent pas être ajoutés au fichier journal système. Ils ne sont donc pas conservés d'une session à l'autre.</translation>
 <translation id="1560279917909364275">Les applis de prise de note ajoutées à la liste d'autorisation sont autorisées sur l'écran de verrouillage de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1561424797596341174">Remplacements de règle pour les versions de débogage de l'hôte distant</translation>
 <translation id="1561967320164410511">U2F plus extensions pour chaque attestation</translation>
@@ -7137,9 +7133,6 @@ Lorsqu'elle est activée, la fonctionnalité de mise à jour GREASE User-Agent C
 <translation id="6704515759227307131">Cette règle est obsolète et a été remplacée par AdvancedProtectionAllowed.
 
       Elle permet de contrôler si les utilisateurs inscrits au Programme Protection Avancée sont autorisés à envoyer leurs téléchargements à Google pour les faire analyser afin de détecter d'éventuels logiciels malveillants. Si cette règle est définie sur "True" ou si elle n'est pas configurée, ces utilisateurs sont invités à envoyer leurs téléchargements à Google pour une analyse approfondie. Si ces utilisateurs sélectionnent l'option d'analyse, leurs téléchargements sont envoyés à Google. Si cette règle est définie sur "False", aucune invite ne s'affiche, et les téléchargements des utilisateurs ne sont pas envoyés à Google.</translation>
-<translation id="6704994003174661159">Permet de spécifier comment sont traités dans le navigateur les formulaires non sécurisés (soumis via HTTP) qui sont intégrés à des sites sécurisés (HTTPS).
-       Si cette règle est activée ou qu'elle n'est pas configurée, un avertissement s'affiche en pleine page lorsqu'un formulaire non sécurisé est soumis. De plus, lorsque l'utilisateur passe la souris sur un champ de ce formulaire, une info-bulle d'avertissement s'affiche juste à côté, et la saisie automatique pour ce formulaire est désactivée.
-       Si cette règle est désactivée, aucun avertissement ne s'affiche quand un formulaire non sécurisé est soumis, et la saisie automatique fonctionne normalement.</translation>
 <translation id="670597451099978576">Autoriser automatiquement ces sites à se connecter aux appareils USB à l'aide des ID de fournisseur et de produit indiqués sur l'écran de connexion.</translation>
 <translation id="6706330611356546885">Autoriser tous les sites à exécuter le JIT pour JavaScript</translation>
 <translation id="6706728459859947543">Cette règle autorise Réponses rapides à accéder au contenu sélectionné et à envoyer les infos au serveur.

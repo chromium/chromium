@@ -826,6 +826,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2526280916094749336">Puedes usar las direcciones guardadas en los productos de Google. Esta dirección se guardará en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC se encuentra en el anverso de tu tarjeta. Es el código de 4 dígitos situado encima del número de la tarjeta, en la parte superior derecha.</translation>
 <translation id="2529899080962247600">Este campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán las demás entradas.</translation>
+<translation id="2533649878691950253">Se ha bloqueado el acceso a tu ubicación precisa en este sitio, ya que normalmente no concedes este permiso</translation>
 <translation id="253493526287553278">Ver detalles del código promocional</translation>
 <translation id="2535585790302968248">Abre una pestaña de Incógnito nueva para navegar en privado</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{y 1 más}other{y # más}}</translation>
@@ -3302,6 +3303,7 @@ Más información:
 <translation id="7392089738299859607">Actualizar dirección</translation>
 <translation id="7393161616326137353">Juegos de aventura</translation>
 <translation id="739728382607845710">Icono del controlador de pagos</translation>
+<translation id="7399616692258236448">Las solicitudes de ubicación se bloquean automáticamente en todos los sitios, excepto los que permitas</translation>
 <translation id="7399802613464275309">Comprobación de seguridad</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Comparte esta pestaña mediante el enlace, creando un código QR, enviando contenido y más</translation>

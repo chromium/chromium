@@ -847,6 +847,7 @@
 <translation id="5407969256130905701">ለውጦችን አስወግድ</translation>
 <translation id="5414763847370083940">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ ማንቂያ ያገኛሉ።</translation>
 <translation id="5416022985862681400">ባለፉት 7 ቀኖች</translation>
+<translation id="5416455648658732408">ወደ ትር ቡድን ውሰድ</translation>
 <translation id="5423269318075950257">ዋጋ ይከታተሉ</translation>
 <translation id="543338862236136125">የይለፍ ቃል አርትዕ</translation>
 <translation id="5433691172869980887">የተጠቃሚ ስም ተቀድቷል</translation>
@@ -1332,6 +1333,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7853202427316060426">እንቅስቃሴ</translation>
 <translation id="7856733331829174190">ማውረድ አልተቻለም</translation>
 <translation id="7859704718976024901">የአሰሳ ታሪክ</translation>
+<translation id="7860900259978879139">ከቡድኑ አስወግድ</translation>
 <translation id="7866501058614003444">ይህ ጥቅል ላይ የሚደረግ ክትትል በተሳካ ሁኔታ ተቋርጧል።</translation>
 <translation id="7866872729285243843">የንባብ ዝርዝርዎን በሁሉም መሳሪያዎችዎ ላይ ለማግኘት፣ በቅንብሮች ውስጥ «የንባብ ዝርዝር»ን ያብሩ።</translation>
 <translation id="7866993391592926595">ይህን ካርድ መደበቅ የጥቅል መከታተልን ያጠፋል እና ሁሉንም ውሂብዎን ያስወግዳል</translation>
@@ -1419,9 +1421,11 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8273982424131314219">መረጃ ወደ <ph name="URL" /> ውስጥ ይሞላሉ</translation>
 <translation id="8281781826761538115">ነባሪ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ዝለል</translation>
+<translation id="8282657446819506217">በትር ቡድን ክፈት</translation>
 <translation id="828291969289324795">{count,plural, =1{ትር ወደ አዲስ ቡድን ያክሉ}one{ትር ወደ አዲስ ቡድን ያክሉ}other{ትሮችን ወደ አዲስ ቡድን ያክሉ}}</translation>
 <translation id="8283172974887967105">ያቀናብሩ…</translation>
 <translation id="8286036467436129157">ግባ</translation>
+<translation id="8289930144142009940">የ<ph name="FEATURE_NAME" /> ማሳወቂያዎች ጠፍተዋል</translation>
 <translation id="8292843446079898078">ለሚከታተሏቸው ምርቶች የዋጋ ቅናሽ ማንቂያዎችን ይቀበሉ።</translation>
 <translation id="8299417921174340354">የይለፍ ቃላትን ለመጠቀም መጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማቀናበር አለብዎት።</translation>
 <translation id="8299613349954694191">ድሩን በግል ለማሰስ ማንነት የማያሳውቅ ትር ይክፈቱ።</translation>
@@ -1429,6 +1433,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8313645224014086262">ፋይል አስቀምጥ</translation>
 <translation id="8319076807703933069">አዲስ ፍለጋ</translation>
 <translation id="8328777765163860529">ሁሉንም ዝጋ</translation>
+<translation id="8343286328361420468">ለ<ph name="FEATURE_NAME" /> ማሳወቂያዎችን አጥፋ</translation>
 <translation id="8343993175958086504">የእርስዎን ነገሮች ምትኬ ያስቀምጡ እና በማንኛውም መሣሪያ ላይ ይጠቀሙበት።</translation>
 <translation id="834783239627985533">በብዛት የተጎበኙ ጣቢያዎች</translation>
 <translation id="8358401059263985056">ማሳወቂያዎችን አብራ</translation>

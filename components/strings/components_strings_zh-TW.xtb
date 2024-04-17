@@ -339,6 +339,7 @@
 <translation id="160851722280695521">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611101756749861742">第二卷</translation>
+<translation id="1611854593425834707">關閉投放裝置清單</translation>
 <translation id="1612199629998703524">管理主題</translation>
 <translation id="1615178538289490617">撤銷 <ph name="PORT_NAME" /> 的存取權</translation>
 <translation id="1615402009686901181">當畫面上出現機密內容，系統管理員政策就會停用螢幕畫面擷取功能</translation>
@@ -825,6 +826,7 @@
 <translation id="2526280916094749336">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2527451058878391043">信用卡驗證碼位於卡片正面，即卡號右上方的 4 位數字。</translation>
 <translation id="2529899080962247600">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會遭到忽略。</translation>
+<translation id="2533649878691950253">系統已禁止這個網站取得你的精確位置資訊，因為你通常不允許這麼做</translation>
 <translation id="253493526287553278">查看促銷代碼詳情</translation>
 <translation id="2535585790302968248">開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{和另外 1 個網域}other{和另外 # 個網域}}</translation>
@@ -1916,6 +1918,7 @@
 <translation id="4691093235373904540">屋頂施工</translation>
 <translation id="4692623383562244444">搜尋引擎</translation>
 <translation id="4698692901173737941">搏擊運動</translation>
+<translation id="4701307090948589984">投放到...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">側邊</translation>
 <translation id="4702656508969495934">已顯示即時字幕，使用視窗切換選項將焦點移至即時字幕</translation>
@@ -2165,6 +2168,8 @@
 <translation id="5161334686036120870">標題：</translation>
 <translation id="5161506081086828129">堆疊出紙器 9</translation>
 <translation id="5164798890604758545">已輸入文字</translation>
+<translation id="5164928537947209380">這項實驗 AI 工具提供的內容不一定正確。為改善這項工具，系統會將你的內容傳送給 Google。
+    <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼。你確認後，這個網站就會取得你 Google 帳戶中的信用卡詳細資料。</translation>
 <translation id="5169827969064885044">你可能會失去貴機構帳戶的存取權，或身分遭到冒用。Chrome 建議你立即變更密碼。</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
@@ -3300,6 +3305,7 @@
 <translation id="7392089738299859607">更新地址</translation>
 <translation id="7393161616326137353">冒險遊戲</translation>
 <translation id="739728382607845710">付款處理常式圖示</translation>
+<translation id="7399616692258236448">系統會自動封鎖所有網站的位置資訊要求 (你允許的網站除外)</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400418766976504921">網址</translation>
 <translation id="7403392780200267761">透過分享連結、建立 QR 圖碼、投放等功能分享這個分頁</translation>
@@ -4060,6 +4066,7 @@
 <translation id="8807160976559152894">每完成一頁後裁切</translation>
 <translation id="8809203544698246977">已封鎖的主題會顯示在這裡</translation>
 <translation id="8811470563853401328">要將地址儲存到帳戶嗎？</translation>
+<translation id="8811725516933141693">輸入 @gemini 即可與 Gemini 對話</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可透過 Chrome 設定來更新 Chrome</translation>

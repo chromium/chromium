@@ -178,6 +178,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="4095980151185649725">{COUNT,plural, =1{Organizacija automatski zatvara Chromium kada se ne koristi 1 minut. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}one{Organizacija automatski zatvara Chromium kada se ne koristi # minut. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}few{Organizacija automatski zatvara Chromium kada se ne koristi # minuta. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}other{Organizacija automatski zatvara Chromium kada se ne koristi # minuta. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}}</translation>
 <translation id="4118474109249235144">Chromium bez arhiviranja</translation>
 <translation id="4148957013307229264">Instaliranje...</translation>
+<translation id="4149336151887611710">Organizacija može da vidi podatke pregledanja na poslovnom profilu, poput obeleživača, istorije i lozinki, i da upravlja njima. Ne može da vidi podatke pregledanja na ličnim Chromium profilima.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – prijavljivanje na mrežu – Chromium</translation>
 <translation id="421369550622382712">Otkrijte odlične aplikacije, igre, dodatke i teme za Chromium.</translation>
 <translation id="4216212958613226427">Ovaj jezik se koristi za prikazivanje korisničkog interfejsa Chromium-a</translation>
@@ -254,6 +255,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikazuj Chromium na ovom jeziku</translation>
 <translation id="569897634095159764">Povezivanje sa internetom nije uspelo. Proksi server zahteva potvrdu identiteta.</translation>
+<translation id="5800158606660203929">Prilagodite i kontrolišite Chromium. Podesite Chromium kao podrazumevani pregledač.</translation>
 <translation id="5809516625706423866">Povezivanje sa internetom nije uspelo. Nije ovlašćen pristup (HTTP 401). Proverite konfiguraciju proksija.</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5883558403894052917">Chromium je otkrio malver u ovim stavkama:</translation>
@@ -405,6 +407,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7867198900892795913">Chromium nije uspeo da se ažurira na najnoviju verziju, pa propuštate nove funkcije i bezbednosne ispravke.</translation>
 <translation id="7872446069773932638">Preuzima se... Još <ph name="SECONDS" /> sek</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kako možete da upravljate podacima:<ph name="END_BOLD" /> Radi zaštite privatnosti automatski brišemo interesovanja starija od 4 nedelje. Kada nastavite da pregledate, interesovanje će se možda ponovo pojaviti na listi. Možete i da uklanjate interesovanja za koja ne želite da ih Chromium uzima u obzir.</translation>
+<translation id="7888981273428720788">Podesite Chromium kao podrazumevani pregledač</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chromium kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti nalog da biste se ponovo prijavili.</translation>
 <translation id="7975919845073681630">Ovo je sekundarna instalacija Chromium-a pa ne možete da ga podesite kao podrazumevani pregledač.</translation>
 <translation id="7997934263947464652">Dodaci, aplikacije i teme iz nepoznatih izvora mogu da naškode uređaju. Chromium preporučuje da ih instalirate samo iz: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -474,7 +477,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="9144490074902256427">Tokom proba možete da vidite i uklanjate interesovanja koja sajtovi koriste da bi vam prikazivali oglase. Chromium procenjuje vaša interesovanja na osnovu nedavne istorije pregledanja.</translation>
 <translation id="9158494823179993217">Administrator sistema je konfigurisao Chromium da otvara alternativni pregledač za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Ponovo pokreni da bi se &amp;Chromium ažurirao</translation>
-<translation id="9187458940438504468">Chromium ne može da proveri odakle potiče ovaj dodatak</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Prilagodite Chromium sebi</translation>
 <translation id="93478295209880648">Chromium možda neće ispravno funkcionisati zato što više nije podržan na Windows XP-u ili Windows Vista-i</translation>

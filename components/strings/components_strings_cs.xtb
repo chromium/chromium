@@ -340,6 +340,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="160851722280695521">Spustit v Chromu dinosauří hru</translation>
 <translation id="161042844686301425">Azurová</translation>
 <translation id="1611101756749861742">Druhá role</translation>
+<translation id="1611854593425834707">Zavřít seznam zařízení pro odesílání</translation>
 <translation id="1612199629998703524">Správa témat</translation>
 <translation id="1615178538289490617">Odebrat přístup k portu <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Zásady administrátora zakazují záznam obrazovky, když je viditelný důvěrný obsah</translation>
@@ -826,6 +827,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2526280916094749336">Uložené adresy můžete používat ve službách Google. Tato adresa bude uložena ve vašem účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Váš kód CVC je na přední straně karty. Je to 4místný kód vpravo nahoře nad číslem vaší karty.</translation>
 <translation id="2529899080962247600">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou ignorovány.</translation>
+<translation id="2533649878691950253">Přístup tohoto webu k vaší přesné poloze byl zablokován, protože ho obvykle nepovolujete</translation>
 <translation id="253493526287553278">Zobrazit podrobnosti propagačního kódu</translation>
 <translation id="2535585790302968248">Otevřete novou anonymní kartu a prohlížejte v soukromí</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{a 1 další}few{a # další}many{a # další}other{a # dalších}}</translation>
@@ -1914,6 +1916,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4691093235373904540">Pokrývači</translation>
 <translation id="4692623383562244444">Vyhledávače</translation>
 <translation id="4698692901173737941">Bojové sporty</translation>
+<translation id="4701307090948589984">Odesílat do…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Boční</translation>
 <translation id="4702656508969495934">Živý přepis je viditelný, vyberete ho pomocí přepínače oken</translation>
@@ -2163,6 +2166,8 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5161334686036120870">Předmět:</translation>
 <translation id="5161506081086828129">Stohovač 9</translation>
 <translation id="5164798890604758545">Zadání textu</translation>
+<translation id="5164928537947209380">Tenhle experimentální AI nástroj se občas splete. Abychom ho mohli vylepšovat, odesílá se váš obsah do Googlu.
+    <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Zadejte kód CVC karty <ph name="CREDIT_CARD" />. Po potvrzení budou údaje o kartě z vašeho účtu Google poskytnuty tomuto webu.</translation>
 <translation id="5169827969064885044">Mohli byste ztratit přístup k účtu organizace nebo by mohlo dojít k odcizení vaší identity. Chrome doporučuje okamžitě změnit heslo.</translation>
 <translation id="5171045022955879922">Vyhledávejte či zadejte URL</translation>
@@ -3296,6 +3301,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7392089738299859607">Aktualizovat adresu</translation>
 <translation id="7393161616326137353">Adventury</translation>
 <translation id="739728382607845710">Ikona obslužného nástroje pro platby</translation>
+<translation id="7399616692258236448">Žádosti o informace o poloze jsou automaticky blokovány u všech webů s výjimkou těch, u nichž je povolíte</translation>
 <translation id="7399802613464275309">Bezpečnostní kontrola</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
 <translation id="7403392780200267761">Sdílet tuto kartu pomocí odkazu či QR kódu, odesláním apod.</translation>
@@ -4057,6 +4063,7 @@ Další podrobnosti:
 <translation id="8807160976559152894">Oříznutí za každou stránkou</translation>
 <translation id="8809203544698246977">Zde se zobrazují blokovaná témata</translation>
 <translation id="8811470563853401328">Uložit adresu do účtu?</translation>
+<translation id="8811725516933141693">Pokud chcete chatovat s Gemini, zadejte @gemini</translation>
 <translation id="8813277370772331957">Připomenout později</translation>
 <translation id="8814707942599948500">Obálka C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter aktualizujete Chrome v nastavení Chromu</translation>

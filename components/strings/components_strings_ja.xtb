@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Chrome で Dino Run ゲームをプレイします</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611101756749861742">ロール 2</translation>
+<translation id="1611854593425834707">キャストするデバイスリストを閉じる</translation>
 <translation id="1612199629998703524">トピックの管理</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> へのアクセス権を取り消します</translation>
 <translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">この住所は Google アカウント（<ph name="ACCOUNT" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="2527451058878391043">CVC コードはカードの表面に記載されています。カード番号の右上にある 4 桁のコードです。</translation>
 <translation id="2529899080962247600">このフィールドで指定できるエントリは <ph name="MAX_ITEMS_LIMIT" /> 件までです。それ以降のエントリはすべて無視されます。</translation>
+<translation id="2533649878691950253">通常、正確な位置情報の共有が許可されていないため、このサイトでも許可されていません</translation>
 <translation id="253493526287553278">プロモーション コードの詳細を確認</translation>
 <translation id="2535585790302968248">新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{、他 1 件}other{、他 # 件}}</translation>
@@ -1918,6 +1920,7 @@
 <translation id="4691093235373904540">屋根材、ルーフ修理</translation>
 <translation id="4692623383562244444">検索エンジン</translation>
 <translation id="4698692901173737941">格闘技</translation>
+<translation id="4701307090948589984">キャスト先...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">側面</translation>
 <translation id="4702656508969495934">自動字幕起こしが表示されています。画面切り替えボタンでフォーカスできます</translation>
@@ -2108,6 +2111,7 @@
 <translation id="5040262127954254034">プライバシー</translation>
 <translation id="5043480802608081735">コピーしたリンク</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
+<translation id="5048293684454354469">広告のトピックは、サイトが広告をパーソナライズするために使用できることの 1 つにすぎません。広告のトピックをオフにしても、サイトでは引き続き広告が表示されますが、パーソナライズされたものでない可能性があります。<ph name="BEGIN_LINK" />広告のプライバシー管理について<ph name="LINK_END" /></translation>
 <translation id="5052517576853118371">アクティブなトピック</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
 <translation id="505757197798929356">開く理由をお知らせください（必須）</translation>
@@ -2167,6 +2171,8 @@
 <translation id="5161334686036120870">主題:</translation>
 <translation id="5161506081086828129">スタッカー 9</translation>
 <translation id="5164798890604758545">テキストが入力された</translation>
+<translation id="5164928537947209380">この試験運用中の AI ツールは、常に正しく動作するとは限りません。改善のため、お客様のコンテンツは Google に送信されます。
+    <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> の CVC を入力します。確認後、Google アカウントのカード情報がこのサイトと共有されます。</translation>
 <translation id="5169827969064885044">組織のアカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
@@ -2325,6 +2331,7 @@
     <ph name="LINE_BREAK" />
     システム管理者にお問い合わせください。</translation>
 <translation id="549333378215107354">サイズ 3</translation>
+<translation id="5496804587179176046">セキュリティ コードを保存します、現在保存されているセキュリティ コードはありません</translation>
 <translation id="550365051221576010">すべて入力</translation>
 <translation id="5508443345185481044">カメラ、ビデオカメラ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3302,6 +3309,7 @@
 <translation id="7392089738299859607">住所を更新</translation>
 <translation id="7393161616326137353">アドベンチャー ゲーム</translation>
 <translation id="739728382607845710">支払いハンドラのアイコン</translation>
+<translation id="7399616692258236448">許可したサイト以外の位置情報リクエストが自動的にブロックされます</translation>
 <translation id="7399802613464275309">安全チェック</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有します</translation>
@@ -4064,6 +4072,7 @@
 <translation id="8807160976559152894">トリミング（ページ単位）</translation>
 <translation id="8809203544698246977">ブロックしたトピックがここに表示されます</translation>
 <translation id="8811470563853401328">アカウントに住所を保存しますか？</translation>
+<translation id="8811725516933141693">Gemini とチャットするには「@gemini」と入力します</translation>
 <translation id="8813277370772331957">後で通知</translation>
 <translation id="8814707942599948500">C8 封筒</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>
