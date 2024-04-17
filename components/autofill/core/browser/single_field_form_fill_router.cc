@@ -103,7 +103,7 @@ void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
   } else if (iban_manager_ && popup_item_id == PopupItemId::kIbanEntry) {
     iban_manager_->OnRemoveCurrentSingleFieldSuggestion(field_name, value,
                                                         popup_item_id);
-  } else {
+  } else if (popup_item_id == PopupItemId::kAutocompleteEntry) {
     autocomplete_history_manager_->OnRemoveCurrentSingleFieldSuggestion(
         field_name, value, popup_item_id);
   }
@@ -119,7 +119,7 @@ void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
         value, popup_item_id);
   } else if (iban_manager_ && popup_item_id == PopupItemId::kIbanEntry) {
     iban_manager_->OnSingleFieldSuggestionSelected(value, popup_item_id);
-  } else {
+  } else if (popup_item_id == PopupItemId::kAutocompleteEntry) {
     autocomplete_history_manager_->OnSingleFieldSuggestionSelected(
         value, popup_item_id);
   }
