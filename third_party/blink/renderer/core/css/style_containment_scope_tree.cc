@@ -4,14 +4,10 @@
 
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 
-#include "third_party/blink/renderer/core/css/counters_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
-#include "third_party/blink/renderer/core/html/list_item_ordinal.h"
-#include "third_party/blink/renderer/core/layout/counter_node.h"
-#include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 
 namespace blink {
@@ -19,9 +15,7 @@ namespace blink {
 void StyleContainmentScopeTree::Trace(Visitor* visitor) const {
   visitor->Trace(root_scope_);
   visitor->Trace(outermost_quotes_dirty_scope_);
-  visitor->Trace(outermost_counters_dirty_scope_);
   visitor->Trace(scopes_);
-  visitor->Trace(object_counters_map_);
 }
 
 StyleContainmentScope*
@@ -51,7 +45,6 @@ void StyleContainmentScopeTree::DestroyScopeForElement(const Element& element) {
     // to its parent, and mark its parent dirty.
     StyleContainmentScope* scope = it->value;
     UpdateOutermostQuotesDirtyScope(scope->Parent());
-    UpdateOutermostCountersDirtyScope(scope->Parent());
     scope->ReattachToParent();
     scopes_.erase(it);
   }
@@ -63,7 +56,6 @@ void StyleContainmentScopeTree::RemoveScopeForElement(const Element& element) {
     // just remove its style scope from scopes_ and clear it.
     StyleContainmentScope* scope = it->value;
     UpdateOutermostQuotesDirtyScope(scope->Parent());
-    UpdateOutermostCountersDirtyScope(scope->Parent());
     scope->Remove();
     scopes_.erase(it);
   }
@@ -92,7 +84,6 @@ StyleContainmentScope* StyleContainmentScopeTree::CreateScopeForElement(
       scope->AppendChild(child);
     }
   }
-  parent->ReparentCountersToStyleScope(*scope);
   auto quotes = parent->Quotes();
   for (LayoutQuote* quote : quotes) {
     if (scope->IsAncestorOf(quote->GetOwningPseudo(), parent->GetElement())) {
@@ -102,7 +93,6 @@ StyleContainmentScope* StyleContainmentScopeTree::CreateScopeForElement(
     }
   }
   StyleContainmentScope* changed_scope = parent_has_changed ? parent : nullptr;
-  UpdateOutermostCountersDirtyScope(changed_scope);
   UpdateOutermostQuotesDirtyScope(changed_scope);
   return scope;
 }
@@ -148,105 +138,12 @@ void StyleContainmentScopeTree::UpdateOutermostQuotesDirtyScope(
       FindCommonAncestor(scope, outermost_quotes_dirty_scope_);
 }
 
-void StyleContainmentScopeTree::UpdateOutermostCountersDirtyScope(
-    StyleContainmentScope* scope) {
-  outermost_counters_dirty_scope_ =
-      FindCommonAncestor(scope, outermost_counters_dirty_scope_);
-}
-
 void StyleContainmentScopeTree::UpdateQuotes() {
   if (!outermost_quotes_dirty_scope_) {
     return;
   }
   outermost_quotes_dirty_scope_->UpdateQuotes();
   outermost_quotes_dirty_scope_ = nullptr;
-}
-
-void StyleContainmentScopeTree::UpdateCounters() {
-  if (!outermost_counters_dirty_scope_) {
-    return;
-  }
-  outermost_counters_dirty_scope_->UpdateCounters();
-  outermost_counters_dirty_scope_ = nullptr;
-}
-
-void StyleContainmentScopeTree::AddCounterToObjectMap(
-    LayoutObject& object,
-    const AtomicString& identifier,
-    CounterNode& counter) {
-  auto identifier_map = object_counters_map_.find(identifier);
-  if (identifier_map != object_counters_map_.end()) {
-    DCHECK(identifier_map->value->find(&object) ==
-           identifier_map->value->end());
-    identifier_map->value->insert(&object, &counter);
-  } else {
-    auto* object_map = MakeGarbageCollected<
-        HeapHashMap<Member<LayoutObject>, Member<CounterNode>>>();
-    object_map->insert(&object, &counter);
-    object_counters_map_.insert(identifier, object_map);
-  }
-}
-
-CounterNode* StyleContainmentScopeTree::PopCounterFromObjectMap(
-    LayoutObject& object,
-    const AtomicString& identifier) {
-  auto identifier_map = object_counters_map_.find(identifier);
-  if (identifier_map == object_counters_map_.end()) {
-    return nullptr;
-  }
-  auto object_map = identifier_map->value->find(&object);
-  if (object_map == identifier_map->value->end()) {
-    return nullptr;
-  }
-  CounterNode* counter = object_map->value;
-  identifier_map->value->erase(object_map);
-  if (!identifier_map->value->size()) {
-    object_counters_map_.erase(identifier_map);
-  }
-  return counter;
-}
-
-void StyleContainmentScopeTree::RemoveCountersForLayoutObject(
-    LayoutObject& object,
-    const ComputedStyle& style) {
-  for (const auto& [identifier, directives] : *style.GetCounterDirectives()) {
-    RemoveCounterForLayoutObject(object, identifier);
-  }
-}
-
-void StyleContainmentScopeTree::RemoveCounterForLayoutObject(
-    LayoutObject& object,
-    const AtomicString& identifier) {
-  CounterNode* counter = PopCounterFromObjectMap(object, identifier);
-  if (counter) {
-    StyleContainmentScope* scope = counter->Scope()->StyleScope();
-    CountersScopeTree* tree = scope->GetCountersScopeTree();
-    tree->RemoveCounterFromScope(*counter, *counter->Scope(), identifier);
-    if (identifier == list_item_) {
-      if (ListItemOrdinal::Get(*object.GetNode())) {
-        ListItemOrdinal::ItemInsertedOrRemoved(&object);
-      }
-    }
-    UpdateOutermostCountersDirtyScope(scope->Parent() ? scope->Parent()
-                                                      : scope);
-  }
-}
-
-void StyleContainmentScopeTree::RemoveListItemCounterForLayoutObject(
-    LayoutObject& object) {
-  // Remove the counter from the counters cache.
-  CounterNode* counter = PopCounterFromObjectMap(object, list_item_);
-  if (counter) {
-    StyleContainmentScope* scope = counter->Scope()->StyleScope();
-    CountersScopeTree* tree =
-        counter->Scope()->StyleScope()->GetCountersScopeTree();
-    tree->RemoveCounterFromScope(*counter, *counter->Scope(), list_item_);
-    if (ListItemOrdinal::Get(*object.GetNode())) {
-      ListItemOrdinal::ItemInsertedOrRemoved(&object);
-    }
-    UpdateOutermostCountersDirtyScope(scope->Parent() ? scope->Parent()
-                                                      : scope);
-  }
 }
 
 #if DCHECK_IS_ON()
@@ -272,7 +169,6 @@ String StyleContainmentScopeTree::ToString(StyleContainmentScope* style_scope,
     builder.Append("SCOPE: root");
   }
   builder.Append("\n");
-  builder.Append(style_scope->ScopesTreeToString(depth));
   for (wtf_size_t i = 0; i < depth; ++i) {
     builder.Append(" ");
   }

@@ -23,7 +23,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_COUNTER_NODE_H_
 
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/core/css/counters_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -80,9 +79,6 @@ class CounterNode : public GarbageCollected<CounterNode> {
   void SetPreviousInParent(CounterNode* previous_in_parent) {
     previous_in_parent_ = previous_in_parent;
   }
-  bool IsInScope() const { return !!scope_; }
-  CountersScope* Scope() const { return scope_.Get(); }
-  void SetScope(CountersScope* scope) { scope_ = scope; }
   int ValueAfter() const { return value_after_; }
   void CalculateValueAfter(bool should_reset_increment = false,
                            int num_counters_in_scope = 0) {
@@ -171,8 +167,6 @@ class CounterNode : public GarbageCollected<CounterNode> {
   Member<CounterNode> last_child_;
   AtomicString identifier_;
 
-  // The counters scope this counter belongs to.
-  Member<CountersScope> scope_;
   Member<CounterNode> previous_in_parent_;
 };
 

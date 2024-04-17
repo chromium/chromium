@@ -111,7 +111,6 @@ void CounterNode::Trace(Visitor* visitor) const {
   visitor->Trace(next_sibling_);
   visitor->Trace(first_child_);
   visitor->Trace(last_child_);
-  visitor->Trace(scope_);
   visitor->Trace(previous_in_parent_);
 }
 
