@@ -89,7 +89,7 @@ class IbanManagerTest : public testing::Test {
     iban.set_suffix(base::UTF8ToUTF16(std::string(suffix)));
     iban.set_length(length);
     iban.set_nickname(base::UTF8ToUTF16(std::string(nickname)));
-    personal_data_manager_.AddServerIban(iban);
+    personal_data_manager_.test_payments_data_manager().AddServerIban(iban);
     return iban;
   }
 

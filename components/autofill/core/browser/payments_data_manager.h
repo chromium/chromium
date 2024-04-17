@@ -441,8 +441,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
  protected:
   friend class PaymentsDataManagerTestApi;
-  // TODO(b/322170538): Remove dependency.
-  friend class TestPersonalDataManager;
 
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.

@@ -138,7 +138,7 @@ TEST_F(IbanAccessManagerTest, NoServerIbanWithBackendId_DoesNotUnmask) {
   // is not triggered.
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(12345679));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
 
   EXPECT_CALL(*payments_network_interface(), UnmaskIban).Times(0);
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
@@ -159,7 +159,7 @@ TEST_F(IbanAccessManagerTest, ServerIban_BackendId_Success) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -176,7 +176,7 @@ TEST_F(IbanAccessManagerTest, ServerIban_BackendId_Failure) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -212,7 +212,7 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Success) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -233,7 +233,7 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Failure) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -281,7 +281,7 @@ TEST_F(IbanAccessManagerTest, ServerIban_LogUsageMetric) {
   Iban server_iban = test::GetServerIban();
   server_iban.set_use_count(kDefaultUseCount);
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -307,7 +307,7 @@ TEST_F(IbanAccessManagerTest, UnmaskServerIban_Success_Metric) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -330,7 +330,7 @@ TEST_F(IbanAccessManagerTest, UnmaskServerIban_Failure_Metric) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -351,7 +351,7 @@ TEST_F(IbanAccessManagerTest, UnmaskIbanResult_Metric_Success) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -369,7 +369,7 @@ TEST_F(IbanAccessManagerTest, UnmaskIbanResult_Metric_Failure) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -455,7 +455,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Server_Reauth_Success) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -473,7 +473,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Server_Reauth_Fail) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -517,7 +517,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest,
   SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
 
   Iban server_iban = test::GetServerIban();
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(server_iban.instrument_id());
 
@@ -607,7 +607,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_ServerIban_Succcess) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
@@ -640,7 +640,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_ServerIban_Fail) {
 
   Iban server_iban = test::GetServerIban();
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(PopupItemId::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 

@@ -77,8 +77,8 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   }
 
   void SetValidCardArtImageForCard(const CreditCard& card) {
-    personal_data_manager().AddCardArtImage(card.card_art_url(),
-                                            gfx::test::CreateImage(40, 24));
+    personal_data_manager().test_payments_data_manager().AddCardArtImage(
+        card.card_art_url(), gfx::test::CreateImage(40, 24));
   }
 
   void SetNetworkImageInResourceBundle(ui::MockResourceBundleDelegate* delegate,
@@ -101,7 +101,9 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
       const TestLegalMessageLine& google_legal_message,
       const TestLegalMessageLine& issuer_legal_message,
       bool make_image_present) {
-    personal_data_manager().ClearCreditCardArtImages();
+    personal_data_manager()
+        .test_payments_data_manager()
+        .ClearCreditCardArtImages();
     SetUpCard();
     auto* state = virtual_card_enrollment_manager_
                       ->GetVirtualCardEnrollmentProcessState();
@@ -130,8 +132,10 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     state->vcn_context_token = kTestVcnContextToken;
     SetUpCard();
     state->virtual_card_enrollment_fields.credit_card = *card_;
-    personal_data_manager().SetPaymentsCustomerData(
-        std::make_unique<PaymentsCustomerData>("123456"));
+    personal_data_manager()
+        .test_payments_data_manager()
+        .SetPaymentsCustomerData(
+            std::make_unique<PaymentsCustomerData>("123456"));
     EXPECT_FALSE(
         virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
             base::NumberToString(state->virtual_card_enrollment_fields
@@ -176,7 +180,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, InitVirtualCardEnroll) {
                    << " virtual_card_enrollment_source="
                    << static_cast<int>(virtual_card_enrollment_source)
                    << ", make_image_present=" << make_image_present);
-      personal_data_manager().ClearCreditCardArtImages();
+      personal_data_manager()
+          .test_payments_data_manager()
+          .ClearCreditCardArtImages();
       SetUpCard();
       auto* state = virtual_card_enrollment_manager_
                         ->GetVirtualCardEnrollmentProcessState();
@@ -213,7 +219,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, InitVirtualCardEnroll) {
 
 TEST_F(VirtualCardEnrollmentManagerTest,
        InitVirtualCardEnroll_GetDetailsForEnrollmentResponseReceived) {
-  personal_data_manager().ClearCreditCardArtImages();
+  personal_data_manager()
+      .test_payments_data_manager()
+      .ClearCreditCardArtImages();
   SetUpCard();
   auto* state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
@@ -463,7 +471,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, Enroll) {
   state->vcn_context_token = kTestVcnContextToken;
   SetUpCard();
   SetValidCardArtImageForCard(*card_);
-  personal_data_manager().SetPaymentsCustomerData(
+  personal_data_manager().test_payments_data_manager().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   for (VirtualCardEnrollmentSource virtual_card_enrollment_source :
@@ -539,7 +547,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, Enroll) {
 
 TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
   base::HistogramTester histogram_tester;
-  personal_data_manager().SetPaymentsCustomerData(
+  personal_data_manager().test_payments_data_manager().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
   virtual_card_enrollment_manager_->SetPaymentsRpcResult(
       AutofillClient::PaymentsRpcResult::kNone);
@@ -792,7 +800,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
   state->vcn_context_token = kTestVcnContextToken;
   SetUpCard();
   state->virtual_card_enrollment_fields.credit_card = *card_;
-  personal_data_manager().SetPaymentsCustomerData(
+  personal_data_manager().test_payments_data_manager().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>("123456"));
 
   // Making sure there is no existing strike for the card.

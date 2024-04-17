@@ -36,7 +36,8 @@ class VirtualCardStandaloneCvcMetricsTest : public AutofillMetricsBaseTest,
     VirtualCardUsageData virtual_card_usage_data =
         test::GetVirtualCardUsageData1();
     card_.set_instrument_id(*virtual_card_usage_data.instrument_id());
-    personal_data().AddVirtualCardUsageData(virtual_card_usage_data);
+    personal_data().test_payments_data_manager().AddVirtualCardUsageData(
+        virtual_card_usage_data);
     personal_data().AddServerCreditCard(card_);
     personal_data().Refresh();
 

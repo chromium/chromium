@@ -2898,8 +2898,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetTouchToFillIbansToSuggest) {
   local_iban1.set_record_type(Iban::kLocalIban);
   Iban server_iban1 = test::GetServerIban2();
   Iban server_iban2 = test::GetServerIban3();
-  personal_data().AddServerIban(server_iban1);
-  personal_data().AddServerIban(server_iban2);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban1);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban2);
 
   std::vector<Iban> available_ibans =
       suggestion_generator().GetTouchToFillIbansToSuggest();
@@ -4058,7 +4058,8 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   GURL card_art_url = GURL("https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
-  personal_data().AddCardArtImage(card_art_url, fake_image);
+  personal_data().test_payments_data_manager().AddCardArtImage(card_art_url,
+                                                               fake_image);
 
   Suggestion virtual_card_suggestion =
       test_api(suggestion_generator())
@@ -4119,7 +4120,8 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
   personal_data().AddServerCreditCard(server_card);
-  personal_data().AddCardArtImage(card_art_url, fake_image);
+  personal_data().test_payments_data_manager().AddCardArtImage(card_art_url,
+                                                               fake_image);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -4247,7 +4249,8 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   gfx::Image fake_image = CustomIconForTest();
   personal_data().AddServerCreditCard(server_card);
-  personal_data().AddCardArtImage(card_art_url, fake_image);
+  personal_data().test_payments_data_manager().AddCardArtImage(card_art_url,
+                                                               fake_image);
 
   bool unused_with_offer;
   bool unused_with_cvc;

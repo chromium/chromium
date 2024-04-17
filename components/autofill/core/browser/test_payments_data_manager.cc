@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 
 namespace autofill {
@@ -265,6 +266,62 @@ void TestPaymentsDataManager::ClearCreditCards() {
 
 void TestPaymentsDataManager::ClearCreditCardOfferData() {
   autofill_offer_data_.clear();
+}
+
+void TestPaymentsDataManager::ClearAllLocalData() {
+  local_credit_cards_.clear();
+  local_ibans_.clear();
+}
+
+void TestPaymentsDataManager::AddServerCreditCard(
+    const CreditCard& credit_card) {
+  std::unique_ptr<CreditCard> server_credit_card =
+      std::make_unique<CreditCard>(credit_card);
+  server_credit_cards_.push_back(std::move(server_credit_card));
+  notify_pdm_observers_.Run();
+}
+
+void TestPaymentsDataManager::AddAutofillOfferData(
+    const AutofillOfferData& offer_data) {
+  std::unique_ptr<AutofillOfferData> data =
+      std::make_unique<AutofillOfferData>(offer_data);
+  autofill_offer_data_.emplace_back(std::move(data));
+  notify_pdm_observers_.Run();
+}
+
+void TestPaymentsDataManager::AddServerIban(const Iban& iban) {
+  CHECK(iban.value().empty());
+  server_ibans_.push_back(std::make_unique<Iban>(iban));
+  notify_pdm_observers_.Run();
+}
+
+void TestPaymentsDataManager::AddCardArtImage(const GURL& url,
+                                              const gfx::Image& image) {
+  credit_card_art_images_[url] = std::make_unique<gfx::Image>(image);
+  notify_pdm_observers_.Run();
+}
+
+void TestPaymentsDataManager::AddVirtualCardUsageData(
+    const VirtualCardUsageData& usage_data) {
+  autofill_virtual_card_usage_data_.push_back(
+      std::make_unique<VirtualCardUsageData>(usage_data));
+  notify_pdm_observers_.Run();
+}
+
+void TestPaymentsDataManager::SetNicknameForCardWithGUID(
+    std::string_view guid,
+    std::string_view nickname) {
+  for (auto& card : local_credit_cards_) {
+    if (card->guid() == guid) {
+      card->SetNickname(base::ASCIIToUTF16(nickname));
+    }
+  }
+  for (auto& card : server_credit_cards_) {
+    if (card->guid() == guid) {
+      card->SetNickname(base::ASCIIToUTF16(nickname));
+    }
+  }
+  notify_pdm_observers_.Run();
 }
 
 void TestPaymentsDataManager::RemoveCardWithoutNotification(

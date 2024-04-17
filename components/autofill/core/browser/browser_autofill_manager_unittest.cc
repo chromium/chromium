@@ -1794,7 +1794,8 @@ TEST_F(BrowserAutofillManagerTest, GetVirtualCreditCardsForStandaloneCvcField) {
       *virtual_card_usage_data.instrument_id());
 
   // Add credit card and usage data to personal data manager.
-  personal_data().AddVirtualCardUsageData(virtual_card_usage_data);
+  personal_data().test_payments_data_manager().AddVirtualCardUsageData(
+      virtual_card_usage_data);
   personal_data().AddServerCreditCard(masked_server_card);
 
   // Call GetCreditCardsForStandaloneCvcField, should return credit card.
@@ -2460,7 +2461,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 // field is the credit card number field.
 TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
   // Set nickname with the corresponding guid of the Mastercard 8765.
-  personal_data().SetNicknameForCardWithGUID(MakeGuid(5), kArbitraryNickname);
+  personal_data().test_payments_data_manager().SetNicknameForCardWithGUID(
+      MakeGuid(5), kArbitraryNickname);
   // Set up our form data.
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
@@ -2504,7 +2506,8 @@ TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
 // field is not the credit card number field.
 TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
   // Set nickname with the corresponding guid of the Mastercard 8765.
-  personal_data().SetNicknameForCardWithGUID(MakeGuid(5), kArbitraryNickname);
+  personal_data().test_payments_data_manager().SetNicknameForCardWithGUID(
+      MakeGuid(5), kArbitraryNickname);
   // Set up our form data.
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);

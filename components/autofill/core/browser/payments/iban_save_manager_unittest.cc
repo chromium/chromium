@@ -197,7 +197,7 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_LocalAndServerIban) {
   server_iban.set_prefix(u"DE91");
   server_iban.set_suffix(u"6789");
   server_iban.set_length(22);
-  personal_data().AddServerIban(server_iban);
+  personal_data().test_payments_data_manager().AddServerIban(server_iban);
 
   // Creates an unknown IBAN with the same prefix, suffix and length as the
   // above server IBAN.
@@ -212,7 +212,7 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_ServerIban) {
   iban.set_prefix(u"DE91");
   iban.set_suffix(u"6789");
   iban.set_length(22);
-  personal_data().AddServerIban(iban);
+  personal_data().test_payments_data_manager().AddServerIban(iban);
 
   // Creates an unknown IBAN with the same prefix, suffix and length as the
   // above server IBAN.

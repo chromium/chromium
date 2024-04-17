@@ -29,14 +29,14 @@ class PaymentsUtilTest : public testing::Test {
 };
 
 TEST_F(PaymentsUtilTest, GetBillingCustomerId_PaymentsCustomerData_Normal) {
-  personal_data_manager_.SetPaymentsCustomerData(
+  personal_data_manager_.test_payments_data_manager().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   EXPECT_EQ(123456, GetBillingCustomerId(&personal_data_manager_));
 }
 
 TEST_F(PaymentsUtilTest, GetBillingCustomerId_PaymentsCustomerData_Garbage) {
-  personal_data_manager_.SetPaymentsCustomerData(
+  personal_data_manager_.test_payments_data_manager().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"garbage"));
 
   EXPECT_EQ(0, GetBillingCustomerId(&personal_data_manager_));
@@ -49,7 +49,7 @@ TEST_F(PaymentsUtilTest, GetBillingCustomerId_PaymentsCustomerData_NoData) {
 }
 
 TEST_F(PaymentsUtilTest, HasGooglePaymentsAccount_Normal) {
-  personal_data_manager_.SetPaymentsCustomerData(
+  personal_data_manager_.test_payments_data_manager().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   EXPECT_TRUE(HasGooglePaymentsAccount(&personal_data_manager_));
