@@ -26,9 +26,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
@@ -428,8 +426,6 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testVirtualKeyboardResizesVisual() throws Throwable {
         startKeyboardTest(VirtualKeyboardMode.RESIZES_VISUAL);
 
@@ -472,8 +468,6 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testVirtualKeyboardResizesContent() throws Throwable {
         startKeyboardTest(VirtualKeyboardMode.RESIZES_CONTENT);
 
@@ -516,8 +510,6 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testDialog() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_dialog.html";
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
@@ -548,8 +540,6 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testPageWiderThanICB() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_wider_than_icb.html";
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
@@ -585,8 +575,6 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testBrowserControlsRootSnapshotControlsOverlay() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_browser_controls.html";
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
@@ -634,8 +622,6 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testBrowserControlsRootSnapshotControlsPush() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_browser_controls.html";
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
@@ -675,8 +661,6 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testBrowserControlsChildSnapshotControlsOverlay() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_browser_controls_child.html";
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
@@ -723,8 +707,6 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testBrowserControlsChildSnapshotControlsPush() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_browser_controls_child.html";
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));

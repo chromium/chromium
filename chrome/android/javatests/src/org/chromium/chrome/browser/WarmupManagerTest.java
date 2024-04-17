@@ -33,11 +33,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager.SpareTabFinalStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
@@ -548,31 +546,6 @@ public class WarmupManagerTest {
                     Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
                 });
         pageLoadHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /**
-     * Tests that we are able to create new tab along with initializing renderer when the feature
-     * CREATE_NEW_TAB_INITIALIZE_RENDERER is enabled.
-     */
-    @Test
-    @MediumTest
-    @Feature({"SpareTab"})
-    @UiThreadTest
-    @EnableFeatures({ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER})
-    public void testOnTabCreationWithInitializeRenderer() {
-        Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
-        mWarmupManager.createRegularSpareTab(profile);
-        Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
-
-        Tab tab = mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_TAB_GROUP_UI);
-        WebContents webContents = tab.getWebContents();
-        Assert.assertNotNull(tab);
-        Assert.assertNotNull(webContents);
-        Assert.assertEquals(TabLaunchType.FROM_TAB_GROUP_UI, tab.getLaunchType());
-
-        // RenderFrame should be created when the CREATE_NEW_TAB_INITIALIZE_RENDERER is enabled.
-        Assert.assertTrue(webContents.getMainFrame().isRenderFrameLive());
-        tab.destroy();
     }
 
     @Test
