@@ -4771,19 +4771,6 @@ const char kLinkPreviewDescription[] =
     "security, privacy, and usability. The feature might be unstable and "
     "unusable on some platforms, e.g. macOS or touch devices.";
 
-const char kMemorySaverMultistateModeAvailableName[] =
-    "Enable the multi-state option for Memory Saver Mode.";
-const char kMemorySaverMultistateModeAvailableDescription[] =
-    "When enabled, Memory Saver can take one of three options: enabled with a "
-    "heuristic mode, enabled with a fixed timer, and discarded. Configure this "
-    "through the settings page.";
-
-const char kModalMemorySaverName[] = "Multi mode memory saver.";
-const char kModalMemorySaverDescription[] =
-    "Configures which underlying Memory Saver mode is active. The mode "
-    "determines how fast a tab will be discarded and the maximum amount of "
-    "times it can be revisited and still be discarded.";
-
 const char kMuteNotificationSnoozeActionName[] =
     "Snooze action for mute notifications";
 const char kMuteNotificationSnoozeActionDescription[] =

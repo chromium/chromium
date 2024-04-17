@@ -3247,36 +3247,6 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-
-const FeatureEntry::FeatureParam
-    kMemorySaverMultistateModeShowRecommendedBadge[] = {
-        {"show_recommended_badge", "true"},
-};
-const FeatureEntry::FeatureVariation kMemorySaverMultistateModeVariations[] = {
-    {"With Recommended Badge", kMemorySaverMultistateModeShowRecommendedBadge,
-     std::size(kMemorySaverMultistateModeShowRecommendedBadge), nullptr},
-};
-
-const FeatureEntry::FeatureParam kModalMemorySaverConservative[] = {
-    {"modal_memory_saver_mode", "1"}};
-const FeatureEntry::FeatureParam kModalMemorySaverMedium[] = {
-    {"modal_memory_saver_mode", "2"}};
-const FeatureEntry::FeatureParam kModalMemorySaverAggressive[] = {
-    {"modal_memory_saver_mode", "3"}};
-
-const FeatureEntry::FeatureVariation kModalMemorySaverMode[] = {
-    {"Conservative (6 hours, only tabs visited < 5 times)",
-     kModalMemorySaverConservative, std::size(kModalMemorySaverConservative),
-     nullptr},
-    {"Medium (4 hours, only tabs visited < 15 times)", kModalMemorySaverMedium,
-     std::size(kModalMemorySaverMedium), nullptr},
-    {"Aggressive (2 hours, only tabs visited < 15 times)",
-     kModalMemorySaverAggressive, std::size(kModalMemorySaverAggressive),
-     nullptr},
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kGalleryAppPdfEditNotificationEditAndSign[] = {
     {"text", "Edit and Sign"}};
@@ -9795,26 +9765,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExternalNavigationDebugLogsName,
      flag_descriptions::kExternalNavigationDebugLogsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(external_intents::kExternalNavigationDebugLogs)},
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-    // "High Efficiency" mode was renamed to "Memory Saver" but some variables
-    // refer to the old name due to being tied to Finch launches.
-    {"memory-saver-multi-state-mode",
-     flag_descriptions::kMemorySaverMultistateModeAvailableName,
-     flag_descriptions::kMemorySaverMultistateModeAvailableDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         performance_manager::features::kMemorySaverMultistateMode,
-         kMemorySaverMultistateModeVariations,
-         "HighEfficiencyMultistateMode")},
-
-    {"modal-memory-saver", flag_descriptions::kModalMemorySaverName,
-     flag_descriptions::kModalMemorySaverDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         performance_manager::features::kModalMemorySaver,
-         kModalMemorySaverMode,
-         "ModalMemorySaverMode")},
 #endif
 
     {"webui-omnibox-popup", flag_descriptions::kWebUIOmniboxPopupName,

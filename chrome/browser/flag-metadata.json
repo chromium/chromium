@@ -5582,11 +5582,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "memory-saver-multi-state-mode",
-    "owners": [ "chrome-performance-ui-team@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "messages-for-android-ads-blocked",
     "owners": [ "pavely@chromium.org", "aishwaryarj@chromium.org" ],
     "expiry_milestone": 99
@@ -5663,11 +5658,6 @@
       "eirage@chromium.org", "mwi-team-core@google.com"
     ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "modal-memory-saver",
-    "owners": ["chrome-performance-ui-team@google.com"],
-    "expiry_milestone": 125
   },
   {
     "name": "modern-tab-strip",
