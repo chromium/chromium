@@ -91,23 +91,10 @@ void WorkerIdSet::Add(const WorkerId& worker_id,
       kMaxWorkerCountToReport);
 
   if (!g_allow_multiple_workers_per_extension) {
-    // TODO(crbug.com/1493391):Enable this CHECK and delete the
-    // DUMP_WILL_BE_CHECK() once multiple active workers is resolved.
+    // TODO(crbug.com/1493391):Enable this CHECK once multiple active workers is
+    // resolved.
     // CHECK_LE(new_size, 1u) << "Extension with worker id " << worker_id
     //                        << " added additional worker";
-
-    if (new_size == 2) {
-      // new_size == 2 guarantees that a previous WorkerId will be present.
-      const WorkerId& previous_worker_id = previous_worker_ids.front();
-      // Set crash keys for the DUMP_WILL_BE_CHECK() below.
-      debug::ScopedMultiWorkerCrashKeys multi_worker_keys(
-          worker_id.extension_id, previous_worker_id, worker_id, context);
-
-      // Only dump when there are two workers. Two added should be enough to
-      // solve why there's N workers.
-      DUMP_WILL_BE_CHECK(false) << "Extension with worker id " << worker_id
-                                << " added additional worker";
-    }
   }
 
   // Only emit our incorrect worker metrics if an unexpected number of workers

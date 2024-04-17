@@ -848,17 +848,11 @@ RuntimeGetContextsFunction::GetWorkerContext() {
   std::vector<WorkerId> active_workers =
       process_manager->GetServiceWorkersForExtension(extension()->id());
 
-  // TODO(crbug.com/1493391):Enable this CHECK and delete the
-  // DUMP_WILL_BE_CHECK() once multiple active workers is resolved.
+  // TODO(crbug.com/1493391):Enable this CHECK once multiple active workers is
+  // resolved.
   // CHECK_LE(active_workers.size(), 1u)
   //     << "runtime.getContexts() API call found more than one service worker "
   //        "for extension.";
-
-  /// Only dump when there are two workers. Two added should be enough to solve
-  // why there's N workers.
-  DUMP_WILL_BE_CHECK(active_workers.size() != 2u)
-      << "runtime.getContexts() API call found more than one service worker "
-         "for extension.";
 
   if (active_workers.empty()) {
     return std::nullopt;
