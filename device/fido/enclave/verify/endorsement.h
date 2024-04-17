@@ -14,9 +14,13 @@
 
 namespace device::enclave {
 
+// TODO(livseibert): Change return type to StatusOr<MatchResult> when util.h is
+// ready.
+// Compares the digest contained in the endorsement against the given one.
 bool VerifyBinaryDigest(base::span<const uint8_t> endorsement,
                         base::span<const uint8_t> expected);
 
+// Verifies the binary endorsement against log entry and public keys.
 bool VerifyBinaryEndorsement(base::Time now,
                              base::span<const uint8_t> endorsement,
                              base::span<const uint8_t> signature,
@@ -24,9 +28,12 @@ bool VerifyBinaryEndorsement(base::Time now,
                              base::span<const uint8_t> endorser_public_key,
                              base::span<const uint8_t> rekor_public_key);
 
+// Verifies endorsement against the given reference values.
 bool VerifyEndorsementStatement(base::Time now,
                                 const EndorsementStatement& statement);
 
+// Verifies that the endorser public key coincides with the one contained in
+// the attestation.
 bool VerifyEndorserPublicKey(base::span<const uint8_t> log_entry,
                              base::span<const uint8_t> endorser_public_key);
 
