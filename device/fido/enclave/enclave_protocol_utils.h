@@ -7,7 +7,6 @@
 
 #include <optional>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -21,6 +20,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/types.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -37,15 +37,21 @@ class JSONRequest;
 namespace enclave {
 
 // Parses a decrypted assertion command response from the enclave.
-std::pair<std::optional<AuthenticatorGetAssertionResponse>, std::string>
+// Returns one of: A successful response, an error code received from the
+//                 enclave, or a string describing an unhandled failure.
+absl::variant<AuthenticatorGetAssertionResponse, int, std::string>
     COMPONENT_EXPORT(DEVICE_FIDO)
         ParseGetAssertionResponse(cbor::Value response_value,
                                   base::span<const uint8_t> credential_id);
 
 // Parses a decrypted registration command response from the enclave.
-std::tuple<std::optional<AuthenticatorMakeCredentialResponse>,
-           std::optional<sync_pb::WebauthnCredentialSpecifics>,
-           std::string>
+// Returns one of: A pair containing the response and the new passkey entity,
+//                 an error code received from the enclave, or a string
+//                 describing an unhandled failure.
+absl::variant<std::pair<AuthenticatorMakeCredentialResponse,
+                        sync_pb::WebauthnCredentialSpecifics>,
+              int,
+              std::string>
     COMPONENT_EXPORT(DEVICE_FIDO)
         ParseMakeCredentialResponse(cbor::Value response,
                                     const CtapMakeCredentialRequest& request,

@@ -28,6 +28,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace device {
 namespace {
@@ -397,29 +398,28 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Success) {
   std::vector<uint8_t> cred_id = {0, 1, 2};
 
   std::optional<AuthenticatorGetAssertionResponse> response;
-  std::string error_string;
-  std::tie(response, error_string) =
+  auto parse_result =
       ParseGetAssertionResponse(std::move(response_cbor), cred_id);
-  bool pass = (response != std::nullopt) && (error_string.empty());
-  EXPECT_TRUE(pass);
-  EXPECT_EQ(response->user_entity->id, std::vector<uint8_t>({'a', 'b'}));
-  EXPECT_EQ(response->credential->id, std::vector<uint8_t>({0, 1, 2}));
+  EXPECT_TRUE(
+      absl::holds_alternative<AuthenticatorGetAssertionResponse>(parse_result));
+  const auto& assertion_response =
+      absl::get<AuthenticatorGetAssertionResponse>(parse_result);
+  EXPECT_EQ(assertion_response.user_entity->id,
+            std::vector<uint8_t>({'a', 'b'}));
+  EXPECT_EQ(assertion_response.credential->id, std::vector<uint8_t>({0, 1, 2}));
 }
 
 TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Failures) {
   for (auto& test_case : kFailingGetAssertionResponses) {
     std::optional<AuthenticatorGetAssertionResponse> response;
-    std::string error_string;
-
     std::vector<uint8_t> response_serialized;
     CHECK(base::HexStringToBytes(test_case.hex_cbor, &response_serialized));
     cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
     std::vector<uint8_t> cred_id = {0, 1, 2};
-    std::tie(response, error_string) =
+    auto parse_result =
         ParseGetAssertionResponse(std::move(response_cbor), cred_id);
-    bool pass = (response == std::nullopt) && (!error_string.empty());
-    EXPECT_TRUE(pass) << "Failed GetAssertion response parsing for: "
-                      << test_case.name;
+    EXPECT_TRUE(absl::holds_alternative<std::string>(parse_result))
+        << "Failed GetAssertion response parsing for: " << test_case.name;
   }
 }
 
@@ -434,29 +434,39 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
       PublicKeyCredentialParams(
           std::vector<PublicKeyCredentialParams::CredentialInfo>()));
 
-  std::optional<AuthenticatorMakeCredentialResponse> response;
-  std::optional<sync_pb::WebauthnCredentialSpecifics> entity;
-  std::string error_string;
-  std::tie(response, entity, error_string) = ParseMakeCredentialResponse(
+  auto parse_result = ParseMakeCredentialResponse(
       std::move(response_cbor), ctap_request, kWrappedSecretVersion);
-  bool pass = (response != std::nullopt) && (entity != std::nullopt) &&
-              (error_string.empty());
-  EXPECT_TRUE(pass) << error_string;
-  EXPECT_EQ(entity->rp_id(), std::string(kRpId));
-  EXPECT_EQ(entity->user_id(), std::string(user_id().begin(), user_id().end()));
-  EXPECT_EQ(entity->key_version(), kWrappedSecretVersion);
-  EXPECT_EQ(entity->encrypted(), std::string(encrypted_passkey().begin(),
-                                             encrypted_passkey().end()));
+  EXPECT_TRUE(
+      (absl::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
+                                         sync_pb::WebauthnCredentialSpecifics>>(
+          parse_result)));
+  const auto& entity =
+      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
+                          sync_pb::WebauthnCredentialSpecifics>>(parse_result)
+          .second;
+  EXPECT_EQ(entity.rp_id(), std::string(kRpId));
+  EXPECT_EQ(entity.user_id(), std::string(user_id().begin(), user_id().end()));
+  EXPECT_EQ(entity.key_version(), kWrappedSecretVersion);
+  EXPECT_EQ(entity.encrypted(), std::string(encrypted_passkey().begin(),
+                                            encrypted_passkey().end()));
+
+  const auto& register_response =
+      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
+                          sync_pb::WebauthnCredentialSpecifics>>(parse_result)
+          .first;
   auto response_cred_id =
-      response->attestation_object.authenticator_data().GetCredentialId();
-  EXPECT_EQ(entity->credential_id(),
+      register_response.attestation_object.authenticator_data()
+          .GetCredentialId();
+  EXPECT_EQ(entity.credential_id(),
             std::string(response_cred_id.begin(), response_cred_id.end()));
-  EXPECT_TRUE(response->transports->contains(FidoTransportProtocol::kInternal));
-  EXPECT_TRUE(response->transports->contains(FidoTransportProtocol::kHybrid));
-  EXPECT_TRUE(response->is_resident_key);
+  EXPECT_TRUE(
+      register_response.transports->contains(FidoTransportProtocol::kInternal));
+  EXPECT_TRUE(
+      register_response.transports->contains(FidoTransportProtocol::kHybrid));
+  EXPECT_TRUE(register_response.is_resident_key);
 }
 
-TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponseFailures) {
+TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_StringFailures) {
   CtapMakeCredentialRequest ctap_request(
       kClientDataJson, PublicKeyCredentialRpEntity(kRpId),
       PublicKeyCredentialUserEntity(user_id()),
@@ -464,20 +474,43 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponseFailures) {
           std::vector<PublicKeyCredentialParams::CredentialInfo>()));
 
   for (auto& test_case : kFailingMakeCredentialResponses) {
-    std::optional<AuthenticatorMakeCredentialResponse> response;
-    std::optional<sync_pb::WebauthnCredentialSpecifics> entity;
-    std::string error_string;
-
     std::vector<uint8_t> response_serialized;
     CHECK(base::HexStringToBytes(test_case.hex_cbor, &response_serialized));
     cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
-    std::tie(response, entity, error_string) = ParseMakeCredentialResponse(
+    auto parse_result = ParseMakeCredentialResponse(
         std::move(response_cbor), ctap_request, kWrappedSecretVersion);
-    bool pass = (response == std::nullopt) && (entity == std::nullopt) &&
-                (!error_string.empty());
-    EXPECT_TRUE(pass) << "Failed MakeCredential response parsing for: "
-                      << test_case.name;
+    EXPECT_TRUE(absl::holds_alternative<std::string>(parse_result))
+        << "Failed MakeCredential response parsing for: " << test_case.name;
   }
+}
+
+TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_IntegerFailure) {
+  std::vector<uint8_t> response_serialized;
+  CHECK(base::HexStringToBytes("81A16365727202", &response_serialized));
+  cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
+  std::vector<uint8_t> cred_id = {0, 1, 2};
+  auto parse_result =
+      ParseGetAssertionResponse(std::move(response_cbor), cred_id);
+
+  EXPECT_TRUE(absl::holds_alternative<int>(parse_result));
+  EXPECT_EQ(absl::get<int>(parse_result), 2);
+}
+
+TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_IntegerFailure) {
+  CtapMakeCredentialRequest ctap_request(
+      kClientDataJson, PublicKeyCredentialRpEntity(kRpId),
+      PublicKeyCredentialUserEntity(user_id()),
+      PublicKeyCredentialParams(
+          std::vector<PublicKeyCredentialParams::CredentialInfo>()));
+
+  std::vector<uint8_t> response_serialized;
+  CHECK(base::HexStringToBytes("81A16365727202", &response_serialized));
+  cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
+  auto parse_result = ParseMakeCredentialResponse(
+      std::move(response_cbor), ctap_request, kWrappedSecretVersion);
+
+  EXPECT_TRUE(absl::holds_alternative<int>(parse_result));
+  EXPECT_EQ(absl::get<int>(parse_result), 2);
 }
 
 }  // namespace enclave

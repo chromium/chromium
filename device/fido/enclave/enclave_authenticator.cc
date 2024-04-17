@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
@@ -22,6 +23,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_descriptor.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace device::enclave {
 
@@ -42,6 +44,34 @@ std::array<uint8_t, 8> RandomId() {
   std::array<uint8_t, 8> ret;
   crypto::RandBytes(ret);
   return ret;
+}
+
+// Needs to match `RequestError` in
+// //third_party/cloud_authenticator/processor/src/lib.rs.
+enum {
+  kNoSupportedAlgorithm = 1,
+  kDuplicate = 2,
+  kIncorrectPIN = 3,
+  kPINLocked = 4,
+  kPINOutdated = 5
+};
+
+CtapDeviceResponseCode EnclaveErrorToCtapResponseCode(int enclave_code) {
+  switch (enclave_code) {
+    case kNoSupportedAlgorithm:
+      return CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm;
+    case kIncorrectPIN:
+      return CtapDeviceResponseCode::kCtap2ErrPinInvalid;
+    case kPINLocked:
+      return CtapDeviceResponseCode::kCtap2ErrPinBlocked;
+    case kPINOutdated:
+      // This is a temporary error. Allow the request to fail.
+    case kDuplicate:
+      // This is not a valid error for a passkey request, deliberate
+      // fallthrough.
+    default:
+      return CtapDeviceResponseCode::kCtap2ErrOther;
+  }
 }
 
 }  // namespace
@@ -144,19 +174,31 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   std::optional<AuthenticatorMakeCredentialResponse> opt_response;
   std::optional<sync_pb::WebauthnCredentialSpecifics> opt_entity;
   std::string error_description;
-  std::tie(opt_response, opt_entity, error_description) =
-      ParseMakeCredentialResponse(std::move(*response),
-                                  pending_make_credential_request_->request,
-                                  *ui_request_->key_version);
-  if (!opt_response || !opt_entity) {
-    FIDO_LOG(ERROR) << "Error in registration response from server: "
-                    << error_description;
+  auto parse_result = ParseMakeCredentialResponse(
+      std::move(*response), pending_make_credential_request_->request,
+      *ui_request_->key_version);
+  if (absl::holds_alternative<std::string>(parse_result)) {
+    FIDO_LOG(ERROR) << base::StrCat(
+        {"Error in registration response from server: ",
+         absl::get<std::string>(parse_result)});
     CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
     return;
   }
-  save_passkey_callback_.Run(std::move(*opt_entity));
+  if (absl::holds_alternative<int>(parse_result)) {
+    // TODO(enclave): Specially handle `kIncorrectPIN`.
+    int code = absl::get<int>(parse_result);
+    FIDO_LOG(DEBUG) << base::StrCat(
+        {"Received an error response from the enclave: ",
+         base::NumberToString(code)});
+    CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
+    return;
+  }
+  auto& success_result =
+      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
+                          sync_pb::WebauthnCredentialSpecifics>>(parse_result);
+  save_passkey_callback_.Run(std::move(success_result.second));
   CompleteMakeCredentialRequest(CtapDeviceResponseCode::kSuccess,
-                                std::move(*opt_response));
+                                std::move(success_result.first));
 }
 
 void EnclaveAuthenticator::ProcessGetAssertionResponse(
@@ -166,16 +208,27 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
     return;
   }
   const std::string& cred_id_str = ui_request_->entity->credential_id();
-  auto decode_result = ParseGetAssertionResponse(
+  auto parse_result = ParseGetAssertionResponse(
       std::move(*response), base::as_bytes(base::make_span(cred_id_str)));
-  if (!decode_result.first) {
-    FIDO_LOG(ERROR) << "Error in assertion response from server: "
-                    << decode_result.second;
+  if (absl::holds_alternative<std::string>(parse_result)) {
+    FIDO_LOG(ERROR) << base::StrCat(
+        {"Error in assertion response from server: ",
+         absl::get<std::string>(parse_result)});
     CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
     return;
   }
+  if (absl::holds_alternative<int>(parse_result)) {
+    // TODO(enclave): Specially handle `kIncorrectPIN`.
+    int code = absl::get<int>(parse_result);
+    FIDO_LOG(DEBUG) << base::StrCat(
+        {"Received an error response from the enclave: ",
+         base::NumberToString(code)});
+    CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
+    return;
+  }
   std::vector<AuthenticatorGetAssertionResponse> responses;
-  responses.emplace_back(*std::move(decode_result.first));
+  responses.emplace_back(
+      std::move(absl::get<AuthenticatorGetAssertionResponse>(parse_result)));
   CompleteGetAssertionRequest(CtapDeviceResponseCode::kSuccess,
                               std::move(responses));
 }
