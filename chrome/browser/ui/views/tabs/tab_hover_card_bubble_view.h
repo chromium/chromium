@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -46,7 +45,20 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
       base::Milliseconds(200);
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardBubbleElementId);
-  explicit TabHoverCardBubbleView(Tab* tab);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardDomainLabelElementId);
+
+  struct InitParams {
+    // Becomes false with certain accessibility options and in tests
+    bool use_animation = true;
+    // Becomes false for ChromeOS tabbed system apps (e.g. Terminal)
+    bool show_domain = true;
+    // Becomes false when image preview setting is disabled
+    bool show_image_preview = true;
+    // Becomes false for ChromeOS system apps or when disabled in settings
+    bool show_memory_usage = true;
+  };
+
+  explicit TabHoverCardBubbleView(Tab* tab, const InitParams& params);
   TabHoverCardBubbleView(const TabHoverCardBubbleView&) = delete;
   TabHoverCardBubbleView& operator=(const TabHoverCardBubbleView&) = delete;
   ~TabHoverCardBubbleView() override;
@@ -80,8 +92,6 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
                            BackgroundTabHoverCardContentsHaveCorrectDimensions);
   class ThumbnailView;
 
-  void OnMemoryUsageInHovercardsPrefChanged();
-
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
 
@@ -91,9 +101,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<FooterView> footer_view_ = nullptr;
   std::optional<TabAlertState> alert_state_;
   const raw_ptr<const TabStyle> tab_style_;
-  PrefChangeRegistrar pref_change_registrar_;
-  bool memory_usage_in_hovercards_setting_ = false;
 
+  const InitParams bubble_params_;
   int corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
 };

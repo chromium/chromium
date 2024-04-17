@@ -68,7 +68,6 @@ class FakeTabSlotController : public TabSlotController {
   void OnMouseEventInTab(views::View* source,
                          const ui::MouseEvent& event) override {}
   void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override {}
-  bool ShowDomainInHoverCards() const override;
   bool HoverCardIsShowingForTab(Tab* tab) override;
   int GetBackgroundOffset() const override;
   int GetStrokeThickness() const override;

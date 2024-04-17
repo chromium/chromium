@@ -61,10 +61,6 @@ const Tab* FakeTabSlotController::GetAdjacentTab(const Tab* tab, int offset) {
   return nullptr;
 }
 
-bool FakeTabSlotController::ShowDomainInHoverCards() const {
-  return true;
-}
-
 bool FakeTabSlotController::HoverCardIsShowingForTab(Tab* tab) {
   return false;
 }

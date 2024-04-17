@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
-
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
@@ -28,8 +26,12 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_test_util.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -58,6 +60,10 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#endif
 
 namespace {
 constexpr char16_t kTabTitle[] = u"Test Tab 2";
@@ -799,3 +805,40 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     TabHoverCardFadeFooterInteractiveUiTest,
     testing::ValuesIn(GetTabHoverCardFooterTestFeatureConfig()));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class TabHoverCardSystemWebAppTest : public InteractiveBrowserTest {
+ public:
+  TabHoverCardSystemWebAppTest()
+      : test_system_web_app_installation_(
+            ash::TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {}
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    Tab::SetShowHoverCardOnMouseHoverForTesting(true);
+  }
+
+ protected:
+  std::unique_ptr<ash::TestSystemWebAppInstallation>
+      test_system_web_app_installation_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabHoverCardSystemWebAppTest,
+                       HideDomainNameFromHoverCard) {
+  test_system_web_app_installation_->WaitForAppInstall();
+  const auto* const app_browser = web_app::LaunchWebAppBrowser(
+      browser()->profile(), test_system_web_app_installation_->GetAppId());
+  const char kTabToHover[] = "Tab to hover";
+
+  RunTestSequenceInContext(
+      app_browser->window()->GetElementContext(),
+      WithView(kTabStripElementId,
+               [](TabStrip* tab_strip) { tab_strip->StopAnimating(true); }),
+      NameDescendantViewByType<Tab>(kBrowserViewElementId, kTabToHover, 0),
+      MoveMouseTo(kTabToHover),
+      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
+      EnsureNotPresent(TabHoverCardBubbleView::kHoverCardDomainLabelElementId),
+      MoveMouseTo(kNewTabButtonElementId),
+      WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
+}
+#endif

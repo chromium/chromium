@@ -156,9 +156,6 @@ class TabSlotController {
   // how the show, hide, or update will be processed.
   virtual void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) = 0;
 
-  // Returns whether domain/origin should be shown in tab hover cards.
-  virtual bool ShowDomainInHoverCards() const = 0;
-
   // Returns true if the hover card is showing for the given tab.
   virtual bool HoverCardIsShowingForTab(Tab* tab) = 0;
 

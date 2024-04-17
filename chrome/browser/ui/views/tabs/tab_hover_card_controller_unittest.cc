@@ -110,6 +110,29 @@ TEST_F(TabHoverCardControllerTest, HidePreviewsForDiscardedTab) {
             TabHoverCardController::kNotWaiting);
 }
 
+TEST_F(TabHoverCardControllerTest, DisableMemoryUsageForTab) {
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kHoverCardMemoryUsageEnabled, false);
+
+  AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+  AddTab(browser_view()->browser(), GURL("http://foo2.com"));
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+
+  auto controller =
+      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+
+  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
+  TabRendererData data;
+  auto tab_resource_usage = base::MakeRefCounted<TabResourceUsage>();
+  tab_resource_usage->SetMemoryUsageInBytes(100);
+  data.tab_resource_usage = std::move(tab_resource_usage);
+  target_tab->SetData(std::move(data));
+  controller->target_tab_ = target_tab;
+
+  controller->CreateHoverCard(target_tab);
+  EXPECT_FALSE(controller->hover_card_memory_usage_enabled_);
+}
+
 class TestThumbnailImageDelegate : public ThumbnailImage::Delegate {
  public:
   TestThumbnailImageDelegate() = default;
