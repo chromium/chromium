@@ -104,7 +104,6 @@ SyncStatusLabels SetUpDistinctCase(
     case STATUS_CASE_AUTH_ERROR: {
       service->SetInitialSyncFeatureSetupComplete(true);
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetPassphraseRequired(false);
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
 
       // Make sure to fail authentication with an error in this case.
@@ -125,7 +124,6 @@ SyncStatusLabels SetUpDistinctCase(
     case STATUS_CASE_PROTOCOL_ERROR: {
       service->SetInitialSyncFeatureSetupComplete(true);
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetPassphraseRequired(false);
       syncer::SyncProtocolError protocol_error;
       protocol_error.action = syncer::UPGRADE_CLIENT;
       syncer::SyncStatus status;
@@ -138,7 +136,6 @@ SyncStatusLabels SetUpDistinctCase(
     }
     case STATUS_CASE_CONFIRM_SYNC_SETTINGS: {
       service->SetInitialSyncFeatureSetupComplete(false);
-      service->SetPassphraseRequired(false);
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       return {SyncStatusMessageType::kSyncError,
               IDS_SYNC_SETTINGS_NOT_CONFIRMED,
@@ -150,8 +147,7 @@ SyncStatusLabels SetUpDistinctCase(
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-      service->SetPassphraseRequired(true);
-      service->SetPassphraseRequiredForPreferredDataTypes(true);
+      service->SetPassphraseRequired();
       return {SyncStatusMessageType::kSyncError, IDS_SYNC_STATUS_NEEDS_PASSWORD,
               IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON,
               SyncStatusActionType::kEnterPassphrase};
@@ -161,8 +157,7 @@ SyncStatusLabels SetUpDistinctCase(
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-      service->SetPassphraseRequired(false);
-      service->SetTrustedVaultKeyRequiredForPreferredDataTypes(true);
+      service->SetTrustedVaultKeyRequired(true);
       return {SyncStatusMessageType::kPasswordsOnlySyncError,
               IDS_SETTINGS_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
@@ -171,7 +166,6 @@ SyncStatusLabels SetUpDistinctCase(
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-      service->SetPassphraseRequired(false);
       service->SetTrustedVaultRecoverabilityDegraded(true);
       return {SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
@@ -180,7 +174,6 @@ SyncStatusLabels SetUpDistinctCase(
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-      service->SetPassphraseRequired(false);
       return {SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
@@ -189,7 +182,6 @@ SyncStatusLabels SetUpDistinctCase(
           {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
       service->SetInitialSyncFeatureSetupComplete(false);
       service->SetTransportState(syncer::SyncService::TransportState::DISABLED);
-      service->SetPassphraseRequired(false);
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       return {SyncStatusMessageType::kSynced,
               IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY,
@@ -200,7 +192,6 @@ SyncStatusLabels SetUpDistinctCase(
       service->GetUserSettings()->SetSyncFeatureDisabledViaDashboard(true);
       service->SetInitialSyncFeatureSetupComplete(true);
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetPassphraseRequired(false);
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       return {SyncStatusMessageType::kSyncError,
               IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
@@ -366,21 +357,20 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError) {
   syncer::TestSyncService service;
   service.SetInitialSyncFeatureSetupComplete(true);
-  service.SetPassphraseRequiredForPreferredDataTypes(true);
+  service.SetPassphraseRequired();
   EXPECT_TRUE(ShouldShowSyncPassphraseError(&service));
 }
 
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_SyncDisabled) {
   syncer::TestSyncService service;
   service.SetInitialSyncFeatureSetupComplete(false);
-  service.SetPassphraseRequiredForPreferredDataTypes(true);
+  service.SetPassphraseRequired();
   EXPECT_FALSE(ShouldShowSyncPassphraseError(&service));
 }
 
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_NotUsingPassphrase) {
   syncer::TestSyncService service;
   service.SetInitialSyncFeatureSetupComplete(true);
-  service.SetPassphraseRequiredForPreferredDataTypes(false);
   EXPECT_FALSE(ShouldShowSyncPassphraseError(&service));
 }
 

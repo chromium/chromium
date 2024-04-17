@@ -124,9 +124,9 @@ TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
       initWithSyncService:&sync_service_
           identityManager:identity_test_environment_.identity_manager()
               prefService:&pref_service_];
-  sync_service_.SetPassphraseRequiredForPreferredDataTypes(false);
+  ASSERT_FALSE(sync_service_.GetUserSettings()->IsPassphraseRequired());
   EXPECT_FALSE(sync_controller.passphraseNeeded);
-  sync_service_.SetPassphraseRequiredForPreferredDataTypes(true);
+  sync_service_.SetPassphraseRequired();
   EXPECT_TRUE(sync_controller.passphraseNeeded);
 }
 
@@ -135,9 +135,9 @@ TEST_F(CWVSyncControllerTest, TrustedVaultKeysRequired) {
       initWithSyncService:&sync_service_
           identityManager:identity_test_environment_.identity_manager()
               prefService:&pref_service_];
-  sync_service_.SetTrustedVaultKeyRequiredForPreferredDataTypes(false);
+  sync_service_.SetTrustedVaultKeyRequired(false);
   EXPECT_FALSE(sync_controller.trustedVaultKeysRequired);
-  sync_service_.SetTrustedVaultKeyRequiredForPreferredDataTypes(true);
+  sync_service_.SetTrustedVaultKeyRequired(true);
   EXPECT_TRUE(sync_controller.trustedVaultKeysRequired);
 }
 

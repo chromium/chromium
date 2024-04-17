@@ -215,7 +215,7 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
   base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
   EXPECT_CALL(show_bubble, Run(Outcome::kSkipBubble));
 
-  test_sync_service_.SetPassphraseRequired(true);
+  test_sync_service_.SetPassphraseRequired();
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   test_sync_service_.FireStateChanged();
 }

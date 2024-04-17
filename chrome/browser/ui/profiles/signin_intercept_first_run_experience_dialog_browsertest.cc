@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
       kSyncConfirmationUrl);
 
   SimulateSyncConfirmationUIClosing(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-  sync_service()->SetPassphraseRequired(true);
+  sync_service()->SetPassphraseRequired();
   sync_service()->FireStateChanged();
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
   EXPECT_FALSE(controller()->ShowsModalDialog());

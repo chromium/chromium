@@ -96,10 +96,9 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetOsTypeIsManaged(UserSelectableOsType type, bool managed);
 #endif
   void SetCustomPassphraseAllowed(bool allowed);
-  void SetPassphraseRequired(bool required);
-  void SetPassphraseRequiredForPreferredDataTypes(bool required);
+  void SetPassphraseRequired();
+  void SetPassphraseRequired(const std::string& required_passphrase);
   void SetTrustedVaultKeyRequired(bool required);
-  void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
   void SetIsUsingExplicitPassphrase(bool enabled);
   void SetPassphraseType(PassphraseType type);
@@ -111,13 +110,9 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   const std::string& GetEncryptionPassphrase() const;
 
-  // Similar to `SetPassphraseRequired(true)` but allows specifying which
-  // passphrase is actually required.
-  // TODO(crbug.com/40946404): Unify this function with other APIs in this
-  // class, most notably `SetPassphraseRequired()` itself.
-  void SetRequiredPassphrase(const std::string& passphrase);
-
  private:
+  bool IsEncryptedDatatypePreferred() const;
+
   const raw_ptr<TestSyncService> service_;
 
   UserSelectableTypeSet registered_selectable_types_ =
@@ -137,9 +132,7 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   bool custom_passphrase_allowed_ = true;
   bool passphrase_required_ = false;
-  bool passphrase_required_for_preferred_data_types_ = false;
   bool trusted_vault_key_required_ = false;
-  bool trusted_vault_key_required_for_preferred_data_types_ = false;
   bool trusted_vault_recoverability_degraded_ = false;
   PassphraseType passphrase_type_ = PassphraseType::kKeystorePassphrase;
   base::Time explicit_passphrase_time_;

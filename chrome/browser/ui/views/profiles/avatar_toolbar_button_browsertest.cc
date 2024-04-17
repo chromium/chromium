@@ -395,7 +395,7 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
     // Triggers Sync Error.
-    GetTestSyncService()->SetTrustedVaultKeyRequiredForPreferredDataTypes(true);
+    GetTestSyncService()->SetTrustedVaultKeyRequired(true);
     GetTestSyncService()->SetHasSyncConsent(false);
     GetTestSyncService()->FireStateChanged();
   }
@@ -405,8 +405,7 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
     // Clear Sync Error introduces in `SimulateSyncError()`.
-    GetTestSyncService()->SetTrustedVaultKeyRequiredForPreferredDataTypes(
-        false);
+    GetTestSyncService()->SetTrustedVaultKeyRequired(false);
     GetTestSyncService()->SetHasSyncConsent(true);
     GetTestSyncService()->FireStateChanged();
   }

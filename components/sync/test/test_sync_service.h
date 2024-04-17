@@ -73,10 +73,8 @@ class TestSyncService : public SyncService {
   void SetEmptyLastCycleSnapshot();
   void SetNonEmptyLastCycleSnapshot();
   void SetDetailedSyncStatus(bool engine_available, SyncStatus status);
-  void SetPassphraseRequired(bool required);
-  void SetPassphraseRequiredForPreferredDataTypes(bool required);
+  void SetPassphraseRequired();
   void SetTrustedVaultKeyRequired(bool required);
-  void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
   void SetIsUsingExplicitPassphrase(bool enabled);
   void SetDownloadStatusFor(const ModelTypeSet& types,

@@ -1187,7 +1187,7 @@ void SyncServiceImpl::OnConfigureDone(
   // We should never get in a state where we have no encrypted datatypes
   // enabled, and yet we still think we require a passphrase for decryption.
   DCHECK(!user_settings_->IsPassphraseRequiredForPreferredDataTypes() ||
-         user_settings_->IsEncryptedDatatypeEnabled());
+         user_settings_->IsEncryptedDatatypePreferred());
 
   DVLOG(2) << "Notify observers OnConfigureDone";
   NotifyObservers();
@@ -1232,7 +1232,7 @@ void SyncServiceImpl::CryptoRequiredUserActionChanged() {
 void SyncServiceImpl::MaybeRecordTrustedVaultHistograms() {
   if (should_record_trusted_vault_error_shown_on_startup_ &&
       crypto_.IsTrustedVaultKeyRequiredStateKnown() &&
-      user_settings_->IsEncryptedDatatypeEnabled()) {
+      user_settings_->IsEncryptedDatatypePreferred()) {
     // If the key-required state is known, the engine must exist.
     DCHECK(engine_);
 

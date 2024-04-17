@@ -321,7 +321,7 @@ bool SyncUserSettingsImpl::IsPassphraseRequiredForPreferredDataTypes() const {
   // If there is an encrypted datatype enabled and we don't have the proper
   // passphrase, we must prompt the user for a passphrase. The only way for the
   // user to avoid entering their passphrase is to disable the encrypted types.
-  return IsEncryptedDatatypeEnabled() && IsPassphraseRequired();
+  return IsEncryptedDatatypePreferred() && IsPassphraseRequired();
 }
 
 bool SyncUserSettingsImpl::IsPassphrasePromptMutedForCurrentProductVersion()
@@ -341,11 +341,11 @@ bool SyncUserSettingsImpl::IsTrustedVaultKeyRequired() const {
 
 bool SyncUserSettingsImpl::IsTrustedVaultKeyRequiredForPreferredDataTypes()
     const {
-  return IsEncryptedDatatypeEnabled() && crypto_->IsTrustedVaultKeyRequired();
+  return IsEncryptedDatatypePreferred() && crypto_->IsTrustedVaultKeyRequired();
 }
 
 bool SyncUserSettingsImpl::IsTrustedVaultRecoverabilityDegraded() const {
-  return IsEncryptedDatatypeEnabled() &&
+  return IsEncryptedDatatypePreferred() &&
          crypto_->IsTrustedVaultRecoverabilityDegraded();
 }
 
@@ -434,7 +434,7 @@ ModelTypeSet SyncUserSettingsImpl::GetEncryptedDataTypes() const {
   return crypto_->GetEncryptedDataTypes();
 }
 
-bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
+bool SyncUserSettingsImpl::IsEncryptedDatatypePreferred() const {
   ModelTypeSet preferred_types = GetPreferredDataTypes();
   const ModelTypeSet encrypted_types = GetEncryptedDataTypes();
   DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));

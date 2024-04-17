@@ -220,7 +220,7 @@ TEST_F(ProfileCustomizationSyncedThemeWaiterTest, SyncHasCustomPasshrase) {
   EXPECT_CALL(callback, Run(ProfileCustomizationSyncedThemeWaiter::Outcome::
                                 kSyncPassphraseRequired));
 
-  test_sync_service()->SetPassphraseRequired(true);
+  test_sync_service()->SetPassphraseRequired();
   WaitForSyncedTheme(callback.Get());
 }
 
@@ -233,7 +233,7 @@ TEST_F(ProfileCustomizationSyncedThemeWaiterTest,
                                 kSyncPassphraseRequired));
 
   WaitForSyncedTheme(callback.Get());
-  test_sync_service()->SetPassphraseRequired(true);
+  test_sync_service()->SetPassphraseRequired();
   test_sync_service()->FireStateChanged();
 }
 

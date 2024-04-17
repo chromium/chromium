@@ -205,13 +205,8 @@ bool TestSyncUserSettings::IsEncryptEverythingEnabled() const {
 }
 
 ModelTypeSet TestSyncUserSettings::GetEncryptedDataTypes() const {
-  if (!IsUsingExplicitPassphrase()) {
-    // PASSWORDS and WIFI_CONFIGURATIONS are always encrypted.
-    return {PASSWORDS, WIFI_CONFIGURATIONS};
-  }
-  // Some types can never be encrypted, e.g. DEVICE_INFO and
-  // AUTOFILL_WALLET_DATA, so make sure we don't report them as encrypted.
-  return Intersection(GetPreferredDataTypes(), EncryptableUserTypes());
+  return IsUsingExplicitPassphrase() ? EncryptableUserTypes()
+                                     : AlwaysEncryptedUserTypes();
 }
 
 bool TestSyncUserSettings::IsPassphraseRequired() const {
@@ -219,7 +214,7 @@ bool TestSyncUserSettings::IsPassphraseRequired() const {
 }
 
 bool TestSyncUserSettings::IsPassphraseRequiredForPreferredDataTypes() const {
-  return passphrase_required_for_preferred_data_types_;
+  return IsPassphraseRequired() && IsEncryptedDatatypePreferred();
 }
 
 bool TestSyncUserSettings::IsPassphrasePromptMutedForCurrentProductVersion()
@@ -236,7 +231,7 @@ bool TestSyncUserSettings::IsTrustedVaultKeyRequired() const {
 
 bool TestSyncUserSettings::IsTrustedVaultKeyRequiredForPreferredDataTypes()
     const {
-  return trusted_vault_key_required_for_preferred_data_types_;
+  return IsTrustedVaultKeyRequired() && IsEncryptedDatatypePreferred();
 }
 
 bool TestSyncUserSettings::IsTrustedVaultRecoverabilityDegraded() const {
@@ -313,26 +308,19 @@ void TestSyncUserSettings::SetOsTypeIsManaged(UserSelectableOsType type,
 }
 #endif
 
-void TestSyncUserSettings::SetPassphraseRequired(bool required) {
-  if (required) {
-    SetRequiredPassphrase(kDefaultPassphrase);
-  } else {
-    passphrase_required_ = false;
-  }
+void TestSyncUserSettings::SetPassphraseRequired() {
+  SetPassphraseRequired(kDefaultPassphrase);
 }
 
-void TestSyncUserSettings::SetPassphraseRequiredForPreferredDataTypes(
-    bool required) {
-  passphrase_required_for_preferred_data_types_ = required;
+void TestSyncUserSettings::SetPassphraseRequired(
+    const std::string& passphrase) {
+  CHECK(!passphrase.empty());
+  encryption_passphrase_ = passphrase;
+  passphrase_required_ = true;
 }
 
 void TestSyncUserSettings::SetTrustedVaultKeyRequired(bool required) {
   trusted_vault_key_required_ = required;
-}
-
-void TestSyncUserSettings::SetTrustedVaultKeyRequiredForPreferredDataTypes(
-    bool required) {
-  trusted_vault_key_required_for_preferred_data_types_ = required;
 }
 
 void TestSyncUserSettings::SetTrustedVaultRecoverabilityDegraded(
@@ -359,11 +347,9 @@ const std::string& TestSyncUserSettings::GetEncryptionPassphrase() const {
   return encryption_passphrase_;
 }
 
-void TestSyncUserSettings::SetRequiredPassphrase(
-    const std::string& passphrase) {
-  CHECK(!passphrase.empty());
-  encryption_passphrase_ = passphrase;
-  passphrase_required_ = true;
+bool TestSyncUserSettings::IsEncryptedDatatypePreferred() const {
+  return !Intersection(GetPreferredDataTypes(), GetEncryptedDataTypes())
+              .empty();
 }
 
 }  // namespace syncer

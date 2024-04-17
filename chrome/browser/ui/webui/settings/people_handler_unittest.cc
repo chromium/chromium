@@ -604,7 +604,7 @@ TEST_F(PeopleHandlerTest, EnterCorrectExistingPassphrase) {
   SigninUserAndTurnSyncFeatureOn();
   CreatePeopleHandler();
 
-  sync_user_settings()->SetRequiredPassphrase(kCorrectPassphrase);
+  sync_user_settings()->SetPassphraseRequired(kCorrectPassphrase);
 
   ASSERT_TRUE(sync_user_settings()->IsPassphraseRequired());
 
@@ -640,8 +640,7 @@ TEST_F(PeopleHandlerTest, EnterWrongExistingPassphrase) {
   SigninUserAndTurnSyncFeatureOn();
   CreatePeopleHandler();
 
-  sync_user_settings()->SetEncryptionPassphrase("correct_passphrase");
-  sync_user_settings()->SetPassphraseRequired(true);
+  sync_user_settings()->SetPassphraseRequired("correct_passphrase");
 
   ASSERT_TRUE(sync_user_settings()->IsPassphraseRequired());
 
@@ -808,7 +807,7 @@ TEST_F(PeopleHandlerTest, ShowSetupOldGaiaPassphraseRequired) {
 
   const auto passphrase_time = base::Time::Now();
 
-  sync_user_settings()->SetPassphraseRequired(true);
+  sync_user_settings()->SetPassphraseRequired();
   sync_user_settings()->SetPassphraseType(
       syncer::PassphraseType::kFrozenImplicitPassphrase);
   sync_user_settings()->SetExplicitPassphraseTime(passphrase_time);
@@ -829,7 +828,7 @@ TEST_F(PeopleHandlerTest, ShowSetupCustomPassphraseRequired) {
 
   const auto passphrase_time = base::Time::Now();
 
-  sync_user_settings()->SetPassphraseRequired(true);
+  sync_user_settings()->SetPassphraseRequired();
   sync_user_settings()->SetPassphraseType(
       syncer::PassphraseType::kCustomPassphrase);
   sync_user_settings()->SetExplicitPassphraseTime(passphrase_time);
@@ -855,7 +854,7 @@ TEST_F(PeopleHandlerTest, OngoingSetupCustomPassphraseRequired) {
   const auto passphrase_time = base::Time::Now();
 
   sync_service_->SetSyncFeatureRequested();
-  sync_user_settings()->SetPassphraseRequired(true);
+  sync_user_settings()->SetPassphraseRequired();
   sync_user_settings()->SetPassphraseType(
       syncer::PassphraseType::kCustomPassphrase);
   sync_user_settings()->SetExplicitPassphraseTime(passphrase_time);

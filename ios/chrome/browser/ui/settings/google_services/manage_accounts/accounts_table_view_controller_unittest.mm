@@ -238,7 +238,7 @@ TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseError) {
   account.gaia = gaia_id;
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   SetSyncStateTransportActive(account, test_sync_service());
-  test_sync_service()->SetPassphraseRequiredForPreferredDataTypes(true);
+  test_sync_service()->GetUserSettings()->SetPassphraseRequired();
 
   CreateController();
   CheckController();
@@ -270,7 +270,7 @@ TEST_F(AccountsTableViewControllerTest,
   account.gaia = gaia_id;
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   SetSyncStateFeatureActive(account, test_sync_service());
-  test_sync_service()->SetPassphraseRequiredForPreferredDataTypes(false);
+  ASSERT_FALSE(test_sync_service()->GetUserSettings()->IsPassphraseRequired());
 
   CreateController();
   CheckController();
