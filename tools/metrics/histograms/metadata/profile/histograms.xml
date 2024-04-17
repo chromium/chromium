@@ -94,10 +94,10 @@ chromium-metrics-reviews@google.com.
 <histogram name="Profile.DeleteProfileAction" enum="ProfileDeleteAction"
     expires_after="never">
 <!-- expires-never: Used to log the profile deletions actions and their source.
-     Profile deletion removes the entire local profile, which means that it
-     deletes user data and this operation cannot be undone. Therefore it is
-     important to not see unexplainable spikes in the profile deletion
-     operations. -->
+      Profile deletion removes the entire local profile, which means that it
+      deletes user data and this operation cannot be undone. Therefore it is
+      important to not see unexplainable spikes in the profile deletion
+      operations. -->
 
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.LacrosFre.WelcomeHasGivenName" enum="Boolean"
-    expires_after="2024-04-28">
+    expires_after="M130">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.LacrosPrimaryProfileFirstRunEntryPoint"
-    enum="FirstRunEntryPoint" expires_after="M127">
+    enum="FirstRunEntryPoint" expires_after="M130">
   <owner>dgn@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.LacrosPrimaryProfileFirstRunOutcome"
-    enum="ProfileSignedInFlowOutcome" expires_after="2024-06-30">
+    enum="ProfileSignedInFlowOutcome" expires_after="M130">
   <owner>dgn@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -558,7 +558,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Profile.UserAction.PerProfile" enum="Profile"
     expires_after="never">
 <!-- expires-never: Used by the Chrome Profile Metrics dashboard to track user
-     actions per profile, for users with multiple active profiles. -->
+      actions per profile, for users with multiple active profiles. -->
 
   <owner>msarda@chromium.org</owner>
   <owner>tangltom@chromium.org</owner>
@@ -663,7 +663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstProfileTime.FirstWebContentsFinishReason"
-    enum="StartupProfilingFinishReason" expires_after="2024-04-28">
+    enum="StartupProfilingFinishReason" expires_after="2024-10-28">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -677,7 +677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint"
-    units="ms" expires_after="2024-04-28">
+    units="ms" expires_after="2024-10-28">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -837,7 +837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.BeforeCreation" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-10-28">
   <owner>alexilin@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -849,7 +849,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.FirstPaint" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-10-28">
   <owner>alexilin@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -860,7 +860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2024-10-28">
   <owner>alexilin@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -875,7 +875,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.MainViewInitialized" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-10-28">
   <owner>alexilin@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -886,7 +886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.WebViewCreated" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-10-28">
   <owner>alexilin@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -897,7 +897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.UiVisited" enum="ProfilePickerPages"
-    expires_after="2024-04-28">
+    expires_after="2024-09-22">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
