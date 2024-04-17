@@ -402,6 +402,19 @@ void WebAppCommandScheduler::RemoveUserUninstallableManagements(
       location);
 }
 
+void WebAppCommandScheduler::RemoveAllManagementTypesAndUninstall(
+    base::PassKey<WebAppSyncBridge>,
+    const webapps::AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source,
+    UninstallJob::Callback callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      WebAppUninstallCommand::CreateForRemoveInstallManagements(
+          uninstall_source, *profile_, app_id, WebAppManagementTypes::All(),
+          std::move(callback)),
+      location);
+}
+
 void WebAppCommandScheduler::UninstallAllUserInstalledWebApps(
     webapps::WebappUninstallSource uninstall_source,
     UninstallAllUserInstalledWebAppsCommand::Callback callback,
