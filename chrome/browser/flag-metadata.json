@@ -6636,6 +6636,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "password-manager-detect-username-in-uff",
+    "owners": [
+      "vincb@google.com",
+      "eic@google.com"
+    ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "password-manager-signin-uff",
     "owners": ["vincb@google.com", "eic@google.com"],
     "expiry_milestone": 130

@@ -530,6 +530,12 @@ const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
 const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";
 
+// Title and description for the flag to enable detecting the username in the
+// username first flows for saving.
+const char kIOSDetectUsernameInUffName[] = "Detect username in UFF";
+const char kIOSDetectUsernameInUffDescription[] =
+    "Detect the username in UFF for saving.";
+
 const char kIOSDockingPromoName[] = "Docking Promo";
 const char kIOSDockingPromoDescription[] =
     "When enabled, the user will be presented an animated, instructional "

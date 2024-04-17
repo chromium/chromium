@@ -460,6 +460,11 @@ extern const char kInProductHelpDemoModeDescription[];
 extern const char kIOSBrowserEditMenuMetricsName[];
 extern const char kIOSBrowserEditMenuMetricsDescription[];
 
+// Title and description for the flag to enable detecting the username in the
+// username first flows for saving.
+extern const char kIOSDetectUsernameInUffName[];
+extern const char kIOSDetectUsernameInUffDescription[];
+
 // Title and description for the flag to enable the Docking Promo.
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];

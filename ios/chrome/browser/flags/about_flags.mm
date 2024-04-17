@@ -1581,6 +1581,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCredentialProviderPerformanceImprovementsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kCredentialProviderPerformanceImprovements)},
+    {"password-manager-detect-username-in-uff",
+     flag_descriptions::kIOSDetectUsernameInUffName,
+     flag_descriptions::kIOSPasswordSignInUffDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kIosDetectUsernameInUff)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
