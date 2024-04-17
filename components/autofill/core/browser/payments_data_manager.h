@@ -46,8 +46,6 @@ class AutofillOptimizationGuide;
 class BankAccount;
 struct CreditCardArtImage;
 class PaymentsDatabaseHelper;
-class PersonalDataManager;
-class TestPersonalDataManager;
 
 // Contains all payments-related logic of the `PersonalDataManager`. See comment
 // above the `PersonalDataManager` first.
@@ -416,6 +414,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // when Chrome is restarted.
   const std::string& GetCountryCodeForExperimentGroup() const;
 
+  // Returns if there are any pending queries to the web database.
+  bool HasPendingPaymentQueries() const;
+
+  bool is_payments_data_loaded() const { return is_payments_data_loaded_; }
+
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
   void SetSyncingForTest(bool is_syncing_for_test) {
     is_syncing_for_test_ = is_syncing_for_test;
@@ -439,8 +442,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
  protected:
   friend class PaymentsDataManagerTestApi;
   // TODO(b/322170538): Remove dependency.
-  friend class PersonalDataManager;
-  friend class TestPaymentsDataManager;
   friend class TestPersonalDataManager;
 
   // Whether server cards or IBANs are enabled and should be suggested to the
@@ -523,6 +524,21 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // merchant benefits that are available for users' online purchases.
   std::vector<CreditCardBenefit> credit_card_benefits_;
 
+  // When the manager makes a request from WebDataServiceBase, the database
+  // is queried on another sequence, we record the query handle until we
+  // get called back.
+  WebDataServiceBase::Handle pending_creditcards_query_ = 0;
+  WebDataServiceBase::Handle pending_server_creditcards_query_ = 0;
+  WebDataServiceBase::Handle pending_server_creditcard_cloud_token_data_query_ =
+      0;
+  WebDataServiceBase::Handle pending_local_ibans_query_ = 0;
+  WebDataServiceBase::Handle pending_server_ibans_query_ = 0;
+  WebDataServiceBase::Handle pending_masked_bank_accounts_query_ = 0;
+  WebDataServiceBase::Handle pending_customer_data_query_ = 0;
+  WebDataServiceBase::Handle pending_offer_data_query_ = 0;
+  WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;
+  WebDataServiceBase::Handle pending_credit_card_benefit_query_ = 0;
+
   // True if personal data has been loaded from the web database.
   bool is_payments_data_loaded_ = false;
 
@@ -530,9 +546,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   base::RepeatingClosure notify_pdm_observers_;
 
  private:
-  // Returns if there are any pending queries to the web database.
-  bool HasPendingPaymentQueries() const;
-
   // Triggered when all the card art image fetches have been completed,
   // regardless of whether all of them succeeded.
   void OnCardArtImagesFetched(
@@ -579,21 +592,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;
-
-  // When the manager makes a request from WebDataServiceBase, the database
-  // is queried on another sequence, we record the query handle until we
-  // get called back.
-  WebDataServiceBase::Handle pending_creditcards_query_ = 0;
-  WebDataServiceBase::Handle pending_server_creditcards_query_ = 0;
-  WebDataServiceBase::Handle pending_server_creditcard_cloud_token_data_query_ =
-      0;
-  WebDataServiceBase::Handle pending_local_ibans_query_ = 0;
-  WebDataServiceBase::Handle pending_server_ibans_query_ = 0;
-  WebDataServiceBase::Handle pending_masked_bank_accounts_query_ = 0;
-  WebDataServiceBase::Handle pending_customer_data_query_ = 0;
-  WebDataServiceBase::Handle pending_offer_data_query_ = 0;
-  WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;
-  WebDataServiceBase::Handle pending_credit_card_benefit_query_ = 0;
 
   // The image fetcher to fetch customized images for Autofill data.
   raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;

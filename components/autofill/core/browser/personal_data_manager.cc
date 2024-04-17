@@ -235,8 +235,8 @@ void PersonalDataManager::AddCreditCardBenefitForTest(
 }
 
 bool PersonalDataManager::IsDataLoaded() const {
-  return address_data_manager_->has_initial_load_finished_ &&
-         payments_data_manager_->is_payments_data_loaded_;
+  return address_data_manager_->has_initial_load_finished() &&
+         payments_data_manager_->is_payments_data_loaded();
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfiles(

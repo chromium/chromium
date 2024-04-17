@@ -38,7 +38,6 @@ class PrefService;
 namespace autofill {
 
 class ContactInfoPreconditionChecker;
-class PersonalDataManager;
 
 // Contains all address-related logic of the `PersonalDataManager`. See comment
 // above the `PersonalDataManager` first. In the `AddressDataManager` (ADM),
@@ -152,7 +151,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // - It receives a new GUID.
   // Like all database operations, the migration happens asynchronously.
   // `profile` (the kLocalOrSyncable one) will not be available in the
-  // PersonalDataManager anymore once the migrating has finished.
+  // AddressDataManager anymore once the migrating has finished.
   void MigrateProfileToAccount(const AutofillProfile& profile);
 
   // Asynchronously loads all `AutofillProfile`s (from all sources) into the
@@ -240,8 +239,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns true if the PDM is currently awaiting an address-related responses
   // from the database. In this case, the PDM's address data is currently
   // potentially inconsistent with the database. Once the state has converged,
-  // PersonalDataManagerObserver:: OnPersonalDataFinishedProfileTasks() will be
-  // called.
+  // PersonalDataManagerObserver:: OnPersonalDataChanged() will be called.
   bool IsAwaitingPendingAddressChanges() const {
     return ProfileChangesAreOngoing() || HasPendingQueries();
   }
@@ -273,6 +271,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // only. It controls syncing of autofill data stored in user accounts for
   // non-syncing users. Remove when toggle becomes available on the Sync page.
   void SetAutofillSelectableTypeEnabled(bool enabled);
+
+  bool has_initial_load_finished() const { return has_initial_load_finished_; }
 
   void SetSyncServiceForTest(syncer::SyncService* sync_service) {
     sync_service_ = sync_service;
@@ -331,10 +331,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   GeoIpCountryCode variation_country_code_;
 
  private:
-  // TODO(b/322170538): Remove once all code writing to `synced_local_profiles_`
-  // and `account_profile_` moved to this class.
-  friend class PersonalDataManager;
-
   // A profile change with a boolean representing if the change is ongoing or
   // not. "Ongoing" means that the change is taking place asynchronously on the
   // DB sequence at the moment. Ongoing changes are still part of
