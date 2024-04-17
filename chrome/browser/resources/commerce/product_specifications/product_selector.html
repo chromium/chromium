@@ -1,0 +1,61 @@
+<style include="cr-shared-style">
+  :host {
+    --product-selector-width: 250px;
+  }
+
+  #currentProductContainer,
+  #selectionContainer {
+    box-sizing: border-box;
+    display: block;
+    overflow: clip;
+    width: var(--product-selector-width);
+  }
+
+  #currentProductContainer {
+    border-radius: 10px;
+    height: 50px;
+  }
+
+  #selectionContainer {
+    padding: 0 8px;
+  }
+
+  cr-action-menu {
+    --cr-menu-border-radius: 10px;
+  }
+
+  #currentItemButton {
+    --cr-section-vertical-padding: 0;
+  }
+</style>
+
+<div id="currentProductContainer">
+  <cr-expand-button id="currentItemButton" on-click="onShowMenu" no-hover>
+    <cr-url-list-item id="currentProduct" size="medium"
+        url="[[selectedItem.url]]" title="[[selectedItem.title]]"
+        description="[[selectedItem.url]]" no-hover>
+    </cr-url-list-item>
+  </cr-expand-button>
+</div>
+
+<cr-lazy-render id="productSelectionMenu">
+  <template>
+    <cr-action-menu>
+      <div id="selectionContainer">
+        <template is="dom-if" if="[[openTabs.length]]" restamp>
+          <cr-expand-button expanded="{{openTabsExpanded}}" no-hover>
+            $i18n{openTabsSectionTitle}
+          </cr-expand-button>
+          <iron-collapse opened="[[openTabsExpanded]]">
+            <template is="dom-repeat" items="[[openTabs]]">
+              <cr-url-list-item class="dropdown-item" size="medium"
+                  url="[[item.url]]" title="[[item.title]]"
+                  description="[[item.url]]" no-hover>
+              </cr-url-list-item>
+            </template>
+          </iron-collapse>
+        </template>
+      </div>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

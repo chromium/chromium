@@ -28,3 +28,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, App) {
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Table) {
   RunTest("commerce/product_specifications/table_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ProductSelector) {
+  RunTest("commerce/product_specifications/product_selector_test.js",
+          "mocha.run()");
+}

@@ -17,21 +17,17 @@ suite('ProductSpecificationsTableTest', () => {
     document.body.appendChild(tableElement);
   });
 
-  test('product columns show the correct data', async () => {
-    // Arrange.
-    const title1 = 'foo';
-    const title2 = 'bar';
-
-    // Act.
-    tableElement.columns = [{title: title1}, {title: title2}];
+  test('column count correct', async () => {
+    // Arrange / Act.
+    tableElement.columns = [
+      {selectedItem: {title: 'title', url: '', imageUrl: ''}},
+      {selectedItem: {title: 'title2', url: '', imageUrl: ''}},
+    ];
     await waitAfterNextRender(tableElement);
 
     // Assert.
-    const columnTitles =
-        tableElement.shadowRoot!.querySelectorAll('.col .col-card');
-    assertEquals(2, columnTitles.length);
-    assertEquals(title1, columnTitles[0]!.textContent);
-    assertEquals(title2, columnTitles[1]!.textContent);
+    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+    assertEquals(2, columns.length);
   });
 
   test('product rows show the correct data', async () => {

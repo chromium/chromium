@@ -4,6 +4,7 @@
   }
   .col {
     width: 220px;
+    text-align: start;
   }
   .col-card {
     display: flex;
@@ -16,11 +17,13 @@
     padding-bottom: 24px;
   }
 </style>
+
 <table>
   <thead>
     <template is="dom-repeat" items="[[columns]]" as="column">
       <th class="col">
-        <div class="col-card">[[column.title]]</div>
+        <product-selector selected-item="[[column.selectedItem]]">
+        </product-selector>
       </th>
     </template>
   </thead>

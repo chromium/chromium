@@ -17,6 +17,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -50,6 +51,12 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   source->AddString("message", "Some example content...");
   source->AddString("pageTitle", "Product Specifications");
   source->AddString("summaryTitle", "Summary");
+
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"openTabsSectionTitle", IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION},
+  };
+
+  source->AddLocalizedStrings(kStrings);
 }
 
 void ProductSpecificationsUI::BindInterface(

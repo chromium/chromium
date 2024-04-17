@@ -297,6 +297,11 @@
       </message>
     </if> <!-- not use_titlecase -->
 
+    <!-- For Desktop Product Specifications -->
+    <message name="IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION" translateable="false" desc="The title of the section in the product selection drop-down in the product specifications UI that shows a list of open tabs.">
+      Open Tabs
+    </message>
+
     <message name="IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS" desc="Text shown in Shopping Insights side panel. Clicking this link will bring users to a new tab where users can check price insights of all available buying options.">
       Buying options
     </message>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
+import './product_selector.js';
 import './table.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
@@ -74,7 +75,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.specsTable_ = {
       columns: productSpecs.products.map(p => {
         return {
-          title: p.title,
+          selectedItem: {title: p.title, url: '', imageUrl: p.imageUrl.url},
         };
       }),
       rows,

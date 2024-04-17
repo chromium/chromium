@@ -4,6 +4,7 @@
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {UrlListEntry} from './product_selector.js';
 import {getTemplate} from './table.html.js';
 
 /** Describes a row in a ProductSpecs table. */
@@ -13,7 +14,7 @@ export interface TableRow {
 }
 /** Describes a column in a ProductSpecs table. */
 export interface TableColumn {
-  title: string;
+  selectedItem: UrlListEntry;
 }
 
 /** Element for rendering a ProductSpecs table. */
