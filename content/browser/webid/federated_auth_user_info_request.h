@@ -20,7 +20,6 @@
 
 namespace content {
 
-class FedCmMetrics;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class FederatedProviderFetcher;
@@ -38,7 +37,6 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       RenderFrameHost* render_frame_host,
-      FedCmMetrics* metrics,
       blink::mojom::IdentityProviderConfigPtr provider);
 
   FederatedAuthUserInfoRequest(const FederatedAuthUserInfoRequest&) = delete;
@@ -58,7 +56,6 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       RenderFrameHost* render_frame_host,
-      FedCmMetrics* metrics,
       blink::mojom::IdentityProviderConfigPtr provider);
 
   void OnAllConfigAndWellKnownFetched(
@@ -88,8 +85,6 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
       nullptr;
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;
-  // Owned by |FederatedAuthRequestImpl|
-  raw_ptr<FedCmMetrics> metrics_;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
   std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;

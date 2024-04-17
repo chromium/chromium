@@ -263,8 +263,6 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
 
     api_permission_delegate_ = std::make_unique<TestApiPermissionDelegate>();
     permission_delegate_ = std::make_unique<TestPermissionDelegate>();
-    metrics_ = std::make_unique<NiceMock<FedCmMetrics>>(
-        GURL(kProviderUrl), ukm::kInvalidSourceId, 0);
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
@@ -302,7 +300,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
     request_ = FederatedAuthUserInfoRequest::Create(
         std::move(network_manager), permission_delegate_.get(),
         api_permission_delegate_.get(), iframe_render_frame_host_,
-        metrics_.get(), std::move(idp_ptr));
+        std::move(idp_ptr));
     request_->SetCallbackAndStart(callback_helper.callback());
     callback_helper.WaitForCallback();
 
@@ -352,7 +350,6 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
   base::WeakPtr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
-  std::unique_ptr<NiceMock<FedCmMetrics>> metrics_;
   std::unique_ptr<FederatedAuthUserInfoRequest> request_;
   base::HistogramTester histogram_tester_;
 };

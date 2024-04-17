@@ -251,7 +251,8 @@ void FederatedAuthDisconnectRequest::Complete(
           : std::nullopt;
   metrics_->RecordDisconnectMetrics(
       disconnect_status_for_metrics, duration, *render_frame_host_, origin_,
-      embedding_origin_, options_->config->config_url);
+      embedding_origin_, options_->config->config_url,
+      webid::GetNewSessionID());
 
   std::move(callback_).Run(status);
 }

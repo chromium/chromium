@@ -39,20 +39,14 @@ FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
 
 }  // namespace
 
-FedCmMetrics::FedCmMetrics(const GURL& provider,
-                           ukm::SourceId page_source_id,
-                           int session_id)
-    : page_source_id_(page_source_id), session_id_(session_id) {
-  // TODO(crbug.com/326397737): Remove the |provider| parameter from the
-  // constructor.
-  ukm::SourceId source_id =
-      ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
-          base::PassKey<FedCmMetrics>(), provider);
-  provider_source_ids_[provider] = source_id;
-  provider_source_id_ = source_id;
-}
+FedCmMetrics::FedCmMetrics(ukm::SourceId page_source_id)
+    : page_source_id_(page_source_id) {}
 
 FedCmMetrics::~FedCmMetrics() = default;
+
+void FedCmMetrics::SetNewSessionID(int session_id) {
+  session_id_ = session_id;
+}
 
 void FedCmMetrics::RecordShowAccountsDialogTime(
     const std::vector<IdentityProviderData>& providers,
@@ -338,6 +332,7 @@ void FedCmMetrics::RecordSignInStateMatchStatus(
   base::UmaHistogramEnumeration("Blink.FedCm.Status.SignInStateMatch", status);
 }
 
+// static
 void FedCmMetrics::RecordIdpSigninMatchStatus(
     std::optional<bool> idp_signin_status,
     IdpNetworkRequestManager::ParseStatus accounts_endpoint_status) {
@@ -527,7 +522,8 @@ void FedCmMetrics::RecordDisconnectMetrics(
     const RenderFrameHost& rfh,
     url::Origin requester,
     url::Origin embedder,
-    const GURL& provider_url) {
+    const GURL& provider_url,
+    int disconnect_session_id) {
   FedCmRequesterFrameType requester_frame_type =
       ComputeRequesterFrameType(rfh, requester, embedder);
   auto RecordUkm = [&](auto& ukm_builder) {
@@ -538,7 +534,7 @@ void FedCmMetrics::RecordDisconnectMetrics(
           ukm::GetSemanticBucketMinForDurationTiming(
               duration->InMilliseconds()));
     }
-    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.SetFedCmSessionID(disconnect_session_id);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);

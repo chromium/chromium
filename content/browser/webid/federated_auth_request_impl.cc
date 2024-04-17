@@ -405,13 +405,6 @@ void FilterAccountsWithDomainHint(
                                 num_matching);
 }
 
-std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
-    const GURL& provider,
-    const ukm::SourceId& source_id) {
-  return std::make_unique<FedCmMetrics>(provider, source_id,
-                                        base::RandInt(1, 1 << 30));
-}
-
 std::string GetTopFrameOriginForDisplay(const url::Origin& top_frame_origin) {
   return FormatOriginForDisplay(top_frame_origin);
 }
@@ -659,15 +652,6 @@ void FederatedAuthRequestImpl::RequestToken(
     std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     MediationRequirement requirement,
     RequestTokenCallback callback) {
-  // Expand the providers list with registered providers.
-  if (IsFedCmIdPRegistrationEnabled()) {
-    for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
-      std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers =
-          MaybeAddRegisteredProviders(idp_get_params_ptr->providers);
-      idp_get_params_ptr->providers = std::move(providers);
-    }
-  }
-
   // idp_get_params_ptrs should never be empty since it is the renderer-side
   // code which populates it.
   if (idp_get_params_ptrs.empty()) {
@@ -688,6 +672,17 @@ void FederatedAuthRequestImpl::RequestToken(
     ReportBadMessageAndDeleteThis(
         "FedCM should not be allowed in fenced frame trees.");
     return;
+  }
+
+  MaybeCreateFedCmMetrics();
+  fedcm_metrics_->SetNewSessionID(webid::GetNewSessionID());
+  // Expand the providers list with registered providers.
+  if (IsFedCmIdPRegistrationEnabled()) {
+    for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
+      std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers =
+          MaybeAddRegisteredProviders(idp_get_params_ptr->providers);
+      idp_get_params_ptr->providers = std::move(providers);
+    }
   }
 
   if (!render_frame_host().GetPage().IsPrimary()) {
@@ -738,9 +733,6 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
-  MaybeCreateFedCmMetrics(
-      idp_get_params_ptrs[0]->providers[0]->config->config_url);
-
   had_transient_user_activation_ =
       render_frame_host().HasTransientUserActivation();
 
@@ -781,11 +773,6 @@ void FederatedAuthRequestImpl::RequestToken(
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
                               std::nullopt, "", /*error=*/nullptr,
                               /*is_auto_selected=*/false);
-      if (pending_request != this) {
-        // fedcm_metrics_ is the only member that's initialized at this point so
-        // we should reset it.
-        fedcm_metrics_.reset();
-      }
       return;
     }
     // Cancel the pending request before starting the new button flow request.
@@ -799,8 +786,6 @@ void FederatedAuthRequestImpl::RequestToken(
     // Some members were reset to false during CleanUp when replacing a widget
     // flow from the same frame so we need to set them again.
     had_transient_user_activation_ = true;
-    MaybeCreateFedCmMetrics(
-        idp_get_params_ptrs[0]->providers[0]->config->config_url);
     for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
       for (auto& idp_ptr : idp_get_params_ptr->providers) {
         idp_order_.push_back(idp_ptr->config->config_url);
@@ -1014,15 +999,14 @@ void FederatedAuthRequestImpl::RequestUserInfo(
         "FedCM should not be allowed in nested frame trees.");
     return;
   }
-
-  MaybeCreateFedCmMetrics(provider->config_url);
+  // FedCMMetrics class is currently not used for UserInfo API. If we log UKM
+  // metrics later on, we should call MaybeCreateFedCmMetrics() here.
 
   auto network_manager = IdpNetworkRequestManager::Create(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
   auto user_info_request = FederatedAuthUserInfoRequest::Create(
       std::move(network_manager), permission_delegate_,
-      api_permission_delegate_, &render_frame_host(), fedcm_metrics_.get(),
-      std::move(provider));
+      api_permission_delegate_, &render_frame_host(), std::move(provider));
   FederatedAuthUserInfoRequest* user_info_request_ptr = user_info_request.get();
   user_info_requests_.insert(std::move(user_info_request));
 
@@ -1702,11 +1686,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   // Note that accounts dialog shown after mismatch dialog is also recorded.
   // Although not useful for catching malicious IDPs, it should only be a very
-  // small percentage of the samples recorded. However, if the request was
-  // completed right away, we do not record as no dialog was shown.
-  if (fedcm_metrics_) {
-    fedcm_metrics_->RecordAccountsDialogShown(idp_data_for_display_);
-  }
+  // small percentage of the samples recorded.
+  fedcm_metrics_->RecordAccountsDialogShown(idp_data_for_display_);
 }
 
 void FederatedAuthRequestImpl::OnAccountsDisplayed() {
@@ -1851,11 +1832,7 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
                           /*can_append_hints=*/true));
 
   // ShowFailureDialog() may have completed the request synchronously, in which
-  // case `fedcm_metrics_` is reset, and hence we did not really show any
-  // failure dialog. Thus, we skip the remaining steps.
-  if (!fedcm_metrics_) {
-    return;
-  }
+  // case we did not really show any failure dialog.
   CHECK(idp_data_for_display_.size() == 1u);
   fedcm_metrics_->RecordSingleIdpMismatchDialogShown(
       idp_data_for_display_[0], has_shown_mismatch, has_hints);
@@ -1889,8 +1866,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
           url::Origin::Create(idp_config_url));
   webid::UpdateIdpSigninStatusForAccountsEndpointResponse(
       render_frame_host(), idp_config_url, status,
-      idp_info->has_failing_idp_signin_status, permission_delegate_,
-      fedcm_metrics_.get());
+      idp_info->has_failing_idp_signin_status, permission_delegate_);
 
   constexpr char kAccountsUrl[] = "accounts endpoint";
   switch (status.parse_status) {
@@ -2633,7 +2609,6 @@ void FederatedAuthRequestImpl::CleanUp() {
   // Given that |request_dialog_controller_| has reference to this web content
   // instance we destroy that first.
   provider_fetcher_.reset();
-  fedcm_metrics_.reset();
   account_id_ = std::string();
   start_time_ = base::TimeTicks();
   well_known_and_config_fetched_time_ = base::TimeTicks();
@@ -3073,7 +3048,9 @@ void FederatedAuthRequestImpl::PreventSilentAccess(
 void FederatedAuthRequestImpl::Disconnect(
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
     DisconnectCallback callback) {
-  MaybeCreateFedCmMetrics(options->config->config_url);
+  MaybeCreateFedCmMetrics();
+  // FedCMMetrics is used to record disconnect metrics, but does not use the
+  // session_id_, which belongs to token request calls.
   if (disconnect_request_) {
     // Since we do not send any fetches in this case, consider the request to be
     // instant, e.g. duration is 0.
@@ -3084,7 +3061,7 @@ void FederatedAuthRequestImpl::Disconnect(
     fedcm_metrics_->RecordDisconnectMetrics(
         FedCmDisconnectStatus::kTooManyRequests, std::nullopt,
         render_frame_host(), origin(), GetEmbeddingOrigin(),
-        options->config->config_url);
+        options->config->config_url, webid::GetNewSessionID());
     std::move(callback).Run(DisconnectStatus::kErrorTooManyRequests);
     return;
   }
@@ -3113,8 +3090,6 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
     TokenResponseType token_response_type,
     std::optional<ErrorDialogType> error_dialog_type,
     std::optional<ErrorUrlType> error_url_type) {
-  MaybeCreateFedCmMetrics(idp->config->config_url);
-
   fedcm_metrics_->RecordErrorMetricsBeforeShowingErrorDialog(
       token_response_type, error_dialog_type, error_url_type,
       idp->config->config_url);
@@ -3126,7 +3101,7 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
   }
 }
 
-void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics(const GURL& provider) {
+void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics() {
   if (!fedcm_metrics_) {
     // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
     // prerendering page. As FederatedAithRequest runs behind the
@@ -3135,8 +3110,8 @@ void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics(const GURL& provider) {
     CHECK(!render_frame_host().IsInLifecycleState(
         RenderFrameHost::LifecycleState::kPrerendering));
 
-    fedcm_metrics_ =
-        CreateFedCmMetrics(provider, render_frame_host().GetPageUkmSourceId());
+    fedcm_metrics_ = std::make_unique<FedCmMetrics>(
+        render_frame_host().GetPageUkmSourceId());
   }
 }
 

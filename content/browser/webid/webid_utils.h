@@ -21,7 +21,6 @@ namespace content {
 class BrowserContext;
 enum class FedCmDisconnectStatus;
 enum class FedCmIdpSigninStatusMode;
-class FedCmMetrics;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
@@ -75,8 +74,7 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
     const GURL& identity_provider_config_url,
     IdpNetworkRequestManager::FetchStatus account_endpoint_fetch_status,
     bool does_idp_have_failing_idp_signin_status,
-    FederatedIdentityPermissionContextDelegate* permission_delegate,
-    FedCmMetrics* metrics);
+    FederatedIdentityPermissionContextDelegate* permission_delegate);
 
 // Returns a string to be used as the console error message from a
 // FederatedAuthRequestResult.
@@ -110,6 +108,10 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
 bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin);
 
 FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host);
+
+// Returns a new session ID. Used to record UKM metrics corresponding to a new
+// API invocation, like get() or disconnect().
+int GetNewSessionID();
 }  // namespace webid
 
 }  // namespace content

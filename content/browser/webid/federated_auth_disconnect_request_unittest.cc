@@ -228,9 +228,7 @@ class FederatedAuthDisconnectRequestTest
           .Times(0);
     }
 
-    metrics_ = std::make_unique<FedCmMetrics>(GURL(config.config_url),
-                                              rfh->GetPageUkmSourceId(),
-                                              /*session_id=*/1);
+    metrics_ = std::make_unique<FedCmMetrics>(rfh->GetPageUkmSourceId());
 
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options =
         blink::mojom::IdentityCredentialDisconnectOptions::New();

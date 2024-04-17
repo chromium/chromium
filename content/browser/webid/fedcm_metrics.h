@@ -201,9 +201,7 @@ enum class FedCmMultipleRequestsRpMode {
 
 class CONTENT_EXPORT FedCmMetrics {
  public:
-  FedCmMetrics(const GURL& provider,
-               const ukm::SourceId page_source_id,
-               int session_id);
+  explicit FedCmMetrics(const ukm::SourceId page_source_id);
 
   ~FedCmMetrics();
 
@@ -212,6 +210,15 @@ class CONTENT_EXPORT FedCmMetrics {
   // FedCM request are not counted.
   static void RecordNumRequestsPerDocument(ukm::SourceId page_source_id,
                                            const int num_requests);
+
+  // Records whether the browser's knowledge of whether the user is signed into
+  // the IDP based on observing signin/signout HTTP headers matches the
+  // information returned by the accounts endpoint.
+  static void RecordIdpSigninMatchStatus(
+      std::optional<bool> idp_signin_status,
+      IdpNetworkRequestManager::ParseStatus accounts_endpoint_status);
+
+  void SetNewSessionID(int session_id);
 
   // Records the time from when a call to the API was made to when the accounts
   // dialog is shown. This does not include flows that involve LoginToIdP. e.g.
@@ -287,13 +294,6 @@ class CONTENT_EXPORT FedCmMetrics {
   void RecordSignInStateMatchStatus(const GURL& provider,
                                     FedCmSignInStateMatchStatus status);
 
-  // Records whether the browser's knowledge of whether the user is signed into
-  // the IDP based on observing signin/signout HTTP headers matches the
-  // information returned by the accounts endpoint.
-  void RecordIdpSigninMatchStatus(
-      std::optional<bool> idp_signin_status,
-      IdpNetworkRequestManager::ParseStatus accounts_endpoint_status);
-
   // Records whether the user selected account is for sign-in or not.
   void RecordIsSignInUser(bool is_sign_in);
 
@@ -351,13 +351,15 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // Records metrics for a disconnect call. `duration` is nullopt if the
   // disconnect fetch request was not sent, in which case we do not log the
-  // metric.
+  // metric. Because this is a separate API from a token request, a different
+  // session ID is passed to this metric.
   void RecordDisconnectMetrics(FedCmDisconnectStatus status,
                                std::optional<base::TimeDelta> duration,
                                const RenderFrameHost& rfh,
                                url::Origin requester,
                                url::Origin embedder,
-                               const GURL& provider_url);
+                               const GURL& provider_url,
+                               int disconnect_session_id);
 
   // Records the outcome of the error dialog.
   void RecordErrorDialogResult(FedCmErrorDialogResult result,
@@ -387,11 +389,6 @@ class CONTENT_EXPORT FedCmMetrics {
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
 
-  // The SourceId to be used to log the UKM event Blink.FedCmIdp.
-  // TODO(crbug.com/326397737): remove this in favor of provider_source_ids_.
-  // In case of multiple IDPs, this will be set to the first IDP's source id.
-  ukm::SourceId provider_source_id_ = ukm::kInvalidSourceId;
-
   // The SourceId to be used to log the UKM event Blink.FedCmIdp. Maps a
   // provider's config URL to its UKM SourceId.
   std::map<GURL, ukm::SourceId> provider_source_ids_;
@@ -399,10 +396,10 @@ class CONTENT_EXPORT FedCmMetrics {
   // Whether a RequestTokenStatus has been recorded.
   bool request_token_status_recorded_{false};
 
-  // The session ID associated to the FedCM call for which this object is
-  // recording metrics. Each FedCM call gets a random integer session id, which
-  // helps group UKM events by the session id.
-  int session_id_;
+  // The session ID associated to the FedCM token request for which this object
+  // is recording metrics. Each FedCM call gets a random integer session id,
+  // which helps group UKM events by the session id.
+  int session_id_ = -1;
 };
 
 // The following metric is recorded for UMA and UKM, but does not require an

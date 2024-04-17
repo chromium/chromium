@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/webid_utils.h"
 
+#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/elide_url.h"
@@ -164,15 +165,14 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
     const GURL& identity_provider_config_url,
     IdpNetworkRequestManager::FetchStatus fetch_status,
     bool does_idp_have_failing_signin_status,
-    FederatedIdentityPermissionContextDelegate* permission_delegate,
-    FedCmMetrics* metrics) {
+    FederatedIdentityPermissionContextDelegate* permission_delegate) {
   url::Origin idp_origin = url::Origin::Create(identity_provider_config_url);
 
   // Record metrics on effect of IDP sign-in status API.
   const std::optional<bool> idp_signin_status =
       permission_delegate->GetIdpSigninStatus(idp_origin);
-  metrics->RecordIdpSigninMatchStatus(idp_signin_status,
-                                      fetch_status.parse_status);
+  FedCmMetrics::RecordIdpSigninMatchStatus(idp_signin_status,
+                                           fetch_status.parse_status);
 
   if (fetch_status.parse_status ==
       IdpNetworkRequestManager::ParseStatus::kSuccess) {
@@ -488,6 +488,10 @@ bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin) {
 FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
   return FederatedAuthRequestPageData::GetOrCreateForPage(
       render_frame_host->GetPage());
+}
+
+int GetNewSessionID() {
+  return base::RandInt(1, 1 << 30);
 }
 
 }  // namespace content::webid

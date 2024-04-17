@@ -403,7 +403,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnRegisterIdPPermissionResponse(RegisterIdPCallback callback,
                                        const GURL& idp,
                                        bool accepted);
-  void MaybeCreateFedCmMetrics(const GURL& provider);
+  void MaybeCreateFedCmMetrics();
 
   RpMode GetRpMode() const { return rp_mode_; }
 
