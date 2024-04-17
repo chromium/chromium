@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -70,6 +71,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -169,6 +171,20 @@ std::vector<url::Origin> GetOrigins(const AttributionData& data) {
       data, std::back_inserter(origins),
       &content::AttributionDataModel::DataKey::reporting_origin);
   return origins;
+}
+
+// /nocontent-set-cookie
+// Returns a HTTP 204 No Content response that sets a cookie.
+std::unique_ptr<net::test_server::HttpResponse> HandleNoContentSetCookie(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != "/nocontent-set-cookie") {
+    return nullptr;
+  }
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_NO_CONTENT);
+  http_response->AddCustomHeader("Set-Cookie", "no-content=true");
+  return http_response;
 }
 
 }  // namespace
@@ -2837,6 +2853,33 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       ->GetDefaultStoragePartition()
       ->GetDedicatedWorkerService()
       ->RemoveObserver(logger);
+}
+
+// Verifies that a HTTP 204 (No Content) response is treated like a bounce.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest, NoContentSetCookie) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(kChromeTestDataDir);
+  https_server.RegisterRequestHandler(
+      base::BindRepeating(&HandleNoContentSetCookie));
+  ASSERT_TRUE(https_server.Start());
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  GURL committed_url = https_server.GetURL("a.test", "/title1.html");
+  RedirectChainObserver observer(
+      DIPSService::Get(web_contents->GetBrowserContext()), committed_url,
+      /*expected_match_count=*/2);
+  ASSERT_TRUE(content::NavigateToURL(web_contents, committed_url));
+
+  GURL nocontent_url = https_server.GetURL("b.test", "/nocontent-set-cookie");
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents, nocontent_url, committed_url));
+  observer.Wait();
+
+  base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
+  DIPSService::Get(web_contents->GetBrowserContext())
+      ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
+  ASSERT_THAT(deleted_sites.Get(), ElementsAre("b.test"));
 }
 
 class DIPSThrottlingBrowserTest : public DIPSBounceDetectorBrowserTest {
