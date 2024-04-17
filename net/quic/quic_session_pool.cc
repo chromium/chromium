@@ -1301,8 +1301,8 @@ int QuicSessionPool::CreateSessionSync(
   bool closed_during_initialize = CreateSessionHelper(
       key, quic_version, cert_verify_flags, require_confirmation,
       std::move(peer_address), std::move(metadata), dns_resolution_start_time,
-      dns_resolution_end_time, /*max_packet_length=*/0, net_log, session,
-      network, std::move(socket));
+      dns_resolution_end_time, /*session_max_packet_length=*/0, net_log,
+      session, network, std::move(socket));
   if (closed_during_initialize) {
     DLOG(DFATAL) << "Session closed during initialize";
     *session = nullptr;
@@ -1336,7 +1336,8 @@ int QuicSessionPool::CreateSessionAsync(
       std::move(callback), key, quic_version, cert_verify_flags,
       require_confirmation, peer_address, std::move(metadata),
       dns_resolution_start_time, dns_resolution_end_time,
-      /*max_packet_length=*/0, net_log, session, network, std::move(socket));
+      /*session_max_packet_length=*/0, net_log, session, network,
+      std::move(socket));
 
   // If migrate_sessions_on_network_change_v2 is on, passing in
   // handles::kInvalidNetworkHandle will bind the socket to the default network.
@@ -1395,7 +1396,7 @@ int QuicSessionPool::CreateSessionOnProxyStream(
       proxy_stream->GetGuaranteedLargestMessagePayload();
   quic::QuicPacketLength overhead =
       quarter_stream_id_length + context_id_length;
-  quic::QuicPacketLength max_packet_length =
+  quic::QuicPacketLength session_max_packet_length =
       guaranteed_largest_message_payload > overhead
           ? guaranteed_largest_message_payload - overhead
           : 0;
@@ -1404,8 +1405,8 @@ int QuicSessionPool::CreateSessionOnProxyStream(
       &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
       std::move(callback), key, quic_version, cert_verify_flags,
       require_confirmation, proxy_peer_address, std::move(metadata),
-      dns_resolution_time, dns_resolution_time, max_packet_length, net_log,
-      session, &network, std::move(socket));
+      dns_resolution_time, dns_resolution_time, session_max_packet_length,
+      net_log, session, &network, std::move(socket));
 
   return socket_ptr->ConnectViaStream(
       std::move(local_address), std::move(proxy_peer_address),
@@ -1422,7 +1423,7 @@ void QuicSessionPool::FinishCreateSession(
     ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
-    quic::QuicPacketLength max_packet_length,
+    quic::QuicPacketLength session_max_packet_length,
     const NetLogWithSource& net_log,
     raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network,
@@ -1435,8 +1436,8 @@ void QuicSessionPool::FinishCreateSession(
   bool closed_during_initialize = CreateSessionHelper(
       key, quic_version, cert_verify_flags, require_confirmation,
       std::move(peer_address), std::move(metadata), dns_resolution_start_time,
-      dns_resolution_end_time, max_packet_length, net_log, session, network,
-      std::move(socket));
+      dns_resolution_end_time, session_max_packet_length, net_log, session,
+      network, std::move(socket));
   if (closed_during_initialize) {
     DLOG(DFATAL) << "Session closed during initialize";
     *session = nullptr;
@@ -1457,7 +1458,7 @@ bool QuicSessionPool::CreateSessionHelper(
     ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
-    quic::QuicPacketLength max_packet_length,
+    quic::QuicPacketLength session_max_packet_length,
     const NetLogWithSource& net_log,
     raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network,
@@ -1510,12 +1511,21 @@ bool QuicSessionPool::CreateSessionHelper(
       writer, true /* owns_writer */, quic::Perspective::IS_CLIENT,
       {quic_version}, connection_id_generator_);
   connection->set_keep_alive_ping_timeout(ping_timeout_);
-  if (max_packet_length > 0) {
-    connection->SetMaxPacketLength(std::min(
-        static_cast<size_t>(max_packet_length), params_.max_packet_length));
-  } else {
-    connection->SetMaxPacketLength(params_.max_packet_length);
+
+  // Calculate the max packet length for this connection. If the session is
+  // carrying proxy traffic, add the `additional_proxy_packet_length`.
+  size_t max_packet_length = params_.max_packet_length;
+  if (key.session_key().session_usage() == SessionUsage::kProxy) {
+    max_packet_length += params_.additional_proxy_packet_length;
   }
+  // Restrict that length by the session maximum, if given.
+  if (session_max_packet_length > 0) {
+    max_packet_length = std::min(static_cast<size_t>(session_max_packet_length),
+                                 max_packet_length);
+  }
+  DVLOG(1) << "Session to " << key.destination().Serialize()
+           << " has max packet length " << max_packet_length;
+  connection->SetMaxPacketLength(max_packet_length);
 
   quic::QuicConfig config = config_;
   ConfigureInitialRttEstimate(

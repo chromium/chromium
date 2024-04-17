@@ -98,6 +98,12 @@ struct NET_EXPORT QuicParams {
       DefaultSupportedQuicVersions();
   // Limit on the size of QUIC packets.
   size_t max_packet_length = quic::kDefaultMaxPacketSize;
+  // Additional packet size to use for QUIC connections used to carry
+  // proxy traffic.  This is required for QUIC connections tunneled via
+  // CONNECT-UDP, as the tunneled connection's packets must fit within the
+  // datagram frames of the tunnel connection, and all QUIC connections require
+  // an MTU of 1200. See https://crbug.com/331221745.
+  size_t additional_proxy_packet_length = 100;
   // Maximum number of server configs that are to be stored in
   // HttpServerProperties, instead of the disk cache.
   size_t max_server_configs_stored_in_properties = 0u;

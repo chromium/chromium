@@ -100,13 +100,13 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
       GetActiveSession(origin, NetworkAnonymizationKey(), proxy_chain);
   ASSERT_TRUE(session);
 
-  // Max datagram size is limited by two layers of packet framing (38 bytes
-  // each), 1 byte for the quarter-stream-ID (which is always less than 64, thus
-  // one byte), and one byte for the CONNECT-UDP context.
-  quic::QuicByteCount largest_message_payload =
-      quic::kDefaultMaxPacketSize - 38 * 2 - 1 - 1;
-  EXPECT_EQ(session->GetGuaranteedLargestMessagePayload(),
-            largest_message_payload);
+  // The direct connection to the proxy has a max packet size 1350. The
+  // connection to the endpoint could use up to 1350 - (packet header = 38) -
+  // (quarter-stream-id = 1) - (context-id = 1), but this value is greater than
+  // the default maximum of 1250. We can only observe the largest datagram that
+  // could be sent to the endpoint, which would be 1250 - (packet header = 38) =
+  // 1212 bytes.
+  EXPECT_EQ(session->GetGuaranteedLargestMessagePayload(), 1212);
 
   stream.reset();
 
