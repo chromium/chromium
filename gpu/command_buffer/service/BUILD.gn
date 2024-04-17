@@ -387,7 +387,7 @@ target(link_target_type, "gles2_sources") {
     "//skia:buildflags",
     "//third_party/angle:angle_image_util",
     "//third_party/angle:angle_version_info",
-    "//third_party/dawn/src/dawn:cpp",
+    "//third_party/dawn/include/dawn:cpp_headers",
     "//third_party/dawn/src/dawn:proc",
     "//third_party/libyuv",
     "//third_party/protobuf:protobuf_lite",

@@ -840,7 +840,6 @@ if (skia_support_gpu) {
       public += skia_graphite_dawn_public
       public_deps = [
         "//third_party/dawn/include/dawn:cpp_headers",
-        "//third_party/dawn/src/dawn:cpp",
         "//third_party/dawn/src/dawn:proc",
       ]
     }

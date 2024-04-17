@@ -513,7 +513,7 @@ if (!is_win) {
 
     if (use_dawn) {
       deps += [
-        "//third_party/dawn/src/dawn:cpp",
+        "//third_party/dawn/include/dawn:cpp_headers",
         "//third_party/dawn/src/dawn:proc",
         "//third_party/dawn/src/dawn/native",
       ]

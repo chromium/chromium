@@ -205,7 +205,7 @@ static_library("test_support") {
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/client:webgpu_interface",
     "//gpu/ipc:gpu_thread_holder",
-    "//third_party/dawn/src/dawn:cpp",
+    "//third_party/dawn/include/dawn:cpp_headers",
     "//third_party/dawn/src/dawn:proc",
   ]
   deps = [

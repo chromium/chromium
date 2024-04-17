@@ -211,7 +211,7 @@ source_set("config_sources") {
     public_deps += [ "//third_party/dawn/include/dawn:headers" ]
 
     deps += [
-      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/include/dawn:cpp_headers",
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
     ]

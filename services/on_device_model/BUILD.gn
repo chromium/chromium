@@ -56,7 +56,7 @@ template("model_service") {
     if (is_linux || is_chromeos) {
       deps += [
         "//gpu/config",
-        "//third_party/dawn/src/dawn:cpp",
+        "//third_party/dawn/include/dawn:cpp_headers",
         "//third_party/dawn/src/dawn:proc",
         "//third_party/dawn/src/dawn/native",
       ]

@@ -173,7 +173,7 @@ component("service") {
     ]
   }
   if (skia_use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn:cpp" ]
+    deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
   }
 }
 
