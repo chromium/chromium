@@ -19,8 +19,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -40,6 +42,7 @@ import java.util.concurrent.TimeoutException;
 @DoNotBatch(reason = "waitForActivityCompletelyLoaded is unhappy when batched - more work needed")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures(ChromeFeatureList.ANDROID_HUB)
 public class ActivityTabProviderTest {
     /** A test observer that provides access to the tab being observed. */
     private static class TestActivityTabTabObserver extends ActivityTabTabObserver {
@@ -170,6 +173,8 @@ public class ActivityTabProviderTest {
                 "The activity tab should be the model's selected tab.",
                 getModelSelectedTab(),
                 mActivityTab);
+
+        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.BROWSING);
     }
 
     /**

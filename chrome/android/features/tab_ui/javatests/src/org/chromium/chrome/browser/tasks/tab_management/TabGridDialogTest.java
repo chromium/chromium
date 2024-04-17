@@ -40,6 +40,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_HUB;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
@@ -88,6 +89,7 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitor;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -121,6 +123,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
+import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -157,7 +160,7 @@ import java.util.concurrent.ExecutionException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures({DEFER_TAB_SWITCHER_LAYOUT_CREATION})
+@EnableFeatures({DEFER_TAB_SWITCHER_LAYOUT_CREATION, ANDROID_HUB})
 @DisableFeatures({TAB_GROUP_PARITY_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
@@ -184,7 +187,7 @@ public class TabGridDialogTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(6)
+                    .setRevision(7)
                     .build();
 
     // Must force tab re-creation to ensure tab group names make sense.
@@ -1471,10 +1474,9 @@ public class TabGridDialogTest {
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
         View dialogView = cta.findViewById(R.id.dialog_parent_view);
-        View tabSwitcherView = cta.findViewById(R.id.tab_list_recycler_view);
-        waitForThumbnailsToFetch((RecyclerView) tabSwitcherView);
+        waitForThumbnailsToFetch(getRecyclerView(cta));
         // Take the GTS first snapshot, which should have the second color (blue) shown.
-        mRenderTestRule.render(tabSwitcherView, "GTS_tab_group_color_initial");
+        mRenderTestRule.render(getRecyclerView(cta), "GTS_tab_group_color_initial");
 
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
         waitForThumbnailsToFetch(
@@ -1504,9 +1506,9 @@ public class TabGridDialogTest {
 
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
-        waitForThumbnailsToFetch((RecyclerView) tabSwitcherView);
+        waitForThumbnailsToFetch(getRecyclerView(cta));
         // Take the GTS second snapshot, which should have the third color (red) shown.
-        mRenderTestRule.render(tabSwitcherView, "GTS_tab_group_color_changed");
+        mRenderTestRule.render(getRecyclerView(cta), "GTS_tab_group_color_changed");
     }
 
     @Test
@@ -2223,21 +2225,18 @@ public class TabGridDialogTest {
 
     private void verifyGlobalUndoBarAndClick() {
         // Verify that the dialog undo bar is showing and the default undo bar is hidden.
-        int expectedAncestor = 0;
+        Matcher<View> expectedAncestor = null;
         if (HubFieldTrial.isHubEnabled()) {
-            expectedAncestor =
-                    TabUiTestHelper.getTabSwitcherAncestorId(sActivityTestRule.getActivity());
+            expectedAncestor = instanceOf(HubContainerView.class);
         } else {
             expectedAncestor =
-                    isTablet(sActivityTestRule.getActivity())
-                            ? R.id.tab_switcher_view_holder
-                            : R.id.bottom_container;
+                    withId(
+                            isTablet(sActivityTestRule.getActivity())
+                                    ? R.id.tab_switcher_view_holder
+                                    : R.id.bottom_container);
         }
         onViewWaiting(
-                allOf(
-                        withId(R.id.snackbar),
-                        isDescendantOfA(withId(expectedAncestor)),
-                        isDisplayed()));
+                allOf(withId(R.id.snackbar), isDescendantOfA(expectedAncestor), isDisplayed()));
         onView(
                         allOf(
                                 withId(R.id.snackbar_button),
@@ -2246,7 +2245,7 @@ public class TabGridDialogTest {
         onView(
                         allOf(
                                 withId(R.id.snackbar_button),
-                                isDescendantOfA(withId(expectedAncestor)),
+                                isDescendantOfA(expectedAncestor),
                                 isDisplayed()))
                 .perform(click());
     }

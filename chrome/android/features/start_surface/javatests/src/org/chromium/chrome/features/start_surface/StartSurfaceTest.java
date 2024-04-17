@@ -197,6 +197,8 @@ public class StartSurfaceTest {
     @CommandLineFlags.Add({
         START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/hide_switch_when_no_incognito_tabs/false"
     })
+    // TODO(b/335250391): This test is no longer relevant when Hub is launched.
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
     public void testShow_SingleAsHomepage_NoIncognitoSwitch() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());

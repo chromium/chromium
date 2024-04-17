@@ -48,6 +48,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -207,6 +208,8 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    // TODO(b/335250391): This test and its properties can be deleted when Hub is launched.
+    @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
     public void testShowWithAnimation_showShadow() {
         mShouldShowShadow = true;
         TestThreadUtils.runOnUiThreadBlocking(
@@ -310,6 +313,8 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     @UiThreadTest
+    // TODO(b/335250391): This test and its properties can be deleted when Hub is launched.
+    @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
     public void testIsIncognitoSetsBackgroundAndToolbarHairlineColor() {
         mContainerModel.set(TabListContainerProperties.IS_INCOGNITO, true);
         assertTrue(

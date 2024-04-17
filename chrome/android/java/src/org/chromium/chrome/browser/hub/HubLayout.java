@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -320,6 +321,11 @@ public class HubLayout extends Layout implements HubLayoutController {
             }
 
             forceAnimationToFinish();
+
+            Tab currentTab = mTabModelSelector.getCurrentTab();
+            if (currentTab != null && currentTab.isHidden()) {
+                currentTab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.SET_TAB);
+            }
 
             int tabId = mTabModelSelector.getCurrentTabId();
             @LayoutType int nextLayoutType = mLayoutStateProvider.getNextLayoutType();
