@@ -6,8 +6,8 @@
 
 #include <winsock2.h>
 
-#include <windot11.h>  // NOLINT
-#include <wlanapi.h>   // NOLINT
+#include <windot11.h>
+#include <wlanapi.h>
 #include <wrl/client.h>
 
 #include <algorithm>

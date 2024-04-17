@@ -4,7 +4,7 @@
 
 #include "components/payments/core/payments_validators.h"
 
-#include <ostream>  // NOLINT
+#include <ostream>
 
 #include "testing/gtest/include/gtest/gtest.h"
 

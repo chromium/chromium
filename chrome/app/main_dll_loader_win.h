@@ -7,7 +7,7 @@
 #ifndef CHROME_APP_MAIN_DLL_LOADER_WIN_H_
 #define CHROME_APP_MAIN_DLL_LOADER_WIN_H_
 
-#include <windows.h>  // NOLINT
+#include <windows.h>
 
 #include <string>
 

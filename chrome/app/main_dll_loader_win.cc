@@ -4,11 +4,11 @@
 
 #include "chrome/app/main_dll_loader_win.h"
 
-#include <windows.h>  // NOLINT
+#include <windows.h>
 
 #include <stddef.h>
 #include <stdint.h>
-#include <userenv.h>  // NOLINT
+#include <userenv.h>
 
 #include <memory>
 #include <string>

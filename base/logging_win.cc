@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/logging_win.h"
+
+#include <initguid.h>
+
 #include "base/memory/singleton.h"
-#include <initguid.h>  // NOLINT
 
 namespace logging {
 

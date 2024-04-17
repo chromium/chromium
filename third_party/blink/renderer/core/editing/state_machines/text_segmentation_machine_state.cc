@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/state_machines/text_segmentation_machine_state.h"
 
-#include <ostream>  // NOLINT
+#include <ostream>
+
 #include "base/check_op.h"
 
 namespace blink {

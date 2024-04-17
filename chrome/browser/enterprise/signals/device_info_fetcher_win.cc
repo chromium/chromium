@@ -10,12 +10,12 @@
 #define SECURITY_WIN32 1
 #include <security.h>
 #undef SECURITY_WIN32
-#include <shobjidl.h>  // NOLINT(build/include_order)
+#include <shobjidl.h>
 
-#include <DSRole.h>        // NOLINT(build/include_order)
-#include <iphlpapi.h>      // NOLINT(build/include_order)
-#include <powersetting.h>  // NOLINT(build/include_order)
-#include <propsys.h>       // NOLINT(build/include_order)
+#include <DSRole.h>
+#include <iphlpapi.h>
+#include <powersetting.h>
+#include <propsys.h>
 #include <wincred.h>
 
 #include "base/files/file_path.h"

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Ensures MFAudioFormat_Xxx symbols are defined in mfapi.h which is included
-// by media_foundation_audio_stream.h.
-#include <initguid.h>  // NOLINT(build/include_order)
-
 #include "media/renderers/win/media_foundation_audio_stream.h"
 
-#include <mferror.h>  // NOLINT(build/include_order)
-#include <mmreg.h>    // NOLINT(build/include_order)
-#include <wrl.h>      // NOLINT(build/include_order)
+#include <mferror.h>
+#include <mmreg.h>
+#include <wrl.h>
 
 #include "base/win/scoped_co_mem.h"
 #include "media/base/audio_codecs.h"

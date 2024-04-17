@@ -4,10 +4,11 @@
 
 #include "media/renderers/win/media_foundation_video_stream.h"
 
-#include <initguid.h>  // NOLINT(build/include_order)
-#include <mfapi.h>     // NOLINT(build/include_order)
-#include <mferror.h>   // NOLINT(build/include_order)
-#include <wrl.h>       // NOLINT(build/include_order)
+#include <initguid.h>
+
+#include <mfapi.h>
+#include <mferror.h>
+#include <wrl.h>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"

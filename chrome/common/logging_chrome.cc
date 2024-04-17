@@ -26,11 +26,9 @@
 #include <windows.h>
 #endif
 
-#include "chrome/common/logging_chrome.h"
-
-#include <fstream>  // NOLINT
-#include <memory>   // NOLINT
-#include <string>   // NOLINT
+#include <fstream>
+#include <memory>
+#include <string>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -52,6 +50,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/env_vars.h"
+#include "chrome/common/logging_chrome.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc_logging.h"
 

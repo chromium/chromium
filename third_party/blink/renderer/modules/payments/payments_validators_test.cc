@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/payments/payments_validators.h"
 
-#include <ostream>  // NOLINT
+#include <ostream>
 
 #include "base/test/scoped_command_line.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"

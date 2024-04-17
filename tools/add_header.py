@@ -369,6 +369,8 @@ def SerializeIncludes(includes):
       '<mmdeviceapi.h>',
       # Must be before emi.h.
       '<initguid.h>',
+      # Must be before commdlg.h.
+      '<ocidl.h>',
   ]
 
   # LINT.ThenChange(/.clang-format:winheader)

@@ -28,7 +28,7 @@ IncludeCategories:
   # LINT.IfChange(winheader)
   - Regex:           '^<objbase\.h>' # This has to be before initguid.h.
     Priority:        1
-  - Regex:           '^<(initguid|mmdeviceapi|windows|winsock2|ws2tcpip|shobjidl|atlbase|ole2|unknwn|tchar)\.h>'
+  - Regex:           '^<(initguid|mmdeviceapi|windows|winsock2|ws2tcpip|shobjidl|atlbase|ole2|unknwn|tchar|ocidl)\.h>'
     Priority:        2
   # LINT.ThenChange(/tools/add_header.py:winheader)
   # UIAutomation*.h need to be after base/win/atl.h.

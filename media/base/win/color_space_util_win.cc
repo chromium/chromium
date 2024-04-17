@@ -4,8 +4,9 @@
 
 #include "media/base/win/color_space_util_win.h"
 
-#include <initguid.h>  // NOLINT(build/include_order)
-#include <mfapi.h>     // NOLINT(build/include_order)
+#include <initguid.h>
+
+#include <mfapi.h>
 
 #include "base/logging.h"
 #include "media/base/video_color_space.h"

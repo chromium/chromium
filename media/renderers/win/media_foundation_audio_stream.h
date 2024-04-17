@@ -5,14 +5,15 @@
 #ifndef MEDIA_RENDERERS_WIN_MEDIA_FOUNDATION_AUDIO_STREAM_H_
 #define MEDIA_RENDERERS_WIN_MEDIA_FOUNDATION_AUDIO_STREAM_H_
 
+#include <initguid.h>
+
 #include <mfapi.h>
 #include <mfidl.h>
 
-#include "media/base/win/mf_helpers.h"
-#include "media/renderers/win/media_foundation_stream_wrapper.h"
-
 #include "media/base/media_log.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/media_buildflags.h"
+#include "media/renderers/win/media_foundation_stream_wrapper.h"
 
 namespace media {
 

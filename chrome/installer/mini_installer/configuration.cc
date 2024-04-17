@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-#include <shellapi.h>  // NOLINT
+#include <shellapi.h>
 #include <stddef.h>
 #include <stdlib.h>
 

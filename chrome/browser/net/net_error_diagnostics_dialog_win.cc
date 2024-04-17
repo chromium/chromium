@@ -4,10 +4,10 @@
 
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
 
-#include <windows.h>   // NOLINT
-#include <winsock2.h>  // NOLINT
+#include <windows.h>
+#include <winsock2.h>
 
-#include <ndfapi.h>  // NOLINT
+#include <ndfapi.h>
 
 #include <memory>
 #include <string>

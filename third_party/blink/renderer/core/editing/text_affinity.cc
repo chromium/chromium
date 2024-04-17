@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 
-#include <ostream>  // NOLINT
+#include <ostream>
+
 #include "third_party/blink/public/web/web_ax_enums.h"
 
 namespace blink {

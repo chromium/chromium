@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "chromecast_export.h"  // NOLINT(build/include)
+#include "chromecast_export.h"
 
 namespace chromecast {
 

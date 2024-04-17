@@ -8,7 +8,7 @@
 
 #include <objbase.h>
 
-#include <initguid.h>  // NOLINT - has to be last
+#include <initguid.h>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

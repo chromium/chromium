@@ -1066,6 +1066,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
           # PartitionAlloc's starscan, doesn't depend on base/. It can't use
           # base::ConditionalVariable::TimedWait(..).
           "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan_internal.cc",
+          # This uses openscreen API depending on std::chrono.
+          "components/openscreen_platform/task_runner.cc",
       ]
     ),
     BanRule(

@@ -7,7 +7,7 @@
 
 #include <ws2tcpip.h>
 
-#include <iphlpapi.h>  // NOLINT
+#include <iphlpapi.h>
 #include <roapi.h>
 #include <windows.networking.connectivity.h>
 

@@ -24,13 +24,14 @@
 #error Windows.h was included inappropriately.
 #endif
 
+// clang-format off
 // Make sure windows.h can be included after windows_types.h
 #include "base/win/windows_types.h"
+// clang-format on
 
-// windows.h must be included before objidl.h
-#include <windows.h>  // NOLINT(build/include_order)
+#include <windows.h>
 
-#include <objidl.h>  // NOLINT(build/include_order)
+#include <objidl.h>
 
 // Check that type sizes match.
 static_assert(sizeof(CHROME_CONDITION_VARIABLE) == sizeof(CONDITION_VARIABLE),

@@ -4,15 +4,16 @@
 
 #include "media/base/win/mf_helpers.h"
 
-#include <d3d11.h>
 #include <initguid.h>
+
+#include <d3d11.h>
 #include <ks.h>
 #include <ksmedia.h>
 #include <mfapi.h>
-#include <mferror.h>  // NOLINT(build/include_order)
+#include <mferror.h>
 #include <mfidl.h>
-#include <mmreg.h>  // NOLINT(build/include_order)
-#include <wrl.h>    // NOLINT(build/include_order)
+#include <mmreg.h>
+#include <wrl.h>
 
 #include "base/check_op.h"
 #include "base/win/scoped_co_mem.h"

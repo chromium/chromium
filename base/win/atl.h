@@ -16,15 +16,15 @@
 // clang-format on
 
 // Now include the real ATL headers.
-#include <atlbase.h>  // NOLINT(build/include_order)
+#include <atlbase.h>
 
-#include <atlcom.h>       // NOLINT(build/include_order)
-#include <atlcomcli.h>    // NOLINT(build/include_order)
-#include <atlctl.h>       // NOLINT(build/include_order)
-#include <atlhost.h>      // NOLINT(build/include_order)
-#include <atlsecurity.h>  // NOLINT(build/include_order)
-#include <atltypes.h>     // NOLINT(build/include_order)
-#include <atlwin.h>       // NOLINT(build/include_order)
+#include <atlcom.h>
+#include <atlcomcli.h>
+#include <atlctl.h>
+#include <atlhost.h>
+#include <atlsecurity.h>
+#include <atltypes.h>
+#include <atlwin.h>
 
 // Undefine the poisonous defines
 #include "base/win/windows_undefines.inc"  // NOLINT(build/include)

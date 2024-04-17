@@ -20,7 +20,7 @@
 #include "chromecast/cast_core/grpc/grpc_unary_handler.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
-#include "components/policy/test_support/remote_commands_service.castcore.pb.h"  // NOLINT(build/include_directory)
+#include "components/policy/test_support/remote_commands_service.castcore.pb.h"
 #include "components/policy/test_support/remote_commands_state.h"
 
 /*

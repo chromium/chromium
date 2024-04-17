@@ -11,7 +11,7 @@
 #include <numeric>
 #include <vector>
 
-#include "libtest_array.h"  // NOLINT(build/include)
+#include "libtest_array.h"
 
 extern "C" {
 int GetSum();

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/state_machines/backspace_state_machine.h"
 
-#include <ostream>  // NOLINT
+#include <ostream>
+
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"

@@ -11,8 +11,8 @@
 #endif
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
+#include "gpu/gles2_conform_support/egl/test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "gpu/gles2_conform_support/egl/test_support.h"  // NOLINT
 
 // This file implements the main entry point for tests for command_buffer_gles2,
 // the mode of command buffer where the code is compiled as a standalone dynamic

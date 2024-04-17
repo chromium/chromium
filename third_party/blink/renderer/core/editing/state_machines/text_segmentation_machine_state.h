@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_TEXT_SEGMENTATION_MACHINE_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_TEXT_SEGMENTATION_MACHINE_STATE_H_
 
-#include <ostream>  // NOLINT
+#include <ostream>
+
 #include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
