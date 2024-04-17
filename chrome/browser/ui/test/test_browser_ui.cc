@@ -32,6 +32,10 @@
 #include "ui/views/widget/widget.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/events/platform/platform_event_source.h"
+#endif
+
 // TODO(crbug.com/40625383) support Mac for pixel tests.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -64,10 +68,24 @@ class ScopedMouseDisabler {
         view->GetWidget()->GetNativeWindow()->GetRootWindow());
     generator.MoveMouseTo({0, 0});
     cursor_client_->DisableMouseEvents();
+#if BUILDFLAG(IS_WIN)
+    // On Windows, cursor client disable isn't consistently respected, and it's
+    // also used to handle touch -> mouse event translation, so use this
+    // instead. See crbug.com/333846475 for an example of the problem this
+    // solves.
+    ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
+#endif
   }
+
   ScopedMouseDisabler(const ScopedMouseDisabler&) = delete;
   const ScopedMouseDisabler operator=(const ScopedMouseDisabler&) = delete;
-  ~ScopedMouseDisabler() { cursor_client_->EnableMouseEvents(); }
+
+  ~ScopedMouseDisabler() {
+#if BUILDFLAG(IS_WIN)
+    ui::PlatformEventSource::SetIgnoreNativePlatformEvents(false);
+#endif
+    cursor_client_->EnableMouseEvents();
+  }
 
  private:
   raw_ptr<aura::client::CursorClient> cursor_client_;
@@ -112,7 +130,7 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
     return ui::test::ActionResult::kNotAttempted;
   }
 
-  // Disable and hide cursor to prvent any interference with the
+  // Disable and hide cursor to prevent any interference with the
   // screenshots.
   ScopedMouseDisabler disable(view);
 
