@@ -975,14 +975,6 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
           ->chrome_feature_list_creator();
   chrome_feature_list_creator->CreateFeatureList();
 
-  // Force emitting `ThreadController` profiler metadata on Canary and Dev only,
-  // since they are the only channels where the data is used.
-  base::features::Init(
-      IsCanaryDev()
-          ? base::features::EmitThreadControllerProfilerMetadata::kForce
-          : base::features::EmitThreadControllerProfilerMetadata::
-                kFeatureDependent);
-
   content::InitializeMojoCore();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1159,10 +1151,11 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
                        }},
       invoked_in);
 
+  const bool is_canary_dev = IsCanaryDev();
   const bool emit_crashes =
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-      IsCanaryDev();
+      is_canary_dev;
 #else
       false;
 #endif
@@ -1170,6 +1163,14 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
   base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type,
                                             /*is_zygote_child=*/is_zygote_child,
                                             emit_crashes);
+
+  // Force emitting `ThreadController` profiler metadata on Canary and Dev only,
+  // since they are the only channels where the data is used.
+  base::features::Init(
+      is_canary_dev
+          ? base::features::EmitThreadControllerProfilerMetadata::kForce
+          : base::features::EmitThreadControllerProfilerMetadata::
+                kFeatureDependent);
 }
 
 #if BUILDFLAG(IS_WIN)
