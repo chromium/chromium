@@ -4175,14 +4175,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.SVGImage.DataChanged" units="microseconds"
-    expires_after="2024-02-25">
+    expires_after="2024-10-17">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Time spent updating a SVG image once all data is received.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Warning: this histogram was expired from 2024-02-25 to 2024-04-17; data may
+    be missing.
   </summary>
 </histogram>
 
