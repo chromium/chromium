@@ -1980,6 +1980,9 @@
                   '|components/cbor/'\
                   '|AndroidManifest',
     },
+    'security_interstitials': {
+      'filepath': 'components/security_interstitials',
+    },
     'select_to_speak': {
       'filepath': 'select_to_speak',
     },
@@ -3205,6 +3208,7 @@
     'search_engine_choice_screen': ['chrome-waffle-eng+watch@google.com'],
     'search_prefetch': ['lingqi+watch@chromium.org'],
     'security': ['security-watchlist@chromium.org'],
+    'security_interstitials': ['drubery+watch@chromium.org'],
     'select_to_speak': ['katie+watch@chromium.org',
                         'anastasi+watch@google.com'],
     'send_tab_to_self': ['jeffreycohen+watch-send_tab_to_self@chromium.org',
