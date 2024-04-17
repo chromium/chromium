@@ -3692,7 +3692,7 @@ Dodatne pojedinosti:
 <translation id="8150722005171944719">Datoteka na adresi <ph name="URL" /> nije čitljiva. Možda je uklonjena ili premještena ili dozvole datoteka sprječavaju pristup.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Prema pravilima administratora ne preporučuje se preuzimanje te datoteke na: <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Oprema za hokej</translation>
-<translation id="815788908807586564">Chatajte s Geminijem</translation>
+<translation id="815788908807586564">Razgovor s Geminijem</translation>
 <translation id="8161095570253161196">Nastavi pregledavanje</translation>
 <translation id="8163866351304776260">Četverostruko bušenje s lijeve strane</translation>
 <translation id="8164078261547504572">Želite li primati e-poruke kada cijene padnu?</translation>

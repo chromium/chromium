@@ -3687,7 +3687,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8150722005171944719">Soubor na adrese <ph name="URL" /> nelze načíst. Možná byl odstraněn, přesunut nebo mohou přístupu bránit oprávnění souboru.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Zásady administrátora nedoporučují stahovat tento soubor do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují stahovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují stahovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují stahovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Hokejové vybavení</translation>
-<translation id="815788908807586564">Chat s Gemini</translation>
+<translation id="815788908807586564">Gemini Chat</translation>
 <translation id="8161095570253161196">Vrátit se k procházení</translation>
 <translation id="8163866351304776260">Čtyři díry vlevo</translation>
 <translation id="8164078261547504572">Chcete dostat e‑maily, když ceny klesnou?</translation>

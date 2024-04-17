@@ -707,7 +707,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2289385804009217824">Zuschneiden</translation>
 <translation id="2292556288342944218">Deine Internetverbindung ist gesperrt</translation>
 <translation id="2293443924986248631">Wenn diese Funktion aktiviert ist, können Websites keine Cookies nutzen, die deine Webaktivitäten erfassen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
-<translation id="2295831393422400053">Aktiviere die Einstellung „Suchanfragen und das Surfen verbessern“, um „Hilfe beim Verfassen“ zu verwenden</translation>
+<translation id="2295831393422400053">Aktiviere die Einstellung „Suchanfragen und das Surfen verbessern“, um „Formuliere für mich“ zu verwenden</translation>
 <translation id="2300306941146563769">Nicht hochgeladen</translation>
 <translation id="2301098101308036335">Welche Websites zu welchem Zeitpunkt besucht werden.</translation>
 <translation id="230286397113210245">Schaltfläche „Inkognitofenster öffnen“ – aktivieren, um ein neues Inkognitofenster zu öffnen und privat zu surfen</translation>
@@ -890,7 +890,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2674804415323431591">Vorschläge ausblenden</translation>
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2683195745483370038">Andere Ergebnisse für die Suche</translation>
-<translation id="2686919536310834199">Feedback zu „Hilfe beim Verfassen“ senden.</translation>
+<translation id="2686919536310834199">Feedback zu „Formuliere für mich“ senden.</translation>
 <translation id="2687555958734450033">Beste Anordnung</translation>
 <translation id="2688186765492306706">500 × 760 mm</translation>
 <translation id="2688969097326701645">Ja, weiter</translation>
@@ -1372,7 +1372,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3632892046558972264">Bildschirmfreigabe pausiert</translation>
 <translation id="3634530185120165534">Fach 5</translation>
 <translation id="3634567936866541746">Du hast dein Passwort gerade auf einer verdächtigen Seite eingegeben. Chrome empfiehlt, deine gespeicherten Passwörter zu überprüfen, um deine Konten besser zu schützen.</translation>
-<translation id="3638102297696182302">„Hilfe beim Verfassen“ fortsetzen. Zum Öffnen Tabulator- und Eingabetaste drücken</translation>
+<translation id="3638102297696182302">„Formuliere für mich“ fortsetzen. Zum Öffnen Tabulator- und Eingabetaste drücken</translation>
 <translation id="3641116835972736297">American Football</translation>
 <translation id="3642196846309122856">Versuche noch einmal, deine Dateien herunterzuladen</translation>
 <translation id="3642638418806704195">Anwendung:</translation>
@@ -2519,7 +2519,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5924782825030413055">Quelle der letzten Aktualisierung der Einwilligung:</translation>
 <translation id="5925040402342933574">Optische Disk (halbglanz)</translation>
 <translation id="5926982310317673627">Fitnessstudios</translation>
-<translation id="5930147475897662863">Aktiviere diese Einstellung, um „Hilfe beim Verfassen“ zu verwenden</translation>
+<translation id="5930147475897662863">Aktiviere diese Einstellung, um „Formuliere für mich“ zu verwenden</translation>
 <translation id="593102073240001326">Anleitungen und Expertenwissen</translation>
 <translation id="5932224571077948991">Website zeigt aufdringliche oder irreführende Werbung an</translation>
 <translation id="5937560539988385583">Seite übersetzt</translation>
@@ -2942,7 +2942,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6734506549556896534">Simulationsspiele</translation>
 <translation id="6737708609449480586">Backwaren</translation>
 <translation id="6738516213925468394">Deine Daten wurden am <ph name="TIME" /> mit deiner <ph name="BEGIN_LINK" />Passphrase für die Synchronisierung<ph name="END_LINK" /> verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
-<translation id="6740851646645036700">Du hast dein Limit für „Hilfe beim Verfassen“ erreicht. Bitte versuche es später noch einmal.</translation>
+<translation id="6740851646645036700">Du hast dein Limit für „Formuliere für mich“ erreicht. Bitte versuche es später noch einmal.</translation>
 <translation id="674375294223700098">Fehler wegen unbekanntem Serverzertifikat</translation>
 <translation id="6744009308914054259">Während du auf eine Verbindung wartest, kannst du "Downloads" aufrufen und Offline-Artikel lesen.</translation>
 <translation id="6745592621698551453">Jetzt aktualisieren</translation>
@@ -3301,7 +3301,7 @@ Weitere Details:
 <translation id="7422347648202898039">Etiketten (Sicherheit)</translation>
 <translation id="7423283032694727565">Schaltfläche „Cookies verwalten“ – aktivieren, um in den Chrome-Einstellungen deine Cookie-Einstellungen zu verwalten</translation>
 <translation id="7424421098814895617">Die Option „Adresse löschen“ wurde ausgewählt</translation>
-<translation id="7425037327577270384">Hilfe beim Verfassen</translation>
+<translation id="7425037327577270384">Formuliere für mich</translation>
 <translation id="7425878584435172632">Bildende Kunst und Design</translation>
 <translation id="7427079287360774240">Fremdsprachenunterricht</translation>
 <translation id="7429429656042611765">Executive</translation>
@@ -3471,7 +3471,7 @@ Weitere Details:
 <translation id="7701486038694690341">Country-Musik</translation>
 <translation id="7701544340847569275">Update mit Fehlern abgeschlossen</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Weiter zu <ph name="SITE" /> (unsicher)<ph name="END_LINK" /></translation>
-<translation id="7705085181312584869">Hilfe beim Verfassen</translation>
+<translation id="7705085181312584869">Formuliere für mich</translation>
 <translation id="7705992072972338699">Optische Disk (hochglanz)</translation>
 <translation id="7706689436519265630">Dateien, die du kopierst oder verschiebst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß den Unternehmensrichtlinien gespeichert werden.</translation>
 <translation id="7709911732293795808">Versicherungen</translation>

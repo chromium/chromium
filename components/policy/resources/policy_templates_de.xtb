@@ -3022,7 +3022,7 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhinder
 <translation id="3423703250826790403">Android-Apps</translation>
 <translation id="3426434797050451264">Mit dieser Richtlinie können auch Android-Apps als Standard-Handler für Dateien festgelegt werden.</translation>
 <translation id="3428247105888806363">Netzwerkvorhersage aktivieren</translation>
-<translation id="3430198032663063246">„Hilfe beim Verfassen“ ist ein KI-basierter Schreibassistent für Kurzinhalte im Web. Vorgeschlagene Inhalte basieren auf den vom Nutzer eingegebenen Prompts und dem Inhalt auf der Webseite.
+<translation id="3430198032663063246">„Formuliere für mich“ ist ein KI-basierter Schreibassistent für Kurzinhalte im Web. Vorgeschlagene Inhalte basieren auf den vom Nutzer eingegebenen Prompts und dem Inhalt auf der Webseite.
 
 „0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI-Modelle zu verbessern.
 
@@ -6343,7 +6343,7 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
           Diese Richtlinie hat keinen Einfluss darauf, ob die Touch-Bildschirmtastatur aktiviert ist. Beispielsweise wird die Touch-Bildschirmtastatur weiterhin auf Tablets angezeigt, auch wenn diese Richtlinie auf „false“ gesetzt ist.</translation>
 <translation id="6254498834449523938">Nicht zulassen, dass Nutzer Safe Browsing-Warnungen umgehen</translation>
 <translation id="625580680776945310">Der Modus für hohe Effizienz wird aktiviert.</translation>
-<translation id="6258314216623064461">Einstellungen für „Hilfe beim Verfassen“</translation>
+<translation id="6258314216623064461">Einstellungen für „Formuliere für mich“</translation>
 <translation id="6258502079038650092">Damit wird festgelegt, ob Nutzer Chrome for Testing verwenden dürfen.
 
       Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, dürfen Nutzer Chrome for Testing installieren und ausführen.
