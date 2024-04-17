@@ -1964,8 +1964,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // When spawning a new page from a WebUI page, make sure that the browser and
 // renderer agree about the length of the history list, and that both get it
 // right.
+// TODO(crbug.com/335458094): Flaky on Linux TSan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_CorrectLengthWithNewTabNavigatingFromWebUI \
+  DISABLED_CorrectLengthWithNewTabNavigatingFromWebUI
+#else
+#define MAYBE_CorrectLengthWithNewTabNavigatingFromWebUI \
+  CorrectLengthWithNewTabNavigatingFromWebUI
+#endif
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       CorrectLengthWithNewTabNavigatingFromWebUI) {
+                       MAYBE_CorrectLengthWithNewTabNavigatingFromWebUI) {
   GURL web_ui_page(std::string(kChromeUIScheme) + "://" +
                    std::string(kChromeUIGpuHost));
   EXPECT_TRUE(NavigateToURL(shell(), web_ui_page));
@@ -2568,7 +2576,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
 }
 
 // Tests various cases of replacements caused by error pages.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ErrorPageReplacement) {
+// TODO(crbug.com/335458094): Flaky on Linux TSan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ErrorPageReplacement DISABLED_ErrorPageReplacement
+#else
+#define MAYBE_ErrorPageReplacement ErrorPageReplacement
+#endif
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       MAYBE_ErrorPageReplacement) {
   NavigationController& controller = shell()->web_contents()->GetController();
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
