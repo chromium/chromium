@@ -455,7 +455,7 @@ bool AuthenticationService::ShowMDMErrorDialogForIdentity(
   }
 
   GetApplicationContext()->GetSystemIdentityManager()->HandleMDMNotification(
-      identity, cached_error, /*display=*/ true, base::DoNothing());
+      identity, cached_error, base::DoNothing());
 
   return true;
 }
@@ -506,7 +506,7 @@ bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
       GetApplicationContext()->GetSystemIdentityManager();
 
   if (system_identity_manager->HandleMDMNotification(
-          identity, error, /*display=*/ false,
+          identity, error,
           base::BindOnce(&AuthenticationService::MDMErrorHandled,
                          weak_pointer_factory_.GetWeakPtr(), identity))) {
     CoreAccountId account_id =
