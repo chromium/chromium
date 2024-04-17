@@ -166,9 +166,8 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchPath(
-      switches::kBackgroundTracingOutputFile,
-      temp_dir.GetPath().AppendASCII("test_trace.perfetto.gz"));
+  command_line->AppendSwitchPath(switches::kBackgroundTracingOutputPath,
+                                 temp_dir.GetPath());
   command_line->AppendSwitchPath(switches::kEnableBackgroundTracing, file_path);
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),

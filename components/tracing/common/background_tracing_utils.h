@@ -64,10 +64,10 @@ COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool SetupPresetTracingFromFieldTrial();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-bool SetBackgroundTracingOutputFile();
+bool SetBackgroundTracingOutputPath();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-bool HasBackgroundTracingOutputFile();
+bool HasBackgroundTracingOutputPath();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 BackgroundTracingSetupMode GetBackgroundTracingSetupMode();

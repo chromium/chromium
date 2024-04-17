@@ -929,7 +929,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     BackgroundTracingManagerImpl::RecordMetric(
         Metrics::FINALIZATION_STARTED_WITH_LOCAL_OUTPUT);
     receive_callback_.Run(
-        std::move(serialized_trace),
+        uuid.ToString() + ".perfetto.gz", std::move(serialized_trace),
         base::BindOnce(&BackgroundTracingManagerImpl::OnFinalizeComplete,
                        weak_factory_.GetWeakPtr(), std::nullopt));
   }

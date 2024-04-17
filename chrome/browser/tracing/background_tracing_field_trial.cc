@@ -38,9 +38,9 @@ bool MaybeSetupSystemTracingFromFieldTrial() {
 
   BackgroundTracingManager::DataFiltering data_filtering =
       BackgroundTracingManager::ANONYMIZE_DATA;
-  if (tracing::HasBackgroundTracingOutputFile()) {
+  if (tracing::HasBackgroundTracingOutputPath()) {
     data_filtering = BackgroundTracingManager::NO_DATA_FILTERING;
-    if (!tracing::SetBackgroundTracingOutputFile()) {
+    if (!tracing::SetBackgroundTracingOutputPath()) {
       return false;
     }
   }
@@ -56,9 +56,9 @@ bool MaybeSetupBackgroundTracingFromFieldTrial() {
 
   BackgroundTracingManager::DataFiltering data_filtering =
       BackgroundTracingManager::ANONYMIZE_DATA;
-  if (tracing::HasBackgroundTracingOutputFile()) {
+  if (tracing::HasBackgroundTracingOutputPath()) {
     data_filtering = BackgroundTracingManager::NO_DATA_FILTERING;
-    if (!tracing::SetBackgroundTracingOutputFile()) {
+    if (!tracing::SetBackgroundTracingOutputPath()) {
       return false;
     }
   }

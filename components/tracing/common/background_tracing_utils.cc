@@ -53,11 +53,13 @@ bool BlockingWriteTraceToFile(const base::FilePath& output_file,
 }
 
 void WriteTraceToFile(
-    const base::FilePath& output_file,
+    const base::FilePath& output_path,
+    const std::string& file_name,
     std::string file_contents,
     content::BackgroundTracingManager::FinishedProcessingCallback
         done_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::FilePath output_file = output_path.AppendASCII(file_name);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&BlockingWriteTraceToFile, output_file,
@@ -169,8 +171,8 @@ bool SetupBackgroundTracingFromProtoConfigFile(
 bool SetupBackgroundTracingFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (tracing::HasBackgroundTracingOutputFile() &&
-      !tracing::SetBackgroundTracingOutputFile()) {
+  if (tracing::HasBackgroundTracingOutputPath() &&
+      !tracing::SetBackgroundTracingOutputPath()) {
     return false;
   }
 
@@ -206,22 +208,22 @@ bool SetupPresetTracingFromFieldTrial() {
   return false;
 }
 
-bool HasBackgroundTracingOutputFile() {
+bool HasBackgroundTracingOutputPath() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(switches::kBackgroundTracingOutputFile);
+  return command_line->HasSwitch(switches::kBackgroundTracingOutputPath);
 }
 
-bool SetBackgroundTracingOutputFile() {
+bool SetBackgroundTracingOutputPath() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->GetSwitchValuePath(switches::kBackgroundTracingOutputFile)
+  if (command_line->GetSwitchValuePath(switches::kBackgroundTracingOutputPath)
           .empty()) {
-    LOG(ERROR) << "--background-tracing-output-file needs an output file path";
+    LOG(ERROR) << "--background-tracing-output-path needs an output path";
     return false;
   }
-  auto output_file =
-      command_line->GetSwitchValuePath(switches::kBackgroundTracingOutputFile);
+  auto output_path =
+      command_line->GetSwitchValuePath(switches::kBackgroundTracingOutputPath);
 
-  auto receive_callback = base::BindRepeating(&WriteTraceToFile, output_file);
+  auto receive_callback = base::BindRepeating(&WriteTraceToFile, output_path);
   content::BackgroundTracingManager::GetInstance().SetReceiveCallback(
       std::move(receive_callback));
   return true;

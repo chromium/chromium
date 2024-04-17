@@ -138,9 +138,8 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchPath(
-      switches::kBackgroundTracingOutputFile,
-      temp_dir.GetPath().AppendASCII("test_trace.perfetto.gz"));
+  command_line->AppendSwitchPath(switches::kBackgroundTracingOutputPath,
+                                 temp_dir.GetPath());
   command_line->AppendSwitchPath(switches::kEnableBackgroundTracing, file_path);
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
@@ -158,9 +157,8 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromJsonConfigFile) {
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchPath(
-      switches::kBackgroundTracingOutputFile,
-      temp_dir.GetPath().AppendASCII("test_trace.perfetto.gz"));
+  command_line->AppendSwitchPath(switches::kBackgroundTracingOutputPath,
+                                 temp_dir.GetPath());
   command_line->AppendSwitchPath(switches::kEnableLegacyBackgroundTracing,
                                  file_path);
 
@@ -171,7 +169,7 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromJsonConfigFile) {
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
-TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrialOutputFile) {
+TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrialOutputPath) {
   const std::string kTrialName = "BackgroundTracing";
   const std::string kExperimentName = "LocalOutput";
   base::AssociateFieldTrialParams(kTrialName, kExperimentName,
@@ -186,11 +184,10 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrialOutputFile) {
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchPath(
-      switches::kBackgroundTracingOutputFile,
-      temp_dir.GetPath().AppendASCII("test_trace.perfetto.gz"));
+  command_line->AppendSwitchPath(switches::kBackgroundTracingOutputPath,
+                                 temp_dir.GetPath());
 
-  ASSERT_TRUE(tracing::HasBackgroundTracingOutputFile());
+  ASSERT_TRUE(tracing::HasBackgroundTracingOutputPath());
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromFieldTrial);
   EXPECT_TRUE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());

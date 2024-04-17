@@ -1857,7 +1857,7 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ReceiveCallback) {
   std::string received_trace_data;
   BackgroundTracingManager::GetInstance().SetReceiveCallback(
       base::BindLambdaForTesting(
-          [&](std::string proto_content,
+          [&](const std::string& file_name, std::string proto_content,
               BackgroundTracingManager::FinishedProcessingCallback callback) {
             received_trace_data = std::move(proto_content);
             std::move(callback).Run(true);
