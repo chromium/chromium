@@ -47,7 +47,7 @@ std::u16string CreateLabel(const Suggestion& suggestion) {
 }  // namespace
 
 AutofillKeyboardAccessoryAdapter::AutofillKeyboardAccessoryAdapter(
-    base::WeakPtr<AutofillSuggestionController> controller)
+    base::WeakPtr<AutofillKeyboardAccessoryController> controller)
     : controller_(controller) {}
 
 AutofillKeyboardAccessoryAdapter::~AutofillKeyboardAccessoryAdapter() = default;
@@ -294,6 +294,11 @@ std::optional<AutofillClient::PopupScreenLocation>
 AutofillKeyboardAccessoryAdapter::GetPopupScreenLocation() const {
   NOTIMPLEMENTED() << "No popup screen location for keyboard accessories.";
   return std::nullopt;
+}
+
+base::WeakPtr<AutofillKeyboardAccessoryController>
+AutofillKeyboardAccessoryAdapter::GetWeakPtrToController() {
+  NOTREACHED_NORETURN() << "The view should not call this method directly";
 }
 
 void AutofillKeyboardAccessoryAdapter::OnDeletionDialogClosed(int index,

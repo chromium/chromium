@@ -18,6 +18,7 @@
 #include "chrome/android/features/keyboard_accessory/internal/jni/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -163,7 +164,13 @@ void AutofillKeyboardAccessoryView::ViewDismissed(
 // static
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     base::WeakPtr<AutofillSuggestionController> controller) {
-  auto adapter = std::make_unique<AutofillKeyboardAccessoryAdapter>(controller);
+  if (!controller) {
+    return nullptr;
+  }
+
+  auto adapter = std::make_unique<AutofillKeyboardAccessoryAdapter>(
+      static_cast<AutofillKeyboardAccessoryController&>(*controller)
+          .GetWeakPtrToController());
   auto accessory_view = std::make_unique<AutofillKeyboardAccessoryView>(
       adapter->GetWeakPtrToAdapter());
   if (!accessory_view->Initialize()) {

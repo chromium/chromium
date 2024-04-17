@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
-#include "ui/gfx/font_list.h"
 
 namespace autofill {
 
-MockAutofillPopupController::MockAutofillPopupController()
-    : default_font_desc_setter_("Arial, Times New Roman, 15px") {}
+MockAutofillPopupController::MockAutofillPopupController() = default;
 
 MockAutofillPopupController::~MockAutofillPopupController() = default;
 

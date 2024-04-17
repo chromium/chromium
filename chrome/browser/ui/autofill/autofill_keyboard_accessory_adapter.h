@@ -14,8 +14,8 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
-#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace content {
@@ -29,11 +29,12 @@ namespace autofill {
 // accessory like any other implementation of AutofillPopupView.
 // From the controller's perspective, this behaves like a real AutofillPopupView
 // and for the view, it behaves like the real AutofillSuggestionController.
-class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
-                                         public AutofillSuggestionController {
+class AutofillKeyboardAccessoryAdapter
+    : public AutofillPopupView,
+      public AutofillKeyboardAccessoryController {
  public:
   explicit AutofillKeyboardAccessoryAdapter(
-      base::WeakPtr<AutofillSuggestionController> controller);
+      base::WeakPtr<AutofillKeyboardAccessoryController> controller);
 
   AutofillKeyboardAccessoryAdapter(const AutofillKeyboardAccessoryAdapter&) =
       delete;
@@ -129,6 +130,10 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
 
+  // AutofillKeyboardAccessoryController:
+  base::WeakPtr<AutofillKeyboardAccessoryController> GetWeakPtrToController()
+      override;
+
   void OnDeletionDialogClosed(int index, bool confirmed);
 
   // Indices might be offset because a special item is moved to the front. This
@@ -136,7 +141,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   // `element_index` is the position of an element as returned by `controller_`.
   int OffsetIndexFor(int element_index) const;
 
-  base::WeakPtr<AutofillSuggestionController> controller_;
+  base::WeakPtr<AutofillKeyboardAccessoryController> controller_;
   std::unique_ptr<AutofillKeyboardAccessoryAdapter::AccessoryView> view_;
 
   // The labels to be used for the input chips.

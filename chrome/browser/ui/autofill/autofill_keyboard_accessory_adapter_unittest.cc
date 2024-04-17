@@ -18,15 +18,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
-#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/test/scoped_default_font_description.h"
 
 using base::ASCIIToUTF16;
 using ::testing::_;
@@ -38,6 +40,121 @@ using ::testing::WithArg;
 
 namespace autofill {
 namespace {
+
+class MockAutofillKeyboardAccessoryController
+    : public AutofillKeyboardAccessoryController {
+ public:
+  // AutofillPopupViewDelegate:
+  MOCK_METHOD(void, Hide, (PopupHidingReason), (override));
+  MOCK_METHOD(void, ViewDestroyed, (), (override));
+  MOCK_METHOD(bool, HasSelection, (), (const override));
+  MOCK_METHOD(gfx::Rect, popup_bounds, (), (const override));
+  MOCK_METHOD(AutofillSuggestionTriggerSource,
+              GetAutofillSuggestionTriggerSource,
+              (),
+              (const override));
+  MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
+  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
+  const gfx::RectF& element_bounds() const override { return element_bounds_; }
+  void set_element_bounds(const gfx::RectF& bounds) {
+    element_bounds_ = bounds;
+  }
+  MOCK_METHOD(base::i18n::TextDirection,
+              GetElementTextDirection,
+              (),
+              (const override));
+
+  // AutofillSuggestionController:
+  MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
+  MOCK_METHOD(void, AcceptSuggestion, (int), (override));
+  MOCK_METHOD(std::optional<AutofillClient::PopupScreenLocation>,
+              GetPopupScreenLocation,
+              (),
+              (const override));
+  std::vector<Suggestion> GetSuggestions() const override {
+    return suggestions_;
+  }
+
+  int GetLineCount() const override { return suggestions_.size(); }
+
+  const autofill::Suggestion& GetSuggestionAt(int row) const override {
+    return suggestions_[row];
+  }
+
+  std::u16string GetSuggestionMinorTextAt(int row) const override {
+    return std::u16string();
+  }
+
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const override {
+    return suggestions_[row].labels;
+  }
+
+  MOCK_METHOD(bool,
+              GetRemovalConfirmationText,
+              (int, std::u16string*, std::u16string*),
+              (override));
+  MOCK_METHOD(bool,
+              RemoveSuggestion,
+              (int, AutofillMetrics::SingleEntryRemovalMethod),
+              (override));
+  MOCK_METHOD(void, SelectSuggestion, (int), (override));
+  MOCK_METHOD(void, UnselectSuggestion, (), (override));
+  MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const override));
+  MOCK_METHOD(void,
+              Show,
+              (std::vector<Suggestion>,
+               AutofillSuggestionTriggerSource,
+               AutoselectFirstSuggestion),
+              (override));
+  MOCK_METHOD(void, DisableThresholdForTesting, (bool), (override));
+  MOCK_METHOD(void, KeepPopupOpenForTesting, (), (override));
+  MOCK_METHOD(void,
+              SetViewForTesting,
+              (base::WeakPtr<AutofillPopupView>),
+              (override));
+  MOCK_METHOD(void,
+              UpdateDataListValues,
+              (base::span<const SelectOption>),
+              (override));
+  MOCK_METHOD(void, PinView, (), (override));
+
+  // AutofillKeyboardAccessoryController:
+  std::u16string GetSuggestionMainTextAt(int row) const override {
+    return suggestions_[row].main_text.value;
+  }
+  base::WeakPtr<AutofillKeyboardAccessoryController> GetWeakPtrToController()
+      override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void set_suggestions(const std::vector<PopupItemId>& ids) {
+    suggestions_.clear();
+
+    for (const auto& id : ids) {
+      // Accessibility requires all focusable AutofillPopupItemView to have
+      // ui::AXNodeData with non-empty names. We specify dummy values and labels
+      // to satisfy this.
+      suggestions_.emplace_back("dummy_value", "dummy_label",
+                                Suggestion::Icon::kNoIcon, id);
+    }
+  }
+
+  void set_suggestions(std::vector<Suggestion> suggestions) {
+    suggestions_ = std::move(suggestions);
+  }
+
+  void InvalidateWeakPtrs() { weak_ptr_factory_.InvalidateWeakPtrs(); }
+
+ private:
+  std::vector<autofill::Suggestion> suggestions_;
+  gfx::ScopedDefaultFontDescription default_font_desc_setter_{
+      "Arial, Times New Roman, 15px"};
+  gfx::RectF element_bounds_ = {100, 100, 250, 50};
+
+  base::WeakPtrFactory<MockAutofillKeyboardAccessoryController>
+      weak_ptr_factory_{this};
+};
 
 class MockAccessoryView
     : public AutofillKeyboardAccessoryAdapter::AccessoryView {
@@ -133,13 +250,14 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
  public:
   AutofillKeyboardAccessoryAdapterTest()
       : popup_controller_(
-            std::make_unique<StrictMock<MockAutofillPopupController>>()) {
+            std::make_unique<
+                StrictMock<MockAutofillKeyboardAccessoryController>>()) {
     auto view = std::make_unique<StrictMock<MockAccessoryView>>();
     accessory_view_ = view.get();
 
     autofill_accessory_adapter_ =
         std::make_unique<AutofillKeyboardAccessoryAdapter>(
-            popup_controller_->GetWeakPtr());
+            popup_controller_->GetWeakPtrToController());
     autofill_accessory_adapter_->SetAccessoryView(std::move(view));
   }
 
@@ -163,13 +281,15 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
     return autofill_accessory_adapter_.get();
   }
 
-  MockAutofillPopupController* controller() { return popup_controller_.get(); }
+  MockAutofillKeyboardAccessoryController* controller() {
+    return popup_controller_.get();
+  }
 
   MockAccessoryView* view() { return accessory_view_; }
 
  private:
   raw_ptr<StrictMock<MockAccessoryView>> accessory_view_;
-  std::unique_ptr<StrictMock<MockAutofillPopupController>> popup_controller_;
+  std::unique_ptr<MockAutofillKeyboardAccessoryController> popup_controller_;
   std::unique_ptr<AutofillKeyboardAccessoryAdapter> autofill_accessory_adapter_;
 };
 

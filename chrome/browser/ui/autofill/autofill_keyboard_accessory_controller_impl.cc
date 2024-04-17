@@ -53,7 +53,7 @@ AutofillSuggestionController::GetOrCreate(
     }
     previous_impl->controller_common_ = std::move(controller_common);
     previous_impl->suggestions_.clear();
-    return previous_impl->GetWeakPtr();
+    return previous_impl->GetWeakPtrToController();
   }
 
   if (previous) {
@@ -62,7 +62,7 @@ AutofillSuggestionController::GetOrCreate(
   auto* controller = new AutofillKeyboardAccessoryControllerImpl(
       delegate, web_contents, std::move(controller_common),
       base::BindRepeating(&local_password_migration::ShowWarning));
-  return controller->GetWeakPtr();
+  return controller->GetWeakPtrToController();
 }
 
 AutofillKeyboardAccessoryControllerImpl::
@@ -476,7 +476,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
             return controller && controller->view_ &&
                    controller->view_->OverlapsWithPictureInPictureWindow();
           },
-          GetWeakPtr());
+          weak_ptr_factory_.GetWeakPtr());
   popup_hide_helper_.emplace(
       web_contents_.get(), rfh->GetGlobalId(), std::move(hiding_params),
       std::move(hiding_callback), std::move(pip_detection_callback));
@@ -487,7 +487,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   if (view_) {
     OnSuggestionsChanged();
   } else {
-    view_ = AutofillPopupView::Create(GetWeakPtr());
+    view_ = AutofillPopupView::Create(GetWeakPtrToController());
     // It is possible to fail to create the popup.
     if (!view_) {
       Hide(PopupHidingReason::kViewDestroyed);
@@ -549,8 +549,8 @@ bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
          popup_item_id == PopupItemId::kScanCreditCard;
 }
 
-base::WeakPtr<AutofillKeyboardAccessoryControllerImpl>
-AutofillKeyboardAccessoryControllerImpl::GetWeakPtr() {
+base::WeakPtr<AutofillKeyboardAccessoryController>
+AutofillKeyboardAccessoryControllerImpl::GetWeakPtrToController() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

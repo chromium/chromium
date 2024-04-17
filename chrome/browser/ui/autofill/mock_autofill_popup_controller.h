@@ -143,7 +143,8 @@ class MockAutofillPopupController : public AutofillPopupController {
 
  private:
   std::vector<autofill::Suggestion> suggestions_;
-  gfx::ScopedDefaultFontDescription default_font_desc_setter_;
+  gfx::ScopedDefaultFontDescription default_font_desc_setter_{
+      "Arial, Times New Roman, 15px"};
   gfx::RectF element_bounds_ = {100, 100, 250, 50};
 
   base::WeakPtrFactory<MockAutofillPopupController> weak_ptr_factory_{this};

@@ -90,7 +90,13 @@ class AutofillKeyboardAccessoryControllerImpl
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
 
-  base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr();
+  // AutofillKeyboardAccessoryController:
+  base::WeakPtr<AutofillKeyboardAccessoryController> GetWeakPtrToController()
+      override;
+
+  base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   friend class AutofillSuggestionController;
