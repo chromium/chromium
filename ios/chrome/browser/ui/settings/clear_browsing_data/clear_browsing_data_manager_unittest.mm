@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/browsing_data/core/pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/search_engines/template_url_data_util.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -102,9 +104,13 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
                        browsingDataRemover:remover_.get()
         browsingDataCounterWrapperProducer:
             [[FakeBrowsingDataCounterWrapperProducer alloc] init]];
+    [manager_ prepare];
 
     test_sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForBrowserState(browser_state_.get()));
+
+    time_range_pref_.Init(browsing_data::prefs::kDeleteTimePeriod,
+                          browser_state_->GetPrefs());
   }
 
   ~ClearBrowsingDataManagerTest() override { [manager_ disconnect]; }
@@ -163,6 +169,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   std::unique_ptr<BrowsingDataRemover> remover_;
   ClearBrowsingDataManager* manager_;
   raw_ptr<syncer::TestSyncService> test_sync_service_;
+  IntegerPrefMember time_range_pref_;
   raw_ptr<TemplateURLService> template_url_service_;  // weak
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
@@ -216,7 +223,9 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
-  manager_.timePeriod = browsing_data::TimePeriod::ALL_TIME;
+  PrefService* prefs = browser_state_->GetPrefs();
+  prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
+                    static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
   CacheCounter counter(browser_state_.get());
 
   NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
@@ -259,7 +268,9 @@ TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
 
 TEST_F(ClearBrowsingDataManagerTest,
        TestCacheCounterFormattingForLessThanAllTime) {
-  manager_.timePeriod = browsing_data::TimePeriod::LAST_HOUR;
+  PrefService* prefs = browser_state_->GetPrefs();
+  prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
+                    static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
   CacheCounter counter(browser_state_.get());
 
   NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
@@ -312,7 +323,7 @@ TEST_F(ClearBrowsingDataManagerTest,
   }
 }
 
-TEST_F(ClearBrowsingDataManagerTest, TestOnTimeRangeChanged) {
+TEST_F(ClearBrowsingDataManagerTest, TestOnPreferenceChanged) {
   [manager_ loadModel:model_];
   NSArray* timeRangeItems =
       [model_ itemsInSectionWithIdentifier:SectionIdentifierTimeRange];
@@ -322,12 +333,11 @@ TEST_F(ClearBrowsingDataManagerTest, TestOnTimeRangeChanged) {
 
   // Changes of Time Range should trigger updates on Time Range item's
   // detailText.
-  manager_.timePeriod = browsing_data::TimePeriod::LAST_WEEK;
+  time_range_pref_.SetValue(2);
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK),
               timeRangeItem.detailText);
-  manager_.timePeriod = browsing_data::TimePeriod::FOUR_WEEKS;
-
+  time_range_pref_.SetValue(3);
   EXPECT_NSEQ(
       l10n_util::GetNSString(
           IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_FOUR_WEEKS),

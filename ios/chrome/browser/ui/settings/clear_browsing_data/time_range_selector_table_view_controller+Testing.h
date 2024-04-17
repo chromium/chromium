@@ -5,12 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TABLE_VIEW_CONTROLLER_TESTING_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TABLE_VIEW_CONTROLLER_TESTING_H_
 
-#import "components/browsing_data/core/browsing_data_utils.h"
-
 // Testing category exposing private methods of
 // TimeRangeSelectorTableViewController for tests.
 @interface TimeRangeSelectorTableViewController (Testing)
-- (void)updateTimePeriod:(browsing_data::TimePeriod)timePeriod;
+- (void)updatePrefValue:(int)prefValue;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TABLE_VIEW_CONTROLLER_TESTING_H_

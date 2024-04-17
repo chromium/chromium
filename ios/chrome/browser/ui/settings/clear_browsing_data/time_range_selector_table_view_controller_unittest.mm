@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller+Testing.h"
 
 #import "base/files/file_path.h"
 #import "base/test/task_environment.h"
+#import "components/browsing_data/core/pref_names.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync_preferences/pref_service_mock_factory.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller+Testing.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -26,14 +30,23 @@ class TimeRangeSelectorTableViewControllerTest
 
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
+    pref_service_ = CreateLocalState();
     CreateController();
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
     time_range_selector_controller_ =
         [[TimeRangeSelectorTableViewController alloc]
-            initWithTimePeriod:browsing_data::TimePeriod::LAST_HOUR];
+            initWithPrefs:pref_service_.get()];
     return time_range_selector_controller_;
+  }
+
+  std::unique_ptr<PrefService> CreateLocalState() {
+    scoped_refptr<PrefRegistrySimple> registry(new PrefRegistrySimple());
+    registry->RegisterIntegerPref(browsing_data::prefs::kDeleteTimePeriod, 0);
+
+    sync_preferences::PrefServiceMockFactory factory;
+    return factory.Create(registry.get());
   }
 
   // Verifies that the cell at `item` in `section` has the given `accessory`
@@ -46,6 +59,7 @@ class TimeRangeSelectorTableViewControllerTest
   }
 
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<PrefService> pref_service_;
   TimeRangeSelectorTableViewController* time_range_selector_controller_;
 };
 
@@ -80,8 +94,7 @@ TEST_F(TimeRangeSelectorTableViewControllerTest, TestUpdateCheckedState) {
   ASSERT_EQ(kNumberOfItems, NumberOfItemsInSection(0));
 
   for (NSInteger checkedItem = 0; checkedItem < kNumberOfItems; ++checkedItem) {
-    [time_range_selector_controller_
-        updateTimePeriod:static_cast<browsing_data::TimePeriod>(checkedItem)];
+    [time_range_selector_controller_ updatePrefValue:checkedItem];
     for (NSInteger item = 0; item < kNumberOfItems; ++item) {
       if (item == checkedItem) {
         CheckTextItemAccessoryType(UITableViewCellAccessoryCheckmark, 0, item);
