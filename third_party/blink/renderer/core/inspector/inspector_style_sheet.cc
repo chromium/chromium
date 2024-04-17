@@ -329,20 +329,43 @@ void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
   // existent implicit nested rule since it won't exist in the parsed
   // CSS rules from the parser itself.
   //
+  // We're also not adding the source data for the non-existent
+  // implicit nested rule when there aren't any non-disabled properties
+  // inside the rule. A `disabled` property means that
+  // it is a commented out property and parsing it happens
+  // inside the inspector[4] and it is not a feature of the Blink CSS parser.
+  // So, even if there is a disabled property in the rule; the rule is not added as a
+  // CSSOM rule in the blink parser, because of this, we're not adding
+  // it as a rule to the source data as well.
+  //
   // [1]: https://drafts.csswg.org/css-nesting-1/#nested-group-rules
   // [2]:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2122;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
   // [3]:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2131;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
+  // [4]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_style_sheet.cc;l=484?q=f:inspector_style_sheet
   if (rule->rule_header_range.length() == 0 &&
-      (rule->type == StyleRule::RuleType::kStyle &&
-       rule->property_data.empty())) {
-    // Add the source data for the child rules since they exist in the
-    // rule data coming from the parser.
-    for (auto& child_rule : rule->child_rules) {
-      AddNewRuleToSourceTree(child_rule);
+      (rule->type == StyleRule::RuleType::kStyle)) {
+    // Check if there is an active property inside the style rule.
+    bool contains_active_property = false;
+    for (auto property_data : rule->property_data) {
+      if (!property_data.disabled) {
+        contains_active_property = true;
+        break;
+      }
     }
-    return;
+
+    // If there isn't any active property declaration
+    // there won't be an implicit nested rule created for this rule.
+    // So, we skip adding it here too and only add its child rules.
+    if (!contains_active_property) {
+      // Add the source data for the child rules since they exist in the
+      // rule data coming from the parser.
+      for (auto& child_rule : rule->child_rules) {
+        AddNewRuleToSourceTree(child_rule);
+      }
+      return;
+    }
   }
 
   if (current_rule_data_stack_.empty()) {
