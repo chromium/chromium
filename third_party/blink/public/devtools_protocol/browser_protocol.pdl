@@ -8440,7 +8440,7 @@ domain Page
   #   This API always waits for the manifest to be loaded.
   #   If manifestId is provided, and it does not match the manifest of the
   #     current document, this API errors out.
-  #   If there isn’t a loaded page, this API errors out immediately.
+  #   If there is not a loaded page, this API errors out immediately.
   command getAppManifest
     parameters
       optional string manifestId
