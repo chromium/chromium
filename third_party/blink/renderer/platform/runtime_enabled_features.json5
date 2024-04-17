@@ -1582,6 +1582,7 @@
       status: "test",
       base_feature: "none",
       origin_trial_feature_name: "FedCmButtonMode",
+      origin_trial_os: ["win", "mac", "linux", "chromeos"],
       origin_trial_allows_third_party: true,
     },
     {
