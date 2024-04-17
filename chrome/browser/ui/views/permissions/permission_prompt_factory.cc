@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt.h"
+#include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_quiet_icon.h"
@@ -150,6 +151,19 @@ bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
       });
 }
 
+bool ShouldCurrentRequestUseExclusiveAccessUI(
+    permissions::PermissionPrompt::Delegate* delegate) {
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests = delegate->Requests();
+  return base::ranges::all_of(
+      requests, [](permissions::PermissionRequest* request) {
+        return request->request_type() ==
+                   permissions::RequestType::kPointerLock ||
+               request->request_type() ==
+                   permissions::RequestType::kKeyboardLock;
+      });
+}
+
 std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(
     Browser* browser,
     content::WebContents* web_contents,
@@ -169,7 +183,10 @@ std::unique_ptr<permissions::PermissionPrompt> CreateNormalPrompt(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(!delegate->ShouldCurrentRequestUseQuietUI());
 
-  if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
+  if (ShouldCurrentRequestUseExclusiveAccessUI(delegate)) {
+    return std::make_unique<ExclusiveAccessPermissionPrompt>(
+        browser, web_contents, delegate);
+  } else if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
     return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
                                                       delegate);
   } else if (ShouldUseChip(delegate) && IsLocationBarDisplayed(browser)) {

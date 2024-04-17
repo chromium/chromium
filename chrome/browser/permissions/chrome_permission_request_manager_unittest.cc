@@ -248,7 +248,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptShown,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::MULTIPLE),
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::kPermissionsPromptShownGesture, 0);
@@ -262,7 +262,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptAccepted,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::MULTIPLE),
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
   histograms.ExpectUniqueSample(
       "Permissions.Engagement.Accepted.AudioAndVideoCapture",
@@ -285,7 +285,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedDeniedBubble) {
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptDenied,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::MULTIPLE),
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
   histograms.ExpectUniqueSample(
       "Permissions.Engagement.Denied.AudioAndVideoCapture",

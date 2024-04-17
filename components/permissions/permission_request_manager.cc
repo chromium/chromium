@@ -113,15 +113,27 @@ bool IsMediaRequest(RequestType type) {
   return type == RequestType::kMicStream || type == RequestType::kCameraStream;
 }
 
-bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
-  if (a->requesting_origin() != b->requesting_origin())
-    return false;
+#if !BUILDFLAG(IS_ANDROID)
+bool IsExclusiveAccessRequest(RequestType type) {
+  return type == RequestType::kPointerLock ||
+         type == RequestType::kKeyboardLock;
+}
+#endif
 
-  // Group if both requests are media requests.
+bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
+  if (a->requesting_origin() != b->requesting_origin()) {
+    return false;
+  }
+  // Group if both requests are of the same category.
   if (IsMediaRequest(a->request_type()) && IsMediaRequest(b->request_type())) {
     return true;
   }
-
+#if !BUILDFLAG(IS_ANDROID)
+  if (IsExclusiveAccessRequest(a->request_type()) &&
+      IsExclusiveAccessRequest(b->request_type())) {
+    return true;
+  }
+#endif
   return false;
 }
 

@@ -153,11 +153,36 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
   }
 }
 
+RequestTypeForUma GetUmaValueForRequests(
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+        requests) {
+  CHECK(!requests.empty());
+  const RequestType request_type = requests[0]->request_type();
+  if (requests.size() == 1) {
+    return GetUmaValueForRequestType(request_type);
+  }
+  if (
+#if !BUILDFLAG(IS_ANDROID)
+      request_type == RequestType::kCameraPanTiltZoom ||
+#endif
+      request_type == RequestType::kCameraStream ||
+      request_type == RequestType::kMicStream) {
+    return RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  if (request_type == RequestType::kKeyboardLock ||
+      request_type == RequestType::kPointerLock) {
+    return RequestTypeForUma::MULTIPLE_KEYBOARD_AND_POINTER_LOCK;
+  }
+#endif
+  return RequestTypeForUma::UNKNOWN;
+}
+
 const int kPriorCountCap = 10;
 
 std::string GetPermissionRequestString(RequestTypeForUma type) {
   switch (type) {
-    case RequestTypeForUma::MULTIPLE:
+    case RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE:
       return "AudioAndVideoCapture";
     case RequestTypeForUma::QUOTA:
       return "Quota";
@@ -215,6 +240,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "KeyboardLock";
     case RequestTypeForUma::PERMISSION_POINTER_LOCK:
       return "PointerLock";
+    case RequestTypeForUma::MULTIPLE_KEYBOARD_AND_POINTER_LOCK:
+      return "KeyboardAndPointerLock";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -293,10 +320,7 @@ void RecordEngagementMetric(
     const std::string& action) {
   CHECK(!requests.empty());
 
-  RequestTypeForUma type =
-      GetUmaValueForRequestType(requests[0]->request_type());
-  if (requests.size() > 1)
-    type = RequestTypeForUma::MULTIPLE;
+  RequestTypeForUma type = GetUmaValueForRequests(requests);
 
   DCHECK(action == "Accepted" || action == "Denied" || action == "Dismissed" ||
          action == "Ignored" || action == "AcceptedOnce");
@@ -844,13 +868,10 @@ void PermissionUmaUtil::RecordPermissionPromptAttempt(
     bool IsLocationBarEditingOrEmpty) {
   DCHECK(!requests.empty());
 
-  RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
+  RequestTypeForUma request_type = GetUmaValueForRequests(requests);
   PermissionRequestGestureType gesture_type =
-      PermissionRequestGestureType::UNKNOWN;
-  if (requests.size() == 1) {
-    request_type = GetUmaValueForRequestType(requests[0]->request_type());
-    gesture_type = requests[0]->GetGestureType();
-  }
+      requests.size() == 1 ? requests[0]->GetGestureType()
+                           : PermissionRequestGestureType::UNKNOWN;
 
   std::string permission_type = GetPermissionRequestString(request_type);
 
@@ -884,13 +905,10 @@ void PermissionUmaUtil::PermissionPromptShown(
         requests) {
   DCHECK(!requests.empty());
 
-  RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
+  RequestTypeForUma request_type = GetUmaValueForRequests(requests);
   PermissionRequestGestureType gesture_type =
-      PermissionRequestGestureType::UNKNOWN;
-  if (requests.size() == 1) {
-    request_type = GetUmaValueForRequestType(requests[0]->request_type());
-    gesture_type = requests[0]->GetGestureType();
-  }
+      requests.size() == 1 ? requests[0]->GetGestureType()
+                           : PermissionRequestGestureType::UNKNOWN;
 
   PERMISSION_BUBBLE_TYPE_UMA(kPermissionsPromptShown, request_type);
   PERMISSION_BUBBLE_GESTURE_TYPE_UMA(kPermissionsPromptShownGesture,
@@ -972,10 +990,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
                                     GetPromptDispositionString(ui_disposition),
                                 permission_action, PermissionAction::NUM);
 
-  RequestTypeForUma type =
-      GetUmaValueForRequestType(requests[0]->request_type());
-  if (requests.size() > 1)
-    type = RequestTypeForUma::MULTIPLE;
+  RequestTypeForUma type = GetUmaValueForRequests(requests);
 
   std::string permission_type = GetPermissionRequestString(type);
   std::string permission_disposition =
@@ -1360,13 +1375,10 @@ void PermissionUmaUtil::RecordPromptDecided(
     bool is_one_time) {
   DCHECK(!requests.empty());
 
-  RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
+  RequestTypeForUma request_type = GetUmaValueForRequests(requests);
   PermissionRequestGestureType gesture_type =
-      PermissionRequestGestureType::UNKNOWN;
-  if (requests.size() == 1) {
-    request_type = GetUmaValueForRequestType(requests[0]->request_type());
-    gesture_type = requests[0]->GetGestureType();
-  }
+      requests.size() == 1 ? requests[0]->GetGestureType()
+                           : PermissionRequestGestureType::UNKNOWN;
 
   if (accepted) {
     if (is_one_time) {
@@ -1749,10 +1761,7 @@ void PermissionUmaUtil::RecordIgnoreReason(
     const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
     PermissionPromptDisposition prompt_disposition,
     PermissionIgnoredReason reason) {
-  RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
-  if (requests.size() == 1) {
-    request_type = GetUmaValueForRequestType(requests[0]->request_type());
-  }
+  RequestTypeForUma request_type = GetUmaValueForRequests(requests);
 
   std::string histogram_name =
       "Permissions.Prompt." + GetPermissionRequestString(request_type) + "." +
@@ -1788,11 +1797,7 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
     DismissedReason reason) {
   CHECK(!requests.empty());
 
-  RequestTypeForUma type =
-      GetUmaValueForRequestType(requests[0]->request_type());
-  if (requests.size() > 1) {
-    type = RequestTypeForUma::MULTIPLE;
-  }
+  RequestTypeForUma type = GetUmaValueForRequests(requests);
 
   base::UmaHistogramEnumeration("Permissions.Prompt." +
                                     GetPermissionRequestString(type) +
@@ -1807,11 +1812,7 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
     OsScreenAction action) {
   CHECK(!requests.empty());
 
-  RequestTypeForUma type =
-      GetUmaValueForRequestType(requests[0]->request_type());
-  if (requests.size() > 1) {
-    type = RequestTypeForUma::MULTIPLE;
-  }
+  RequestTypeForUma type = GetUmaValueForRequests(requests);
 
   std::string screen_type;
   switch (screen) {
@@ -1836,11 +1837,7 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
     ElementAnchoredBubbleVariant variant) {
   CHECK(!requests.empty());
 
-  RequestTypeForUma type =
-      GetUmaValueForRequestType(requests[0]->request_type());
-  if (requests.size() > 1) {
-    type = RequestTypeForUma::MULTIPLE;
-  }
+  RequestTypeForUma type = GetUmaValueForRequests(requests);
 
   base::UmaHistogramEnumeration("Permissions.Prompt." +
                                     GetPermissionRequestString(type) +

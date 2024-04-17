@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_view_delegate.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -22,8 +23,10 @@ namespace content {
 class WebContents;
 }
 
-class EmbeddedPermissionPrompt : public PermissionPromptDesktop,
-                                 public EmbeddedPermissionPromptViewDelegate {
+class EmbeddedPermissionPrompt
+    : public PermissionPromptDesktop,
+      public EmbeddedPermissionPromptViewDelegate,
+      public EmbeddedPermissionPromptContentScrimView::Delegate {
  public:
   EmbeddedPermissionPrompt(Browser* browser,
                            content::WebContents* web_contents,
@@ -61,7 +64,6 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop,
 
   void CloseCurrentViewAndMaybeShowNext(bool first_prompt);
 
-
   // permissions::PermissionPrompt:
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
@@ -69,19 +71,22 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop,
   bool ShouldFinalizeRequestAfterDecided() const override;
   std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
       const override;
-  // EmbeddedPermissionPromptBaseView::Delegate
+
+  // EmbeddedPermissionPromptViewDelegate:
   void Allow() override;
   void AllowThisTime() override;
   void Dismiss() override;
   void Acknowledge() override;
   void StopAllowing() override;
   void ShowSystemSettings() override;
-  void DismissScrim() override;
   base::WeakPtr<permissions::PermissionPrompt::Delegate>
   GetPermissionPromptDelegate() const override;
   const std::vector<
       raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
   Requests() const override;
+
+  // EmbeddedPermissionPromptContentScrimView::Delegate:
+  void DismissScrim() override;
 
  private:
   static Variant DeterminePromptVariant(

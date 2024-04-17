@@ -257,7 +257,8 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     prompt_view_tracker_.SetView(prompt_view);
     content_scrim_widget_ =
         EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
-            weak_factory_.GetWeakPtr());
+            weak_factory_.GetWeakPtr(),
+            SkColorSetA(gfx::kGoogleGrey700, SK_AlphaOPAQUE * 0.5f));
     prompt_view->UpdateAnchor(content_scrim_widget_.get());
     prompt_view->Show();
   }
@@ -391,6 +392,16 @@ void EmbeddedPermissionPrompt::ShowSystemSettings() {
 #endif
 }
 
+base::WeakPtr<permissions::PermissionPrompt::Delegate>
+EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
+  return delegate_->GetWeakPtr();
+}
+
+const std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
+EmbeddedPermissionPrompt::Requests() const {
+  return requests_;
+}
+
 void EmbeddedPermissionPrompt::DismissScrim() {
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
       delegate()->Requests(), permissions::DismissedReason::DISMISSED_SCRIM);
@@ -408,16 +419,6 @@ void EmbeddedPermissionPrompt::DismissScrim() {
   PrecalculateVariantsForMetrics();
   delegate_->Dismiss();
   delegate_->FinalizeCurrentRequests();
-}
-
-base::WeakPtr<permissions::PermissionPrompt::Delegate>
-EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
-  return delegate_->GetWeakPtr();
-}
-
-const std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
-EmbeddedPermissionPrompt::Requests() const {
-  return requests_;
 }
 
 void EmbeddedPermissionPrompt::PromptForOsPermission() {

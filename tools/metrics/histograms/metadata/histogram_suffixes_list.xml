@@ -2699,10 +2699,14 @@ chromium-metrics-reviews@google.com.
   <suffix name="CapturedSurfaceControl"
       label="Captured Surface Control permission"/>
   <suffix name="Geolocation" label="Geolocation permission"/>
+  <suffix name="KeyboardAndPointerLock"
+      label="Keyboard and pointer lock permission"/>
+  <suffix name="KeyboardLock" label="Keyboard lock permission"/>
   <suffix name="MidiSysEx" label="Midi SysEx permission"/>
   <suffix name="MultipleDownload" label="Multiple downloads permission"/>
   <suffix name="Nfc" label="NFC permission"/>
   <suffix name="Notifications" label="Notification permission"/>
+  <suffix name="PointerLock" label="Pointer lock permission"/>
   <suffix name="ProtectedMedia" label="Protected media permission"/>
   <suffix name="PushMessaging" label="Push messaging permission"/>
   <suffix name="Quota" label="Quota permission"/>

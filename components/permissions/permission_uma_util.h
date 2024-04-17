@@ -48,7 +48,8 @@ enum class ActivityIndicatorState {
 
 // Used for UMA to record the types of permission prompts shown.
 // When updating, you also need to update:
-//   1) The PermissionRequestType enum in tools/metrics/histograms/enums.xml.
+//   1) The PermissionRequestType enum in
+//      tools/metrics/histograms/metadata/permissions/enums.xml.
 //   2) The PermissionRequestTypes suffix list in
 //      tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
 //   3) GetPermissionRequestString function in
@@ -59,7 +60,7 @@ enum class ActivityIndicatorState {
 // - only ever add values at the end
 enum class RequestTypeForUma {
   UNKNOWN = 0,
-  MULTIPLE = 1,
+  MULTIPLE_AUDIO_AND_VIDEO_CAPTURE = 1,
   // UNUSED_PERMISSION = 2,
   QUOTA = 3,
   DOWNLOAD = 4,
@@ -98,6 +99,7 @@ enum class RequestTypeForUma {
   PERMISSION_IDENTITY_PROVIDER = 36,
   PERMISSION_KEYBOARD_LOCK = 37,
   PERMISSION_POINTER_LOCK = 38,
+  MULTIPLE_KEYBOARD_AND_POINTER_LOCK = 39,
   // NUM must be the last value in the enum.
   NUM
 };
