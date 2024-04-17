@@ -59,7 +59,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             BrowserControlsStateProvider browserControlsStateProvider,
             TabSwitcher tabSwitcher,
             ViewGroup tabSwitcherScrimAnchor,
-            ScrimCoordinator scrimCoordinator) {
+            ScrimCoordinator scrimCoordinator,
+            ObservableSupplier<Float> appHeaderHeightSupplier) {
         return new TabSwitcherLayout(
                 context,
                 updateHost,
@@ -68,7 +69,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 browserControlsStateProvider,
                 tabSwitcher,
                 tabSwitcherScrimAnchor,
-                scrimCoordinator);
+                scrimCoordinator,
+                appHeaderHeightSupplier);
     }
 
     @Override

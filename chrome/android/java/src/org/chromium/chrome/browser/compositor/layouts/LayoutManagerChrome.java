@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -97,6 +98,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     // Theme Color
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
     private ThemeColorObserver mThemeColorObserver;
+
+    protected ObservableSupplierImpl<Float> mAppHeaderHeightSupplier;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
@@ -222,7 +225,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         browserControlsStateProvider,
                         tabSwitcher,
                         tabSwitcherScrimAnchor,
-                        scrimCoordinator);
+                        scrimCoordinator,
+                        mAppHeaderHeightSupplier);
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())) {
             mTabSwitcherFocusLayoutStateObserver =
