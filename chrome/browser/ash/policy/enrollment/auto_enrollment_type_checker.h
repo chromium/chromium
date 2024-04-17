@@ -161,6 +161,10 @@ class AutoEnrollmentTypeChecker {
       ash::system::StatisticsProvider* statistics_provider,
       bool dev_disable_boot);
 
+  // Returns requirement for FRE on Flex. Note that this method doesn't check
+  // whether it is running on Flex or not.
+  static FRERequirement GetFRERequirementOnFlex();
+
   // Returns requirement for initial state determination.
   static InitialStateDeterminationRequirement
   GetInitialStateDeterminationRequirement(

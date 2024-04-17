@@ -48,7 +48,7 @@ static bool IsOfficialGoogleChrome() {
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-// Returns true if this is an official Flex build that can do FRE.
+// Returns true if this is an official Flex build.
 static bool IsOfficialGoogleFlex() {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return false;
@@ -57,6 +57,12 @@ static bool IsOfficialGoogleFlex() {
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+// Returns true if this is an official Google OS.
+static bool IsOfficialGoogleOS() {
+  return IsOfficialGoogleChrome() || IsOfficialGoogleFlex();
+}
+
+// A helpful function to dump FRE requirements in human readable form.
 static std::string FRERequirementToString(
     AutoEnrollmentTypeChecker::FRERequirement requirement) {
   using FRERequirement = AutoEnrollmentTypeChecker::FRERequirement;
@@ -85,8 +91,8 @@ static bool IsFREOnFlexEnabledByCommandLineSwitch() {
 
 // Returns true if FRE state keys are supported.
 static bool AreFREStateKeysSupported() {
+  // TODO(b/331677599): Return IsOfficialGoogleOS().
   return IsOfficialGoogleChrome() ||
-         // TODO(b/331677599): Replace with IsOfficialGoogleFlex().
          (ash::switches::IsRevenBranding() &&
           IsFREOnFlexEnabledByCommandLineSwitch());
 }
@@ -258,22 +264,12 @@ bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
     return false;
   }
 
-  // Devices supporting FRE state keys do support unified state determination.
-  return AreFREStateKeysSupported();
+  // Official Google OSes support unified state determination.
+  return IsOfficialGoogleOS();
 }
 
 // static
 bool AutoEnrollmentTypeChecker::IsFREEnabled() {
-  // To support legacy code that does not support unified state determination
-  // yet, we pretend FRE is explicitly enabled, when unified state determination
-  // is enabled. For example, this enables state keys to be uploaded with the
-  // policy fetches.
-  // TODO(b/265923216): Migrate legacy code to support unified state
-  // determination.
-  if (IsUnifiedStateDeterminationEnabled()) {
-    return true;
-  }
-
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   std::string command_line_mode = command_line->GetSwitchValueASCII(
@@ -297,10 +293,6 @@ bool AutoEnrollmentTypeChecker::IsFREEnabled() {
 bool AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (!command_line->HasSwitch(
-          ash::switches::kEnterpriseEnableInitialEnrollment)) {
-    return IsOfficialGoogleChrome() || IsOfficialGoogleFlex();
-  }
   std::string command_line_mode = command_line->GetSwitchValueASCII(
       ash::switches::kEnterpriseEnableInitialEnrollment);
   if (command_line_mode == kInitialEnrollmentAlways)
@@ -308,7 +300,7 @@ bool AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled() {
 
   if (command_line_mode.empty() ||
       command_line_mode == kInitialEnrollmentOfficialBuild) {
-    return IsOfficialGoogleChrome() || IsOfficialGoogleFlex();
+    return IsOfficialGoogleOS();
   }
 
   if (command_line_mode == kInitialEnrollmentNever)
@@ -327,15 +319,35 @@ AutoEnrollmentTypeChecker::FRERequirement
 AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
     ash::system::StatisticsProvider* statistics_provider) {
   // To support legacy code that does not support unified state determination
-  // yet, we pretend FRE is explicitly enabled, when unified state determination
-  // is enabled. For example, this disables powerwash and TPM firmware updates
-  // during OOBE (since admin could have forbidden both).
+  // yet, we pretend FRE is explicitly required, when unified state
+  // determination is enabled. For example, this disables powerwash and TPM
+  // firmware updates during OOBE (since admin could have forbidden both).
+  //
+  // However, we don't do that if the platform doesn't support state keys,
+  // because legacy state determination will not work then anyways.
+  //
   // TODO(b/265923216): Migrate legacy code to support unified state
   // determination.
   if (IsUnifiedStateDeterminationEnabled()) {
-    LOG(WARNING) << "Unified state determination is enabled. Forcing"
-                    "re-enrollment check.";
-    return FRERequirement::kExplicitlyRequired;
+    if (AreFREStateKeysSupported()) {
+      LOG(WARNING) << "Unified state determination is enabled."
+                      " Forcing legacy re-enrollment check.";
+      return FRERequirement::kExplicitlyRequired;
+    } else {
+      LOG(WARNING) << "Unified state determination is enabled, but the device"
+                      " does not support state keys."
+                      " Disabling legacy re-enrollment check.";
+      return FRERequirement::kDisabled;
+    }
+  }
+
+  // FRE on Flex is not supported without unified state determination because
+  // we do not have ways to store whether an FRE check should be done or not,
+  // and the legacy path would then make a check on consumer devices without
+  // using the PSM privacy-friendly protocol.
+  if (ash::switches::IsRevenBranding()) {
+    LOG(WARNING) << "Legacy re-enrollment on Flex is not supported.";
+    return FRERequirement::kDisabled;
   }
 
   const std::optional<std::string_view> check_enrollment_value =
@@ -354,21 +366,6 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
                << ": " << check_enrollment_value.value()
                << ". Forcing re-enrollment check.";
     return FRERequirement::kExplicitlyRequired;
-  }
-
-  // Decide whether to enable forced re-enrollment on Flex.
-  if (ash::switches::IsRevenBranding()) {
-    // We only enable FRE for Flex devices if the command line forces it to be
-    // always enabled.
-    if (IsFREOnFlexEnabledByCommandLineSwitch()) {
-      LOG(WARNING) << "Requiring re-enrollment check on Flex.";
-      return FRERequirement::kExplicitlyRequired;
-    } else {
-      // If we return kRequired, a check would happen even on consumer
-      // devices.
-      LOG(WARNING) << "Re-enrollment check is disabled on Flex devices.";
-      return FRERequirement::kDisabled;
-    }
   }
 
   // The FRE flag is not found. If VPD is in valid state, do not require FRE
@@ -413,7 +410,7 @@ AutoEnrollmentTypeChecker::FRERequirement
 AutoEnrollmentTypeChecker::GetFRERequirement(
     ash::system::StatisticsProvider* statistics_provider,
     bool dev_disable_boot) {
-  // Skip FRE check if it is not enabled by command-line switch.
+  // Skip FRE check if FRE is not enabled on this device.
   if (!IsFREEnabled()) {
     LOG(WARNING) << "FRE disabled.";
     return FRERequirement::kDisabled;

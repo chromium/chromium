@@ -369,7 +369,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
                 &fake_statistics_provider_),
-            AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+            AutoEnrollmentTypeChecker::FRERequirement::kDisabled);
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
@@ -706,6 +706,10 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
            device_os_ == DeviceOs::FlexWithFRE;
   }
 
+  bool IsOfficialGoogleOS() {
+    return device_os_ != DeviceOs::Nonchrome && google_branded_;
+  }
+
   const DeviceOs device_os_ = std::get<0>(GetParam());
   const bool kill_switch_enabled_ = std::get<1>(GetParam());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -717,7 +721,7 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Default) {
   EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
-            !kill_switch_enabled_ && IsFRESupportedByDevice());
+            !kill_switch_enabled_ && IsOfficialGoogleOS());
 }
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, OfficialBuild) {
@@ -726,7 +730,7 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, OfficialBuild) {
       AutoEnrollmentTypeChecker::kUnifiedStateDeterminationOfficialBuild);
 
   EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
-            !kill_switch_enabled_ && IsFRESupportedByDevice());
+            !kill_switch_enabled_ && google_branded_);
 }
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Never) {
@@ -761,16 +765,13 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Never) {
     EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
                   &statistics_provider),
               AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
-  } else if (device_os_ == DeviceOs::FlexWithoutFRE) {
-    // Check that the FRE requirement is as expected with FRE disabled on Flex.
+  } else if (device_os_ == DeviceOs::FlexWithoutFRE ||
+             device_os_ == DeviceOs::FlexWithFRE) {
+    // Check that the FRE requirement is as expected on Flex, where we don't
+    // support legacy FRE.
     EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
                   &statistics_provider),
               AutoEnrollmentTypeChecker::FRERequirement::kDisabled);
-  } else if (device_os_ == DeviceOs::FlexWithFRE) {
-    // Check that the FRE requirement is as expected with FRE enabled on Flex.
-    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-                  &statistics_provider),
-              AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
   }
 }
 
@@ -781,11 +782,14 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Always) {
 
   EXPECT_TRUE(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
 
-  // Ensure that legacy functions behave as if FRE was explicitly enabled.
-  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
+  // FRE is independent of USD.
+  EXPECT_EQ(IsFRESupportedByDevice(),
+            AutoEnrollmentTypeChecker::IsFREEnabled());
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
                 /*statistics_provider=*/nullptr),
-            AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+            IsFRESupportedByDevice()
+                ? AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired
+                : AutoEnrollmentTypeChecker::FRERequirement::kDisabled);
 }
 
 INSTANTIATE_TEST_SUITE_P(
