@@ -239,7 +239,7 @@ suite('CategoriesTest', () => {
             categoriesElement,
             '#classicChromeTile #cornerNewTabPageTile #cornerNewTabPage')!.src,
         'chrome://customize-chrome-side-panel.top-chrome/icons/' +
-            'gm3_corner_new_tab_page.svg');
+            'corner_new_tab_page.svg');
   });
 
   [true, false].forEach((flagEnabled) => {

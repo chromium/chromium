@@ -158,7 +158,7 @@ suite('ThemeSnapshotTest', () => {
         $$<SVGUseElement>(
             themeSnapshotElement,
             '#classicChromeBackground svg use')!.href.baseVal,
-        'icons/gm3_mini_new_tab_page.svg#miniNewTabPage');
+        'icons/mini_new_tab_page.svg#miniNewTabPage');
   });
 
   test(
