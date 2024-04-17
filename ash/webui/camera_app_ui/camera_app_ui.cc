@@ -185,19 +185,19 @@ CreateCameraAppDeviceProvider(
     content::BrowserContext* browser_context,
     media_device_salt::MediaDeviceSaltService* salt_service,
     const url::Origin& security_origin) {
-  mojo::PendingRemote<cros::mojom::CameraAppDeviceBridge> device_bridge;
-  auto device_bridge_receiver = device_bridge.InitWithNewPipeAndPassReceiver();
-
-  // Connects to CameraAppDeviceBridge from video_capture service.
-  content::GetVideoCaptureService().ConnectToCameraAppDeviceBridge(
-      std::move(device_bridge_receiver));
-
+  auto connect_to_bridge_callback = base::BindRepeating(
+      [](mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge>
+             device_bridge_receiver) {
+        // Connects to CameraAppDeviceBridge from video_capture service.
+        content::GetVideoCaptureService().ConnectToCameraAppDeviceBridge(
+            std::move(device_bridge_receiver));
+      });
   auto mapping_callback =
       base::BindRepeating(&TranslateVideoDeviceId, browser_context,
                           salt_service, std::move(security_origin));
 
   return std::make_unique<media::CameraAppDeviceProviderImpl>(
-      std::move(device_bridge), std::move(mapping_callback));
+      std::move(connect_to_bridge_callback), std::move(mapping_callback));
 }
 
 std::unique_ptr<CameraAppHelperImpl> CreateCameraAppHelper(

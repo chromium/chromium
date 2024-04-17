@@ -13,11 +13,13 @@
 namespace media {
 
 CameraAppDeviceProviderImpl::CameraAppDeviceProviderImpl(
-    mojo::PendingRemote<cros::mojom::CameraAppDeviceBridge> bridge,
+    ConnectToBridgeCallback connect_to_bridge_callback,
     DeviceIdMappingCallback mapping_callback)
-    : bridge_(std::move(bridge)),
+    : connect_to_bridge_callback_(std::move(connect_to_bridge_callback)),
       mapping_callback_(std::move(mapping_callback)),
-      weak_ptr_factory_(this) {}
+      weak_ptr_factory_(this) {
+  ConnectToCameraAppDeviceBridge();
+}
 
 CameraAppDeviceProviderImpl::~CameraAppDeviceProviderImpl() = default;
 
@@ -94,6 +96,14 @@ void CameraAppDeviceProviderImpl::IsDeviceInUseWithDeviceId(
     return;
   }
   bridge_->IsDeviceInUse(*device_id, std::move(callback));
+}
+
+void CameraAppDeviceProviderImpl::ConnectToCameraAppDeviceBridge() {
+  bridge_.reset();
+  connect_to_bridge_callback_.Run(bridge_.BindNewPipeAndPassReceiver());
+  bridge_.set_disconnect_handler(base::BindOnce(
+      &CameraAppDeviceProviderImpl::ConnectToCameraAppDeviceBridge,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace media
