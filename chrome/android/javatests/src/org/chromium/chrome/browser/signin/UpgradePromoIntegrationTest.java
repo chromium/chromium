@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -217,6 +218,7 @@ public class UpgradePromoIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/333908211")
     public void testAddAccount() {
         String secondAccountEmail = "jane.doe@gmail.com";
         mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, secondAccountEmail);
