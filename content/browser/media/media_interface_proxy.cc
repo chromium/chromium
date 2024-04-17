@@ -311,7 +311,10 @@ void MediaInterfaceProxy::CreateVideoDecoder(
       break;
     case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
       // Well-behaved clients shouldn't call CreateVideoDecoder() in this OOP-VD
-      // mode.
+      // mode and MediaInterfaceProxy::CreateVideoDecoder() should always be
+      // called during a message dispatch.
+      CHECK(mojo::IsInMessageDispatch());
+      mojo::ReportBadMessage("CreateVideoDecoder() called unexpectedly");
       return;
     case media::OOPVDMode::kDisabled:
       break;

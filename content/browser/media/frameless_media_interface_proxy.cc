@@ -90,7 +90,15 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
     case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
       // Well-behaved clients shouldn't call CreateVideoDecoder() in this OOP-VD
       // mode.
-      break;
+      //
+      // Note: FramelessMediaInterfaceProxy::CreateVideoDecoder() might be
+      // called outside of a message dispatch, e.g., by
+      // GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities().
+      // However, these calls should only occur inside of the browser process
+      // which we can trust not to reach this point, hence the CHECK().
+      CHECK(mojo::IsInMessageDispatch());
+      mojo::ReportBadMessage("CreateVideoDecoder() called unexpectedly");
+      return;
     case media::OOPVDMode::kDisabled:
       break;
   }
