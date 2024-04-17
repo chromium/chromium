@@ -77,6 +77,14 @@ IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest,
              qr_code_generator::LocatorStyle::kSquare);
 }
 
+IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest,
+                       ProductLogoWithSquareQrPixelsAndLocators) {
+  TestGolden("https://example.com",
+             qr_code_generator::CenterImage::kProductLogo,
+             qr_code_generator::ModuleStyle::kSquares,
+             qr_code_generator::LocatorStyle::kSquare);
+}
+
 // This is a regression test for https://crbug.com/1334066.  It tests that the
 // QR code generator can handle fairly big inputs (the URL below is more than
 // 800 bytes long).

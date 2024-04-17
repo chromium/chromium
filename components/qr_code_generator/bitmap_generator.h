@@ -33,6 +33,7 @@ enum class CenterImage {
   kDino,
 #if !BUILDFLAG(IS_IOS)
   kPasskey,
+  kProductLogo,
 #endif
 };
 

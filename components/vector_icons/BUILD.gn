@@ -11,6 +11,7 @@ aggregate_vector_icons("components_vector_icons") {
 
   sources = [
     "${branding_path_component}/product.icon",
+    "${branding_path_component}/product_refresh.icon",
     "account_circle.icon",
     "account_circle_chrome_refresh.icon",
     "account_circle_off_chrome_refresh.icon",

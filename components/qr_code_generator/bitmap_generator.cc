@@ -97,6 +97,18 @@ void DrawPasskeyIcon(SkCanvas* canvas,
   PaintCenterImage(canvas, canvas_bounds, kSizePx, kSizePx, kBorderPx,
                    paint_background, icon.GetRepresentation(1.0f).GetBitmap());
 }
+
+void DrawProductIcon(SkCanvas* canvas,
+                     const SkRect& canvas_bounds,
+                     const SkPaint& paint_foreground,
+                     const SkPaint& paint_background) {
+  constexpr int kSizePx = 100;
+  constexpr int kBorderPx = 0;  // Unlike the dino, the icon is already padded.
+  auto icon = gfx::CreateVectorIcon(gfx::IconDescription(
+      vector_icons::kProductRefreshIcon, kSizePx, paint_foreground.getColor()));
+  PaintCenterImage(canvas, canvas_bounds, kSizePx, kSizePx, kBorderPx,
+                   paint_background, icon.GetRepresentation(1.0f).GetBitmap());
+}
 #endif
 
 void DrawDino(SkCanvas* canvas,
@@ -280,6 +292,9 @@ SkBitmap RenderBitmap(base::span<const uint8_t> data,
 #if !BUILDFLAG(IS_IOS)
     case CenterImage::kPasskey:
       DrawPasskeyIcon(&canvas, bitmap_bounds, paint_black, paint_white);
+      break;
+    case CenterImage::kProductLogo:
+      DrawProductIcon(&canvas, bitmap_bounds, paint_black, paint_white);
       break;
 #endif
   }

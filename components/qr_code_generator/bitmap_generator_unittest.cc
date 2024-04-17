@@ -38,6 +38,20 @@ TEST(QRBitmapGeneratorTest, RoundPassKeyWithNoMargins) {
   // More detailed test coverage of the bitmap contents is provided by the pixel
   // tests at //chrome/browser/share/qr_code_generator_pixeltest.cc
 }
+
+TEST(QRBitmapGeneratorTest, RoundProductLogoWithNoMargins) {
+  auto bitmap = GenerateBitmap(
+      base::as_byte_span(std::string_view("0123456789")), ModuleStyle::kCircles,
+      LocatorStyle::kRounded, CenterImage::kProductLogo,
+      QuietZone::kWillBeAddedByClient);
+
+  ASSERT_TRUE(bitmap.has_value());
+  EXPECT_EQ(bitmap->width(), bitmap->height());
+  EXPECT_EQ(bitmap->width(), 370);
+
+  // More detailed test coverage of the bitmap contents is provided by the pixel
+  // tests at //chrome/browser/share/qr_code_generator_pixeltest.cc
+}
 #endif
 
 }  // namespace qr_code_generator
