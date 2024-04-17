@@ -7659,7 +7659,7 @@
   {
     "name": "site-instance-groups-for-data-urls",
     "owners": [ "yangsharon@chromium.org", "site-isolation-dev@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 140
   },
   {
     "_comment1": "Shipping some form of Site Isolation to Android is tracked",
