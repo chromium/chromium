@@ -715,6 +715,16 @@ T FromJniType(JNIEnv*, const JavaRef<J>&);
 template <typename T, typename J = jobject>
 ScopedJavaLocalRef<J> ToJniType(JNIEnv*, const T&);
 
+// Primary template for Array conversion.
+// This is in a struct so that we are able to write a default implementation for
+// container of any type as long as there is a conversion function from jobject
+// to that type. Partial specialized template functions are not allowed, but
+// functions inside a struct are.
+template <typename ContainerType>
+struct ConvertArray;
+
+#if defined(__cpp_concepts) && __cpp_concepts >= 202002L
+
 namespace internal {
 template <typename T>
 concept has_reserve = requires(T t) { t.reserve(0); };
@@ -740,15 +750,7 @@ concept is_container = requires(T t) {
 };
 }  // namespace internal
 
-// Primary template for Array conversion.
-// This is in a struct so that we are able to write a default implementation for
-// vector of any type as long as there is a conversion function from jobject to
-// that type. Partial specialized template functions are not allowed, but
-// functions inside a struct are.
-template <typename ContainerType>
-struct ConvertArray;
-
-// Partial specialization for converting java arrays into std::vector
+// Partial specialization for converting java arrays into std containers
 template <typename ContainerType>
   requires requires(ContainerType t) {
     internal::is_container<ContainerType>;
@@ -835,6 +837,8 @@ struct ConvertArray<ContainerType> {
     return ScopedJavaLocalRef<jobjectArray>(env, j_array);
   }
 };
+
+#endif  //  defined(__cpp_concepts) && __cpp_concepts >= 202002L
 
 // Specialization for int64_t.
 template <>
