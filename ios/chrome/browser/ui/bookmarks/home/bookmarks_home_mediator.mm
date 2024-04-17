@@ -472,8 +472,13 @@ bool IsABookmarkNodeSectionForIdentifier(
       base::BindOnce(^(std::map<syncer::ModelType, syncer::LocalDataDescription>
                            description) {
         auto it = description.find(syncer::BOOKMARKS);
-        CHECK(it != description.end());
-        completion(it->second.item_count, std::move(user_email));
+        // GetLocalDataDescriptions() can return an empty result if data type is
+        // still in configuration, or has an error.
+        if (it != description.end()) {
+          completion(it->second.item_count, std::move(user_email));
+          return;
+        }
+        completion(0, std::move(user_email));
       }));
 }
 

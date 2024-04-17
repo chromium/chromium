@@ -424,6 +424,7 @@ class SyncService : public KeyedService {
   // `types` is available.
   // Note: Only data types that are enabled and support this functionality are
   // part of the response.
+  // Note: Only data types that are ready for migration are returned.
   virtual void GetLocalDataDescriptions(
       ModelTypeSet types,
       base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
