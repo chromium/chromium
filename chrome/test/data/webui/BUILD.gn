@@ -99,6 +99,7 @@ source_set("browser_tests") {
   if (is_chromeos_ash) {
     sources += [
       "chromeos/ash_common/ash_common_browsertest.cc",
+      "chromeos/ash_common/ash_common_resources_browsertest.cc",
       "chromeos/ash_common/cr_elements/ash_common_cr_elements_browsertest.cc",
       "chromeos/ash_common/sea_pen/sea_pen_browsertest.cc",
       "chromeos/ash_common/webui_resource_browsertest.cc",

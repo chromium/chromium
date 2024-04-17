@@ -4,6 +4,8 @@
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 
+import {assertEquals, assertThrows, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+
 suite('I18nBehaviorModuleTest', function() {
   const allowedByDefault = '<a href="https://google.com">Google!</a>';
   const text = 'I\'m just text, nobody should have a problem with me!';

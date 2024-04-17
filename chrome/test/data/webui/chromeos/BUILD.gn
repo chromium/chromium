@@ -38,7 +38,6 @@ if (include_js2gtest_tests) {
       "../cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
       "account_manager/account_manager_browsertest.js",
       "arc_account_picker/arc_account_picker_browsertest.js",
-      "ash_common/ash_common_resources_browsertest.js",
       "ash_common/i18n_process_test.js",
       "ash_common/post_message_api/post_message_api_browsertest.js",
       "assertions.js",
