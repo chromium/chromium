@@ -84,6 +84,17 @@ chromium-metrics-reviews@google.com.
   <token key="Duration" variants="DiskStatsDuration"/>
 </histogram>
 
+<histogram name="Virtualization.{Name}.SecurityKeyAttach" enum="BooleanSuccess"
+    expires_after="2024-09-01">
+  <owner>morg@google.com</owner>
+  <owner>uekawa@google.com</owner>
+  <summary>
+    True when the vmc command to attach a security key to a VM is successful.
+    False when the command has failed.
+  </summary>
+  <token key="Name" variants="VmName"/>
+</histogram>
+
 <histogram name="Virtualization.{Name}.StartDuration" units="Milliseconds"
     expires_after="2024-09-01">
   <owner>abhishekbh@google.com</owner>
