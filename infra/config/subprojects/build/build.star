@@ -84,8 +84,6 @@ ci.defaults.set(
     priority = ci.DEFAULT_FYI_PRIORITY,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_configs = [],
-    siso_enable_cloud_profiler = True,
-    siso_enable_cloud_trace = True,
     siso_enabled = True,
     siso_experiments = ["no-fallback"],
 )
