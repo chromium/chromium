@@ -34,6 +34,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
 
 namespace ash {
@@ -122,6 +123,12 @@ gfx::RoundedCornersF CalculatePointyAnchoredNudgeCorners(
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemNudgeView, kBubbleIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemNudgeView,
+                                      kPrimaryButtonIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemNudgeView,
+                                      kSecondaryButtonIdForTesting);
+
 SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
     : shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation4)),
@@ -135,6 +142,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
   SetBackground(views::CreateThemedSolidBackground(
       nudge_data.background_color_id.value_or(kColorAshShieldAndBase80)));
   SetNotifyEnterExitOnChild(true);
+  SetProperty(views::kElementIdentifierKey, kBubbleIdForTesting);
 
   // Cache the anchor view when the nudge anchors by its corner to set a pointy
   // corner based on the nudge's position in relation to this anchor view.
@@ -340,6 +348,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
           .SetTooltipText(nudge_data.primary_button_text)
           .SetPillButtonType(PillButton::Type::kPrimaryWithoutIcon)
           .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
+          .SetProperty(views::kElementIdentifierKey, kPrimaryButtonIdForTesting)
           .Build());
 
   if (has_secondary_button) {
@@ -351,6 +360,8 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
             .SetTooltipText(nudge_data.secondary_button_text)
             .SetPillButtonType(PillButton::Type::kSecondaryWithoutIcon)
             .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
+            .SetProperty(views::kElementIdentifierKey,
+                         kSecondaryButtonIdForTesting)
             .Build(),
         0);
   }

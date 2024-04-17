@@ -35,6 +35,10 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
   METADATA_HEADER(SystemNudgeView, views::FlexLayoutView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPrimaryButtonIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSecondaryButtonIdForTesting);
+
   SystemNudgeView(const AnchoredNudgeData& nudge_data);
   SystemNudgeView(const SystemNudgeView&) = delete;
   SystemNudgeView& operator=(const SystemNudgeView&) = delete;
