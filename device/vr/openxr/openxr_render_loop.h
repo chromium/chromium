@@ -125,7 +125,6 @@ class OpenXrRenderLoop : public XRThread,
       base::RepeatingCallback<void(mojom::XRVisibilityState)>
           on_visibility_state_changed,
       mojom::XRRuntimeSessionOptionsPtr options,
-      RequestSessionCallback callback,
       bool success);
 
   // Will Submit if we have textures submitted from the Overlay (if it is
@@ -197,9 +196,12 @@ class OpenXrRenderLoop : public XRThread,
   mojom::XRFrameDataPtr GetNextFrameData();
 
   // TODO(https://crbug.com/1516973): Investigate removing this callback.
-  using StartRuntimeCallback = base::OnceCallback<void(bool success)>;
+  using ContextProviderAcquiredCallback =
+      base::OnceCallback<void(bool success)>;
 
-  void StartRuntime(StartRuntimeCallback start_runtime_callback);
+  void StartRuntime(base::RepeatingCallback<void(mojom::XRVisibilityState)>
+                        on_visibility_state_changed,
+                    mojom::XRRuntimeSessionOptionsPtr options);
   void StopRuntime();
   void OnSessionStart();
   bool HasSessionEnded();
@@ -211,8 +213,11 @@ class OpenXrRenderLoop : public XRThread,
   // viz::ContextLostObserver Implementation
   void OnContextLost() override;
 
-  void OnOpenXrSessionStarted(StartRuntimeCallback start_runtime_callback,
-                              XrResult result);
+  void OnOpenXrSessionStarted(
+      base::RepeatingCallback<void(mojom::XRVisibilityState)>
+          on_visibility_state_changed,
+      mojom::XRRuntimeSessionOptionsPtr options,
+      XrResult result);
   bool UpdateViews();
   bool UpdateView(const XrView& view_head,
                   int width,
@@ -253,10 +258,9 @@ class OpenXrRenderLoop : public XRThread,
       OpenXrAnchorManager* anchor_manager,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state);
 
-  void StartContextProviderIfNeeded(
-      StartRuntimeCallback start_runtime_callback);
+  void StartContextProviderIfNeeded(ContextProviderAcquiredCallback callback);
   void OnContextProviderCreated(
-      StartRuntimeCallback start_runtime_callback,
+      ContextProviderAcquiredCallback start_runtime_callback,
       scoped_refptr<viz::ContextProvider> context_provider);
   void OnContextLostCallback(
       scoped_refptr<viz::ContextProvider> context_provider);
@@ -264,6 +268,8 @@ class OpenXrRenderLoop : public XRThread,
   void OnWebXrTokenSignaled(int16_t frame_index,
                             GLuint id,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
+
+  void MaybeRejectSessionCallback();
 
   bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
   int16_t next_frame_id_ = 0;
@@ -313,6 +319,8 @@ class OpenXrRenderLoop : public XRThread,
 
   mojo::AssociatedReceiver<mojom::XREnvironmentIntegrationProvider>
       environment_receiver_{this};
+
+  RequestSessionCallback request_session_callback_;
 
   // This must be the last member
   base::WeakPtrFactory<OpenXrRenderLoop> weak_ptr_factory_{this};
