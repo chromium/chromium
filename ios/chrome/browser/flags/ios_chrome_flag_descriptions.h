@@ -499,10 +499,6 @@ extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 extern const char kIOSMagicStackCollectionViewName[];
 extern const char kIOSMagicStackCollectionViewDescription[];
 
-// Title and description for the flag to enable parcel tracking.
-extern const char kIOSParcelTrackingName[];
-extern const char kIOSParcelTrackingDescription[];
-
 // Title and description for the flag to require Local Authentication before
 // accessing the any of the Password Manager surfaces.
 extern const char kIOSPasswordAuthOnEntryV2Name[];

@@ -68,7 +68,6 @@ source_set("flags") {
     "//ios/chrome/browser/find_in_page/model:util",
     "//ios/chrome/browser/follow/model:feature_flags",
     "//ios/chrome/browser/iph_for_new_chrome_user/model:features",
-    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:policy_util",

@@ -61,7 +61,6 @@ source_set("util") {
     "parcel_tracking_util.mm",
   ]
   deps = [
-    ":features",
     ":metrics",
     ":prefs",
     ":tracking_source",
@@ -82,19 +81,10 @@ source_set("util") {
   ]
 }
 
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [ "parcel_tracking_util_unittest.mm" ]
   deps = [
-    ":features",
     ":util",
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",

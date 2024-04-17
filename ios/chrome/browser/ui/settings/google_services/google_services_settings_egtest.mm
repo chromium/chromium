@@ -10,7 +10,6 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -110,9 +109,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  if ([self isRunningTest:@selector(testParcelTrackingSetting)]) {
-    config.features_enabled.push_back(kIOSParcelTracking);
-  }
   return config;
 }
 

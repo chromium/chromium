@@ -156,7 +156,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
-    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/reading_list/model:test_support",
     "//ios/chrome/browser/segmentation_platform/model",

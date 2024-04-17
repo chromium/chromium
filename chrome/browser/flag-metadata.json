@@ -5111,11 +5111,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "ios-parcel-tracking",
-    "owners": [ "thegreenfrog@google.com", "hiramahmood@google.com" ],
-    "expiry_milestone": 127
-  },
-  {
     "name": "ios-password-auth-on-entry",
     "owners": ["eic@chromium.org", "bling-integrations-team@google.com"],
     "expiry_milestone": 121

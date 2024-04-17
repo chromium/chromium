@@ -287,7 +287,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
-    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

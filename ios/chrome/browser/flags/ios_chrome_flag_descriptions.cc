@@ -577,10 +577,6 @@ const char kIOSMagicStackCollectionViewDescription[] =
     "When enabled, the Magic Stack will be using a UICollectionView "
     "implementation";
 
-const char kIOSParcelTrackingName[] = "Parcel Tracking";
-const char kIOSParcelTrackingDescription[] =
-    "When enabled, the user will be able to track their packages.";
-
 const char kIOSPasswordAuthOnEntryV2Name[] =
     "Password Manager Auth on Entry V2";
 const char kIOSPasswordAuthOnEntryV2Description[] =

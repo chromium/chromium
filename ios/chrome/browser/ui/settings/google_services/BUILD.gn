@@ -223,7 +223,6 @@ source_set("eg2_tests") {
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
-    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_util",

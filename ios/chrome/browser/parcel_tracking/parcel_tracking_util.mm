@@ -14,7 +14,6 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -29,8 +28,7 @@ const CGFloat parcelLimit = 5;
 }  // namespace
 
 bool IsIOSParcelTrackingEnabled() {
-  return base::FeatureList::IsEnabled(kIOSParcelTracking) &&
-         GetApplicationContext()->GetLocalState()->GetBoolean(
+  return GetApplicationContext()->GetLocalState()->GetBoolean(
              prefs::kIosParcelTrackingPolicyEnabled);
 }
 
