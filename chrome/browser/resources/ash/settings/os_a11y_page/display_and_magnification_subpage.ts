@@ -94,6 +94,17 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
               'isAccessibilityReducedAnimationsEnabled');
         },
       },
+      /**
+       * Whether the magnifier following select to speak words feature is
+       * enabled.
+       */
+      isAccessibilityMagnifierFollowsStsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityMagnifierFollowsStsEnabled');
+        },
+      },
 
       colorVisionDeficiencyTypeOptions_: {
         readOnly: true,
@@ -135,6 +146,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
           Setting.kFullscreenMagnifier,
           Setting.kFullscreenMagnifierMouseFollowingMode,
           Setting.kFullscreenMagnifierFocusFollowing,
+          Setting.kAccessibilityMagnifierFollowsSts,
           Setting.kDockedMagnifier,
         ]),
       },
@@ -145,6 +157,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
   private screenMagnifierMouseFollowingModePrefValues_: {[key: string]: number};
   private screenMagnifierZoomOptions_: Array<{value: number, name: string}>;
   private isAccessibilityReducedAnimationsEnabled_: boolean;
+  private isAccessibilityMagnifierFollowsStsEnabled_: boolean;
 
 
   constructor() {

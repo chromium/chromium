@@ -22,6 +22,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram
+    name="ChromeOS.Settings.Accessibility.AccessibilityMagnifierFollowsSts"
+    enum="BooleanToggled" expires_after="2024-10-16">
+  <owner>lkupo@chromium.org</owner>
+  <owner>chromium-accessibility@chromium.org</owner>
+  <summary>
+    Records when a user changes the magnifier follows the word being read by
+    select-to-speak setting on the Accessibility page.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount"
     units="%" expires_after="2024-10-16">
   <owner>katie@chromium.org</owner>

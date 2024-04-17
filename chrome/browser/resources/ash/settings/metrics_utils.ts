@@ -141,6 +141,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kFullscreenMagnifierFocusFollowing,
     type: PrefType.BOOLEAN,
   },
+  'settings.a11y.screen_magnifier_select_to_speak_focus_following': {
+    setting: Setting.kAccessibilityMagnifierFollowsSts,
+    type: PrefType.BOOLEAN,
+  },
   'settings.a11y.screen_magnifier_mouse_following_mode': {
     setting: Setting.kFullscreenMagnifierMouseFollowingMode,
     type: PrefType.NUMBER,

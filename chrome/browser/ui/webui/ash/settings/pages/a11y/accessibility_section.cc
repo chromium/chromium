@@ -462,6 +462,19 @@ GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>&
+GetA11yFullscreenMagnifierSelectToSpeakFocusFollowingSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_MAGNIFIER_SELECT_TO_SPEAK_FOLLOWING,
+       mojom::kDisplayAndMagnificationSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kAccessibilityMagnifierFollowsSts}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetA11yColorCorrectionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION,
@@ -499,6 +512,10 @@ int GetDisplayAndMangificationLinkDescriptionResourceId() {
 
 bool IsAccessibilityReducedAnimationsEnabled() {
   return ::features::IsAccessibilityReducedAnimationsEnabled();
+}
+
+bool IsAccessibilityMagnifierFollowsStsEnabled() {
+  return ::features::IsAccessibilityMagnifierFollowsStsEnabled();
 }
 
 bool IsAccessibilityFaceGazeEnabled() {
@@ -949,6 +966,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SCREEN_MAGNIFIER_DESCRIPTION_ON},
       {"screenMagnifierFocusFollowingLabel",
        IDS_SETTINGS_SCREEN_MAGNIFIER_FOCUS_FOLLOWING_LABEL},
+      {"screenMagnifierSelectToSpeakFocusFollowingLabel",
+       IDS_SETTINGS_SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING_LABEL},
       {"screenMagnifierLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL},
       {"screenMagnifierMouseFollowingModeCentered",
        IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CENTERED},
@@ -1237,6 +1256,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityReducedAnimationsEnabled",
                           IsAccessibilityReducedAnimationsEnabled());
 
+  html_source->AddBoolean("isAccessibilityMagnifierFollowsStsEnabled",
+                          IsAccessibilityMagnifierFollowsStsEnabled());
+
   html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
                           IsAccessibilityFaceGazeEnabled());
 
@@ -1294,6 +1316,12 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
     case mojom::Setting::kFullscreenMagnifierFocusFollowing:
       base::UmaHistogramBoolean(
           "ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kAccessibilityMagnifierFollowsSts:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility."
+          "FullscreenMagnifierSelectToSpeakFollowing",
           value.GetBool());
       return true;
     case mojom::Setting::kFullscreenMagnifierMouseFollowingMode:
@@ -1476,6 +1504,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kHighContrastMode,
       mojom::Setting::kFullscreenMagnifier,
       mojom::Setting::kFullscreenMagnifierFocusFollowing,
+      mojom::Setting::kAccessibilityMagnifierFollowsSts,
       mojom::Setting::kFullscreenMagnifierMouseFollowingMode,
       mojom::Setting::kDockedMagnifier,
       mojom::Setting::kStickyKeys,
@@ -1619,6 +1648,14 @@ void AccessibilitySection::UpdateSearchTags() {
   } else {
     updater.RemoveSearchTags(
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
+  }
+
+  if (IsAccessibilityMagnifierFollowsStsEnabled()) {
+    updater.AddSearchTags(
+        GetA11yFullscreenMagnifierSelectToSpeakFocusFollowingSearchConcepts());
+  } else {
+    updater.RemoveSearchTags(
+        GetA11yFullscreenMagnifierSelectToSpeakFocusFollowingSearchConcepts());
   }
 
   updater.AddSearchTags(GetA11yColorCorrectionSearchConcepts());

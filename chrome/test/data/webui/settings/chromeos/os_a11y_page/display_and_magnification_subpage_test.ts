@@ -5,12 +5,12 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsDisplayAndMagnificationSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -180,4 +180,239 @@ suite('<settings-display-and-magnification-subpage>', () => {
       assert(!enableReducedAnimationsToggle);
     }
   });
+
+  if (loadTimeData.getBoolean('isAccessibilityMagnifierFollowsStsEnabled')) {
+    test('Turns off docked magnifier follows select to speak', async () => {
+      await initPage();
+      const dockedMagnifierToggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#dockedMagnifierToggle');
+
+      assert(dockedMagnifierToggle);
+
+      dockedMagnifierToggle.click();
+      await waitBeforeNextRender(page);
+
+      const dockedMagnifierFollowsStsToggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#dockedMagnifierFollowsStsToggle');
+
+      assert(dockedMagnifierFollowsStsToggle);
+      assertTrue(isVisible(dockedMagnifierFollowsStsToggle));
+      // Docked magnifier follows STS toggle should be enabled by default.
+      assertTrue(page.prefs.settings.a11y
+                     .screen_magnifier_select_to_speak_focus_following.value);
+
+      dockedMagnifierFollowsStsToggle.click();
+      await waitBeforeNextRender(page);
+      flush();
+
+      assertFalse(page.prefs.settings.a11y
+                      .screen_magnifier_select_to_speak_focus_following.value);
+    });
+  } else {
+    test(
+        'Docked magnifier follows select to speak toggle does not appear',
+        async () => {
+          await initPage();
+          const dockedMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierToggle');
+
+          assert(dockedMagnifierToggle);
+
+          dockedMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          // Toggle shouldn't be available if flag is disabled.
+          const dockedMagnifierFollowsStsToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierFollowsStsToggle');
+
+          assertNull(dockedMagnifierFollowsStsToggle);
+        });
+  }
+
+  if (loadTimeData.getBoolean('isAccessibilityMagnifierFollowsStsEnabled')) {
+    test(
+        'Turns off full screen magnifier follows select to speak', async () => {
+          await initPage();
+
+          const fullScreenMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierToggle');
+
+          assert(fullScreenMagnifierToggle);
+
+          fullScreenMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          const fullScreenMagnifierFollowsStsToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierFollowsStsToggle');
+
+          assert(fullScreenMagnifierFollowsStsToggle);
+          assertTrue(isVisible(fullScreenMagnifierFollowsStsToggle));
+          // Full Screen magnifier follows STS toggle should be enabled by
+          // default.
+          assertTrue(
+              page.prefs.settings.a11y
+                  .screen_magnifier_select_to_speak_focus_following.value);
+
+          fullScreenMagnifierFollowsStsToggle.click();
+          await waitBeforeNextRender(page);
+          flush();
+
+          assertFalse(
+              page.prefs.settings.a11y
+                  .screen_magnifier_select_to_speak_focus_following.value);
+        });
+  } else {
+    test(
+        'Full screen magnifier follows select to speak toggle does not appear',
+        async () => {
+          await initPage();
+          const fullScreenMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierToggle');
+
+          assert(fullScreenMagnifierToggle);
+
+          fullScreenMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          // Toggle shouldn't be available if flag is disabled.
+          const fullScreenMagnifierFollowsStsToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierFollowsStsToggle');
+
+          assertNull(fullScreenMagnifierFollowsStsToggle);
+        });
+  }
+
+  if (loadTimeData.getBoolean('isAccessibilityMagnifierFollowsStsEnabled')) {
+    test(
+        'kAccessibilityMagnifierFollowsSts is deep-linked from full magnifier',
+        async () => {
+          await initPage();
+          const setting =
+              settingMojom.Setting.kAccessibilityMagnifierFollowsSts;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(
+              routes.A11Y_DISPLAY_AND_MAGNIFICATION, params);
+
+          const fullScreenMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierToggle');
+
+          assert(fullScreenMagnifierToggle);
+
+          fullScreenMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          const deepLinkElement =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierFollowsStsToggle');
+
+          assertTrue(!!deepLinkElement);
+
+          await waitAfterNextRender(deepLinkElement);
+          assertEquals(
+              deepLinkElement, page.shadowRoot!.activeElement,
+              `Element should be focused for settingId=${setting}.'`);
+        });
+  } else {
+    test(
+        'kAccessibilityMagnifierFollowsSts not deep-linked from full magnifier',
+        async () => {
+          await initPage();
+
+          const setting =
+              settingMojom.Setting.kAccessibilityMagnifierFollowsSts;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(
+              routes.A11Y_DISPLAY_AND_MAGNIFICATION, params);
+
+          const fullScreenMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierToggle');
+
+          assert(fullScreenMagnifierToggle);
+
+          fullScreenMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          const deepLinkElement =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierFollowsStsToggle');
+
+          assertNull(deepLinkElement);
+        });
+  }
+
+
+  if (loadTimeData.getBoolean('isAccessibilityMagnifierFollowsStsEnabled')) {
+    test(
+        'kAccessibilityMagnifierFollowsSts deep-linked docked magnifier',
+        async () => {
+          await initPage();
+
+          const setting =
+              settingMojom.Setting.kAccessibilityMagnifierFollowsSts;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(
+              routes.A11Y_DISPLAY_AND_MAGNIFICATION, params);
+
+          const dockedMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierToggle');
+
+          assert(dockedMagnifierToggle);
+
+          dockedMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          const deepLinkElement =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierFollowsStsToggle');
+
+          assertTrue(!!deepLinkElement);
+
+          await waitAfterNextRender(deepLinkElement);
+          assertEquals(
+              deepLinkElement, page.shadowRoot!.activeElement,
+              `Element should be focused for settingId=${setting}.'`);
+        });
+  } else {
+    test(
+        'kAccessibilityMagnifierFollowsSts is not deep-linked docked magnifier',
+        async () => {
+          await initPage();
+
+          const setting =
+              settingMojom.Setting.kAccessibilityMagnifierFollowsSts;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(
+              routes.A11Y_DISPLAY_AND_MAGNIFICATION, params);
+
+          const dockedMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierToggle');
+
+          assert(dockedMagnifierToggle);
+
+          dockedMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          const deepLinkElement =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierFollowsStsToggle');
+
+          assertNull(deepLinkElement);
+        });
+  }
 });

@@ -1645,7 +1645,10 @@
     Move screen when mouse touches edges of screen
   </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_FOCUS_FOLLOWING_LABEL" desc="Label for toggle which enables keyboard focus following in the fullscreen magnifier">
-      Zoomed in screen follows keyboard focus
+      Magnifier follows keyboard focus
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING_LABEL" desc="Label for toggle which enables select to speak following in the docked or fullscreen magnifier">
+      Magnifier follows the word being read by select-to-speak
   </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_LABEL" desc="Label for dropdown menu which contains zoom levels for the fullscreen magnifier">
     Zoom level

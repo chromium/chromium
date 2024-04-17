@@ -147,6 +147,18 @@ class OSSettingsMochaTestReducedAnimationsEnabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class OSSettingsMochaTestMagnifierFollowsStsEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsMochaTestMagnifierFollowsStsEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityMagnifierFollowsSts);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
  protected:
   OSSettingsMochaTestMouseKeysEnabled() {
@@ -1049,6 +1061,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestReducedAnimationsEnabled,
+                       OsA11yPageDisplayAndMagnificationSubpage) {
+  RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMagnifierFollowsStsEnabled,
                        OsA11yPageDisplayAndMagnificationSubpage) {
   RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
 }

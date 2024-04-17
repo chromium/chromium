@@ -343,6 +343,7 @@ export class SettingsManageA11ySubpageElement extends
           Setting.kFullscreenMagnifier,
           Setting.kFullscreenMagnifierMouseFollowingMode,
           Setting.kFullscreenMagnifierFocusFollowing,
+          Setting.kAccessibilityMagnifierFollowsSts,
           Setting.kDockedMagnifier,
           Setting.kStickyKeys,
           Setting.kOnScreenKeyboard,
