@@ -22,11 +22,13 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_thread.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
-#include "read_anything_app_controller.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -380,9 +382,16 @@ ReadAnythingAppController::ReadAnythingAppController(
   distiller_ = std::make_unique<AXTreeDistiller>(
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
                           weak_ptr_factory_.GetWeakPtr()));
+  // TODO(crbug.com/1450930): Use a global ukm recorder instance instead.
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  content::RenderThread::Get()->BindHostReceiver(
+      factory.BindNewPipeAndPassReceiver());
+  ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
 }
 
-ReadAnythingAppController::~ReadAnythingAppController() = default;
+ReadAnythingAppController::~ReadAnythingAppController() {
+  RecordNumSelections();
+}
 
 void ReadAnythingAppController::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
@@ -433,8 +442,9 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   if (tree_id == model_.active_tree_id() && !is_pdf) {
     return;
   }
+  RecordNumSelections();
   model_.set_active_tree_id(tree_id);
-  model_.SetActiveUkmSourceId(ukm_source_id);
+  model_.set_ukm_source_id(ukm_source_id);
   model_.set_is_pdf(is_pdf);
   // Delete all pending updates on the formerly active AXTree.
   // TODO(crbug.com/1266555): If distillation is in progress, cancel the
@@ -452,6 +462,14 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
       model_.ContainsTree(model_.active_tree_id())) {
     Distill();
   }
+}
+
+void ReadAnythingAppController::RecordNumSelections() {
+  ukm::builders::Accessibility_ReadAnything_EmptyState(
+      model_.ukm_source_id())
+      .SetTotalNumSelections(model_.num_selections())
+      .Record(ukm_recorder_.get());
+  model_.set_num_selections(0);
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -491,7 +509,7 @@ void ReadAnythingAppController::Distill() {
   }
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   model_.SetDistillationInProgress(true);
-  distiller_->Distill(*tree, snapshot, model_.active_ukm_source_id());
+  distiller_->Distill(*tree, snapshot, model_.ukm_source_id());
 }
 
 void ReadAnythingAppController::OnAXTreeDistilled(

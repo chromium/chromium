@@ -36,6 +36,10 @@ class AXSerializableTree;
 class AXTree;
 }  // namespace ui
 
+namespace ukm {
+class MojoUkmRecorder;
+}  // namespace ukm
+
 class AXTreeDistiller;
 class ReadAnythingAppControllerTest;
 
@@ -261,6 +265,10 @@ class ReadAnythingAppController
   // node isn't in the current segment.
   int GetCurrentTextEndIndex(ui::AXNodeID node_id);
 
+  // Records the number of selections that occurred for the active page. Called
+  // when the active tree changes.
+  void RecordNumSelections();
+
   // SetContentForTesting, SetThemeForTesting, and SetLanguageForTesting are
   // used by ReadAnythingAppTest and thus need to be kept in
   // ReadAnythingAppController even though ReadAnythingAppControllerBrowserTest
@@ -309,6 +317,8 @@ class ReadAnythingAppController
   ReadAnythingAppModel model_;
 
   // For metrics logging
+
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 
   // The time when the renderer constructor is first triggered.
   base::TimeTicks renderer_load_triggered_time_ms_;

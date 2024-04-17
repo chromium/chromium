@@ -10,8 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/renderer/render_thread.h"
-#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -21,6 +19,7 @@
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree_update_util.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -44,17 +43,9 @@ bool GetIsGoogleDocs(const GURL& url) {
 
 }  // namespace
 
-ReadAnythingAppModel::ReadAnythingAppModel() {
-  // TODO(crbug.com/1450930): Use a global ukm recorder instance instead.
-  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
-  content::RenderThread::Get()->BindHostReceiver(
-      factory.BindNewPipeAndPassReceiver());
-  ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
-}
+ReadAnythingAppModel::ReadAnythingAppModel() = default;
 
-ReadAnythingAppModel::~ReadAnythingAppModel() {
-  SetActiveUkmSourceId(ukm::kInvalidSourceId);
-}
+ReadAnythingAppModel::~ReadAnythingAppModel() = default;
 
 ReadAnythingAppModel::AXTreeInfo::AXTreeInfo(
     std::unique_ptr<ui::AXTreeManager> other) {
@@ -161,7 +152,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
     base::UmaHistogramEnumeration(
         string_constants::kEmptyStateHistogramName,
         ReadAnythingEmptyState::kSelectionAfterEmptyStateShown);
-    num_selections_++;
+    tree_infos_.at(active_tree_id_)->num_selections++;
   }
 
   // If the main panel selection contains content outside of the distilled
@@ -579,23 +570,61 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     // TODO(crbug.com/1266555): If distillation is in progress, cancel the
     // distillation request.
     active_tree_id_ = ui::AXTreeIDUnknown();
-    SetActiveUkmSourceId(ukm::kInvalidSourceId);
+    set_ukm_source_id(ukm::kInvalidSourceId);
   }
   EraseTree(tree_id);
 }
 
-void ReadAnythingAppModel::SetActiveUkmSourceId(
-    const ukm::SourceId& source_id) {
-  // Record the number of selections made on the current page if it was not
-  // distillable.
-  if (active_ukm_source_id_ != ukm::kInvalidSourceId &&
-      content_node_ids_.empty()) {
-    ukm::builders::Accessibility_ReadAnything_EmptyState(active_ukm_source_id_)
-        .SetTotalNumSelections(num_selections_)
-        .Record(ukm_recorder_.get());
+const ukm::SourceId& ReadAnythingAppModel::ukm_source_id() {
+  if (base::Contains(tree_infos_, active_tree_id_)) {
+    ReadAnythingAppModel::AXTreeInfo* tree_info =
+        tree_infos_.at(active_tree_id_).get();
+    if (tree_info) {
+      return tree_info->ukm_source_id;
+    }
   }
-  num_selections_ = 0;
-  active_ukm_source_id_ = source_id;
+  return ukm::kInvalidSourceId;
+}
+
+void ReadAnythingAppModel::set_ukm_source_id(
+    const ukm::SourceId ukm_source_id) {
+  if (!base::Contains(tree_infos_, active_tree_id_)) {
+    return;
+  }
+  ReadAnythingAppModel::AXTreeInfo* tree_info =
+      tree_infos_.at(active_tree_id_).get();
+  if (!tree_info) {
+    return;
+  }
+  if (tree_info->ukm_source_id == ukm::kInvalidSourceId) {
+    tree_info->ukm_source_id = ukm_source_id;
+  } else {
+    DCHECK_EQ(tree_info->ukm_source_id, ukm_source_id);
+  }
+}
+
+int32_t ReadAnythingAppModel::num_selections() {
+  if (base::Contains(tree_infos_, active_tree_id_)) {
+    ReadAnythingAppModel::AXTreeInfo* tree_info =
+        tree_infos_.at(active_tree_id_).get();
+    if (tree_info) {
+      return tree_info->num_selections;
+    }
+  }
+  return 0;
+}
+
+void ReadAnythingAppModel::set_num_selections(
+    const int32_t& num_selections) {
+  if (!base::Contains(tree_infos_, active_tree_id_)) {
+    return;
+  }
+  ReadAnythingAppModel::AXTreeInfo* tree_info =
+      tree_infos_.at(active_tree_id_).get();
+  if (!tree_info) {
+    return;
+  }
+  tree_info->num_selections = num_selections;
 }
 
 ui::AXNode* ReadAnythingAppModel::GetAXNode(

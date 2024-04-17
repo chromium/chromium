@@ -26,10 +26,6 @@ class AXNode;
 class AXSerializableTree;
 }  // namespace ui
 
-namespace ukm {
-class MojoUkmRecorder;
-}
-
 // A class that holds state for the ReadAnythingAppController for the Read
 // Anything WebUI app.
 class ReadAnythingAppModel {
@@ -49,17 +45,27 @@ class ReadAnythingAppModel {
     // AXTreeManagers.
     std::unique_ptr<ui::AXTreeManager> manager;
 
+    // The UKM source ID of the main frame that sources this AXTree. This is
+    // used for metrics collection. Only root AXTrees have this set.
+    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+
+    // Used to keep track of how many selections were made for the
+    // ukm_source_id. Only recorded during the select-to-distill flow (when the
+    // empty state page is shown).
+    int32_t num_selections = 0;
+
     // Whether URL information, namely is_docs, has been set.
     bool is_url_information_set = false;
 
     // Google Docs are different from regular webpages. We want to distill
-    // content from the annotated canvas elements, not the main tree.
+    // content from the annotated canvas elements, not the main tree. Only root
+    // AXTrees have this set.
     bool is_docs = false;
 
     // TODO(41496290): Include any information that is associated with a
-    // particular AXTree, namely is_pdf and ukm_id. Right now, those are set
-    // every time the active ax tree id changes; instead, they should be set
-    // once when a new tree is added.
+    // particular AXTree, namely is_pdf. Right now, this is set every time the
+    // active ax tree id changes; instead, it should be set once when a new tree
+    // is added.
   };
 
   // A current segment of text that will be consumed by Read Aloud.
@@ -171,10 +177,6 @@ class ReadAnythingAppModel {
     page_finished_loading_ = value;
   }
 
-  const ukm::SourceId& active_ukm_source_id() const {
-    return active_ukm_source_id_;
-  }
-
   const std::vector<ui::AXNodeID>& content_node_ids() const {
     return content_node_ids_;
   }
@@ -193,7 +195,12 @@ class ReadAnythingAppModel {
   void SetDistillationInProgress(bool distillation) {
     distillation_in_progress_ = distillation;
   }
-  void SetActiveUkmSourceId(const ukm::SourceId& source_id);
+
+  const ukm::SourceId& ukm_source_id();
+  void set_ukm_source_id(const ukm::SourceId ukm_source_id);
+  int32_t num_selections();
+  void set_num_selections(const int32_t& num_selections);
+
   void AddUrlInformationForTreeId(const ui::AXTreeID& tree_id);
   bool IsDocs() const;
 
@@ -420,10 +427,6 @@ class ReadAnythingAppModel {
   // child).
   ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();
 
-  // The UKM source ID of the main frame of the active web contents, whose
-  // AXTree has ID active_tree_id_. This is used for metrics collection.
-  ukm::SourceId active_ukm_source_id_ = ukm::kInvalidSourceId;
-
   // PDFs are handled differently than regular webpages. That is because they
   // are stored in a different web contents and the actual PDF text is inside an
   // iframe. In order to get tree information from the PDF web contents, we need
@@ -488,13 +491,6 @@ class ReadAnythingAppModel {
   bool requires_post_process_selection_ = false;
   ui::AXNodeID image_to_update_node_id_ = ui::kInvalidAXNodeID;
   bool selection_from_action_ = false;
-
-  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
-
-  // Used to keep track of how many selections were made for the
-  // active_ukm_source_id_. Only recorded during the select-to-distill flow
-  // (when the empty state page is shown).
-  int32_t num_selections_ = 0;
 
   // For screen2x data collection, Chrome is launched from the CLI to open one
   // webpage. We record the result of the distill() call for this entire
