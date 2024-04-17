@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_bio_enrollment_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_create_gpm_passkey_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_onboarding_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_sheet_view.h"
@@ -382,9 +383,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               dialog_model));
       break;
     case Step::kGPMCreatePasskey:
-      // TODO(derinel): use a specific view to include the row with the passkey
-      // icon and the credential name.
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+      sheet_view = std::make_unique<AuthenticatorCreateGpmPasskeySheetView>(
           std::make_unique<AuthenticatorCreateGpmPasskeySheetModel>(
               dialog_model));
       break;
