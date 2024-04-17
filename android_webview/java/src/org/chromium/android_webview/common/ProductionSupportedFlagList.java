@@ -356,9 +356,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetworkServiceFeatures.MASKED_DOMAIN_LIST,
                 "When enabled, the masked domain list required for IP Protection is loaded."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_EMPTY_COMPONENT_LOADER_POLICY,
-                "Enables loading a fake empty (no-op) component during WebView startup."),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_SELECTIVE_IMAGE_INVERSION_DARKENING,
                 "Enables use selective image inversion to automatically darken page, it will be"

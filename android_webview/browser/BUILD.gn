@@ -116,8 +116,6 @@ source_set("browser") {
     "aw_web_ui_controller_factory.h",
     "component_updater/first_party_sets_component_loader.cc",
     "component_updater/first_party_sets_component_loader.h",
-    "component_updater/loader_policies/empty_component_loader_policy.cc",
-    "component_updater/loader_policies/empty_component_loader_policy.h",
     "component_updater/loader_policies/origin_trials_component_loader_policy.cc",
     "component_updater/loader_policies/origin_trials_component_loader_policy.h",
     "component_updater/masked_domain_list_component_loader.cc",

@@ -73,12 +73,6 @@ BASE_FEATURE(kWebViewDisplayCutout,
              "WebViewDisplayCutout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Fake empty component to measure component updater performance impact on
-// WebView clients.
-BASE_FEATURE(kWebViewEmptyComponentLoaderPolicy,
-             "WebViewEmptyComponentLoaderPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable the WebView Media Integrity API.
 // This feature requires `kWebViewInjectPlatformJsApis` to be enabled as well.
 BASE_FEATURE(kWebViewMediaIntegrityApi,
