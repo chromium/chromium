@@ -318,6 +318,7 @@ void FakeSystemIdentityManager::FetchCapabilities(
 bool FakeSystemIdentityManager::HandleMDMNotification(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error,
+    bool display,
     HandleMDMCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK([storage_ containsIdentity:identity]);

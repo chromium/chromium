@@ -213,11 +213,17 @@ class SystemIdentityManager {
                                  FetchCapabilitiesCallback callback) = 0;
 
   // Asynchronously handles a potential MDM (Mobile Device Management) event.
+  // If `display`, potentially open a view on top to display the error message.
   // The callback is invoked on the calling sequence when the operation
   // completes.
+  // Returns YES if the device status is blocked.
   virtual bool HandleMDMNotification(id<SystemIdentity> identity,
                                      id<RefreshAccessTokenError> error,
-                                     HandleMDMCallback callback) = 0;
+                                     HandleMDMCallback callback);
+  virtual bool HandleMDMNotification(id<SystemIdentity> identity,
+                                     id<RefreshAccessTokenError> error,
+                                     bool display,
+                                     HandleMDMCallback callback);
 
   // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management) or not.
