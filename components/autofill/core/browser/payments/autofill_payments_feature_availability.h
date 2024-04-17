@@ -9,13 +9,13 @@ namespace autofill {
 
 class AutofillClient;
 class CreditCard;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // Returns whether the `card` is shown in an Autofill suggestion dropdown with a
 // benefit label.
 bool DidDisplayBenefitForCard(const CreditCard& card,
                               const AutofillClient& autofill_client,
-                              const PersonalDataManager& personal_data_manager);
+                              const PaymentsDataManager& payments_data_manager);
 
 // Returns whether the `card` is populated with a card art image and a card
 // product name and whether they both should be shown.

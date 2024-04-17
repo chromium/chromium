@@ -177,8 +177,9 @@ void FullCardRequest::GetFullCardImpl(
   // TODO(crbug.com/332715322): Refactor FullCardRequest to use
   // AutofillClient::GetPersonalDataManager() instead of a separate class
   // variable.
-  if (DidDisplayBenefitForCard(card, autofill_client_.get(),
-                               *personal_data_manager_)) {
+  if (DidDisplayBenefitForCard(
+          card, autofill_client_.get(),
+          personal_data_manager_->payments_data_manager())) {
     request_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardBenefits);
   }

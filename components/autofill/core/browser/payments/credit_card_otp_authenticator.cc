@@ -43,7 +43,8 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
   }
   if (DidDisplayBenefitForCard(*card_, *autofill_client_,
-                               *autofill_client_->GetPersonalDataManager())) {
+                               autofill_client_->GetPersonalDataManager()
+                                   ->payments_data_manager())) {
     unmask_request_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardBenefits);
   }

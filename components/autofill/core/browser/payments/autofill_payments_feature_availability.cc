@@ -6,7 +6,7 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
@@ -23,9 +23,9 @@ bool ShouldShowCardMetadata(const CreditCard& card) {
 bool DidDisplayBenefitForCard(
     const CreditCard& card,
     const AutofillClient& autofill_client,
-    const PersonalDataManager& personal_data_manager) {
-  return card.IsCardEligibleForBenefits() &&
-         !personal_data_manager.payments_data_manager()
+    const PaymentsDataManager& payments_data_manager) {
+  return payments_data_manager.IsCardEligibleForBenefits(card) &&
+         !payments_data_manager
               .GetApplicableBenefitDescriptionForCardAndOrigin(
                   card,
                   autofill_client.GetLastCommittedPrimaryMainFrameOrigin(),

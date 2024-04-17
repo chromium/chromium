@@ -467,12 +467,6 @@ class CreditCard : public AutofillDataModel {
   // image.
   bool HasRichCardArtImageFromMetadata() const;
 
-  // Returns whether the card is from an issuer eligible for benefits and the
-  // user is in a benefits Chrome experiment for the card's issuer.
-  // TODO(crbug.com/330908547): Move IsCardEligibleForBenefits to the
-  // PaymentsDataManager.
-  bool IsCardEligibleForBenefits() const;
-
   const std::u16string& product_description() const {
     return product_description_;
   }

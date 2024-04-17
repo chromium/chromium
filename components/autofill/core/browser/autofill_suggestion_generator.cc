@@ -1999,7 +1999,8 @@ void AutofillSuggestionGenerator::SetSuggestionLabelsForCard(
       // interactions.
       metadata_logging_context.instrument_ids_with_benefits_available.insert(
           credit_card.instrument_id());
-      if (credit_card.IsCardEligibleForBenefits()) {
+      if (personal_data().payments_data_manager().IsCardEligibleForBenefits(
+              credit_card)) {
         labels.push_back({*benefit_label});
       }
       suggestion.feature_for_iph =
@@ -2159,7 +2160,9 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
       suggestion.labels = {};
       std::optional<Suggestion::Text> benefit_label =
           GetCreditCardBenefitSuggestionLabel(credit_card);
-      if (benefit_label && credit_card.IsCardEligibleForBenefits()) {
+      if (benefit_label &&
+          personal_data().payments_data_manager().IsCardEligibleForBenefits(
+              credit_card)) {
         suggestion.labels.push_back({*benefit_label});
       }
     }

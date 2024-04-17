@@ -70,7 +70,8 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
   }
   if (DidDisplayBenefitForCard(unmask_request_details_->card,
                                autofill_client_.get(),
-                               *autofill_client_->GetPersonalDataManager())) {
+                               autofill_client_->GetPersonalDataManager()
+                                   ->payments_data_manager())) {
     unmask_request_details_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardBenefits);
   }
