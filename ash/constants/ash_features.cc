@@ -2204,6 +2204,11 @@ BASE_FEATURE(kOrcaOnlyInEnglishLocales,
              "OrcaOnlyInEnglishLocales",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Orca resizing support.
+BASE_FEATURE(kOrcaResizingSupport,
+             "OrcaResizingSupport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables Orca on Demo mode.
 BASE_FEATURE(kOrcaSupportDemoMode,
              "OrcaSupportDemoMode",
