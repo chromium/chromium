@@ -355,7 +355,9 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
 // Called when the user tap on the primary button.
 - (void)primaryButtonAction {
   if (_didReachBottom) {
-    [self.actionDelegate didTapPrimaryButton];
+    if (_selectedSearchEngineButton) {
+      [self.actionDelegate didTapPrimaryButton];
+    }
   } else {
     // Adding 1 to the content offset to make sure the scroll view will reach
     // the bottom of view to trigger the floating SetAsDefault container when
