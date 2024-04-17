@@ -830,9 +830,9 @@ The maximum size of the token is 4K (Windows only).
 
 #### Windows
 The enrollment token is searched in the order:
-* The `EnrollmentToken` `REG_BINARY` value from
+* The `EnrollmentToken` REG_SZ value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`
-* The `CloudManagementEnrollmentToken` `REG_BINARY` value from
+* The `CloudManagementEnrollmentToken` REG_SZ value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\{BROWSER_NAME}`
 
 The `EnrollmentMandatory` `REG_DWORD` value is also read from
