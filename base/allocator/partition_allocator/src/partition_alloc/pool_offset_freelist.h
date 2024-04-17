@@ -12,13 +12,15 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/tagging.h"
 
 #if !defined(ARCH_CPU_BIG_ENDIAN)
 #include "partition_alloc/reverse_bytes.h"
-#endif  // !defined(ARCH_CPU_BIG_ENDIAN)
+#endif
 
 namespace partition_alloc::internal {
 
@@ -49,34 +51,44 @@ class EncodedPoolOffset {
 
   PA_ALWAYS_INLINE constexpr explicit operator bool() const { return encoded_; }
 
+  // Transform() works the same in both directions, so can be used for
+  // encoding and decoding.
+  PA_ALWAYS_INLINE static constexpr uintptr_t Transform(uintptr_t offset) {
+    // We use bswap on little endian as a fast transformation for two reasons:
+    // 1) The offset is a canonical address, possibly pointing to valid memory,
+    //    whereas, on 64 bit, the swapped offset is very unlikely to be a
+    //    canonical address. Therefore, if an object is freed and its vtable is
+    //    used where the attacker doesn't get the chance to run allocations
+    //    between the free and use, the vtable dereference is likely to fault.
+    // 2) If the attacker has a linear buffer overflow and elects to try and
+    //    corrupt a freelist pointer, partial pointer overwrite attacks are
+    //    thwarted.
+    // For big endian, similar guarantees are arrived at with a negation.
+#if defined(ARCH_CPU_BIG_ENDIAN)
+    uintptr_t transformed = ~offset;
+#else
+    uintptr_t transformed = ReverseBytes(offset);
+#endif
+    return transformed;
+  }
+
   // Determines the containing pool of `ptr` and returns `ptr`
   // represented as a tagged offset into that pool.
   PA_ALWAYS_INLINE static uintptr_t Encode(void* ptr) {
     if (!ptr) {
       return kEncodeedNullptr;
     }
-    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
-    PoolInfo pool_info = PartitionAddressSpace::GetPoolInfo(addr);
+    uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+    PoolInfo pool_info = PartitionAddressSpace::GetPoolInfo(address);
     // Save a MTE tag as well as an offset.
-    uintptr_t tagged_offset = addr & (kPtrTagMask | ~pool_info.base_mask);
-    PA_DCHECK(tagged_offset == (pool_info.offset | (addr & kPtrTagMask)));
-
-#if defined(ARCH_CPU_BIG_ENDIAN)
-    uintptr_t encoded = ~tagged_offset;
-#else
-    uintptr_t encoded = ReverseBytes(tagged_offset);
-#endif
-    return encoded;
+    uintptr_t tagged_offset = address & (kPtrTagMask | ~pool_info.base_mask);
+    PA_DCHECK(tagged_offset == (pool_info.offset | (address & kPtrTagMask)));
+    return Transform(tagged_offset);
   }
 
   // Given `pool_info`, decodes a `tagged_offset` into a tagged pointer.
   PA_ALWAYS_INLINE PoolOffsetFreelistEntry* Decode(PoolInfo& pool_info) const {
-#if defined(ARCH_CPU_BIG_ENDIAN)
-    uintptr_t tagged_offset = ~encoded_;
-#else
-    uintptr_t tagged_offset = ReverseBytes(encoded_);
-#endif
-
+    uintptr_t tagged_offset = Transform(encoded_);
     // We assume `tagged_offset` contains a proper MTE tag.
     return reinterpret_cast<PoolOffsetFreelistEntry*>(pool_info.base |
                                                       tagged_offset);
@@ -87,9 +99,14 @@ class EncodedPoolOffset {
   friend PoolOffsetFreelistEntry;
 };
 
-// This implementation of PartitionAlloc's freelist uses pool offsets
-// rather than naked pointers. This is intended to prevent usage of
-// freelist pointers to easily jump around to freed slots.
+// Freelist entries are encoded for security reasons. See
+// //base/allocator/partition_allocator/PartitionAlloc.md
+// and |Transform()| for the rationale and mechanism, respectively.
+//
+// We'd to especially point out, that as part of encoding, we store the entries
+// as pool offsets. In a scenario that an attacker has a write primitive
+// anywhere within the pool, they would not be able to corrupt the freelist
+// in a way that would allow them to break out of the pool.
 class PoolOffsetFreelistEntry {
   constexpr explicit PoolOffsetFreelistEntry(std::nullptr_t)
       : encoded_next_(nullptr)
@@ -128,7 +145,6 @@ class PoolOffsetFreelistEntry {
     auto* entry = new (slot_start_tagged) PoolOffsetFreelistEntry(nullptr);
     return entry;
   }
-
   PA_ALWAYS_INLINE static PoolOffsetFreelistEntry* EmplaceAndInitNull(
       uintptr_t slot_start) {
     return EmplaceAndInitNull(SlotStartAddr2Ptr(slot_start));
@@ -162,7 +178,7 @@ class PoolOffsetFreelistEntry {
 
   void CorruptNextForTesting(uintptr_t v) {
     // We just need a value that can never be a valid pool offset here.
-    encoded_next_.Override(v);
+    encoded_next_.Override(EncodedPoolOffset::Transform(v));
   }
 
   // Puts `slot_size` on the stack before crashing in case of memory
@@ -238,8 +254,9 @@ class PoolOffsetFreelistEntry {
     }
 
     PoolInfo pool_info = GetPoolInfo(reinterpret_cast<uintptr_t>(this));
-    // We assume `(next_ & pool_info.base_mask) == 0` here.
-    // This assumption is checked in `IsWellFormed()` later.
+    // We verify that `(next_ & pool_info.base_mask) == 0` in `IsWellFormed()`,
+    // which is meant to prevent from breaking out of the pool in face of
+    // a corruption (see PoolOffsetFreelistEntry class-level comment).
     auto* ret = encoded_next_.Decode(pool_info);
     if (PA_UNLIKELY(!IsWellFormed<for_thread_cache>(pool_info, this, ret))) {
       if constexpr (crash_on_corruption) {

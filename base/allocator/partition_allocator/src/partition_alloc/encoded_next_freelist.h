@@ -13,14 +13,13 @@
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_base/immediate_crash.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
 #if !defined(ARCH_CPU_BIG_ENDIAN)
 #include "partition_alloc/reverse_bytes.h"
-#endif  // !defined(ARCH_CPU_BIG_ENDIAN)
+#endif
 
 namespace partition_alloc::internal {
 
@@ -50,7 +49,7 @@ class EncodedFreelistPtr {
   // encoding and decoding.
   PA_ALWAYS_INLINE static constexpr uintptr_t Transform(uintptr_t address) {
     // We use bswap on little endian as a fast transformation for two reasons:
-    // 1) On 64 bit architectures, the pointer is very unlikely to be a
+    // 1) On 64 bit architectures, the swapped pointer is very unlikely to be a
     //    canonical address. Therefore, if an object is freed and its vtable is
     //    used where the attacker doesn't get the chance to run allocations
     //    between the free and use, the vtable dereference is likely to fault.
