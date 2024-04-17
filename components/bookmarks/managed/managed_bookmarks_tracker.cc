@@ -163,7 +163,7 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
   // Remove any extra children of |folder| that haven't been reused.
   while (folder->children().size() != folder_index)
     model_->Remove(folder->children()[folder_index].get(),
-                   bookmarks::metrics::BookmarkEditSource::kOther);
+                   bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 }
 
 // static

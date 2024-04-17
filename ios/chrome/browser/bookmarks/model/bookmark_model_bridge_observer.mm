@@ -66,7 +66,8 @@ void BookmarkModelBridge::BookmarkNodeAdded(
 void BookmarkModelBridge::OnWillRemoveBookmarks(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
-    const bookmarks::BookmarkNode* node) {
+    const bookmarks::BookmarkNode* node,
+    const base::Location& location) {
   LegacyBookmarkModel* model = model_observation_.GetSource();
   SEL selector = @selector(bookmarkModel:willDeleteNode:fromFolder:);
   if ([observer_ respondsToSelector:selector]) {
@@ -78,7 +79,8 @@ void BookmarkModelBridge::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   LegacyBookmarkModel* model = model_observation_.GetSource();
   // Calling -bookmarkModel:didDeleteNode:fromFolder: may cause the current
   // bridge object to be destroyed, so code must not access `this` after (even
@@ -121,7 +123,8 @@ void BookmarkModelBridge::BookmarkNodeChildrenReordered(
   [observer_ bookmarkModel:model didChangeChildrenForNode:node];
 }
 
-void BookmarkModelBridge::OnWillRemoveAllUserBookmarks() {
+void BookmarkModelBridge::OnWillRemoveAllUserBookmarks(
+    const base::Location& location) {
   LegacyBookmarkModel* model = model_observation_.GetSource();
   SEL selector = @selector(bookmarkModelWillRemoveAllNodes:);
   if ([observer_ respondsToSelector:selector]) {
@@ -130,7 +133,8 @@ void BookmarkModelBridge::OnWillRemoveAllUserBookmarks() {
 }
 
 void BookmarkModelBridge::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   LegacyBookmarkModel* model = model_observation_.GetSource();
   [observer_ bookmarkModelRemovedAllNodes:model];
 }

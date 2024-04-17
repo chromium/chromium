@@ -243,7 +243,7 @@ TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
   DestroyDelegate();
   while (model()->other_node()->children().size() > 1) {
     model()->Remove(model()->other_node()->children()[1].get(),
-                    bookmarks::metrics::BookmarkEditSource::kOther);
+                    bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   }
 
   NewDelegate();

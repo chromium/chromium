@@ -69,7 +69,8 @@ TEST_F(ShoppingBookmarkModelObserverTest, TestUnsubscribeOnBookmarkDeletion) {
       Unsubscribe(VectorHasSubscriptionWithId(base::NumberToString(cluster_id)),
                   testing::_))
       .Times(1);
-  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther,
+                          FROM_HERE);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -86,7 +87,8 @@ TEST_F(ShoppingBookmarkModelObserverTest,
   shopping_service_->SetIsSubscribedCallbackValue(true);
 
   EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(0);
-  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther,
+                          FROM_HERE);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -107,8 +109,8 @@ TEST_F(ShoppingBookmarkModelObserverTest,
   shopping_service_->SetIsSubscribedCallbackValue(true);
 
   EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(1);
-  bookmark_model_->Remove(folder,
-                          bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model_->Remove(
+      folder, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -133,8 +135,8 @@ TEST_F(ShoppingBookmarkModelObserverTest,
   shopping_service_->SetIsSubscribedCallbackValue(true);
 
   EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(1);
-  bookmark_model_->Remove(folder,
-                          bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model_->Remove(
+      folder, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -162,8 +164,8 @@ TEST_F(ShoppingBookmarkModelObserverTest,
   shopping_service_->SetIsSubscribedCallbackValue(true);
 
   EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(0);
-  bookmark_model_->Remove(folder1,
-                          bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model_->Remove(
+      folder1, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -279,8 +281,8 @@ TEST_F(ShoppingBookmarkModelObserverTest, TestShoppingCollectionChangeMetrics) {
                 "Commerce.PriceTracking.ShoppingCollection.ParentChanged"),
             1);
 
-  bookmark_model_->Remove(collection,
-                          bookmarks::metrics::BookmarkEditSource::kUser);
+  bookmark_model_->Remove(
+      collection, bookmarks::metrics::BookmarkEditSource::kUser, FROM_HERE);
 
   ASSERT_EQ(user_action_tester.GetActionCount(
                 "Commerce.PriceTracking.ShoppingCollection.Deleted"),

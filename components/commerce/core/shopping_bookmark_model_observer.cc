@@ -159,7 +159,8 @@ void ShoppingBookmarkModelObserver::BookmarkNodeMoved(
 void ShoppingBookmarkModelObserver::OnWillRemoveBookmarks(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
-    const bookmarks::BookmarkNode* node) {
+    const bookmarks::BookmarkNode* node,
+    const base::Location& location) {
   if (node->is_folder()) {
     std::set<uint64_t> unsubscribed_ids;
     HandleFolderDeletion(node, &unsubscribed_ids);

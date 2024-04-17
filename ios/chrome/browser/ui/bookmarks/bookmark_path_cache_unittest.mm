@@ -72,7 +72,7 @@ TEST_F(BookmarkPathCacheTest, TestPathCacheWhenFolderDeleted) {
 
   // Delete the folder.
   local_or_syncable_bookmark_model_->Remove(
-      f1, bookmarks::metrics::BookmarkEditSource::kOther);
+      f1, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 
   int64_t unused_folder_id;
   BookmarkModelType model_type;

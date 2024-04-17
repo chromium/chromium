@@ -753,7 +753,7 @@ TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   EXPECT_TRUE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
 
   ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get())
-      ->RemoveAllUserBookmarks();
+      ->RemoveAllUserBookmarks(FROM_HERE);
   EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
   EXPECT_FALSE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
 }

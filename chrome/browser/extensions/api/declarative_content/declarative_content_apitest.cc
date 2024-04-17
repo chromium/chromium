@@ -268,8 +268,8 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
       bookmark_model->other_node(), 0, u"title", GURL("http://test1/"));
   EXPECT_EQ(match_is_bookmarked, action->GetIsVisible(tab_id));
 
-  bookmark_model->Remove(node,
-                         bookmarks::metrics::BookmarkEditSource::kExtension);
+  bookmark_model->Remove(
+      node, bookmarks::metrics::BookmarkEditSource::kExtension, FROM_HERE);
   EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 
   // Check rule evaluation on navigate to bookmarked and non-bookmarked URL.

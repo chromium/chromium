@@ -84,7 +84,7 @@ TEST_F(BookmarkExpandedStateTrackerTest, SetExpandedNodes) {
 
   // Remove the folder, which should remove it from the list of expanded nodes.
   model_->Remove(model_->bookmark_bar_node()->children().front().get(),
-                 bookmarks::metrics::BookmarkEditSource::kOther);
+                 bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   nodes.erase(n1);
   n1 = nullptr;
   EXPECT_EQ(nodes, tracker_->GetExpandedNodes());
@@ -100,7 +100,7 @@ TEST_F(BookmarkExpandedStateTrackerTest, RemoveAllUserBookmarks) {
   // Verify that the node is present.
   EXPECT_EQ(nodes, tracker_->GetExpandedNodes());
   // Call remove all.
-  model_->RemoveAllUserBookmarks();
+  model_->RemoveAllUserBookmarks(FROM_HERE);
   // Verify node is not present.
   EXPECT_TRUE(tracker_->GetExpandedNodes().empty());
 }

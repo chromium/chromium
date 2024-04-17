@@ -560,7 +560,7 @@ TEST_F(PopupMenuMediatorTest, TestBookmarksToolsMenuButtons) {
       ios::AccountBookmarkModelFactory::GetForBrowserState(
           browser_state_.get()));
   ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get())
-      ->RemoveAllUserBookmarks();
+      ->RemoveAllUserBookmarks(FROM_HERE);
   EXPECT_TRUE(HasItem(consumer, kToolsMenuAddToBookmarks, /*enabled=*/YES));
   EXPECT_FALSE(HasItem(consumer, kToolsMenuEditBookmark, /*enabled=*/YES));
 }

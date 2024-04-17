@@ -77,11 +77,13 @@ class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
                          bool added_by_user) override;
   void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
                              size_t old_index,
-                             const bookmarks::BookmarkNode* node) override;
+                             const bookmarks::BookmarkNode* node,
+                             const base::Location& location) override;
   void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& removed_urls) override;
+                           const std::set<GURL>& removed_urls,
+                           const base::Location& location) override;
 
   void OnWillChangeBookmarkNode(const bookmarks::BookmarkNode* node) override;
 
@@ -89,8 +91,9 @@ class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
       const bookmarks::BookmarkNode* node) override;
-  void OnWillRemoveAllUserBookmarks() override;
-  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls) override;
+  void OnWillRemoveAllUserBookmarks(const base::Location& location) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override;
 
   __weak id<BookmarkModelBridgeObserver> observer_;
 

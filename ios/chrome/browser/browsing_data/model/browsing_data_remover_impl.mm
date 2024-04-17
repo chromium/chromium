@@ -538,9 +538,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // safe as the callback is always invoked, even if ChromeBrowserState is
     // destroyed, and BookmarkRemoverHelper supports being deleted while the
     // callback is run.
-    bookmarks_remover_helper_ptr->RemoveAllUserBookmarksIOS(base::BindOnce(
-        &BookmarkClearedAdapter, std::move(bookmarks_remover_helper),
-        CreatePendingTaskCompletionClosure()));
+    bookmarks_remover_helper_ptr->RemoveAllUserBookmarksIOS(
+        FROM_HERE, base::BindOnce(&BookmarkClearedAdapter,
+                                  std::move(bookmarks_remover_helper),
+                                  CreatePendingTaskCompletionClosure()));
   }
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_READING_LIST)) {

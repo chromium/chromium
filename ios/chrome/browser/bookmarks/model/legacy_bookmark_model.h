@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -63,7 +64,8 @@ class LegacyBookmarkModel : public KeyedService {
   // libraries.
   bool loaded() const;
   void Remove(const bookmarks::BookmarkNode* node,
-              bookmarks::metrics::BookmarkEditSource source);
+              bookmarks::metrics::BookmarkEditSource source,
+              const base::Location& location);
   void Move(const bookmarks::BookmarkNode* node,
             const bookmarks::BookmarkNode* new_parent,
             size_t index);
@@ -92,7 +94,8 @@ class LegacyBookmarkModel : public KeyedService {
                                         const std::u16string& title,
                                         const GURL& url);
   void RemoveMany(const std::set<const bookmarks::BookmarkNode*>& nodes,
-                  bookmarks::metrics::BookmarkEditSource source);
+                  bookmarks::metrics::BookmarkEditSource source,
+                  const base::Location& location);
   void CommitPendingWriteForTest();
 
   // LegacyBookmarkModel has three top-level permanent nodes (as opposed to

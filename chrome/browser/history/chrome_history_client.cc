@@ -93,16 +93,19 @@ void ChromeHistoryClient::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   BaseBookmarkModelObserver::BookmarkNodeRemoved(parent, old_index, node,
-                                                 removed_urls);
+                                                 removed_urls, location);
   if (on_bookmarks_removed_)
     on_bookmarks_removed_.Run(removed_urls);
 }
 
 void ChromeHistoryClient::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
-  BaseBookmarkModelObserver::BookmarkAllUserNodesRemoved(removed_urls);
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
+  BaseBookmarkModelObserver::BookmarkAllUserNodesRemoved(removed_urls,
+                                                         location);
   if (on_bookmarks_removed_)
     on_bookmarks_removed_.Run(removed_urls);
 }

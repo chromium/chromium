@@ -21,7 +21,7 @@ TEST_F(BookmarkRemoverHelperUnitTest,
        TestRemoveAllUserBookmarksIOSBeforeIntialization) {
   base::test::TestFuture<bool> test_future;
   BookmarkRemoverHelper helper(chrome_browser_state_.get());
-  helper.RemoveAllUserBookmarksIOS(test_future.GetCallback());
+  helper.RemoveAllUserBookmarksIOS(FROM_HERE, test_future.GetCallback());
   ASSERT_FALSE(test_future.IsReady());
   WaitForLegacyBookmarkModelToLoad(local_or_syncable_bookmark_model_);
   WaitForLegacyBookmarkModelToLoad(account_bookmark_model_);

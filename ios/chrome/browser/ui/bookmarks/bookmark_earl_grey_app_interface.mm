@@ -69,7 +69,7 @@ const bookmarks::BookmarkNode* GetFirstBookmarkWithTitle(
       chrome_test_util::GetOriginalBrowserState();
   [BookmarkPathCache
       clearBookmarkTopMostRowCacheWithPrefService:browserState->GetPrefs()];
-  BOOL removeSucceeded = RemoveAllUserBookmarksIOS(browserState);
+  BOOL removeSucceeded = RemoveAllUserBookmarksIOS(browserState, FROM_HERE);
   if (!removeSucceeded) {
     return testing::NSErrorWithLocalizedDescription(
         @"Failed to remove some user boomkark");
@@ -298,8 +298,8 @@ const bookmarks::BookmarkNode* GetFirstBookmarkWithTitle(
         stringWithFormat:@"Could not remove bookmark with name %@", title]);
   }
 
-  bookmarkModel->Remove(bookmark,
-                        bookmarks::metrics::BookmarkEditSource::kUser);
+  bookmarkModel->Remove(bookmark, bookmarks::metrics::BookmarkEditSource::kUser,
+                        FROM_HERE);
   return nil;
 }
 

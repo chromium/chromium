@@ -80,12 +80,13 @@ class BookmarkRestorer : public bookmarks::BookmarkModelObserver {
   void BookmarkNodeRemoved(const BookmarkNode* parent,
                            size_t old_index,
                            const BookmarkNode* node,
-                           const std::set<GURL>& removed_urls) override {}
+                           const std::set<GURL>& removed_urls,
+                           const base::Location& location) override {}
   void BookmarkNodeChanged(const BookmarkNode* node) override {}
   void BookmarkNodeFaviconChanged(const BookmarkNode* node) override {}
   void BookmarkNodeChildrenReordered(const BookmarkNode* node) override {}
-  void BookmarkAllUserNodesRemoved(
-      const std::set<GURL>& removed_urls) override {}
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override {}
 
  private:
   const raw_ptr<Profile> profile_;

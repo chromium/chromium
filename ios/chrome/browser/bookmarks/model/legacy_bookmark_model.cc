@@ -16,15 +16,16 @@ void RemoveBookmarksRecursive(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
     bookmarks::BookmarkModel* model,
     bookmarks::metrics::BookmarkEditSource source,
-    const bookmarks::BookmarkNode* node) {
+    const bookmarks::BookmarkNode* node,
+    const base::Location& location) {
   // Remove children in reverse order, so that the index remains valid.
   for (size_t i = node->children().size(); i > 0; --i) {
     RemoveBookmarksRecursive(bookmarks, model, source,
-                             node->children()[i - 1].get());
+                             node->children()[i - 1].get(), location);
   }
 
   if (base::Contains(bookmarks, node)) {
-    model->Remove(node, source);
+    model->Remove(node, source, location);
   }
 }
 
@@ -47,10 +48,10 @@ bool LegacyBookmarkModel::loaded() const {
   return underlying_model()->loaded();
 }
 
-void LegacyBookmarkModel::Remove(
-    const bookmarks::BookmarkNode* node,
-    bookmarks::metrics::BookmarkEditSource source) {
-  underlying_model()->Remove(node, source);
+void LegacyBookmarkModel::Remove(const bookmarks::BookmarkNode* node,
+                                 bookmarks::metrics::BookmarkEditSource source,
+                                 const base::Location& location) {
+  underlying_model()->Remove(node, source, location);
 }
 
 void LegacyBookmarkModel::Move(const bookmarks::BookmarkNode* node,
@@ -115,9 +116,10 @@ const bookmarks::BookmarkNode* LegacyBookmarkModel::AddURL(
 
 void LegacyBookmarkModel::RemoveMany(
     const std::set<const bookmarks::BookmarkNode*>& nodes,
-    bookmarks::metrics::BookmarkEditSource source) {
+    bookmarks::metrics::BookmarkEditSource source,
+    const base::Location& location) {
   RemoveBookmarksRecursive(nodes, underlying_model(), source,
-                           underlying_model()->root_node());
+                           underlying_model()->root_node(), location);
 }
 
 void LegacyBookmarkModel::CommitPendingWriteForTest() {

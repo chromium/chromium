@@ -669,7 +669,7 @@ void BookmarkRemoteUpdatesHandler::ProcessDelete(
   // Remove the entities of |node| and its children.
   RemoveEntityAndChildrenFromTracker(node);
   // Remove the node and its children from the model.
-  bookmark_model_->Remove(node);
+  bookmark_model_->Remove(node, FROM_HERE);
 }
 
 // This method doesn't explicitly handle conflicts as a result of re-encryption:

@@ -6,7 +6,9 @@
 
 namespace bookmarks {
 
-void BaseBookmarkModelObserver::BookmarkModelLoaded(bool ids_reassigned) {}
+void BaseBookmarkModelObserver::BookmarkModelLoaded(bool ids_reassigned) {
+  BookmarkModelChanged();
+}
 
 void BaseBookmarkModelObserver::BookmarkModelBeingDeleted() {
   BookmarkModelChanged();
@@ -30,12 +32,14 @@ void BaseBookmarkModelObserver::BookmarkNodeRemoved(
     const BookmarkNode* parent,
     size_t old_index,
     const BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   BookmarkModelChanged();
 }
 
@@ -44,7 +48,9 @@ void BaseBookmarkModelObserver::BookmarkNodeChanged(const BookmarkNode* node) {
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeFaviconChanged(
-    const BookmarkNode* node) {}
+    const BookmarkNode* node) {
+  BookmarkModelChanged();
+}
 
 void BaseBookmarkModelObserver::BookmarkNodeChildrenReordered(
     const BookmarkNode* node) {

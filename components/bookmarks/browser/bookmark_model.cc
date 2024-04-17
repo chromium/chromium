@@ -308,7 +308,8 @@ void BookmarkModel::EndGroupedChanges() {
 }
 
 void BookmarkModel::Remove(const BookmarkNode* node,
-                           metrics::BookmarkEditSource source) {
+                           metrics::BookmarkEditSource source,
+                           const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(node);
@@ -322,7 +323,7 @@ void BookmarkModel::Remove(const BookmarkNode* node,
   // that are difficult to trace back.
   CHECK(!is_permanent_node(node)) << "for type " << node->type();
 
-  std::unique_ptr<BookmarkNode> owned_node = RemoveNode(node);
+  std::unique_ptr<BookmarkNode> owned_node = RemoveNode(node, location);
 
   client_->OnBookmarkNodeRemovedUndoable(this, parent, index.value(),
                                          std::move(owned_node));
@@ -363,7 +364,7 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   // observers of the source model get removal notifications, while observers of
   // the destination model get bookmark addition notifications.
   for (BookmarkModelObserver& observer : observers_) {
-    observer.OnWillRemoveBookmarks(parent, index.value(), node);
+    observer.OnWillRemoveBookmarks(parent, index.value(), node, FROM_HERE);
   }
 
   std::set<GURL> removed_urls;
@@ -393,7 +394,8 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   ScheduleSaveForNode(parent);
 
   for (BookmarkModelObserver& observer : observers_) {
-    observer.BookmarkNodeRemoved(parent, index.value(), node, removed_urls);
+    observer.BookmarkNodeRemoved(parent, index.value(), node, removed_urls,
+                                 FROM_HERE);
   }
 
   client_->OnBookmarkNodeRemovedUndoable(this, parent, index.value(),
@@ -422,7 +424,7 @@ BookmarkModel::CloneSubtreeForOtherModelWithNewNodeIdsAndUuids(
   return new_node;
 }
 
-void BookmarkModel::RemoveAllUserBookmarks() {
+void BookmarkModel::RemoveAllUserBookmarks(const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   std::set<GURL> removed_urls;
@@ -434,7 +436,7 @@ void BookmarkModel::RemoveAllUserBookmarks() {
   std::vector<RemoveNodeData> removed_node_data_list;
 
   for (BookmarkModelObserver& observer : observers_) {
-    observer.OnWillRemoveAllUserBookmarks();
+    observer.OnWillRemoveAllUserBookmarks(location);
   }
 
   BeginExtensiveChanges();
@@ -468,7 +470,7 @@ void BookmarkModel::RemoveAllUserBookmarks() {
   EndExtensiveChanges();
 
   for (BookmarkModelObserver& observer : observers_) {
-    observer.BookmarkAllUserNodesRemoved(removed_urls);
+    observer.BookmarkAllUserNodesRemoved(removed_urls, location);
   }
 
   BeginGroupedChanges();
@@ -1354,7 +1356,8 @@ void BookmarkModel::AddNodeToIndicesRecursive(
 }
 
 std::unique_ptr<BookmarkNode> BookmarkModel::RemoveNode(
-    const BookmarkNode* node) {
+    const BookmarkNode* node,
+    const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(node);
@@ -1368,7 +1371,7 @@ std::unique_ptr<BookmarkNode> BookmarkModel::RemoveNode(
       DetermineTypeForUuidLookupForExistingNode(node);
 
   for (BookmarkModelObserver& observer : observers_) {
-    observer.OnWillRemoveBookmarks(parent, index.value(), node);
+    observer.OnWillRemoveBookmarks(parent, index.value(), node, location);
   }
 
   // Schedule the save before actually removing the node for
@@ -1383,7 +1386,8 @@ std::unique_ptr<BookmarkNode> BookmarkModel::RemoveNode(
   RemoveNodeFromIndicesRecursive(owned_node.get(), type_for_uuid_lookup);
 
   for (BookmarkModelObserver& observer : observers_) {
-    observer.BookmarkNodeRemoved(parent, index.value(), node, removed_urls);
+    observer.BookmarkNodeRemoved(parent, index.value(), node, removed_urls,
+                                 location);
   }
 
   return owned_node;
@@ -1537,7 +1541,7 @@ void BookmarkModel::RemoveAccountPermanentFolders() {
   account_mobile_node_ = nullptr;
 
   for (const BookmarkNode* node : account_permanent_folders) {
-    RemoveNode(node);
+    RemoveNode(node, FROM_HERE);
   }
 }
 

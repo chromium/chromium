@@ -571,8 +571,8 @@ TEST_F(PriceTrackingUtilsTest, GetShoppingCollection) {
 
   // Deleting the collection should behave like any other bookmark node
   // deletion.
-  bookmark_model_->Remove(collection,
-                          bookmarks::metrics::BookmarkEditSource::kUser);
+  bookmark_model_->Remove(
+      collection, bookmarks::metrics::BookmarkEditSource::kUser, FROM_HERE);
 
   collection = GetShoppingCollectionBookmarkFolder(bookmark_model_.get());
 

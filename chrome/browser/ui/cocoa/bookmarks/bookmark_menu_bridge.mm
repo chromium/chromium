@@ -157,16 +157,17 @@ void BookmarkMenuBridge::BookmarkNodeAdded(const BookmarkNode* parent,
   InvalidateMenu();
 }
 
-void BookmarkMenuBridge::BookmarkNodeRemoved(
-    const BookmarkNode* parent,
-    size_t old_index,
-    const BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+void BookmarkMenuBridge::BookmarkNodeRemoved(const BookmarkNode* parent,
+                                             size_t old_index,
+                                             const BookmarkNode* node,
+                                             const std::set<GURL>& removed_urls,
+                                             const base::Location& location) {
   InvalidateMenu();
 }
 
 void BookmarkMenuBridge::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   InvalidateMenu();
 }
 

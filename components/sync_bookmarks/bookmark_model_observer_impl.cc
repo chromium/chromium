@@ -222,12 +222,14 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
 void BookmarkModelObserverImpl::OnWillRemoveBookmarks(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
-    const bookmarks::BookmarkNode* node) {
+    const bookmarks::BookmarkNode* node,
+    const base::Location& location) {
   // Ignore changes to non-syncable nodes (e.g. managed nodes).
   if (!bookmark_model_->IsNodeSyncable(node)) {
     return;
   }
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
+  // TODO(crbug.com/334001702): Plumb `location` into sync metadata.
   ProcessDelete(node);
   nudge_for_commit_closure_.Run();
 }
@@ -236,18 +238,21 @@ void BookmarkModelObserverImpl::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   // All the work should have already been done in OnWillRemoveBookmarks.
   DCHECK(bookmark_tracker_->GetEntityForBookmarkNode(node) == nullptr);
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
 }
 
-void BookmarkModelObserverImpl::OnWillRemoveAllUserBookmarks() {
+void BookmarkModelObserverImpl::OnWillRemoveAllUserBookmarks(
+    const base::Location& location) {
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
   const bookmarks::BookmarkNode* root_node = bookmark_model_->root_node();
   for (const auto& permanent_node : root_node->children()) {
     for (const auto& child : permanent_node->children()) {
       if (bookmark_model_->IsNodeSyncable(child.get())) {
+        // TODO(crbug.com/334001702): Plumb `location` into sync metadata.
         ProcessDelete(child.get());
       }
     }
@@ -256,7 +261,8 @@ void BookmarkModelObserverImpl::OnWillRemoveAllUserBookmarks() {
 }
 
 void BookmarkModelObserverImpl::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   // All the work should have already been done in OnWillRemoveAllUserBookmarks.
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
 }

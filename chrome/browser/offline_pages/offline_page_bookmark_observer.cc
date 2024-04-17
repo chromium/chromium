@@ -24,7 +24,8 @@ void OfflinePageBookmarkObserver::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   if (!offline_page_model_) {
     offline_page_model_ =
         OfflinePageModelFactory::GetForBrowserContext(context_);

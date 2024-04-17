@@ -267,7 +267,8 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
     const BookmarkNode* parent,
     size_t index,
     const BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   api::bookmarks::OnRemoved::RemoveInfo remove_info;
   remove_info.parent_id = base::NumberToString(parent->id());
   remove_info.index = static_cast<int>(index);
@@ -281,7 +282,8 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
 }
 
 void BookmarkEventRouter::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   // TODO(crbug.com/40277078): This used to be used only on Android, but that's
   // no longer the case. We need to implement a new event to handle this.
 }

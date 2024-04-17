@@ -363,13 +363,13 @@ TEST_F(BookmarkBarViewTest, RemoveNode) {
 
   // Remove the 2nd node, should still only have 1 visible.
   model()->Remove(bookmark_bar_node->children()[1].get(),
-                  bookmarks::metrics::BookmarkEditSource::kOther);
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   views::test::RunScheduledLayout(bookmark_bar_view());
   EXPECT_EQ("a", GetStringForVisibleButtons());
 
   // Remove the first node, should force a new button (for the 'c' node).
   model()->Remove(bookmark_bar_node->children()[0].get(),
-                  bookmarks::metrics::BookmarkEditSource::kOther);
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   views::test::RunScheduledLayout(bookmark_bar_view());
   ASSERT_EQ("c", GetStringForVisibleButtons());
 }
@@ -496,7 +496,7 @@ TEST_F(BookmarkBarViewTest, MutateModelDuringDrag) {
   bookmark_bar_view()->OnDragUpdated(target_event);
   EXPECT_NE(-1, test_helper_->GetDropLocationModelIndexForTesting());
   model()->Remove(model()->bookmark_bar_node()->children()[4].get(),
-                  bookmarks::metrics::BookmarkEditSource::kOther);
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   EXPECT_EQ(-1, test_helper_->GetDropLocationModelIndexForTesting());
 }
 

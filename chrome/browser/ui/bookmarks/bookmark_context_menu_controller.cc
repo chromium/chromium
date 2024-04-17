@@ -317,7 +317,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
 
       bookmarks::ScopedGroupBookmarkActions group_remove(model_);
       for (const bookmarks::BookmarkNode* node : selection_) {
-        model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
+        model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
+                       FROM_HERE);
       }
       selection_.clear();
       break;

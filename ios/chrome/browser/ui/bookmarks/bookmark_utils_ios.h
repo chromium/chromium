@@ -12,6 +12,7 @@
 #import <string>
 #import <vector>
 
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
@@ -172,11 +173,13 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
     const std::vector<LegacyBookmarkModel*>& bookmark_models,
-    ChromeBrowserState* browser_state);
+    ChromeBrowserState* browser_state,
+    const base::Location& location);
 
 // Deletes all nodes in `bookmarks`.
 void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
-                     LegacyBookmarkModel* model);
+                     LegacyBookmarkModel* model,
+                     const base::Location& location);
 
 // Move all `bookmarks_to_move` to the given `folder`, and returns a snackbar
 // with an undo action. Returns nil if the operation wasn't successful or

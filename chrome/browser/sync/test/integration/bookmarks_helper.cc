@@ -158,9 +158,10 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
   void BookmarkNodeRemoved(const BookmarkNode* parent,
                            size_t old_index,
                            const BookmarkNode* node,
-                           const std::set<GURL>& removed_urls) override {}
-  void BookmarkAllUserNodesRemoved(
-      const std::set<GURL>& removed_urls) override {}
+                           const std::set<GURL>& removed_urls,
+                           const base::Location& location) override {}
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override {}
 
   void BookmarkNodeChanged(const BookmarkNode* node) override {
     if (node == node_) {
@@ -727,11 +728,11 @@ void Remove(int profile, const BookmarkNode* parent, size_t index) {
       << "Node " << parent->GetTitle() << " does not belong to "
       << "Profile " << profile;
   model->Remove(parent->children()[index].get(),
-                bookmarks::metrics::BookmarkEditSource::kOther);
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 }
 
 void RemoveAll(int profile) {
-  GetBookmarkModel(profile)->RemoveAllUserBookmarks();
+  GetBookmarkModel(profile)->RemoveAllUserBookmarks(FROM_HERE);
 }
 
 void SortChildren(int profile, const BookmarkNode* parent) {
@@ -910,99 +911,7 @@ AnyBookmarkChangeObserver::AnyBookmarkChangeObserver(
 
 AnyBookmarkChangeObserver::~AnyBookmarkChangeObserver() = default;
 
-void AnyBookmarkChangeObserver::BookmarkModelLoaded(bool ids_reassigned) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::BookmarkModelBeingDeleted() {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::BookmarkNodeMoved(
-    const BookmarkNode* old_parent,
-    size_t old_index,
-    const BookmarkNode* new_parent,
-    size_t new_index) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::BookmarkNodeAdded(const BookmarkNode* parent,
-                                                  size_t index,
-                                                  bool added_by_user) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::OnWillRemoveBookmarks(
-    const BookmarkNode* parent,
-    size_t old_index,
-    const BookmarkNode* node) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::BookmarkNodeRemoved(
-    const BookmarkNode* parent,
-    size_t old_index,
-    const BookmarkNode* node,
-    const std::set<GURL>& no_longer_bookmarked) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::OnWillChangeBookmarkNode(
-    const BookmarkNode* node) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::BookmarkNodeChanged(const BookmarkNode* node) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::OnWillChangeBookmarkMetaInfo(
-    const BookmarkNode* node) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::BookmarkMetaInfoChanged(
-    const BookmarkNode* node) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::BookmarkNodeFaviconChanged(
-    const BookmarkNode* node) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::OnWillReorderBookmarkNode(
-    const BookmarkNode* node) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::BookmarkNodeChildrenReordered(
-    const BookmarkNode* node) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::ExtensiveBookmarkChangesBeginning() {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::ExtensiveBookmarkChangesEnded() {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::OnWillRemoveAllUserBookmarks() {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::GroupedBookmarkChangesBeginning() {
-  cb_.Run();
-}
-
-void AnyBookmarkChangeObserver::GroupedBookmarkChangesEnded() {
+void AnyBookmarkChangeObserver::BookmarkModelChanged() {
   cb_.Run();
 }
 

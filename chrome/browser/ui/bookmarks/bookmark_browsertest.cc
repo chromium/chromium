@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
     bookmark_model->AddURL(bbar, 3, u"Gmail", GURL("http://mail.google.com"));
     open_urls_and_test();
     open_urls_from_incognito_and_test();
-    bookmark_model->RemoveAllUserBookmarks();
+    bookmark_model->RemoveAllUserBookmarks(FROM_HERE);
   }
   {
     // Bookmark 4 pages, with the second and fourth one not being able to be
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
                            GURL(chrome::kChromeUIExtensionsURL));
     open_urls_and_test();
     open_urls_from_incognito_and_test();
-    bookmark_model->RemoveAllUserBookmarks();
+    bookmark_model->RemoveAllUserBookmarks(FROM_HERE);
   }
 }
 

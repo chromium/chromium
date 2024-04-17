@@ -189,7 +189,8 @@ TEST_F(BookmarkClientBaseTest, SuggestedFolder_Rejected) {
 
   // Remove and re-bookmark the second URL. The suggested folder should be
   // allowed again.
-  model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
+  model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
+                  FROM_HERE);
 
   bookmarks::AddIfNotBookmarked(model(), url_for_suggestion2, u"bookmark 2");
   node = model()->GetMostRecentlyAddedUserNodeForURL(url_for_suggestion2);
@@ -346,7 +347,8 @@ TEST_F(BookmarkClientBaseTest, SaveLocationMetrics) {
   // state.
   model()->Move(node, model()->other_node(),
                 model()->other_node()->children().size());
-  model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
+  model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
+                  FROM_HERE);
 
   // Adding the bookmark again should use "feature 2" since "feature 1" was
   // previously rejected.

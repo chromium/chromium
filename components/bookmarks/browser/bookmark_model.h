@@ -195,13 +195,16 @@ class BookmarkModel : public CoreBookmarkModel,
   // Removes `node` from the model and deletes it. Removing a folder node
   // recursively removes all nodes. Observers are notified immediately. `node`
   // must not be a permanent node. The source of the removal is passed through
-  // `source`.
-  void Remove(const BookmarkNode* node, metrics::BookmarkEditSource source);
+  // `source`. `location` is used for logging purposes and investigations.
+  void Remove(const BookmarkNode* node,
+              metrics::BookmarkEditSource source,
+              const base::Location& location);
 
   // Removes all the non-permanent bookmark nodes that are editable by the user.
   // Observers are only notified when all nodes have been removed. There is no
-  // notification for individual node removals.
-  void RemoveAllUserBookmarks() override;
+  // notification for individual node removals. `location` is used for logging
+  // purposes and investigations.
+  void RemoveAllUserBookmarks(const base::Location& location) override;
 
   // Moves `node` to `new_parent` and inserts it at the given `index`.
   //
@@ -540,7 +543,8 @@ class BookmarkModel : public CoreBookmarkModel,
   // Removes `node` and notifies its observers, returning and transferring
   // ownership of the node removed. The caller is responsible for allowing undo,
   // if applicable.
-  std::unique_ptr<BookmarkNode> RemoveNode(const BookmarkNode* node);
+  std::unique_ptr<BookmarkNode> RemoveNode(const BookmarkNode* node,
+                                           const base::Location& location);
 
   // Removes the node from internal maps and recurses through all children. If
   // the node is a url, its url is added to removed_urls.

@@ -51,7 +51,8 @@ bool AreAllAvailableBookmarkModelsLoaded(ChromeBrowserState* browser_state) {
   return model->loaded();
 }
 
-bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
+bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state,
+                               const base::Location& location) {
   bookmarks::CoreBookmarkModel* bookmark_model =
       ios::BookmarkModelFactory::GetForBrowserState(browser_state);
 
@@ -59,7 +60,7 @@ bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
     return false;
   }
 
-  bookmark_model->RemoveAllUserBookmarks();
+  bookmark_model->RemoveAllUserBookmarks(location);
 
   ResetLastUsedBookmarkFolder(browser_state->GetPrefs());
   return true;

@@ -254,7 +254,7 @@ TEST_F(ManagedBookmarksTrackerTest, RemoveNode) {
   updated.erase(updated.begin() + 1);
 
   const BookmarkNode* parent = managed_node();
-  EXPECT_CALL(observer_, BookmarkNodeRemoved(parent, 1, _, _));
+  EXPECT_CALL(observer_, BookmarkNodeRemoved(parent, 1, _, _, _));
   SetManagedPref(prefs::kManagedBookmarks, updated);
   Mock::VerifyAndClearExpectations(&observer_);
 
@@ -276,7 +276,7 @@ TEST_F(ManagedBookmarksTrackerTest, CreateNewNodes) {
   // The remaining nodes have been pushed to positions 1 and 2; they'll both be
   // removed when at position 1.
   const BookmarkNode* parent = managed_node();
-  EXPECT_CALL(observer_, BookmarkNodeRemoved(parent, 1, _, _)).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved(parent, 1, _, _, _)).Times(2);
   SetManagedPref(prefs::kManagedBookmarks, updated);
   Mock::VerifyAndClearExpectations(&observer_);
 
@@ -293,7 +293,7 @@ TEST_F(ManagedBookmarksTrackerTest, RemoveAll) {
 
   // Remove the policy.
   const BookmarkNode* parent = managed_node();
-  EXPECT_CALL(observer_, BookmarkNodeRemoved(parent, 0, _, _)).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved(parent, 0, _, _, _)).Times(2);
   prefs_.RemoveManagedPref(prefs::kManagedBookmarks);
   Mock::VerifyAndClearExpectations(&observer_);
 
@@ -335,8 +335,8 @@ TEST_F(ManagedBookmarksTrackerTest, RemoveAllUserBookmarksDoesntRemoveManaged) {
   EXPECT_EQ(2u, model_->bookmark_bar_node()->children().size());
   Mock::VerifyAndClearExpectations(&observer_);
 
-  EXPECT_CALL(observer_, BookmarkAllUserNodesRemoved(_));
-  model_->RemoveAllUserBookmarks();
+  EXPECT_CALL(observer_, BookmarkAllUserNodesRemoved(_, _));
+  model_->RemoveAllUserBookmarks(FROM_HERE);
   EXPECT_EQ(2u, managed_node()->children().size());
   EXPECT_EQ(0u, model_->bookmark_bar_node()->children().size());
   Mock::VerifyAndClearExpectations(&observer_);

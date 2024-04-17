@@ -62,7 +62,8 @@ class ShoppingBookmarkModelObserver
 
   void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
                              size_t old_index,
-                             const bookmarks::BookmarkNode* node) override;
+                             const bookmarks::BookmarkNode* node,
+                             const base::Location& location) override;
 
   void BookmarkMetaInfoChanged(const bookmarks::BookmarkNode* node) override;
 

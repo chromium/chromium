@@ -1088,7 +1088,8 @@ void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
     std::set<GURL> removed_urls;
     // Observer must be trigger prior, the underlying BookmarkNode* will be
     // deleted immediately after the delete call.
-    BookmarkNodeRemoved(reading_list_parent, index, node, removed_urls);
+    BookmarkNodeRemoved(reading_list_parent, index, node, removed_urls,
+                        FROM_HERE);
 
     // Inside the Delete method, node will be destroyed and node->url will be
     // also destroyed. This causes heap-use-after-free at
@@ -1097,15 +1098,15 @@ void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
     GURL url(node->url());
     reading_list_manager->Delete(url);
   } else {
-    bookmark_model_->Remove(node,
-                            bookmarks::metrics::BookmarkEditSource::kUser);
+    bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
+                            FROM_HERE);
   }
 }
 
 void BookmarkBridge::RemoveAllUserBookmarks(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
-  bookmark_model_->RemoveAllUserBookmarks();
+  bookmark_model_->RemoveAllUserBookmarks(FROM_HERE);
   local_or_syncable_reading_list_manager_->DeleteAll();
   if (account_reading_list_manager_) {
     account_reading_list_manager_->DeleteAll();
@@ -1606,7 +1607,8 @@ void BookmarkBridge::BookmarkNodeAdded(const BookmarkNode* parent,
 void BookmarkBridge::BookmarkNodeRemoved(const BookmarkNode* parent,
                                          size_t old_index,
                                          const BookmarkNode* node,
-                                         const std::set<GURL>& removed_urls) {
+                                         const std::set<GURL>& removed_urls,
+                                         const base::Location& location) {
   if (!IsLoaded() || !java_bookmark_model_ ||
       suppress_observer_notifications_) {
     return;
@@ -1619,7 +1621,8 @@ void BookmarkBridge::BookmarkNodeRemoved(const BookmarkNode* parent,
 }
 
 void BookmarkBridge::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   if (!IsLoaded() || !java_bookmark_model_ ||
       suppress_observer_notifications_) {
     return;

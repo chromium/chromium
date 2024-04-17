@@ -264,11 +264,11 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeMoved(
     const bookmarks::BookmarkNode* node =
         new_parent->children()[new_index].get();
     for (bookmarks::BookmarkModelObserver& observer : observers_) {
-      observer.OnWillRemoveBookmarks(old_parent, old_index, node);
+      observer.OnWillRemoveBookmarks(old_parent, old_index, node, FROM_HERE);
     }
     for (bookmarks::BookmarkModelObserver& observer : observers_) {
       observer.BookmarkNodeRemoved(old_parent, old_index, node,
-                                   /*no_longer_bookmarked=*/{});
+                                   /*no_longer_bookmarked=*/{}, FROM_HERE);
     }
     return;
   }
@@ -294,12 +294,13 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeAdded(
 void LegacyBookmarkModelWithSharedUnderlyingModel::OnWillRemoveBookmarks(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
-    const bookmarks::BookmarkNode* node) {
+    const bookmarks::BookmarkNode* node,
+    const base::Location& location) {
   if (!parent->is_root() && IsNodeExcludedFromView(parent)) {
     return;
   }
   for (bookmarks::BookmarkModelObserver& observer : observers_) {
-    observer.OnWillRemoveBookmarks(parent, old_index, node);
+    observer.OnWillRemoveBookmarks(parent, old_index, node, location);
   }
 }
 
@@ -307,7 +308,8 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& no_longer_bookmarked) {
+    const std::set<GURL>& no_longer_bookmarked,
+    const base::Location& location) {
   if (!parent->is_root() && IsNodeExcludedFromView(parent)) {
     return;
   }
@@ -315,7 +317,7 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeRemoved(
   // is to always pass an empty set, as it isn't actually consumed on ios.
   for (bookmarks::BookmarkModelObserver& observer : observers_) {
     observer.BookmarkNodeRemoved(parent, old_index, node,
-                                 /*no_longer_bookmarked=*/{});
+                                 /*no_longer_bookmarked=*/{}, location);
   }
 }
 
@@ -403,19 +405,20 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::
   }
 }
 
-void LegacyBookmarkModelWithSharedUnderlyingModel::
-    OnWillRemoveAllUserBookmarks() {
+void LegacyBookmarkModelWithSharedUnderlyingModel::OnWillRemoveAllUserBookmarks(
+    const base::Location& location) {
   for (bookmarks::BookmarkModelObserver& observer : observers_) {
-    observer.OnWillRemoveAllUserBookmarks();
+    observer.OnWillRemoveAllUserBookmarks(location);
   }
 }
 
 void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   // Computing `removed_urls` isn't possible so this simply uses an empty set,
   // as it isn't consumed anyway on ios/.
   for (bookmarks::BookmarkModelObserver& observer : observers_) {
-    observer.BookmarkAllUserNodesRemoved(/*removed_urls=*/{});
+    observer.BookmarkAllUserNodesRemoved(/*removed_urls=*/{}, location);
   }
 }
 

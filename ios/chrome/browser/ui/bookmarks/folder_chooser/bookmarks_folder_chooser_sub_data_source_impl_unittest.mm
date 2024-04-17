@@ -131,10 +131,11 @@ class BookmarksFolderChooserSubDataSourceImplTest
   }
 
   void RemoveNode(const BookmarkNode* node) {
-    model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
+    model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
+                    FROM_HERE);
   }
 
-  void RemoveAllNodes() { bookmark_model_->RemoveAllUserBookmarks(); }
+  void RemoveAllNodes() { bookmark_model_->RemoveAllUserBookmarks(FROM_HERE); }
 
   void MoveNode(const BookmarkNode* node, const BookmarkNode* new_parent) {
     model()->Move(node, new_parent, new_parent->children().size());

@@ -313,7 +313,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
           _accountBookmarkModel.get());
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                              editedNodes, {modelForFolder}, _browserState)];
+                              editedNodes, {modelForFolder}, _browserState,
+                              FROM_HERE)];
   [self.delegate bookmarksFolderEditorDidDeleteEditedFolder:self];
 }
 

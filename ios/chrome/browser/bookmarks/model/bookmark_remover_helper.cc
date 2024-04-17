@@ -37,7 +37,7 @@ void BookmarkRemoverHelper::BookmarkModelLoaded(
   }
 
   bookmark_model_observations_.RemoveAllObservations();
-  BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_));
+  BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_, location_));
 }
 
 void BookmarkRemoverHelper::BookmarkModelBeingDeleted() {
@@ -46,12 +46,16 @@ void BookmarkRemoverHelper::BookmarkModelBeingDeleted() {
   BookmarksRemoved(false);
 }
 
-void BookmarkRemoverHelper::RemoveAllUserBookmarksIOS(Callback completion) {
+void BookmarkRemoverHelper::RemoveAllUserBookmarksIOS(
+    const base::Location& location,
+    Callback completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  location_ = std::move(location);
   completion_ = std::move(completion);
 
   if (AreAllAvailableBookmarkModelsLoaded(browser_state_)) {
-    BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_));
+    BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_, location_));
     return;
   }
 

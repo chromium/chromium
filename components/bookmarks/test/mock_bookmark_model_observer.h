@@ -23,14 +23,18 @@ class MockBookmarkModelObserver : public BookmarkModelObserver {
 
   MOCK_METHOD3(BookmarkNodeAdded, void(const BookmarkNode*, size_t, bool));
 
-  MOCK_METHOD3(OnWillRemoveBookmarks,
-               void(const BookmarkNode*, size_t, const BookmarkNode*));
-
-  MOCK_METHOD4(BookmarkNodeRemoved,
+  MOCK_METHOD4(OnWillRemoveBookmarks,
                void(const BookmarkNode*,
                     size_t,
                     const BookmarkNode*,
-                    const std::set<GURL>&));
+                    const base::Location&));
+
+  MOCK_METHOD5(BookmarkNodeRemoved,
+               void(const BookmarkNode*,
+                    size_t,
+                    const BookmarkNode*,
+                    const std::set<GURL>&,
+                    const base::Location&));
 
   MOCK_METHOD1(OnWillChangeBookmarkNode, void(const BookmarkNode* node));
 
@@ -40,7 +44,8 @@ class MockBookmarkModelObserver : public BookmarkModelObserver {
 
   MOCK_METHOD1(BookmarkNodeChildrenReordered, void(const BookmarkNode*));
 
-  MOCK_METHOD1(BookmarkAllUserNodesRemoved, void(const std::set<GURL>&));
+  MOCK_METHOD2(BookmarkAllUserNodesRemoved,
+               void(const std::set<GURL>&, const base::Location&));
 };
 
 }  // namespace bookmarks

@@ -86,11 +86,13 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
                          bool added_by_user) override;
   void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
                              size_t old_index,
-                             const bookmarks::BookmarkNode* node) override;
+                             const bookmarks::BookmarkNode* node,
+                             const base::Location& location) override;
   void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& no_longer_bookmarked) override;
+                           const std::set<GURL>& no_longer_bookmarked,
+                           const base::Location& location) override;
   void OnWillChangeBookmarkNode(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
   void OnWillChangeBookmarkMetaInfo(
@@ -102,8 +104,9 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
       const bookmarks::BookmarkNode* node) override;
   void ExtensiveBookmarkChangesBeginning() override;
   void ExtensiveBookmarkChangesEnded() override;
-  void OnWillRemoveAllUserBookmarks() override;
-  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls) override;
+  void OnWillRemoveAllUserBookmarks(const base::Location& location) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override;
   void GroupedBookmarkChangesBeginning() override;
   void GroupedBookmarkChangesEnded() override;
 

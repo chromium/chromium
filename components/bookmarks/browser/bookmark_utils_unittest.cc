@@ -556,7 +556,7 @@ TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
       model->GetNodesByURL(url);
   ASSERT_EQ(4u, nodes.size());
 
-  RemoveAllBookmarks(model.get(), url);
+  RemoveAllBookmarks(model.get(), url, FROM_HERE);
 
   nodes = model->GetNodesByURL(url);
   ASSERT_EQ(1u, nodes.size());

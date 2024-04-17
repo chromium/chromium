@@ -1347,7 +1347,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_EQ(1u, server_bookmarks_before.size());
 
   // Remove the node and undo the action.
-  bookmark_model->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther,
+                         FROM_HERE);
   BookmarkUndoService* undo_service =
       GetBookmarkUndoService(kSingleProfileIndex);
   undo_service->undo_manager()->Undo();

@@ -51,16 +51,19 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
                          bool added_by_user) override;
   void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
                              size_t old_index,
-                             const bookmarks::BookmarkNode* node) override;
+                             const bookmarks::BookmarkNode* node,
+                             const base::Location& location) override;
   void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& removed_urls) override;
+                           const std::set<GURL>& removed_urls,
+                           const base::Location& location) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
       const bookmarks::BookmarkNode* node) override;
-  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override;
 
   // If necessary this function moves |node| into the corresponding folder for
   // the given |selected_index|.

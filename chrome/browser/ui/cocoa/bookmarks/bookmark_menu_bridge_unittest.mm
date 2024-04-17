@@ -117,7 +117,7 @@ TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
   // Remove the new bookmark and reload and we should have 0 items again
   // because the separator should have been removed as well.
   model->Remove(parent->children().front().get(),
-                bookmarks::metrics::BookmarkEditSource::kOther);
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   UpdateRootMenu();
   EXPECT_EQ(0, [menu_ numberOfItems]);
 }
@@ -300,7 +300,7 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   const BookmarkNode* removed_node = folder->children()[0].get();
   EXPECT_EQ(2u, folder->children().size());
   model->Remove(folder->children()[0].get(),
-                bookmarks::metrics::BookmarkEditSource::kOther);
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   EXPECT_EQ(1u, folder->children().size());
 
   EXPECT_FALSE(menu_is_valid());

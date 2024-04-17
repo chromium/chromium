@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/location.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -67,7 +68,8 @@ class CoreBookmarkModel : public KeyedService {
       query_parser::MatchingAlgorithm matching_algorithm) const = 0;
 
   // Removes all the non-permanent bookmark nodes that are editable by the user.
-  virtual void RemoveAllUserBookmarks() = 0;
+  // `location` is used for logging purposes and investigations.
+  virtual void RemoveAllUserBookmarks(const base::Location& location) = 0;
 };
 
 }  // namespace bookmarks

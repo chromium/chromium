@@ -326,7 +326,7 @@ TEST_F(BookmarkBridgeTest, TestIsBookmarked) {
   AddURL(bookmark_model()->other_node(), 0, u"foo", url);
   ASSERT_TRUE(bookmark_bridge()->IsBookmarked(env, url));
 
-  bookmark_model()->RemoveAllUserBookmarks();
+  bookmark_model()->RemoveAllUserBookmarks(FROM_HERE);
   ASSERT_FALSE(bookmark_bridge()->IsBookmarked(env, url));
 
   local_or_syncable_reading_list_manager()->Add(url, "bar");

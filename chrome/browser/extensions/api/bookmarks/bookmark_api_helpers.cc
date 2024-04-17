@@ -141,7 +141,8 @@ bool RemoveNode(BookmarkModel* model,
     return false;
   }
 
-  model->Remove(node, bookmarks::metrics::BookmarkEditSource::kExtension);
+  model->Remove(node, bookmarks::metrics::BookmarkEditSource::kExtension,
+                FROM_HERE);
   return true;
 }
 

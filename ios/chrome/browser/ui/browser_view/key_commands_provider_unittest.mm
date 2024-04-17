@@ -982,8 +982,8 @@ TEST_F(KeyCommandsProviderTest, ValidateBookmarkCommand) {
   }
 
   // Remove the bookmark.
-  bookmark_model_->Remove(bookmark,
-                          bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model_->Remove(
+      bookmark, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 
   for (UIKeyCommand* command in provider_.keyCommands) {
     [provider_ validateCommand:command];

@@ -236,11 +236,11 @@ void BookmarkEditorView::BookmarkNodeAdded(const BookmarkNode* parent,
   Reset();
 }
 
-void BookmarkEditorView::BookmarkNodeRemoved(
-    const BookmarkNode* parent,
-    size_t index,
-    const BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+void BookmarkEditorView::BookmarkNodeRemoved(const BookmarkNode* parent,
+                                             size_t index,
+                                             const BookmarkNode* node,
+                                             const std::set<GURL>& removed_urls,
+                                             const base::Location& location) {
   if ((details_.type == EditDetails::EXISTING_NODE &&
        details_.existing_node->HasAncestor(node)) ||
       (parent_ && parent_->HasAncestor(node))) {
@@ -252,7 +252,8 @@ void BookmarkEditorView::BookmarkNodeRemoved(
 }
 
 void BookmarkEditorView::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   Reset();
 }
 
@@ -500,7 +501,7 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
 
     // Remove the folders that were removed. This has to be done after all the
     // other changes have been committed.
-    bookmarks::DeleteBookmarkFolders(bb_model_, deletes_);
+    bookmarks::DeleteBookmarkFolders(bb_model_, deletes_, FROM_HERE);
   }
 
   // Once all required bookmarks updates have been called, call the configured

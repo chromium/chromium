@@ -110,12 +110,14 @@ void HistoryClientImpl::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& no_longer_bookmarked) {
+    const std::set<GURL>& no_longer_bookmarked,
+    const base::Location& location) {
   HandleBookmarksRemovedFromModel(no_longer_bookmarked);
 }
 
 void HistoryClientImpl::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   HandleBookmarksRemovedFromModel(removed_urls);
 }
 

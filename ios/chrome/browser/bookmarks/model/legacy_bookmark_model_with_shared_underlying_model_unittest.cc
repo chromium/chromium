@@ -275,14 +275,14 @@ TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
     testing::InSequence seq;
     EXPECT_CALL(
         local_view_observer_,
-        OnWillRemoveBookmarks(shared_model_->bookmark_bar_node(), 0, node1));
-    EXPECT_CALL(
-        local_view_observer_,
-        BookmarkNodeRemoved(shared_model_->bookmark_bar_node(), 0, node1, _));
+        OnWillRemoveBookmarks(shared_model_->bookmark_bar_node(), 0, node1, _));
+    EXPECT_CALL(local_view_observer_,
+                BookmarkNodeRemoved(shared_model_->bookmark_bar_node(), 0,
+                                    node1, _, _));
     EXPECT_CALL(account_view_observer_, OnWillRemoveBookmarks).Times(0);
     EXPECT_CALL(account_view_observer_, BookmarkNodeRemoved).Times(0);
-    shared_model_->Remove(node1,
-                          bookmarks::metrics::BookmarkEditSource::kOther);
+    shared_model_->Remove(node1, bookmarks::metrics::BookmarkEditSource::kOther,
+                          FROM_HERE);
     testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
     testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
   }
@@ -291,14 +291,14 @@ TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
     testing::InSequence seq;
     EXPECT_CALL(account_view_observer_,
                 OnWillRemoveBookmarks(
-                    shared_model_->account_bookmark_bar_node(), 0, node2));
+                    shared_model_->account_bookmark_bar_node(), 0, node2, _));
     EXPECT_CALL(account_view_observer_,
                 BookmarkNodeRemoved(shared_model_->account_bookmark_bar_node(),
-                                    0, node2, _));
+                                    0, node2, _, _));
     EXPECT_CALL(local_view_observer_, OnWillRemoveBookmarks).Times(0);
     EXPECT_CALL(local_view_observer_, BookmarkNodeRemoved).Times(0);
-    shared_model_->Remove(node2,
-                          bookmarks::metrics::BookmarkEditSource::kOther);
+    shared_model_->Remove(node2, bookmarks::metrics::BookmarkEditSource::kOther,
+                          FROM_HERE);
     testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
     testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
   }
@@ -382,10 +382,12 @@ TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
 
   // Move from local to account.
   {
-    EXPECT_CALL(local_view_observer_,
-                OnWillRemoveBookmarks(shared_model_->mobile_node(), 0, node1));
-    EXPECT_CALL(local_view_observer_,
-                BookmarkNodeRemoved(shared_model_->mobile_node(), 0, node1, _));
+    EXPECT_CALL(
+        local_view_observer_,
+        OnWillRemoveBookmarks(shared_model_->mobile_node(), 0, node1, _));
+    EXPECT_CALL(
+        local_view_observer_,
+        BookmarkNodeRemoved(shared_model_->mobile_node(), 0, node1, _, _));
     EXPECT_CALL(account_view_observer_,
                 BookmarkNodeAdded(shared_model_->account_bookmark_bar_node(), 0,
                                   false));
@@ -401,12 +403,12 @@ TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
 
   // Move from account to local.
   {
-    EXPECT_CALL(
-        account_view_observer_,
-        OnWillRemoveBookmarks(shared_model_->account_mobile_node(), 0, node2));
-    EXPECT_CALL(
-        account_view_observer_,
-        BookmarkNodeRemoved(shared_model_->account_mobile_node(), 0, node2, _));
+    EXPECT_CALL(account_view_observer_,
+                OnWillRemoveBookmarks(shared_model_->account_mobile_node(), 0,
+                                      node2, _));
+    EXPECT_CALL(account_view_observer_,
+                BookmarkNodeRemoved(shared_model_->account_mobile_node(), 0,
+                                    node2, _, _));
     EXPECT_CALL(
         local_view_observer_,
         BookmarkNodeAdded(shared_model_->bookmark_bar_node(), 0, false));

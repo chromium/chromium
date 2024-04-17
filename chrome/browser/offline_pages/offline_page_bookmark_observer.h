@@ -34,7 +34,8 @@ class OfflinePageBookmarkObserver
   void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& removed_urls) override;
+                           const std::set<GURL>& removed_urls,
+                           const base::Location& location) override;
 
  private:
   // Does work for actual deleting removed bookmark pages.

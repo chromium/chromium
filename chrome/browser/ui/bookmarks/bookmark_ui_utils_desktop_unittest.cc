@@ -55,7 +55,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
 
   // But first we have to remove the URL from |folder1|.
   model->Remove(folder1->children().front().get(),
-                bookmarks::metrics::BookmarkEditSource::kOther);
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 
   const BookmarkNode* subfolder1 = model->AddFolder(folder1, 0, u"Subfolder1");
 
@@ -111,7 +111,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
 
   // But first we have to remove the URL from |folder1|.
   model->Remove(folder1->children().front().get(),
-                bookmarks::metrics::BookmarkEditSource::kOther);
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 
   const BookmarkNode* subfolder1 = model->AddFolder(folder1, 0, u"Subfolder1");
 

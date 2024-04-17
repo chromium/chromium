@@ -1164,7 +1164,8 @@ void BookmarkBarView::BookmarkNodeAdded(const BookmarkNode* parent,
 void BookmarkBarView::BookmarkNodeRemoved(const BookmarkNode* parent,
                                           size_t old_index,
                                           const BookmarkNode* node,
-                                          const std::set<GURL>& removed_urls) {
+                                          const std::set<GURL>& removed_urls,
+                                          const base::Location& location) {
   // See comment in BookmarkNodeMoved() for details on this.
   InvalidateDrop();
 
@@ -1179,7 +1180,8 @@ void BookmarkBarView::BookmarkNodeRemoved(const BookmarkNode* parent,
 }
 
 void BookmarkBarView::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   // See comment in BookmarkNodeMoved() for details on this.
   InvalidateDrop();
 

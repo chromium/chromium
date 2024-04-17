@@ -490,7 +490,7 @@ void BrowsingHistoryHandler::HandleRemoveBookmark(
   std::string url = args[0].GetString();
   Profile* profile = GetProfile();
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
-  bookmarks::RemoveAllBookmarks(model, GURL(url));
+  bookmarks::RemoveAllBookmarks(model, GURL(url), FROM_HERE);
 }
 
 void BrowsingHistoryHandler::HandleSetLastSelectedTab(

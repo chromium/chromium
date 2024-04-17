@@ -142,7 +142,8 @@ class DeclarativeContentIsBookmarkedConditionTracker
   void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& no_longer_bookmarked) override;
+                           const std::set<GURL>& no_longer_bookmarked,
+                           const base::Location& location) override;
   void ExtensiveBookmarkChangesBeginning() override;
   void ExtensiveBookmarkChangesEnded() override;
   void GroupedBookmarkChangesBeginning() override;

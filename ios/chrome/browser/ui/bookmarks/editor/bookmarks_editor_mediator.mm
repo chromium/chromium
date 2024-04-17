@@ -301,7 +301,7 @@
     [self.snackbarCommandsHandler
         showSnackbarMessageOverBrowserToolbar:
             bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                nodes, {[self bookmarkModel]}, _browserState)];
+                nodes, {[self bookmarkModel]}, _browserState, FROM_HERE)];
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
   }
 }

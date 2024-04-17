@@ -158,7 +158,8 @@ void RecentlyUsedFoldersComboModel::BookmarkNodeAdded(
 void RecentlyUsedFoldersComboModel::OnWillRemoveBookmarks(
     const BookmarkNode* parent,
     size_t old_index,
-    const BookmarkNode* node) {
+    const BookmarkNode* node,
+    const base::Location& location) {
   // Changing is rare enough that we don't attempt to readjust the contents.
   // Update |items_| so we aren't left pointing to a deleted node.
   bool changed = false;
@@ -180,7 +181,8 @@ void RecentlyUsedFoldersComboModel::BookmarkNodeRemoved(
     const BookmarkNode* parent,
     size_t old_index,
     const BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {}
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeChanged(
     const BookmarkNode* node) {}
@@ -192,7 +194,8 @@ void RecentlyUsedFoldersComboModel::BookmarkNodeChildrenReordered(
     const BookmarkNode* node) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   // Changing is rare enough that we don't attempt to readjust the contents.
   // Update |items_| so we aren't left pointing to a deleted node.
   bool changed = false;

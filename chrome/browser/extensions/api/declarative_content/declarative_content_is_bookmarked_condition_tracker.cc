@@ -232,7 +232,8 @@ void DeclarativeContentIsBookmarkedConditionTracker::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& no_longer_bookmarked) {
+    const std::set<GURL>& no_longer_bookmarked,
+    const base::Location& location) {
   if (!extensive_bookmark_changes_in_progress_) {
     for (const auto& web_contents_tracker_pair : per_web_contents_tracker_) {
       web_contents_tracker_pair.second->BookmarkRemovedForUrls(

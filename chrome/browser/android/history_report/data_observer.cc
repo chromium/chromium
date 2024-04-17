@@ -57,12 +57,14 @@ void DataObserver::BookmarkNodeAdded(const BookmarkNode* parent,
 void DataObserver::BookmarkNodeRemoved(const BookmarkNode* parent,
                                        size_t old_index,
                                        const BookmarkNode* node,
-                                       const std::set<GURL>& removed_urls) {
+                                       const std::set<GURL>& removed_urls,
+                                       const base::Location& location) {
   DeleteBookmarks(removed_urls);
 }
 
 void DataObserver::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   DeleteBookmarks(removed_urls);
 }
 

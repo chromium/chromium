@@ -103,7 +103,7 @@ void BookmarkAddOperation::Undo() {
   DCHECK(parent);
 
   model->Remove(parent->children()[index_].get(),
-                bookmarks::metrics::BookmarkEditSource::kUser);
+                bookmarks::metrics::BookmarkEditSource::kUser, FROM_HERE);
 }
 
 int BookmarkAddOperation::GetUndoLabelId() const {

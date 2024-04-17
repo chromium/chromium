@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_REMOVER_HELPER_H_
 
 #include "base/functional/callback.h"
+#include "base/location.h"
 #import "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/sequence_checker.h"
@@ -28,7 +29,8 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
 
   // Removes all bookmarks and asynchronously invoke `completion` with
   // boolean indicating success or failure.
-  void RemoveAllUserBookmarksIOS(Callback completion);
+  void RemoveAllUserBookmarksIOS(const base::Location& location,
+                                 Callback completion);
 
   // BaseBookmarkModelObserver implementation.
   void BookmarkModelChanged() override;
@@ -43,6 +45,7 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
   // the object won't be deleted immediately).
   void BookmarksRemoved(bool success);
 
+  base::Location location_;
   Callback completion_;
   raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
   base::ScopedMultiSourceObservation<LegacyBookmarkModel,

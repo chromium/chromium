@@ -875,7 +875,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   }
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                              nodes, models, self.browserState)];
+                              nodes, models, self.browserState, FROM_HERE)];
   [self setTableViewEditing:NO];
 }
 

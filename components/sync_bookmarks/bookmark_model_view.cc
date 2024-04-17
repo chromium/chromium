@@ -83,8 +83,10 @@ void BookmarkModelView::EndExtensiveChanges() {
   bookmark_model_->EndExtensiveChanges();
 }
 
-void BookmarkModelView::Remove(const bookmarks::BookmarkNode* node) {
-  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
+void BookmarkModelView::Remove(const bookmarks::BookmarkNode* node,
+                               const base::Location& location) {
+  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther,
+                          location);
 }
 
 void BookmarkModelView::Move(const bookmarks::BookmarkNode* node,
@@ -191,9 +193,9 @@ void BookmarkModelViewUsingLocalOrSyncableNodes::RemoveAllSyncableNodes() {
 
     for (int i = static_cast<int>(permanent_node->children().size() - 1);
          i >= 0; --i) {
-      underlying_model()->Remove(
-          permanent_node->children()[i].get(),
-          bookmarks::metrics::BookmarkEditSource::kOther);
+      underlying_model()->Remove(permanent_node->children()[i].get(),
+                                 bookmarks::metrics::BookmarkEditSource::kOther,
+                                 FROM_HERE);
     }
   }
 

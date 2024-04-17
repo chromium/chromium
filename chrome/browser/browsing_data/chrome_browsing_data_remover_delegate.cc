@@ -771,7 +771,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     if (bookmark_model && bookmark_model->loaded()) {
       if (delete_begin_.is_null() &&
           (delete_end_.is_null() || delete_end_.is_max())) {
-        bookmark_model->RemoveAllUserBookmarks();
+        bookmark_model->RemoveAllUserBookmarks(FROM_HERE);
       } else {
         // Bookmark deletion is only implemented to remove all data after a
         // profile deletion. A full implementation would need to traverse the

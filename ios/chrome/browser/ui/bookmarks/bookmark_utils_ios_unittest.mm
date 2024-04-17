@@ -144,8 +144,8 @@ TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   toDelete.insert(f2b);
   toDelete.insert(f2);
 
-  bookmark_utils_ios::DeleteBookmarks(toDelete,
-                                      local_or_syncable_bookmark_model_);
+  bookmark_utils_ios::DeleteBookmarks(
+      toDelete, local_or_syncable_bookmark_model_, FROM_HERE);
 
   EXPECT_EQ(2u, mobileNode->children().size());
   const BookmarkNode* child0 = mobileNode->children()[0].get();

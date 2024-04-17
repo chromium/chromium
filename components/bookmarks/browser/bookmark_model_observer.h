@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_MODEL_OBSERVER_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_MODEL_OBSERVER_H_
 
-#include <set>
-
 #include <stddef.h>
 
+#include <set>
+
+#include "base/location.h"
 #include "base/observer_list_types.h"
 
 class GURL;
@@ -23,7 +24,7 @@ class BookmarkModelObserver : public base::CheckedObserver {
   BookmarkModelObserver(const BookmarkModelObserver&) = delete;
   BookmarkModelObserver& operator=(const BookmarkModelObserver&) = delete;
 
-  // Invoked when the model has finished loading. |ids_reassigned| mirrors
+  // Invoked when the model has finished loading. `ids_reassigned` mirrors
   // that of BookmarkLoadDetails::ids_reassigned. See it for details.
   virtual void BookmarkModelLoaded(bool ids_reassigned) = 0;
 
@@ -55,29 +56,30 @@ class BookmarkModelObserver : public base::CheckedObserver {
   // model->Remove('A') generates a single notification for 'A'; no notification
   // is sent for 'A1' or 'A2'.
   //
-  // |parent| the parent of the node that will be removed.
-  // |old_index| the index of the node about to be removed in |parent|.
-  // |node| is the node to be removed.
+  // `parent` the parent of the node that will be removed.
+  // `old_index` the index of the node about to be removed in `parent`.
+  // `node` is the node to be removed.
   virtual void OnWillRemoveBookmarks(const BookmarkNode* parent,
                                      size_t old_index,
-                                     const BookmarkNode* node) {}
+                                     const BookmarkNode* node,
+                                     const base::Location& location) {}
 
   // Invoked after a node has been removed from the model. Removing a node
   // implicitly removes all descendants. Notification is only sent for the node
   // that BookmarkModel::Remove() is invoked on. See description of
   // OnWillRemoveBookmarks() for details.
   //
-  // |parent| the parent of the node that was removed.
-  // |old_index| the index of the removed node in |parent| before it was
+  // `parent` the parent of the node that was removed.
+  // `old_index` the index of the removed node in `parent` before it was
   // removed.
-  // |node| the node that was removed.
-  // |no_longer_bookmarked| contains the urls of any nodes that are no longer
+  // `node` the node that was removed.
+  // `no_longer_bookmarked` contains the urls of any nodes that are no longer
   // bookmarked as a result of the removal.
-  virtual void BookmarkNodeRemoved(
-      const BookmarkNode* parent,
-      size_t old_index,
-      const BookmarkNode* node,
-      const std::set<GURL>& no_longer_bookmarked) = 0;
+  virtual void BookmarkNodeRemoved(const BookmarkNode* parent,
+                                   size_t old_index,
+                                   const BookmarkNode* node,
+                                   const std::set<GURL>& no_longer_bookmarked,
+                                   const base::Location& location) = 0;
 
   // Invoked before the title or url of a node is changed. Subsequent
   // BookmarkNodeChanged call guaranteed to contain the same BookmarkNode.
@@ -96,12 +98,12 @@ class BookmarkModelObserver : public base::CheckedObserver {
   // Invoked when a favicon has been loaded or changed.
   virtual void BookmarkNodeFaviconChanged(const BookmarkNode* node) = 0;
 
-  // Invoked before the direct children of |node| have been reordered in some
+  // Invoked before the direct children of `node` have been reordered in some
   // way, such as sorted.
   virtual void OnWillReorderBookmarkNode(const BookmarkNode* node) {}
 
   // Invoked when the children (just direct children, not descendants) of
-  // |node| have been reordered in some way, such as sorted.
+  // `node` have been reordered in some way, such as sorted.
   virtual void BookmarkNodeChildrenReordered(const BookmarkNode* node) = 0;
 
   // Invoked before an extensive set of model changes is about to begin.
@@ -119,14 +121,14 @@ class BookmarkModelObserver : public base::CheckedObserver {
 
   // Invoked before all non-permanent bookmark nodes that are editable by
   // the user are removed.
-  virtual void OnWillRemoveAllUserBookmarks() {}
+  virtual void OnWillRemoveAllUserBookmarks(const base::Location& location) {}
 
   // Invoked when all non-permanent bookmark nodes that are editable by the
   // user have been removed.
-  // |removed_urls| is populated with the urls which no longer have any
+  // `removed_urls` is populated with the urls which no longer have any
   // bookmarks associated with them.
-  virtual void BookmarkAllUserNodesRemoved(
-      const std::set<GURL>& removed_urls) = 0;
+  virtual void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                           const base::Location& location) = 0;
 
   // Invoked before a set of model changes that is initiated by a single user
   // action. For example, this is called a single time when pasting from the

@@ -119,7 +119,7 @@ TEST_F(BookmarkModelBridgeObserverTest,
 
     // Deleting the folder should not cause a crash.
     local_or_syncable_bookmark_model_->Remove(
-        folder, bookmarks::metrics::BookmarkEditSource::kOther);
+        folder, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 
     EXPECT_TRUE([owner bookmarkNodeDeletedCalled]);
   }

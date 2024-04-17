@@ -111,9 +111,9 @@ class MergedBookmarkModel : public bookmarks::CoreBookmarkModel {
     return matches;
   }
 
-  void RemoveAllUserBookmarks() override {
-    model1_->RemoveAllUserBookmarks();
-    model2_->RemoveAllUserBookmarks();
+  void RemoveAllUserBookmarks(const base::Location& location) override {
+    model1_->RemoveAllUserBookmarks(location);
+    model2_->RemoveAllUserBookmarks(location);
   }
 
  private:
