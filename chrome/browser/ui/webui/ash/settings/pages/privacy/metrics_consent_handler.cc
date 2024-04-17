@@ -98,6 +98,13 @@ void MetricsConsentHandler::HandleUpdateMetricsConsent(
 }
 
 bool MetricsConsentHandler::IsMetricsConsentConfigurable() const {
+  // TODO(b/333911538): In the interim, completely disable child users
+  // from being able to toggle consent in the settings. Once the parent sets
+  // the consent for the child during OOBE, it cannot be updated afterwards.
+  if (user_manager_->IsLoggedInAsChildUser()) {
+    return false;
+  }
+
   return ShouldUseUserConsent() || user_manager_->IsCurrentUserOwner();
 }
 

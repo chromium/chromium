@@ -394,4 +394,39 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
   StatsReportingController::Shutdown();
 }
 
+TEST_F(MetricsConsentHandlerTest, ChildUserCannotToggleAsNonOwner) {
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
+  std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
+
+  auto child_id = AccountId::FromUserEmailGaiaId("child@user.com", "3");
+  std::unique_ptr<TestingProfile> child =
+      CreateUser("child@user.com", non_owner_keys);
+  test_user_manager_->set_current_user_child(true);
+  test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+      child_id, false, user_manager::UserType::kChild, child.get());
+
+  // User cannot use user consent. This happens if the device is managed.
+  test_metrics_service_client_->SetShouldUseUserConsent(true);
+
+  LoginUser(child_id);
+  EXPECT_FALSE(test_user_manager_->IsCurrentUserOwner());
+
+  // Set the javascript message object for metrics consent state.
+  InitializeTestHandler(child.get());
+  handler_->GetMetricsConsentState();
+
+  // Check values of javascript callback response message.
+  std::string pref_name;
+  bool is_configurable;
+  EXPECT_TRUE(GetMetricsConsentStateMessage(&pref_name, &is_configurable));
+
+  // Unmanaged child user should use user consent and should not be toggle-able.
+  EXPECT_THAT(pref_name, Eq(::metrics::prefs::kMetricsUserConsent));
+  EXPECT_FALSE(is_configurable);
+
+  // Explicitly shutdown controller here because OwnerSettingsService is
+  // destructed before TearDown() is called.
+  StatsReportingController::Shutdown();
+}
+
 }  // namespace ash::settings
