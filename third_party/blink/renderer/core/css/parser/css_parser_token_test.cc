@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
 namespace blink {
 
@@ -40,6 +41,23 @@ TEST(CSSParserTokenTest, DimensionTokenEquality) {
   EXPECT_EQ(DimensionToken(1, em8_bit), DimensionToken(1, em8_bit));
   EXPECT_NE(DimensionToken(1, em8_bit), DimensionToken(1, rem8_bit));
   EXPECT_NE(DimensionToken(2, em8_bit), DimensionToken(1, em16_bit));
+}
+
+static String RoundTripToken(String str) {
+  CSSTokenizer tokenizer(str);
+  StringBuilder sb;
+  tokenizer.TokenizeSingle().Serialize(sb);
+  return sb.ToString();
+}
+
+TEST(CSSParserTokenTest, SerializeDoubles) {
+  EXPECT_EQ("1.5", RoundTripToken("1.500"));
+  EXPECT_EQ("2", RoundTripToken("2"));
+  EXPECT_EQ("2.0", RoundTripToken("2.0"));
+  EXPECT_EQ("1234567890.0", RoundTripToken("1234567890.0"));
+  EXPECT_EQ("1e+30", RoundTripToken("1e30"));
+  EXPECT_EQ("0.00001525878", RoundTripToken("0.00001525878"));
+  EXPECT_EQ("0.00001525878rad", RoundTripToken("0.00001525878rad"));
 }
 
 }  // namespace blink

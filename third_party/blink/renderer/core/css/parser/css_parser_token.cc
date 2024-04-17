@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -241,16 +242,31 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
       if (numeric_value_type_ == kIntegerValueType) {
         return builder.AppendNumber(ClampTo<int64_t>(NumericValue()));
       } else {
-        return builder.AppendNumber(NumericValue());
+        NumberToStringBuffer buffer;
+        const char* str = NumberToString(NumericValue(), buffer);
+        builder.Append(str);
+        // This wasn't parsed as an integer, so when we serialize it back,
+        // it cannot be an integer. Otherwise, we would round-trip e.g.
+        // “2.0” to “2”, which could make an invalid value suddenly valid.
+        if (strchr(str, '.') == nullptr && strchr(str, 'e') == nullptr) {
+          builder.Append(".0");
+        }
+        return;
       }
     case kPercentageToken:
       builder.AppendNumber(NumericValue());
       return builder.Append('%');
-    case kDimensionToken:
+    case kDimensionToken: {
       // This will incorrectly serialize e.g. 4e3e2 as 4000e2
-      builder.AppendNumber(NumericValue());
+      NumberToStringBuffer buffer;
+      const char* str = NumberToString(NumericValue(), buffer);
+      builder.Append(str);
+      // NOTE: We don't need the same “.0” treatment as we did for
+      // kNumberToken, as there are no situations where e.g. 2deg
+      // would be valid but 2.0deg not.
       SerializeIdentifier(Value().ToString(), builder);
       break;
+    }
     case kUnicodeRangeToken:
       return builder.Append(
           String::Format("U+%X-%X", UnicodeRangeStart(), UnicodeRangeEnd()));
