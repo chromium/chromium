@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -15,6 +14,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
@@ -261,7 +261,7 @@ gfx::Rect GetGridBoundsInScreen(
     const bool show_home_launcher =
         hotseat_state == HotseatState::kShownHomeLauncher;
 
-    const bool forest_enabled = features::IsForestFeatureEnabled();
+    const bool forest_enabled = IsForestFeatureEnabled();
 
     // Use the default hotseat size here to avoid the possible re-layout
     // due to the update in HotseatWidget::is_forced_dense_.

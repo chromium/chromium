@@ -252,10 +252,8 @@ void HandleToggleVirtualTrackpad() {
 }
 
 void HandleShowInformedRestore() {
-  if (features::IsForestFeatureEnabled()) {
-    Shell::Get()
-        ->pine_controller()
-        ->MaybeStartPineOverviewSessionDevAccelerator();
+  if (auto* pine_controller = Shell::Get()->pine_controller()) {
+    pine_controller->MaybeStartPineOverviewSessionDevAccelerator();
   }
 }
 

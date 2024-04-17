@@ -268,10 +268,6 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   // Ensure that the `HoldingSpaceKeyedService` for `profile` is created.
   HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
 
-  // Ensure that the `BirchKeyedService` for `profile` is created. It is created
-  // one per user in a multiprofile session.
-  BirchKeyedServiceFactory::GetInstance()->GetService(profile);
-
   // Ensure that the `CalendarKeyedService` for `profile` is created. It is
   // created one per user in a multiprofile session.
   CalendarKeyedServiceFactory::GetInstance()->GetService(profile);
@@ -285,6 +281,10 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);
+
+    // Ensure that the `BirchKeyedService` for `profile` is created. It is
+    // created one per user in a multiprofile session.
+    BirchKeyedServiceFactory::GetInstance()->GetService(profile);
 
     // Ensure that PhoneHubManager and EcheAppManager are created for the
     // primary profile.

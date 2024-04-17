@@ -12,16 +12,23 @@
 
 namespace ash {
 
+bool IsForestFeatureFlagEnabled() {
+  return base::FeatureList::IsEnabled(features::kForestFeature);
+}
+
 bool IsForestFeatureEnabled() {
-  if (!base::FeatureList::IsEnabled(features::kForestFeature)) {
+  if (!IsForestFeatureFlagEnabled()) {
     return false;
   }
 
-  // TODO(http://b/333952534): Remove the google api DEPS changes.
-  if (gaia::IsGoogleInternalAccountEmail(Shell::Get()
-                                             ->session_controller()
-                                             ->GetActiveAccountId()
-                                             .GetUserEmail())) {
+  // The shell may not be created in some unit tests.
+  Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
+
+  // TODO(http://b/333952534): Remove the google api DEPS changes, and move this
+  // function back to ash/constants/ash_features.
+  if (shell &&
+      gaia::IsGoogleInternalAccountEmail(
+          shell->session_controller()->GetActiveAccountId().GetUserEmail())) {
     return true;
   }
 

@@ -9,6 +9,8 @@
 
 namespace ash {
 
+ASH_EXPORT bool IsForestFeatureFlagEnabled();
+
 // Checks for the forest feature. This needs a secret key, unless the active
 // user is a google account.
 ASH_EXPORT bool IsForestFeatureEnabled();

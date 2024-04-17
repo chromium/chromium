@@ -22,6 +22,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -213,7 +214,7 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
 
 void PineController::MaybeStartPineOverviewSession(
     std::unique_ptr<PineContentsData> pine_contents_data) {
-  CHECK(features::IsForestFeatureEnabled());
+  CHECK(IsForestFeatureEnabled());
 
   if (OverviewController::Get()->InOverviewSession()) {
     return;
@@ -267,11 +268,18 @@ void PineController::OnOverviewModeEnding(OverviewSession* overview_session) {
 void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   // If `canceled` is true, overview was reentered before the exit animations
   // were finished. `in_pine_` will be reset the next time overview ends.
-  if (canceled || !in_pine_ || !features::IsForestFeatureEnabled()) {
+  if (canceled || !in_pine_) {
     return;
   }
 
   in_pine_ = false;
+
+  // In multi-user scenario, forest may have been available for the user that
+  // started overview, but not for the current user. (Switching users ends
+  // overview.)
+  if (!IsForestFeatureEnabled()) {
+    return;
+  }
 
   PrefService* prefs = GetActivePrefService();
   if (!prefs) {
