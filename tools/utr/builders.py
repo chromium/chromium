@@ -9,7 +9,8 @@ import pathlib
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
-# TODO(crbug.com/41492688): Support src-internal configs too.
+# TODO(crbug.com/41492688): Support src-internal configs too. When this is done,
+# ensure tools/utr/recipe.py is not using the public reclient instance
 _BUILDER_PROP_DIRS = _SRC_DIR.joinpath('infra', 'config', 'generated',
                                        'builders')
 

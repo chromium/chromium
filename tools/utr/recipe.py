@@ -148,6 +148,15 @@ class LegacyRunner:
             },
         },
     }
+    # TODO(crbug.com/41492688): Use the chrome version for internal builders
+    # when they are added.
+    # Set reclient and siso to use untrusted even for imitating ci builders
+    if not '$build/reclient' in input_props:
+      input_props['$build/reclient'] = {}
+    input_props['$build/reclient']['instance'] = 'rbe-chromium-untrusted'
+    if not '$build/siso' in input_props:
+      input_props['$build/siso'] = {}
+    input_props['$build/siso']['project'] = 'rbe-chromium-untrusted'
     self._input_props = input_props
 
   def _run(self, adapter, rerun_props=None):
