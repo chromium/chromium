@@ -58,9 +58,6 @@ build_webui("build") {
     extra_grdp_files = [ "$target_gen_dir/icon_resources.grdp" ]
   }
 
-  # Files holding a Polymer element definition AND have an equivalent .html file.
-  web_component_files = [ "set_as_default/nux_set_as_default.ts" ]
-
   non_web_component_files = [
     "landing_view.html.ts",
     "landing_view_proxy.ts",
@@ -82,7 +79,9 @@ build_webui("build") {
     "ntp_background/ntp_background_proxy.ts",
     "ntp_background/nux_ntp_background.html.ts",
     "ntp_background/nux_ntp_background.ts",
+    "set_as_default/nux_set_as_default.html.ts",
     "set_as_default/nux_set_as_default_proxy.ts",
+    "set_as_default/nux_set_as_default.ts",
     "shared/bookmark_proxy.ts",
     "shared/module_metrics_proxy.ts",
     "shared/nux_types.ts",

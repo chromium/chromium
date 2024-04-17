@@ -120,7 +120,7 @@ class JSChecker(object):
     affected_files = self.input_api.AffectedFiles(file_filter=self.file_filter,
                                                   include_deletes=False)
     affected_js_files = [
-        f for f in affected_files if f.LocalPath().endswith((".js", "ts"))
+        f for f in affected_files if f.LocalPath().endswith((".js", ".ts"))
     ]
 
     if affected_js_files:
@@ -134,7 +134,6 @@ class JSChecker(object):
             _f for _f in [
                 self.BindThisCheck(i, line),
                 self.ChromeSendCheck(i, line),
-                self.CommentIfAndIncludeCheck(i, line),
                 self.EndJsDocCommentCheck(i, line),
                 self.ExtraDotInGenericCheck(i, line),
                 self.InheritDocCheck(i, line),
@@ -142,6 +141,16 @@ class JSChecker(object):
                 self.VariableNameCheck(i, line),
             ] if _f
         ]
+
+      if not f.LocalPath().endswith((".html.js", ".html.ts")):
+        # Exclude JS/TS files holding HTML strings from
+        # CommentIfAndIncludeCheck().
+        for i, line in f.ChangedContents():
+          error_lines += [
+              _f for _f in [
+                  self.CommentIfAndIncludeCheck(i, line),
+              ] if _f
+          ]
 
       if error_lines:
         error_lines = [
