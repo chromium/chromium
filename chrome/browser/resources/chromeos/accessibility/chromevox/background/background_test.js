@@ -2561,13 +2561,17 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ReadWindowTitle', async function() {
 });
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'OutputEmptyQueueMode', async function() {
+  class FakeOutputAction extends OutputAction {
+    run() {}
+  }
+
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree('<p>unused</p>');
   const output = new Output();
   Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
   output.append(
       output.speechBuffer_, new Spannable(''),
-      {annotation: [new OutputAction()]});
+      {annotation: [new FakeOutputAction()]});
   output.withString('test');
   mockFeedback.clearPendingOutput()
       .call(output.go.bind(output))

@@ -10,7 +10,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {AbstractRole, ChromeVoxRole, CustomRole} from '../../common/role_type.js';
 
 import {OutputRoleInfo} from './output_role_info.js';
-import {OutputCustomEvent, OutputEventType, OutputFormatType, OutputNavigationType} from './output_types.js';
+import {OutputCustomEvent, OutputFormatType, OutputNavigationType} from './output_types.js';
 
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;

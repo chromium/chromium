@@ -15,46 +15,38 @@ import {OutputFormatTree} from './output_format_tree.js';
 import {OutputFormatLogger} from './output_logger.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
+type EventType = chrome.automation.EventType;
+type Rect = chrome.automation.Rect;
 const Restriction = chrome.automation.Restriction;
 
-/**
- * The ordering of contextual output.
- * @enum {string}
- */
-export const OutputContextOrder = {
+/** The ordering of contextual output. */
+export enum OutputContextOrder {
   // The (ancestor) context comes before the node output.
-  FIRST: 'first',
+  FIRST = 'first',
   // The (ancestor) context comes before the node output when moving forward,
   // after when moving backward.
-  DIRECTED: 'directed',
+  DIRECTED = 'directed',
 
   // The (ancestor) context comes after the node output.
-  LAST: 'last',
+  LAST = 'last',
 
   // Ancestor context is placed both before and after node output.
-  FIRST_AND_LAST: 'firstAndLast',
-};
+  FIRST_AND_LAST = 'firstAndLast',
+}
 
-/**
- * Used to annotate utterances with speech properties.
- */
+/** Used to annotate utterances with speech properties. */
 export class OutputSpeechProperties {
-  constructor() {
-    /** @private {!Object} */
-    this.properties_ = {};
-  }
+  private properties_: {[key: string]: any} = {};
 
-  /** @return {!Object} */
-  get properties() {
+  get properties(): {[key: string]: any} {
     return this.properties_;
   }
 
-  /** @override */
-  toJSON() {
+  toJSON(): Object {
     // Make a copy of our properties since the caller really shouldn't be
     // modifying our local state.
-    const clone = {};
+    const clone: {[key: string]: any} = {};
     for (const key in this.properties_) {
       clone[key] = this.properties_[key];
     }
@@ -62,37 +54,27 @@ export class OutputSpeechProperties {
   }
 }
 
-/**
- * Custom actions performed while rendering an output string.
- */
-export class OutputAction {
-  run() {}
+/** Custom actions performed while rendering an output string. */
+export abstract class OutputAction {
+  abstract run(): void;
 }
 
-/**
- * Action to play an earcon.
- */
+/** Action to play an earcon. */
 export class OutputEarconAction extends OutputAction {
-  /**
-   * @param {!EarconId} earcon
-   * @param {chrome.automation.Rect=} opt_location
-   */
-  constructor(earcon, opt_location) {
-    super();
+  earcon: EarconId;
+  location?: Rect;
 
-    /** @type {!EarconId} */
+  constructor(earcon: EarconId, location?: Rect) {
+    super();
     this.earcon = earcon;
-    /** @type {chrome.automation.Rect|undefined} */
-    this.location = opt_location;
+    this.location = location;
   }
 
-  /** @override */
-  run() {
+  override run(): void {
     ChromeVox.earcons.playEarcon(this.earcon, this.location);
   }
 
-  /** @override */
-  toJSON() {
+  toJSON(): Object {
     return {earcon: this.earcon};
   }
 }
@@ -101,11 +83,10 @@ export class OutputEarconAction extends OutputAction {
  * Annotation for text with a selection inside it.
  */
 export class OutputSelectionSpan {
-  /**
-   * @param {number} startIndex
-   * @param {number} endIndex
-   */
-  constructor(startIndex, endIndex) {
+  startIndex: number;
+  endIndex: number;
+
+  constructor(startIndex: number, endIndex: number) {
     // TODO(dtseng): Direction lost below; should preserve for braille panning.
     this.startIndex = startIndex < endIndex ? startIndex : endIndex;
     this.endIndex = endIndex > startIndex ? endIndex : startIndex;
@@ -118,32 +99,25 @@ export class OutputSelectionSpan {
  * API, this class is used to allow instanceof checks on these annotations.
  */
 export class OutputNodeSpan {
-  /**
-   * @param {!chrome.automation.AutomationNode} node
-   * @param {number=} opt_offset Offsets into the node's text. Defaults to 0.
-   */
-  constructor(node, opt_offset) {
+  node: AutomationNode;
+  offset: number;
+
+  /** @param offset Offsets into the node's text. Defaults to 0. */
+  constructor(node: AutomationNode, offset?: number) {
     this.node = node;
-    this.offset = opt_offset ? opt_offset : 0;
+    this.offset = offset ? offset : 0;
   }
 }
 
-/**
- * Possible events handled by ChromeVox internally.
- * @enum {string}
- */
-export const OutputCustomEvent = {
-  NAVIGATE: 'navigate',
-};
+/** Possible events handled by ChromeVox internally. */
+export enum OutputCustomEvent {
+  NAVIGATE = 'navigate',
+}
 
-/** @typedef {!chrome.automation.EventType|!OutputCustomEvent} */
-export let OutputEventType;
+export type OutputEventType = EventType | OutputCustomEvent;
 
-/**
- * Rules for mapping properties to a msg id
- * @const {Object<Object<string, string>>}
- */
-export const OutputPropertyMap = {
+/** Rules for mapping properties to a msg id. */
+export const OutputPropertyMap: Record<string, Record<string, string>> = {
   CHECKED: {
     'true': 'checked_true',
     'false': 'checked_false',
@@ -169,15 +143,18 @@ export const OutputPropertyMap = {
 };
 
 /**
- * Metadata about supported automation states.
- * @const {!Object<string, {on: {msgId: string, earcon: !EarconId},
- *                          off: {msgId: string, earcon: !EarconId},
- *                          isRoleSpecific: (boolean|undefined)}>}
- *     on: info used to describe a state that is set to true.
- *     off: info used to describe a state that is set to undefined.
- *     isRoleSpecific: info used for specific roles.
- */
-export const OUTPUT_STATE_INFO = {
+  * on: info used to describe a state that is set to true.
+  * off: info used to describe a state that is set to undefined.
+  * isRoleSpecific: info used for specific roles.
+  */
+interface StateInfo {
+  on: {msgId: string, earcon?: EarconId};
+  off?: {msgId?: string, earcon?: EarconId};
+  isRoleSpecific?: boolean;
+}
+
+/** Metadata about supported automation states. */
+export const OUTPUT_STATE_INFO: Record<string, StateInfo> = {
   collapsed: {on: {msgId: 'aria_expanded_false'}},
   default: {on: {msgId: 'default_state'}},
   expanded: {on: {msgId: 'aria_expanded_true'}},
@@ -186,11 +163,8 @@ export const OUTPUT_STATE_INFO = {
   visited: {on: {msgId: 'visited_state'}},
 };
 
-/**
- * Maps input types to message IDs.
- * @const {Object<string, string>}
- */
-export const INPUT_TYPE_MESSAGE_IDS = {
+/** Maps input types to message IDs. */
+export const INPUT_TYPE_MESSAGE_IDS: Record<string, string> = {
   'email': 'input_type_email',
   'number': 'input_type_number',
   'password': 'input_type_password',
@@ -201,15 +175,6 @@ export const INPUT_TYPE_MESSAGE_IDS = {
 };
 
 /**
- * @typedef {{
- *    node: ?chrome.automation.AutomationNode,
- *    outputFormat: (string|!OutputFormatTree),
- *    outputBuffer: !Array<Spannable>,
- *    outputFormatLogger: !OutputFormatLogger,
- *    opt_prevNode: (!AutomationNode|undefined),
- *    opt_speechProps: (OutputSpeechProperties|undefined)
- * }}
- *
  * node: The AutomationNode of interest.
  * outputFormat: The output format either specified as an output template
  *     string or a parsed output format tree.
@@ -220,21 +185,26 @@ export const INPUT_TYPE_MESSAGE_IDS = {
  * opt_speechProps: Optional argument. Used to specify how speech should be
  *     verbalized; can specify pitch, rate, language, etc.
  */
-export let OutputFormattingData;
+export interface OutputFormattingData {
+  node: AutomationNode | undefined;
+  outputFormat: string | OutputFormatTree;
+  outputBuffer: Spannable[];
+  outputFormatLogger: OutputFormatLogger;
+  opt_prevNode?: AutomationNode;
+  opt_speechProps?: OutputSpeechProperties;
+}
 
-/** @enum {string} */
-export const OutputFormatType = {
-  BRAILLE: 'braille',
-  SPEAK: 'speak',
-};
+export enum OutputFormatType {
+  BRAILLE = 'braille',
+  SPEAK = 'speak',
+}
 
-/** @enum {string} */
-export const OutputNavigationType = {
-  END_OF: 'endOf',
-  ENTER: 'enter',
-  LEAVE: 'leave',
-  START_OF: 'startOf',
-};
+export enum OutputNavigationType {
+  END_OF = 'endOf',
+  ENTER = 'enter',
+  LEAVE = 'leave',
+  START_OF = 'startOf',
+}
 
 TestImportManager.exportForTesting(
     OutputAction, OutputEarconAction, OutputNodeSpan, OutputSelectionSpan,
