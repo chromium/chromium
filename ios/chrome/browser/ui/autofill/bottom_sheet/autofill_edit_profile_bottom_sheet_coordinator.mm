@@ -4,9 +4,14 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
 
+#import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -38,6 +43,7 @@
   AutofillProfileEditMediator* _autofillProfileEditMediator;
 
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
+  raw_ptr<web::WebState> _webState;
 }
 
 - (instancetype)initWithBaseViewController:
@@ -52,9 +58,9 @@
     _personalDataManager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
 
-    web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
+    _webState = browser->GetWebStateList()->GetActiveWebState();
     AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-        AutofillBottomSheetTabHelper::FromWebState(webState);
+        AutofillBottomSheetTabHelper::FromWebState(_webState);
 
     _autofillProfile = bottomSheetTabHelper->address_profile_for_edit();
     CHECK(_autofillProfile);
@@ -129,7 +135,24 @@
 }
 
 - (void)didSaveProfile {
-  // TODO(crbug.com/1482269): Implement.
+  InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(_webState);
+  const auto it = base::ranges::find(
+      manager->infobars(), InfobarType::kInfobarTypeSaveAutofillAddressProfile,
+      [](const infobars::InfoBar* infobar) {
+        return static_cast<const InfoBarIOS*>(infobar)->infobar_type();
+      });
+
+  CHECK(it != manager->infobars().cend());
+  InfoBarIOS* infobar = static_cast<InfoBarIOS*>(*it);
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      autofill::AutofillSaveUpdateAddressProfileDelegateIOS::
+          FromInfobarDelegate(infobar->delegate());
+  CHECK(delegate);
+
+  delegate->SetProfile(_autofillProfile.get());
+  delegate->EditAccepted();
+  infobar->set_accepted(true);
+  [self stop];
 }
 
 @end
