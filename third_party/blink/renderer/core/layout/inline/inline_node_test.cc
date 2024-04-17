@@ -520,10 +520,13 @@ struct MinMaxData {
     {"Hello <img>.", {50, 80}, "", "img { width: 1em; }"},
     {"Hello <img>.", {50, 120}, "", "img { width: 5em; }"},
     {"Hello <img>.", {60, 130}, "", "img { width: 6em; }"},
-    // `text-indent.
+    // `text-indent`.
     {"6 12345 12", {60, 150}, "text-indent: 5em"},
     {"6 1234567 12", {70, 170}, "text-indent: 5em"},
-    // Negative `text-indent.
+    // `text-indent` with hyphenations.
+    // The "hy-" with the indent should be longest.
+    {"hyphenation a", {60, 160}, "hyphens: auto; text-indent: 3em", "", "en"},
+    // Negative `text-indent`.
     {"43210123 1234 12", {40, 110}, "text-indent: -5em"},
     {"4321012345 1234 12", {50, 130}, "text-indent: -5em"},
     {"432 012 1", {30, 40}, "text-indent: -5em"},
