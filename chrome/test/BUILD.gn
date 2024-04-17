@@ -563,7 +563,7 @@ static_library("test_support") {
 
   if (is_chromeos_ash && also_build_lacros_chrome) {
     data_deps += [
-      # TODO(crbug.com/1480917): Try to drop building ordinary Lacros binary.
+      # TODO(crbug.com/40281506): Try to drop building ordinary Lacros binary.
       "//chrome:chrome(//build/toolchain/linux:lacros_clang_x64)",
       "//chrome/test:test_lacros_chrome(//build/toolchain/linux:lacros_clang_x64)",
     ]
@@ -1318,7 +1318,7 @@ if (is_android) {
       "//components/webapk:proto",
       "//components/webapps/browser",
 
-      # TODO(crbug.com/961849): This is needed for ShellManager which is what
+      # TODO(crbug.com/40626932): This is needed for ShellManager which is what
       # the ChromeBrowserTestsActivity is using to build the java UI. It's
       # likely we want to replace it with something new that uses ChromeWindow
       # and CompositorViewHolder instead.
@@ -3189,7 +3189,7 @@ if (!is_android) {
       if (enable_printing) {
         sources += [ "../browser/pdf/pdf_extension_printing_test.cc" ]
 
-        # TODO(crbug.com/1414651): All printToPdf tests consistently fail on ChromeOS
+        # TODO(crbug.com/40892214): All printToPdf tests consistently fail on ChromeOS
         if (!is_chromeos) {
           sources += [
             "../browser/devtools/protocol/devtools_printtopdf_browsertest.cc",
@@ -5394,7 +5394,7 @@ if (!is_android) {
     }
 
     if ((is_linux || is_chromeos) && is_asan && is_lsan) {
-      # TODO(crbug.com/793426): Fix the flakiness on Linux Asan Lsan bot.
+      # TODO(crbug.com/40553979): Fix the flakiness on Linux Asan Lsan bot.
       sources -= [ "../browser/media/encrypted_media_browsertest.cc" ]
     }
     if (enable_library_cdms) {
@@ -6267,7 +6267,7 @@ test("unit_tests") {
     "../browser/media/media_storage_id_salt_unittest.cc",
     "../browser/tab_group_sync/tab_group_sync_service_factory_unittest.cc",
 
-    # TODO(crbug.com/1186446): move p_s_d_impl_unittest.cc to the same directory
+    # TODO(crbug.com/40753746): move p_s_d_impl_unittest.cc to the same directory
     # as presentation_service_delegate_impl.* files.
     "../browser/commerce/browser_utils_unittest.cc",
     "../browser/commerce/product_specifications/product_specifications_service_factory_unittest.cc",
@@ -11572,7 +11572,7 @@ if (!is_android && !is_chromeos_device) {
       ]
 
       sources -= [
-        # TODO(crbug.com/1026820): Re-enable this test when history backend failures are addressed.
+        # TODO(crbug.com/40659953): Re-enable this test when history backend failures are addressed.
         "../browser/ui/omnibox/omnibox_view_browsertest.cc",
       ]
 
@@ -12553,7 +12553,7 @@ if (!is_android) {
     }
   }
 
-  # TODO(https://crbug.com/816629): Migrate this to a generic wrapper script
+  # TODO(crbug.com/40564748): Migrate this to a generic wrapper script
   # once the functionality is available on all platforms.
   copy("xr_browser_tests_runner") {
     testonly = true

@@ -270,7 +270,7 @@ class MojoJSInterfaceBrokerBrowserTest : public InProcessBrowserTest {
   TestContentBrowserClient test_content_browser_client_;
 };
 
-// TODO(crbug.com/1446914): Move tests to //content.
+// TODO(crbug.com/40268810): Move tests to //content.
 
 // Try to get Foo Mojo interface on a top-level frame.
 IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {

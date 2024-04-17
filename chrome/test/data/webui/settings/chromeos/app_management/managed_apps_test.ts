@@ -49,7 +49,7 @@ suite('<app-management-managed-apps>', () => {
     appDetailView.remove();
   });
 
-  // TODO(crbug.com/999412): rewrite test.
+  // TODO(crbug.com/40642807): rewrite test.
   test.skip('Uninstall button affected by policy', () => {
     const element = appDetailView.shadowRoot!.querySelector(
         'app-management-detail-view-header');

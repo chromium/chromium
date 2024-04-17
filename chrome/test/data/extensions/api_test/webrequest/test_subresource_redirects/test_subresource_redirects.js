@@ -47,7 +47,7 @@ function assertRedirectFails(url, callback) {
 }
 
 const nonServiceWorkerTests = [
-  // TODO(crbug.com/1376106): These two tests hang.
+  // TODO(crbug.com/40243056): These two tests hang.
   'subresourceRedirectHasSameRequestIdOnHeadersReceived',
   'subresourceRedirectHasSameRequestIdOnBeforeRequest'
 ];

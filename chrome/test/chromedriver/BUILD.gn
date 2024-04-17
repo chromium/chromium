@@ -386,7 +386,7 @@ source_set("lib") {
     sources += [ "keycode_text_conversion_ozone.cc" ]
     deps += [ "//ui/events/ozone/layout" ]
 
-    # TODO(1239521): clean up usages of ozone_platform_x11.
+    # TODO(crbug.com/40193891): clean up usages of ozone_platform_x11.
     # Ozone/X11 implementation provides a stub KeyboardLayoutEngine. Thus,
     # use plain X11 keyboard conversion code until Ozone/X11 uses a non-stub
     # engine.

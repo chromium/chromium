@@ -188,7 +188,7 @@ TEST_PPAPI_NACL(Graphics2D_Paint)
 TEST_PPAPI_NACL(Graphics2D_Scroll)
 TEST_PPAPI_NACL(Graphics2D_Replace)
 TEST_PPAPI_NACL(Graphics2D_Flush)
-// TODO(crbug.com/682275): Flaky on Ubuntu.
+// TODO(crbug.com/40502125): Flaky on Ubuntu.
 // TEST_PPAPI_NACL(Graphics2D_FlushOffscreenUpdate)
 TEST_PPAPI_NACL(Graphics2D_BindNull)
 
@@ -1933,7 +1933,7 @@ TEST_PPAPI_NACL(MouseCursor)
 
 TEST_PPAPI_NACL(NetworkProxy)
 
-// TODO(crbug.com/602875), TODO(crbug.com/602876) Flaky on CrOS.
+// TODO(crbug.com/41248785), TODO(crbug.com/41248786) Flaky on CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_VideoDecoder DISABLED_VideoDecoder
 #else

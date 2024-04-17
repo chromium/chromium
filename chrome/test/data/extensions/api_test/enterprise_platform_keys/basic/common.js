@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1154680): Refactor enterprise.platformKeys test extension.
+// TODO(crbug.com/40735021): Refactor enterprise.platformKeys test extension.
 
 'use strict';
 

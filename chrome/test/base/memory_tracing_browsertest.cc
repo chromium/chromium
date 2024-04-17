@@ -114,7 +114,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
   bool should_test_memory_dump_success_;
 };
 
-// TODO(crbug.com/806988): Disabled due to excessive output on lsan bots and
+// TODO(crbug.com/41367720): Disabled due to excessive output on lsan bots and
 // timeouts on debug bots.
 #if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_TestMemoryInfra DISABLED_TestMemoryInfra

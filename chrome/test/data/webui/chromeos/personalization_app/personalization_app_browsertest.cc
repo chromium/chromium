@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppControllerTest, All) {
 // implementations but with mocked out network handler helper classes.
 using PersonalizationAppBrowserTest = PersonalizationAppMochaTestBase;
 
-// TODO(crbug.com/1517028): Re-enable this test flakily failing on dbg builds.
+// TODO(crbug.com/41490011): Re-enable this test flakily failing on dbg builds.
 #if !defined(NDEBUG)
 #define MAYBE_Main DISABLED_Main
 #else

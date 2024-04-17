@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
 }
 
 // This test checks that we can attach to a WebUI that is not embedded in a tab.
-// TODO(crbug.com/1354017): Re-enable this test
+// TODO(crbug.com/40858808): Re-enable this test
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
                        DISABLED_CompareScreenshot_SecondaryWebUI) {
   // This will capture the tab search page when it is displayed.

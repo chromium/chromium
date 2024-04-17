@@ -10,7 +10,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// TODO(crbug.com/1368284): Remove this test when there are more use cases
+// TODO(crbug.com/40240249): Remove this test when there are more use cases
 // to verify the start ash chrome logic.
 class StartUniqueAshBrowserTest : public InProcessBrowserTest {
  public:

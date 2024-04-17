@@ -62,7 +62,7 @@ class InteractiveUITestSuite : public ChromeTestSuite {
     ui_controls::EnableUIControls();
 #endif
 
-    // TODO(crbug.com/1430562) Investigate why https upgrade causes
+    // TODO(crbug.com/40263135) Investigate why https upgrade causes
     // interactive_ui_tests to run longer.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
     // Force the HTTPS-Upgrades timeout to zero.

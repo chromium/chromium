@@ -301,7 +301,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
 
       const mockUsage = index * 100;
 
-      // TODO(https://crbug.com/1021606): Add test where existing evaluates to
+      // TODO(crbug.com/40106241): Add test where existing evaluates to
       // true.
       if (existing) {
         const originInfo = createOriginInfo(origin, {usage: mockUsage});

@@ -136,5 +136,5 @@ suite('A11yPage', () => {
   });
   // </if>
 
-  // TODO(crbug.com/1499996): Add more test cases to improve code coverage.
+  // TODO(crbug.com/40940496): Add more test cases to improve code coverage.
 });

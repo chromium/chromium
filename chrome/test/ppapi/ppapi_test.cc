@@ -286,7 +286,7 @@ void PPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
   if (in_process_)
     command_line->AppendSwitch(switches::kPpapiInProcess);
 
-  // TODO(https://crbug.com/1172495): Remove once NaCl code can be deleted.
+  // TODO(crbug.com/40166667): Remove once NaCl code can be deleted.
   command_line->AppendSwitchASCII(blink::switches::kBlinkSettings,
                                   "allowNonEmptyNavigatorPlugins=true");
 }

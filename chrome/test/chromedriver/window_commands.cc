@@ -2176,7 +2176,7 @@ Status ExecuteFullPageScreenshot(Session* session,
     return status;
 
   std::unique_ptr<base::Value> layout_metrics;
-  // TODO(crbug.com/1444533): Pass base::Value::Dict* as return param.
+  // TODO(crbug.com/40911917): Pass base::Value::Dict* as return param.
   status = web_view->SendCommandAndGetResult(
       "Page.getLayoutMetrics", base::Value::Dict(), &layout_metrics);
   if (status.IsError())

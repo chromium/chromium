@@ -232,7 +232,7 @@ class ChromeBrowserMainExtraPartsBrowserProcessInjection
 // For browser tests that depend on AccountManager on Lacros - e.g. tests that
 // manage accounts by calling methods like `signin::MakePrimaryAccountAvailable`
 // from identity_test_utils.
-// TODO(https://crbug.com/982233): consider using this class on Ash, and remove
+// TODO(crbug.com/40635309): consider using this class on Ash, and remove
 // the initialization from profile_impl.
 class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
  public:
@@ -803,7 +803,7 @@ bool InProcessBrowserTest::SetUpUserDataDirectory() {
 }
 
 void InProcessBrowserTest::SetScreenInstance() {
-  // TODO(crbug.com/1317416): On wayland platform, we need to check if the
+  // TODO(crbug.com/40222482): On wayland platform, we need to check if the
   // wayland-ozone platform is initialized at this point due to the async
   // initialization of the display. Investigate if we can eliminate
   // IsOzoneInitialized.
@@ -1001,7 +1001,7 @@ void InProcessBrowserTest::PostRunTestOnMainThread() {
 
   // Sometimes tests leave Quit tasks in the MessageLoop (for shame), so let's
   // run all pending messages here to avoid preempting the QuitBrowsers tasks.
-  // TODO(https://crbug.com/922118): Remove this once it is no longer possible
+  // TODO(crbug.com/41435726): Remove this once it is no longer possible
   // to post QuitCurrent* tasks.
   content::RunAllPendingInMessageLoop();
 

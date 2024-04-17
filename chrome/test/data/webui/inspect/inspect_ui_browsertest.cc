@@ -207,7 +207,7 @@ class InspectUIFencedFrameTest : public InspectUITest {
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1331249): Re-enable this test
+// TODO(crbug.com/40227465): Re-enable this test
 IN_PROC_BROWSER_TEST_F(InspectUIFencedFrameTest,
                        DISABLED_FencedFrameInFrontEnd) {
   ASSERT_TRUE(embedded_test_server()->Start());

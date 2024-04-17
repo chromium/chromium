@@ -12,7 +12,7 @@
 
 // This class is introduced to provide ui_controls since some test cases use
 // it. Ideally such tests should be moved into interactive_ui_tests.
-// TODO(1445328): remove this after moving such tests.
+// TODO(crbug.com/40268116): remove this after moving such tests.
 class BrowserTestSuiteChromeOS : public ChromeTestSuite {
  public:
   BrowserTestSuiteChromeOS(int argc, char** argv)

@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 // Tests whether ActivateSurface() results in kCurrentWidgetFocus updating
 // correctly when targeting a non-tab web contents.
 //
-// TODO(crbug.com/1471043): These tests can be kind of hairy and we're working
+// TODO(crbug.com/40069026): These tests can be kind of hairy and we're working
 // on making sure these primitives play nice together and do not flake. If you
 // see a flake, first, note that these are edge case tests for new test
 // infrastructure and do not directly affect Chrome stability. Next, please:

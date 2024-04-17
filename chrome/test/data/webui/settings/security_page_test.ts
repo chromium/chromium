@@ -164,7 +164,7 @@ suite('Main', function() {
         Router.getInstance().getCurrentRoute());
   });
 
-  // TODO(crbug.com/1494186): Add test for alternate sub-label when Advanced
+  // TODO(crbug.com/40937027): Add test for alternate sub-label when Advanced
   // Protection is enabled.
 });
 

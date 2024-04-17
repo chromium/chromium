@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1467015): Combine this with
+// TODO(crbug.com/40276609): Combine this with
 // chrome/test/data/extensions/api_test/webnavigation/prerendering/
 //   test_prerendering.js when start optimization is the default.
 

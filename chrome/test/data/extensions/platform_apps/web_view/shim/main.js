@@ -3526,7 +3526,7 @@ function testWebRequestBlockedNavigation() {
     webview.addEventListener('loadstop', () => {
       // Note: simply checking `src` doesn't work here, since it's set to the
       // URL of the last attempted navigation (which was blocked).
-      // TODO(https://crbug.com/1126515): Clarify/figure out how the src
+      // TODO(crbug.com/40718552): Clarify/figure out how the src
       // attribute should behave.
       webview.contentWindow.postMessage('moo', '*');
     });

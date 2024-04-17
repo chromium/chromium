@@ -743,7 +743,8 @@ Status SetOptionElementSelected(Session* session,
                                 WebView* web_view,
                                 const std::string& element_id,
                                 bool selected) {
-  // TODO(171034): need to fix throwing error if an alert is triggered.
+  // TODO(crbug.com/40299291): need to fix throwing error if an alert is
+  // triggered.
   base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(selected);

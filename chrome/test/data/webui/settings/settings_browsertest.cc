@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AppearanceFontsPage) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1350019) Test is flaky on ChromeOS
+// TODO(crbug.com/40856240) Test is flaky on ChromeOS
 IN_PROC_BROWSER_TEST_F(SettingsTest, AppearancePage) {
   RunTest("settings/appearance_page_test.js", "mocha.run()");
 }
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAddressValidation) {
           "mocha.run()");
 }
 
-// TODO(crbug.com/1420597): Clean up this test after Password Manager redesign
+// TODO(crbug.com/40258836): Clean up this test after Password Manager redesign
 // is launched.
 IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillPage) {
   RunTest("settings/autofill_page_test.js", "mocha.run()");
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, RelaunchConfirmationDialog) {
 }
 #endif
 
-// TODO(crbug.com/1127733): Flaky on all OSes. Enable the test.
+// TODO(crbug.com/40719198): Flaky on all OSes. Enable the test.
 IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_ResetPage) {
   RunTest("settings/reset_page_test.js", "mocha.run()");
 }
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, StorageAccessSiteListEntry) {
 IN_PROC_BROWSER_TEST_F(SettingsTest, StorageAccessSiteList) {
   RunTest("settings/storage_access_site_list_test.js", "mocha.run()");
 }
-// Flaky on all OSes. TODO(crbug.com/1302405): Enable the test.
+// Flaky on all OSes. TODO(crbug.com/40825327): Enable the test.
 IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_Subpage) {
   RunTest("settings/settings_subpage_test.js", "mocha.run()");
 }
@@ -515,7 +515,7 @@ class SettingsBasicPageTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kSafetyHub};
 };
 
-// TODO(crbug.com/1298753): Flaky on all platforms.
+// TODO(crbug.com/40823128): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, DISABLED_BasicPage) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('BasicPage')");
 }
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, ExperimentalAdvanced) {
 
 using SettingsClearBrowsingDataTest = SettingsBrowserTest;
 
-// TODO(crbug.com/1107652): Flaky on Mac.
+// TODO(crbug.com/40707011): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ClearBrowsingDataAllPlatforms \
   DISABLED_ClearBrowsingDataAllPlatforms
@@ -583,8 +583,8 @@ class SettingsCookiesPageTest : public SettingsBrowserTest {
 #else
 #define MAYBE_CookiesPageTest CookiesPageTest
 #endif
-// TODO(crbug.com/1409653): fix flakiness on Linux and ChromeOS debug builds and
-// re-enable.
+// TODO(crbug.com/40889245): fix flakiness on Linux and ChromeOS debug builds
+// and re-enable.
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, MAYBE_CookiesPageTest) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('CookiesPageTest')");
 }
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuideDialog) {
           "runMochaSuite('PrivacyGuideDialog')");
 }
 
-// TODO(https://crbug.com/1426530): Re-enable when no longer flaky.
+// TODO(crbug.com/40899379): Re-enable when no longer flaky.
 #if !BUILDFLAG(IS_LINUX) || defined(NDEBUG)
 IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, Integration) {
   RunTest("settings/privacy_guide_integration_test.js", "mocha.run()");
@@ -890,7 +890,7 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list2_;
 };
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class SettingsPrivacyPageTestNoTestingConfig : public SettingsPrivacyPageTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, DISABLED_PrivacyPageSound) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPageSound')");
 }
 
-// TODO(crbug.com/1113912): flaky failure on multiple platforms
+// TODO(crbug.com/40710522): flaky failure on multiple platforms
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        DISABLED_HappinessTrackingSurveys) {
   RunTest("settings/privacy_page_test.js",
@@ -1205,8 +1205,8 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
           "runMochaSuite('SecurityPageHappinessTrackingSurveys')");
 }
 
-// TODO(crbug.com/1403969): SafeBrowsing suite is flaky on Mac.
-// TODO(crbug.com/1404109): SafeBrowsing suite is flaky on Linux and LaCrOS.
+// TODO(crbug.com/40885738): SafeBrowsing suite is flaky on Mac.
+// TODO(crbug.com/40251771): SafeBrowsing suite is flaky on Linux and LaCrOS.
 // TODO(crbug.com/334026272): SafeBrowsing suite is flaky on Windows.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)

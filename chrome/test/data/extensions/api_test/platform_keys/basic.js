@@ -745,7 +745,7 @@ var testSuites = {
       testSignSha1Client2OnSystemTokenOnly,
       // Interactively select all clients to grant permissions for these
       // certificates.
-      // TODO(crbug.com/1303197): We should move all interactive tests to
+      // TODO(crbug.com/40217298): We should move all interactive tests to
       // a separate test suite.
       testInteractiveSelectClient1,
       testInteractiveSelectClient2,

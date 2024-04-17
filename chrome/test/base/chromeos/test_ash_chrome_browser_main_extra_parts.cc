@@ -33,7 +33,7 @@ TestAshChromeBrowserMainExtraParts::
 
 // Create a file so test_runner know ash is ready for testing.
 void AshIsReadyForTesting() {
-  // TODO(crbug.com/1107966) Remove this early return after
+  // TODO(crbug.com/40707216) Remove this early return after
   // test_runner make related changes.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           kAshReadyFilePathFlag)) {
@@ -52,9 +52,10 @@ void AshIsReadyForTesting() {
 
 void TestAshChromeBrowserMainExtraParts::PreProfileInit() {
   crosapi::BrowserManager::DisableForTesting();
-  // TODO(crbug.com/1422469): Explore whether there is a better place to disable
-  // the built-in tts engine other than TestAshChromeBrowserMainExtraParts,
-  // which may make test_ash_chrome behavior differs from production ash chrome.
+  // TODO(crbug.com/40259646): Explore whether there is a better place to
+  // disable the built-in tts engine other than
+  // TestAshChromeBrowserMainExtraParts, which may make test_ash_chrome behavior
+  // differs from production ash chrome.
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
 }
 

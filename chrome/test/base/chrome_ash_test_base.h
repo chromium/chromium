@@ -8,7 +8,7 @@
 #include "ash/test/ash_test_base.h"
 
 // AshTestBase used in Chrome.
-// TODO(crbug.com/1261269): Chrome should not have tests subclassing
+// TODO(crbug.com/40798802): Chrome should not have tests subclassing
 // AshTestBase.
 class ChromeAshTestBase : public ash::AshTestBase {
  public:

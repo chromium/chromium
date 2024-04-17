@@ -125,7 +125,7 @@ public class AccountManagerTestRule implements TestRule {
         identityManager.addObserver(mFakeAccountInfoService);
     }
 
-    // TODO(https://crbug.com/1411335): Remove deprecated `addAccount` overloads.
+    // TODO(crbug.com/40890215): Remove deprecated `addAccount` overloads.
     /**
      * Adds an account of the given accountName to the fake AccountManagerFacade.
      *

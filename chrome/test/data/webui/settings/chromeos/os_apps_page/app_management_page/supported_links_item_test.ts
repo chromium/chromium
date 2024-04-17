@@ -126,8 +126,8 @@ suite('<app-management-supported-links-item>', () => {
     assertEquals('preferred', radioGroup.selected);
   });
 
-  // TODO(crbug/1253891): Race condition when closing the dialog makes this test
-  // flaky.
+  // TODO(crbug.com/40199350): Race condition when closing the dialog makes this
+  // test flaky.
   test.skip('overlap dialog is shown and cancelled', async () => {
     const pwaOptions = {
       type: AppType.kWeb,

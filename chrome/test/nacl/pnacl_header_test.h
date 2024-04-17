@@ -18,7 +18,7 @@ class HttpResponse;
 }
 
 /*
-TODO(https://crbug.com/711289): port to work with network service if this
+TODO(crbug.com/41312886): port to work with network service if this
 check matters.
 
 using content::ResourceDispatcherHostDelegate;

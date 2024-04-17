@@ -39,9 +39,9 @@ suite('MultiDeviceSetup', () => {
   // TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, all
   // devices should have an Instance ID.
   const DEVICES = [
-    // TODO(crbug.com/1022196) Replace the hard-coded values with the deviceSync
-    // enum. This is currently causing an import error where chromeos is not
-    // defined.
+    // TODO(crbug.com/40106510) Replace the hard-coded values with the
+    // deviceSync enum. This is currently causing an import error where
+    // chromeos is not defined.
     {
       remoteDevice: {deviceName: 'Pixel XL', deviceId: 'legacy-id-1'},
       connectivityStatus: 0,  // kOnline

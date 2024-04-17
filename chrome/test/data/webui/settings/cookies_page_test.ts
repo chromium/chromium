@@ -340,7 +340,7 @@ suite('ExceptionsList', function() {
   });
 });
 
-// TODO(crbug/1349370): Remove after crbug/1349370 is launched.
+// TODO(crbug.com/40233724): Remove after crbug/1349370 is launched.
 suite('FirstPartySetsUIDisabled', function() {
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;

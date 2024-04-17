@@ -416,7 +416,7 @@ suite('UnusedSitePermissionsReviewSafetyHubDisabled', function() {
  * If feature is not enabled, the UI should not be shown regardless of whether
  * there would be unused site permissions for the user to review.
  *
- * TODO(crbug/1345920): Remove after crbug/1345920 launched.
+ * TODO(crbug.com/40232296): Remove after crbug/1345920 launched.
  */
 suite('UnusedSitePermissionsReviewDisabled', function() {
   let page: SettingsSiteSettingsPageElement;

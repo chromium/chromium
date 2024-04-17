@@ -562,7 +562,7 @@ public class OmniboxTestUtils {
                                     autocompleteSelectionStart);
                         }
 
-                        // TODO(crbug.com/1289474): Investigate why AutocompleteSelectionEnd was
+                        // TODO(crbug.com/40211958): Investigate why AutocompleteSelectionEnd was
                         // never enforced and why it doesn't work, then possibly re-enable the
                         // logic below: if (autocompleteSelectionEnd != null) {
                         //     Criteria.checkThat("Autocomplete Selection end",

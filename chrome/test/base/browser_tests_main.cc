@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
   // manually verify results.
   if (command_line->HasSwitch(switches::kTestLauncherInteractive)) {
 #if BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/1288963): Consider porting interactive tests to Fuchsia.
+    // TODO(crbug.com/40211757): Consider porting interactive tests to Fuchsia.
     LOG(FATAL) << "Interactive tests are not supported on Fuchsia.";
 #else
     // Since the test is interactive, the invoker will want to have pixel output
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 #if BUILDFLAG(IS_FUCHSIA)
   // Running in headless mode frees the test suite from depending on
   // a graphical compositor.
-  // TODO(crbug.com/1318197): Remove this extra logic once tests are run in
+  // TODO(crbug.com/40835208): Remove this extra logic once tests are run in
   // non-headless mode. See also crbug.com/1292100.
   command_line->AppendSwitch(switches::kHeadless);
   command_line->AppendSwitchNative(switches::kOzonePlatform,

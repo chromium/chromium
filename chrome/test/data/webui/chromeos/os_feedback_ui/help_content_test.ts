@@ -350,7 +350,7 @@ suite('helpContentTestSuite', () => {
    *
    * Case 2: the query is NOT empty.
    */
-  // TODO(crbug.com/1401615): Flaky.
+  // TODO(crbug.com/40884343): Flaky.
   test.skip('SuggestedHelpContentNotAvailable', async () => {
     // Initialize element with no content and empty query.
     await initializeHelpContentElement(

@@ -147,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsToolbarTest, NarrowModeShowsMenu) {
   RunTestCase("NarrowModeShowsMenu");
 }
 
-// TODO(crbug.com/882342) Disabled on other platforms but MacOS due to timeouts.
+// TODO(crbug.com/40592901) Disabled on other platforms but MacOS due to
+// timeouts.
 #if !BUILDFLAG(IS_MAC)
 #define MAYBE_ClickHandlers DISABLED_ClickHandlers
 #else
@@ -495,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
   RunTestCase("UrlNavigationToDetails");
 }
 
-// Disabled as flaky. TODO(crbug.com/1127741): Enable this test.
+// Disabled as flaky. TODO(crbug.com/40719203): Enable this test.
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
                        DISABLED_UrlNavigationToActivityLogFail) {
   InstallPrerequisites();
@@ -539,7 +540,7 @@ class CrExtensionsOptionsDialogTest : public ExtensionSettingsTestBase {
   }
 };
 
-// TODO(crbug.com/1028357): Flaky on multiple platforms.
+// TODO(crbug.com/40109111): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(CrExtensionsOptionsDialogTest, DISABLED_Layout) {
   InstallExtensionWithInPageOptions();
   RunTest("extensions/options_dialog_test.js",
@@ -558,7 +559,7 @@ class CrExtensionsErrorConsoleTest : public ExtensionSettingsTestBase {
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsErrorConsoleTest, TestUpDownErrors) {
   SetDevModeEnabled(true);
-  // TODO(https://crbug.com/1269161): Update the associated extensions to
+  // TODO(crbug.com/40804030): Update the associated extensions to
   // Manifest V3 and stop ignoring deprecated manifest version warnings.
   SetSilenceDeprecatedManifestVersionWarnings(true);
   InstallErrorsExtension();

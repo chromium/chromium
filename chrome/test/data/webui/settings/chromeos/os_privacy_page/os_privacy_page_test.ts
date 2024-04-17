@@ -514,7 +514,7 @@ suite('<os-settings-privacy-page>', () => {
         fakeMetricsPrivate.countMetricValue('ChromeOS.PrivacyHub.Opened', 0));
   });
 
-  // TODO(crbug.com/1262869): add a test for deep linking to snopping setting
+  // TODO(crbug.com/40202733): add a test for deep linking to snopping setting
   //                          once it has been added.
 });
 

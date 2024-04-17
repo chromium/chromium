@@ -245,7 +245,7 @@ function preprocessResult(item, seen, nodes) {
     return serializationGuard(ret);
   }
 
-  // TODO(crbug.com/1337415): Implement WindowProxy serialization.
+  // TODO(crbug.com/40229283): Implement WindowProxy serialization.
 
   if (Object.hasOwn(item, 'toJSON') && typeof item.toJSON === 'function') {
       // Not guarded because we want item.toJSON to be invoked by

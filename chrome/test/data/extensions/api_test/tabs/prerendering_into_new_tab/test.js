@@ -211,9 +211,9 @@ chrome.test.getConfig(async config => {
   await chrome.test.loadScript(
       '_test_resources/api_test/tabs/basics/tabs_util.js');
 
-  // TODO(https://crbug.com/1350676): add more tests for tabs.on* event listeners.
+  // TODO(crbug.com/40234240): add more tests for tabs.on* event listeners.
   chrome.test.runTests([
-    // TODO(crbug.com/1501760): Flaky on multiple platforms.
+    // TODO(crbug.com/40942071): Flaky on multiple platforms.
     // testGetTitleForAllFrames,
     // testGetAllInWindow,
     // testQuery,

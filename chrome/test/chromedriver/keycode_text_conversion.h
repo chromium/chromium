@@ -43,7 +43,7 @@ void InitializeOzoneKeyboardEngineManager();
 
 #if BUILDFLAG(IS_OZONE_X11)
 // Uses X11 implementation if there is an X display.
-// TODO(crbug.com/987939): Support XKB.
+// TODO(crbug.com/41472924): Support XKB.
 bool ConvertKeyCodeToTextOzone(ui::KeyboardCode key_code,
                                int modifiers,
                                std::string* text,

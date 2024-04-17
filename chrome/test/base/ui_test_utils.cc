@@ -267,7 +267,7 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
                "ui_test_utils::"
                "NavigateToURLWithDispositionBlockUntilNavigationsComplete",
                "params", [&](perfetto::TracedValue context) {
-                 // TODO(crbug.com/1183371): Replace this with passing more
+                 // TODO(crbug.com/40751990): Replace this with passing more
                  // parameters to TRACE_EVENT directly when available.
                  auto dict = std::move(context).WriteDictionary();
                  dict.Add("url", url);

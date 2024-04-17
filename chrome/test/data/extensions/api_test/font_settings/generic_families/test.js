@@ -9,7 +9,7 @@ var fs = chrome.fontSettings;
 var CONTROLLED_BY_THIS_EXTENSION = 'controlled_by_this_extension';
 var CONTROLLABLE_BY_THIS_EXTENSION = 'controllable_by_this_extension';
 
-// TODO(crbug.com/122303): Support generic font families added to CSS Fonts
+// TODO(crbug.com/40187445): Support generic font families added to CSS Fonts
 // Module Level 4.
 const genericFamilyNames = [
   'standard',

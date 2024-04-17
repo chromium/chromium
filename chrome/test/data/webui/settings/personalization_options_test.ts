@@ -32,7 +32,7 @@ suite('AllBuilds', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      // TODO(crbug.com/1459031): Remove the tests for "driveSuggest" when
+      // TODO(crbug.com/40274151): Remove the tests for "driveSuggest" when
       // the setting is completely removed.
       driveSuggestAvailable: true,
       driveSuggestNoSetting: false,

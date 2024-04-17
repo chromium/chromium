@@ -107,7 +107,7 @@ public class PageStation extends TransitStation {
     protected final String mPath;
     protected final String mTitle;
 
-    // TODO(crbug.com/1524512): This should be owned, but the tab_switcher_button exists in the
+    // TODO(crbug.com/41497463): This should be owned, but the tab_switcher_button exists in the
     // tab switcher, even though the tab switcher's toolbar is drawn over it.
     public static final ViewElement TAB_SWITCHER_BUTTON =
             unscopedViewElement(withId(R.id.tab_switcher_button));

@@ -271,7 +271,7 @@ Status CheckVersion(const BrowserInfo& browser_info,
                     "cannot be reproduced with this switch removed.";
   } else if (browser_info.major_version != CHROME_VERSION_MAJOR) {
     if (browser_info.major_version == 0) {
-      // TODO(https://crbug.com/932013): Content Shell doesn't report a version
+      // TODO(crbug.com/41441334): Content Shell doesn't report a version
       // number. Skip version checking with a warning.
       LOG(WARNING) << "Unable to retrieve " << kBrowserShortName
                    << " version. Unable to verify browser compatibility.";

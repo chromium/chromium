@@ -31,7 +31,7 @@ function getApiPaths() {
         // - `runtime.getContexts()` (restricted to MV3)
         // - `runtime.onUserScriptConnect()` (restricted to MV3)
         // - `runtime.onUserScriptMessage()` (restricted to MV3)
-        // TODO(https://crbug.com/921466)
+        // TODO(crbug.com/40609281)
         const skipPaths = ['idle.getAutoLockDelay', 'power.reportActivity',
                            'runtime.getContexts', 'runtime.onUserScriptConnect',
                            'runtime.onUserScriptMessage'];

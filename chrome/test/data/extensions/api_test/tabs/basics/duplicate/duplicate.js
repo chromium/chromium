@@ -38,7 +38,7 @@ chrome.test.runTests([
       }));
   },
 
-  // TODO(crbug.com/149924): This test was broken by crrev.com/c/3029302.
+  // TODO(crbug.com/40940015): This test was broken by crrev.com/c/3029302.
 /*
   function duplicateTabFromNewPopupWindow() {
     chrome.windows.create({

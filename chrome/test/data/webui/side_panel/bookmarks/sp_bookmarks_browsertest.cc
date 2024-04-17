@@ -15,7 +15,7 @@ class SidePanelBookmarksTest : public WebUIMochaBrowserTest {
   }
 };
 
-// TODO(crbug.com/1396268): Flaky on Mac and Linux dbg. Re-enable this test.
+// TODO(crbug.com/40882667): Flaky on Mac and Linux dbg. Re-enable this test.
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_ShoppingList DISABLED_ShoppingList
 #else
@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, EditDialog) {
           "mocha.run()");
 }
 
-// TODO(crbug.com/1466691): Flaky on multiple platforms.
+// TODO(crbug.com/40276462): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, DISABLED_List) {
   RunTest("side_panel/bookmarks/power_bookmarks_list_test.js", "mocha.run()");
 }

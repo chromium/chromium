@@ -10,7 +10,7 @@
 
 // Base test class that performs additional setup that is only needed when the
 // `ash::standalone_browser::features::kLacrosOnly` flag is used.
-// TODO(crbug.com/1457360): Decide whether this needs to be added to
+// TODO(crbug.com/40273581): Decide whether this needs to be added to
 // WebUIMochaBrowserTest directly. Keeping it separate for now until more tests
 // that need it are migrated to WebUIMochaBrowserTest.
 class LacrosOnlyMochaBrowserTest : public WebUIMochaBrowserTest {

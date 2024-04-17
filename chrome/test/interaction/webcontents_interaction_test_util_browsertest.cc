@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
-// TODO(crbug.com/1492005): Resolve flakiness on ChromeOS and re-enable the
+// TODO(crbug.com/40285351): Resolve flakiness on ChromeOS and re-enable the
 // test.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_StateChangeExistsTimeoutSendsEvent \
@@ -2473,7 +2473,7 @@ class WebContentsInteractionTestUtilInteractiveTest
   }
 };
 
-// TODO(crbug.com/1447298): flaky on Mac - see comments below for the likely
+// TODO(crbug.com/40268930): flaky on Mac - see comments below for the likely
 // culprit line.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TrackWebContentsAcrossReplace \

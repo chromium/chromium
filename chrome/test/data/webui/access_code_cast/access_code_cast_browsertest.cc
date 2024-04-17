@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastTest, ErrorMessage) {
   RunTest("access_code_cast/error_message_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/1363398): PasscodeInput has started acting flaky ().
+// TODO(crbug.com/40864933): PasscodeInput has started acting flaky ().
 // Disabling for now pending investigation.
 IN_PROC_BROWSER_TEST_F(AccessCodeCastTest, DISABLED_PasscodeInput) {
   RunTest("access_code_cast/passcode_input_test.js", "mocha.run()");

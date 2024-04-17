@@ -108,7 +108,7 @@ chrome.test.getConfig(async config => {
   });
 
   chrome.test.runTests([
-    // TODO(crbug.com/1351648): disabled due to flakiness.
+    // TODO(crbug.com/40857271): disabled due to flakiness.
     // testGetTitleByFrameId,
     // testGetTitleByDocumentId,
     testEventRouter,

@@ -191,8 +191,8 @@ ready.then(async function() {
           });
       });
 
-      // TODO(crbug/1273341): Modify the testcase to be triggering concurrent
-      // multiple prerendering pages once it is supported.
+      // TODO(crbug.com/40206306): Modify the testcase to be triggering
+      // concurrent multiple prerendering pages once it is supported.
       // Navigate to a page that initiates prerendering "a.html".
       chrome.tabs.update(tab.id, {"url": initiatorUrl});
     },
@@ -361,7 +361,7 @@ ready.then(async function() {
     // Load an URL with a frame which is detached during load.
     // getAllFrames should only return the remaining (main) frame.
     async function testFrameDetach() {
-      // TODO(crbug.com/1194800): Extremely flaky for Service Worker. Note that
+      // TODO(crbug.com/40758628): Extremely flaky for Service Worker. Note that
       // this test is also (very infrequently) flaky for non-Service Worker.
       if (inServiceWorker)
         chrome.test.succeed();

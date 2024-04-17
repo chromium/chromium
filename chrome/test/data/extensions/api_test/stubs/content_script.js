@@ -15,8 +15,8 @@ function logToConsoleAndStdout(msg) {
 console.log("asking for api ...");
 chrome.extension.sendRequest("getApi", function(apis) {
   var apiFeatures = chrome.test.getApiFeatures();
-  // TODO(crbug.com/998971): This really should support more than two levels of
-  // inheritance.
+  // TODO(crbug.com/41478937): This really should support more than two levels
+  // of inheritance.
   function isAvailableToContentScripts(namespace, path) {
     const results = {
       NULL: 'null',

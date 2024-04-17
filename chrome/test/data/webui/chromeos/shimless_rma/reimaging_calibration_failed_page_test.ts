@@ -20,7 +20,7 @@ import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// TODO(crbug/1296829): Add a non-flaky test for keyboard navigation.
+// TODO(crbug.com/40214914): Add a non-flaky test for keyboard navigation.
 suite('reimagingCalibrationFailedPageTest', function() {
   let component: ReimagingCalibrationFailedPage|null = null;
 

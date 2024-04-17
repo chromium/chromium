@@ -136,7 +136,7 @@ chrome.test.getConfig(async config => {
   // `match_origin_as_fallback` and manifest v3.
   chrome.test.runTests([
     testWithIframe,
-    // TODO(crbug.com/1344548): These two tests are flaky and time out.
+    // TODO(crbug.com/40853029): These two tests are flaky and time out.
     // testWithAboutBlankIframe,
     // testWithAboutBlankIframe.bind(this, {matchAboutBlank: true}),
   ]);

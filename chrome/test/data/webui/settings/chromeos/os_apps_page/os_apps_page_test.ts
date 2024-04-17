@@ -500,7 +500,7 @@ suite('AppsPageTests', () => {
               SETTING_ID_702}.`);
     });
 
-    // TODO(crbug.com/1006662): Test that setting playStoreEnabled to false
+    // TODO(crbug.com/40099962): Test that setting playStoreEnabled to false
     // navigates back to the main apps section.
   });
 

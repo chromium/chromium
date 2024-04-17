@@ -62,8 +62,8 @@ void ChromeRenderViewTest::SetUp() {
 
   registry_ = std::make_unique<service_manager::BinderRegistry>();
 
-  // TODO(crbug/862989): Before this SetUp, the test agents defined at the end
-  // of this method should be injected into the creation of RenderViewImpl.
+  // TODO(crbug.com/41401202): Before this SetUp, the test agents defined at the
+  // end of this method should be injected into the creation of RenderViewImpl.
   // In the current state, regular agents are created before the test agents.
   content::RenderViewTest::SetUp();
 
