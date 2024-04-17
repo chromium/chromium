@@ -67,18 +67,18 @@ bool ShouldEnableGameDashboardButton(aura::Window* window);
 
 // Checks whether the welcome dialog should be displayed when the game window
 // opens.
-bool ShouldShowWelcomeDialog();
+ASH_EXPORT bool ShouldShowWelcomeDialog();
 
 // Updates the `PrefService` preference for showing the welcome dialog with
 // the new value specified in `show_dialog`.
-void SetShowWelcomeDialog(bool show_dialog);
+ASH_EXPORT void SetShowWelcomeDialog(bool show_dialog);
 
 // Checks whether the toolbar should be displayed.
-bool ShouldShowToolbar();
+ASH_EXPORT bool ShouldShowToolbar();
 
 // Updates the `PrefService` preference for showing the toolbar with the new
 // value specified in `show_toolbar`.
-void SetShowToolbar(bool show_toolbar);
+ASH_EXPORT void SetShowToolbar(bool show_toolbar);
 
 // Calculates the height of the `window`'s frame header. Returns 0 if the frame
 // header is not found or when the header is invisible.

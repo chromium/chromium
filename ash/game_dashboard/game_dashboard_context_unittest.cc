@@ -312,16 +312,12 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   void SetUp() override {
     GameDashboardTestBase::SetUp();
     // Disable the welcome dialog by default.
-    active_user_prefs_ =
-        Shell::Get()->session_controller()->GetActivePrefService();
-    ASSERT_TRUE(active_user_prefs_);
-    SetShowWelcomeDialog(false);
-    SetShowToolbar(false);
+    game_dashboard_utils::SetShowWelcomeDialog(false);
+    game_dashboard_utils::SetShowToolbar(false);
     GetContext()->AddPostTargetHandler(&post_target_event_capturer_);
   }
 
   void TearDown() override {
-    active_user_prefs_ = nullptr;
     GetContext()->RemovePostTargetHandler(&post_target_event_capturer_);
     CloseGameWindow();
     GameDashboardTestBase::TearDown();
@@ -358,29 +354,6 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
   }
 
-  // Sets the `pref` boolean preference with `value`.
-  // NOTE: This function should be called before CreateGameWindow() is called.
-  void SetBooleanPref(const std::string& pref, bool value) {
-    CHECK(!game_window_) << "\"" << pref
-                         << "\" should be changed before "
-                            "creating the window. To set this param, call this "
-                            "function before CreateGameWindow() is called.";
-    active_user_prefs_->SetBoolean(pref, value);
-    ASSERT_EQ(active_user_prefs_->GetBoolean(pref), value);
-  }
-
-  // Sets whether the welcome dialog should be displayed when a game window
-  // opens, which is determined by the `show_dialog` param.
-  void SetShowWelcomeDialog(bool show_dialog) {
-    SetBooleanPref(prefs::kGameDashboardShowWelcomeDialog, show_dialog);
-  }
-
-  // Sets whether the toolbar should be displayed when a game window opens,
-  // which is determined by the `show_toolbar` param.
-  void SetShowToolbar(bool show_toolbar) {
-    SetBooleanPref(prefs::kGameDashboardShowToolbar, show_toolbar);
-  }
-
   // If `is_arc_window` is true, this function creates the window as an ARC
   // game window. Otherwise, it creates the window as a GeForceNow window.
   // For ARC game windows, if `set_arc_game_controls_flags_prop` is true, then
@@ -415,10 +388,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     CHECK(game_dashboard_button_widget);
     ASSERT_TRUE(game_dashboard_button_widget->CanActivate());
 
-    // Using `prefs::kGameDashboardShowWelcomeDialog`, verify whether the
-    // welcome dialog should be shown.
-    if (active_user_prefs_->GetBoolean(
-            prefs::kGameDashboardShowWelcomeDialog) &&
+    // Verify whether the welcome dialog should be shown.
+    if (game_dashboard_utils::ShouldShowWelcomeDialog() &&
         game_dashboard_utils::ShouldEnableFeatures()) {
       ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
     } else {
@@ -800,7 +771,6 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
  private:
   gfx::Rect app_bounds_ = gfx::Rect(50, 50, 800, 400);
-  raw_ptr<PrefService> active_user_prefs_;
 };
 
 // Verifies Game Controls tile state.
@@ -1323,7 +1293,7 @@ TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
 // disappears after 4 seconds.
 TEST_F(GameDashboardContextTest, WelcomeDialogAutoDismisses) {
   // Open the game window with the welcome dialog enabled.
-  SetShowWelcomeDialog(true);
+  game_dashboard_utils::SetShowWelcomeDialog(true);
   CreateGameWindow(/*is_arc_window=*/true,
                    /*set_arc_game_controls_flags_prop=*/true);
 
@@ -1348,7 +1318,7 @@ TEST_F(GameDashboardContextTest, WelcomeDialogAutoDismisses) {
 // Verifies the welcome dialog disappears when the main menu view is opened.
 TEST_F(GameDashboardContextTest, WelcomeDialogDismissOnMainMenuOpening) {
   // Open the game window with the welcome dialog enabled.
-  SetShowWelcomeDialog(true);
+  game_dashboard_utils::SetShowWelcomeDialog(true);
   CreateGameWindow(/*is_arc_window=*/true,
                    /*set_arc_game_controls_flags_prop=*/true);
 
@@ -1361,7 +1331,7 @@ TEST_F(GameDashboardContextTest, WelcomeDialogDismissOnMainMenuOpening) {
 // enough.
 TEST_F(GameDashboardContextTest, WelcomeDialogWithSmallWindow) {
   // Open a new game window with a width of 450.
-  SetShowWelcomeDialog(true);
+  game_dashboard_utils::SetShowWelcomeDialog(true);
   SetAppBounds(gfx::Rect(50, 50, 450, 400));
   CreateGameWindow(/*is_arc_window=*/true,
                    /*set_arc_game_controls_flags_prop=*/true);
@@ -1579,8 +1549,8 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_MouseOver) {
 // Verifies that at startup and with the welcome dialog is visible, opening
 // the main menu dismisses the welcome dialog and shows the toolbar.
 TEST_F(GameDashboardContextTest, MainMenuAndToolbarAndWelcomeDialogStartup) {
-  SetShowWelcomeDialog(true);
-  SetShowToolbar(true);
+  game_dashboard_utils::SetShowWelcomeDialog(true);
+  game_dashboard_utils::SetShowToolbar(true);
   CreateGameWindow(/*is_arc_window=*/true);
 
   // Verify the welcome dialog is visible and the toolbar is not visible.
@@ -1605,7 +1575,7 @@ TEST_F(GameDashboardContextTest, MainMenuAndToolbarAndWelcomeDialogStartup) {
 // focus is respected after overview mode exits.
 TEST_F(GameDashboardContextTest, OverviewModeWithTwoWindows) {
   // Create a GFN game window with the toolbar displayed.
-  SetShowToolbar(true);
+  game_dashboard_utils::SetShowToolbar(true);
   std::unique_ptr<aura::Window> gfn_game_window =
       CreateAppWindow(extension_misc::kGeForceNowAppId, AppType::NON_APP,
                       gfx::Rect(50, 50, 400, 200));
@@ -1819,6 +1789,35 @@ class GameTypeGameDashboardContextTest
 
 // GameTypeGameDashboardContextTest Tests
 // -----------------------------------------------------------------------
+// Verifies the default startup sequence of the toolbar and welcome dialog
+// widgets.
+TEST_P(GameTypeGameDashboardContextTest, DefaultWidgetStartupSequence) {
+  // Close the existing window, and clear the overridden Game Dashboard prefs.
+  CloseGameWindow();
+  auto* active_user_prefs_ =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  ASSERT_TRUE(active_user_prefs_);
+  active_user_prefs_->ClearPref(prefs::kGameDashboardShowToolbar);
+  active_user_prefs_->ClearPref(prefs::kGameDashboardShowWelcomeDialog);
+
+  // Verify the preferences have their default value.
+  ASSERT_FALSE(game_dashboard_utils::ShouldShowToolbar());
+  ASSERT_TRUE(game_dashboard_utils::ShouldShowWelcomeDialog());
+
+  CreateGameWindow(IsArcGame());
+
+  // Verify the welcome dialog is created and visible, and not the toolbar.
+  ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+  ASSERT_FALSE(test_api_->GetToolbarWidget());
+
+  // Advance by 4 seconds to dismiss the welcome dialog.
+  task_environment()->FastForwardBy(base::Seconds(4));
+
+  // Verify the welcome dialog is closed, and the toolbar is not shown.
+  ASSERT_FALSE(test_api_->GetWelcomeDialogWidget());
+  ASSERT_FALSE(test_api_->GetToolbarWidget());
+}
+
 // Verifies the initial location of the Game Dashboard button widget relative to
 // the game window.
 TEST_P(GameTypeGameDashboardContextTest,
@@ -3139,8 +3138,8 @@ class GameDashboardUIStartupSequenceTest
 
   void SetUp() override {
     GameDashboardContextTest::SetUp();
-    SetShowWelcomeDialog(should_show_welcome_dialog_);
-    SetShowToolbar(should_show_toolbar_);
+    game_dashboard_utils::SetShowWelcomeDialog(should_show_welcome_dialog_);
+    game_dashboard_utils::SetShowToolbar(should_show_toolbar_);
     CreateGameWindow(/*is_arc_window=*/true,
                      /*set_arc_game_controls_flags_prop=*/true);
   }
