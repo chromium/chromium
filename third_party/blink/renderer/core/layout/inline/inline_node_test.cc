@@ -516,6 +516,18 @@ struct MinMaxData {
     {"abcd&shy; ef xx", {50, 100}, "hyphens: none;"},
     // Hyphenations.
     {"zz hyphenation xx", {50, 170}, "hyphens: auto;", "", "en-us"},
+    // Atomic inlines.
+    {"Hello <img>.", {50, 80}, "", "img { width: 1em; }"},
+    {"Hello <img>.", {50, 120}, "", "img { width: 5em; }"},
+    {"Hello <img>.", {60, 130}, "", "img { width: 6em; }"},
+    // `text-indent.
+    {"6 12345 12", {60, 150}, "text-indent: 5em"},
+    {"6 1234567 12", {70, 170}, "text-indent: 5em"},
+    // Negative `text-indent.
+    {"43210123 1234 12", {40, 110}, "text-indent: -5em"},
+    {"4321012345 1234 12", {50, 130}, "text-indent: -5em"},
+    {"432 012 1", {30, 40}, "text-indent: -5em"},
+    {"432 01 12", {20, 40}, "text-indent: -5em"},
     // Floats.
     {"XXX <div id=left></div> XXXX",
      {50, 130},
