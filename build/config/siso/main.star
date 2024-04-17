@@ -100,6 +100,7 @@ def __use_large_b289968566(ctx, step_config):
         # target_os = "android"
         # use_remoteexec = true
         "./android_clang_arm/obj/content/browser/browser/browser_interface_binders.o",
+        "./obj/chrome/test/unit_tests__library/chrome_browsing_data_remover_delegate_unittest.o",
         "./obj/content/test/content_unittests__library/auction_runner_unittest.o",
 
         # Fallback happens with follwoing args.gn (try/fuchsia-x64-cast-receiver-rel).
