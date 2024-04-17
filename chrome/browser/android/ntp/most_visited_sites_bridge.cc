@@ -151,24 +151,17 @@ MostVisitedSitesBridge::JavaObserver::JavaObserver(
 void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
     const std::map<SectionType, NTPTilesVector>& sections) {
   JNIEnv* env = AttachCurrentThread();
-  std::vector<std::u16string> titles;
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> urls;
-  std::vector<int> title_sources;
-  std::vector<int> sources;
-  std::vector<int> section_types;
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> suggestions;
   for (const auto& section : sections) {
+    int32_t section_type = static_cast<int32_t>(section.first);
     const NTPTilesVector& tiles = section.second;
-    section_types.resize(section_types.size() + tiles.size(),
-                         static_cast<int>(section.first));
     for (const auto& tile : tiles) {
-      titles.emplace_back(tile.title);
-      urls.emplace_back(url::GURLAndroid::FromNativeGURL(env, tile.url));
-      title_sources.emplace_back(static_cast<int>(tile.title_source));
-      sources.emplace_back(static_cast<int>(tile.source));
+      suggestions.push_back(Java_MostVisitedSitesBridge_makeSiteSuggestion(
+          env, tile.title, tile.url, static_cast<int32_t>(tile.title_source),
+          static_cast<int32_t>(tile.source), section_type));
     }
   }
-  Java_MostVisitedSitesBridge_onURLsAvailable(
-      env, observer_, titles, urls, section_types, title_sources, sources);
+  Java_MostVisitedSitesBridge_onURLsAvailable(env, observer_, suggestions);
 }
 
 void MostVisitedSitesBridge::JavaObserver::OnIconMadeAvailable(

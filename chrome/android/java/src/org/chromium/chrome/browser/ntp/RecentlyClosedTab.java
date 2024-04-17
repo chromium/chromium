@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.ntp;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
 import org.chromium.base.Token;
 import org.chromium.url.GURL;
 
@@ -22,8 +25,13 @@ public class RecentlyClosedTab extends RecentlyClosedEntry {
      * @param tabGroupId The tab group ID the tab had before being closed or null if it was not part
      *     of a group.
      */
+    @CalledByNative
     public RecentlyClosedTab(
-            int sessionId, long timestamp, String title, GURL url, @Nullable Token tabGroupId) {
+            int sessionId,
+            long timestamp,
+            @JniType("std::u16string") String title,
+            @JniType("GURL") GURL url,
+            @JniType("std::optional<base::Token>") @Nullable Token tabGroupId) {
         super(sessionId, timestamp);
         mTitle = title;
         mUrl = url;

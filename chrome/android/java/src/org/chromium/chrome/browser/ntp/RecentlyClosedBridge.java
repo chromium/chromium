@@ -19,9 +19,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** This class allows Java code to get and clear the list of recently closed entries. */
@@ -32,33 +32,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
     @Nullable private Runnable mEntriesUpdatedRunnable;
 
-    private static void addTabs(
-            List<RecentlyClosedTab> tabs,
-            int[] tabIds,
-            long[] tabTimestamps,
-            String[] tabTitles,
-            GURL[] tabUrls,
-            Token[] tabGroupIds) {
-        assert tabIds.length == tabTimestamps.length;
-        assert tabIds.length == tabTitles.length;
-        assert tabIds.length == tabUrls.length;
-        assert tabIds.length == tabGroupIds.length;
-        for (int i = 0; i < tabIds.length; i++) {
-            tabs.add(
-                    new RecentlyClosedTab(
-                            tabIds[i], tabTimestamps[i], tabTitles[i], tabUrls[i], tabGroupIds[i]));
-        }
-    }
-
     @CalledByNative
-    private static void addTabToEntries(
-            List<RecentlyClosedEntry> entries,
-            int id,
-            long timestamp,
-            String title,
-            GURL url,
-            Token tabGroupId) {
-        RecentlyClosedTab tab = new RecentlyClosedTab(id, timestamp, title, url, tabGroupId);
+    private static void addTabToEntries(List<RecentlyClosedEntry> entries, RecentlyClosedTab tab) {
         entries.add(tab);
     }
 
@@ -68,15 +43,9 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             int id,
             long groupTimestamp,
             @JniType("std::u16string") String groupTitle,
-            @JniType("std::vector<int32_t>") int[] tabIds,
-            @JniType("std::vector<int64_t>") long[] tabTimestamps,
-            @JniType("std::vector<const std::u16string*>") String[] tabTitles,
-            @JniType("std::vector") GURL[] tabUrls,
-            @JniType("std::vector<std::optional<base::Token>>") Token[] tabGroupIds) {
+            @JniType("std::vector") Object[] tabsArr) {
         RecentlyClosedGroup group = new RecentlyClosedGroup(id, groupTimestamp, groupTitle);
-
-        addTabs(group.getTabs(), tabIds, tabTimestamps, tabTitles, tabUrls, tabGroupIds);
-
+        group.getTabs().addAll((List<RecentlyClosedTab>) (List<?>) Arrays.asList(tabsArr));
         entries.add(group);
     }
 
@@ -87,11 +56,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             long eventTimestamp,
             @JniType("std::vector<std::optional<base::Token>>") Token[] tabGroupIds,
             @JniType("std::vector<const std::u16string*>") String[] groupTitles,
-            @JniType("std::vector<int32_t>") int[] tabIds,
-            @JniType("std::vector<int64_t>") long[] tabTimestamps,
-            @JniType("std::vector<const std::u16string*>") String[] tabTitles,
-            @JniType("std::vector") GURL[] tabUrls,
-            @JniType("std::vector<std::optional<base::Token>>") Token[] perTabTabGroupIds) {
+            @JniType("std::vector") Object[] tabsArr) {
         RecentlyClosedBulkEvent event = new RecentlyClosedBulkEvent(id, eventTimestamp);
 
         assert tabGroupIds.length == groupTitles.length;
@@ -99,13 +64,16 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             event.getTabGroupIdToTitleMap().put(tabGroupIds[i], groupTitles[i]);
         }
 
-        addTabs(event.getTabs(), tabIds, tabTimestamps, tabTitles, tabUrls, perTabTabGroupIds);
-
+        event.getTabs().addAll((List<RecentlyClosedTab>) (List<?>) Arrays.asList(tabsArr));
         entries.add(event);
     }
 
     @CalledByNative
-    private void restoreTabGroup(TabModel tabModel, String title, int color, int[] tabIds) {
+    private void restoreTabGroup(
+            TabModel tabModel,
+            @JniType("std::u16string") String title,
+            int color,
+            @JniType("std::vector") int[] tabIds) {
         if (tabIds.length == 0) return;
 
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
