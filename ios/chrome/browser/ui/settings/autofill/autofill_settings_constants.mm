@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 
 NSString* const kAutofillProfileEditTableViewId =
     @"kAutofillProfileEditTableViewId";
@@ -24,11 +24,6 @@ NSString* const kAutofillMandatoryReauthSwitchViewId =
 
 NSString* const kAutofillCreditCardEditTableViewId =
     @"kAutofillCreditCardEditTableViewId";
-
-NSString* const kAutofillCountrySelectionTableViewId =
-    @"kAutofillCountrySelectionTableViewId";
-NSString* const kAutofillCountrySelectionSearchScrimId =
-    @"kAutofillCountrySelectionSearchScrimId";
 
 NSString* const kAutofillAddressMigrateToAccountButtonId =
     @"kAutofillAddressMigrateToAccountButtonId";

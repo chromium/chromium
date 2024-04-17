@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/browser/ui/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_address_profile_modal_constants.h"
@@ -29,6 +30,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 using base::test::ios::kWaitForActionTimeout;
 
@@ -93,6 +95,32 @@ BOOL WaitForKeyboardToAppear() {
                     return [EarlGrey isKeyboardShownWithError:nil];
                   }];
   return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
+}
+
+// Matcher for a country entry with the given accessibility label.
+id<GREYMatcher> CountryEntry(NSString* label) {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(label),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the search bar.
+id<GREYMatcher> SearchBar() {
+  return grey_allOf(grey_accessibilityID(kAutofillCountrySelectionTableViewId),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the search bar's cancel button.
+id<GREYMatcher> SearchBarCancelButton() {
+  return grey_allOf(
+      chrome_test_util::ButtonWithAccessibilityLabelId(IDS_APP_CANCEL),
+      grey_kindOfClass([UIButton class]),
+      grey_ancestor(grey_kindOfClass([UISearchBar class])),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the search bar's scrim.
+id<GREYMatcher> SearchBarScrim() {
+  return grey_accessibilityID(kAutofillCountrySelectionSearchScrimId);
 }
 
 }  // namespace
@@ -386,6 +414,35 @@ BOOL WaitForKeyboardToAppear() {
       selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
                                    IDS_IOS_AUTOFILL_CITY)]
       performAction:grey_replaceText(@"New York")];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_AUTOFILL_COUNTRY))]
+      performAction:grey_tap()];
+
+  // Focus the search bar.
+  [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+
+  // Verify the scrim is visible when search bar is focused but not typed in.
+  [[EarlGrey selectElementWithMatcher:SearchBarScrim()]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify the cancel button is visible and unfocuses search bar when tapped.
+  [[EarlGrey selectElementWithMatcher:SearchBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Verify countries are searchable using their name in the current locale.
+  [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
+      performAction:grey_replaceText(@"Germany")];
+
+  // Verify that scrim is not visible anymore.
+  [[EarlGrey selectElementWithMatcher:SearchBarScrim()]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:CountryEntry(@"Germany")]
+      performAction:grey_tap()];
 
   // Save the profile.
   [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]

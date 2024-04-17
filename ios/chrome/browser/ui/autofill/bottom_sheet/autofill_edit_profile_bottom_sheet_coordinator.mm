@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 
 @interface AutofillEditProfileBottomSheetCoordinator () <
+    AutofillCountrySelectionTableViewControllerDelegate,
     AutofillProfileEditMediatorDelegate>
 @end
 
@@ -131,7 +132,19 @@
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country
                                           countryList:(NSArray<CountryItem*>*)
                                                           allCountries {
-  // TODO(crbug.com/1482269): Implement.
+  AutofillCountrySelectionTableViewController*
+      autofillCountrySelectionTableViewController =
+          [[AutofillCountrySelectionTableViewController alloc]
+              initWithDelegate:self
+               selectedCountry:country
+                  allCountries:allCountries
+                  settingsView:NO];
+
+  // TODO(crbug.com/1482269): The transition is weird with animation.
+  // Investigate.
+  [_navigationController
+      pushViewController:autofillCountrySelectionTableViewController
+                animated:NO];
 }
 
 - (void)didSaveProfile {
@@ -153,6 +166,13 @@
   delegate->EditAccepted();
   infobar->set_accepted(true);
   [self stop];
+}
+
+#pragma mark - AutofillCountrySelectionTableViewControllerDelegate
+
+- (void)didSelectCountry:(CountryItem*)selectedCountry {
+  [_navigationController popViewControllerAnimated:YES];
+  [_autofillProfileEditMediator didSelectCountry:selectedCountry];
 }
 
 @end

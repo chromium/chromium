@@ -76,8 +76,8 @@ source_set("autofill") {
 
 source_set("constants") {
   sources = [
-    "autofill_constants.h",
-    "autofill_constants.mm",
+    "autofill_settings_constants.h",
+    "autofill_settings_constants.mm",
   ]
 }
 
@@ -147,6 +147,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/autofill:constants",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

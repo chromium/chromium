@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/testing/earl_grey/earl_grey_test.h"
-
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -32,7 +30,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
@@ -52,6 +50,7 @@
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 

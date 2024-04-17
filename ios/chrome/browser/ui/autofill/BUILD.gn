@@ -111,6 +111,13 @@ source_set("autofill_ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("constants") {
+  sources = [
+    "autofill_constants.h",
+    "autofill_constants.mm",
+  ]
+}
+
 source_set("autofill_shared_ui") {
   sources = [
     "autofill_country_selection_table_view_controller.h",
@@ -127,6 +134,7 @@ source_set("autofill_shared_ui") {
   ]
   deps = [
     ":autofill_ui_type",
+    ":constants",
     "//base:base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common:features",
@@ -140,7 +148,6 @@ source_set("autofill_shared_ui") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill/cells",
-    "//ios/chrome/browser/ui/settings/autofill:constants",
     "//ios/chrome/browser/ui/settings/autofill:shared_ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
@@ -190,6 +197,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":common",
+    ":constants",
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
@@ -214,6 +222,7 @@ source_set("eg2_tests") {
     "//services/network/public/cpp",
     "//testing/gtest",
     "//ui/base",
+    "//ui/strings:ui_strings_grit",
   ]
   frameworks = [ "UIKit.framework" ]
 }

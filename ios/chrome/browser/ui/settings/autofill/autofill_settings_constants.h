@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_SETTINGS_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_SETTINGS_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -21,11 +21,7 @@ extern NSString* const kAutofillMandatoryReauthSwitchViewId;
 // Accessibility identifier for the edit card table view.
 extern NSString* const kAutofillCreditCardEditTableViewId;
 
-// Accessibility identifier for the country selection view.
-extern NSString* const kAutofillCountrySelectionTableViewId;
-extern NSString* const kAutofillCountrySelectionSearchScrimId;
-
 // Accessibility identifier for the migrate to account button.
 extern NSString* const kAutofillAddressMigrateToAccountButtonId;
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_SETTINGS_CONSTANTS_H_

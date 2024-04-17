@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
