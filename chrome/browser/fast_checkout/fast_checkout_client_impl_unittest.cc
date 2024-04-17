@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -382,7 +383,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     auto credit_card_form_structure = std::make_unique<autofill::FormStructure>(
         autofill::test::CreateTestCreditCardFormData(true, false, true));
     credit_card_form_structure->field(kCreditCardFieldIndexInForm)
-        ->set_heuristic_type(autofill::HeuristicSource::kLegacy,
+        ->set_heuristic_type(autofill::GetActiveHeuristicSource(),
                              autofill::FieldType::CREDIT_CARD_NUMBER);
     return credit_card_form_structure;
   }
@@ -391,7 +392,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     auto address_form_structure = std::make_unique<autofill::FormStructure>(
         autofill::test::CreateTestAddressFormData());
     address_form_structure->field(kFirstNameFieldIndexInForm)
-        ->set_heuristic_type(autofill::HeuristicSource::kLegacy,
+        ->set_heuristic_type(autofill::GetActiveHeuristicSource(),
                              autofill::FieldType::NAME_FIRST);
     return address_form_structure;
   }
@@ -1058,7 +1059,7 @@ TEST_F(
   autofill::FormStructure* address_form =
       AddFormToAutofillManagerCache(SetUpAddressForm());
   address_form->field(0)->set_heuristic_type(
-      autofill::HeuristicSource::kLegacy, autofill::FieldType::EMAIL_ADDRESS);
+      autofill::GetActiveHeuristicSource(), autofill::FieldType::EMAIL_ADDRESS);
   StartRunAndSelectOptions({address_form->form_signature()});
   std::u16string announcement_text = u"Email filled.";
 
