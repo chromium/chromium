@@ -29,11 +29,19 @@ def IsSubListOf(needle, hay):
 
 
 def _CheckNullabilityAnnotations(input_api, output_api):
-    """ Checks whether there are nullability annotations in ios code."""
+    """ Checks whether there are nullability annotations in ios code.
+
+    They are accepted in ios/web_view/public since it tries to mimic
+    the platform library but not anywhere else.
+    """
     nullability_regex = input_api.re.compile(NULLABILITY_PATTERN)
 
     errors = []
     for f in input_api.AffectedFiles():
+        if f.LocalPath().startswith('ios/web_view/public/'):
+            # ios/web_view/public tries to mimic an existing API that
+            # might have nullability in it and that is acceptable.
+            continue
         for line_num, line in f.ChangedContents():
             if nullability_regex.search(line):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))

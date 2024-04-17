@@ -93,14 +93,14 @@ CWV_EXPORT
 //
 // See the comment of |visibleURL| above for the difference between |visibleURL|
 // and |lastCommittedURL|.
-@property(nonatomic, readonly) NSURL* lastCommittedURL;
+@property(nonatomic, readonly, nullable) NSURL* lastCommittedURL;
 
 // The SSL status displayed in the URL bar. KVO compliant.
 // It is nil when no page is loaded on the web view.
 @property(nonatomic, readonly, nullable) CWVSSLStatus* visibleSSLStatus;
 
 // The current page title. KVO compliant.
-@property(nonatomic, readonly, copy) NSString* title;
+@property(nonatomic, readonly, copy, nullable) NSString* title;
 
 // Page loading progress from 0.0 to 1.0. KVO compliant.
 //

@@ -20,7 +20,7 @@ CWV_EXPORT
 @property(nonatomic, readonly) NSURL* URL;
 
 // The title of the item.
-@property(nonatomic, readonly) NSString* title;
+@property(nonatomic, readonly, nullable) NSString* title;
 
 - (instancetype)init NS_UNAVAILABLE;
 
