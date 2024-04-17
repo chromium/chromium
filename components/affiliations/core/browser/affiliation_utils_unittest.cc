@@ -6,11 +6,13 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
+#include "url/url_features.h"
 
 namespace affiliations {
 
@@ -318,7 +320,6 @@ INSTANTIATE_TEST_SUITE_P(
         // different url schemas and non tld parts
         MainDomainTestCase{"http://www.twitter.com", "twitter.com"},
         MainDomainTestCase{"https://mobile.twitter.com", "twitter.com"},
-        MainDomainTestCase{"android://blabla@com.twitter.android"},
         // additional URI components, see
         // https://tools.ietf.org/html/rfc3986#section-3
         MainDomainTestCase{"https://facebook.com/", "facebook.com"},
@@ -359,6 +360,43 @@ INSTANTIATE_TEST_SUITE_P(
         MainDomainTestCase{"http://www.facebook.com", "facebook.com"},
         MainDomainTestCase{"http://many.many.many.facebook.com",
                            "facebook.com"}));
+
+// Non-special URLs behavior is affected by the
+// StandardCompliantNonSpecialSchemeURLParsing feature.
+// See https://crbug.com/40063064 for details.
+class AffiliationUtilsMainDomainNonSpecialUrlTest
+    : public ::testing::TestWithParam<bool> {
+ public:
+  AffiliationUtilsMainDomainNonSpecialUrlTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    if (use_standard_compliant_non_special_scheme_url_parsing_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          url::kStandardCompliantNonSpecialSchemeURLParsing);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          url::kStandardCompliantNonSpecialSchemeURLParsing);
+    }
+  }
+
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(AffiliationUtilsMainDomainNonSpecialUrlTest, ParamTest) {
+  GURL url("android://blabla@com.twitter.android");
+  std::string top_level_domain = GetExtendedTopLevelDomain(url, {});
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    EXPECT_THAT(top_level_domain, testing::Eq("twitter.android"));
+  } else {
+    EXPECT_THAT(top_level_domain, testing::Eq(""));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AffiliationUtilsMainDomainNonSpecialUrlTest,
+                         ::testing::Bool());
 
 struct MergeRelatedGroupsTestCase {
   std::vector<std::vector<std::string>> input_groups;
