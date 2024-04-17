@@ -806,8 +806,15 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 // Regression test for https://crbug.com/1405341.
 // Tests that RenderFrameHostImpl destruction is finished without crashing when
 // tracing is enabled.
+// TODO(crbug.com/335334098): Flaky on Linux TSan
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TracingRenderFrameHostImplDtor \
+  DISABLED_TracingRenderFrameHostImplDtor
+#else
+#define MAYBE_TracingRenderFrameHostImplDtor TracingRenderFrameHostImplDtor
+#endif
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
-                       TracingRenderFrameHostImplDtor) {
+                       MAYBE_TracingRenderFrameHostImplDtor) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   TestBackgroundTracingHelper background_tracing_helper;
