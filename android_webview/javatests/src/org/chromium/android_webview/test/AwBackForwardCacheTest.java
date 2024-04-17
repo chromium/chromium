@@ -9,10 +9,11 @@ import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_T
 import android.webkit.JavascriptInterface;
 
 import androidx.test.InstrumentationRegistry;
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.LargeTest;
 
 import com.google.common.util.concurrent.SettableFuture;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +28,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeUnit;
@@ -100,10 +102,12 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         mTestServer.stopAndDestroyServer();
     }
 
-    private void navigateForwardAndBack() throws Throwable {
+    private void navigateForward() throws Throwable {
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mForwardUrl);
+    }
 
+    private void navigateBack() throws Throwable {
         // Create a new future to avoid the future set in the initial load.
         SettableFuture<Boolean> pageFullyLoadedFuture = SettableFuture.create();
         mLoadedNotifier.setFuture(pageFullyLoadedFuture);
@@ -124,6 +128,11 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
                 true, pageFullyLoadedFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
+    private void navigateForwardAndBack() throws Throwable {
+        navigateForward();
+        navigateBack();
+    }
+
     private boolean isPageShowPersisted() throws Exception {
         String isPersisted =
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
@@ -142,8 +151,16 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
                 "JSON.stringify(performance.getEntriesByType('navigation')[0].notRestoredReasons);");
     }
 
+    private String extractSimpleReasonString(String notRestoredReasons) throws Exception {
+        // Remove the escape character and the beginning and trailing quotes
+        notRestoredReasons = notRestoredReasons.replace("\\", "");
+        notRestoredReasons = notRestoredReasons.substring(1, notRestoredReasons.length() - 1);
+        JSONObject json_obj = new JSONObject(notRestoredReasons);
+        return json_obj.getJSONArray("reasons").getJSONObject(0).getString("reason");
+    }
+
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({
         "enable-features=WebViewBackForwardCache"
@@ -157,7 +174,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({
         "disable-features=WebViewBackForwardCache"
@@ -166,10 +183,65 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
         navigateForwardAndBack();
-        String not_restored_reasons = getNotRestoredReasons();
-        Assert.assertTrue(not_restored_reasons.indexOf("reasons") >= 0);
+        String notRestoredReasons = getNotRestoredReasons();
+        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
         Assert.assertFalse(isPageShowPersisted());
     }
 
-    // TODO: Add more cases (e.g. page eviction when in BFCache) to test
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testPageEvictedWhenModifyingJSInterface() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+
+        // Test adding javascript interface
+        navigateForward();
+        Object testInjectedObject =
+                new Object() {
+                    @JavascriptInterface
+                    public void mock() {}
+                };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents, testInjectedObject, "testInjectedObject");
+        navigateBack();
+        String notRestoredReasons = getNotRestoredReasons();
+        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
+        Assert.assertFalse(isPageShowPersisted());
+
+        // Test removing javascript interface
+        navigateForward();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mAwContents.removeJavascriptInterface("testInjectedObject"));
+        navigateBack();
+        notRestoredReasons = getNotRestoredReasons();
+        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
+        Assert.assertFalse(isPageShowPersisted());
+
+        // Test BFCache can still work for future navigations
+        navigateForwardAndBack();
+        Assert.assertTrue(isPageShowPersisted());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testPageEvictedWhenAddingWebMessageListener() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        TestWebMessageListener listener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                mAwContents, "awMessagePort", new String[] {"*"}, listener);
+        navigateBack();
+        String notRestoredReasons = getNotRestoredReasons();
+        Assert.assertTrue(notRestoredReasons.indexOf("reasons") >= 0);
+        Assert.assertFalse(isPageShowPersisted());
+
+        // Test BFCache can still work for future navigations
+        navigateForwardAndBack();
+        Assert.assertTrue(isPageShowPersisted());
+    }
 }

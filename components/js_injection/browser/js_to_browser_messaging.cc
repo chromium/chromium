@@ -203,8 +203,6 @@ void JsToBrowserMessaging::SetBrowserToJsMessaging(
   // TODO(crbug.com/40752101): this should really call
   // IsInactiveAndDisallowReactivation().
 
-  // TODO(crbug.com/331250166): If an associated page is bfcached, evict it.
-
   // A RenderFrame may inject JsToBrowserMessaging in the JavaScript context
   // more than once because of reusing of RenderFrame.
   host_.reset();

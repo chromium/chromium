@@ -50,6 +50,14 @@ void JavascriptInjector::AddInterface(
     const JavaParamRef<jstring>& name,
     const JavaParamRef<jclass>& safe_annotation_clazz) {
   DCHECK(java_bridge_dispatcher_host_);
+  // If a new js object is added or removed when a page is in BFCache,
+  // the change won't apply after restoring the page.
+  // To avoid this behavior difference when BFCache is involved vs not,
+  // evict all BFCached pages so that we won't
+  // restore any pages that don't have this object modified.
+  // Same for RemoveInterface below.
+  // TODO(crbug.com/331250164): Evict prerendered pages as well
+  GetWebContents().GetController().GetBackForwardCache().Flush();
   java_bridge_dispatcher_host_->AddNamedObject(
       ConvertJavaStringToUTF8(env, name), object, safe_annotation_clazz);
 }
@@ -58,6 +66,7 @@ void JavascriptInjector::RemoveInterface(JNIEnv* env,
                                          const JavaParamRef<jobject>& /* obj */,
                                          const JavaParamRef<jstring>& name) {
   DCHECK(java_bridge_dispatcher_host_);
+  GetWebContents().GetController().GetBackForwardCache().Flush();
   java_bridge_dispatcher_host_->RemoveNamedObject(
       ConvertJavaStringToUTF8(env, name));
 }
