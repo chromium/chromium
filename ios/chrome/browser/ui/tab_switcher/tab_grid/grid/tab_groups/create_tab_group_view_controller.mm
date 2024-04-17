@@ -482,6 +482,8 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   }
   [self.view layoutIfNeeded];
   [self hideSnapshotsIfNeeded];
+  // To force display the keyboard.
+  [_tabGroupTextField becomeFirstResponder];
 }
 
 // Hides the snapshots container if it is too small.
