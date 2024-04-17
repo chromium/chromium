@@ -21,10 +21,11 @@ AuthenticatorGPMArbitraryPinSheetView::gpm_arbitrary_pin_sheet_model() {
 std::pair<std::unique_ptr<views::View>,
           AuthenticatorGPMArbitraryPinSheetView::AutoFocus>
 AuthenticatorGPMArbitraryPinSheetView::BuildStepSpecificContent() {
-  return std::make_pair(std::make_unique<AuthenticatorGPMArbitraryPinView>(
-                            gpm_arbitrary_pin_sheet_model()->ui_disabled(),
-                            gpm_arbitrary_pin_sheet_model()->pin(), this),
-                        AutoFocus::kYes);
+  bool ui_disabled = gpm_arbitrary_pin_sheet_model()->ui_disabled();
+  return std::make_pair(
+      std::make_unique<AuthenticatorGPMArbitraryPinView>(
+          ui_disabled, gpm_arbitrary_pin_sheet_model()->pin(), this),
+      ui_disabled ? AutoFocus::kNo : AutoFocus::kYes);
 }
 
 void AuthenticatorGPMArbitraryPinSheetView::OnPinChanged(std::u16string pin) {

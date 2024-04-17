@@ -19,11 +19,11 @@ AuthenticatorGpmPinSheetView::gpm_pin_sheet_model() {
 
 std::pair<std::unique_ptr<views::View>, AuthenticatorGpmPinSheetView::AutoFocus>
 AuthenticatorGpmPinSheetView::BuildStepSpecificContent() {
+  bool ui_disabled = gpm_pin_sheet_model()->ui_disabled();
   return std::make_pair(std::make_unique<AuthenticatorGPMPinView>(
                             gpm_pin_sheet_model()->pin_digits_count(),
-                            gpm_pin_sheet_model()->ui_disabled(),
-                            gpm_pin_sheet_model()->pin(), this),
-                        AutoFocus::kYes);
+                            ui_disabled, gpm_pin_sheet_model()->pin(), this),
+                        ui_disabled ? AutoFocus::kNo : AutoFocus::kYes);
 }
 
 void AuthenticatorGpmPinSheetView::OnPinChanged(std::u16string pin) {

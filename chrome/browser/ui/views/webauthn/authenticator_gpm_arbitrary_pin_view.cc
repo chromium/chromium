@@ -26,6 +26,7 @@ AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
   pin_textfield->SetDefaultWidthInChars(20);
   pin_textfield->SetReadOnly(ui_disabled);
   pin_textfield->SetText(pin);
+  pin_textfield->SetEnabled(!ui_disabled);
   pin_textfield_ = AddChildView(std::move(pin_textfield));
 
   reveal_button_ = AddChildView(CreateRevealButton(base::BindRepeating(

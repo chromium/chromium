@@ -26,6 +26,7 @@ AuthenticatorGPMPinView::AuthenticatorGPMPinView(int pin_digits_count,
   pin_textfield->SetObscured(true);
   pin_textfield->SetDisabled(ui_disabled);
   pin_textfield->SetPin(pin);
+  pin_textfield->SetEnabled(!ui_disabled);
   pin_textfield_ = AddChildView(std::move(pin_textfield));
 
   reveal_button_ = AddChildView(CreateRevealButton(
