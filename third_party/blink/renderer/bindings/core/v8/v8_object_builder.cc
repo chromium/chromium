@@ -36,6 +36,16 @@ V8ObjectBuilder& V8ObjectBuilder::AddNumber(const StringView& name,
   return *this;
 }
 
+V8ObjectBuilder& V8ObjectBuilder::AddNumberOrNull(const StringView& name,
+                                                  std::optional<double> value) {
+  if (value.has_value()) {
+    AddInternal(name, v8::Number::New(script_state_->GetIsolate(), *value));
+  } else {
+    AddInternal(name, v8::Null(script_state_->GetIsolate()));
+  }
+  return *this;
+}
+
 V8ObjectBuilder& V8ObjectBuilder::AddInteger(const StringView& name,
                                              uint64_t value) {
   AddInternal(name,

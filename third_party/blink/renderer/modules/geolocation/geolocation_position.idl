@@ -31,4 +31,5 @@
 ] interface GeolocationPosition {
     readonly attribute GeolocationCoordinates coords;
     readonly attribute EpochTimeStamp timestamp;
+    [CallWith=ScriptState] object toJSON();
 };
