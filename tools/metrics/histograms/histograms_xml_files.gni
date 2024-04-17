@@ -14,6 +14,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/ash/histograms.xml",
   "//tools/metrics/histograms/metadata/ash_clipboard/enums.xml",
   "//tools/metrics/histograms/metadata/ash_clipboard/histograms.xml",
+  "//tools/metrics/histograms/metadata/ash_growth/enums.xml",
+  "//tools/metrics/histograms/metadata/ash_growth/histograms.xml",
   "//tools/metrics/histograms/metadata/ash_user_education/enums.xml",
   "//tools/metrics/histograms/metadata/ash_user_education/histograms.xml",
   "//tools/metrics/histograms/metadata/assistant/histograms.xml",

@@ -2700,18 +2700,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Dismissed"/>
 </enum>
 
-<enum name="CampaignButtonId">
-  <int value="0" label="Primary button"/>
-  <int value="1" label="Secondary button"/>
-</enum>
-
-<enum name="CampaignSlot">
-  <int value="0" label="Demo Mode App"/>
-  <int value="1" label="Demo Mode Free Play Apps"/>
-  <int value="2" label="Nudge"/>
-  <int value="3" label="Notification"/>
-</enum>
-
 <enum name="CanaryCheckLookupResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

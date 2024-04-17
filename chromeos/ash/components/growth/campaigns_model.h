@@ -29,7 +29,7 @@ namespace growth {
 
 // Entries should not be renumbered and numeric values should never be reused
 // as it is used for logging metrics as well. Please keep in sync with
-// "CampaignSlot" in src/tools/metrics/histograms/enums.xml.
+// "CampaignSlot" in tools/metrics/histograms/metadata/ash_growth/enums.xml.
 enum class Slot {
   kDemoModeApp = 0,
   kDemoModeFreePlayApps = 1,

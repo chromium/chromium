@@ -202,12 +202,6 @@ chromium-metrics-reviews@google.com.
                install should be very quick and always succeed."/>
 </variants>
 
-<variants name="CampaignButtonId">
-  <variant name="0" summary="Primary"/>
-  <variant name="1" summary="Secondary"/>
-  <variant name="2" summary="Others"/>
-</variants>
-
 <variants name="DisplayModes">
 <!-- Should be kept in sync with variants AppDisplayModes in
   tools/metrics/histograms/metadata/apps/histograms.xml.
@@ -4191,105 +4185,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".Classroom" summary="Google Classroom"/>
     <variant name=".Tasks" summary="Google Tasks"/>
   </token>
-</histogram>
-
-<histogram name="Ash.Growth.CampaignsComponent.DownloadDurationInOobe"
-    units="ms" expires_after="2024-10-17">
-  <owner>llin@google.com</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    The amount of time in ms that the Campaigns Manager takes to download the
-    campaigns component from Omaha. Recorded when a component loading complete
-    in the OOBE flow. This metric is splitted from
-    Ash.Growth.CampaignsComponent.DownloadDuration in M124.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Growth.CampaignsComponent.DownloadDurationSessionStart"
-    units="ms" expires_after="2024-10-17">
-  <owner>llin@google.com</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    The amount of time in ms that the Campaigns Manager takes to download the
-    campaigns component from Omaha. Recorded when a component loading complete
-    at session start. This metric is splitted from
-    Ash.Growth.CampaignsComponent.DownloadDuration in M124.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Growth.CampaignsComponent.ParseDuration" units="ms"
-    expires_after="2024-10-17">
-  <owner>llin@google.com</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    The amount of time in ms that the Campaigns Manager takes to read and parsed
-    (as JSON) from disk. Recorded when a component is loaded into Campaign
-    Matcher.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Growth.CampaignsManager.Error"
-    enum="CampaignsManagerError" expires_after="2024-10-17">
-  <owner>llin@google.com</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    Tracks unexpected error while loading and matching campaigns, recorded each
-    time an unexpected error occurs.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Growth.CampaignsManager.GetCampaignBySlot"
-    enum="CampaignSlot" expires_after="2024-10-17">
-  <owner>llin@google.com</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    Tracks the slot of the fetched campaign, recorded each time a campaign is
-    fetched.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Growth.CampaignsManager.MatchDuration" units="ms"
-    expires_after="2024-10-17">
-  <owner>llin@google.com</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    The amount of time in ms that the Campaigns Manager takes to match a
-    campaign based on the targeting criteria. Recorded when fetching a campaign
-    for a particular slot completed.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Growth.Ui.ButtonPressed.Button{ButtonId}.Campaigns500"
-    units="int" expires_after="2025-03-01">
-  <owner>wutao@chromium.org</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    Recorded when the button of {ButtonId} in the UI is pressed. The bucket is
-    indexed by the campaign_id. The campaign_id recorded in this histogram
-    should be less than 500.
-  </summary>
-  <token key="ButtonId" variants="CampaignButtonId"/>
-</histogram>
-
-<histogram name="Ash.Growth.Ui.Dismissed.Campaigns500" units="int"
-    expires_after="2025-03-01">
-  <owner>wutao@chromium.org</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    Recorded when the UI is dismissed. The bucket is indexed by the campaign_id.
-    The campaign_id recorded in this histogram should be less than 500.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Growth.Ui.Impression.Campaigns500" units="int"
-    expires_after="2025-03-01">
-  <owner>wutao@chromium.org</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    Recorded when it is ready to log a UI impression. Normally this is called
-    right after a call to show the UI. The bucket is indexed by the campaign_id.
-    The campaign_id recorded in this histogram should be less than 500.
-  </summary>
 </histogram>
 
 <histogram name="Ash.Homescreen.AnimationSmoothness" units="%"
