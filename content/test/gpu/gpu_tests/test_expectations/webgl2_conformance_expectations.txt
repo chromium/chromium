@@ -1005,6 +1005,7 @@ crbug.com/332743717 [ android android-pixel-4 ] conformance2/canvas/drawingbuffe
 crbug.com/332743717 [ linux ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ mac angle-metal ] conformance2/query/occlusion-query-scissor.html [ Failure ]
 crbug.com/332743717 [ mac intel angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
+crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ android android-pixel-2 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/335203259 [ android android-pixel-2 ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ android android-pixel-2 ] conformance2/wasm/bufferdata-4gb-wasm-memory.html [ Failure ]
@@ -1054,6 +1055,18 @@ crbug.com/335203259 [ win target-cpu-32 ] conformance2/wasm/teximage2d-16gb-wasm
 crbug.com/335203259 [ win target-cpu-32 ] conformance2/wasm/teximage2d-4gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ win target-cpu-32 ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ win target-cpu-32 ] conformance2/wasm/texsubimage2d-4gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/buffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/readpixels-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-jacuzzi ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-jacuzzi ] conformance2/wasm/buffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-jacuzzi ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-jacuzzi ] conformance2/wasm/readpixels-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-jacuzzi ] conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-jacuzzi ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
 
 #################################################################
 # Temporary suppressions for introduction of drawingBufferStorage
