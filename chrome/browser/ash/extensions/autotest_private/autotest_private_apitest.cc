@@ -116,19 +116,12 @@ class TestSearchProvider : public app_list::SearchProvider {
 
 class AutotestPrivateApiTest : public ExtensionApiTest {
  public:
-  AutotestPrivateApiTest() {
-    // App pin syncing code makes an untitled Play Store icon appear in the
-    // shelf. Sync isn't relevant to this test, so skip pinned app sync.
-    // https://crbug.com/1085597
-    ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(true);
-  }
+  AutotestPrivateApiTest() = default;
 
   AutotestPrivateApiTest(const AutotestPrivateApiTest&) = delete;
   AutotestPrivateApiTest& operator=(const AutotestPrivateApiTest&) = delete;
 
-  ~AutotestPrivateApiTest() override {
-    ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(false);
-  }
+  ~AutotestPrivateApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);

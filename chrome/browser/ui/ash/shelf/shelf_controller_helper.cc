@@ -49,6 +49,7 @@
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_entry.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -535,6 +536,11 @@ bool ShelfControllerHelper::IsValidIDForArcApp(
     }
     if (!arc::IsArcPlayStoreEnabledForProfile(profile()) &&
         arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile())) {
+      return false;
+    }
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(profile_);
+    if (!registry->GetInstalledExtension(arc::kPlayStoreAppId)) {
       return false;
     }
     return true;

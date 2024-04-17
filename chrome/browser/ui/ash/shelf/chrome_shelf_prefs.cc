@@ -118,8 +118,6 @@ void EnsurePinnedOrMakeFirst(
 
 constexpr char kDefaultPinnedAppsKey[] = "default";
 
-bool skip_pinned_apps_from_sync_for_test = false;
-
 bool should_add_default_apps_for_test = false;
 
 struct PinInfo {
@@ -427,9 +425,9 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
   auto* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
 
-  // Some unit tests may not have it or service may not be initialized.
-  if (!syncable_service || !syncable_service->IsInitialized() ||
-      skip_pinned_apps_from_sync_for_test) {
+  // Some unit tests may not have it or service or helper may not be
+  // initialized.
+  if (!syncable_service || !syncable_service->IsInitialized() || !helper) {
     return std::vector<ash::ShelfID>();
   }
 
@@ -610,10 +608,6 @@ void ChromeShelfPrefs::SetPinPosition(
   syncable_service->SetPinPosition(app_id, pin_position, pinned_by_policy);
 }
 
-void ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(bool value) {
-  skip_pinned_apps_from_sync_for_test = value;
-}
-
 void ChromeShelfPrefs::SetShouldAddDefaultAppsForTest(bool value) {
   should_add_default_apps_for_test = value;
 }
@@ -731,8 +725,7 @@ std::string ChromeShelfPrefs::GetPromisePackageIdForSyncItem(
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
 
   // Some unit tests may not have the service or it may not be initialized.
-  if (!syncable_service || !syncable_service->IsInitialized() ||
-      skip_pinned_apps_from_sync_for_test) {
+  if (!syncable_service || !syncable_service->IsInitialized()) {
     return std::string();
   }
 

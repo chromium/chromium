@@ -79,11 +79,6 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
                       base::span<const ash::ShelfID> shelf_ids_after,
                       bool pinned_by_policy);
 
-  // Makes GetPinnedAppsFromSync() return an empty list. Avoids test failures
-  // due to an untitled Play Store icon in the shelf.
-  // https://crbug.com/1085597
-  static void SetSkipPinnedAppsFromSyncForTest(bool value);
-
   // Makes ShouldAddDefaultApps() return true if set to true.
   static void SetShouldAddDefaultAppsForTest(bool value);
 

@@ -1479,8 +1479,6 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
     proxy_ = nullptr;
     chrome_app_shelf_item_ = nullptr;
     ChromeShelfControllerTestBase::TearDown();
-    // Some test sets this so unsetting.
-    ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(false);
   }
 
   void AddChromeAppItem(const std::string& app_id, aura::Window* window) {
@@ -2039,7 +2037,6 @@ TEST_F(ChromeShelfControllerLacrosTest, WithoutAppService) {
   EXPECT_FALSE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       controller_profile));
 
-  ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(true);
   ash::ShelfModel model;
   ChromeShelfController(controller_profile, &model).Init();
 }
@@ -2055,9 +2052,9 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppsHiddenFromLaunchCanBePinned) {
   PinAppWithIDToShelf(arc::kSettingsAppId);
   EXPECT_EQ("Chrome, Android Settings", GetPinnedAppStatus());
 
-  // The pin should remain after syncing prefs. Play Store should now appear.
+  // The pin should remain after syncing prefs.
   StartPrefSyncService(syncer::SyncDataList());
-  EXPECT_EQ("Chrome, Play Store, Android Settings", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, Android Settings", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
