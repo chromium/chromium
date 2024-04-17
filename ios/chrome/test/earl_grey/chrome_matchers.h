@@ -517,6 +517,9 @@ id<GREYMatcher> OpenInButton();
 // Returns a matcher for the cell at `index` in the tab grid.
 id<GREYMatcher> TabGridCellAtIndex(unsigned int index);
 
+// Returns a matcher for the group cell at `index` in the tab grid.
+id<GREYMatcher> TabGridGroupCellAtIndex(unsigned int index);
+
 // Returns a matcher for the button that closes the tab grid.
 id<GREYMatcher> TabGridDoneButton();
 

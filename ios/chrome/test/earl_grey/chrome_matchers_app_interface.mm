@@ -82,6 +82,11 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
 }
 
+NSString* IdentifierForGroupCellAtIndex(unsigned int index) {
+  return [NSString
+      stringWithFormat:@"%@%u", kGroupGridCellIdentifierPrefix, index];
+}
+
 id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
   GREYMatchesBlock matches = ^BOOL(id element) {
     TableViewSwitchCell* switch_cell =
@@ -1029,6 +1034,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index {
   return grey_allOf(grey_accessibilityID(IdentifierForCellAtIndex(index)),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridGroupCellAtIndex:(unsigned int)index {
+  return grey_allOf(grey_accessibilityID(IdentifierForGroupCellAtIndex(index)),
                     grey_sufficientlyVisible(), nil);
 }
 

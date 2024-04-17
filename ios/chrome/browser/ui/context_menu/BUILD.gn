@@ -108,6 +108,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/fullscreen/test:eg_test_support+eg2",
     "//ios/chrome/test:eg_test_support+eg2",
@@ -117,6 +118,7 @@ source_set("eg2_tests") {
     "//ios/web/common:features",
     "//ios/web/public/test:element_selector",
     "//net:test_support",
+    "//ui/base",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]

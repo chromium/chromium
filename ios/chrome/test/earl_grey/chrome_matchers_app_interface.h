@@ -483,6 +483,9 @@
 // Returns the GREYMatcher for the cell at `index` in the tab grid.
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index;
 
+// Returns the GREYMatcher for the group cell at `index` in the tab grid.
++ (id<GREYMatcher>)tabGridGroupCellAtIndex:(unsigned int)index;
+
 // Returns the GREYMatcher for the button that closes the tab grid.
 + (id<GREYMatcher>)tabGridDoneButton;
 

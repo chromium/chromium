@@ -639,6 +639,10 @@ id<GREYMatcher> TabGridCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGridCellAtIndex:index];
 }
 
+id<GREYMatcher> TabGridGroupCellAtIndex(unsigned int index) {
+  return [ChromeMatchersAppInterface tabGridGroupCellAtIndex:index];
+}
+
 id<GREYMatcher> TabGridDoneButton() {
   return [ChromeMatchersAppInterface tabGridDoneButton];
 }
