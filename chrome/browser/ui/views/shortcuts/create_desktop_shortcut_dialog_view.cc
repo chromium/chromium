@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/controls/site_icon_text_and_origin_view.h"
-#include "chrome/browser/ui/views/shortcuts/create_shortcut_delegate.h"
+#include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/prefs/pref_service.h"
@@ -35,7 +35,7 @@ void ShowCreateShortcutDialog(
     return;
   }
 
-  auto delegate = std::make_unique<shortcuts::CreateShortcutDelegate>(
+  auto delegate = std::make_unique<shortcuts::CreateDesktopShortcutDelegate>(
       web_contents, std::move(dialog_action_and_text_callback));
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
@@ -46,19 +46,20 @@ void ShowCreateShortcutDialog(
               IDS_CREATE_SHORTCUT_NOT_APPS_DIALOG_TITLE))
           .SetSubtitle(l10n_util::GetStringUTF16(
               IDS_CREATE_SHORTCUT_NOT_APPS_DIALOG_SUBTITLE))
-          .AddOkButton(
-              base::BindOnce(&shortcuts::CreateShortcutDelegate::OnAccept,
-                             delegate_weak_ptr),
-              ui::DialogModel::Button::Params()
-                  .SetLabel(l10n_util::GetStringUTF16(
-                      IDS_CREATE_SHORTCUTS_BUTTON_LABEL))
-                  .SetId(shortcuts::CreateShortcutDelegate::
-                             kCreateShortcutDialogOkButtonId))
+          .AddOkButton(base::BindOnce(
+                           &shortcuts::CreateDesktopShortcutDelegate::OnAccept,
+                           delegate_weak_ptr),
+                       ui::DialogModel::Button::Params()
+                           .SetLabel(l10n_util::GetStringUTF16(
+                               IDS_CREATE_SHORTCUTS_BUTTON_LABEL))
+                           .SetId(shortcuts::CreateDesktopShortcutDelegate::
+                                      kCreateShortcutDialogOkButtonId))
           // Dialog cancellations and closes are handled properly by the dialog
           // destroying callback.
           .AddCancelButton(base::DoNothing())
-          .SetDialogDestroyingCallback(base::BindOnce(
-              &shortcuts::CreateShortcutDelegate::OnClose, delegate_weak_ptr))
+          .SetDialogDestroyingCallback(
+              base::BindOnce(&shortcuts::CreateDesktopShortcutDelegate::OnClose,
+                             delegate_weak_ptr))
           .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
           .Build();
 
@@ -70,7 +71,7 @@ void ShowCreateShortcutDialog(
                   IDS_CREATE_SHORTCUT_NOT_APPS_AX_BUBBLE_LABEL),
               web_contents->GetLastCommittedURL(), web_contents,
               base::BindRepeating(
-                  &shortcuts::CreateShortcutDelegate::OnTitleUpdated,
+                  &shortcuts::CreateDesktopShortcutDelegate::OnTitleUpdated,
                   delegate_weak_ptr)),
           views::BubbleDialogModelHost::FieldType::kControl));
 

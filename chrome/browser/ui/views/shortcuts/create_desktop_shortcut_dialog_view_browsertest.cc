@@ -25,7 +25,7 @@ namespace shortcuts {
 
 namespace {
 
-class CreateShortcutDialogViewBrowserTest : public DialogBrowserTest {
+class CreateDesktopShortcutDialogViewBrowserTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest overrides:
   void ShowUi(const std::string& name) override {
@@ -42,7 +42,8 @@ class CreateShortcutDialogViewBrowserTest : public DialogBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest, InvokeUiBasic) {
+IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
+                       InvokeUiBasic) {
   base::UserActionTester action_tester;
   ShowAndVerifyUi();
   EXPECT_EQ(1,
@@ -51,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest, InvokeUiBasic) {
 
 // Dialog destruction due to navigations or other reasons are measured as
 // cancellations from an user action perspective.
-IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
                        InvokeUi_WidgetDestroyedOnNavigation) {
   base::UserActionTester action_tester;
   views::NamedWidgetShownWaiter widget_waiter(
@@ -68,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest,
       1, action_tester.GetActionCount("CreateDesktopShortcutDialogCancelled"));
 }
 
-IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
                        InvokeUi_WidgetClosesOnVisibilityChange) {
   base::UserActionTester action_tester;
   views::NamedWidgetShownWaiter widget_waiter(
@@ -85,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest,
       1, action_tester.GetActionCount("CreateDesktopShortcutDialogCancelled"));
 }
 
-IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
                        InvokeUi_WidgetClosesOnWebContentsDestruction) {
   base::UserActionTester action_tester;
   views::NamedWidgetShownWaiter widget_waiter(
@@ -103,7 +104,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest,
       1, action_tester.GetActionCount("CreateDesktopShortcutDialogCancelled"));
 }
 
-IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest, InvokeUi_Accept) {
+IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
+                       InvokeUi_Accept) {
   base::UserActionTester action_tester;
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
@@ -117,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest, InvokeUi_Accept) {
       1, action_tester.GetActionCount("CreateDesktopShortcutDialogAccepted"));
 }
 
-IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
                        InvokeUi_Cancel_TitleFilled) {
   base::UserActionTester action_tester;
   views::NamedWidgetShownWaiter widget_waiter(
@@ -132,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest,
       1, action_tester.GetActionCount("CreateDesktopShortcutDialogCancelled"));
 }
 
-IN_PROC_BROWSER_TEST_F(CreateShortcutDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
                        InvokeUi_Cancel_TitleEmpty) {
   base::UserActionTester action_tester;
   views::NamedWidgetShownWaiter widget_waiter(

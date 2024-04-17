@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/shortcuts/create_shortcut_delegate.h"
+#include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut_delegate.h"
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/controls/site_icon_text_and_origin_view.h"
-#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
 namespace shortcuts {
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CreateShortcutDelegate,
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CreateDesktopShortcutDelegate,
                                       kCreateShortcutDialogOkButtonId);
 
-CreateShortcutDelegate::CreateShortcutDelegate(
+CreateDesktopShortcutDelegate::CreateDesktopShortcutDelegate(
     content::WebContents* web_contents,
     chrome::CreateShortcutDialogCallback final_callback)
     : content::WebContentsObserver(web_contents),
       final_callback_(std::move(final_callback)) {}
 
-CreateShortcutDelegate::~CreateShortcutDelegate() = default;
+CreateDesktopShortcutDelegate::~CreateDesktopShortcutDelegate() = default;
 
-void CreateShortcutDelegate::OnAccept() {
+void CreateDesktopShortcutDelegate::OnAccept() {
   if (final_callback_) {
     base::RecordAction(
         base::UserMetricsAction("CreateDesktopShortcutDialogAccepted"));
@@ -34,7 +34,7 @@ void CreateShortcutDelegate::OnAccept() {
   }
 }
 
-void CreateShortcutDelegate::OnClose() {
+void CreateDesktopShortcutDelegate::OnClose() {
   if (final_callback_) {
     base::RecordAction(
         base::UserMetricsAction("CreateDesktopShortcutDialogCancelled"));
@@ -42,7 +42,7 @@ void CreateShortcutDelegate::OnClose() {
   }
 }
 
-void CreateShortcutDelegate::OnTitleUpdated(
+void CreateDesktopShortcutDelegate::OnTitleUpdated(
     const std::u16string& trimmed_text_field_data) {
   text_field_data_ = trimmed_text_field_data;
   ui::DialogModel::Button* ok_button =
@@ -52,31 +52,22 @@ void CreateShortcutDelegate::OnTitleUpdated(
                                    /*enabled=*/!text_field_data_.empty());
 }
 
-void CreateShortcutDelegate::OnVisibilityChanged(
+void CreateDesktopShortcutDelegate::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
     CloseDialogAsIgnored();
   }
 }
 
-void CreateShortcutDelegate::WebContentsDestroyed() {
+void CreateDesktopShortcutDelegate::WebContentsDestroyed() {
   CloseDialogAsIgnored();
 }
 
-void CreateShortcutDelegate::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
-  // Close dialog when navigating to a different document.
-  if (!navigation_handle->IsSameDocument()) {
-    CloseDialogAsIgnored();
-  }
+void CreateDesktopShortcutDelegate::PrimaryPageChanged(content::Page& page) {
+  CloseDialogAsIgnored();
 }
 
-void CreateShortcutDelegate::CloseDialogAsIgnored() {
+void CreateDesktopShortcutDelegate::CloseDialogAsIgnored() {
   if (dialog_model() && dialog_model()->host()) {
     dialog_model()->host()->Close();
   }

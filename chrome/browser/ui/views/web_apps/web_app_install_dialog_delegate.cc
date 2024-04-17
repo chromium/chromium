@@ -22,7 +22,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
-#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -177,19 +177,8 @@ void WebAppInstallDialogDelegate::WebContentsDestroyed() {
   CloseDialogAsIgnored();
 }
 
-void WebAppInstallDialogDelegate::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
-  // Close dialog when navigating to a different domain.
-  if (!url::IsSameOriginWith(
-          navigation_handle->GetPreviousPrimaryMainFrameURL(),
-          navigation_handle->GetURL())) {
-    CloseDialogAsIgnored();
-  }
+void WebAppInstallDialogDelegate::PrimaryPageChanged(content::Page& page) {
+  CloseDialogAsIgnored();
 }
 
 void WebAppInstallDialogDelegate::CloseDialogAsIgnored() {

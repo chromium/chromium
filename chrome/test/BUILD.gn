@@ -4323,7 +4323,7 @@ if (!is_android) {
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_pixel_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_required_dialog_view_browsertest.cc",
-          "../browser/ui/views/shortcuts/create_shortcut_dialog_view_browsertest.cc",
+          "../browser/ui/views/shortcuts/create_desktop_shortcut_dialog_view_browsertest.cc",
         ]
       }
       deps += [

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_SHORTCUT_DELEGATE_H_
-#define CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_SHORTCUT_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_DESKTOP_SHORTCUT_DELEGATE_H_
+#define CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_DESKTOP_SHORTCUT_DELEGATE_H_
 
 #include <memory>
 
@@ -17,44 +17,44 @@
 #include "ui/base/models/dialog_model.h"
 
 namespace content {
+class Page;
 class WebContents;
-class NavigationHandle;
 }  // namespace content
 
 namespace shortcuts {
 
-class CreateShortcutDelegate : public ui::DialogModelDelegate,
-                               public content::WebContentsObserver {
+class CreateDesktopShortcutDelegate : public ui::DialogModelDelegate,
+                                      public content::WebContentsObserver {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateShortcutDialogOkButtonId);
 
-  CreateShortcutDelegate(content::WebContents* web_contents,
-                         chrome::CreateShortcutDialogCallback final_callback);
+  CreateDesktopShortcutDelegate(
+      content::WebContents* web_contents,
+      chrome::CreateShortcutDialogCallback final_callback);
 
-  ~CreateShortcutDelegate() override;
+  ~CreateDesktopShortcutDelegate() override;
 
   void OnAccept();
   void OnClose();
   void OnTitleUpdated(const std::u16string& trimmed_text_field_data);
 
-  base::WeakPtr<CreateShortcutDelegate> AsWeakPtr() {
+  base::WeakPtr<CreateDesktopShortcutDelegate> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   void CloseDialogAsIgnored();
 
   chrome::CreateShortcutDialogCallback final_callback_;
   std::u16string text_field_data_;
-  base::WeakPtrFactory<CreateShortcutDelegate> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CreateDesktopShortcutDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace shortcuts
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_SHORTCUT_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_DESKTOP_SHORTCUT_DELEGATE_H_

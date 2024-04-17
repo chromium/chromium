@@ -21,9 +21,9 @@
 class PrefService;
 
 namespace content {
-class NavigationHandle;
+class Page;
 class WebContents;
-}
+}  // namespace content
 
 namespace feature_engagement {
 class Tracker;
@@ -55,9 +55,8 @@ inline constexpr int kIconSize = 32;
 // result in a weird filename), it only restricts what we suggest as titles.
 std::u16string NormalizeSuggestedAppTitle(const std::u16string& title);
 
-class WebAppInstallDialogDelegate
-    : public ui::DialogModelDelegate,
-      public content::WebContentsObserver {
+class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
+                                    public content::WebContentsObserver {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDiyAppsDialogOkButtonId);
 
@@ -90,8 +89,7 @@ class WebAppInstallDialogDelegate
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   void CloseDialogAsIgnored();
@@ -109,8 +107,7 @@ class WebAppInstallDialogDelegate
   InstallDialogType dialog_type_;
   std::u16string text_field_contents_;
 
-  base::WeakPtrFactory<WebAppInstallDialogDelegate> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<WebAppInstallDialogDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
