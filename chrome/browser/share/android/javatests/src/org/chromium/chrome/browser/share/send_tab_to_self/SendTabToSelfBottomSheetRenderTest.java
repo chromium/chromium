@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -137,7 +136,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             NoTargetDeviceBottomSheetContent sheetContent =
-                                    new NoTargetDeviceBottomSheetContent(getActivity());
+                                    new NoTargetDeviceBottomSheetContent(getActivity(), mProfile);
                             getActivity().setContentView(sheetContent.getContentView());
                             return sheetContent.getContentView();
                         });
@@ -153,7 +152,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NoTargetDeviceBottomSheetContent sheetContent =
-                            new NoTargetDeviceBottomSheetContent(getActivity());
+                            new NoTargetDeviceBottomSheetContent(getActivity(), mProfile);
                     getActivity().setContentView(sheetContent.getContentView());
                 });
         onView(withText(account.getEmail())).check(doesNotExist());
@@ -193,6 +192,5 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                 .thenReturn(account);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
     }
 }

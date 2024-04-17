@@ -22,7 +22,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -37,6 +37,7 @@ class ManageAccountDevicesLinkView extends LinearLayout {
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
 
     private final boolean mShowLink;
+    private boolean mHasAccountInfo;
 
     public ManageAccountDevicesLinkView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,8 +54,22 @@ class ManageAccountDevicesLinkView extends LinearLayout {
 
         LayoutInflater.from(getContext())
                 .inflate(R.layout.send_tab_to_self_manage_devices_link, this);
+    }
 
-        AccountInfo account = getSharingAccountInfo();
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        assert mHasAccountInfo : "setProfile must be called for this UI to function";
+    }
+
+    /** Set the {@link Profile} associated with this account. */
+    public void setProfile(Profile profile) {
+        assert profile != null;
+        mHasAccountInfo = true;
+        onAccountInfoAvailable(getSharingAccountInfo(profile));
+    }
+
+    private void onAccountInfoAvailable(AccountInfo account) {
         assert account != null;
 
         // The avatar can be null in tests.
@@ -112,10 +127,9 @@ class ManageAccountDevicesLinkView extends LinearLayout {
         getContext().startActivity(intent);
     }
 
-    private static AccountInfo getSharingAccountInfo() {
+    private static AccountInfo getSharingAccountInfo(Profile profile) {
         IdentityManager identityManager =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(ProfileManager.getLastUsedRegularProfile());
+                IdentityServicesProvider.get().getIdentityManager(profile);
         return identityManager.findExtendedAccountInfoByEmailAddress(
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail());
     }

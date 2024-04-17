@@ -11,18 +11,21 @@ import android.view.ViewGroup;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Content shown if the send-tab-to-self feature is ready but there are no target devices. */
 class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
-    private final View mContentView;
+    private final ViewGroup mContentView;
 
-    public NoTargetDeviceBottomSheetContent(Context context) {
+    public NoTargetDeviceBottomSheetContent(Context context, Profile profile) {
         mContentView =
                 (ViewGroup)
                         LayoutInflater.from(context)
                                 .inflate(
                                         R.layout.send_tab_to_self_feature_unavailable_prompt, null);
+        ((ManageAccountDevicesLinkView) mContentView.findViewById(R.id.manage_account_devices_link))
+                .setProfile(profile);
         RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
     }
 

@@ -178,7 +178,7 @@ public class SendTabToSelfCoordinator {
             case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
                 MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_NO_TARGET_DEVICE_MESSAGE);
                 mController.requestShowContent(
-                        new NoTargetDeviceBottomSheetContent(mContext), true);
+                        new NoTargetDeviceBottomSheetContent(mContext, mProfile), true);
                 return;
             case EntryPointDisplayReason.OFFER_FEATURE:
                 MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_DEVICE_LIST);
