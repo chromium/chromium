@@ -1039,7 +1039,8 @@ crbug.com/335203259 [ win target-cpu-32 ] conformance2/wasm/teximage2d-16gb-wasm
 crbug.com/335203259 [ win target-cpu-32 ] conformance2/wasm/teximage2d-4gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ win target-cpu-32 ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ win target-cpu-32 ] conformance2/wasm/texsubimage2d-4gb-wasm-memory.html [ Failure ]
-crbug.com/332743717 [ mac intel angle-metal ] conformance2/query/occlusion-query-scissor.html [ Failure ]
+crbug.com/332743717 [ mac angle-metal ] conformance2/query/occlusion-query-scissor.html [ Failure ]
+crbug.com/332743717 [ mac intel angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 
 #################################################################
 # Temporary suppressions for introduction of drawingBufferStorage
