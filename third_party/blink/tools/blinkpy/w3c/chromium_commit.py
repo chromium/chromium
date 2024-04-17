@@ -118,9 +118,12 @@ class ChromiumCommit:
         filtered_files = self.filtered_changed_files()
         if not filtered_files:
             return ''
+        # Disable rename detection, which may allow a chained CL with renames
+        # to export too early (https://crbug.com/40242850#comment8).
         return self._git.run([
             'format-patch',
             '-1',
+            '--no-renames',
             '--stdout',
             self.sha,
             '--',
