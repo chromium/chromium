@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
@@ -22,12 +24,12 @@ const char kPaddingChar = '=';
 const char kBase64Chars[] = "+/";
 const char kBase64UrlSafeChars[] = "-_";
 
-class StringPieceOrString {
+class StringViewOrString {
  public:
-  explicit StringPieceOrString(StringPiece piece) : piece_(piece) {}
-  explicit StringPieceOrString(std::string str) : str_(std::move(str)) {}
+  explicit StringViewOrString(std::string_view piece) : piece_(piece) {}
+  explicit StringViewOrString(std::string str) : str_(std::move(str)) {}
 
-  StringPiece get() const {
+  std::string_view get() const {
     if (str_) {
       return *str_;
     }
@@ -36,12 +38,12 @@ class StringPieceOrString {
 
  private:
   const std::optional<std::string> str_;
-  const StringPiece piece_;
+  const std::string_view piece_;
 };
 
 // Converts the base64url `input` into a plain base64 string.
-std::optional<StringPieceOrString> Base64ToBase64URL(
-    StringPiece input,
+std::optional<StringViewOrString> Base64ToBase64URL(
+    std::string_view input,
     Base64UrlDecodePolicy policy) {
   // Characters outside of the base64url alphabet are disallowed, which includes
   // the {+, /} characters found in the conventional base64 alphabet.
@@ -69,7 +71,7 @@ std::optional<StringPieceOrString> Base64ToBase64URL(
   }
 
   if (required_padding_characters == 0 && !needs_replacement) {
-    return StringPieceOrString(input);
+    return StringViewOrString(input);
   }
 
   // If the string either needs replacement of URL-safe characters to normal
@@ -91,7 +93,7 @@ std::optional<StringPieceOrString> Base64ToBase64URL(
   // Append the necessary padding characters.
   base64_input.resize(out_size.ValueOrDie(), '=');
 
-  return StringPieceOrString(std::move(base64_input));
+  return StringViewOrString(std::move(base64_input));
 }
 
 }  // namespace
@@ -120,16 +122,16 @@ void Base64UrlEncode(span<const uint8_t> input,
   }
 }
 
-void Base64UrlEncode(StringPiece input,
+void Base64UrlEncode(std::string_view input,
                      Base64UrlEncodePolicy policy,
                      std::string* output) {
   Base64UrlEncode(base::as_byte_span(input), policy, output);
 }
 
-bool Base64UrlDecode(StringPiece input,
+bool Base64UrlDecode(std::string_view input,
                      Base64UrlDecodePolicy policy,
                      std::string* output) {
-  std::optional<StringPieceOrString> base64_input =
+  std::optional<StringViewOrString> base64_input =
       Base64ToBase64URL(input, policy);
   if (!base64_input) {
     return false;
@@ -138,9 +140,9 @@ bool Base64UrlDecode(StringPiece input,
 }
 
 std::optional<std::vector<uint8_t>> Base64UrlDecode(
-    StringPiece input,
+    std::string_view input,
     Base64UrlDecodePolicy policy) {
-  std::optional<StringPieceOrString> base64_input =
+  std::optional<StringViewOrString> base64_input =
       Base64ToBase64URL(input, policy);
   if (!base64_input) {
     return std::nullopt;

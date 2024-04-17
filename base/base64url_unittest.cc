@@ -4,6 +4,8 @@
 
 #include "base/base64url.h"
 
+#include <string_view>
+
 #include "base/ranges/algorithm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,11 +24,11 @@ TEST(Base64UrlTest, BinaryIncludePaddingPolicy) {
   Base64UrlEncode(kData, Base64UrlEncodePolicy::INCLUDE_PADDING,
                   &binary_encoded_with_padding);
 
-  // Check that encoding the same binary data through the StringPiece interface
-  // gives the same result.
+  // Check that encoding the same binary data through the std::string_view
+  // interface gives the same result.
   std::string string_encoded_with_padding;
   Base64UrlEncode(
-      StringPiece(reinterpret_cast<const char*>(kData), sizeof(kData)),
+      std::string_view(reinterpret_cast<const char*>(kData), sizeof(kData)),
       Base64UrlEncodePolicy::INCLUDE_PADDING, &string_encoded_with_padding);
   EXPECT_EQ(binary_encoded_with_padding, string_encoded_with_padding);
 
@@ -51,11 +53,11 @@ TEST(Base64UrlTest, BinaryOmitPaddingPolicy) {
   Base64UrlEncode(kData, Base64UrlEncodePolicy::OMIT_PADDING,
                   &binary_encoded_without_padding);
 
-  // Check that encoding the same binary data through the StringPiece interface
-  // gives the same result.
+  // Check that encoding the same binary data through the std::string_view
+  // interface gives the same result.
   std::string string_encoded_without_padding;
   Base64UrlEncode(
-      StringPiece(reinterpret_cast<const char*>(kData), sizeof(kData)),
+      std::string_view(reinterpret_cast<const char*>(kData), sizeof(kData)),
       Base64UrlEncodePolicy::OMIT_PADDING, &string_encoded_without_padding);
   EXPECT_EQ(binary_encoded_without_padding, string_encoded_without_padding);
 

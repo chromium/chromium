@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
-#include "base/strings/string_piece.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string decode_output;
-  base::StringPiece data_piece(reinterpret_cast<const char*>(data), size);
+  std::string_view data_piece(reinterpret_cast<const char*>(data), size);
   base::Base64Decode(data_piece, &decode_output);
   return 0;
 }

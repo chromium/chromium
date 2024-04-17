@@ -4,6 +4,8 @@
 
 #include "base/base64.h"
 
+#include <string_view>
+
 #include "base/numerics/checked_math.h"
 #include "base/strings/escape.h"
 #include "base/test/gtest_util.h"
@@ -99,10 +101,10 @@ TEST(Base64Test, Binary) {
 
   std::string binary_encoded = Base64Encode(kData);
 
-  // Check that encoding the same data through the StringPiece interface gives
-  // the same results.
+  // Check that encoding the same data through the std::string_view interface
+  // gives the same results.
   std::string string_piece_encoded = Base64Encode(
-      StringPiece(reinterpret_cast<const char*>(kData), sizeof(kData)));
+      std::string_view(reinterpret_cast<const char*>(kData), sizeof(kData)));
 
   EXPECT_EQ(binary_encoded, string_piece_encoded);
 
