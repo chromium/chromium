@@ -165,4 +165,8 @@ BASE_FEATURE(kFreezingOnBatterySaver,
              "FreezingOnBatterySaver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kResourceAttributionIncludeOrigins,
+             "ResourceAttributionIncludeOrigins",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace performance_manager::features

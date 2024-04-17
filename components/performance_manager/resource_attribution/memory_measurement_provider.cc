@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -28,10 +29,15 @@ namespace resource_attribution {
 
 namespace {
 
+using performance_manager::features::kResourceAttributionIncludeOrigins;
+
 template <typename FrameOrWorkerNode>
 std::optional<OriginInPageContext> OriginInPageContextForNode(
     const FrameOrWorkerNode* node,
     const PageNode* page_node) {
+  if (!base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins)) {
+    return std::nullopt;
+  }
   const auto url = node->GetURL();
   if (!url.is_valid()) {
     return std::nullopt;

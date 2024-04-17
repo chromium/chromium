@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -46,6 +47,8 @@ namespace resource_attribution {
 
 namespace {
 
+using performance_manager::features::kResourceAttributionIncludeOrigins;
+
 // CHECK's that `result` obeys all constraints: the start and end timestamps
 // form a positive interval and `cumulative_cpu` will fit into that interval.
 void ValidateCPUTimeResult(const CPUTimeResult& result) {
@@ -64,6 +67,9 @@ std::optional<OriginInPageContext> OriginInPageContextForNode(
     const FrameOrWorkerNode* node,
     const PageNode* page_node,
     GraphChange graph_change = NoGraphChange{}) {
+  if (!base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins)) {
+    return std::nullopt;
+  }
   // If this node was just assigned a new URL, assign CPU usage before the
   // change to the previous URL.
   GraphChangeUpdateURL* url_change =
@@ -237,16 +243,18 @@ void CPUMeasurementMonitor::OnBeforePageNodeRemoved(const PageNode* page_node) {
   // the last frame was removed from the page.
   const PageContext& page_context = page_node->GetResourceContext();
   std::vector<ResourceContext> contexts{page_context};
-  // Find all OriginInPageContexts for this page.
-  // TODO(crbug.com/333112603): OriginInPageContext results for opaque origins
-  // could also be deleted when the PageNode no longer has any frames for the
-  // given origin. Non-opaque origins should be kept for the lifetime of the
-  // page, because new frames for the same origin could be created.
-  for (const auto& [context, _] : measurement_results_) {
-    auto origin_context = AsOptionalContext<OriginInPageContext>(context);
-    if (origin_context.has_value() &&
-        origin_context->GetPageContext() == page_context) {
-      contexts.push_back(std::move(origin_context.value()));
+  if (base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins)) {
+    // Find all OriginInPageContexts for this page.
+    // TODO(crbug.com/333112603): OriginInPageContext results for opaque origins
+    // could also be deleted when the PageNode no longer has any frames for the
+    // given origin. Non-opaque origins should be kept for the lifetime of the
+    // page, because new frames for the same origin could be created.
+    for (const auto& [context, _] : measurement_results_) {
+      auto origin_context = AsOptionalContext<OriginInPageContext>(context);
+      if (origin_context.has_value() &&
+          origin_context->GetPageContext() == page_context) {
+        contexts.push_back(std::move(origin_context.value()));
+      }
     }
   }
   SaveFinalMeasurements(contexts);
@@ -410,6 +418,13 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
   // Must call StartMonitoring() before getting measurements.
   CHECK(graph_);
   CHECK(process_node);
+
+  if (!base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins) &&
+      absl::holds_alternative<GraphChangeUpdateURL>(graph_change)) {
+    // No need to update measurements on origin changes when origins aren't
+    // being measured.
+    return;
+  }
 
   // Don't distribute measurements to nodes that are being added to the graph.
   // The current measurement covers the time before the node was added.

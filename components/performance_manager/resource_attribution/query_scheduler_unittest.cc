@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/performance_manager/embedder/graph_features.h"
@@ -22,6 +23,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
@@ -48,6 +50,7 @@ namespace resource_attribution::internal {
 
 namespace {
 
+using performance_manager::features::kResourceAttributionIncludeOrigins;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
@@ -86,6 +89,11 @@ class ResourceAttrQuerySchedulerTest
  protected:
   using Super = performance_manager::GraphTestHarness;
 
+  ResourceAttrQuerySchedulerTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kResourceAttributionIncludeOrigins);
+  }
+
   void SetUp() override {
     GetGraphFeatures().EnableResourceAttributionScheduler();
     Super::SetUp();
@@ -94,6 +102,8 @@ class ResourceAttrQuerySchedulerTest
     MemoryMeasurementDelegate::SetDelegateFactoryForTesting(
         graph(), &memory_delegate_factory_);
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // These must be deleted after TearDown() so that they outlive the
   // CPUMeasurementMonitor and MemoryMeasurementProvider.
