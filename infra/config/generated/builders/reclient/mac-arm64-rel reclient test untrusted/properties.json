@@ -47,7 +47,7 @@
   },
   "$build/reclient": {
     "bootstrap_env": {
-      "GLOG_v": "2",
+      "GLOG_vmodule": "depsscannerclient.go=2,main.go=2",
       "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "true",
       "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
       "RBE_fast_log_collection": "true",

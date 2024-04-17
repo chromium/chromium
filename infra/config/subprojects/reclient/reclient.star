@@ -257,7 +257,7 @@ fyi_reclient_staging_builder(
     console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
-        "GLOG_v": "2",
+        "GLOG_vmodule": "depsscannerclient.go=2,main.go=2",
     },
 )
 
@@ -286,7 +286,7 @@ fyi_reclient_test_builder(
     console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
-        "GLOG_v": "2",
+        "GLOG_vmodule": "depsscannerclient.go=2,main.go=2",
     },
     reclient_profiler_service = "reclient-mac",
     reclient_rewrapper_env = {
@@ -508,7 +508,7 @@ fyi_reclient_staging_builder(
     console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
-        "GLOG_v": "2",
+        "GLOG_vmodule": "depsscannerclient.go=2,main.go=2",
     },
 )
 
@@ -543,7 +543,7 @@ fyi_reclient_test_builder(
     console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
-        "GLOG_v": "2",
+        "GLOG_vmodule": "depsscannerclient.go=2,main.go=2",
     },
 )
 
