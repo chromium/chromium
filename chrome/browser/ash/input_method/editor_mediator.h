@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 
+#include <optional>
+
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/editor_announcer.h"
 #include "chrome/browser/ash/input_method/editor_client_connector.h"
@@ -100,8 +102,13 @@ class EditorMediator : public EditorEventSink,
 
   EditorPanelManager* panel_manager() { return &panel_manager_; }
 
+  MakoBubbleCoordinator& mako_bubble_coordinator_for_testing() {
+    return mako_bubble_coordinator_;
+  }
+
   bool SetTextQueryProviderResponseForTesting(
       const std::vector<std::string>& mock_results);
+  void OverrideEditorModeForTesting(EditorMode editor_mode);
 
  private:
   struct SurroundingText {
@@ -137,6 +144,8 @@ class EditorMediator : public EditorEventSink,
   std::unique_ptr<EditorSystemActuator> system_actuator_;
 
   SurroundingText surrounding_text_;
+
+  std::optional<EditorMode> editor_mode_override_for_testing_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

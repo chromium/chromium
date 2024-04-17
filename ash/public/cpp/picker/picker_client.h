@@ -32,6 +32,7 @@ class ASH_PUBLIC_EXPORT PickerClient {
   using CrosSearchResultsCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType result_type,
                                    std::vector<PickerSearchResult> results)>;
+  using ShowEditorCallback = base::OnceClosure;
   using RecentFilesCallback =
       base::OnceCallback<void(std::vector<PickerSearchResult>)>;
   using SuggestedLinksCallback =
@@ -59,7 +60,9 @@ class ASH_PUBLIC_EXPORT PickerClient {
   // (`app_list::SearchEngine::StopQuery`).
   virtual void StopCrosQuery() = 0;
 
-  virtual void ShowEditor() = 0;
+  // Caches the current input field context and returns a callback to show
+  // Editor. If Editor is not available, this returns a null callback.
+  virtual ShowEditorCallback CacheEditorContext() = 0;
 
   virtual void GetRecentLocalFileResults(RecentFilesCallback callback) = 0;
 

@@ -70,7 +70,7 @@ class PickerClientImpl
                        std::optional<ash::PickerCategory> category,
                        CrosSearchResultsCallback callback) override;
   void StopCrosQuery() override;
-  void ShowEditor() override;
+  ShowEditorCallback CacheEditorContext() override;
   void GetRecentLocalFileResults(RecentFilesCallback callback) override;
   void GetRecentDriveFileResults(RecentFilesCallback callback) override;
   void GetSuggestedLinkResults(SuggestedLinksCallback callback) override;
@@ -122,6 +122,8 @@ class PickerClientImpl
   CreateOmniboxProvider(bool bookmarks, bool history, bool open_tabs);
   std::unique_ptr<app_list::SearchProvider> CreateSearchProviderForCategory(
       ash::PickerCategory category);
+
+  void ShowEditor();
 
   raw_ptr<ash::PickerController> controller_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;

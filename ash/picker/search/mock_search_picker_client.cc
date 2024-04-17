@@ -26,8 +26,9 @@ MockSearchPickerClient::MockSearchPickerClient() {
         << "GetSharedURLLoaderFactory should not be called in this unittest";
     return nullptr;
   });
-  ON_CALL(*this, ShowEditor).WillByDefault([]() {
-    FAIL() << "ShowEditor should not be called in this unittest";
+  ON_CALL(*this, CacheEditorContext).WillByDefault([]() {
+    ADD_FAILURE() << "CacheEditorContext should not be called in this unittest";
+    return base::OnceClosure();
   });
 }
 

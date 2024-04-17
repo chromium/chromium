@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
@@ -26,6 +27,7 @@ class FakeTextInputClient : public TextInputClient {
     TextInputMode mode = TEXT_INPUT_MODE_NONE;
     TextInputFlags flags = TEXT_INPUT_FLAG_NONE;
     bool can_insert_image = false;
+    gfx::Rect caret_bounds;
   };
 
   explicit FakeTextInputClient(TextInputType text_input_type);
@@ -135,6 +137,7 @@ class FakeTextInputClient : public TextInputClient {
   GURL url_;
   bool can_insert_image_ = false;
   std::optional<GURL> last_inserted_image_url_;
+  gfx::Rect caret_bounds_;
 };
 
 }  // namespace ui

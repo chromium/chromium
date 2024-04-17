@@ -107,6 +107,8 @@ class ASH_EXPORT PickerController
   std::unique_ptr<PickerSearchController> search_controller_;
   std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
 
+  base::OnceClosure show_editor_callback_;
+
   // Periodically records usage metrics based on the Standard Feature Usage
   // Logging (SFUL) framework.
   PickerFeatureUsageMetrics feature_usage_metrics_;

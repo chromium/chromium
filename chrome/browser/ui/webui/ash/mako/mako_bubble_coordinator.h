@@ -43,6 +43,10 @@ class MakoBubbleCoordinator {
   // context for the mako UI is focused.
   void CacheContextCaretBounds();
 
+  gfx::Rect context_caret_bounds_for_testing() const {
+    return context_caret_bounds_;
+  }
+
  private:
   // Cached context caret bounds at which to anchor the mako UI. This might not
   // correspond to the most recent active text input client's caret bounds, e.g.

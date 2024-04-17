@@ -25,7 +25,8 @@ FakeTextInputClient::FakeTextInputClient(InputMethod* input_method,
       text_input_type_(options.type),
       mode_(options.mode),
       flags_(options.flags),
-      can_insert_image_(options.can_insert_image) {}
+      can_insert_image_(options.can_insert_image),
+      caret_bounds_(options.caret_bounds) {}
 
 FakeTextInputClient::~FakeTextInputClient() {
   Blur();
@@ -128,7 +129,7 @@ bool FakeTextInputClient::CanComposeInline() const {
 }
 
 gfx::Rect FakeTextInputClient::GetCaretBounds() const {
-  return {};
+  return caret_bounds_;
 }
 
 gfx::Rect FakeTextInputClient::GetSelectionBoundingBox() const {

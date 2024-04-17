@@ -21,6 +21,9 @@ class EditorMediatorFactory : public ProfileKeyedServiceFactory {
  public:
   static EditorMediator* GetForProfile(Profile* profile);
   static EditorMediatorFactory* GetInstance();
+  static std::unique_ptr<KeyedService> BuildInstanceFor(
+      std::string_view country_code,
+      content::BrowserContext* context);
 
  private:
   friend class base::NoDestructor<EditorMediatorFactory>;

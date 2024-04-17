@@ -234,6 +234,9 @@ bool EditorMediator::IsAllowedForUse() {
 }
 
 EditorMode EditorMediator::GetEditorMode() const {
+  if (editor_mode_override_for_testing_.has_value()) {
+    return *editor_mode_override_for_testing_;
+  }
   return editor_switch_->GetEditorMode();
 }
 
@@ -272,6 +275,10 @@ bool EditorMediator::SetTextQueryProviderResponseForTesting(
   text_query_provider_ = std::make_unique<TextQueryProviderForTesting>(
       std::move(pending_receiver.value()), mock_results);  // IN-TEST
   return true;
+}
+
+void EditorMediator::OverrideEditorModeForTesting(EditorMode editor_mode) {
+  editor_mode_override_for_testing_ = editor_mode;
 }
 
 }  // namespace ash::input_method

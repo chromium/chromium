@@ -47,13 +47,20 @@ EditorMediatorFactory::EditorMediatorFactory()
 
 EditorMediatorFactory::~EditorMediatorFactory() = default;
 
+std::unique_ptr<KeyedService> EditorMediatorFactory::BuildInstanceFor(
+    std::string_view country_code,
+    content::BrowserContext* context) {
+  return std::make_unique<EditorMediator>(Profile::FromBrowserContext(context),
+                                          country_code);
+}
+
 std::unique_ptr<KeyedService>
 EditorMediatorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<EditorMediator>(
-      /*profile=*/Profile::FromBrowserContext(context),
+  return BuildInstanceFor(
       /*country_code=*/g_browser_process->variations_service()
-          ->GetLatestCountry());
+          ->GetLatestCountry(),
+      context);
 }
 
 }  // namespace input_method

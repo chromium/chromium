@@ -308,6 +308,8 @@ void PickerController::ToggleWidget(
     widget_->Close();
     model_.reset();
   } else {
+    show_editor_callback_ = client_->CacheEditorContext();
+
     model_ = std::make_unique<PickerModel>(GetFocusedTextInputClient(),
                                            &GetImeKeyboard());
     widget_ = PickerWidget::Create(
@@ -450,7 +452,9 @@ void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category) {
 }
 
 void PickerController::ShowEditor() {
-  client_->ShowEditor();
+  if (!show_editor_callback_.is_null()) {
+    std::move(show_editor_callback_).Run();
+  }
 }
 
 void PickerController::SetCapsLockEnabled(bool enabled) {

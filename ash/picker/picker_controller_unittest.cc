@@ -38,6 +38,8 @@
 namespace ash {
 namespace {
 
+using ::testing::NiceMock;
+
 bool CopyTextToClipboard() {
   base::test::TestFuture<bool> copy_confirmed_future;
   Shell::Get()
@@ -113,13 +115,22 @@ class TestPickerClient : public MockPickerClient {
   }
   ~TestPickerClient() override { controller_->SetClient(nullptr); }
 
+  base::test::TestFuture<void>& show_editor_future() {
+    return show_editor_future_;
+  }
+
+  ShowEditorCallback CacheEditorContext() override {
+    return show_editor_future_.GetCallback();
+  }
+
  private:
   raw_ptr<PickerController> controller_ = nullptr;
+  base::test::TestFuture<void> show_editor_future_;
 };
 
 TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
 
   controller.ToggleWidget();
 
@@ -128,7 +139,7 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
 
 TEST_F(PickerControllerTest, ToggleWidgetClosesWidgetIfOpen) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
       controller.widget_for_testing());
@@ -141,7 +152,7 @@ TEST_F(PickerControllerTest, ToggleWidgetClosesWidgetIfOpen) {
 
 TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
       controller.widget_for_testing());
@@ -155,7 +166,7 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
 
 TEST_F(PickerControllerTest, SetClientToNullKeepsWidget) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
 
   controller.SetClient(nullptr);
@@ -166,7 +177,7 @@ TEST_F(PickerControllerTest, SetClientToNullKeepsWidget) {
 TEST_F(PickerControllerTest, ShowWidgetRecordsInputReadyLatency) {
   base::HistogramTester histogram;
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
 
   controller.ToggleWidget(base::TimeTicks::Now());
   views::test::WidgetVisibleWaiter widget_visible_waiter(
@@ -178,7 +189,7 @@ TEST_F(PickerControllerTest, ShowWidgetRecordsInputReadyLatency) {
 
 TEST_F(PickerControllerTest, InsertResultDoesNothingWhenWidgetIsClosed) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
@@ -195,7 +206,7 @@ TEST_F(PickerControllerTest, InsertResultDoesNothingWhenWidgetIsClosed) {
 
 TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
@@ -215,7 +226,7 @@ TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
 TEST_F(PickerControllerTest,
        InsertClipboardResultPastesIntoInputFieldAfterFocus) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
   ASSERT_TRUE(CopyTextToClipboard());
   std::optional<base::UnguessableToken> clipboard_item_id =
@@ -236,7 +247,7 @@ TEST_F(PickerControllerTest,
 
 TEST_F(PickerControllerTest, InsertGifResultInsertsIntoInputFieldAfterFocus) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
@@ -259,7 +270,7 @@ TEST_F(PickerControllerTest, InsertGifResultInsertsIntoInputFieldAfterFocus) {
 TEST_F(PickerControllerTest,
        InsertUnsupportedImageResultTimeoutCopiesToClipboard) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
@@ -286,7 +297,7 @@ TEST_F(PickerControllerTest,
 TEST_F(PickerControllerTest,
        InsertBrowsingHistoryResultInsertsIntoInputFieldAfterFocus) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
@@ -303,7 +314,7 @@ TEST_F(PickerControllerTest,
 
 TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
   base::test::TestFuture<ui::EmojiPickerCategory, ui::EmojiPickerFocusBehavior>
       future;
@@ -318,7 +329,7 @@ TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
 
 TEST_F(PickerControllerTest, SetCapsLockEnabledToTrueTurnsOnCapsLock) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
 
   controller.SetCapsLockEnabled(true);
 
@@ -329,7 +340,7 @@ TEST_F(PickerControllerTest, SetCapsLockEnabledToTrueTurnsOnCapsLock) {
 
 TEST_F(PickerControllerTest, SetCapsLockEnabledToFalseTurnsOffCapsLock) {
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
 
   controller.SetCapsLockEnabled(false);
 
@@ -341,7 +352,7 @@ TEST_F(PickerControllerTest, SetCapsLockEnabledToFalseTurnsOffCapsLock) {
 TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
   base::HistogramTester histogram_tester;
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
 
   // Show the widget twice.
   controller.ToggleWidget();
@@ -369,6 +380,16 @@ TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
                                          base::Seconds(3), 1);
 }
 
+TEST_F(PickerControllerTest, ShowEditorCallsCallbackFromClient) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  controller.ShowEditor();
+
+  EXPECT_TRUE(client.show_editor_future().Wait());
+}
+
 TEST_F(PickerControllerTest, GetUpperCaseSelectedText) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
@@ -377,7 +398,7 @@ TEST_F(PickerControllerTest, GetUpperCaseSelectedText) {
   input_method->SetFocusedTextInputClient(&input_field);
   input_field.SetTextAndSelection(u"abc", gfx::Range(0, 3));
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
 
   controller.ToggleWidget();
   controller.TransformSelectedText(PickerCategory::kUpperCase);
@@ -394,7 +415,7 @@ TEST_F(PickerControllerTest, GetLowerCaseSelectedText) {
   input_method->SetFocusedTextInputClient(&input_field);
   input_field.SetTextAndSelection(u"XYZ", gfx::Range(0, 3));
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
 
   controller.ToggleWidget();
   controller.TransformSelectedText(PickerCategory::kLowerCase);
@@ -411,7 +432,7 @@ TEST_F(PickerControllerTest, GetTitleCaseSelectedText) {
   input_method->SetFocusedTextInputClient(&input_field);
   input_field.SetTextAndSelection(u"how are you", gfx::Range(0, 11));
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
 
   controller.ToggleWidget();
   controller.TransformSelectedText(PickerCategory::kTitleCase);
@@ -429,7 +450,7 @@ TEST_F(PickerControllerTest, GetSentenceCaseSelectedText) {
   input_field.SetTextAndSelection(u"how are you? fine. thanks!  ok",
                                   gfx::Range(0, 30));
   PickerController controller;
-  TestPickerClient client(&controller);
+  NiceMock<TestPickerClient> client(&controller);
 
   controller.ToggleWidget();
   controller.TransformSelectedText(PickerCategory::kSentenceCase);

@@ -154,6 +154,11 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
   return picker_results;
 }
 
+ash::input_method::EditorMediator* GetEditorMediator(Profile* profile) {
+  return ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
+      profile);
+}
+
 }  // namespace
 
 PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
@@ -298,15 +303,19 @@ void PickerClientImpl::StopCrosQuery() {
   search_engine_->StopQuery();
 }
 
-void PickerClientImpl::ShowEditor() {
-  auto* editor_mediator =
-      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
-          profile_);
-  if (editor_mediator == nullptr) {
-    return;
+PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
+  ash::input_method::EditorMediator* editor_mediator =
+      GetEditorMediator(profile_);
+  if (editor_mediator == nullptr ||
+      editor_mediator->GetEditorMode() ==
+          ash::input_method::EditorMode::kBlocked) {
+    return {};
   }
 
-  editor_mediator->HandleTrigger();
+  editor_mediator->CacheContext();
+
+  return base::BindOnce(&PickerClientImpl::ShowEditor,
+                        weak_factory_.GetWeakPtr());
 }
 
 void PickerClientImpl::GetRecentLocalFileResults(RecentFilesCallback callback) {
@@ -414,6 +423,14 @@ PickerClientImpl::CreateSearchProviderForCategory(
       return CreateDriveSearchProvider(profile_);
     case ash::PickerCategory::kLocalFiles:
       return CreateFileSearchProvider(profile_);
+  }
+}
+
+void PickerClientImpl::ShowEditor() {
+  ash::input_method::EditorMediator* editor_mediator =
+      GetEditorMediator(profile_);
+  if (editor_mediator != nullptr) {
+    editor_mediator->HandleTrigger();
   }
 }
 
