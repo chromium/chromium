@@ -4624,6 +4624,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ApiCall.Static.First"
+    enum="WebViewApiCallStatic" expires_after="2024-08-22">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the first call to a static WebView API through the platform
+    (framework) APIs after the native library was loaded and the browser process
+    was started (meaning that this static method call caused the
+    initialization).
+
+    This may include AndroidX API calls on OS versions where the AndroidX
+    library just calls through the platform API (see
+    &quot;Android.WebView.AndroidX.ApiCall&quot; for details).
+
+    Recorded in M125+.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ApiCall.System" enum="WebViewApiCallSystem"
     expires_after="2024-08-22">
   <owner>ntfschr@chromium.org</owner>
@@ -6088,6 +6107,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.CreationTime.InitReason"
+    enum="WebViewStartupCallSite" expires_after="2024-12-31">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the reason for initialization (startChromiumLocked call), such as
+    creating a WebView instance, calling a static method through getStatics() or
+    other static methods.
+
+    Recorded in M125+.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.CreationTime.Stage1.FactoryInit"
     units="ms" expires_after="2024-12-31">
   <owner>torne@chromium.org</owner>
@@ -6139,6 +6171,19 @@ chromium-metrics-reviews@google.com.
     This measurement is different from Stage1.FactoryInit as it takes into
     account time spent in framework. Does not overlap with
     Android.WebView.Startup.CreationTime.Stage2.* measurements.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Startup.CreationTime.waitForUIThreadInit"
+    units="ms" expires_after="2024-12-31">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records how long it took to wait for the UI thread before running
+    startChromiumLocked. Only recorded if startChromiumLocked was posted as a
+    task.
+
+    Recorded in M125+.
   </summary>
 </histogram>
 

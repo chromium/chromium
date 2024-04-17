@@ -454,11 +454,14 @@ public class TraceEvent implements AutoCloseable {
     /**
      * Records a 'WebView.Startup.CreationTime.StartChromiumLocked' event with the
      * 'android_webview.timeline' category starting at `startTimeMs` with the duration of
-     * `durationMs`.
+     * `durationMs`. `callSite` and `fromUIThread` are set as the arguments for the event.
      */
-    public static void webViewStartupStartChromiumLocked(long startTimeMs, long durationMs) {
+    public static void webViewStartupStartChromiumLocked(
+            long startTimeMs, long durationMs, int callSite, boolean fromUIThread) {
         if (sEnabled) {
-            TraceEventJni.get().webViewStartupStartChromiumLocked(startTimeMs, durationMs);
+            TraceEventJni.get()
+                    .webViewStartupStartChromiumLocked(
+                            startTimeMs, durationMs, callSite, fromUIThread);
         }
     }
 
@@ -668,7 +671,8 @@ public class TraceEvent implements AutoCloseable {
 
         void webViewStartupStage2(long startTimeMs, long durationMs, boolean isColdStartup);
 
-        void webViewStartupStartChromiumLocked(long startTimeMs, long durationMs);
+        void webViewStartupStartChromiumLocked(
+                long startTimeMs, long durationMs, int callSite, boolean fromUIThread);
 
         void startupActivityStart(long activityId, long startTimeMs);
 

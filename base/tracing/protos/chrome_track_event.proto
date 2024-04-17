@@ -1835,9 +1835,27 @@ message CompositorTimingHistoryV2 {
   optional int64 draw_estimate_delta_us = 7;
 }
 
+message WebViewStartup {
+  optional bool from_ui_thread = 1;
+  // This enum must be kept in sync with WebViewChromiumAwInit.CallSite
+  enum CallSite {
+    GET_AW_TRACING_CONTROLLER = 0;
+    GET_AW_PROXY_CONTROLLER = 1;
+    WEBVIEW_INSTANCE = 2;
+    GET_STATICS = 3;
+    GET_DEFAULT_GEOLOCATION_PERMISSIONS = 4;
+    GET_DEFAULT_SERVICE_WORKER_CONTROLLER = 5;
+    GET_WEB_ICON_DATABASE = 6;
+    GET_DEFAULT_WEB_STORAGE = 7;
+    GET_DEFAULT_WEBVIEW_DATABASE = 8;
+    GET_TRACING_CONTROLLER = 9;
+  }
+  optional CallSite call_site = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1063
+  // Next ID: 1064
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1970,5 +1988,7 @@ message ChromeTrackEvent {
     optional ViewClassName view_class_name = 1061;
 
     optional ChromeCompositorSchedulerStateV2 cc_scheduler_state = 1062;
+
+    optional WebViewStartup webview_startup = 1063;
   }
 }

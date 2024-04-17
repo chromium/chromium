@@ -28,11 +28,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This class provides functionality that is accessed in a static way from apps using WebView.
- * This class is meant to be shared between the webkit-glue layer and the support library glue
- * layer.
+ * This class provides functionality that is accessed in a static way from apps using WebView. This
+ * class is meant to be shared between the webkit-glue layer and the support library glue layer.
  * Ideally this class would live in a lower layer than the webkit-glue layer, to allow sharing the
  * implementation between different glue layers without needing to depend on the webkit-glue layer
  * (right now there are dependencies from this class on the webkit-glue layer though).
@@ -40,13 +40,23 @@ import java.util.List;
 @Lifetime.Singleton
 public class SharedStatics {
     private AwDevToolsServer mDevToolsServer;
+    private static final AtomicBoolean sAnyMethodCalled = new AtomicBoolean(false);
+    private static volatile boolean sStartupTriggered;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
-        ApiCall.FIND_ADDRESS, ApiCall.GET_DEFAULT_USER_AGENT,
-        ApiCall.SET_WEB_CONTENTS_DEBUGGING_ENABLED, ApiCall.CLEAR_CLIENT_CERT_PREFERENCES,
-        ApiCall.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW, ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL,
+        ApiCall.FIND_ADDRESS,
+        ApiCall.GET_DEFAULT_USER_AGENT,
+        ApiCall.SET_WEB_CONTENTS_DEBUGGING_ENABLED,
+        ApiCall.CLEAR_CLIENT_CERT_PREFERENCES,
+        ApiCall.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW,
+        ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL,
+        ApiCall.PARSE_RESULT,
+        ApiCall.START_SAFE_BROWSING,
+        ApiCall.SET_SAFE_BROWSING_ALLOWLIST,
+        ApiCall.IS_MULTI_PROCESS_ENABLED,
+        ApiCall.GET_VARIATIONS_HEADER,
         // Add new constants above. The final constant should have a trailing comma for
         // cleaner diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordStaticApiCall
@@ -58,16 +68,30 @@ public class SharedStatics {
         int CLEAR_CLIENT_CERT_PREFERENCES = 3;
         int ENABLE_SLOW_WHOLE_DOCUMENT_DRAW = 4;
         int GET_SAFE_BROWSING_PRIVACY_POLICY_URL = 5;
-        // Remember to update StaticWebViewApiCall in enums.xml when adding new values here
-        int COUNT = 6;
+        int PARSE_RESULT = 6;
+        int START_SAFE_BROWSING = 7;
+        int SET_SAFE_BROWSING_ALLOWLIST = 8;
+        int IS_MULTI_PROCESS_ENABLED = 9;
+        int GET_VARIATIONS_HEADER = 10;
+        // Remember to update WebViewApiCallStatic in enums.xml when adding new values here
+        int COUNT = 11;
+    }
+
+    public static void setStartupTriggered() {
+        sStartupTriggered = true;
     }
 
     public static void recordStaticApiCall(@ApiCall int sample) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.ApiCall.Static", sample, ApiCall.COUNT);
-    }
 
-    public SharedStatics() {}
+        // If getStatics() triggered startup and this is the first method to be called after that,
+        // record the method in a histogram.
+        if (sStartupTriggered && sAnyMethodCalled.compareAndSet(false, true)) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.WebView.ApiCall.Static.First", sample, ApiCall.COUNT);
+        }
+    }
 
     public String findAddress(String addr) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.FIND_ADDRESS")) {
@@ -137,31 +161,43 @@ public class SharedStatics {
     }
 
     public Uri[] parseFileChooserResult(int resultCode, Intent intent) {
-        return AwContentsClient.parseFileChooserResult(resultCode, intent);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.PARSE_RESULT")) {
+            recordStaticApiCall(ApiCall.PARSE_RESULT);
+            return AwContentsClient.parseFileChooserResult(resultCode, intent);
+        }
     }
 
     /**
      * Starts Safe Browsing initialization. This should only be called once.
+     *
      * @param context is the application context the WebView will be used in.
-     * @param callback will be called with the value true if initialization is
-     * successful. The callback will be run on the UI thread.
+     * @param callback will be called with the value true if initialization is successful. The
+     *     callback will be run on the UI thread.
      */
     public void initSafeBrowsing(Context context, Callback<Boolean> callback) {
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT, () -> AwContentsStatics.initSafeBrowsing(context, callback));
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.START_SAFE_BROWSING")) {
+            recordStaticApiCall(ApiCall.START_SAFE_BROWSING);
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> AwContentsStatics.initSafeBrowsing(context, callback));
+        }
     }
 
     public void setSafeBrowsingAllowlist(List<String> urls, Callback<Boolean> callback) {
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
-                () -> AwContentsStatics.setSafeBrowsingAllowlist(urls, callback));
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.SET_SAFE_BROWSING_ALLOWLIST")) {
+            recordStaticApiCall(ApiCall.SET_SAFE_BROWSING_ALLOWLIST);
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> AwContentsStatics.setSafeBrowsingAllowlist(urls, callback));
+        }
     }
 
     /**
      * Returns a URL pointing to the privacy policy for Safe Browsing reporting.
      *
-     * @return the url pointing to a privacy policy document which can be displayed
-     * to users.
+     * @return the url pointing to a privacy policy document which can be displayed to users.
      */
     public Uri getSafeBrowsingPrivacyPolicyUrl() {
         try (TraceEvent event =
@@ -175,10 +211,18 @@ public class SharedStatics {
     }
 
     public boolean isMultiProcessEnabled() {
-        return AwContentsStatics.isMultiProcessEnabled();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.IS_MULTI_PROCESS_ENABLED")) {
+            recordStaticApiCall(ApiCall.IS_MULTI_PROCESS_ENABLED);
+            return AwContentsStatics.isMultiProcessEnabled();
+        }
     }
 
     public String getVariationsHeader() {
-        return AwContentsStatics.getVariationsHeader();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.GET_VARIATIONS_HEADER")) {
+            recordStaticApiCall(ApiCall.GET_VARIATIONS_HEADER);
+            return AwContentsStatics.getVariationsHeader();
+        }
     }
 }

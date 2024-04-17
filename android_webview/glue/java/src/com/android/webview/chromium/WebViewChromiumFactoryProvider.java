@@ -759,7 +759,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @Override
     public TracingController getTracingController() {
         synchronized (mAwInit.getLock()) {
-            mAwInit.ensureChromiumStartedLocked(true);
+            mAwInit.ensureChromiumStartedLocked(
+                    true, WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
             // ensureChromiumStartedLocked() can release the lock on first call while
             // waiting for startup. Hence check the mTracingController here to ensure
             // the singleton property.

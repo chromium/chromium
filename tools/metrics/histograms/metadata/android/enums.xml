@@ -1881,6 +1881,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="clearClientCertPreferences"/>
   <int value="4" label="enableSlowWholeDocumentDraw"/>
   <int value="5" label="getSafeBrowsingPrivacyPolicyUrl"/>
+  <int value="6" label="parseResult"/>
+  <int value="7" label="startSafeBrowsing"/>
+  <int value="8" label="setSafeBrowsingAllowlist"/>
+  <int value="9" label="isMultiProcessEnabled"/>
+  <int value="10" label="getVariationsHeader"/>
 </enum>
 
 <enum name="WebViewApiCallSystem">
@@ -2051,6 +2056,19 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Text dark, night mode undefined"/>
   <int value="7" label="Text dark, night mode on"/>
   <int value="8" label="Text dark, night mode off"/>
+</enum>
+
+<enum name="WebViewStartupCallSite">
+  <int value="0" label="getAwTracingController"/>
+  <int value="1" label="getAwProxyController"/>
+  <int value="2" label="webViewInstance"/>
+  <int value="3" label="getStatics"/>
+  <int value="4" label="getDefaultGeolocationPermissions"/>
+  <int value="5" label="getDefaultServiceWorkerController"/>
+  <int value="6" label="getWebIconDatabase"/>
+  <int value="7" label="getDefaultWebStorage"/>
+  <int value="8" label="getDefaultWebViewDatabase"/>
+  <int value="9" label="getTracingController"/>
 </enum>
 
 <enum name="WebViewUrlScheme">
