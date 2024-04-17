@@ -424,7 +424,7 @@ BASE_FEATURE(kAndroidHatsRefactor,
              "AndroidHatsRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidHub, "AndroidHub", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidHub, "AndroidHub", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidImprovedBookmarks,
              "AndroidImprovedBookmarks",

@@ -152,6 +152,12 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 4);
 
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.tab_list_recycler_view),
+                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isCompletelyDisplayed()));
+
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
@@ -177,6 +183,12 @@ public class TabGroupUiTest {
         // Select the 10th tab in group.
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 9);
+
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.tab_list_recycler_view),
+                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isCompletelyDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
