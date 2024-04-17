@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 
+#include <set>
+
 #include "base/base64.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,7 +14,9 @@
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -242,14 +246,16 @@ void AddPasswordUsernameChildSuggestion(const std::u16string& username,
 }
 
 void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion,
-                                    const CredentialUIEntry& credential) {
+                                    const CredentialUIEntry& credential,
+                                    IsCrossDomain is_cross_origin) {
   autofill::Suggestion fill_password(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
       autofill::PopupItemId::kFillPassword);
   fill_password.payload = autofill::Suggestion::PasswordSuggestionDetails(
       credential.password,
-      GetHumanReadableRealm(credential.GetFirstSignonRealm()));
+      GetHumanReadableRealm(credential.GetFirstSignonRealm()),
+      is_cross_origin.value());
   suggestion.children.emplace_back(std::move(fill_password));
 }
 
@@ -264,7 +270,8 @@ void AddViewPasswordDetailsChildSuggestion(autofill::Suggestion& suggestion) {
 
 autofill::Suggestion GetManualFallbackSuggestion(
     const CredentialUIEntry& credential,
-    IsTriggeredOnPasswordForm on_password_form) {
+    IsTriggeredOnPasswordForm on_password_form,
+    IsCrossDomain is_cross_origin) {
   autofill::Suggestion suggestion(
       GetHumanReadableRealm(credential.GetFirstSignonRealm()),
       autofill::PopupItemId::kPasswordEntry);
@@ -275,13 +282,14 @@ autofill::Suggestion GetManualFallbackSuggestion(
   suggestion.icon = autofill::Suggestion::Icon::kGlobe;
   suggestion.payload = autofill::Suggestion::PasswordSuggestionDetails(
       credential.password,
-      GetHumanReadableRealm(credential.GetFirstSignonRealm()));
+      GetHumanReadableRealm(credential.GetFirstSignonRealm()),
+      is_cross_origin.value());
   suggestion.is_acceptable = on_password_form.value();
 
   if (!replaced) {
     AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
   }
-  AddFillPasswordChildSuggestion(suggestion, credential);
+  AddFillPasswordChildSuggestion(suggestion, credential, is_cross_origin);
   suggestion.children.emplace_back(autofill::PopupItemId::kSeparator);
   AddViewPasswordDetailsChildSuggestion(suggestion);
 
@@ -401,9 +409,11 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         autofill::PopupItemId::kTitle);
   }
 
+  std::set<std::string> suggested_signon_realms;
   for (const auto& form : suggested_credentials) {
-    suggestions.emplace_back(
-        GetManualFallbackSuggestion(CredentialUIEntry(form), on_password_form));
+    suggested_signon_realms.insert(form.signon_realm);
+    suggestions.emplace_back(GetManualFallbackSuggestion(
+        CredentialUIEntry(form), on_password_form, IsCrossDomain(false)));
   }
 
   if (generate_sections) {
@@ -417,8 +427,16 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
   const size_t relevant_section_offset = suggestions.size();
 
   for (const CredentialUIEntry& credential : credentials) {
-    suggestions.emplace_back(
-        GetManualFallbackSuggestion(credential, on_password_form));
+    // Check if any credential in the "Suggested" section has the same singon
+    // realm as this `CredentialUIEntry`.
+    const bool has_suggested_realm = base::ranges::any_of(
+        credential.facets,
+        [&suggested_signon_realms](const std::string& signon_realm) {
+          return suggested_signon_realms.count(signon_realm);
+        },
+        &CredentialFacet::signon_realm);
+    suggestions.emplace_back(GetManualFallbackSuggestion(
+        credential, on_password_form, IsCrossDomain(!has_suggested_realm)));
   }
 
   base::ranges::sort(suggestions.begin() + relevant_section_offset,

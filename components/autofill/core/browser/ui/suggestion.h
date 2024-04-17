@@ -33,6 +33,11 @@ struct Suggestion {
     // Stores either the password signon realm or the Android app name for which
     // the password was saved.
     std::u16string display_signon_realm;
+    // This flag is set to `false` for the manual fallback suggestions which
+    // represent exact, strongly affiliated, PSL and weakly affiliated matches
+    // for the domain the suggestions are shown for. All other suggestions have
+    // this flag set to `true`.
+    bool is_cross_domain;
   };
 
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;

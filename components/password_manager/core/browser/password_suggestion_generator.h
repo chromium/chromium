@@ -27,6 +27,7 @@ using ShowWebAuthnCredentials =
     base::StrongAlias<class ShowWebAuthnCredentialsTag, bool>;
 using IsTriggeredOnPasswordForm =
     base::StrongAlias<class IsTriggeredOnPasswordFormTag, bool>;
+using IsCrossDomain = base::StrongAlias<class IsCrossDomainTag, bool>;
 
 // Helper class to generate password suggestions. Calls to the generation do not
 // modify the state of this class.
@@ -70,6 +71,9 @@ class PasswordSuggestionGenerator {
   // If either `suggested_credentials` or `all_credentials` is empty, the
   // section titles won't be generated. If both `suggested_credentials` and
   // `all_credentials` are empty, no suggestions will be generated.
+  // `suggested_credentials` contains the following types of passwords: exact,
+  // strongly affiliated, PSL and weakly affiliated matches. `all_credentials`
+  // contains all user passwords as displayed in settings.
   std::vector<autofill::Suggestion> GetManualFallbackSuggestions(
       base::span<const PasswordForm> suggested_credentials,
       base::span<const CredentialUIEntry> all_credentials,
