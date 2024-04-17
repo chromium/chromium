@@ -54,6 +54,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "extensions/common/constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -2446,6 +2447,22 @@ TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
   EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
   EXPECT_TRUE(
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
+}
+
+// Test tab navigation when the game window is focused.
+TEST_P(GameTypeGameDashboardContextTest, TabNavigationGameWindow) {
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  test_api_->CloseTheMainMenu();
+
+  aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+      ->FocusWindow(game_window_.get());
+  TabNavigateForward();
+
+  // Once the focus is on the game window, it's hard to know if it reaches to
+  // the last focusable view inside. Keep the focus inside of the game window.
+  EXPECT_FALSE(test_api_->GetGameDashboardButton()->HasFocus());
+  EXPECT_FALSE(test_api_->GetToolbarGamepadButton()->HasFocus());
 }
 
 // -----------------------------------------------------------------------------
