@@ -117,6 +117,15 @@ WebStateListBuilderFromDescription::~WebStateListBuilderFromDescription() {
 bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
     std::string_view description,
     ChromeBrowserState* browser_state) {
+  return BuildWebStateListFromDescription(
+      description,
+      base::BindRepeating(CreateWebState, base::Unretained(browser_state)));
+}
+
+bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
+    std::string_view description,
+    base::RepeatingCallback<std::unique_ptr<web::WebState>()>
+        create_web_state) {
   if (!web_state_list_->empty()) {
     return false;
   }
@@ -142,7 +151,7 @@ bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
         if (GetWebStateForIdentifier(token.character)) {
           return false;
         }
-        auto web_state = CreateWebState(browser_state);
+        auto web_state = create_web_state.Run();
         SetWebStateIdentifier(web_state.get(), token.character);
         web_state_list_->InsertWebState(
             std::move(web_state),
@@ -218,16 +227,16 @@ std::string WebStateListBuilderFromDescription::GetWebStateListDescription()
   std::ostringstream oss;
   bool pinned_web_states_separator_added = false;
   for (int i = 0; i < web_state_list_->count(); ++i) {
-    const WebState* web_state = web_state_list_->GetWebStateAt(i);
+    WebState* web_state = web_state_list_->GetWebStateAt(i);
     const TabGroup* tab_group = web_state_list_->GetGroupOfWebStateAt(i);
-    const WebState* prev_web_state = web_state_list_->ContainsIndex(i - 1)
-                                         ? web_state_list_->GetWebStateAt(i - 1)
-                                         : nullptr;
+    WebState* prev_web_state = web_state_list_->ContainsIndex(i - 1)
+                                   ? web_state_list_->GetWebStateAt(i - 1)
+                                   : nullptr;
     const TabGroup* prev_tab_group =
         prev_web_state ? web_state_list_->GetGroupOfWebStateAt(i - 1) : nullptr;
-    const WebState* next_web_state = web_state_list_->ContainsIndex(i + 1)
-                                         ? web_state_list_->GetWebStateAt(i + 1)
-                                         : nullptr;
+    WebState* next_web_state = web_state_list_->ContainsIndex(i + 1)
+                                   ? web_state_list_->GetWebStateAt(i + 1)
+                                   : nullptr;
     const TabGroup* next_tab_group =
         next_web_state ? web_state_list_->GetGroupOfWebStateAt(i + 1) : nullptr;
 
@@ -280,8 +289,7 @@ std::string WebStateListBuilderFromDescription::FormatWebStateListDescription(
   return result;
 }
 
-const web::WebState*
-WebStateListBuilderFromDescription::GetWebStateForIdentifier(
+web::WebState* WebStateListBuilderFromDescription::GetWebStateForIdentifier(
     char identifier) const {
   auto found_web_state_it = web_state_for_identifier_.find(identifier);
   return found_web_state_it != end(web_state_for_identifier_)
@@ -298,7 +306,7 @@ const TabGroup* WebStateListBuilderFromDescription::GetTabGroupForIdentifier(
 }
 
 char WebStateListBuilderFromDescription::GetWebStateIdentifier(
-    const WebState* web_state) const {
+    WebState* web_state) const {
   auto found_identifier_it = identifier_for_web_state_.find(web_state);
   return found_identifier_it != end(identifier_for_web_state_)
              ? found_identifier_it->second
@@ -314,7 +322,7 @@ char WebStateListBuilderFromDescription::GetTabGroupIdentifier(
 }
 
 void WebStateListBuilderFromDescription::SetWebStateIdentifier(
-    const WebState* web_state,
+    WebState* web_state,
     char new_identifier) {
   CHECK(web_state);
   CHECK(base::IsAsciiAlpha(new_identifier));
@@ -362,7 +370,7 @@ void WebStateListBuilderFromDescription::GenerateIdentifiersForWebStateList() {
   }
 
   for (int i = 0; i < web_state_list_->count(); ++i) {
-    const WebState* web_state = web_state_list_->GetWebStateAt(i);
+    WebState* web_state = web_state_list_->GetWebStateAt(i);
     if (GetWebStateIdentifier(web_state) == '_') {
       CHECK(!available_web_state_identifiers.empty());
       char identifier = available_web_state_identifiers.front();

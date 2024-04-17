@@ -818,7 +818,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   switch (_draggedItemIdentifier.type) {
     case GridItemType::Tab:
       [self.dragDropHandler
-          dragWillBeginForItem:_draggedItemIdentifier.tabSwitcherItem];
+          dragWillBeginForTabSwitcherItem:_draggedItemIdentifier
+                                              .tabSwitcherItem];
       base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent,
                                     DragDropItem::kDragBegin);
       break;
@@ -968,8 +969,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
   // This is how the explicit forbidden icon or (+) copy icon is shown. Move has
   // no explicit icon.
-  UIDropOperation dropOperation =
-      [self.dragDropHandler dropOperationForDropSession:session];
+  UIDropOperation dropOperation = [self.dragDropHandler
+      dropOperationForDropSession:session
+                          toIndex:destinationIndexPath.item];
   return [[UICollectionViewDropProposal alloc]
       initWithDropOperation:dropOperation
                      intent:

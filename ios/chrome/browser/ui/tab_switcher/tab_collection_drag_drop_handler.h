@@ -25,8 +25,12 @@
 // Note that this drag item cannot be dropped within other apps.
 - (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem;
 
-// Tells the receiver that the drag session will begin for the `item`.
-- (void)dragWillBeginForItem:(TabSwitcherItem*)item;
+// Tells the receiver that the drag session will begin for the
+// `tabSwitcherItem`.
+- (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)tabSwitcherItem;
+
+// Tells the receiver that the drag session will begin for the `tabGroupItem`.
+- (void)dragWillBeginForTabGroupItem:(TabGroupItem*)tabGroupItem;
 
 // Tells the receiver that the drag session did end.
 - (void)dragSessionDidEnd;
@@ -34,7 +38,8 @@
 // Returns a value which represents how a drag activity should be resolved when
 // the user drops a drag item. `session` contains pertinent information
 // including the drag item.
-- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session;
+- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session
+                                       toIndex:(NSUInteger)destinationIndex;
 
 // Tells the receiver to incorporate the `dragItem` into the model layer at the
 // `destinationIndex`. `fromSameCollection` is an indication that the operation

@@ -1126,8 +1126,12 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   return [self dragItemForItemWithID:item.identifier];
 }
 
-- (void)dragWillBeginForItem:(TabSwitcherItem*)item {
+- (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
   _dragItemID = item.identifier;
+}
+
+- (void)dragWillBeginForTabGroupItem:(TabSwitcherItem*)item {
+  NOTREACHED();
 }
 
 - (void)dragSessionDidEnd {
@@ -1138,7 +1142,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   [self configureToolbarsButtons];
 }
 
-- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session {
+- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session
+                                       toIndex:(NSUInteger)destinationIndex {
   UIDragItem* dragItem = session.localDragSession.items.firstObject;
 
   // Tab move operations only originate from Chrome so a local object is used.

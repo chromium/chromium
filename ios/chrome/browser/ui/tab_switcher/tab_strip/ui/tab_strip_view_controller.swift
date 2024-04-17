@@ -40,7 +40,7 @@ class TabStripViewController: UIViewController,
 
   // Latest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
-  private var draggedItem: TabSwitcherItem?
+  private var draggedItemIdentifier: TabStripItemIdentifier?
 
   // The item currently selected in the tab strip.
   // The collection view appears to sometimes forget what item is selected,
@@ -812,11 +812,20 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     _ collectionView: UICollectionView,
     dragSessionWillBegin session: UIDragSession
   ) {
+    guard let draggedItemIdentifier = draggedItemIdentifier else { return }
     dragEndAtNewIndex = false
-    HistogramUtils.recordHistogram(
-      kUmaTabStripViewDragDropTabsEvent, withSample: DragDropTabs.dragBegin.rawValue,
-      maxValue: DragDropTabs.maxValue.rawValue)
-    dragDropHandler?.dragWillBegin(for: draggedItem)
+    switch draggedItemIdentifier.item {
+    case .tab(let tabSwitcherItem):
+      dragDropHandler?.dragWillBegin(for: tabSwitcherItem)
+      HistogramUtils.recordHistogram(
+        kUmaTabStripViewDragDropTabsEvent, withSample: DragDropTabs.dragBegin.rawValue,
+        maxValue: DragDropTabs.maxValue.rawValue)
+    case .group(let tabGroupItem):
+      dragDropHandler?.dragWillBegin(for: tabGroupItem)
+      HistogramUtils.recordHistogram(
+        kUmaTabStripViewDragDropGroupsEvent, withSample: DragDropTabs.dragBegin.rawValue,
+        maxValue: DragDropTabs.maxValue.rawValue)
+    }
   }
 
   func collectionView(
@@ -834,21 +843,41 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
       dragEvent = DragDropTabs.dragEndInOtherCollection
     }
 
-    HistogramUtils.recordHistogram(
-      kUmaTabStripViewDragDropTabsEvent, withSample: dragEvent.rawValue,
-      maxValue: DragDropTabs.maxValue.rawValue)
-
     dragDropHandler?.dragSessionDidEnd()
+
+    switch draggedItemIdentifier?.item {
+    case .tab(_):
+      HistogramUtils.recordHistogram(
+        kUmaTabStripViewDragDropTabsEvent, withSample: dragEvent.rawValue,
+        maxValue: DragDropTabs.maxValue.rawValue)
+    case .group(let tabGroupItem):
+      HistogramUtils.recordHistogram(
+        kUmaTabStripViewDragDropGroupsEvent, withSample: dragEvent.rawValue,
+        maxValue: DragDropTabs.maxValue.rawValue)
+      if !tabGroupItem.collapsed, let draggedItemIdentifier = draggedItemIdentifier {
+        // If the dragged item is a group and the group was expanded before it started being dragged, then expand it back.
+        var snapshot = dataSource.snapshot(for: .tabs)
+        snapshot.expand([draggedItemIdentifier])
+        applySnapshot(
+          dataSource: dataSource, snapshot: snapshot, animatingDifferences: true,
+          numberOfVisibleItemsChanged: false)
+      }
+    default:
+      break
+    }
+
+    // Reset the current dragged item.
+    draggedItemIdentifier = nil
   }
 
   func collectionView(
     _ collectionView: UICollectionView,
     dragPreviewParametersForItemAt indexPath: IndexPath
   ) -> UIDragPreviewParameters? {
-    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripTabCell else {
+    guard let tabStripCell = collectionView.cellForItem(at: indexPath) as? TabStripCell else {
       return nil
     }
-    return cell.dragPreviewParameters
+    return tabStripCell.dragPreviewParameters
   }
 
   func collectionView(
@@ -856,13 +885,20 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     itemsForBeginning session: UIDragSession,
     at indexPath: IndexPath
   ) -> [UIDragItem] {
-    guard let itemIdentifier = dataSource.itemIdentifier(for: indexPath),
-      let item = itemIdentifier.tabSwitcherItem,
-      let dragItem = dragDropHandler?.dragItem(for: item)
-    else {
+    guard let itemIdentifier = dataSource.itemIdentifier(for: indexPath) else {
       return []
     }
-    draggedItem = item
+    let dragItem: UIDragItem?
+    switch itemIdentifier.item {
+    case .tab(let tabSwitcherItem):
+      dragItem = dragDropHandler?.dragItem(for: tabSwitcherItem)
+    case .group(let tabGroupItem):
+      dragItem = dragDropHandler?.dragItem(for: tabGroupItem)
+    }
+    guard let dragItem = dragItem else {
+      return []
+    }
+    draggedItemIdentifier = itemIdentifier
     return [dragItem]
   }
 
@@ -883,14 +919,26 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     dropSessionDidUpdate session: UIDropSession,
     withDestinationIndexPath destinationIndexPath: IndexPath?
   ) -> UICollectionViewDropProposal {
-    guard let dropOperation: UIDropOperation = dragDropHandler?.dropOperation(for: session) else {
+    // Calculating location in view
+    let location = session.location(in: collectionView)
+    var destinationIndexPath: IndexPath?
+    collectionView.performUsingPresentationValues {
+      destinationIndexPath = collectionView.indexPathForItem(at: location)
+    }
+    guard let destinationIndexPath = destinationIndexPath else {
+      return UICollectionViewDropProposal(operation: .cancel, intent: .unspecified)
+    }
+    guard
+      let dropOperation: UIDropOperation = dragDropHandler?.dropOperation(
+        for: session, to: UInt(destinationIndexPath.item))
+    else {
       return UICollectionViewDropProposal(operation: .cancel)
     }
     /// Use `insertIntoDestinationIndexPath` if the dragged item is not from the same
     /// collection view. This prevents having unwanted empty space in the collection view.
     return UICollectionViewDropProposal(
       operation: dropOperation,
-      intent: dropOperation == .move
+      intent: draggedItemIdentifier != nil
         ? .insertAtDestinationIndexPath : .insertIntoDestinationIndexPath)
   }
 

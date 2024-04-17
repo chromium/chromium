@@ -10,6 +10,7 @@ source_set("coordinator") {
     "tab_strip_mediator.mm",
   ]
   deps = [
+    ":tab_strip_mediator_utils",
     "//base",
     "//components/favicon/ios",
     "//components/tab_groups",
@@ -31,6 +32,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups:tab_group_creation",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:swift",
@@ -44,11 +46,31 @@ source_set("coordinator") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("tab_strip_mediator_utils") {
+  sources = [
+    "tab_strip_mediator_utils.h",
+    "tab_strip_mediator_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:swift",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tab_strip_mediator_unittest.mm" ]
+  sources = [
+    "tab_strip_mediator_unittest.mm",
+    "tab_strip_mediator_utils_unittest.mm",
+  ]
   deps = [
     ":coordinator",
+    ":tab_strip_mediator_utils",
     "//base",
     "//base/test:test_support",
     "//components/favicon/core",
@@ -63,6 +85,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher:utils",

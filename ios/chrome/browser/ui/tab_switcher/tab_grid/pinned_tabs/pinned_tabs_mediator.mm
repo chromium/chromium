@@ -317,15 +317,20 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   NOTREACHED_NORETURN() << "There is no tab groups in the pinned tabs section";
 }
 
-- (void)dragWillBeginForItem:(TabSwitcherItem*)item {
+- (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
   _dragItemID = item.identifier;
+}
+
+- (void)dragWillBeginForTabGroupItem:(TabGroupItem*)item {
+  NOTREACHED_NORETURN() << "There is no tab groups in the pinned tabs section";
 }
 
 - (void)dragSessionDidEnd {
   _dragItemID = web::WebStateID();
 }
 
-- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session {
+- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session
+                                       toIndex:(NSUInteger)destinationIndex {
   UIDragItem* dragItem = session.localDragSession.items.firstObject;
 
   // Tab move operations only originate from Chrome so a local object is used.

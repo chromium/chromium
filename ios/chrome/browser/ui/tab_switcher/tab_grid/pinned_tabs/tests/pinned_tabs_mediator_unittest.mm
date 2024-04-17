@@ -151,7 +151,8 @@ TEST_F(PinnedTabsMediatorTest, DropOperation) {
 
   FakeDropSession* regular_drop_session = FakeDropSessionWithWebState(
       regular_browser_->GetWebStateList()->GetWebStateAt(0));
-  EXPECT_EQ([mediator_ dropOperationForDropSession:regular_drop_session],
+  EXPECT_EQ([mediator_ dropOperationForDropSession:regular_drop_session
+                                           toIndex:0],
             UIDropOperationMove);
 
   // Tests an incognito tab.
@@ -161,7 +162,8 @@ TEST_F(PinnedTabsMediatorTest, DropOperation) {
       WebStateList::InsertionParams::AtIndex(0));
   FakeDropSession* incognito_drop_session = FakeDropSessionWithWebState(
       incognito_browser_->GetWebStateList()->GetWebStateAt(0));
-  EXPECT_EQ([mediator_ dropOperationForDropSession:incognito_drop_session],
+  EXPECT_EQ([mediator_ dropOperationForDropSession:incognito_drop_session
+                                           toIndex:0],
             UIDropOperationMove);
 }
 

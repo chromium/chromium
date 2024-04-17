@@ -175,7 +175,7 @@ TEST_F(WebStateListBuilderFromDescriptionTest, ManyInvalidDescriptions) {
 // `GenerateIdentifiersForWebStateList(...)`.
 TEST_F(WebStateListBuilderFromDescriptionTest, CanSetIdentifiers) {
   auto web_state_1 = std::make_unique<web::FakeWebState>();
-  const web::WebState* web_state_1_ptr = web_state_1.get();
+  web::WebState* web_state_1_ptr = web_state_1.get();
   web_state_list_.InsertWebState(std::move(web_state_1));
   EXPECT_EQ("| _", GetDescription());
   builder_.SetWebStateIdentifier(web_state_1_ptr, 'a');
@@ -184,7 +184,7 @@ TEST_F(WebStateListBuilderFromDescriptionTest, CanSetIdentifiers) {
   EXPECT_EQ("| b", GetDescription());
 
   auto web_state_2 = std::make_unique<web::FakeWebState>();
-  const web::WebState* web_state_2_ptr = web_state_2.get();
+  web::WebState* web_state_2_ptr = web_state_2.get();
   web_state_list_.InsertWebState(std::move(web_state_2));
   EXPECT_EQ("| b _", GetDescription());
   builder_.SetWebStateIdentifier(web_state_2_ptr, 'a');
@@ -341,7 +341,7 @@ TEST_F(WebStateListBuilderFromDescriptionTest, ResetsGroupIdentifier) {
 // Tests that replacing a WebState doesn’t change the identifier.
 TEST_F(WebStateListBuilderFromDescriptionTest, ReplaceKeepsIdentifier) {
   ASSERT_TRUE(BuildWebStateList("| a"));
-  const web::WebState* initial_web_state = web_state_list_.GetWebStateAt(0);
+  web::WebState* initial_web_state = web_state_list_.GetWebStateAt(0);
   ASSERT_EQ(initial_web_state, web_state_list_.GetWebStateAt(0));
 
   web_state_list_.ReplaceWebStateAt(0, std::make_unique<web::FakeWebState>());
@@ -355,7 +355,7 @@ TEST_F(WebStateListBuilderFromDescriptionTest, ReplaceKeepsIdentifier) {
 // Tests that detaching a WebState removes its identifier.
 TEST_F(WebStateListBuilderFromDescriptionTest, DetachRemovesIdentifier) {
   ASSERT_TRUE(BuildWebStateList("| a"));
-  const web::WebState* web_state = web_state_list_.GetWebStateAt(0);
+  web::WebState* web_state = web_state_list_.GetWebStateAt(0);
   EXPECT_EQ('a', builder_.GetWebStateIdentifier(web_state));
 
   std::unique_ptr<web::WebState> detached_web_state =

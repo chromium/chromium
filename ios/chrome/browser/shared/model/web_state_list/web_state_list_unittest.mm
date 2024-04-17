@@ -1842,7 +1842,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndex) {
         web_state_list_description_before_insertion));
     observer_.ResetStatistics();
     std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
-    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
@@ -1901,7 +1901,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
     opener_web_state->SetNavigationManager(
         std::make_unique<FakeNavigationManager>());
     std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
-    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
@@ -1964,7 +1964,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInheritOpener) {
         std::make_unique<FakeNavigationManager>());
     web_state_list_.ActivateWebStateAt(opener_index);
     std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
-    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
@@ -2016,7 +2016,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInGroup) {
         web_state_list_description_before_insertion));
     observer_.ResetStatistics();
     std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
-    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
@@ -2079,7 +2079,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup1) {
         web_state_list_description_before_insertion));
     observer_.ResetStatistics();
     std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
-    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
@@ -2143,7 +2143,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup2) {
         web_state_list_description_before_insertion));
     observer_.ResetStatistics();
     std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
-    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
@@ -2207,7 +2207,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup3) {
         web_state_list_description_before_insertion));
     observer_.ResetStatistics();
     std::unique_ptr<web::WebState> web_state_to_insert = CreateWebState(kURL0);
-    const web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
+    web::WebState* web_state_to_insert_ptr = web_state_to_insert.get();
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 

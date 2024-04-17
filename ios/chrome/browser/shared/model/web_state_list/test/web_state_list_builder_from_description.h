@@ -8,6 +8,8 @@
 #import <string_view>
 #import <unordered_map>
 
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
@@ -56,6 +58,10 @@ class WebStateListBuilderFromDescription : public WebStateListObserver {
   [[nodiscard]] bool BuildWebStateListFromDescription(
       std::string_view description,
       ChromeBrowserState* browser_state = nullptr);
+  [[nodiscard]] bool BuildWebStateListFromDescription(
+      std::string_view description,
+      base::RepeatingCallback<std::unique_ptr<web::WebState>()>
+          create_web_state);
 
   // Returns the description of `web_state_list_`.
   std::string GetWebStateListDescription() const;
@@ -70,7 +76,7 @@ class WebStateListBuilderFromDescription : public WebStateListObserver {
   std::string FormatWebStateListDescription(std::string_view description) const;
 
   // Returns the WebState associated with identifier `identifier`, if any.
-  const WebState* GetWebStateForIdentifier(char identifier) const;
+  WebState* GetWebStateForIdentifier(char identifier) const;
 
   // Returns the TabGroup associated with identifier `identifier`, if any.
   const TabGroup* GetTabGroupForIdentifier(char identifier) const;
@@ -78,13 +84,13 @@ class WebStateListBuilderFromDescription : public WebStateListObserver {
   // Returns the identifiers associated with a WebState or TabGroup.
   // If no identifier exists for this element, then the placeholder character
   // '_' is returned instead.
-  char GetWebStateIdentifier(const WebState* web_state) const;
+  char GetWebStateIdentifier(WebState* web_state) const;
   char GetTabGroupIdentifier(const TabGroup* tab_group) const;
 
   // Sets the identifier for a WebState or TabGroup. The identifier must be
   // valid i.e. a lowercase/uppercase letter for a WebState, a digit for a
   // TabGroup. The identifier cannot be already used.
-  void SetWebStateIdentifier(const WebState* web_state, char identifier);
+  void SetWebStateIdentifier(WebState* web_state, char identifier);
   void SetTabGroupIdentifier(const TabGroup* tab_group, char identifier);
 
   // Generates identifiers for WebStates and TabGroups in `web_state_list_`
@@ -102,9 +108,9 @@ class WebStateListBuilderFromDescription : public WebStateListObserver {
   // The observed WebStateList.
   raw_ptr<WebStateList> web_state_list_;
   // Memorizes identifiers for WebStates and TabGroups created by this builder.
-  std::unordered_map<char, raw_ptr<const WebState>> web_state_for_identifier_;
+  std::unordered_map<char, raw_ptr<WebState>> web_state_for_identifier_;
   std::unordered_map<char, raw_ptr<const TabGroup>> tab_group_for_identifier_;
-  std::unordered_map<raw_ptr<const WebState>, char> identifier_for_web_state_;
+  std::unordered_map<raw_ptr<WebState>, char> identifier_for_web_state_;
   std::unordered_map<raw_ptr<const TabGroup>, char> identifier_for_tab_group_;
 };
 

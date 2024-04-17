@@ -6,6 +6,7 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_features_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -117,26 +119,6 @@ NSMutableArray<TabStripItemData*>* CreateItemData(
   return data;
 }
 
-// Returns the `TabStripItemIdentifier` for `web_state`.
-TabStripItemIdentifier* CreateTabItemIdentifier(web::WebState* web_state) {
-  TabSwitcherItem* tab_item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
-  TabStripItemIdentifier* tab_item_identifier =
-      [TabStripItemIdentifier tabIdentifier:tab_item];
-  return tab_item_identifier;
-}
-
-// Returns the `TabStripItemIdentifier` for `group`.
-TabStripItemIdentifier* CreateGroupItemIdentifier(
-    const TabGroup* group,
-    WebStateList* web_state_list) {
-  TabGroupItem* group_item =
-      [[TabGroupItem alloc] initWithTabGroup:group webStateList:web_state_list];
-  TabStripItemIdentifier* group_item_identifier =
-      [TabStripItemIdentifier groupIdentifier:group_item];
-  return group_item_identifier;
-}
-
 // Returns the `TabStripItemIdentifier` elements for WebStates and TabGroups in
 // `range` in `web_state_list`. If `including_groups` is set to false, then
 // TabGroups are not included in the result.
@@ -205,6 +187,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // ItemID of the dragged tab. Used to check if the dropped tab is from the
   // same Chrome window.
   web::WebStateID _dragItemID;
+  // List of items in the tab strip when a drag operation starts.
+  // Should be set back to `nil` when the drag operation ends.
+  NSMutableArray<TabStripItemIdentifier*>* _dragItems;
 }
 
 // The consumer for this object.
@@ -708,19 +693,39 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
-  // TODO(crbug.com/331749274): Implement this.
-  return nil;
+  return CreateTabGroupDragItem(tabGroupItem.tabGroup,
+                                self.browserState->IsOffTheRecord());
 }
 
-- (void)dragWillBeginForItem:(TabSwitcherItem*)item {
+- (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
   _dragItemID = item.identifier;
+  _dragItems = CreateItemIdentifiers(_webStateList,
+                                     /*including_hidden_tab_items=*/false);
+  // When a tab is dragged, it is visually removed from the collection view.
+  [_dragItems removeObject:[TabStripItemIdentifier tabIdentifier:item]];
+}
+
+- (void)dragWillBeginForTabGroupItem:(TabGroupItem*)item {
+  _dragItems = CreateItemIdentifiers(_webStateList,
+                                     /*including_hidden_tab_items=*/false);
+  // When a group is dragged, it is visually removed from the collection view,
+  // along with all the tabs within that group.
+  [_dragItems removeObject:[TabStripItemIdentifier groupIdentifier:item]];
+  for (int childWebStateIndex : item.tabGroup->range()) {
+    TabStripItemIdentifier* childItemIdentifier = CreateTabItemIdentifier(
+        _webStateList->GetWebStateAt(childWebStateIndex));
+    [_dragItems removeObject:childItemIdentifier];
+  }
 }
 
 - (void)dragSessionDidEnd {
   _dragItemID = web::WebStateID();
+  _dragItems = nil;
 }
 
-- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session {
+- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session
+                                       toIndex:
+                                           (NSUInteger)destinationItemIndex {
   UIDragItem* dragItem = session.localDragSession.items.firstObject;
 
   // Tab move operations only originate from Chrome so a local object is used.
@@ -734,6 +739,37 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       return UIDropOperationMove;
     }
 
+    // Tabs of different profiles (regular/incognito) cannot be dropped.
+    return UIDropOperationForbidden;
+  }
+
+  // Group move operations only originate from Chrome so a local object is used.
+  // Local objects allow synchronous drops, whereas NSItemProvider only allows
+  // asynchronous drops.
+  if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
+    TabGroupInfo* tabGroupInfo =
+        base::apple::ObjCCast<TabGroupInfo>(dragItem.localObject);
+
+    if (_dragItems && destinationItemIndex < _dragItems.count &&
+        _dragItems[destinationItemIndex].tabSwitcherItem) {
+      // If the drop originates from the same collection, then it is forbidden
+      // to drop a group before an already grouped tab. If the drop originates
+      // from a different collection view, a group can be dropped anywhere, but
+      // it will be inserted at a valid location.
+      int webStateIndex = GetWebStateIndex(
+          _webStateList,
+          WebStateSearchCriteria{
+              .identifier =
+                  _dragItems[destinationItemIndex].tabSwitcherItem.identifier});
+      if (_webStateList->GetGroupOfWebStateAt(webStateIndex)) {
+        return UIDropOperationForbidden;
+      }
+    }
+
+    // TODO(crbug.com/333502177) : Fix this when implementing multi profiles.
+    if (self.browserState->IsOffTheRecord() == tabGroupInfo.incognito) {
+      return UIDropOperationMove;
+    }
     // Tabs of different profiles (regular/incognito) cannot be dropped.
     return UIDropOperationForbidden;
   }
@@ -762,19 +798,52 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    if (!fromSameCollection) {
+    if (fromSameCollection) {
+      base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
+                                    DragItemOrigin::kSameCollection);
+      // Reorder tab within same grid.
+      [self moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
+    } else {
       // The tab lives in another Browser.
       // TODO(crbug.com/1515821): Need to be updated for pinned tabs.
       base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
                                     DragItemOrigin::kOtherBrwoser);
-      MoveTabToBrowser(tabInfo.tabID, self.browser, destinationIndex);
-    } else {
-      base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
-                                    DragItemOrigin::kSameCollection);
+      [self moveItemWithIDFromDifferentBrowser:tabInfo.tabID
+                                       toIndex:destinationIndex];
     }
+    return;
+  }
 
-    // Reorder tab within same grid.
-    [self moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
+  // Group move operations only originate from Chrome so a local object is used.
+  // Local objects allow synchronous drops, whereas NSItemProvider only allows
+  // asynchronous drops.
+  if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
+    TabGroupInfo* tabGroupInfo =
+        base::apple::ObjCCast<TabGroupInfo>(dragItem.localObject);
+    // Early return if the group has been closed during the drag an drop.
+    if (!tabGroupInfo.tabGroup) {
+      return;
+    }
+    if (fromSameCollection) {
+      base::UmaHistogramEnumeration(kUmaTabStripViewGroupDragOrigin,
+                                    DragItemOrigin::kSameCollection);
+    } else {
+      base::UmaHistogramEnumeration(kUmaTabStripViewGroupDragOrigin,
+                                    DragItemOrigin::kOtherBrwoser);
+    }
+    // Determine the tab strip item before which the group should be moved.
+    NSArray<TabStripItemIdentifier*>* items = _dragItems;
+    if (!items) {
+      items = CreateItemIdentifiers(self.webStateList,
+                                    /*including_hidden_tab_items=*/false);
+    }
+    TabStripItemIdentifier* nextItemIdentifier = nil;
+    if (destinationIndex < items.count) {
+      nextItemIdentifier = items[destinationIndex];
+    }
+    // Move the group before `nextItemIdentifier`.
+    MoveGroupBeforeTabStripItem(tabGroupInfo.tabGroup, nextItemIdentifier,
+                                self.browser);
     return;
   }
   base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
@@ -877,17 +946,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       _webStateList->GetGroupOfWebStateAt(webStateListIndexBeforeUpdate);
   web::WebState* sourceWebState =
       _webStateList->GetWebStateAt(webStateListIndexBeforeUpdate);
-  TabStripItemIdentifier* sourceItemIdentifier =
-      CreateTabItemIdentifier(sourceWebState);
-
-  // Simulating the move.
-  NSMutableArray<TabStripItemIdentifier*>* items = CreateItemIdentifiers(
-      _webStateList, /*including_hidden_tab_items=*/false);
-  [items removeObject:sourceItemIdentifier];
-  [items insertObject:sourceItemIdentifier atIndex:itemIndexAfterUpdate];
+  // Determine insertion params for insertion of a tab at `itemIndexAfterUpdate`
+  // in `_dragItems`.
   const WebStateList::InsertionParams insertionParams =
       [self insertionParamsForDestinationItemIndex:itemIndexAfterUpdate
-                                             items:items];
+                                             items:_dragItems];
   const TabGroup* destinationGroup = insertionParams.in_group;
   const int webStateListIndexAfterUpdate = insertionParams.desired_index;
 
@@ -915,6 +978,23 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                 webStateListIndexAfterUpdate);
 }
 
+// Moves item to the desired final item index `itemIndexAfterUpdate`.
+- (void)moveItemWithIDFromDifferentBrowser:(web::WebStateID)sourceWebStateID
+                                   toIndex:(NSUInteger)itemIndexAfterUpdate {
+  NSMutableArray<TabStripItemIdentifier*>* items = CreateItemIdentifiers(
+      _webStateList, /*including_hidden_tab_items=*/false);
+
+  if (itemIndexAfterUpdate >= items.count) {
+    MoveTabToBrowser(sourceWebStateID, self.browser, _webStateList->count());
+    return;
+  }
+
+  const WebStateList::InsertionParams insertionParams =
+      [self insertionParamsForDestinationItemIndex:itemIndexAfterUpdate
+                                             items:items];
+  MoveTabToBrowser(sourceWebStateID, self.browser, insertionParams);
+}
+
 // Inserts a new item with the given`newTabURL` at `index`.
 - (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
   // There are some circumstances where a new tab insertion can be erroniously
@@ -938,8 +1018,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // Simulating the insertion.
   NSMutableArray<TabStripItemIdentifier*>* items = CreateItemIdentifiers(
       _webStateList, /*including_hidden_tab_items=*/false);
-  [items insertObject:CreateTabItemIdentifier(webState.get()) atIndex:index];
-
   const WebStateList::InsertionParams insertionParams =
       [self insertionParamsForDestinationItemIndex:index items:items];
   _webStateList->InsertWebState(std::move(webState), insertionParams);
@@ -954,9 +1032,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                                items {
   TabStripItemIdentifier* previousItem =
       destinationItemIndex > 0 ? items[destinationItemIndex - 1] : nil;
-  TabStripItemIdentifier* nextItem = destinationItemIndex + 1 < items.count
-                                         ? items[destinationItemIndex + 1]
-                                         : nil;
+  TabStripItemIdentifier* nextItem =
+      destinationItemIndex < items.count ? items[destinationItemIndex] : nil;
   const TabGroup* destinationGroup =
       [self groupForInsertionBetweenPreviousItem:previousItem
                                         nextItem:nextItem];
