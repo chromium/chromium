@@ -35,6 +35,8 @@ class WifiDirectConnection : public mojom::WifiDirectConnection {
   // mojom::WifiDirectConnection
   void GetFrequency(GetFrequencyCallback callback) override;
 
+  void FlushForTesting();
+
  private:
   WifiDirectConnection(int shill_id, uint32_t frequency);
   mojo::PendingRemote<mojom::WifiDirectConnection> CreateRemote(

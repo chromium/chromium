@@ -81,6 +81,7 @@ class WifiDirectManagerTest : public testing::Test {
   }
 
   void ExpectConnectionsCount(size_t expected_connections_count) {
+    wifi_direct_manager_->FlushForTesting();
     EXPECT_EQ(expected_connections_count,
               wifi_direct_manager_->GetConnectionsCountForTesting());
   }
@@ -108,8 +109,6 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupSuccess) {
   EXPECT_EQ(1000u, GetFrequency(wifi_direct_connection));
   // Request disconnection from client side.
   wifi_direct_connection.reset();
-  // Wait for the disconnect callback finish running.
-  base::RunLoop().RunUntilIdle();
   ExpectConnectionsCount(0);
 }
 
@@ -142,8 +141,6 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
   EXPECT_EQ(5200u, GetFrequency(wifi_direct_connection));
   // Request disconnection from client side.
   wifi_direct_connection.reset();
-  // Wait for the disconnect callback finish running.
-  base::RunLoop().RunUntilIdle();
   ExpectConnectionsCount(0);
 }
 

@@ -49,6 +49,7 @@ class WifiDirectManager : public mojom::WifiDirectManager {
       ConnectToWifiDirectGroupCallback callback) override;
 
   size_t GetConnectionsCountForTesting() const;
+  void FlushForTesting();
 
  private:
   void OnCreateOrConnectWifiDirectGroup(

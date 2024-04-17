@@ -41,4 +41,8 @@ WifiDirectConnection::CreateRemote(base::OnceClosure disconnect_handler) {
   return pending_remote;
 }
 
+void WifiDirectConnection::FlushForTesting() {
+  receiver_.FlushForTesting();  // IN-TEST
+}
+
 }  // namespace ash::wifi_direct

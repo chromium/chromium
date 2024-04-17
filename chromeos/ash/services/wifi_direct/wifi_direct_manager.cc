@@ -130,4 +130,12 @@ size_t WifiDirectManager::GetConnectionsCountForTesting() const {
   return shill_id_to_wifi_direct_connection_.size();
 }
 
+void WifiDirectManager::FlushForTesting() {
+  receivers_.FlushForTesting();  // IN-TEST
+  for (const auto& shill_id_connection_pair :
+       shill_id_to_wifi_direct_connection_) {
+    shill_id_connection_pair.second->FlushForTesting();  // IN-TEST
+  }
+}
+
 }  // namespace ash::wifi_direct
