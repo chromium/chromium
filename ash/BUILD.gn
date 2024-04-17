@@ -4155,7 +4155,6 @@ test("ash_unittests") {
     "wm/screen_pinning_controller_unittest.cc",
     "wm/session_state_animator_impl_unittest.cc",
     "wm/snap_group/snap_group_unittest.cc",
-    "wm/splitview/split_view_controller_clamshell_unittest.cc",
     "wm/splitview/split_view_controller_unittest.cc",
     "wm/splitview/split_view_drag_indicators_unittest.cc",
     "wm/splitview/split_view_highlight_view_unittest.cc",
