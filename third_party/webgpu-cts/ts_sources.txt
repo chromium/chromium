@@ -824,6 +824,12 @@ src/webgpu/shader/validation/expression/call/builtin/unpack4x8unorm.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xI8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xU8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/workgroupUniformLoad.spec.ts
+src/webgpu/shader/validation/expression/matrix/add_sub.spec.ts
+src/webgpu/shader/validation/expression/matrix/and_or_xor.spec.ts
+src/webgpu/shader/validation/expression/matrix/bitwise_shift.spec.ts
+src/webgpu/shader/validation/expression/matrix/comparison.spec.ts
+src/webgpu/shader/validation/expression/matrix/div_rem.spec.ts
+src/webgpu/shader/validation/expression/matrix/mul.spec.ts
 src/webgpu/shader/validation/expression/unary/address_of_and_indirection.spec.ts
 src/webgpu/shader/validation/expression/unary/arithmetic_negation.spec.ts
 src/webgpu/shader/validation/expression/unary/bitwise_complement.spec.ts
@@ -879,6 +885,7 @@ src/webgpu/shader/validation/shader_io/layout_constraints.spec.ts
 src/webgpu/shader/validation/shader_io/locations.spec.ts
 src/webgpu/shader/validation/shader_io/size.spec.ts
 src/webgpu/shader/validation/shader_io/workgroup_size.spec.ts
+src/webgpu/shader/validation/statement/break_if.spec.ts
 src/webgpu/shader/validation/statement/for.spec.ts
 src/webgpu/shader/validation/statement/if.spec.ts
 src/webgpu/shader/validation/statement/increment_decrement.spec.ts
