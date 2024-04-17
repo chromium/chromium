@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/cross_origin_opener_policy_access_report_manager.h"
+#include "content/browser/security/coop/cross_origin_opener_policy_access_report_manager.h"
 
 #include <utility>
 

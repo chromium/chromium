@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/cross_origin_opener_policy_status.h"
+#include "content/browser/security/coop/cross_origin_opener_policy_status.h"
 
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "content/browser/renderer_host/cross_origin_opener_policy_access_report_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/browser/security/coop/cross_origin_opener_policy_access_report_manager.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"

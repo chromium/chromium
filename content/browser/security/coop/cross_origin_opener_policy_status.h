@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_CROSS_ORIGIN_OPENER_POLICY_STATUS_H_
-#define CONTENT_BROWSER_RENDERER_HOST_CROSS_ORIGIN_OPENER_POLICY_STATUS_H_
+#ifndef CONTENT_BROWSER_SECURITY_COOP_CROSS_ORIGIN_OPENER_POLICY_STATUS_H_
+#define CONTENT_BROWSER_SECURITY_COOP_CROSS_ORIGIN_OPENER_POLICY_STATUS_H_
 
 #include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "content/browser/renderer_host/coop_swap_result.h"
+#include "content/browser/security/coop/coop_swap_result.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
@@ -196,4 +196,4 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_CROSS_ORIGIN_OPENER_POLICY_STATUS_H_
+#endif  // CONTENT_BROWSER_SECURITY_COOP_CROSS_ORIGIN_OPENER_POLICY_STATUS_H_

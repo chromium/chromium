@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/coop_related_group.h"
+#include "content/browser/security/coop/coop_related_group.h"
 
 #include "content/browser/browsing_instance.h"
 #include "content/browser/site_instance_impl.h"

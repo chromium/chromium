@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_CROSS_ORIGIN_OPENER_POLICY_ACCESS_REPORT_MANAGER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_CROSS_ORIGIN_OPENER_POLICY_ACCESS_REPORT_MANAGER_H_
+#ifndef CONTENT_BROWSER_SECURITY_COOP_CROSS_ORIGIN_OPENER_POLICY_ACCESS_REPORT_MANAGER_H_
+#define CONTENT_BROWSER_SECURITY_COOP_CROSS_ORIGIN_OPENER_POLICY_ACCESS_REPORT_MANAGER_H_
 
 #include <string>
 
 #include "base/values.h"
-#include "content/browser/network/cross_origin_opener_policy_reporter.h"
-#include "content/browser/renderer_host/coop_swap_result.h"
+#include "content/browser/security/coop/cross_origin_opener_policy_reporter.h"
+#include "content/browser/security/coop/coop_swap_result.h"
 
 namespace content {
 
@@ -73,4 +73,4 @@ class CrossOriginOpenerPolicyAccessReportManager {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_CROSS_ORIGIN_OPENER_POLICY_ACCESS_REPORT_MANAGER_H_
+#endif  // CONTENT_BROWSER_SECURITY_COOP_CROSS_ORIGIN_OPENER_POLICY_ACCESS_REPORT_MANAGER_H_

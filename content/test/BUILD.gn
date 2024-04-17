@@ -1393,7 +1393,6 @@ test("content_browsertests") {
     "../browser/content_index/content_index_browsertest.cc",
     "../browser/content_security_policy_browsertest.cc",
     "../browser/cookie_deprecation_label/cookie_deprecation_label_browsertest.cc",
-    "../browser/cross_origin_opener_policy_browsertest.cc",
     "../browser/cross_site_transfer_browsertest.cc",
     "../browser/data_decoder_browsertest.cc",
     "../browser/database_browsertest.cc",
@@ -1577,6 +1576,7 @@ test("content_browsertests") {
     "../browser/resource_loading_browsertest.cc",
     "../browser/screen_details/screen_details_browsertest.cc",
     "../browser/screen_orientation/screen_orientation_browsertest.cc",
+    "../browser/security/coop/cross_origin_opener_policy_browsertest.cc",
     "../browser/security_exploit_browsertest.cc",
     "../browser/service_process_host_browsertest.cc",
     "../browser/service_worker/service_worker_auth_browsertest.cc",
@@ -1703,9 +1703,7 @@ test("content_browsertests") {
   }
 
   if (enable_reporting) {
-    sources += [
-      "../browser/network/cross_origin_opener_policy_reporting_browsertest.cc",
-    ]
+    sources += [ "../browser/security/coop/cross_origin_opener_policy_reporting_browsertest.cc" ]
   }
 
   if (use_viz_debugger) {
@@ -2540,7 +2538,6 @@ test("content_unittests") {
     "../browser/mojo_binder_policy_applier_unittest.cc",
     "../browser/mojo_binder_policy_map_impl_unittest.cc",
     "../browser/network/cross_origin_embedder_policy_reporter_unittest.cc",
-    "../browser/network/cross_origin_opener_policy_reporter_unittest.cc",
     "../browser/network/network_quality_observer_impl_unittest.cc",
     "../browser/network/socket_broker_impl_unittest.cc",
     "../browser/network_context_client_base_impl_unittest.cc",
@@ -2608,7 +2605,6 @@ test("content_unittests") {
     "../browser/renderer_host/browsing_context_group_swap_unittest.cc",
     "../browser/renderer_host/clipboard_host_impl_unittest.cc",
     "../browser/renderer_host/commit_deferring_condition_runner_unittest.cc",
-    "../browser/renderer_host/cross_origin_opener_policy_status_unittest.cc",
     "../browser/renderer_host/cursor_manager_unittest.cc",
     "../browser/renderer_host/display_feature_unittest.cc",
     "../browser/renderer_host/document_service_unittest.cc",
@@ -2684,6 +2680,8 @@ test("content_unittests") {
     "../browser/scheduler/responsiveness/watcher_unittest.cc",
     "../browser/screen_orientation/screen_orientation_provider_unittest.cc",
     "../browser/screenlock_monitor/screenlock_monitor_unittest.cc",
+    "../browser/security/coop/cross_origin_opener_policy_reporter_unittest.cc",
+    "../browser/security/coop/cross_origin_opener_policy_status_unittest.cc",
     "../browser/service_worker/embedded_worker_instance_unittest.cc",
     "../browser/service_worker/service_worker_cache_writer_unittest.cc",
     "../browser/service_worker/service_worker_container_host_unittest.cc",

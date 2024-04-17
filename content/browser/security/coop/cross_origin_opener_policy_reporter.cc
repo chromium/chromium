@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/network/cross_origin_opener_policy_reporter.h"
+#include "content/browser/security/coop/cross_origin_opener_policy_reporter.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
