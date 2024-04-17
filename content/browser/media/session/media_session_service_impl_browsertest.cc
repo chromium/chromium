@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
 // side.
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 // crbug.com/927234.
 #define MAYBE_ResetServiceWhenNavigatingAway \
   DISABLED_ResetServiceWhenNavigatingAway
