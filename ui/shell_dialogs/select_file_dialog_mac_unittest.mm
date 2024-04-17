@@ -179,32 +179,33 @@ TEST_F(SelectFileDialogMacTest, ExtensionPopup) {
   // passed and no default extension was provided.
   EXPECT_EQ(0, popup.indexOfSelectedItem);
 
-  if (@available(macOS 11, *)) {
-    ASSERT_EQ(1lu, panel.allowedContentTypes.count);
-    EXPECT_NSEQ(UTTypeHTML, panel.allowedContentTypes[0]);
-  } else {
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"htm"]);
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"html"]);
-    // Extensions should appear in order of input.
-    EXPECT_LT([panel.allowedFileTypes indexOfObject:@"html"],
-              [panel.allowedFileTypes indexOfObject:@"htm"]);
-    EXPECT_FALSE([panel.allowedFileTypes containsObject:@"jpg"]);
-  }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  NSArray<NSString*>* file_types = panel.allowedFileTypes;
+#pragma clang diagnostic pop
+
+  EXPECT_TRUE([file_types containsObject:@"htm"]);
+  EXPECT_TRUE([file_types containsObject:@"html"]);
+  // Extensions should appear in order of input.
+  EXPECT_LT([file_types indexOfObject:@"html"],
+            [file_types indexOfObject:@"htm"]);
+  EXPECT_FALSE([file_types containsObject:@"jpg"]);
 
   // Select the second item.
   [popup.menu performActionForItemAtIndex:1];
   EXPECT_EQ(1, popup.indexOfSelectedItem);
-  if (@available(macOS 11, *)) {
-    ASSERT_EQ(1lu, panel.allowedContentTypes.count);
-    EXPECT_NSEQ(UTTypeJPEG, panel.allowedContentTypes[0]);
-  } else {
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"jpg"]);
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"jpeg"]);
-    // Extensions should appear in order of input.
-    EXPECT_LT([panel.allowedFileTypes indexOfObject:@"jpeg"],
-              [panel.allowedFileTypes indexOfObject:@"jpg"]);
-    EXPECT_FALSE([panel.allowedFileTypes containsObject:@"html"]);
-  }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  file_types = panel.allowedFileTypes;
+#pragma clang diagnostic pop
+
+  EXPECT_TRUE([file_types containsObject:@"jpg"]);
+  EXPECT_TRUE([file_types containsObject:@"jpeg"]);
+  // Extensions should appear in order of input.
+  EXPECT_LT([file_types indexOfObject:@"jpeg"],
+            [file_types indexOfObject:@"jpg"]);
+  EXPECT_FALSE([file_types containsObject:@"html"]);
 }
 
 // Verify file_type_info.include_all_files argument is respected.
@@ -265,14 +266,15 @@ TEST_F(SelectFileDialogMacTest, InitialSelection) {
   // Verify that the `file_type_index` causes the second item to be initially
   // selected.
   EXPECT_EQ(1, popup.indexOfSelectedItem);
-  if (@available(macOS 11, *)) {
-    ASSERT_EQ(1lu, panel.allowedContentTypes.count);
-    EXPECT_NSEQ(UTTypeJPEG, panel.allowedContentTypes[0]);
-  } else {
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"jpg"]);
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"jpeg"]);
-    EXPECT_FALSE([panel.allowedFileTypes containsObject:@"html"]);
-  }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  NSArray<NSString*>* file_types = panel.allowedFileTypes;
+#pragma clang diagnostic pop
+
+  EXPECT_TRUE([file_types containsObject:@"jpg"]);
+  EXPECT_TRUE([file_types containsObject:@"jpeg"]);
+  EXPECT_FALSE([file_types containsObject:@"html"]);
 
   ResetDialog();
   args.file_type_index = 0;
@@ -284,15 +286,16 @@ TEST_F(SelectFileDialogMacTest, InitialSelection) {
   // Verify that the first item was selected, since the default extension passed
   // was not present in the extension list.
   EXPECT_EQ(0, popup.indexOfSelectedItem);
-  if (@available(macOS 11, *)) {
-    ASSERT_EQ(1lu, panel.allowedContentTypes.count);
-    EXPECT_NSEQ(UTTypeHTML, panel.allowedContentTypes[0]);
-  } else {
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"html"]);
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"htm"]);
-    EXPECT_FALSE([panel.allowedFileTypes containsObject:@"pdf"]);
-    EXPECT_FALSE([panel.allowedFileTypes containsObject:@"jpeg"]);
-  }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  file_types = panel.allowedFileTypes;
+#pragma clang diagnostic pop
+
+  EXPECT_TRUE([file_types containsObject:@"html"]);
+  EXPECT_TRUE([file_types containsObject:@"htm"]);
+  EXPECT_FALSE([file_types containsObject:@"pdf"]);
+  EXPECT_FALSE([file_types containsObject:@"jpeg"]);
 
   ResetDialog();
   args.file_type_index = 0;
@@ -304,14 +307,15 @@ TEST_F(SelectFileDialogMacTest, InitialSelection) {
   // Verify that the extension group corresponding to the default extension is
   // initially selected.
   EXPECT_EQ(1, popup.indexOfSelectedItem);
-  if (@available(macOS 11, *)) {
-    ASSERT_EQ(1lu, panel.allowedContentTypes.count);
-    EXPECT_NSEQ(UTTypeJPEG, panel.allowedContentTypes[0]);
-  } else {
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"jpg"]);
-    EXPECT_TRUE([panel.allowedFileTypes containsObject:@"jpeg"]);
-    EXPECT_FALSE([panel.allowedFileTypes containsObject:@"html"]);
-  }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  file_types = panel.allowedFileTypes;
+#pragma clang diagnostic pop
+
+  EXPECT_TRUE([file_types containsObject:@"jpg"]);
+  EXPECT_TRUE([file_types containsObject:@"jpeg"]);
+  EXPECT_FALSE([file_types containsObject:@"html"]);
 }
 
 // Verify that an appropriate extension description is shown even if an empty
