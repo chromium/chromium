@@ -123,6 +123,11 @@ TARGET_DEVICES = {
             'long_running:tools:gmail-background': 10,
             'browse:media:youtubetv:2019': 10
         },
+        # set speedometer to 20 shards to help warm up speedometer2
+        # benchmark runs on linux-perf b/325578543
+        'speedometer': {
+            'http://browserbench.org/Speedometer/': 20,
+        },
         'speedometer2': {
             'Speedometer2': 20,
         },
