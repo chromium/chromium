@@ -44,7 +44,8 @@ class DefaultBrowserPromptManagerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
 
     manager_ = DefaultBrowserPromptManager::GetInstance();
-    manager_->CloseAllPrompts();
+    manager_->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kAccept);
 
     // Set up a single tab in the foreground.
     std::unique_ptr<content::WebContents> contents =
@@ -82,7 +83,8 @@ class DefaultBrowserPromptManagerTest : public BrowserWithTestWindowTest {
       local_state()->ClearPref(prefs::kDefaultBrowserDeclinedCount);
     }
 
-    manager()->CloseAllPrompts();
+    manager()->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kAccept);
 
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(
@@ -155,6 +157,30 @@ TEST_F(DefaultBrowserPromptManagerTest, HidesAppMenuItemWithParamDisabled) {
 
   manager->MaybeShowPrompt();
   ASSERT_FALSE(manager->get_show_app_menu_item());
+}
+
+TEST_F(DefaultBrowserPromptManagerTest, AppMenuItemHiddenOnPromptAccept) {
+  EnableDefaultBrowserPromptRefreshFeatureWithParams(
+      {{features::kShowDefaultBrowserAppMenuItem.name, "true"}});
+
+  auto* manager = DefaultBrowserPromptManager::GetInstance();
+  manager->MaybeShowPrompt();
+  ASSERT_TRUE(manager->get_show_app_menu_item());
+
+  manager->CloseAllPrompts(DefaultBrowserPromptManager::CloseReason::kAccept);
+  ASSERT_FALSE(manager->get_show_app_menu_item());
+}
+
+TEST_F(DefaultBrowserPromptManagerTest, AppMenuItemPersistsOnPromptDismissed) {
+  EnableDefaultBrowserPromptRefreshFeatureWithParams(
+      {{features::kShowDefaultBrowserAppMenuItem.name, "true"}});
+
+  auto* manager = DefaultBrowserPromptManager::GetInstance();
+  manager->MaybeShowPrompt();
+  ASSERT_TRUE(manager->get_show_app_menu_item());
+
+  manager->CloseAllPrompts(DefaultBrowserPromptManager::CloseReason::kDismiss);
+  ASSERT_TRUE(manager->get_show_app_menu_item());
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {

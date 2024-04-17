@@ -1122,8 +1122,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       }
       DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
           browser_->profile());
-      DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts();
-
+      DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+          DefaultBrowserPromptManager::CloseReason::kAccept);
       break;
 #endif
     default:
