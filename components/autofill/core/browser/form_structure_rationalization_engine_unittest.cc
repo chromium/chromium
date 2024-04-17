@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -201,7 +202,7 @@ TEST(FormStructureRationalizationEngine,
       kMXContext, requires_address_line1_type, field));
 
   // Non-matching type.
-  field.set_heuristic_type(HeuristicSource::kLegacy, NAME_FIRST);
+  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
   ASSERT_EQ(field.Type().GetStorableType(), NAME_FIRST);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_possible_types_required, field));
@@ -209,7 +210,7 @@ TEST(FormStructureRationalizationEngine,
       kMXContext, requires_address_line1_type, field));
 
   // Matching type.
-  field.set_heuristic_type(HeuristicSource::kLegacy, ADDRESS_HOME_LINE1);
+  field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_LINE1);
   ASSERT_EQ(field.Type().GetStorableType(), ADDRESS_HOME_LINE1);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_possible_types_required, field));

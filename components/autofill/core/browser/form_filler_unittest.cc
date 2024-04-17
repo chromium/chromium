@@ -783,7 +783,7 @@ TEST_F(FormFillerTest, FillAddressForm_AutocompleteOffFillingBehavior) {
            {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
   FormsSeen({form});
   FormStructure* form_structure = GetFormStructure(form);
-  form_structure->field(1)->set_heuristic_type(HeuristicSource::kLegacy,
+  form_structure->field(1)->set_heuristic_type(GetActiveHeuristicSource(),
                                                NAME_MIDDLE);
   ASSERT_EQ(form_structure->field(1)->Type().GetStorableType(), NAME_MIDDLE);
 
