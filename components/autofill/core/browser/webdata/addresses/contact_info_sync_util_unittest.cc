@@ -112,6 +112,69 @@ AutofillProfile ConstructBaseProfile(
   return profile;
 }
 
+AutofillProfile ConstructCompleteProfileAU() {
+  AutofillProfile profile = ConstructBaseProfile(AddressCountryCode("AU"));
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Sydney",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"NWS",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, u"Unit 7 Level 8 189 Great Eastern Highway",
+      VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME,
+                                           u"Great Eastern Highway",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"189",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_LOCATION,
+                                           u"189 Great Eastern Highway",
+                                           VerificationStatus::kFormatted);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SUBPREMISE,
+                                           u"Unit 7 Level 8",
+                                           VerificationStatus::kFormatted);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT, u"Unit 7",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT_NUM, u"7",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT_TYPE, u"Unit",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_FLOOR, u"8",
+                                           VerificationStatus::kParsed);
+
+  profile.ClearFields({ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_SORTING_CODE,
+                       ADDRESS_HOME_DEPENDENT_LOCALITY});
+  return profile;
+}
+
+AutofillProfile ConstructCompleteProfileDE() {
+  AutofillProfile profile = ConstructBaseProfile(AddressCountryCode("DE"));
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Enkenbach",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, u"Mozartstr. 9\n Obergeschoss 2 Wohnung 3",
+      VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_NAME, u"Mozartstr.", VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"9",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_LOCATION,
+                                           u"Mozartstr. 9",
+                                           VerificationStatus::kFormatted);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_OVERFLOW,
+                                           u"Obergeschoss 2 Wohnung 3",
+                                           VerificationStatus::kParsed);
+
+  profile.ClearFields({ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_SORTING_CODE,
+                       ADDRESS_HOME_FLOOR, ADDRESS_HOME_STATE,
+                       ADDRESS_HOME_DEPENDENT_LOCALITY});
+  return profile;
+}
+
 AutofillProfile ConstructCompleteProfileBR() {
   AutofillProfile profile = ConstructBaseProfile(AddressCountryCode("BR"));
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Belo Horizonte",
@@ -369,6 +432,83 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
   return specifics;
 }
 
+ContactInfoSpecifics ConstructCompleteSpecificsAU() {
+  ContactInfoSpecifics specifics = ConstructBaseSpecifics();
+
+  SetToken(specifics.mutable_address_country(), "AU",
+           ContactInfoSpecifics::OBSERVED);
+  SetToken(specifics.mutable_address_city(), "Sydney",
+           ContactInfoSpecifics::OBSERVED);
+  SetToken(specifics.mutable_address_state(), "NWS",
+           ContactInfoSpecifics::OBSERVED);
+
+  SetToken(specifics.mutable_address_street_address(),
+           "Unit 7 Level 8 189 Great Eastern Highway",
+           ContactInfoSpecifics::OBSERVED);
+  SetToken(specifics.mutable_address_thoroughfare_name(),
+           "Great Eastern Highway", ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_thoroughfare_number(), "189",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_street_location(),
+           "189 Great Eastern Highway", ContactInfoSpecifics::FORMATTED);
+  SetToken(specifics.mutable_address_subpremise_name(), "Unit 7 Level 8",
+           ContactInfoSpecifics::FORMATTED);
+  SetToken(specifics.mutable_address_apt(), "Unit 7",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_apt_num(), "7",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_apt_type(), "Unit",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_floor(), "8",
+           ContactInfoSpecifics::PARSED);
+
+  // Reset unused tokens from the default info.
+  SetToken(specifics.mutable_address_sorting_code(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_admin_level_2(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_dependent_locality(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+
+  return specifics;
+}
+
+ContactInfoSpecifics ConstructCompleteSpecificsDE() {
+  ContactInfoSpecifics specifics = ConstructBaseSpecifics();
+
+  SetToken(specifics.mutable_address_country(), "DE",
+           ContactInfoSpecifics::OBSERVED);
+  SetToken(specifics.mutable_address_city(), "Enkenbach",
+           ContactInfoSpecifics::OBSERVED);
+
+  SetToken(specifics.mutable_address_street_address(),
+           "Mozartstr. 9\n Obergeschoss 2 Wohnung 3",
+           ContactInfoSpecifics::OBSERVED);
+  SetToken(specifics.mutable_address_thoroughfare_name(), "Mozartstr.",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_thoroughfare_number(), "9",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_street_location(), "Mozartstr. 9",
+           ContactInfoSpecifics::FORMATTED);
+  SetToken(specifics.mutable_address_overflow(), "Obergeschoss 2 Wohnung 3",
+           ContactInfoSpecifics::PARSED);
+
+  // Reset unused tokens from the default info.
+  SetToken(specifics.mutable_address_sorting_code(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_admin_level_2(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_dependent_locality(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_state(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_apt_num(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_floor(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  return specifics;
+}
+
 ContactInfoSpecifics ConstructCompleteSpecificsBR() {
   ContactInfoSpecifics specifics = ConstructBaseSpecifics();
 
@@ -518,7 +658,14 @@ ContactInfoSpecifics ConstructCompleteSpecificsIN() {
 
 }  // namespace
 
-enum class I18nCountryModel { kLegacy = 0, kBR = 1, kMX = 2, kIN = 3 };
+enum class I18nCountryModel {
+  kLegacy = 0,
+  kAU = 1,
+  kBR = 2,
+  kDE = 3,
+  kIN = 4,
+  kMX = 5
+};
 
 // The tests are parametrized with a country to assert that all custom address
 // models are supported.
@@ -529,7 +676,9 @@ class ContactInfoSyncUtilTest
   ContactInfoSyncUtilTest() {
     features_.InitWithFeatures(
         {features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseAUAddressModel,
          features::kAutofillUseBRAddressModel,
+         features::kAutofillUseDEAddressModel,
          features::kAutofillUseINAddressModel,
          features::kAutofillUseMXAddressModel,
          features::kAutofillEnableSupportForLandmark,
@@ -547,8 +696,12 @@ class ContactInfoSyncUtilTest
     switch (country_model) {
       case I18nCountryModel::kLegacy:
         return ConstructBaseProfile();
+      case I18nCountryModel::kAU:
+        return ConstructCompleteProfileAU();
       case I18nCountryModel::kBR:
         return ConstructCompleteProfileBR();
+      case I18nCountryModel::kDE:
+        return ConstructCompleteProfileDE();
       case I18nCountryModel::kMX:
         return ConstructCompleteProfileMX();
       case I18nCountryModel::kIN:
@@ -561,8 +714,12 @@ class ContactInfoSyncUtilTest
     switch (country_model) {
       case I18nCountryModel::kLegacy:
         return ConstructBaseSpecifics();
+      case I18nCountryModel::kAU:
+        return ConstructCompleteSpecificsAU();
       case I18nCountryModel::kBR:
         return ConstructCompleteSpecificsBR();
+      case I18nCountryModel::kDE:
+        return ConstructCompleteSpecificsDE();
       case I18nCountryModel::kMX:
         return ConstructCompleteSpecificsMX();
       case I18nCountryModel::kIN:

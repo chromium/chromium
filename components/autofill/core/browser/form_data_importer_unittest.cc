@@ -521,7 +521,10 @@ class FormDataImporterTest : public testing::Test {
   FormDataImporterTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseAUAddressModel,
          features::kAutofillUseBRAddressModel,
+         features::kAutofillUseDEAddressModel,
+         features::kAutofillUseINAddressModel,
          features::kAutofillUseMXAddressModel,
          features::kAutofillEnableDependentLocalityParsing,
          features::kAutofillEnableSupportForApartmentNumbers,
@@ -776,7 +779,6 @@ class FormDataImporterTest : public testing::Test {
 TEST_F(FormDataImporterTest, ComplementCountry_PartOfForm) {
   AutofillProfile kDefaultGermanProfile =
       ConstructDefaultProfileWithOverriddenCountry("DE");
-  kDefaultGermanProfile.ClearFields({ADDRESS_HOME_STATE});
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(
           GetDefaultProfileTypeValuePairsWithOverriddenCountry("Germany"));
@@ -789,7 +791,6 @@ TEST_F(FormDataImporterTest, ComplementCountry_PartOfForm) {
 TEST_F(FormDataImporterTest, ComplementCountry_VariationCountryCode) {
   AutofillProfile kDefaultGermanProfile =
       ConstructDefaultProfileWithOverriddenCountry("DE");
-  kDefaultGermanProfile.ClearFields({ADDRESS_HOME_STATE});
 
   autofill_client_->SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
 
@@ -828,8 +829,6 @@ TEST_F(FormDataImporterTest, ComplementCountry_PhoneNumberParsing) {
 
   AutofillProfile expected_profile =
       ConstructDefaultProfileWithOverriddenCountry("DE");
-  // In Germany, state information is not imported.
-  expected_profile.ClearFields({ADDRESS_HOME_STATE});
 
   // Create an address form with `kNationalNumber` and without a country field.
   TypeValuePairs type_value_pairs =
@@ -3823,10 +3822,10 @@ TEST_F(FormDataImporterTest, UnusableIncompleteProfile) {
 // Note that this function doesn't test the removal functionality itself. This
 // is done in the AutofillProfile unit tests.
 TEST_F(FormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
-  // State is setting-inaccessible in Germany. Expect that when importing a
-  // German profile with a state, the state information is removed.
+  // State is setting-inaccessible in Bermuda. Expect that when importing a
+  // Bermudan profile with a state, the state information is removed.
   TypeValuePairs type_value_pairs =
-      GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("BM");
   ASSERT_EQ(type_value_pairs[6].first, ADDRESS_HOME_STATE);
 
   std::unique_ptr<FormStructure> form_structure =

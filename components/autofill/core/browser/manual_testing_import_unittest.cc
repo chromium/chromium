@@ -323,7 +323,10 @@ class ManualTestingImportTesti18n : public ManualTestingImportTest {
  public:
   ManualTestingImportTesti18n() {
     features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
+                                features::kAutofillUseAUAddressModel,
                                 features::kAutofillUseBRAddressModel,
+                                features::kAutofillUseDEAddressModel,
+                                features::kAutofillUseINAddressModel,
                                 features::kAutofillUseMXAddressModel},
                                {});
   }

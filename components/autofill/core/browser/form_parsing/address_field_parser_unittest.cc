@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_parsing/address_field_parser.h"
-#include "components/autofill/core/browser/field_types.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -21,9 +22,12 @@ class AddressFieldParserTest
  public:
   AddressFieldParserTest() : FormFieldParserTestBase(GetParam()) {
     default_features.InitWithFeatures({features::kAutofillUseI18nAddressModel,
+                                       features::kAutofillUseAUAddressModel,
                                        features::kAutofillUseBRAddressModel,
+                                       features::kAutofillUseDEAddressModel,
+                                       features::kAutofillUsePLAddressModel,
                                        features::kAutofillUseINAddressModel,
-                                       features::kAutofillUsePLAddressModel},
+                                       features::kAutofillUseMXAddressModel},
                                       {});
   }
   AddressFieldParserTest(const AddressFieldParserTest&) = delete;
@@ -274,14 +278,33 @@ TEST_P(AddressFieldParserTest, ParseAdminLevel2) {
 // Tests that overflow field is correctly classified.
 TEST_P(AddressFieldParserTest, ParseOverflow) {
   // TODO(crbug.com/1441904): Remove once launched.
+  struct TestCase {
+    std::string field_name;
+    std::string field_label;
+    std::string country_code;
+    std::string language_code;
+  };
+  std::vector<TestCase> testcases = {
+      {"complemento", "Complemento", "BR", "pt"},
+      {"adresszusatz", "Adresszusatz", "DE", "de"},
+  };
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures({features::kAutofillEnableSupportForAddressOverflow,
-                            features::kAutofillUseBRAddressModel},
+                            features::kAutofillUseBRAddressModel,
+                            features::kAutofillUseDEAddressModel},
                            {});
 
-  AddTextFormFieldData("complemento", "Complemento", ADDRESS_HOME_OVERFLOW);
-  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("BR"),
-                    LanguageCode("pt"));
+  for (const TestCase& test : testcases) {
+    SCOPED_TRACE(testing::Message() << "field_name=" << test.field_name
+                                    << " field_label=" << test.field_label
+                                    << " country_code=" << test.country_code
+                                    << " language_code=" << test.language_code);
+    AddTextFormFieldData(test.field_name, test.field_label,
+                         ADDRESS_HOME_OVERFLOW);
+    ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode(test.country_code),
+                      LanguageCode(test.language_code));
+    ClearFieldsAndExpectations();
+  }
 }
 
 // Tests that overflow field is correctly classified.

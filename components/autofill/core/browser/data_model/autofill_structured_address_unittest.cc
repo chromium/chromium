@@ -945,7 +945,10 @@ class AutofillI18nStructuredAddress : public testing::Test {
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
          features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseAUAddressModel,
          features::kAutofillUseBRAddressModel,
+         features::kAutofillUseDEAddressModel,
+         features::kAutofillUseINAddressModel,
          features::kAutofillUseMXAddressModel},
         {});
   }
