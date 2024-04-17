@@ -7,6 +7,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -37,6 +38,7 @@ typedef struct _PROCESSOR_POWER_INFORMATION {
 
 double EstimateCpuFrequency() {
 #if defined(ARCH_CPU_X86_FAMILY)
+  TRACE_EVENT0("power", "EstimateCpuFrequency");
   // The heuristic to estimate CPU frequency is based on UIforETW code.
   // see: https://github.com/google/UIforETW/blob/main/UIforETW/CPUFrequency.cpp
   //      https://github.com/google/UIforETW/blob/main/UIforETW/SpinALot64.asm
