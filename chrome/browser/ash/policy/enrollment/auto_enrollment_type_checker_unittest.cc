@@ -730,7 +730,7 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, OfficialBuild) {
       AutoEnrollmentTypeChecker::kUnifiedStateDeterminationOfficialBuild);
 
   EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
-            !kill_switch_enabled_ && google_branded_);
+            !kill_switch_enabled_ && IsOfficialGoogleOS());
 }
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Never) {
