@@ -35,7 +35,6 @@
   customize-chrome-cards,
   customize-chrome-categories,
   customize-chrome-themes,
-  customize-chrome-chrome-colors,
   customize-chrome-wallpaper-search,
   customize-chrome-toolbar {
     display: block;
@@ -148,16 +147,12 @@
   <customize-chrome-categories on-back-click="onBackClick_"
       on-collection-select="onCollectionSelect_" page-name="categories"
       id="categoriesPage" on-local-image-upload="onLocalImageUpload_"
-      on-chrome-colors-select="onChromeColorsSelect_"
       on-wallpaper-search-select="onWallpaperSearchSelect_">
   </customize-chrome-categories>
   <customize-chrome-themes on-back-click="onBackClick_"
       page-name="themes" id="themesPage"
       selected-collection="[[selectedCollection_]]">
   </customize-chrome-themes>
-  <customize-chrome-chrome-colors on-back-click="onBackClick_"
-      page-name="chrome-colors" id="chromeColorsPage">
-  </customize-chrome-chrome-colors>
   <template is="dom-if" if="[[wallpaperSearchEnabled_]]">
     <customize-chrome-wallpaper-search on-back-click="onBackClick_"
         page-name="wallpaper-search" id="wallpaperSearchPage">

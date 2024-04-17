@@ -10,7 +10,6 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './appearance.js';
 import './cards.js';
 import './categories.js';
-import './chrome_colors.js';
 import './shortcuts.js';
 import './themes.js';
 import './toolbar.js';
@@ -26,7 +25,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './app.html.js';
 import type {AppearanceElement} from './appearance.js';
 import type {CategoriesElement} from './categories.js';
-import type {ChromeColorsElement} from './chrome_colors.js';
 import type {BackgroundCollection, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
 import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
@@ -46,7 +44,6 @@ export enum CustomizeChromePage {
   CATEGORIES = 'categories',
   THEMES = 'themes',
   TOOLBAR = 'toolbar',
-  CHROME_COLORS = 'chrome-colors',
   WALLPAPER_SEARCH = 'wallpaper-search',
 }
 
@@ -59,7 +56,6 @@ export interface AppElement {
     categoriesPage: CategoriesElement,
     themesPage: ThemesElement,
     appearanceElement: AppearanceElement,
-    chromeColorsPage: ChromeColorsElement,
   };
 }
 
@@ -159,7 +155,6 @@ export class AppElement extends AppElementBase {
         this.$.appearanceElement.focusOnThemeButton();
         break;
       case CustomizeChromePage.THEMES:
-      case CustomizeChromePage.CHROME_COLORS:
       case CustomizeChromePage.WALLPAPER_SEARCH:
         this.page_ = CustomizeChromePage.CATEGORIES;
         this.$.categoriesPage.focusOnBackButton();
@@ -181,11 +176,6 @@ export class AppElement extends AppElementBase {
   private onLocalImageUpload_() {
     this.page_ = CustomizeChromePage.OVERVIEW;
     this.$.appearanceElement.focusOnThemeButton();
-  }
-
-  private onChromeColorsSelect_() {
-    this.page_ = CustomizeChromePage.CHROME_COLORS;
-    this.$.chromeColorsPage.focusOnBackButton();
   }
 
   private onWallpaperSearchSelect_() {

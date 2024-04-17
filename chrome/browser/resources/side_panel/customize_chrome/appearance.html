@@ -117,14 +117,14 @@
 </customize-chrome-hover-button>
 <div id="editButtonsContainer">
   <cr-button id="editThemeButton" on-click="onEditThemeClicked_"
-      class$="[[themeButtonClass_]]">
+      class="floating-button">
     <div id="editThemeIcon" class="cr-icon edit-theme-icon" slot="prefix-icon"
         hidden$="[[wallpaperSearchButtonEnabled_]]"></div>
     [[editThemeButtonText_]]
   </cr-button>
   <template is="dom-if" if="[[wallpaperSearchButtonEnabled_]]">
     <cr-button id="wallpaperSearchButton" on-click="onWallpaperSearchClicked_"
-        class$="[[themeButtonClass_]]">
+        class="floating-button">
       <div id="wallpaperSearchIcon" class="cr-icon edit-theme-icon"
           slot="prefix-icon"></div>
       $i18n{wallpaperSearchTileLabel}
@@ -132,10 +132,8 @@
   </template>
 </div>
 <hr class="sp-hr">
-<customize-color-scheme-mode>
-</customize-color-scheme-mode>
-<cr-theme-color-picker id="chromeColors"
-    hidden$="[[!showColorPicker_]]">
+<customize-color-scheme-mode></customize-color-scheme-mode>
+<cr-theme-color-picker id="chromeColors" hidden$="[[!showColorPicker_]]">
 </cr-theme-color-picker>
 <hr class="sp-hr" hidden$="[[!showBottomDivider_]]">
 <div id="followThemeToggle" class="sp-card-content"

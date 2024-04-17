@@ -69,11 +69,6 @@ export class CategoriesElement extends CategoriesElementBase {
 
   static get properties() {
     return {
-      chromeRefresh2023Enabled_: {
-        type: Boolean,
-        value: () =>
-            document.documentElement.hasAttribute('chrome-refresh-2023'),
-      },
       collections_: Array,
       theme_: Object,
       selectedCategory_: {
@@ -91,10 +86,6 @@ export class CategoriesElement extends CategoriesElementBase {
       isWallpaperSearchSelected_: {
         type: Boolean,
         computed: 'computeIsWallpaperSearchSelected_(selectedCategory_)',
-      },
-      isChromeColorsSelected_: {
-        type: Boolean,
-        computed: 'computeIsChromeColorsSelected_(selectedCategory_)',
       },
       wallpaperSearchEnabled_: {
         type: Boolean,
@@ -205,10 +196,6 @@ export class CategoriesElement extends CategoriesElementBase {
     return this.selectedCategory_.type === CategoryType.WALLPAPER_SEARCH;
   }
 
-  private computeIsChromeColorsSelected_() {
-    return this.selectedCategory_.type === CategoryType.COLOR;
-  }
-
   private isCollectionSelected_(id: string) {
     return this.selectedCategory_.type === CategoryType.COLLECTION &&
         this.selectedCategory_.collectionId === id;
@@ -244,10 +231,6 @@ export class CategoriesElement extends CategoriesElementBase {
     if (success) {
       this.dispatchEvent(new Event('local-image-upload'));
     }
-  }
-
-  private async onChromeColorsClick_() {
-    this.dispatchEvent(new Event('chrome-colors-select'));
   }
 
   private onCollectionClick_(e: DomRepeatEvent<BackgroundCollection>) {

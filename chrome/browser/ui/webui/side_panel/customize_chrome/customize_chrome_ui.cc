@@ -94,7 +94,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"toolbarHeader", IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL},
       // Appearance strings.
       {"changeTheme", IDS_NTP_CUSTOMIZE_CHROME_CHANGE_THEME_LABEL},
-      {"chromeColors", IDS_NTP_CUSTOMIZE_CHROME_COLORS_LABEL},
       {"chromeWebStore", IDS_EXTENSION_WEB_STORE_TITLE},
       {"classicChrome", IDS_NTP_CUSTOMIZE_NO_BACKGROUND_LABEL},
       {"colorsContainerLabel", IDS_NTP_THEMES_CONTAINER_LABEL},

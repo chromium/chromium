@@ -12,7 +12,6 @@ build_webui_tests("build") {
     "cards_test.ts",
     "categories_test.ts",
     "check_mark_wrapper_test.ts",
-    "chrome_colors_test.ts",
     "wallpaper_search/combobox_test.ts",
     "hover_button_test.ts",
     "shortcuts_test.ts",

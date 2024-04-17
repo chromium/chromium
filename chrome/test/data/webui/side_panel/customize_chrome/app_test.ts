@@ -83,22 +83,6 @@ suite('AppTest', () => {
         new Event('edit-theme-click'));
     assertEquals(customizeChromeApp, document.activeElement);
 
-    // Send event for chrome colors select.
-    customizeChromeApp.$.categoriesPage.dispatchEvent(
-        new Event('chrome-colors-select'));
-    // Current page should now be chrome colors.
-    assertTrue(customizeChromeApp.$.chromeColorsPage.classList.contains(
-        'iron-selected'));
-    assertEquals(customizeChromeApp, document.activeElement);
-
-    // Send event for back click.
-    customizeChromeApp.$.chromeColorsPage.dispatchEvent(
-        new Event('back-click'));
-    // Current page should now be categories.
-    assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
-        'iron-selected'));
-    assertEquals(customizeChromeApp, document.activeElement);
-
     // Send event for back click.
     customizeChromeApp.$.categoriesPage.dispatchEvent(new Event('back-click'));
     // Current page should now be overview.

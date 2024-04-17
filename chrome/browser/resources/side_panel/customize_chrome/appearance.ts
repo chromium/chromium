@@ -51,13 +51,6 @@ export class AppearanceElement extends I18nMixin
   static get properties() {
     return {
       theme_: Object,
-      themeButtonClass_: String,
-
-      chromeRefresh2023Enabled_: {
-        type: Boolean,
-        value: () =>
-            document.documentElement.hasAttribute('chrome-refresh-2023'),
-      },
 
       editThemeButtonText_: {
         type: String,
@@ -135,8 +128,6 @@ export class AppearanceElement extends I18nMixin
   }
 
   private theme_: Theme|undefined = undefined;
-  private themeButtonClass_: string;
-  private chromeRefresh2023Enabled_: boolean;
   private editThemeButtonText_:
     string;
   private thirdPartyThemeId_: string|null = null;
@@ -166,8 +157,6 @@ export class AppearanceElement extends I18nMixin
 
   override connectedCallback() {
     super.connectedCallback();
-    this.themeButtonClass_ =
-        this.chromeRefresh2023Enabled_ ? 'floating-button' : 'action-button';
     this.setThemeListenerId_ =
         this.callbackRouter_.setTheme.addListener((theme: Theme) => {
           this.theme_ = theme;
@@ -231,23 +220,20 @@ export class AppearanceElement extends I18nMixin
 
   private computeShowThemeSnapshot_(): boolean {
     return !!this.theme_ && !this.theme_.thirdPartyThemeInfo &&
-        (!this.chromeRefresh2023Enabled_ ||
-         !(this.theme_.backgroundImage &&
+        (!(this.theme_.backgroundImage &&
            this.theme_.backgroundImage.isUploadedImage));
   }
 
   private computeShowUploadedImageButton_(): boolean {
     return !!(
-        this.chromeRefresh2023Enabled_ && this.theme_ &&
-        this.theme_.backgroundImage &&
+        this.theme_ && this.theme_.backgroundImage &&
         this.theme_.backgroundImage.isUploadedImage &&
         !this.theme_.backgroundImage.localBackgroundId);
   }
 
   private computeShowSearchedImageButton_(): boolean {
     return !!(
-        this.chromeRefresh2023Enabled_ && this.theme_ &&
-        this.theme_.backgroundImage &&
+        this.theme_ && this.theme_.backgroundImage &&
         this.theme_.backgroundImage.localBackgroundId);
   }
 

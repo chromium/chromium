@@ -9,7 +9,7 @@ import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} fro
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {ThemeSnapshotElement} from 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
 import {CustomizeThemeType} from 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
@@ -96,13 +96,8 @@ suite('ThemeSnapshotTest', () => {
         CustomizeThemeType.CLASSIC_CHROME);
     assertEquals(
         $$<HTMLImageElement>(
-            themeSnapshotElement, '#classicChromeBackground img')!.src,
-        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
-            'mini_new_tab_page.svg');
-    assertEquals(
-        $$<HTMLImageElement>(
             themeSnapshotElement,
-            '#classicChromeBackground img')!.getAttribute('aria-labelledby'),
+            '#classicChromeBackground svg')!.getAttribute('aria-labelledby'),
         'classicChromeThemeTitle');
     assertEquals(
         'Default Chrome',
@@ -141,12 +136,35 @@ suite('ThemeSnapshotTest', () => {
            '.snapshot-container #uploadedThemeTitle')!.textContent!.trim());
   });
 
+  test('classic chrome snapshot shows correct image', async () => {
+    // Arrange.
+    createThemeSnapshotElement();
+    const theme = createTheme();
+
+    // Act.
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('updateTheme'));
+    const shownPages =
+        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
+    assertTrue(!!shownPages);
+    assertEquals(shownPages.length, 1);
+    assertEquals(
+        shownPages[0]!.getAttribute('theme-type'),
+        CustomizeThemeType.CLASSIC_CHROME);
+    assertEquals(
+        $$<SVGUseElement>(
+            themeSnapshotElement,
+            '#classicChromeBackground svg use')!.href.baseVal,
+        'icons/gm3_mini_new_tab_page.svg#miniNewTabPage');
+  });
+
   test(
-      'clicking snapshot with chrome-refresh-2023 toggled off ' +
-          'does not create an edit-theme-click event',
+      'clicking classic chrome snapshot creates edit-theme-click event',
       async () => {
         // Arrange.
-        document.documentElement.toggleAttribute('chrome-refresh-2023', false);
         createThemeSnapshotElement();
         let clicked = false;
         themeSnapshotElement.addEventListener(
@@ -156,85 +174,37 @@ suite('ThemeSnapshotTest', () => {
             themeSnapshotElement,
             '.snapshot-container #classicChromeBackground')!.click();
         // Assert
-        assertFalse(clicked);
+        assertTrue(clicked);
       });
 
-  suite('chrome refresh 2023', () => {
-    suiteSetup(() => {
-      document.documentElement.toggleAttribute('chrome-refresh-2023', true);
-    });
+  test(
+      'clicking custom theme snapshot creates edit-theme-click event',
+      async () => {
+        // Arrange.
+        createThemeSnapshotElement();
+        let clicked = false;
+        themeSnapshotElement.addEventListener(
+            'edit-theme-click', () => clicked = true);
+        // Act
+        $$<HTMLElement>(
+            themeSnapshotElement,
+            '.snapshot-container #customThemeImageBackground')!.click();
+        // Assert
+        assertTrue(clicked);
+      });
 
-    test('classic chrome snapshot shows correct image', async () => {
-      // Arrange.
-      createThemeSnapshotElement();
-      const theme = createTheme();
-
-      // Act.
-      callbackRouterRemote.setTheme(theme);
-      await callbackRouterRemote.$.flushForTesting();
-
-      // Assert.
-      assertEquals(1, handler.getCallCount('updateTheme'));
-      const shownPages =
-          themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
-      assertTrue(!!shownPages);
-      assertEquals(shownPages.length, 1);
-      assertEquals(
-          shownPages[0]!.getAttribute('theme-type'),
-          CustomizeThemeType.CLASSIC_CHROME);
-      assertEquals(
-          $$<SVGUseElement>(
-              themeSnapshotElement,
-              '#classicChromeBackground svg use')!.href.baseVal,
-          'icons/gm3_mini_new_tab_page.svg#miniNewTabPage');
-    });
-
-    test(
-        'clicking classic chrome snapshot creates edit-theme-click event',
-        async () => {
-          // Arrange.
-          createThemeSnapshotElement();
-          let clicked = false;
-          themeSnapshotElement.addEventListener(
-              'edit-theme-click', () => clicked = true);
-          // Act
-          $$<HTMLElement>(
-              themeSnapshotElement,
-              '.snapshot-container #classicChromeBackground')!.click();
-          // Assert
-          assertTrue(clicked);
-        });
-
-    test(
-        'clicking custom theme snapshot creates edit-theme-click event',
-        async () => {
-          // Arrange.
-          createThemeSnapshotElement();
-          let clicked = false;
-          themeSnapshotElement.addEventListener(
-              'edit-theme-click', () => clicked = true);
-          // Act
-          $$<HTMLElement>(
-              themeSnapshotElement,
-              '.snapshot-container #customThemeImageBackground')!.click();
-          // Assert
-          assertTrue(clicked);
-        });
-
-    test(
-        'clicking uploaded snapshot creates edit-theme-click event',
-        async () => {
-          // Arrange.
-          createThemeSnapshotElement();
-          let clicked = false;
-          themeSnapshotElement.addEventListener(
-              'edit-theme-click', () => clicked = true);
-          // Act
-          $$<HTMLElement>(
-              themeSnapshotElement,
-              '.snapshot-container #uploadedThemeImageBackground')!.click();
-          // Assert
-          assertTrue(clicked);
-        });
-  });
+  test(
+      'clicking uploaded snapshot creates edit-theme-click event', async () => {
+        // Arrange.
+        createThemeSnapshotElement();
+        let clicked = false;
+        themeSnapshotElement.addEventListener(
+            'edit-theme-click', () => clicked = true);
+        // Act
+        $$<HTMLElement>(
+            themeSnapshotElement,
+            '.snapshot-container #uploadedThemeImageBackground')!.click();
+        // Assert
+        assertTrue(clicked);
+      });
 });

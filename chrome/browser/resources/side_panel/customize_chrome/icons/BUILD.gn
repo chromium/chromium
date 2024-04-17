@@ -12,7 +12,6 @@ generate_grd("build_grdp") {
   input_files = [
     "collapse_carets.svg",
     "chrome_web_store.svg",
-    "corner_new_tab_page.svg",
     "coupons.svg",
     "delete.svg",
     "expand_carets.svg",
@@ -20,7 +19,6 @@ generate_grd("build_grdp") {
     "gm3_corner_new_tab_page.svg",
     "gm3_mini_new_tab_page.svg",
     "image.svg",
-    "mini_new_tab_page.svg",
     "productivity.svg",
     "reset.svg",
     "sparkle.svg",

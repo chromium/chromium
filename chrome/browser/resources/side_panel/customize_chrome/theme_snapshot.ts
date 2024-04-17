@@ -32,10 +32,6 @@ export class ThemeSnapshotElement extends PolymerElement {
 
   static get properties() {
     return {
-      chromeRefresh2023Enabled_: {
-        type: Boolean,
-      },
-
       theme_: Object,
 
       themeType_: {
@@ -45,7 +41,6 @@ export class ThemeSnapshotElement extends PolymerElement {
     };
   }
 
-  private chromeRefresh2023Enabled_: boolean;
   private theme_: Theme|undefined = undefined;
   private themeType_: CustomizeThemeType|null = null;
 
@@ -61,8 +56,6 @@ export class ThemeSnapshotElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.chromeRefresh2023Enabled_ =
-        document.documentElement.hasAttribute('chrome-refresh-2023');
     this.setThemeListenerId_ =
         this.callbackRouter_.setTheme.addListener((theme: Theme) => {
           this.theme_ = theme;
@@ -97,8 +90,7 @@ export class ThemeSnapshotElement extends PolymerElement {
   }
 
   private onThemeSnapshotClick_() {
-    if (!this.chromeRefresh2023Enabled_ ||
-        (this.theme_ && this.theme_.backgroundManagedByPolicy)) {
+    if (this.theme_ && this.theme_.backgroundManagedByPolicy) {
       return;
     }
     this.dispatchEvent(new Event('edit-theme-click'));

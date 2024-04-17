@@ -30,12 +30,6 @@
     justify-content: center;
   }
 
-  #miniNewTabPage {
-    height: auto;
-    margin: 17px;
-    width: 100%;
-  }
-
   #gm3MiniNewTabPage {
     height: auto;
     width: 100%;
@@ -113,17 +107,10 @@
     <div class="image-background image"
         id="classicChromeBackground"
         on-click="onThemeSnapshotClick_">
-      <template is="dom-if" if="[[!chromeRefresh2023Enabled_]]">
-        <img id="miniNewTabPage" src="icons/mini_new_tab_page.svg"
-            aria-labelledby="classicChromeThemeTitle">
-        </img>
-      </template>
-      <template is="dom-if" if="[[chromeRefresh2023Enabled_]]">
-        <svg id="gm3MiniNewTabPage" aria-labelledby="classicChromeThemeTitle"
-            viewBox="0 0 240 126" preserveAspectRatio="xMidYMid meet">
-          <use href="icons/gm3_mini_new_tab_page.svg#miniNewTabPage"></use>
-        </svg>
-      </template>
+      <svg id="gm3MiniNewTabPage" aria-labelledby="classicChromeThemeTitle"
+          viewBox="0 0 240 126" preserveAspectRatio="xMidYMid meet">
+        <use href="icons/gm3_mini_new_tab_page.svg#miniNewTabPage"></use>
+      </svg>
       <div class="overlay"></div>
       <cr-ripple></cr-ripple>
     </div>

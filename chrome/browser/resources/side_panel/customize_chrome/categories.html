@@ -232,16 +232,7 @@
       <customize-chrome-check-mark-wrapper
           checked="[[isClassicChromeSelected_]]">
         <div id="cornerNewTabPageTile" class="image-container">
-          <template is="dom-if" if="[[!chromeRefresh2023Enabled_]]">
-            <img id="cornerNewTabPage"
-                src="icons/corner_new_tab_page.svg">
-            </img>
-          </template>
-          <template is="dom-if" if="[[chromeRefresh2023Enabled_]]">
-            <img id="cornerNewTabPage"
-                src="icons/gm3_corner_new_tab_page.svg">
-            </img>
-          </template>
+          <img id="cornerNewTabPage" src="icons/gm3_corner_new_tab_page.svg">
         </div>
       </customize-chrome-check-mark-wrapper>
       <div class="label">$i18n{classicChrome}</div>
@@ -272,25 +263,6 @@
       </customize-chrome-check-mark-wrapper>
       <div class="label">$i18n{uploadImage}</div>
     </div>
-    <template is="dom-if" if="[[!chromeRefresh2023Enabled_]]">
-      <div class="tile" tabindex="0" id="chromeColorsTile"
-          role="button" on-click="onChromeColorsClick_"
-          aria-current$="[[boolToString_(isChromeColorsSelected_)]]">
-        <customize-chrome-check-mark-wrapper
-            checked="[[isChromeColorsSelected_]]">
-          <div class="image-container">
-            <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink">
-              <rect id="foreground" x="0" y="0" width="50" height="50">
-              </rect>
-              <rect id="background" x="0" y="25" width="50" height="25">
-              </rect>
-            </svg>
-          </div>
-        </customize-chrome-check-mark-wrapper>
-        <div class="label">$i18n{chromeColors}</div>
-      </div>
-    </template>
     <template is="dom-repeat" id="collectionsRepeat" items="[[collections_]]"
         on-rendered-item-count-changed="onCollectionsRendered_">
       <div class="tile collection" tabindex="0" role="button"
