@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
-
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -32,7 +30,6 @@ class TextureBase;
 struct ContextCreationAttribs;
 
 namespace gles2 {
-class AbstractTexture;
 class ContextGroup;
 class ErrorState;
 class FeatureInfo;
@@ -161,17 +158,6 @@ class GPU_GLES2_EXPORT DecoderContext : public AsyncAPIInterface,
   //
   virtual gles2::ContextGroup* GetContextGroup() = 0;
   virtual gles2::ErrorState* GetErrorState() = 0;
-#if !BUILDFLAG(IS_ANDROID)
-  virtual std::unique_ptr<gpu::gles2::AbstractTexture> CreateAbstractTexture(
-      unsigned /* GLenum */ target,
-      unsigned /* GLenum */ internal_format,
-      int /* GLsizei */ width,
-      int /* GLsizei */ height,
-      int /* GLsizei */ depth,
-      int /* GLint */ border,
-      unsigned /* GLenum */ format,
-      unsigned /* GLenum */ type) = 0;
-#endif
 
   //
   // Methods required by Texture.

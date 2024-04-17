@@ -39,9 +39,6 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   // Complete a pending SyncToken wait.
   void ReleaseSyncToken(gpu::SyncToken sync_token);
 
-  // Test whether a texture exists (has not been destroyed).
-  bool HasTexture(GLuint service_id);
-
 #if !BUILDFLAG(IS_ANDROID)
   // CommandBufferHelper implementation.
   gl::GLContext* GetGLContext() override;
@@ -56,17 +53,7 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   bool MakeContextCurrent() override;
   std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> Register(
       std::unique_ptr<gpu::SharedImageBacking> backing) override;
-  gpu::TextureBase* GetTexture(GLuint service_id) const override;
-  GLuint CreateTexture(GLenum target,
-                       GLenum internal_format,
-                       GLsizei width,
-                       GLsizei height,
-                       GLenum format,
-                       GLenum type) override;
-  void DestroyTexture(GLuint service_id) override;
-  gpu::Mailbox CreateLegacyMailbox(GLuint service_id) override;
   void AddWillDestroyStubCB(WillDestroyStubCB callback) override;
-  bool IsPassthrough() const override;
   bool SupportsTextureRectangle() const override;
 #endif
 
@@ -79,11 +66,6 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   bool is_context_lost_ = false;
   bool is_context_current_ = false;
 
-#if !BUILDFLAG(IS_ANDROID)
-  GLuint next_service_id_ = 1;
-#endif
-
-  std::set<GLuint> service_ids_;
   std::map<gpu::SyncToken, base::OnceClosure> waits_;
 
   std::vector<WillDestroyStubCB> will_destroy_stub_callbacks_;

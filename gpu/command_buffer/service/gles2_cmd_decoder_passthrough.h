@@ -50,7 +50,6 @@ namespace gles2 {
 
 class ContextGroup;
 class GPUTracer;
-class AbstractTexture;
 class MultiDrawManager;
 class GLES2DecoderPassthroughImpl;
 class GLES2ExternalFramebuffer;
@@ -70,19 +69,6 @@ struct PassthroughResources {
 
   // api is null if we don't have a context (e.g. lost).
   void Destroy(gl::GLApi* api, gl::ProgressReporter* progress_reporter);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Resources stores a shared list of textures pending deletion.
-  // If we have don't context when this function is called, we can mark
-  // these textures as lost context and drop all references to them.
-  // NOTE: This functionality is exercised only when the decoder is asked to
-  // create textures via CreateAbstractTexture(), an API that does not exist on
-  // Android.
-  void DestroyPendingTextures(bool has_context);
-
-  // If there are any textures pending destruction.
-  bool HasTexturesPendingDestruction() const;
-#endif
 
   void SuspendSharedImageAccessIfNeeded();
   bool ResumeSharedImageAccessIfNeeded(gl::GLApi* api);
@@ -145,16 +131,6 @@ struct PassthroughResources {
   // TODO(ericrk): Remove this once TexturePassthrough holds a reference to
   // the GLTexturePassthroughImageRepresentation itself.
   base::flat_map<GLuint, SharedImageData> texture_shared_image_map;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // A set of yet-to-be-deleted TexturePassthrough, which should be tossed
-  // whenever a context switch happens or the resources is destroyed.
-  // NOTE: The concept of "textures pending destruction" is relevant only when
-  // the decoder is asked to create textures via CreateAbstractTexture(), an API
-  // that does not exist on Android.
-  base::flat_set<scoped_refptr<TexturePassthrough>>
-      textures_pending_destruction;
-#endif
 
   // Mapping of client buffer IDs that are mapped to the shared memory used to
   // back the mapping so that it can be flushed when the buffer is unmapped
@@ -347,18 +323,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   ErrorState* GetErrorState() override;
 
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<AbstractTexture> CreateAbstractTexture(
-      unsigned target,
-      unsigned internal_format,
-      int width,
-      int height,
-      int depth,
-      int border,
-      unsigned format,
-      unsigned type) override;
-#endif
-
   void WaitForReadPixels(base::OnceClosure callback) override;
 
   // Returns true if the context was lost either by GL_ARB_robustness, forced
@@ -398,11 +362,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
       override;
   void SetCopyTexImageBlitterForTest(
       CopyTexImageResourceManager* copy_tex_image_blit) override;
-
-#if !BUILDFLAG(IS_ANDROID)
-  void OnAbstractTextureDestroyed(AbstractTexture*,
-                                  scoped_refptr<TexturePassthrough>);
-#endif
 
   const FeatureInfo::FeatureFlags& features() const {
     return feature_info_->feature_flags();
@@ -518,12 +477,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
                                       const char* function_name);
 
   bool OnlyHasPendingProgramCompletionQueries();
-
-#if !BUILDFLAG(IS_ANDROID)
-  // A set of raw pointers to currently living AbstractTextures
-  // which allow us to properly signal to them when we are destroyed.
-  base::flat_set<raw_ptr<AbstractTexture, CtnExperimental>> abstract_textures_;
-#endif
 
   int commands_to_process_;
 

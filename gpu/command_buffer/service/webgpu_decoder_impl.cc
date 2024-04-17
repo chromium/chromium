@@ -68,10 +68,6 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "gpu/command_buffer/service/abstract_texture.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 namespace gpu {
 namespace webgpu {
 
@@ -255,20 +251,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     NOTREACHED();
     return nullptr;
   }
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<gles2::AbstractTexture> CreateAbstractTexture(
-      GLenum target,
-      GLenum internal_format,
-      GLsizei width,
-      GLsizei height,
-      GLsizei depth,
-      GLint border,
-      GLenum format,
-      GLenum type) override {
-    NOTREACHED();
-    return nullptr;
-  }
-#endif
   bool IsCompressedTextureFormat(unsigned format) override {
     NOTREACHED();
     return false;

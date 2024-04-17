@@ -73,7 +73,6 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
         &CommandBufferHelper::GetGLContext, command_buffer_helper);
     gl_client.make_context_current = base::BindRepeating(
         &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
-    gl_client.is_passthrough = command_buffer_helper->IsPassthrough();
     gl_client.supports_arb_texture_rectangle =
         command_buffer_helper->SupportsTextureRectangle();
   }

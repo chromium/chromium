@@ -118,10 +118,6 @@
 // Note: this undefs far and near so include this after other Windows headers.
 #include "third_party/angle/src/image_util/loadimage.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "gpu/command_buffer/service/abstract_texture.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 namespace gpu {
 namespace gles2 {
 
@@ -663,19 +659,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   ErrorState* GetErrorState() override;
   const ContextState* GetContextState() override { return &state_; }
-  #if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<AbstractTexture> CreateAbstractTexture(GLenum target,
-                                                         GLenum internal_format,
-                                                         GLsizei width,
-                                                         GLsizei height,
-                                                         GLsizei depth,
-                                                         GLint border,
-                                                         GLenum format,
-                                                         GLenum type) override {
-    NOTREACHED();
-    return nullptr;
-  }
-#endif
 
   scoped_refptr<ShaderTranslatorInterface> GetTranslator(GLenum type) override;
   scoped_refptr<ShaderTranslatorInterface> GetOrCreateTranslator(GLenum type);

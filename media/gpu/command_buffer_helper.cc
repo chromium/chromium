@@ -15,7 +15,6 @@
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
-#include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -30,7 +29,6 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "gpu/command_buffer/service/abstract_texture.h"
 #include "media/gpu/gles2_decoder_helper.h"
 #endif
 
@@ -155,65 +153,10 @@ class CommandBufferHelperImpl
         ->Register(std::move(backing), &memory_type_tracker_);
   }
 
-  gpu::TextureBase* GetTexture(GLuint service_id) const override {
-    DVLOG(2) << __func__ << "(" << service_id << ")";
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    DCHECK(stub_->decoder_context()->GetGLContext()->IsCurrent(nullptr));
-    DCHECK(textures_.count(service_id));
-    return textures_.at(service_id)->GetTextureBase();
-  }
-
-  GLuint CreateTexture(GLenum target,
-                       GLenum internal_format,
-                       GLsizei width,
-                       GLsizei height,
-                       GLenum format,
-                       GLenum type) override {
-    DVLOG(2) << __func__;
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    DCHECK(stub_->decoder_context()->GetGLContext()->IsCurrent(nullptr));
-
-    std::unique_ptr<gpu::gles2::AbstractTexture> texture =
-        decoder_helper_->CreateTexture(target, internal_format, width, height,
-                                       format, type);
-    GLuint service_id = texture->service_id();
-    textures_[service_id] = std::move(texture);
-    return service_id;
-  }
-
-  void DestroyTexture(GLuint service_id) override {
-    DVLOG(2) << __func__ << "(" << service_id << ")";
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    DCHECK(stub_->decoder_context()->GetGLContext()->IsCurrent(nullptr));
-    DCHECK(textures_.count(service_id));
-
-    textures_.erase(service_id);
-  }
-
- private:
-  gpu::Mailbox CreateLegacyMailbox(GLuint service_id) override {
-    DVLOG(2) << __func__ << "(" << service_id << ")";
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    if (!decoder_helper_)
-      return gpu::Mailbox();
-
-    DCHECK(textures_.count(service_id));
-    return decoder_helper_->CreateLegacyMailbox(textures_[service_id].get());
-  }
-
  public:
   void AddWillDestroyStubCB(WillDestroyStubCB callback) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     will_destroy_stub_callbacks_.push_back(std::move(callback));
-  }
-
-  bool IsPassthrough() const override {
-    if (!stub_)
-      return false;
-    return stub_->decoder_context()
-        ->GetFeatureInfo()
-        ->is_passthrough_cmd_decoder();
   }
 
   bool SupportsTextureRectangle() const override {
@@ -324,7 +267,6 @@ class CommandBufferHelperImpl
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(sandersd): Merge GLES2DecoderHelper implementation into this class.
   std::unique_ptr<GLES2DecoderHelper> decoder_helper_;
-  std::map<GLuint, std::unique_ptr<gpu::gles2::AbstractTexture>> textures_;
 #endif
 
   std::vector<WillDestroyStubCB> will_destroy_stub_callbacks_;

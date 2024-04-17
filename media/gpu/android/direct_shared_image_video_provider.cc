@@ -49,8 +49,6 @@ void ContextStateResultUMA(gpu::ContextResult result) {
 
 }  // namespace
 
-using gpu::gles2::AbstractTexture;
-
 DirectSharedImageVideoProvider::DirectSharedImageVideoProvider(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetStubCB get_stub_cb,
