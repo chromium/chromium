@@ -71,9 +71,10 @@ class CORE_EXPORT SVGResourceDocumentContent final
 
   // Update the contained document using the text data in `content`, using
   // `request_url` as the document URL.
-  void UpdateDocument(const WTF::String& content, const KURL& request_url);
+  bool UpdateDocument(const WTF::String& content, const KURL& request_url);
   void ClearDocument();
 
+  ResourceStatus GetStatus() const { return status_; }
   void UpdateStatus(ResourceStatus new_status);
 
   const KURL& Url() const;

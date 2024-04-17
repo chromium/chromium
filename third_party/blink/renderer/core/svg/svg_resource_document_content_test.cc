@@ -41,7 +41,7 @@ TEST_F(SVGResourceDocumentContentSimTest, GetDocumentBeforeLoadComplete) {
   EXPECT_EQ(nullptr, entry->GetDocument());
 
   // Finish the response, the Document should now be accessible.
-  svg_resource.Complete("g></svg>");
+  svg_resource.Complete("g xmlns='http://www.w3.org/2000/svg'></svg>");
   EXPECT_NE(nullptr, entry->GetDocument());
 }
 
@@ -59,6 +59,21 @@ TEST_F(SVGResourceDocumentContentTest, EmptyDataUrl) {
 
   EXPECT_TRUE(content->IsLoaded());
   EXPECT_TRUE(content->ErrorOccurred());
+}
+
+TEST_F(SVGResourceDocumentContentTest, InvalidDocumentRoot) {
+  const char kInvalidSvgImageDataUrl[] = "data:image/svg+xml,<root/>";
+  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  FetchParameters params(ResourceRequest(kInvalidSvgImageDataUrl), options);
+  params.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
+  auto* content = SVGResourceDocumentContent::Fetch(params, GetDocument());
+
+  EXPECT_TRUE(content->IsLoaded());
+  EXPECT_TRUE(content->ErrorOccurred());
+  EXPECT_EQ(content->GetStatus(), ResourceStatus::kDecodeError);
 }
 
 }  // namespace blink

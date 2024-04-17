@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/resource/svg_document_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
+#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -172,10 +173,10 @@ void SVGResourceDocumentContent::UpdateStatus(ResourceStatus new_status) {
   status_ = new_status;
 }
 
-void SVGResourceDocumentContent::UpdateDocument(const String& content,
+bool SVGResourceDocumentContent::UpdateDocument(const String& content,
                                                 const KURL& request_url) {
   if (content.empty()) {
-    return;
+    return false;
   }
   url_ = request_url;
   document_ = XMLDocument::CreateSVG(DocumentInit::Create()
@@ -183,6 +184,11 @@ void SVGResourceDocumentContent::UpdateDocument(const String& content,
                                          .WithExecutionContext(context_)
                                          .WithAgent(*context_->GetAgent()));
   document_->SetContent(content);
+  // Drop documents with a non-SVG root element.
+  if (!IsA<SVGSVGElement>(document_->documentElement())) {
+    document_.Clear();
+  }
+  return document_;
 }
 
 void SVGResourceDocumentContent::ClearDocument() {

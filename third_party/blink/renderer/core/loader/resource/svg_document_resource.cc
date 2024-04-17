@@ -77,9 +77,12 @@ void SVGDocumentResource::NotifyStartLoad() {
 void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
                                  base::SingleThreadTaskRunner* task_runner) {
   const ResourceResponse& response = GetResponse();
+  bool parse_success = false;
   if (MimeTypeAllowed(response) && HasData()) {
-    content_->UpdateDocument(DecodedText(), response.CurrentRequestUrl());
-  } else if (!ErrorOccurred()) {
+    parse_success =
+        content_->UpdateDocument(DecodedText(), response.CurrentRequestUrl());
+  }
+  if (!parse_success && !ErrorOccurred()) {
     SetStatus(ResourceStatus::kDecodeError);
     ClearData();
   }
