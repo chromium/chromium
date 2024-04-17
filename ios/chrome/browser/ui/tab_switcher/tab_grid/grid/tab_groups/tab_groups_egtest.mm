@@ -106,12 +106,12 @@ void SetTabGroupCreationName(NSString* group_name) {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabGroupsInGrid);
   config.features_enabled.push_back(kTabGroupsIPad);
+  config.features_enabled.push_back(kModernTabStrip);
   return config;
 }
 
 // Tests that creates a tab group and opens the grouped tab.
-// TODO(crbug.com/333892967): The test fails on bots.
-- (void)DISABLED_testCompleteTabGroupCreation {
+- (void)testCompleteTabGroupCreation {
   [ChromeEarlGreyUI openTabGrid];
 
   // Open the creation view.
