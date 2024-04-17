@@ -32,7 +32,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/autofill/payments/test_card_unmask_prompt_waiter.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -230,29 +229,22 @@ class AutofillCapturedSitesInteractiveTest
       // If CVC is available in the Action Recorder receipts and this is a
       // payment form, this means it's running the test with a server card. So
       // the "Enter CVC" dialog will pop up for card autofill.
+      // TODO(crbug.com/333815150): Fix the TestCardUnmaskPromptWaiter.
       bool is_credit_card_field =
           triggered_field_type.has_value() &&
           GroupTypeOfFieldType(triggered_field_type.value()) ==
               FieldTypeGroup::kCreditCard;
       bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
+      CHECK(!should_cvc_dialog_pop_up)
+          << "Tests with CVC dialogs are currently not supported due to "
+             "crbug.com/333815150. See crrev.com/c/5458703 for the code to "
+             "bring back the TestCardUnmaskPromptWaiter.";
 
       // Press the enter key to invoke autofill using the first suggestion.
       test_delegate()->SetExpectations({ObservedUiEvents::kFormDataFilled,
                                         ObservedUiEvents::kSuggestionsHidden},
                                        kAutofillWaitForFillInterval);
-      TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(web_contents);
       SendKeyToPopup(frame, ui::DomKey::ENTER);
-
-      if (should_cvc_dialog_pop_up) {
-        if (!test_card_unmask_prompt_waiter.Wait()) {
-          LOG(WARNING) << "\"Enter CVC\" dialog did not pop up.";
-        } else {
-          VLOG(1) << "CVC to be filled is: " << *cvc;
-          if (test_card_unmask_prompt_waiter.EnterAndAcceptCvcDialog(*cvc)) {
-            VLOG(1) << "\"Enter CVC\" dialog popped up and closed.";
-          }
-        }
-      }
       testing::AssertionResult form_filled = test_delegate()->Wait();
       if (!form_filled) {
         LOG(WARNING) << "Failed to fill the form: " << form_filled.message();
@@ -436,13 +428,16 @@ class AutofillCapturedSitesInteractiveTest
     // If CVC is available in the Action Recorder receipts and this is a
     // payment form, this means it's running the test with a server card. So
     // the "Enter CVC" dialog will pop up for card autofill.
+    // TODO(crbug.com/333815150): Fix the TestCardUnmaskPromptWaiter.
     bool is_credit_card_field =
         triggered_field_type.has_value() &&
         GroupTypeOfFieldType(triggered_field_type.value()) ==
             FieldTypeGroup::kCreditCard;
     bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
-
-    TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(web_contents);
+    CHECK(!should_cvc_dialog_pop_up)
+        << "Tests with CVC dialogs are currently not supported due to "
+           "crbug.com/333815150. See crrev.com/c/5458703 for the code to bring "
+           "back the TestCardUnmaskPromptWaiter.";
 
     // Use AutofillFlow library to trigger the autofill behavior. Try both ways.
     testing::AssertionResult autofill_assertion_by_arrow =
@@ -469,17 +464,6 @@ class AutofillCapturedSitesInteractiveTest
                 << autofill_assertion_by_click.message()
                 << "\nNo Fallbacks left'";
         return false;
-      }
-    }
-
-    if (should_cvc_dialog_pop_up) {
-      if (!test_card_unmask_prompt_waiter.Wait()) {
-        LOG(WARNING) << "\"Enter CVC\" dialog did not pop up.";
-      } else {
-        VLOG(1) << "CVC to be filled is: " << *cvc;
-        if (test_card_unmask_prompt_waiter.EnterAndAcceptCvcDialog(*cvc)) {
-          VLOG(1) << "\"Enter CVC\" dialog popped up and closed.";
-        }
       }
     }
     return true;
