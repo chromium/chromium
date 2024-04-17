@@ -797,23 +797,29 @@ base::Value::Dict ArcNetHostImpl::TranslateVpnConfigurationToOnc(
 
 void ArcNetHostImpl::AndroidVpnConnected(
     mojom::AndroidVpnConfigurationPtr cfg) {
-  std::string service_path = LookupArcVpnServicePath();
-  if (!service_path.empty()) {
-    GetManagedConfigurationHandler()->SetProperties(
-        service_path, TranslateVpnConfigurationToOnc(*cfg),
-        base::BindOnce(&ArcNetHostImpl::ConnectArcVpn,
-                       weak_factory_.GetWeakPtr(), service_path, std::string()),
-        base::BindOnce(&ArcVpnErrorCallback,
-                       "reconnecting ARC VPN " + service_path));
-    return;
-  }
-
   std::string user_id_hash = ash::LoginState::Get()->primary_user_hash();
+
+  // TODO(b/333809009): Skip ONC translation step.
   GetManagedConfigurationHandler()->CreateConfiguration(
       user_id_hash, TranslateVpnConfigurationToOnc(*cfg),
       base::BindOnce(&ArcNetHostImpl::ConnectArcVpn,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&ArcVpnErrorCallback, "connecting new ARC VPN"));
+}
+
+void ArcNetHostImpl::AndroidVpnUpdated(mojom::AndroidVpnConfigurationPtr cfg) {
+  std::string service_path = LookupArcVpnServicePath();
+  if (service_path.empty()) {
+    NET_LOG(ERROR) << __func__ << ": ARC VPN (" << cfg->app_label << ", "
+                   << cfg->app_name << ") doesn't exist";
+    return;
+  }
+
+  // TODO(b/333809009): Skip ONC translation step.
+  GetManagedConfigurationHandler()->SetProperties(
+      service_path, TranslateVpnConfigurationToOnc(*cfg),
+      /*callback=*/base::DoNothing(),
+      base::BindOnce(&ArcVpnErrorCallback, "updating ARC VPN " + service_path));
 }
 
 void ArcNetHostImpl::AndroidVpnStateChanged(mojom::ConnectionStateType state) {
