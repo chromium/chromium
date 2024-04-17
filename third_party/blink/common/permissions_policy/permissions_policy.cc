@@ -197,16 +197,17 @@ bool PermissionsPolicy::GetFeatureValueForOrigin(
     mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin) const {
   DCHECK(base::Contains(*feature_list_, feature));
-  DCHECK(base::Contains(inherited_policies_, feature));
 
-  auto inherited_value = inherited_policies_.at(feature);
-  allowlists_checked_ = true;
+  disallow_updates_ = true;
+  if (!IsFeatureEnabledByInheritedPolicy(feature)) {
+    return false;
+  }
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
-    return inherited_value && allowlist->second.Contains(origin);
+    return allowlist->second.Contains(origin);
   }
 
-  return inherited_value;
+  return true;
 }
 
 const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
@@ -284,7 +285,7 @@ PermissionsPolicy::GetAllowlistForFeatureIfExists(
     return std::nullopt;
 
   // Only return allowlist if actually in `allowlists_`.
-  allowlists_checked_ = true;
+  disallow_updates_ = true;
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end())
     return allowlist->second;
@@ -304,7 +305,7 @@ void PermissionsPolicy::SetHeaderPolicy(
     const ParsedPermissionsPolicy& parsed_header) {
   if (allowlists_set_by_manifest_)
     return;
-  DCHECK(allowlists_.empty() && !allowlists_checked_);
+  DCHECK(allowlists_.empty() && !disallow_updates_);
   for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
@@ -320,7 +321,7 @@ void PermissionsPolicy::SetHeaderPolicy(
 
 void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
     const ParsedPermissionsPolicy& parsed_header) {
-  DCHECK(!allowlists_checked_);
+  DCHECK(!disallow_updates_);
   for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
@@ -361,7 +362,7 @@ void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
 
 void PermissionsPolicy::OverwriteHeaderPolicyForClientHints(
     const ParsedPermissionsPolicy& parsed_header) {
-  DCHECK(!allowlists_checked_);
+  DCHECK(!disallow_updates_);
   for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
@@ -380,9 +381,7 @@ const mojom::PermissionsPolicyFeature
 PermissionsPolicy::PermissionsPolicy(
     url::Origin origin,
     const PermissionsPolicyFeatureList& feature_list)
-    : origin_(std::move(origin)),
-      allowlists_checked_(false),
-      feature_list_(feature_list) {}
+    : origin_(std::move(origin)), feature_list_(feature_list) {}
 
 PermissionsPolicy::~PermissionsPolicy() = default;
 
@@ -471,13 +470,10 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
     const url::Origin& origin,
     const std::set<mojom::PermissionsPolicyFeature>& opt_in_features) const {
   DCHECK(base::Contains(*feature_list_, feature));
-  DCHECK(base::Contains(inherited_policies_, feature));
-
-  auto inherited_value = inherited_policies_.at(feature);
 
   // 9.9.2: If policy’s inherited policy for feature is Disabled, return
   // "Disabled".
-  if (!inherited_value) {
+  if (!IsFeatureEnabledByInheritedPolicy(feature)) {
     return false;
   }
 
@@ -485,7 +481,7 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
   //    1. If the allowlist for feature in policy’s declared policy matches
   //       origin, then return "Enabled".
   //    2. Otherwise return "Disabled".
-  allowlists_checked_ = true;
+  disallow_updates_ = true;
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
     return allowlist->second.Contains(origin);
@@ -540,20 +536,23 @@ bool PermissionsPolicy::InheritedValueForFeature(
         feature,
     const ParsedPermissionsPolicy& container_policy) const {
   // 9.7 1: If container is null, return "Enabled".
-  if (!parent_policy)
+  if (!parent_policy) {
     return true;
+  }
 
-  // 9.7 2: If the result of executing Is feature enabled in document for origin
-  // on feature, container’s node document, and container’s node document's
-  // origin is "Disabled", return "Disabled".
+  // 9.7 2: If the result of executing Get feature value for origin on feature,
+  // container’s node document, and container’s node document’s origin is
+  // "Disabled", return "Disabled".
   if (!parent_policy->GetFeatureValueForOrigin(feature.first,
-                                               parent_policy->origin_))
+                                               parent_policy->origin_)) {
     return false;
+  }
 
   // 9.7 3: If feature was inherited and (if declared) the allowlist for the
   // feature does not match origin, then return "Disabled".
-  if (!parent_policy->GetFeatureValueForOrigin(feature.first, origin_))
+  if (!parent_policy->GetFeatureValueForOrigin(feature.first, origin_)) {
     return false;
+  }
 
   for (const auto& decl : container_policy) {
     if (decl.feature == feature.first) {

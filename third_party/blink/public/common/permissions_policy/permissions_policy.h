@@ -332,7 +332,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   std::map<mojom::PermissionsPolicyFeature, std::string> reporting_endpoints_;
 
   // Set this to true if `allowlists_` have already been checked.
-  mutable bool allowlists_checked_;
+  mutable bool disallow_updates_ = false;
 
   // Set this to true if `allowlists_` was populated by web app manifest
   // declared permissions policy.
