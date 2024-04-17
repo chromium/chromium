@@ -1780,6 +1780,7 @@
       // Protected Audience ad auction config.
       name: "FledgeDeprecatedRenderURLReplacements",
       public: true,
+      status: "test",
     },
     {
       name: "FledgeDirectFromSellerSignalsHeaderAdSlot",

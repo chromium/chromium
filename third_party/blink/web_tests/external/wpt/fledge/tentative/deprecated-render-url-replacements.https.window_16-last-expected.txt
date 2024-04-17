@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Super macro, with brackets.
+  assert_in_array: value "https://web-platform.test:8444/fledge/tentative/resources/request-tracker.py?uuid=<uuid>&dispatch=track_get&id=${${foo}}" not in array ["https://web-platform.test:8444/fledge/tentative/resources/request-tracker.py?uuid=<uuid>&dispatch=track_get&id=bidder_report_1", "https://web-platform.test:8444/fledge/tentative/resources/request-tracker.py?uuid=<uuid>&dispatch=track_get&id=foo", "https://web-platform.test:8444/fledge/tentative/resources/request-tracker.py?uuid=<uuid>&dispatch=track_get&id=seller_report_1"]
+[FAIL] Super macro, with both.
+  assert_in_array: value "https://web-platform.test:8444/fledge/tentative/resources/request-tracker.py?uuid=<uuid>&dispatch=track_get&id=${%%foo%%}%%${bar}%%" not in array ["https://web-platform.test:8444/fledge/tentative/resources/request-tracker.py?uuid=<uuid>&dispatch=track_get&id=bidder_report_1", "https://web-platform.test:8444/fledge/tentative/resources/request-tracker.py?uuid=<uuid>&dispatch=track_get&id=foobar", "https://web-platform.test:8444/fledge/tentative/resources/request-tracker.py?uuid=<uuid>&dispatch=track_get&id=seller_report_1"]
+Harness: the test ran to completion.
+

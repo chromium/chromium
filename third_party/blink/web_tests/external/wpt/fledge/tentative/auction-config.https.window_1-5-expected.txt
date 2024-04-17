@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] deprecatedRenderURLReplacements without end bracket is invalid.
+  assert_true: did not get expected error type: [object FencedFrameConfig] expected true got false
+[FAIL] deprecatedRenderURLReplacements without percents and brackets.
+  assert_true: did not get expected error type: [object FencedFrameConfig] expected true got false
+[FAIL] deprecatedRenderURLReplacements without dollar sign.
+  assert_true: did not get expected error type: [object FencedFrameConfig] expected true got false
+[FAIL] deprecatedRenderURLReplacements without start bracket is invalid.
+  assert_true: did not get expected error type: [object FencedFrameConfig] expected true got false
+[FAIL] deprecatedRenderURLReplacements mix and match is invalid.
+  assert_true: did not get expected error type: [object FencedFrameConfig] expected true got false
+Harness: the test ran to completion.
+

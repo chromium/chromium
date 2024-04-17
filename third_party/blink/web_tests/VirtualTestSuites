@@ -1592,6 +1592,23 @@
     "expires": "Sep 1, 2024"
   },
   {
+    "prefix": "fledge-deprecated-render-url-replacements",
+    "platforms": ["Linux", "Mac", "Win"],
+    "owners": ["ybourouphael@google.com", "behamilton@google.com", "mmenke@chromium.org", "pauljensen@chromium.org"],
+    "bases": [
+      "external/wpt/fledge/tentative/deprecated-render-url-replacements.https.window.js",
+      "external/wpt/fledge/tentative/auction-config-passed-to-worklets.https.window.js",
+      "external/wpt/fledge/tentative/auction-config.https.window.js",
+      "external/wpt/fledge/tentative/component-ads.https.window.js",
+      "external/wpt/fledge/tentative/component-auction.https.window.js"
+    ],
+    "args": [
+      "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeConsiderKAnonymity",
+      "--disable-features=CookieDeprecationFacilitatedTesting"
+    ],
+    "expires": "Sep 1, 2024"
+  },
+  {
     "prefix": "automatic-lazy-frame-loading",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

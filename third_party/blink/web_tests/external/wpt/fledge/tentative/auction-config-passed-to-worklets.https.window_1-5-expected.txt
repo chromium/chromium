@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] AuctionConfig.deprecatedRenderURLReplacements with brackets.
+  assert_true: Auction unexpectedly had no winner expected true got false
+[FAIL] AuctionConfig.deprecatedRenderURLReplacements with percents.
+  assert_true: Auction unexpectedly had no winner expected true got false
+Harness: the test ran to completion.
+
