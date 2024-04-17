@@ -24,10 +24,9 @@ PlusProfile PlusProfileFromEntityData(const syncer::EntityData& entity_data) {
   CHECK(entity_data.specifics.has_plus_address());
   sync_pb::PlusAddressSpecifics specifics =
       entity_data.specifics.plus_address();
-  return PlusProfile{.profile_id = specifics.profile_id(),
-                     .facet = specifics.facet(),
-                     .plus_address = specifics.plus_email().email_address(),
-                     .is_confirmed = true};
+  return PlusProfile(specifics.profile_id(), specifics.facet(),
+                     specifics.plus_email().email_address(),
+                     /*is_confirmed=*/true);
 }
 
 syncer::EntityData EntityDataFromPlusProfile(const PlusProfile& profile) {

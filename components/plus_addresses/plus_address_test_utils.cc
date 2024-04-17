@@ -11,17 +11,17 @@
 namespace plus_addresses::test {
 
 PlusProfile CreatePlusProfile() {
-  return {.profile_id = "123",
-          .facet = "foo.com",
-          .plus_address = "plus+foo@plus.plus",
-          .is_confirmed = true};
+  return PlusProfile(/*profile_id=*/"123",
+                     /*facet=*/"foo.com",
+                     /*plus_address=*/"plus+foo@plus.plus",
+                     /*is_confirmed=*/true);
 }
 
 PlusProfile CreatePlusProfile2() {
-  return {.profile_id = "234",
-          .facet = "bar.com",
-          .plus_address = "plus+bar@plus.plus",
-          .is_confirmed = true};
+  return PlusProfile(/*profile_id=*/"234",
+                     /*facet=*/"bar.com",
+                     /*plus_address=*/"plus+bar@plus.plus",
+                     /*is_confirmed=*/true);
 }
 
 std::string MakeCreationResponse(const PlusProfile& profile) {

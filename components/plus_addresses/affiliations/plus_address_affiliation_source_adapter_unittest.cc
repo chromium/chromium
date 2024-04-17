@@ -12,6 +12,7 @@
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -76,9 +77,9 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest, TestGetFacetsEmpty) {
 // Verifies that facets for plus addresses are available via GetFacets.
 TEST_F(PlusAddressAffiliationSourceAdapterTest, TestGetFacets) {
   service().SavePlusProfile(url::Origin::Create(GURL("https://foo.com")),
-                            {.plus_address = "plus+foo@plus.plus"});
+                            test::CreatePlusProfile());
   service().SavePlusProfile(url::Origin::Create(GURL("https://bar.com")),
-                            {.plus_address = "plus+bar@plus.plus"});
+                            test::CreatePlusProfile2());
 
   EXPECT_TRUE(ExpectAdapterToReturnFacets(
       {FacetURI::FromCanonicalSpec("https://foo.com"),

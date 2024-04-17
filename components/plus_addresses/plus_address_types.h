@@ -16,22 +16,23 @@
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
 
-namespace internal {
-// TODO(b/322147254): With three std::string members, the Chromium style checker
-// considers `PlusProfile` a complex struct, requiring a user-defined
-// constructor. Using a template avoids triggering this check.
-// Add a constructor and rewrite all aggregate initialisations.
-template <typename = void>
 struct PlusProfile {
+  PlusProfile(std::string profile_id,
+              std::string facet,
+              std::string plus_address,
+              bool is_confirmed);
+  PlusProfile(const PlusProfile&);
+  PlusProfile(PlusProfile&&);
+  PlusProfile& operator=(const PlusProfile&) = default;
+  PlusProfile& operator=(PlusProfile&&) = default;
+  ~PlusProfile();
+  friend bool operator==(const PlusProfile&, const PlusProfile&) = default;
+
   std::string profile_id;
   std::string facet;
   std::string plus_address;
   bool is_confirmed;
-
-  friend bool operator==(const PlusProfile&, const PlusProfile&) = default;
 };
-}  // namespace internal
-using PlusProfile = internal::PlusProfile<>;
 
 struct PlusProfileFacetComparator {
   bool operator()(const PlusProfile& a, const PlusProfile& b) const {

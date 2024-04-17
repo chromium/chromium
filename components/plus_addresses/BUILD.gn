@@ -6,7 +6,10 @@ import("//build/buildflag_header.gni")
 import("//components/plus_addresses/buildflags.gni")
 
 source_set("types") {
-  sources = [ "plus_address_types.h" ]
+  sources = [
+    "plus_address_types.cc",
+    "plus_address_types.h",
+  ]
   public_deps = [
     "//base",
     "//components/autofill/core/browser",

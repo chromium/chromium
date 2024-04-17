@@ -20,6 +20,7 @@ class FakePlusAddressService : public PlusAddressService {
   FakePlusAddressService();
   ~FakePlusAddressService() override;
 
+  static constexpr char kFakeProfileId[] = "123";
   static constexpr char kFakePlusAddress[] = "plus+remote@plus.plus";
   static constexpr char kFacet[] = "facet.bar";
 

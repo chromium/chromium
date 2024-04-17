@@ -130,12 +130,10 @@ std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
           .c_str()));
   std::vector<PlusProfile> result;
   while (query.Step()) {
-    result.push_back({
-        .profile_id = query.ColumnString(0),
-        .facet = query.ColumnString(1),
-        .plus_address = query.ColumnString(2),
-        .is_confirmed = true,
-    });
+    result.emplace_back(/*profile_id=*/query.ColumnString(0),
+                        /*facet=*/query.ColumnString(1),
+                        /*plus_address=*/query.ColumnString(2),
+                        /*is_confirmed=*/true);
   }
   return result;
 }
@@ -150,12 +148,10 @@ std::optional<PlusProfile> PlusAddressTable::GetPlusProfileForId(
   if (!query.Step()) {
     return std::nullopt;
   }
-  return PlusProfile{
-      .profile_id = query.ColumnString(0),
-      .facet = query.ColumnString(1),
-      .plus_address = query.ColumnString(2),
-      .is_confirmed = true,
-  };
+  return PlusProfile(/*profile_id=*/query.ColumnString(0),
+                     /*facet=*/query.ColumnString(1),
+                     /*plus_address=*/query.ColumnString(2),
+                     /*is_confirmed=*/true);
 }
 
 bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {

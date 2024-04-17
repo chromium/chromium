@@ -124,7 +124,8 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string etld_plus_one = GetEtldPlusOne(origin);
   // `facet` is used as the comparator, so the other fields don't matter.
-  auto it = plus_profiles_.find({.facet = etld_plus_one});
+  auto it =
+      plus_profiles_.find(PlusProfile("", /*facet=*/etld_plus_one, "", false));
   if (it == plus_profiles_.end()) {
     return std::nullopt;
   }
@@ -134,10 +135,9 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
 void PlusAddressService::SavePlusProfile(url::Origin origin,
                                          const PlusProfile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const PlusProfile profile_to_save = {.profile_id = profile.profile_id,
-                                       .facet = GetEtldPlusOne(origin),
-                                       .plus_address = profile.plus_address,
-                                       .is_confirmed = true};
+  const PlusProfile profile_to_save(profile.profile_id, GetEtldPlusOne(origin),
+                                    profile.plus_address,
+                                    /*is_confirmed=*/true);
   // New plus addresses are requested directly from the PlusAddress backend. If
   // `IsSyncingPlusAddresses()`, these addresses become later available through
   // sync. Until the address shows up in sync, it should still be available
@@ -327,7 +327,7 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
     // `UpdatePlusAddressMap()` is only called when sync support is disabled.
     // In this case, profile_ids don't matter.
     plus_profiles_.insert(
-        {.facet = facet, .plus_address = address, .is_confirmed = true});
+        PlusProfile(/*profile_id=*/"", facet, address, /*is_confirmed=*/true));
     plus_addresses_.insert(address);
   }
   for (Observer& o : observers_) {

@@ -12,6 +12,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_allocator.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,7 +93,7 @@ TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshParameterPassedOn) {
 TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshLimit) {
   // Note: In practice, this would be a different profile with each call - but
   // the test does not need to reproduce this level of fidelity.
-  const PlusProfile kSampleProfile{.plus_address = "plus+plus123@plus.com"};
+  const PlusProfile kSampleProfile = test::CreatePlusProfile();
   ON_CALL(http_client(), ReservePlusAddress(_, /*refresh=*/true, _))
       .WillByDefault([&kSampleProfile](const url::Origin& origin, bool refresh,
                                        PlusAddressRequestCallback cb) {

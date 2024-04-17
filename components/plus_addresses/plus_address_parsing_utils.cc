@@ -62,10 +62,8 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
       !is_confirmed.has_value()) {
     return std::nullopt;
   }
-  return PlusProfile{.profile_id = std::move(profile_id),
-                     .facet = std::move(facet),
-                     .plus_address = std::move(plus_address),
-                     .is_confirmed = *is_confirmed};
+  return PlusProfile(std::move(profile_id), std::move(facet),
+                     std::move(plus_address), *is_confirmed);
 }
 
 // Creates a list of PlusProfiles by parsing each dict-value in `list` that

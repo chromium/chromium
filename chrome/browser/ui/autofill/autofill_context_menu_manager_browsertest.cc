@@ -38,6 +38,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/service/variations_service.h"
@@ -944,7 +945,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
   autofill_client()->set_is_off_the_record(true);
   autofill_client()->set_last_committed_primary_main_frame_url(kUrl);
   plus_address_service()->SavePlusProfile(
-      url::Origin::Create(kUrl), {.plus_address = "plus+plus@plus.plus"});
+      url::Origin::Create(kUrl), plus_addresses::test::CreatePlusProfile());
 
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(

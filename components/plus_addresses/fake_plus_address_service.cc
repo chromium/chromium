@@ -34,9 +34,8 @@ void FakePlusAddressService::ReservePlusAddress(
     return;
   }
   std::move(on_completed)
-      .Run(PlusProfile({.facet = kFacet,
-                        .plus_address = kFakePlusAddress,
-                        .is_confirmed = is_confirmed_}));
+      .Run(
+          PlusProfile(kFakeProfileId, kFacet, kFakePlusAddress, is_confirmed_));
 }
 
 void FakePlusAddressService::ConfirmPlusAddress(
@@ -50,9 +49,7 @@ void FakePlusAddressService::ConfirmPlusAddress(
     return;
   }
   is_confirmed_ = true;
-  PlusProfile profile({.facet = kFacet,
-                       .plus_address = plus_address,
-                       .is_confirmed = is_confirmed_});
+  PlusProfile profile(kFakeProfileId, kFacet, plus_address, is_confirmed_);
   if (on_confirmed_) {
     std::move(on_confirmed_).Run(profile);
     on_confirmed_.Reset();
