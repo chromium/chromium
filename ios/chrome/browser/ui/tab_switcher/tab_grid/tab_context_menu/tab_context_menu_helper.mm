@@ -221,23 +221,25 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       [weakSelf handleAddWebState:tabID toGroup:group];
     };
 
-    const TabGroup* tabGroup = [self groupForWebState:tabID];
+    const TabGroup* currentTabGroup = [self groupForWebState:tabID];
     UIMenuElement* groupAction;
-    if (tabGroup) {
+    if (currentTabGroup) {
       ProceduralBlock removeBlock = ^{
         [weakSelf handleRemoveWebStateFromGroup:tabID];
       };
-      groupAction = [actionFactory menuToMoveTabToGroupWithGroups:groups
-                                                     currentGroup:tabGroup
-                                                        moveBlock:actionResult
-                                                      removeBlock:removeBlock];
+      groupAction =
+          [actionFactory menuToMoveTabToGroupWithGroups:groups
+                                           currentGroup:currentTabGroup
+                                              moveBlock:actionResult
+                                            removeBlock:removeBlock];
     } else {
       groupAction = [actionFactory menuToAddTabToGroupWithGroups:groups
                                                     numberOfTabs:1
                                                            block:actionResult];
     }
 
-    if (shareAction) {
+    // Hide the `shareAction` for tabs in groups.
+    if (shareAction && !currentTabGroup) {
       UIMenu* shareMenu = [UIMenu menuWithTitle:@""
                                           image:nil
                                      identifier:nil
@@ -261,7 +263,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     if (bookmarkAction) {
       [collectionsActions addObject:bookmarkAction];
     }
-    if (selectAction) {
+    // Hide the `selectAction` for tabs in groups.
+    if (selectAction && !currentTabGroup) {
       [collectionsActions addObject:selectAction];
     }
     if (closeTabAction) {
