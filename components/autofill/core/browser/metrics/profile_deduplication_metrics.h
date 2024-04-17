@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PROFILE_DEDUPLICATION_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PROFILE_DEDUPLICATION_METRICS_H_
 
-#include <string>
-#include <vector>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 
 namespace autofill::autofill_metrics {
@@ -16,8 +16,8 @@ namespace autofill::autofill_metrics {
 // except for a small number of types) for the `profiles` a user has stored at
 // browser startup.
 void LogDeduplicationStartupMetrics(
-    const std::vector<AutofillProfile*>& profiles,
-    const std::string& app_locale);
+    base::span<const AutofillProfile* const> profiles,
+    std::string_view app_locale);
 
 // Logs various metrics around quasi duplicates after the user was shown a
 // new profile prompt for the `import_candidate`. `existing_profiles` are the
@@ -27,8 +27,8 @@ void LogDeduplicationStartupMetrics(
 void LogDeduplicationImportMetrics(
     bool did_user_accept,
     const AutofillProfile& import_candidate,
-    const std::vector<AutofillProfile*>& existing_profiles,
-    const std::string& app_locale);
+    base::span<const AutofillProfile* const> existing_profiles,
+    std::string_view app_locale);
 
 }  // namespace autofill::autofill_metrics
 

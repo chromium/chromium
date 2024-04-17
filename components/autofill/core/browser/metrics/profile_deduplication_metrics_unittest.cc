@@ -36,7 +36,8 @@ TEST_F(ProfileDeduplicationMetricsTest,
   b.SetRawInfo(COMPANY_NAME, u"different company");
   b.SetRawInfo(EMAIL_ADDRESS, u"different-email@gmail.com");
   base::HistogramTester histogram_tester;
-  LogDeduplicationStartupMetrics({&a, &b}, kLocale);
+  const std::vector<AutofillProfile*> profiles = {&a, &b};
+  LogDeduplicationStartupMetrics(profiles, kLocale);
   RunUntilIdle();
   // The same sample is emitted once for each profile.
   histogram_tester.ExpectUniqueSample(
@@ -50,7 +51,8 @@ TEST_F(ProfileDeduplicationMetricsTest,
        Startup_RankOfStoredQuasiDuplicateProfiles_NoProfiles) {
   AutofillProfile a = test::GetFullProfile();
   base::HistogramTester histogram_tester;
-  LogDeduplicationStartupMetrics({&a}, kLocale);
+  const std::vector<AutofillProfile*> profiles = {&a};
+  LogDeduplicationStartupMetrics(profiles, kLocale);
   RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "Autofill.Deduplication.ExistingProfiles."
@@ -66,7 +68,8 @@ TEST_F(ProfileDeduplicationMetricsTest, Startup_TypeOfQuasiDuplicateToken) {
   AutofillProfile c = test::GetFullProfile();
   c.SetRawInfo(EMAIL_ADDRESS, u"different-email@gmail.com");
   base::HistogramTester histogram_tester;
-  LogDeduplicationStartupMetrics({&a, &b, &c}, kLocale);
+  const std::vector<AutofillProfile*> profiles = {&a, &b, &c};
+  LogDeduplicationStartupMetrics(profiles, kLocale);
   RunUntilIdle();
   // Expect two samples for `kCompany` and `kEmailAddress`, since:
   // - `kCompany` and `kEmailAddress` are each emitted once by `a`.
@@ -87,8 +90,9 @@ TEST_F(ProfileDeduplicationMetricsTest,
   AutofillProfile import_candidate = test::GetFullProfile();
   import_candidate.SetRawInfo(COMPANY_NAME, u"different company");
   base::HistogramTester histogram_tester;
+  const std::vector<AutofillProfile*> existing_profiles = {&existing_profile};
   LogDeduplicationImportMetrics(/*did_user_accept=*/true, import_candidate,
-                                {&existing_profile}, kLocale);
+                                existing_profiles, kLocale);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Deduplication.NewProfile.Accepted."
       "RankOfStoredQuasiDuplicateProfiles",
@@ -101,8 +105,9 @@ TEST_F(ProfileDeduplicationMetricsTest, Import_TypeOfQuasiDuplicateToken) {
   AutofillProfile import_candidate = test::GetFullProfile();
   import_candidate.SetRawInfo(COMPANY_NAME, u"different company");
   base::HistogramTester histogram_tester;
+  const std::vector<AutofillProfile*> existing_profiles = {&existing_profile};
   LogDeduplicationImportMetrics(/*did_user_accept=*/false, import_candidate,
-                                {&existing_profile}, kLocale);
+                                existing_profiles, kLocale);
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.Deduplication.NewProfile.Declined."
                   "TypeOfQuasiDuplicateToken.1"),
