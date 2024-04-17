@@ -310,15 +310,10 @@ void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
   signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
 
-  TurnSyncOnHelper::SigninAbortedMode abort_mode =
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kExperimental)
-          ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY
-          : TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT;
-
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(browser_->profile(), access_point, promo_action,
-                       account_id_, abort_mode,
+                       account_id_,
+                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
                        std::make_unique<InterceptTurnSyncOnHelperDelegate>(
                            weak_ptr_factory_.GetWeakPtr()),
                        base::OnceClosure());

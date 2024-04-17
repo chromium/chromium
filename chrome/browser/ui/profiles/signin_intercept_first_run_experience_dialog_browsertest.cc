@@ -9,8 +9,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -223,14 +221,6 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
               signin::GetPrimaryAccountConsentLevel(identity_manager()));
   }
 
-  void ExpectNoPrimaryAccount() {
-    EXPECT_EQ(
-        identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-        CoreAccountId());
-    EXPECT_EQ(std::nullopt,
-              signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  }
-
   syncer::TestSyncService* sync_service() {
     return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(GetProfile()));
@@ -267,44 +257,9 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
   CoreAccountId account_id_;
 };
 
-// The feature override controls the
-// `switches::kExplicitBrowserSigninUIOnDesktop` uno feature.
-//
-// Main differences with Uno enabled/disabled:
-// - State of the Primary account when Sync is declined.
-//    - Uno enabled: primary account is not set.
-//    - Uno disabled: primary account consent level is kSignin.
-//
-// Potential other differences might occur in the future with the change of
-// behavior with the intercept and Uno.
-class SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest
-    : public SigninInterceptFirstRunExperienceDialogBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
-                                switches::kUnoDesktop},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
-                                 switches::kUnoDesktop});
-    }
-  }
-
-  bool is_uno_enabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Shows and closes the fre dialog.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    ShowAndCloseDialog) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       ShowAndCloseDialog) {
   SignIn(kConsumerEmail);
   controller()->ShowModalInterceptFirstRunExperienceDialog(
       account_id(), /* is_forced_intercept = */ false);
@@ -314,9 +269,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Goes through all steps of the fre dialog. The user enables sync.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    AcceptSync) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       AcceptSync) {
   SignIn(kConsumerEmail);
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
@@ -362,9 +316,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Goes through all steps of the fre dialog and skips profile customization.
 // The user enables sync.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    AcceptSync_SkipCustomization) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       AcceptSyncSkipCustomization) {
   SignIn(kConsumerEmail);
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
@@ -412,9 +365,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // The user enables sync and has a synced extension theme. Tests that the dialog
 // waits on the sync confirmation page until the extension theme is applied.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    AcceptSync_ExtensionTheme) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       AcceptSyncExtensionTheme) {
   SignIn(kConsumerEmail);
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
@@ -466,9 +418,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests that the profile customzation is not shown when the user enables sync
 // for an account with a custom passphrase.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    AcceptSync_SyncPassphrase) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       AcceptSyncCustomPassphrase) {
   SignIn(kConsumerEmail);
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
@@ -497,9 +448,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Goes through all steps of the fre dialog. The user declines sync.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    DeclineSync) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       DeclineSync) {
   SignIn(kConsumerEmail);
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
@@ -518,12 +468,7 @@ IN_PROC_BROWSER_TEST_P(
 
   SimulateSyncConfirmationUIClosing(LoginUIService::ABORT_SYNC);
 
-  if (is_uno_enabled()) {
-    ExpectNoPrimaryAccount();
-  } else {
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  }
-
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   profile_customization_observer.Wait();
   EXPECT_EQ(
@@ -542,9 +487,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests the case when the account has a profile color policy. Tests that the
 // FRE dialog skips the profile customization step.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    ProfileColorPolicy) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       ProfileColorPolicy) {
   SignIn(kEnterpriseEmail);
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
@@ -585,9 +529,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // The user chooses to manage sync settings in the sync confirmation dialog.
 // The profile customization is not shown in this case.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    SyncSettings) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       SyncSettings) {
   SignIn(kConsumerEmail);
   content::TestNavigationObserver sync_confirmation_observer(
       kSyncConfirmationUrl);
@@ -618,9 +561,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Closes the fre dialog before the sync confirmation is shown. Tests that
 // `TurnSyncOnHelper` is eventually destroyed.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    CloseDialogBeforeSyncConfirmationIsShown) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       CloseDialogBeforeSyncConfirmationIsShown) {
   // It's important to use an enterprise email here in order to block the sync
   // confirmation UI until the sync engine starts.
   SignIn(kEnterpriseEmail);
@@ -647,20 +589,15 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(
       TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(GetProfile()));
   // Sync is aborted.
-  if (is_uno_enabled()) {
-    ExpectNoPrimaryAccount();
-  } else {
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  }
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   ExpectRecordedEvents({DialogEvent::kStart});
   ExpectSigninHistogramsRecorded();
 }
 
 // Tests the case when sync is disabled by policy. The fre dialog starts with
 // the profile customization UI.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    SyncDisabled) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       SyncDisabled) {
   SignIn(kEnterpriseEmail);
   sync_service()->SetDisableReasons(
       {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
@@ -679,11 +616,7 @@ IN_PROC_BROWSER_TEST_P(
       kProfileCustomizationUrl);
   // Sync consent should not be granted since the user hasn't seen any consent
   // UI.
-  if (is_uno_enabled()) {
-    ExpectNoPrimaryAccount();
-  } else {
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  }
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
 
   SimulateProfileCustomizationDoneButtonClicked();
   EXPECT_FALSE(controller()->ShowsModalDialog());
@@ -696,9 +629,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests the case when the user went through the forced intercept dialog. The
 // FRE dialog should skip the sync confirmation.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    ForcedIntercept) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       ForcedIntercept) {
   SignIn(kEnterpriseEmail);
   content::TestNavigationObserver profile_customization_observer(
       kProfileCustomizationUrl);
@@ -708,11 +640,8 @@ IN_PROC_BROWSER_TEST_P(
       account_id(), /* is_forced_intercept = */ true);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   profile_customization_observer.Wait();
-  if (is_uno_enabled()) {
-    ExpectNoPrimaryAccount();
-  } else {
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  }
+
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   EXPECT_EQ(
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
@@ -727,9 +656,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests the case when promotional tabs are disabled by policy. The FRE dialog
 // should skip the sync confirmation.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    PromotionalTabsDisabled) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       PromotionalTabsDisabled) {
   SignIn(kEnterpriseEmail);
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kPromotionalTabsEnabled,
@@ -751,11 +679,7 @@ IN_PROC_BROWSER_TEST_P(
       kProfileCustomizationUrl);
   // Sync consent should not be granted since the user hasn't seen any consent
   // UI.
-  if (is_uno_enabled()) {
-    ExpectNoPrimaryAccount();
-  } else {
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  }
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
 
   SimulateProfileCustomizationDoneButtonClicked();
   EXPECT_FALSE(controller()->ShowsModalDialog());
@@ -769,9 +693,8 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the case when the user went through the forced intercept dialog and the
 // account has a profile color policy. Tests that the FRE dialog exits
 // immediately and displays the profile switch IPH.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    ForcedIntercept_ProfileColorPolicy) {
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       ForcedIntercept_ProfileColorPolicy) {
   SignIn(kEnterpriseEmail);
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kBrowserThemeColor,
@@ -787,17 +710,7 @@ IN_PROC_BROWSER_TEST_P(
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(controller()->ShowsModalDialog());
-  if (is_uno_enabled()) {
-    ExpectNoPrimaryAccount();
-  } else {
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  }
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
   ExpectRecordedEvents({DialogEvent::kStart});
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SigninInterceptFirstRunExperienceDialogWithUnoParamBrowserTest,
-    testing::Bool(),
-    [](auto& info) { return info.param ? "UnoEnabled" : "UnoDisabled"; });
