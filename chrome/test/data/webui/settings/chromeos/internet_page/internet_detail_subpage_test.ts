@@ -1963,6 +1963,79 @@ suite('<settings-internet-detail-subpage>', () => {
       });
     });
 
+    [true, false].forEach(isApnPoliciesEnabled => {
+      test(
+          `Managed APN icon visibility when isApnPoliciesEnabled is ${
+              isApnPoliciesEnabled}`,
+          async () => {
+            loadTimeData.overrideValues({
+              isApnRevampEnabled: true,
+              isApnPoliciesEnabled: isApnPoliciesEnabled,
+            });
+            init();
+            mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+            const apnName = 'test';
+            const testIccid = '11111';
+            const cellularNetwork =
+                getManagedProperties(NetworkType.kCellular, 'cellular');
+            cellularNetwork.typeProperties.cellular!.connectedApn = {
+              accessPointName: '',
+              id: '',
+              authentication: ApnAuthenticationType.kAutomatic,
+              language: undefined,
+              localizedName: undefined,
+              name: undefined,
+              password: undefined,
+              username: undefined,
+              attach: undefined,
+              state: ApnState.kEnabled,
+              ipType: ApnIpType.kAutomatic,
+              apnTypes: [],
+              source: ApnSource.kModb,
+            };
+            cellularNetwork.typeProperties.cellular!.connectedApn!
+                .accessPointName = apnName;
+            cellularNetwork.typeProperties.cellular!.iccid = testIccid;
+            mojoApi.setManagedPropertiesForTest(cellularNetwork);
+            internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+
+            // Set cellular network as active SIM so that APN row should show up
+            // if the flag is enabled.
+            mojoApi.setDeviceStateForTest({
+              ...getDefaultDeviceStateProps(),
+              deviceState: DeviceStateType.kEnabled,
+              simInfos: [{
+                iccid: testIccid,
+                isPrimary: true,
+                slotId: 0,
+                eid: '',
+              }],
+            });
+            await flushTasks();
+            assertTrue(!!internetDetailPage.shadowRoot!.querySelector(
+                '#apnSubpageButton'));
+
+            // Check for APN policies managed icon.
+            const getApnManagedIcon = () =>
+                internetDetailPage.shadowRoot!.querySelector('#apnManagedIcon');
+            assertFalse(!!getApnManagedIcon());
+
+            internetDetailPage.globalPolicy = {
+              ...getDefaultGlobalPolicy(),
+              allowApnModification: true,
+            };
+            await flushTasks();
+            assertFalse(!!getApnManagedIcon());
+
+            internetDetailPage.globalPolicy = {
+              ...getDefaultGlobalPolicy(),
+              allowApnModification: false,
+            };
+            await flushTasks();
+            assertEquals(isApnPoliciesEnabled, !!getApnManagedIcon());
+          });
+    });
+
     test('Cellular network not found while in detail subpage', async () => {
       init();
       mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);

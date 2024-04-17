@@ -8,6 +8,7 @@
  * for a network.
  */
 
+import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/ash/common/network/cr_policy_network_indicator_mojo.js';
 import 'chrome://resources/ash/common/network/network_apnlist.js';
 import 'chrome://resources/ash/common/network/network_choose_mobile.js';
@@ -321,6 +322,14 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
+      isApnPoliciesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isApnPoliciesEnabled') &&
+              loadTimeData.getBoolean('isApnPoliciesEnabled');
+        },
+      },
+
       passpointSubscription_: {
         type: Object,
         notify: true,
@@ -408,6 +417,7 @@ export class SettingsInternetDetailPageElement extends
   private suppressTextMessagesOverride_: boolean;
   private isCellularCarrierLockEnabled_: boolean;
   private isPasspointSettingsEnabled_: boolean;
+  private isApnPoliciesEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
@@ -1271,6 +1281,16 @@ export class SettingsInternetDetailPageElement extends
   private shouldShowApnRow_(): boolean {
     return this.isApnRevampEnabled_ &&
         this.isCellular_(this.managedProperties_);
+  }
+
+  private isApnManaged_(globalPolicy: GlobalPolicy|undefined): boolean {
+    if (!this.isApnPoliciesEnabled_) {
+      return false;
+    }
+    if (!globalPolicy) {
+      return false;
+    }
+    return !globalPolicy.allowApnModification;
   }
 
   private shouldShowApnList_(): boolean {
