@@ -12,8 +12,6 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include <vector>
-
-#include "chrome/browser/profiles/avatar_menu.h"
 #endif
 
 struct AccountInfo;
