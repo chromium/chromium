@@ -126,4 +126,39 @@ suite('cr-icon', function() {
     svg = icon.shadowRoot!.querySelector('svg');
     assertTrue(!!svg);
   });
+
+  test('cr-iconset used rather than iron-iconset', async () => {
+    // Add an iron-iconset to the document.
+    const template = html`<iron-iconset-svg name="cr20-test" size="20">
+      <svg>
+        <defs>
+          <g id="arrow">
+            <path d="M7 10l5 5 5-5z"></path>
+          </g>
+        </defs>
+      </svg>
+    </iron-iconset-svg>`;
+    document.head.appendChild(template.content);
+
+    // Add a cr-iconset with the same name.
+    const iconsetHtml = litHtml`
+      <cr-iconset name="cr20-test" size="20">
+        <svg>
+          <defs>
+            <g id="arrow">
+              <path d="M7 14l5-5 5 5z"></path>
+            </g>
+          </defs>
+        </svg>
+      </cr-iconset>`;
+    render(iconsetHtml, document.head);
+
+    icon.icon = 'cr20-test:arrow';
+    await microtasksFinished();
+    const svg = icon.shadowRoot!.querySelector('svg');
+    assertTrue(!!svg);
+
+    // Confirm the cr-iconset value.
+    assertSvgPath(svg, 'M7 14l5-5 5 5z');
+  });
 });

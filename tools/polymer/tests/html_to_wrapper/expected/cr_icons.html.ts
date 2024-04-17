@@ -1,0 +1,12 @@
+import '//resources/cr_elements/cr_icon/cr_iconset.js';
+import {html, render} from '//resources/lit/v3_0/lit.rollup.js';
+
+const iconsetHtml = html`<cr-iconset name="dummy" size="24">
+  <svg>
+    <defs>
+      <g id="foo"><path d="M12 2C6.48 2 2 6.48 2"></path></g>
+    </defs>
+  </svg>
+</cr-iconset>
+`;
+render(iconsetHtml, document.head);

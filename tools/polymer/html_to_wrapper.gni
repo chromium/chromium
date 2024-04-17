@@ -47,7 +47,8 @@ template("html_to_wrapper") {
         # Exclude non-web component "*_icons.html" or "icons.html" files.
         is_icons_template =
             get_path_info(html_file, "file") == "icons.html" ||
-            string_replace(html_file, "_icons.html", "") != html_file
+            string_replace(html_file, "_icons.html", "") != html_file ||
+            string_replace(html_file, "icons_lit.html", "") != html_file
         if (!is_icons_template) {
           inputs += [ "$in_folder/" +
                       string_replace(html_file, ".html", wrapper_extension) ]
