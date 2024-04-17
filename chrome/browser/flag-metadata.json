@@ -5437,7 +5437,7 @@
   {
     "name": "link-preview",
     "owners": [ "//chrome/browser/preloading/preview/OWNERS" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "linked-services-setting",
