@@ -4407,9 +4407,6 @@ extern const char kOneGroupPerRendererDescription[];
 extern const char kPlatformKeysAesEncryptionName[];
 extern const char kPlatformKeysAesEncryptionDescription[];
 
-extern const char kPreinstalledWebAppWindowExperimentName[];
-extern const char kPreinstalledWebAppWindowExperimentDescription[];
-
 extern const char kPrintPreviewSetupAssistanceName[];
 extern const char kPrintPreviewSetupAssistanceDescription[];
 

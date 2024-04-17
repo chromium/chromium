@@ -48,10 +48,6 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/preinstalled_web_app_window_experiment_utils.h"
-#endif
-
 using DisplayMode = blink::mojom::DisplayMode;
 using content::WebContents;
 
@@ -431,19 +427,6 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
       if (mode == TabSwitching::kTo)
         features.num_sessions = 1;
     }
-#if BUILDFLAG(IS_CHROMEOS)
-    auto user_group =
-        preinstalled_web_app_window_experiment_utils::GetUserGroupPref(
-            profile_->GetPrefs());
-    if (user_group !=
-        features::PreinstalledWebAppWindowExperimentUserGroup::kUnknown) {
-      features.preinstalled_web_app_window_experiment_user_group =
-          static_cast<int>(user_group);
-      features.preinstalled_web_app_window_experiment_has_launched_before =
-          preinstalled_web_app_window_experiment_utils::
-              HasLaunchedAppBeforeExperiment(*app_id, profile_->GetPrefs());
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (banner_data &&
              installable ==
                  webapps::InstallableWebAppCheckResult::kYes_Promotable) {

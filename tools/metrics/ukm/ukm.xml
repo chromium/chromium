@@ -29784,39 +29784,25 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="PreinstalledWindowExperimentHasLaunchedBefore" enum="Boolean">
+    <obsolete>
+      Removed 2024-04.
+    </obsolete>
     <summary>
       Records whether the user has launched this preinstalled app before the
       preinstalled app window vs tab experiment started. Recorded only if the
       user was eligible for the experiment, which is new Chrome OS users.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="PreinstalledWindowExperimentUserGroup"
       enum="WebAppPreinstalledWindowExperimentUserGroup">
+    <obsolete>
+      Removed 2024-04.
+    </obsolete>
     <summary>
       Records the user group that the user is in, for an experiment on opening
       preinstalled apps in windows vs tabs. Recorded only if the user was
       eligible for the experiment, which is new Chrome OS users.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <index fields="profile.form_factor"/>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Promotable" enum="Boolean">
     <summary>

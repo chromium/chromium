@@ -596,13 +596,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // is a subset of GetAppsIncludingStubs().
   AppSet GetApps() const;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Set (or replace existing) temporary experimental overrides for
-  // UserDisplayMode. `overrides` maps app IDs to their overridden value.
-  void SetUserDisplayModeOverridesForExperiment(
-      base::flat_map<webapps::AppId, mojom::UserDisplayMode> overrides);
-#endif
-
   // Returns a dict with debug values for each app in the registry, including
   // registrar-evaluated effective fields.
   base::Value AsDebugValue() const;
@@ -660,9 +653,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
 #if DCHECK_IS_ON()
   size_t mutations_count_ = 0;
 #endif
-
-  base::flat_map<webapps::AppId, mojom::UserDisplayMode>
-      user_display_mode_overrides_for_experiment_;
 
   // Keeps a record of in-memory (non-persistent) Storage Partitions created by
   // Isolated Web Apps' Controlled Frames. This table will expire on browser

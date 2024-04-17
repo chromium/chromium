@@ -245,13 +245,6 @@ BASE_FEATURE(kPreinstalledWebAppInstallation,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-// An experiment for making preinstalled apps open in a window by default.
-BASE_FEATURE(kPreinstalledWebAppWindowExperiment,
-             "PreinstalledWebAppWindowExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
 // If enabled, specified extensions cannot be closed via the task manager.
 BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,
              "DesktopTaskManagerEndProcessDisabledForExtension",

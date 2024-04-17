@@ -34759,6 +34759,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="WebAppPreinstalledWindowExperimentUserGroup">
+  <obsolete>
+    Removed 2024-04.
+  </obsolete>
   <summary>
     User group for an experiment on opening preinstalled apps in windows vs
     tabs.

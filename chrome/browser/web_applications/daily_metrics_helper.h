@@ -31,11 +31,6 @@ struct DailyInteraction {
   base::TimeDelta foreground_duration;
   base::TimeDelta background_duration;
   int num_sessions = 0;
-#if BUILDFLAG(IS_CHROMEOS)
-  std::optional<int> preinstalled_web_app_window_experiment_user_group;
-  std::optional<bool>
-      preinstalled_web_app_window_experiment_has_launched_before;
-#endif
 
   DailyInteraction();
   explicit DailyInteraction(GURL start_url);

@@ -70,17 +70,6 @@ class DesktopWebAppUkmRecorder {
           BucketedDailySeconds(record.background_duration));
     if (record.num_sessions > 0)
       builder.SetNumSessions(record.num_sessions);
-#if BUILDFLAG(IS_CHROMEOS)
-    if (record.preinstalled_web_app_window_experiment_user_group) {
-      builder.SetPreinstalledWindowExperimentUserGroup(
-          record.preinstalled_web_app_window_experiment_user_group.value());
-    }
-    if (record.preinstalled_web_app_window_experiment_has_launched_before) {
-      builder.SetPreinstalledWindowExperimentHasLaunchedBefore(
-          record.preinstalled_web_app_window_experiment_has_launched_before
-              .value());
-    }
-#endif
     builder.Record(ukm::UkmRecorder::Get());
     ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
   }
@@ -100,12 +89,6 @@ const char kPromotable[] = "promotable";
 const char kForegroundDurationSec[] = "foreground_duration_sec";
 const char kBackgroundDurationSec[] = "background_duration_sec";
 const char kNumSessions[] = "num_sessions";
-#if BUILDFLAG(IS_CHROMEOS)
-const char kPreinstalledWebAppWindowExperimentUserGroup[] =
-    "preinstalled_app_experiment_user_group";
-const char kPreinstalledWebAppWindowExperimentHasLaunchedBefore[] =
-    "preinstalled_app_experiment_has_launched_before";
-#endif
 
 optional<DailyInteraction> DictToRecord(const std::string& url,
                                         const base::Value::Dict& record_dict) {
@@ -150,14 +133,6 @@ optional<DailyInteraction> DictToRecord(const std::string& url,
   if (num_sessions)
     record.num_sessions = *num_sessions;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  record.preinstalled_web_app_window_experiment_user_group =
-      record_dict.FindInt(kPreinstalledWebAppWindowExperimentUserGroup);
-  record.preinstalled_web_app_window_experiment_has_launched_before =
-      record_dict.FindBool(
-          kPreinstalledWebAppWindowExperimentHasLaunchedBefore);
-#endif
-
   return record;
 }
 
@@ -175,19 +150,6 @@ base::Value::Dict RecordToDict(DailyInteraction& record) {
   record_dict.Set(kBackgroundDurationSec,
                   static_cast<int>(record.background_duration.InSeconds()));
   record_dict.Set(kNumSessions, record.num_sessions);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (record.preinstalled_web_app_window_experiment_user_group.has_value()) {
-    record_dict.Set(kPreinstalledWebAppWindowExperimentUserGroup,
-                    *record.preinstalled_web_app_window_experiment_user_group);
-  }
-  if (record.preinstalled_web_app_window_experiment_has_launched_before
-          .has_value()) {
-    record_dict.Set(
-        kPreinstalledWebAppWindowExperimentHasLaunchedBefore,
-        *record.preinstalled_web_app_window_experiment_has_launched_before);
-  }
-#endif
 
   return record_dict;
 }

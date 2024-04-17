@@ -353,10 +353,6 @@ source_set("web_applications") {
       "migrations/adobe_express_oem_to_default_migration.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
-      "preinstalled_web_app_window_experiment.cc",
-      "preinstalled_web_app_window_experiment.h",
-      "preinstalled_web_app_window_experiment_utils.cc",
-      "preinstalled_web_app_window_experiment_utils.h",
       "web_app_run_on_os_login_manager.cc",
       "web_app_run_on_os_login_manager.h",
     ]
@@ -1175,18 +1171,6 @@ source_set("interactive_ui_tests") {
     "//ui/base/idle:test_support",
     "//ui/events/devices:test_support",
   ]
-
-  if (is_chromeos) {
-    sources += [ "preinstalled_web_app_window_experiment_browsertest.cc" ]
-
-    deps += [
-      "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:test_support",
-      "//chrome/browser/web_applications/app_service:test_support",
-      "//components/services/app_service",
-      "//components/user_manager",
-    ]
-  }
 
   if (is_mac) {
     deps += [ "//chrome/browser/apps/app_shim" ]

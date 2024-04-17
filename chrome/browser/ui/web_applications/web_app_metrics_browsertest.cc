@@ -45,10 +45,6 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/preinstalled_web_app_window_experiment_utils.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
 #endif
@@ -194,12 +190,6 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
                                /*overwrite_existing_manifest_fields=*/false,
                                webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  preinstalled_web_app_window_experiment_utils::SetUserGroupPref(
-      profile()->GetPrefs(),
-      features::PreinstalledWebAppWindowExperimentUserGroup::kWindow);
-#endif
-
   AddBlankTabAndShow(browser());
   NavigateAndAwaitInstallabilityCheck(browser(), GetInstallableAppURL());
 
@@ -219,8 +209,6 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kDisplayModeName,
       static_cast<int>(DisplayMode::kBrowser));
-  // Note kCapturesLinksName would be true if PreinstalledWebAppWindowExperiment
-  // was really enabled and ran its setup (covered by its own browsertest).
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kCapturesLinksName, false);
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
@@ -229,15 +217,6 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
   // be expected to have session time upon further interaction).
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(entry,
                                                  UkmEntry::kNumSessionsName, 1);
-#if BUILDFLAG(IS_CHROMEOS)
-  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
-      entry, UkmEntry::kPreinstalledWindowExperimentUserGroupName,
-      static_cast<int>(
-          features::PreinstalledWebAppWindowExperimentUserGroup::kWindow));
-  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
-      entry, UkmEntry::kPreinstalledWindowExperimentHasLaunchedBeforeName,
-      false);
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -257,14 +236,6 @@ IN_PROC_BROWSER_TEST_F(
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 
   apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  preinstalled_web_app_window_experiment_utils::SetUserGroupPref(
-      profile()->GetPrefs(),
-      features::PreinstalledWebAppWindowExperimentUserGroup::kTab);
-  preinstalled_web_app_window_experiment_utils::SetHasLaunchedAppsBeforePref(
-      profile()->GetPrefs(), {app_id});
-#endif
 
   LaunchWebAppBrowserAndAwaitInstallabilityCheck(app_id);
 
@@ -297,16 +268,6 @@ IN_PROC_BROWSER_TEST_F(
       entry, UkmEntry::kBackgroundDurationName));
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(entry,
                                                  UkmEntry::kNumSessionsName, 1);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
-      entry, UkmEntry::kPreinstalledWindowExperimentUserGroupName,
-      static_cast<int>(
-          features::PreinstalledWebAppWindowExperimentUserGroup::kTab));
-  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
-      entry, UkmEntry::kPreinstalledWindowExperimentHasLaunchedBeforeName,
-      true);
-#endif
 }
 
 // Flaky test: crbug.com/1170786

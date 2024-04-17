@@ -7619,13 +7619,6 @@ const char kPlatformKeysAesEncryptionDescription[] =
     "chrome.platformKeys APIs. For instance, the new operations include sign, "
     "encrypt, and decrypt.";
 
-const char kPreinstalledWebAppWindowExperimentName[] =
-    "Preinstalled web app window experiment.";
-const char kPreinstalledWebAppWindowExperimentDescription[] =
-    "A ChromeOS experiment for new users that makes all preinstalled web apps "
-    "open in windows with link capturing enabled, or tabs, instead of the "
-    "default behavior.";
-
 const char kPrintPreviewSetupAssistanceName[] =
     "Enable improved printer status and error messaging in Print Preview.";
 const char kPrintPreviewSetupAssistanceDescription[] =
