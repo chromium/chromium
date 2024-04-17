@@ -162,7 +162,10 @@ class MouseKeysTest : public AshTestBase {
   }
 
   void SetDisableInTextFields(bool value) {
-    return GetMouseKeysController()->set_disable_in_text_fields(value);
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+    prefs->SetBoolean(prefs::kAccessibilityMouseKeysDisableInTextFields, value);
   }
 
   void SetLeftHanded(bool value) {

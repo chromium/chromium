@@ -2332,6 +2332,11 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
           base::Unretained(this)));
   if (::features::IsAccessibilityMouseKeysEnabled()) {
     pref_change_registrar_->Add(
+        prefs::kAccessibilityMouseKeysDisableInTextFields,
+        base::BindRepeating(&AccessibilityController::
+                                UpdateMouseKeysDisableInTextFieldsFromPref,
+                            base::Unretained(this)));
+    pref_change_registrar_->Add(
         prefs::kAccessibilityMouseKeysAcceleration,
         base::BindRepeating(
             &AccessibilityController::UpdateMouseKeysAccelerationFromPref,
@@ -2440,6 +2445,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateAutoclickMovementThresholdFromPref();
   UpdateAutoclickMenuPositionFromPref();
   if (::features::IsAccessibilityMouseKeysEnabled()) {
+    UpdateMouseKeysDisableInTextFieldsFromPref();
     UpdateMouseKeysAccelerationFromPref();
     UpdateMouseKeysMaxSpeedFromPref();
     UpdateMouseKeysDominantHandFromPref();
@@ -2522,6 +2528,13 @@ void AccessibilityController::UpdateAutoclickMovementThresholdFromPref() {
 void AccessibilityController::UpdateAutoclickMenuPositionFromPref() {
   Shell::Get()->autoclick_controller()->SetMenuPosition(
       GetAutoclickMenuPosition());
+}
+
+void AccessibilityController::UpdateMouseKeysDisableInTextFieldsFromPref() {
+  DCHECK(active_user_prefs_);
+  bool value = active_user_prefs_->GetBoolean(
+      prefs::kAccessibilityMouseKeysDisableInTextFields);
+  Shell::Get()->mouse_keys_controller()->set_disable_in_text_fields(value);
 }
 
 void AccessibilityController::UpdateMouseKeysAccelerationFromPref() {
