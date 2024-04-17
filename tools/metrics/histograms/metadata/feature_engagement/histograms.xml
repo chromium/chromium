@@ -226,9 +226,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_iOSDefaultBrowserVideoPromoTrigger"
       summary="(obsolete) notifying that the conditions to show the default
                browser video promo have been met."/>
-  <variant name="IPH_iOSDockingPromoFeature"
+  <variant name="IPH_iOSDockingPromo"
       summary="Showing the Docking Promo on iOS"/>
-  <variant name="IPH_iOSDockingPromoRemindMeLaterFeature"
+  <variant name="IPH_iOSDockingPromoRemindMeLater"
       summary="Showing the Docking Promo (Remind Me Later version) on iOS"/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
