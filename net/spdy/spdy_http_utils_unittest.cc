@@ -54,13 +54,10 @@ void CheckOrdering(const spdy::Http2HeaderBlock& headers) {
   bool seen_http_header = false;
 
   for (auto& header : headers) {
-    bool is_pseudo = header.first.starts_with(':');
+    const bool is_pseudo = header.first.starts_with(':');
     if (is_pseudo) {
-      if (seen_http_header) {
-        EXPECT_TRUE(false) << "Header order is incorrect:\n"
-                           << headers.DebugString();
-        return;
-      }
+      ASSERT_FALSE(seen_http_header) << "Header order is incorrect:\n"
+                                     << headers.DebugString();
     } else {
       seen_http_header = true;
     }
