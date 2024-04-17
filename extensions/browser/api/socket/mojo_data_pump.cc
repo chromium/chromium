@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -70,12 +71,11 @@ void MojoDataPump::ReceiveMore(MojoResult result,
   DCHECK(read_callback_);
   DCHECK_NE(0u, read_size_);
 
-  uint32_t num_bytes = read_size_;
+  size_t num_bytes = read_size_;
 
   scoped_refptr<net::IOBuffer> io_buffer;
   if (result == MOJO_RESULT_OK) {
-    io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
-        static_cast<size_t>(num_bytes));
+    io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(num_bytes);
     result = receive_stream_->ReadData(io_buffer->data(), &num_bytes,
                                        MOJO_READ_DATA_FLAG_NONE);
   }
@@ -89,14 +89,14 @@ void MojoDataPump::ReceiveMore(MojoResult result,
     std::move(read_callback_).Run(0, nullptr);
     return;
   }
-  std::move(read_callback_).Run(num_bytes, io_buffer);
+  std::move(read_callback_).Run(base::checked_cast<int>(num_bytes), io_buffer);
 }
 
 void MojoDataPump::SendMore(MojoResult result,
                             const mojo::HandleSignalsState& state) {
   DCHECK(write_callback_);
 
-  uint32_t num_bytes = pending_write_buffer_size_;
+  size_t num_bytes = base::checked_cast<size_t>(pending_write_buffer_size_);
   if (result == MOJO_RESULT_OK) {
     result = send_stream_->WriteData(pending_write_buffer_->data(), &num_bytes,
                                      MOJO_WRITE_DATA_FLAG_NONE);
@@ -111,7 +111,7 @@ void MojoDataPump::SendMore(MojoResult result,
     std::move(write_callback_).Run(net::ERR_FAILED);
     return;
   }
-  std::move(write_callback_).Run(num_bytes);
+  std::move(write_callback_).Run(base::checked_cast<int>(num_bytes));
 }
 
 }  // namespace extensions

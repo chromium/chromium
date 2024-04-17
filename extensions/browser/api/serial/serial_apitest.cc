@@ -179,7 +179,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
 
   void DoWrite(MojoResult result, const mojo::HandleSignalsState& state) {
     const void* data;
-    uint32_t num_bytes;
+    size_t num_bytes;
 
     if (result == MOJO_RESULT_OK) {
       result = in_stream_->BeginReadData(&data, &num_bytes,
@@ -243,7 +243,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
     out_stream_watcher_.ArmOrNotify();
   }
 
-  void WriteOutReadData(uint32_t num_bytes) {
+  void WriteOutReadData(size_t num_bytes) {
     MojoResult result = out_stream_->WriteData(buffer_.data(), &num_bytes,
                                                MOJO_WRITE_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_OK) {

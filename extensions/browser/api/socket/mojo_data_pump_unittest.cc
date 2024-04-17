@@ -54,7 +54,7 @@ TEST(MojoDataPumpTest, ReceiveStreamNotReady) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(callback_called);
 
-  uint32_t num_bytes = data.size();
+  size_t num_bytes = data.size();
   // WriteData() completes synchronously because |data| is much smaller than
   // data pipe's internal buffer.
   MojoResult r = receive_producer_handle->WriteData(data.data(), &num_bytes,

@@ -655,7 +655,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
   void WriteData(mojo::StructPtr<network::mojom::URLResponseHead> head,
                  base::span<const uint8_t> contents) {
     DCHECK(contents.data());
-    uint32_t size = base::saturated_cast<uint32_t>(contents.size());
+    size_t size = contents.size();
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     if (mojo::CreateDataPipe(size, producer_handle, consumer_handle) !=

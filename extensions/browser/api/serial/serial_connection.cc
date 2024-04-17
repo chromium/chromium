@@ -370,7 +370,7 @@ void SerialConnection::OnReadPipeReadableOrClosed(
 
   DCHECK(receive_pipe_);
   const void* buffer;
-  uint32_t read_bytes;
+  size_t read_bytes;
   result = receive_pipe_->BeginReadData(&buffer, &read_bytes,
                                         MOJO_READ_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -581,7 +581,7 @@ void SerialConnection::OnSendPipeWritableOrClosed(
   }
 
   DCHECK(send_pipe_);
-  uint32_t num_bytes = data_to_send_.size();
+  size_t num_bytes = data_to_send_.size();
   result = send_pipe_->WriteData(data_to_send_.data(), &num_bytes,
                                  MOJO_WRITE_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
