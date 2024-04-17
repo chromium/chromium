@@ -9,13 +9,44 @@ assert(!is_android)
 source_set("shortcuts") {
   sources = [
     "create_shortcut_for_current_web_contents_task.h",
+    "document_icon_fetcher.cc",
+    "document_icon_fetcher.h",
+    "fetch_icons_from_document_task.cc",
+    "fetch_icons_from_document_task.h",
     "platform_util_mac.h",
     "platform_util_mac.mm",
   ]
 
   deps = [
     "//base",
+    "//components/webapps/common",
+    "//components/webapps/common:mojo_bindings",
     "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//skia",
+    "//third_party/blink/public/common",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "document_icon_fetcher_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":shortcuts",
+    "//base",
+    "//chrome/browser/ui:ui",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//skia",
+    "//testing/gtest:gtest",
+    "//ui/gfx:test_support",
+    "//url",
   ]
 }
 

@@ -725,6 +725,7 @@ static_library("test_support") {
     "test/scoped_default_font_description.h",
     "test/sk_color_eq.cc",
     "test/sk_color_eq.h",
+    "test/sk_gmock_support.h",
   ]
   if (is_apple) {
     sources += [ "image/image_unittest_util_apple.mm" ]
