@@ -976,6 +976,7 @@ try_.builder(
             "android_fastbuild",
         ],
     ),
+    execution_timeout = 8 * time.hour,
 )
 
 try_.builder(
