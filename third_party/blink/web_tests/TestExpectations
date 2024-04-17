@@ -5462,6 +5462,7 @@ crbug.com/1354433 [ Mac ] external/wpt/html/browsers/the-window-object/window-pr
 
 # Failures with FractionalScrollOffsets disabled for web tests by default.
 crbug.com/1358383 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-root-scrollbar-thumb.html [ Failure ]
+crbug.com/326122314 external/wpt/css/css-viewport/zoom/scroll-top-test-with-zoom.html [ Failure ]
 
 # Sheriff 2022-08-30
 

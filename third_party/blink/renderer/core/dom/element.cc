@@ -1807,7 +1807,7 @@ double Element::scrollLeft() {
     }
 
     return AdjustForAbsoluteZoom::AdjustScroll(
-        scrollable_area->GetScrollOffset().x(), *GetLayoutBox());
+        scrollable_area->GetWebExposedScrollOffset().x(), *GetLayoutBox());
   }
 
   return 0;
@@ -1854,7 +1854,7 @@ double Element::scrollTop() {
     }
 
     return AdjustForAbsoluteZoom::AdjustScroll(
-        scrollable_area->GetScrollOffset().y(), *GetLayoutBox());
+        scrollable_area->GetWebExposedScrollOffset().y(), *GetLayoutBox());
   }
 
   return 0;

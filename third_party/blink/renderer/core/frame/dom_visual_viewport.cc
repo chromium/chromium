@@ -100,10 +100,10 @@ float DOMVisualViewport::pageLeft() const {
   SyncScrollAttemptHeuristic::DidAccessScrollOffset();
 
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_x = view->LayoutViewport()->GetScrollOffset().x();
+  float viewport_x = view->LayoutViewport()->GetWebExposedScrollOffset().x();
 
   if (frame->IsMainFrame() && page->GetVisualViewport().IsActiveViewport())
-    viewport_x += page->GetVisualViewport().GetScrollOffset().x();
+    viewport_x += page->GetVisualViewport().GetWebExposedScrollOffset().x();
 
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_x,
                                              frame->PageZoomFactor());
@@ -127,10 +127,10 @@ float DOMVisualViewport::pageTop() const {
   SyncScrollAttemptHeuristic::DidAccessScrollOffset();
 
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_y = view->LayoutViewport()->GetScrollOffset().y();
+  float viewport_y = view->LayoutViewport()->GetWebExposedScrollOffset().y();
 
   if (frame->IsMainFrame() && page->GetVisualViewport().IsActiveViewport())
-    viewport_y += page->GetVisualViewport().GetScrollOffset().y();
+    viewport_y += page->GetVisualViewport().GetWebExposedScrollOffset().y();
 
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_y,
                                              frame->PageZoomFactor());

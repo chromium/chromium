@@ -4267,6 +4267,10 @@
       status: "experimental",
     },
     {
+      name: "WebExposedScrollOffset",
+      status: "stable",
+    },
+    {
       name: "WebFontResizeLCP",
       status: "experimental",
     },

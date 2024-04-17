@@ -448,6 +448,7 @@
     "prefix": "fractional-scroll-offsets",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-position/sticky/",
+              "external/wpt/css/css-viewport/zoom/scroll-top-test-with-zoom.html",
               "fast/scrolling/"],
     "args": ["--enable-blink-features=FractionalScrollOffsets",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
