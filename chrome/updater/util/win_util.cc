@@ -44,6 +44,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -975,7 +976,13 @@ std::optional<base::CommandLine> CommandLineForLegacyFormat(
       VLOG(1) << "Empty switch in command line: [" << cmd_string << "]";
       return std::nullopt;
     }
-
+    if (base::StringPairs switch_value_pairs;
+        base::SplitStringIntoKeyValuePairs(switch_name, '=', '\n',
+                                           &switch_value_pairs)) {
+      command_line.AppendSwitchASCII(switch_value_pairs[0].first,
+                                     switch_value_pairs[0].second);
+      continue;
+    }
     if (is_legacy_switch(next_arg) || next_arg.empty()) {
       command_line.AppendSwitch(switch_name);
     } else {

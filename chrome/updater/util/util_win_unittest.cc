@@ -56,4 +56,19 @@ TEST(UtilTest, CommandLineForLegacyFormat_WithArgs) {
   EXPECT_TRUE(cmd_line->GetSwitchValueASCII("s3").empty());
 }
 
+TEST(UtilTest, CommandLineForLegacyFormat_SwitchWithEqualSign) {
+  std::optional<base::CommandLine> cmd_line = CommandLineForLegacyFormat(
+      L"updater.exe /enable-logging "
+      L"/vmodule=*/components/update_client/*=2,*/chrome/updater/*=2 "
+      L"/handoff \"appguid={CDABE316-39CD-43BA-8440-6D1E0547AEE6}&lang=en\"");
+
+  EXPECT_TRUE(cmd_line);
+  EXPECT_TRUE(cmd_line->HasSwitch("enable-logging"));
+  EXPECT_TRUE(cmd_line->GetSwitchValueASCII("enable-logging").empty());
+  EXPECT_EQ(cmd_line->GetSwitchValueASCII("vmodule"),
+            "*/components/update_client/*=2,*/chrome/updater/*=2");
+  EXPECT_EQ(cmd_line->GetSwitchValueASCII("handoff"),
+            "appguid={CDABE316-39CD-43BA-8440-6D1E0547AEE6}&lang=en");
+}
+
 }  // namespace updater
