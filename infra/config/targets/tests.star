@@ -568,11 +568,11 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "chrome_wpt_tests_old_headless",
+    name = "headless_shell_wpt_tests",
     mixins = [
         "has_native_resultdb_integration",
     ],
-    binary = "chrome_wpt_tests",
+    binary = "headless_shell_wpt",
 )
 
 targets.tests.gtest_test(

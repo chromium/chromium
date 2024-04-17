@@ -905,6 +905,14 @@
     "label": "//headless:headless_browsertests",
     "type": "console_test_launcher",
   },
+  "headless_shell_wpt": {
+    "label": "//:headless_shell_wpt",
+    "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
+  },
   "headless_unittests": {
     "label": "//headless:headless_unittests",
     "type": "console_test_launcher",

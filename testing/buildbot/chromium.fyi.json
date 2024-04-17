@@ -47891,21 +47891,13 @@
         "test_id_prefix": "ninja://:chrome_wpt_tests/"
       },
       {
-        "args": [
-          "--test-type",
-          "testharness",
-          "reftest",
-          "crashtest",
-          "print-reftest",
-          "--additional-driver-flag=--headless=old"
-        ],
         "merge": {
           "args": [
             "--verbose"
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "chrome_wpt_tests_old_headless",
+        "name": "headless_shell_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -47915,10 +47907,11 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
         },
-        "test": "chrome_wpt_tests",
-        "test_id_prefix": "ninja://:chrome_wpt_tests/"
+        "test": "headless_shell_wpt",
+        "test_id_prefix": "ninja://:headless_shell_wpt/"
       }
     ]
   },

@@ -37,7 +37,9 @@ def make_product_registry():
     respective classes.
     """
     product_registry = {}
-    product_classes = [Chrome, ContentShell, ChromeiOS, ChromeAndroid, WebView]
+    product_classes = [
+        Chrome, HeadlessShell, ContentShell, ChromeiOS, ChromeAndroid, WebView
+    ]
     for product_cls in product_classes:
         names = [product_cls.name] + product_cls.aliases
         product_registry.update((name, product_cls) for name in names)
@@ -110,6 +112,10 @@ class Chrome(Product):
             'webdriver_binary':
             self.default_webdriver_binary,
         }
+
+
+class HeadlessShell(Chrome):
+    name = 'headless_shell'
 
 
 class ContentShell(Product):

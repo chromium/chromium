@@ -171,7 +171,7 @@ targets.legacy_compound_suite(
     basic_suites = [
         "chromium_wpt_tests_isolated_scripts",
         "chromium_wpt_tests_headful_isolated_scripts",
-        "chromium_wpt_tests_old_headless_isolated_scripts",
+        "headless_shell_wpt_tests_isolated_scripts",
     ],
 )
 

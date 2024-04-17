@@ -1649,33 +1649,6 @@
       },
     },
 
-    'chromium_wpt_tests_old_headless_isolated_scripts': {
-      'chrome_wpt_tests_old_headless': {
-        'test': 'chrome_wpt_tests',
-        'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-          '--additional-driver-flag=--headless=old',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-      },
-    },
-
     'clang_tot_gtests': {
       'base_unittests': {},
     },
@@ -4118,6 +4091,25 @@
       'headless_unittests': {},
     },
 
+    'headless_shell_wpt_tests_isolated_scripts': {
+      'headless_shell_wpt_tests': {
+        'test': 'headless_shell_wpt',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'swarming': {
+          'shards': 10,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+    },
+
     'ios_blink_tests': {
       'absl_hardening_tests': {},
       'angle_unittests': {
@@ -6042,7 +6034,7 @@
     'chrome_wpt_tests_three_modes': [
       'chromium_wpt_tests_headful_isolated_scripts',
       'chromium_wpt_tests_isolated_scripts',
-      'chromium_wpt_tests_old_headless_isolated_scripts',
+      'headless_shell_wpt_tests_isolated_scripts',
     ],
 
     'chromeos_device_no_gtests': [

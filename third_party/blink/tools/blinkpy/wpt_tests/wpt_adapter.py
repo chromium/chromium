@@ -170,7 +170,7 @@ class WPTAdapter:
         else:
             port = host.port_factory.get(port_name, options)
 
-        if options.product == 'chrome':
+        if options.product in ['chrome', 'headless_shell']:
             port.set_option_default('driver_name', port.CHROME_NAME)
         product = make_product(port, options)
         return WPTAdapter(product, port, options, tests)
@@ -233,7 +233,8 @@ class WPTAdapter:
                 mozlog.commandline.log_formatters[name][1],
             )
 
-        runner_options = parser.parse_args(['--product', self.product.name])
+        product_name = 'chrome' if self.product.name == 'headless_shell' else self.product.name
+        runner_options = parser.parse_args(['--product', product_name])
         runner_options.include = []
         runner_options.exclude = []
 
@@ -326,6 +327,8 @@ class WPTAdapter:
             'MAP *.test 127.0.0.1, MAP *.test. 127.0.0.1',
             *self.port.additional_driver_flags(),
         ])
+        if self.options.product == 'headless_shell':
+            runner_options.binary_args.append('--headless=old')
         # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest` to Chrome.
         runner_options.mojojs_path = self.port.generated_sources_directory()
 

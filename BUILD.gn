@@ -1135,6 +1135,28 @@ if (use_blink && !is_cronet_build) {
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
     }
+    script_test("headless_shell_wpt") {
+      script = "//third_party/blink/tools/run_wpt_tests.py"
+      args = [
+        "--test-type",
+        "testharness",
+        "reftest",
+        "crashtest",
+        "print-reftest",
+        "--product=headless_shell",
+        "--no-virtual-tests",
+        "--no-wpt-internal",
+        "--no-show-results",
+        "--zero-tests-executed-ok",
+      ]
+      data_deps = [
+        ":blink_web_tests_expectations",
+        ":blink_web_tests_support_data",
+        "//chrome:chrome",
+        "//chrome/test/chromedriver:chromedriver_server",
+        "//third_party/blink/tools:wpt_tests_isolate",
+      ]
+    }
   }
 
   group("blink_web_tests_support_data") {

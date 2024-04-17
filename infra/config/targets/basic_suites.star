@@ -1591,19 +1591,11 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_wpt_tests_old_headless_isolated_scripts",
+    name = "headless_shell_wpt_tests_isolated_scripts",
     tests = {
-        "chrome_wpt_tests_old_headless": targets.legacy_test_config(
-            args = [
-                "--test-type",
-                "testharness",
-                "reftest",
-                "crashtest",
-                "print-reftest",
-                "--additional-driver-flag=--headless=old",
-            ],
+        "headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 1,
+                shards = 10,
             ),
         ),
     },

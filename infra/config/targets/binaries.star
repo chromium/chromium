@@ -832,6 +832,22 @@ targets.binaries.console_test_launcher(
     label = "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
 )
 
+targets.binaries.generated_script(
+    name = "headless_shell_wpt",
+    label = "//:headless_shell_wpt",
+    results_handler = "layout tests",
+    args = [
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
+    ],
+    merge = targets.merge(
+        script = "//third_party/blink/tools/merge_web_test_results.py",
+        args = [
+            "--verbose",
+        ],
+    ),
+)
+
 targets.binaries.console_test_launcher(
     name = "video_decode_accelerator_tests",
     label = "//media/gpu/test:video_decode_accelerator_tests",
