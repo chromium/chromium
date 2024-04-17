@@ -22,10 +22,11 @@ TEST(PickerModel, AvailableCategoriesWithNoFocusHasCorrectOrdering) {
   PickerModel model(/*focused_client=*/nullptr, &fake_ime_keyboard);
   EXPECT_THAT(
       model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kCapsOn, PickerCategory::kLinks,
-                  PickerCategory::kExpressions, PickerCategory::kClipboard,
-                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
+      ElementsAre(PickerCategory::kCapsOn, PickerCategory::kEditor,
+                  PickerCategory::kLinks, PickerCategory::kExpressions,
+                  PickerCategory::kClipboard, PickerCategory::kDriveFiles,
+                  PickerCategory::kLocalFiles, PickerCategory::kDatesTimes,
+                  PickerCategory::kUnitsMaths));
 }
 
 TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
@@ -36,10 +37,11 @@ TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
   PickerModel model(&client, &fake_ime_keyboard);
   EXPECT_THAT(
       model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kCapsOn, PickerCategory::kLinks,
-                  PickerCategory::kExpressions, PickerCategory::kClipboard,
-                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
+      ElementsAre(PickerCategory::kCapsOn, PickerCategory::kEditor,
+                  PickerCategory::kLinks, PickerCategory::kExpressions,
+                  PickerCategory::kClipboard, PickerCategory::kDriveFiles,
+                  PickerCategory::kLocalFiles, PickerCategory::kDatesTimes,
+                  PickerCategory::kUnitsMaths));
 }
 
 TEST(PickerModel, AvailableCategoriesWithSelectedTextHasCorrectOrdering) {
@@ -50,8 +52,9 @@ TEST(PickerModel, AvailableCategoriesWithSelectedTextHasCorrectOrdering) {
   PickerModel model(&client, &fake_ime_keyboard);
   EXPECT_THAT(
       model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kUpperCase, PickerCategory::kLowerCase,
-                  PickerCategory::kSentenceCase, PickerCategory::kTitleCase));
+      ElementsAre(PickerCategory::kEditor, PickerCategory::kUpperCase,
+                  PickerCategory::kLowerCase, PickerCategory::kSentenceCase,
+                  PickerCategory::kTitleCase));
 }
 
 TEST(PickerModel, AvailableCategoriesShowsCapsOffWhenCapsIsOn) {

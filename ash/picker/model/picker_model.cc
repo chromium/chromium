@@ -34,9 +34,8 @@ PickerModel::PickerModel(ui::TextInputClient* focused_client,
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   if (HasSelectedText()) {
     return std::vector<PickerCategory>{
-        PickerCategory::kUpperCase,
-        PickerCategory::kLowerCase,
-        PickerCategory::kSentenceCase,
+        PickerCategory::kEditor,    PickerCategory::kUpperCase,
+        PickerCategory::kLowerCase, PickerCategory::kSentenceCase,
         PickerCategory::kTitleCase,
     };
   }
@@ -44,6 +43,7 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   return std::vector<PickerCategory>{
       (is_caps_lock_enabled_ ? PickerCategory::kCapsOff
                              : PickerCategory::kCapsOn),
+      PickerCategory::kEditor,
       PickerCategory::kLinks,
       PickerCategory::kExpressions,
       PickerCategory::kClipboard,
