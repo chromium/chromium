@@ -1197,6 +1197,22 @@ void InputMethodManagerImpl::ConnectInputEngineManager(
   iter->second->SetupImeService(std::move(receiver));
 }
 
+void InputMethodManagerImpl::BindInputMethodUserDataService(
+    mojo::PendingReceiver<ime::mojom::InputMethodUserDataService> receiver) {
+  DCHECK(state_);
+  ImeServiceConnectorMap::iterator iter =
+      ime_service_connectors_.find(state_->GetProfile());
+  if (iter == ime_service_connectors_.end()) {
+    auto connector_ =
+        std::make_unique<ImeServiceConnector>(state_->GetProfile());
+    iter =
+        ime_service_connectors_
+            .insert(std::make_pair(state_->GetProfile(), std::move(connector_)))
+            .first;
+  }
+  iter->second->BindInputMethodUserDataService(std::move(receiver));
+}
+
 bool InputMethodManagerImpl::IsISOLevel5ShiftUsedByCurrentInputMethod() const {
   return keyboard_->IsISOLevel5ShiftAvailable();
 }

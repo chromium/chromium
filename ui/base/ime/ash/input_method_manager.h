@@ -316,6 +316,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
   virtual void ConnectInputEngineManager(
       mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) = 0;
 
+  // Connects a receiver to the InputMethodUserDataService instance.
+  virtual void BindInputMethodUserDataService(
+      mojo::PendingReceiver<ime::mojom::InputMethodUserDataService>
+          receiver) = 0;
+
   virtual bool IsISOLevel5ShiftUsedByCurrentInputMethod() const = 0;
 
   virtual bool IsAltGrUsedByCurrentInputMethod() const = 0;

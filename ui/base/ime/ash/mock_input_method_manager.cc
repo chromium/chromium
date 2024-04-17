@@ -164,6 +164,9 @@ void MockInputMethodManager::ActivateInputMethodMenuItem(
 void MockInputMethodManager::ConnectInputEngineManager(
     mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) {}
 
+void MockInputMethodManager::BindInputMethodUserDataService(
+    mojo::PendingReceiver<ime::mojom::InputMethodUserDataService> receiver) {}
+
 bool MockInputMethodManager::IsISOLevel5ShiftUsedByCurrentInputMethod() const {
   return false;
 }

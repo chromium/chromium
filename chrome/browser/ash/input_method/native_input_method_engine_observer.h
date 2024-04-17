@@ -23,6 +23,7 @@
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -166,6 +167,9 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
 
   void ConnectToImeService(const std::string& engine_id);
 
+  void SetJapanesePrefsFromLegacyConfig(
+      ime::mojom::JapaneseLegacyConfigResponsePtr response);
+
   void HandleOnFocusAsyncForNativeMojoEngine(
       const std::string& engine_id,
       int context_id,
@@ -186,6 +190,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;
   mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
   mojo::Remote<ime::mojom::ConnectionFactory> connection_factory_;
+  mojo::Remote<ime::mojom::InputMethodUserDataService> user_data_service_;
   mojo::AssociatedRemote<ime::mojom::InputMethod> input_method_;
   mojo::AssociatedReceiver<ime::mojom::InputMethodHost> host_receiver_{this};
 

@@ -206,6 +206,9 @@ class InputMethodManagerImpl : public InputMethodManager,
   void ActivateInputMethodMenuItem(const std::string& key) override;
   void ConnectInputEngineManager(
       mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) override;
+  void BindInputMethodUserDataService(
+      mojo::PendingReceiver<ime::mojom::InputMethodUserDataService> receiver)
+      override;
   bool IsISOLevel5ShiftUsedByCurrentInputMethod() const override;
   bool IsAltGrUsedByCurrentInputMethod() const override;
   bool ArePositionalShortcutsUsedByCurrentInputMethod() const override;

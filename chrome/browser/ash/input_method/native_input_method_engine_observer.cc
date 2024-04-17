@@ -53,6 +53,10 @@ namespace {
 
 namespace mojom = ::ash::ime::mojom;
 
+// Japanese Prefs should be should be set only the nacl_mozc_jp, and shared
+// across both "nacl_mozc_jp" and "nacl_mozc_us"
+constexpr char kJapanesePrefsEngineId[] = "nacl_mozc_jp";
+
 struct InputFieldContext {
   bool multiword_enabled = false;
   bool multiword_allowed = false;
@@ -769,7 +773,39 @@ void NativeInputMethodEngineObserver::OnFocusAck(
   }
 }
 
+void NativeInputMethodEngineObserver::SetJapanesePrefsFromLegacyConfig(
+    mojom::JapaneseLegacyConfigResponsePtr response) {
+  // TODO(b/333041130): Add remaining values.
+  // Move this setting prefs logic to its own separate file.
+  base::Value::Dict values;
+
+  mojom::JapaneseLegacyConfig::PreeditMethod preedit =
+      response->get_response()->preedit_method;
+  if (preedit == mojom::JapaneseLegacyConfig::PreeditMethod::kKana) {
+    values.Set("JapaneseInputMode", "Kana");
+  }
+  if (preedit == mojom::JapaneseLegacyConfig::PreeditMethod::kRomaji) {
+    values.Set("JapaneseInputMode", "Romaji");
+  }
+
+  SetLanguageInputMethodSpecificSetting(*prefs_, kJapanesePrefsEngineId,
+                                        values);
+}
+
 void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
+  if (IsJapaneseEngine(engine_id) &&
+      base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping)) {
+    // TODO(b/333041130): Add a check to see if migration has been completed
+    // already instead of copying over every single time.
+    if (!user_data_service_.is_bound()) {
+      auto* ime_manager = InputMethodManager::Get();
+      ime_manager->BindInputMethodUserDataService(
+          user_data_service_.BindNewPipeAndPassReceiver());
+    }
+    user_data_service_->FetchJapaneseLegacyConfig(base::BindOnce(
+        &NativeInputMethodEngineObserver::SetJapanesePrefsFromLegacyConfig,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
   // Always hide the candidates window and clear the quick settings menu when
   // switching input methods.
   UpdateCandidatesWindowSync(nullptr);

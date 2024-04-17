@@ -43,6 +43,9 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
   void SetupImeService(
       mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver);
 
+  void BindInputMethodUserDataService(
+      mojo::PendingReceiver<ime::mojom::InputMethodUserDataService> receiver);
+
   void OnFileDownloadComplete(DownloadImeFileToCallback client_callback,
                               base::FilePath path);
 
