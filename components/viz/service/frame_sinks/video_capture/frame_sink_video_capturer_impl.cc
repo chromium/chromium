@@ -85,25 +85,14 @@ constexpr gfx::Rect kMaxRect = gfx::Rect(0,
 // could be RGBA/BGRA depends on platform and the preference of the buffer
 // format. When user wants ARGB result, it requests a CopyOutputRequest with
 // ResultFormat::RGBA which gives RGBA/BGRA results depends on platform and
-// where the result is stored (system memory or shared texture).
-// In our case, when requesting a kPreferGpuMemoryBuffer, it will create a blit
-// request, results in CopyOutputRequest uses whatever RGBA/BGRA pixel format
-// the GMB is, which we created in advance. For now, it is determined by
-// GetFramePoolPlatformPixelFormat.
+// where the result is stored (buffer format preference).
+// Currently, kPreferGpuMemoryBuffer + ARGB will request BGRA as pixel format,
+// but kDefault + ARGB will be platform dependent because CopyOutputRequest
+// will use kN32_SkColorType (RGBA on Android, BGRA elsewhere) mostly, and use
+// kRGBA_8888_SkColorType on iOS.
 // This is also documented in the mojom comments (https://crrev.com/c/5418235)
 // about SetFormat, indicating the ARGB format may produce RGBA/BGRA frames
 // depends on platform.
-
-media::VideoPixelFormat GetFramePoolPlatformPixelFormat(
-    media::VideoPixelFormat format,
-    mojom::BufferFormatPreference buffer_format_preference) {
-  if (format == media::PIXEL_FORMAT_ARGB &&
-      buffer_format_preference ==
-          mojom::BufferFormatPreference::kPreferGpuMemoryBuffer) {
-    return media::PIXEL_FORMAT_ABGR;
-  }
-  return format;
-}
 
 // Get the frame pool for the specific format. We need context_provider if the
 // format is NV12 or ARGB (when buffer_format_preference is kNativeTexture).
@@ -124,9 +113,8 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
       switch (buffer_format_preference) {
         case mojom::BufferFormatPreference::kPreferGpuMemoryBuffer:
           return std::make_unique<GpuMemoryBufferVideoFramePool>(
-              capacity,
-              GetFramePoolPlatformPixelFormat(format, buffer_format_preference),
-              gfx::ColorSpace::CreateSRGB(), context_provider);
+              capacity, format, gfx::ColorSpace::CreateSRGB(),
+              context_provider);
         case mojom::BufferFormatPreference::kDefault:
           return std::make_unique<SharedMemoryVideoFramePool>(capacity);
         default:
@@ -863,10 +851,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                         region_properties->render_pass_subrect.ToString());
     auto reserve_start_time = base::TimeTicks::Now();
 
-    frame = frame_pool_->ReserveVideoFrame(
-        GetFramePoolPlatformPixelFormat(pixel_format_,
-                                        buffer_format_preference_),
-        capture_size);
+    frame = frame_pool_->ReserveVideoFrame(pixel_format_, capture_size);
 
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "Viz.FrameSinkVideoCapturer.ReserveFrameDuration",
