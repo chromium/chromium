@@ -93,7 +93,9 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
           base::to_address(browser_context_));
   service_router->BindScreenAIAnnotator(
       screen_ai_annotator_.BindNewPipeAndPassReceiver());
-  OcrNextDirtyPageIfAny();
+  if (!dirty_page_ids_.empty()) {
+    OcrNextDirtyPageIfAny();
+  }
   if (UNLIKELY(media_app_)) {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
