@@ -77,24 +77,8 @@ void DistillerPage::DistillPage(
     const dom_distiller::proto::DomDistillerOptions options,
     DistillerPageCallback callback) {
   CHECK(ready_, base::NotFatalUntil::M126);
-  if (!callback) {
-    // Callback should never be nullptr but there are eveidence (crbug/1216307)
-    // that it is sometimes null at the end of the distillation. As it is never
-    // reset, add DWC to gather info about this case.
-    // Also early return as doing a distillation without callback is useless and
-    // will lead to a crash.
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-  if (distiller_page_callback_) {
-    // This function should not be called when a distillation is already in
-    // progress as this would result in OnDistillationDone being called twice.
-    // This is a tentative fix for (crbug/1216307). Remove once the bug is
-    // fixed.
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
+  CHECK(callback, base::NotFatalUntil::M127);
+  CHECK(!distiller_page_callback_, base::NotFatalUntil::M127);
   // It is only possible to distill one page at a time. |ready_| is reset when
   // the callback to OnDistillationDone happens.
   ready_ = false;

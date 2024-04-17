@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/apple/foundation_util.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -207,9 +206,6 @@ void DistillerPageIOS::OnLoadURLDone(
   if (!distilling_navigation_) {
     // This is a second navigation after the distillation request.
     // Distillation was already requested, so ignore this one.
-    // This is a tentative fix for (crbug/1216307), so create a dump here.
-    // Remove once the bug fix is validated.
-    base::debug::DumpWithoutCrashing();
     return;
   }
   distilling_navigation_ = false;
