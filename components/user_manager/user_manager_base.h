@@ -194,6 +194,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void NotifyUserNotAllowed(const std::string& user_email) final;
   PrefService* GetLocalState() const final;
   bool IsFirstExecAfterBoot() const final;
+  void SetUserAffiliated(const AccountId& account_id,
+                         bool is_affiliated) override;
   bool HasBrowserRestarted() const final;
 
   void Initialize() override;

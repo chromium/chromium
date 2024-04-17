@@ -974,22 +974,6 @@ void ChromeUserManagerImpl::NotifyUserAddedToSession(
   UserManagerBase::NotifyUserAddedToSession(added_user, user_switch_pending);
 }
 
-void ChromeUserManagerImpl::SetUserAffiliation(
-    const AccountId& account_id,
-    const base::flat_set<std::string>& user_affiliation_ids) {
-  user_manager::User* user = FindUserAndModify(account_id);
-
-  if (user) {
-    policy::BrowserPolicyConnectorAsh const* const connector =
-        g_browser_process->platform_part()->browser_policy_connector_ash();
-    const bool is_affiliated = policy::IsUserAffiliated(
-        user_affiliation_ids, connector->device_affiliation_ids(),
-        account_id.GetUserEmail());
-    user->SetAffiliation(is_affiliated);
-    NotifyUserAffiliationUpdated(*user);
-  }
-}
-
 void ChromeUserManagerImpl::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
   cryptohome::AccountIdentifier identifier =

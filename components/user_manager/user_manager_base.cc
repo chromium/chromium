@@ -1330,6 +1330,16 @@ bool UserManagerBase::IsFirstExecAfterBoot() const {
       ash::switches::kFirstExecAfterBoot);
 }
 
+void UserManagerBase::SetUserAffiliated(const AccountId& account_id,
+                                        bool is_affiliated) {
+  User* user = FindUserAndModify(account_id);
+  if (!user) {
+    return;
+  }
+  user->SetAffiliated(is_affiliated);
+  NotifyUserAffiliationUpdated(*user);
+}
+
 bool UserManagerBase::HasBrowserRestarted() const {
   return base::SysInfo::IsRunningOnChromeOS() &&
          base::CommandLine::ForCurrentProcess()->HasSwitch(

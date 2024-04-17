@@ -188,11 +188,8 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   AshSignalsDecorator decorator(connector_, profile);
 
-  base::flat_set<std::string> user_affiliation_ids;
-  user_affiliation_ids.insert(kFakeAffilationID);
-
-  user_manager::UserManager::Get()->SetUserAffiliation(user->GetAccountId(),
-                                                       user_affiliation_ids);
+  user_manager::UserManager::Get()->SetUserAffiliated(user->GetAccountId(),
+                                                      /*is_affiliated=*/true);
 
   // Test for no network
   {

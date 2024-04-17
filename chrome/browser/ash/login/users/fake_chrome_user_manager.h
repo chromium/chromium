@@ -139,10 +139,9 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   using UserManagerBase::SetOwnerId;
 
   // UserManager:
-  void SetUserAffiliation(
-      const AccountId& account_id,
-      const base::flat_set<std::string>& user_affiliation_ids) override;
-
+  void SetUserAffiliated(const AccountId& account_id,
+                         bool is_affiliated) override;
+  // TODO(b/278643115): merged into SetUserAffiliated.
   void SetUserAffiliationForTesting(const AccountId& account_id,
                                     bool is_affliated);
 

@@ -240,7 +240,7 @@ void User::IsAffiliatedAsync(
   }
 }
 
-void User::SetAffiliation(bool is_affiliated) {
+void User::SetAffiliated(bool is_affiliated) {
   // Device local accounts are always affiliated. No affiliation
   // modification must happen.
   CHECK(!IsDeviceLocalAccount());

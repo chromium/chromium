@@ -114,7 +114,7 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
     TestingProfile* profile) {
   user_manager::User* user =
       user_manager::User::CreateRegularUser(account_id, user_type);
-  user->SetAffiliation(is_affiliated);
+  user->SetAffiliated(is_affiliated);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   user->SetStubImage(
@@ -582,9 +582,8 @@ bool FakeChromeUserManager::IsDeviceLocalAccountMarkedForRemoval(
   return false;
 }
 
-void FakeChromeUserManager::SetUserAffiliation(
-    const AccountId& account_id,
-    const base::flat_set<std::string>& user_affiliation_ids) {}
+void FakeChromeUserManager::SetUserAffiliated(const AccountId& account_id,
+                                              bool is_affiliated) {}
 
 void FakeChromeUserManager::SetUserAffiliationForTesting(
     const AccountId& account_id,
@@ -593,7 +592,7 @@ void FakeChromeUserManager::SetUserAffiliationForTesting(
   if (!user) {
     return;
   }
-  user->SetAffiliation(is_affiliated);
+  user->SetAffiliated(is_affiliated);
   NotifyUserAffiliationUpdated(*user);
 }
 

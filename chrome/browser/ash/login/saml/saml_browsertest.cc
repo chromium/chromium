@@ -1282,24 +1282,23 @@ void SAMLPolicyTest::SetUpOnMainThread() {
       user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
   // Give affiliated users appropriate affiliation IDs.
-  const base::flat_set<std::string> user_affiliation_ids = {kAffiliationID};
   auto* user_manager = user_manager::UserManager::Get();
-  user_manager->SetUserAffiliation(
+  user_manager->SetUserAffiliated(
       AccountId::FromUserEmailGaiaId(
           saml_test_users::kFirstUserCorpExampleComEmail, kFirstSAMLUserGaiaId),
-      user_affiliation_ids);
-  user_manager->SetUserAffiliation(
+      /*is_affiliated=*/true);
+  user_manager->SetUserAffiliated(
       AccountId::FromUserEmailGaiaId(
           saml_test_users::kSecondUserCorpExampleComEmail,
           kSecondSAMLUserGaiaId),
-      user_affiliation_ids);
-  user_manager->SetUserAffiliation(
+      /*is_affiliated=*/true);
+  user_manager->SetUserAffiliated(
       AccountId::FromUserEmailGaiaId(
           saml_test_users::kThirdUserCorpExampleComEmail, kThirdSAMLUserGaiaId),
-      user_affiliation_ids);
-  user_manager->SetUserAffiliation(
+      /*is_affiliated=*/true);
+  user_manager->SetUserAffiliated(
       AccountId::FromUserEmailGaiaId(kNonSAMLUserEmail, kNonSAMLUserGaiaId),
-      user_affiliation_ids);
+      /*is_affiliated=*/true);
 
   // Set up fake networks.
   ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();

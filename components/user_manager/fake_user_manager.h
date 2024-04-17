@@ -131,9 +131,8 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
       std::set<AccountId>* device_local_accounts_set) override {}
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
-  void SetUserAffiliation(
-      const AccountId& account_id,
-      const base::flat_set<std::string>& user_affiliation_ids) override {}
+  void SetUserAffiliated(const AccountId& account_id,
+                         bool is_affiliated) override {}
   // Just make it public for tests.
   using UserManagerBase::ResetOwnerId;
   using UserManagerBase::SetOwnerId;

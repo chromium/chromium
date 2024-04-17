@@ -293,7 +293,7 @@ class USER_MANAGER_EXPORT User {
 
   void SetProfilePrefs(PrefService* prefs) { profile_prefs_ = prefs; }
 
-  void SetAffiliation(bool is_affiliated);
+  void SetAffiliated(bool is_affiliated);
 
  private:
   AccountId account_id_;

@@ -86,9 +86,6 @@ class ChromeUserManagerImpl
   user_manager::MultiUserSignInPolicyController*
   GetMultiUserSignInPolicyController() override;
   bool IsEnterpriseManaged() const override;
-  void SetUserAffiliation(
-      const AccountId& account_id,
-      const base::flat_set<std::string>& user_affiliation_ids) override;
 
   // DeviceSettingsService::Observer:
   void OwnershipStatusChanged() override;
