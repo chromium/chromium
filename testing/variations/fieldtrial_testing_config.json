@@ -5366,21 +5366,6 @@
             ]
         }
     ],
-    "CrosDeviceActiveClientChurnObservationNewDeviceMetadata": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeviceActiveClientChurnObservationNewDeviceMetadata"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrosLazyLoginWebUI": [
         {
             "platforms": [

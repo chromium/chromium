@@ -3064,7 +3064,7 @@ BASE_FEATURE(kDeviceActiveClientChurnObservationCheckMembership,
 // the churn observation check in ping.
 BASE_FEATURE(kDeviceActiveClientChurnObservationNewDeviceMetadata,
              "DeviceActiveClientChurnObservationNewDeviceMetadata",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables forced reboots when DeviceScheduledReboot policy is set.
 BASE_FEATURE(kDeviceForceScheduledReboot,
