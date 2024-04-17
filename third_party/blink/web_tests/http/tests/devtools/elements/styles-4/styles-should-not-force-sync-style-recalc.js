@@ -39,9 +39,12 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
   UI.Context.Context.instance().setFlavor(Timeline.TimelinePanel.TimelinePanel, Timeline.TimelinePanel.TimelinePanel.instance());
   await PerformanceTestRunner.evaluateWithTimeline('performActions()');
 
-  PerformanceTestRunner.mainTrackEvents().forEach(event => {
-    if (event.name === TimelineModel.TimelineModel.RecordType.UpdateLayoutTree)
-      TestRunner.addResult(event.name);
-  });
+  const events = PerformanceTestRunner.traceEngineRawEvents();
+  if (events.length === 0) {
+    TestRunner.addResult('ERROR: did not find any trace engine events.');
+  }
+
+  const updateLayoutTreeEvents = events.filter(event => event.name === 'UpdateLayoutTree');
+  TestRunner.addResult(`Found ${updateLayoutTreeEvents.length} UpdateLayoutTree events (expecting 0).`);
   TestRunner.completeTest();
 })();
