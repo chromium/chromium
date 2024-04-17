@@ -20,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -96,8 +97,11 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(LensOverlayControllerTabLookup);
 
 LensOverlayController::LensOverlayController(
     tabs::TabInterface* tab,
-    variations::VariationsClient* variations_client)
-    : tab_(tab), variations_client_(variations_client) {
+    variations::VariationsClient* variations_client,
+    signin::IdentityManager* identity_manager)
+    : tab_(tab),
+      variations_client_(variations_client),
+      identity_manager_(identity_manager) {
   if (tab_->GetContents()) {
     LensOverlayControllerTabLookup::CreateForWebContents(tab_->GetContents(),
                                                          this);
@@ -176,7 +180,7 @@ void LensOverlayController::ShowUI() {
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleInteractionDataResponse,
                           weak_factory_.GetWeakPtr()),
-      variations_client_);
+      variations_client_, identity_manager_);
 
   state_ = State::kScreenshot;
   scoped_tab_modal_ui_ = tab_->ShowModalUI();
@@ -378,10 +382,12 @@ LensOverlayController::CreateLensQueryController(
     lens::LensOverlayFullImageResponseCallback full_image_callback,
     lens::LensOverlayUrlResponseCallback url_callback,
     lens::LensOverlayInteractionResponseCallback interaction_data_callback,
-    variations::VariationsClient* variations_client) {
+    variations::VariationsClient* variations_client,
+    signin::IdentityManager* identity_manager) {
   return std::make_unique<lens::LensOverlayQueryController>(
       std::move(full_image_callback), std::move(url_callback),
-      std::move(interaction_data_callback), variations_client);
+      std::move(interaction_data_callback), variations_client,
+      identity_manager);
 }
 
 class LensOverlayController::UnderlyingWebContentsObserver

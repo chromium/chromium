@@ -110,13 +110,15 @@ LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayFullImageResponseCallback full_image_callback,
     LensOverlayUrlResponseCallback url_callback,
     LensOverlayInteractionResponseCallback interaction_data_callback,
-    variations::VariationsClient* variations_client)
+    variations::VariationsClient* variations_client,
+    signin::IdentityManager* identity_manager)
     : full_image_callback_(std::move(full_image_callback)),
       request_id_generator_(
           std::make_unique<lens::LensOverlayRequestIdGenerator>()),
       url_callback_(std::move(url_callback)),
       interaction_data_callback_(std::move(interaction_data_callback)),
-      variations_client_(variations_client) {}
+      variations_client_(variations_client),
+      identity_manager_{identity_manager} {}
 
 LensOverlayQueryController::~LensOverlayQueryController() = default;
 
@@ -159,11 +161,10 @@ void LensOverlayQueryController::FetchFullImageRequest(
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
 
   // Fetch the request.
-  full_image_endpoint_fetcher_ = CreateEndpointFetcher(request);
-  full_image_endpoint_fetcher_.get()->PerformRequest(
+  full_image_endpoint_fetcher_ = CreateAndFetchEndpointFetcher(
+      request,
       base::BindOnce(&LensOverlayQueryController::FullImageFetchResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr()),
-      google_apis::GetAPIKey().c_str());
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LensOverlayQueryController::FullImageFetchResponseHandler(
@@ -376,12 +377,11 @@ void LensOverlayQueryController::
   lens::LensOverlayServerRequest server_request = CreateInteractionRequest(
       std::move(region), query_text, object_id, image_crop,
       request_id_generator_->GetNextRequestId());
-  interaction_endpoint_fetcher_ = CreateEndpointFetcher(server_request);
-  interaction_endpoint_fetcher_.get()->PerformRequest(
+  interaction_endpoint_fetcher_ = CreateAndFetchEndpointFetcher(
+      server_request,
       base::BindOnce(
           &LensOverlayQueryController::InteractionFetchResponseHandler,
-          weak_ptr_factory_.GetWeakPtr()),
-      google_apis::GetAPIKey().c_str());
+          weak_ptr_factory_.GetWeakPtr()));
 
   // Generate and send the Lens search url.
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
@@ -440,8 +440,9 @@ void LensOverlayQueryController::ResetRequestFlowState() {
 }
 
 std::unique_ptr<EndpointFetcher>
-LensOverlayQueryController::CreateEndpointFetcher(
-    lens::LensOverlayServerRequest request_data) {
+LensOverlayQueryController::CreateAndFetchEndpointFetcher(
+    lens::LensOverlayServerRequest request_data,
+    EndpointFetcherCallback callback) {
   std::string request_data_string;
   CHECK(request_data.SerializeToString(&request_data_string));
   std::vector<std::string> cors_exempt_headers;
@@ -464,18 +465,47 @@ LensOverlayQueryController::CreateEndpointFetcher(
         cluster_info_->server_session_id());
   }
 
-  return std::make_unique<EndpointFetcher>(
-      /*url_loader_factory=*/g_browser_process->shared_url_loader_factory(),
-      /*url=*/fetch_url,
-      /*http_method=*/kHttpMethod,
-      /*content_type=*/kContentType,
-      /*timeout=*/kServerRequestTimeout,
-      /*post_data=*/request_data_string,
-      /*headers=*/std::vector<std::string>(),
-      /*cors_exempt_headers=*/cors_exempt_headers,
-      /*annotation_tag=*/kTrafficAnnotationTag,
-      /*is_stable_channel=*/chrome::GetChannel() ==
-          version_info::Channel::STABLE);
+  if (lens::features::UseOauthForLensOverlayRequests() && identity_manager_) {
+    // Make a request with oauth.
+    // TODO(b/335241935): Manually fetch the oauth token and use the
+    // EndpointFetcher constructor that supports setting cors_exempt_headers.
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher =
+        std::make_unique<EndpointFetcher>(
+            /*url_loader_factory=*/g_browser_process
+                ->shared_url_loader_factory(),
+            /*oauth_consumer_name=*/"LensOverlayQueryController",
+            /*url=*/fetch_url,
+            /*http_method=*/kHttpMethod,
+            /*content_type=*/kContentType,
+            /*scopes=*/
+            std::vector<std::string>{"https://www.googleapis.com/auth/lens"},
+            /*timeout=*/kServerRequestTimeout,
+            /*post_data=*/request_data_string,
+            /*annotation_tag=*/kTrafficAnnotationTag,
+            /*identity_manager=*/identity_manager_,
+            /*consent_level=*/signin::ConsentLevel::kSignin);
+    endpoint_fetcher.get()->Fetch(std::move(callback));
+    return endpoint_fetcher;
+  } else {
+    // Make a request with the api key.
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher =
+        std::make_unique<EndpointFetcher>(
+            /*url_loader_factory=*/g_browser_process
+                ->shared_url_loader_factory(),
+            /*url=*/fetch_url,
+            /*http_method=*/kHttpMethod,
+            /*content_type=*/kContentType,
+            /*timeout=*/kServerRequestTimeout,
+            /*post_data=*/request_data_string,
+            /*headers=*/std::vector<std::string>(),
+            /*cors_exempt_headers=*/cors_exempt_headers,
+            /*annotation_tag=*/kTrafficAnnotationTag,
+            /*is_stable_channel=*/chrome::GetChannel() ==
+                version_info::Channel::STABLE);
+    endpoint_fetcher.get()->PerformRequest(std::move(callback),
+                                           google_apis::GetAPIKey().c_str());
+    return endpoint_fetcher;
+  }
 }
 
 }  // namespace lens

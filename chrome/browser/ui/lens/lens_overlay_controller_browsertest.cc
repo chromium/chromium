@@ -14,6 +14,7 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/tabs/tab_features.h"
@@ -88,8 +89,9 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
 class LensOverlayControllerFake : public LensOverlayController {
  public:
   LensOverlayControllerFake(tabs::TabInterface* tab,
-                            variations::VariationsClient* variations_client)
-      : LensOverlayController(tab, variations_client) {}
+                            variations::VariationsClient* variations_client,
+                            signin::IdentityManager* identity_manager)
+      : LensOverlayController(tab, variations_client, identity_manager) {}
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
                    mojo::PendingRemote<lens::mojom::LensPage> page) override {
@@ -116,7 +118,8 @@ class TabFeaturesFake : public tabs::TabFeatures {
       tabs::TabInterface* tab,
       Profile* profile) override {
     return std::make_unique<LensOverlayControllerFake>(
-        tab, profile->GetVariationsClient());
+        tab, profile->GetVariationsClient(),
+        IdentityManagerFactory::GetForProfile(profile));
   }
 };
 

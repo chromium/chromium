@@ -40,6 +40,10 @@ namespace content {
 class WebUI;
 }  // namespace content
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace variations {
 class VariationsClient;
 }  // namespace variations
@@ -52,7 +56,8 @@ class LensOverlayController : public LensSearchboxClient,
                               public lens::mojom::LensSidePanelPageHandler {
  public:
   LensOverlayController(tabs::TabInterface* tab,
-                        variations::VariationsClient* variations_client);
+                        variations::VariationsClient* variations_client,
+                        signin::IdentityManager* identity_manager);
   ~LensOverlayController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
@@ -187,7 +192,8 @@ class LensOverlayController : public LensSearchboxClient,
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
       lens::LensOverlayInteractionResponseCallback interaction_data_callback,
-      variations::VariationsClient* variations_client);
+      variations::VariationsClient* variations_client,
+      signin::IdentityManager* identity_manager);
 
  private:
   class UnderlyingWebContentsObserver;
@@ -330,6 +336,10 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;
+
+  // Unowned IdentityManager for fetching access tokens. Could be null for
+  // incognito profiles.
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;

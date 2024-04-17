@@ -68,6 +68,9 @@ constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
     "https://lens.google.com/lensonelrpui/crupload"};
 
+constexpr base::FeatureParam<bool> kUseOauthForLensOverlayRequests{
+    &kLensOverlay, "use-oauth-for-requests", false};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -233,6 +236,10 @@ std::string GetLensOverlayEndpointURL() {
 
 bool IsLensOverlayDebuggingEnabled() {
   return kLensOverlayDebuggingMode.Get();
+}
+
+bool UseOauthForLensOverlayRequests() {
+  return kUseOauthForLensOverlayRequests.Get();
 }
 
 }  // namespace lens::features

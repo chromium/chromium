@@ -235,6 +235,10 @@ extern std::string GetLensOverlayEndpointURL();
 // Returns whether to highlight text and object bounding boxes for debugging.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayDebuggingEnabled();
+
+// Returns whether to use oauth for signed in requests to the endpoint.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseOauthForLensOverlayRequests();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

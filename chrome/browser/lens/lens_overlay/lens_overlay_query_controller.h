@@ -21,6 +21,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace variations {
 class VariationsClient;
 }  // namespace variations
@@ -44,7 +48,8 @@ class LensOverlayQueryController {
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
       LensOverlayInteractionResponseCallback interaction_data_callback,
-      variations::VariationsClient* variations_client);
+      variations::VariationsClient* variations_client,
+      signin::IdentityManager* identity_manager);
   virtual ~LensOverlayQueryController();
 
   // Starts a query flow by sending a request to Lens using the screenshot,
@@ -71,9 +76,11 @@ class LensOverlayQueryController {
                              const std::string& query_text);
 
  protected:
-  // Creates an endpoint fetcher for fetching the request data.
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      lens::LensOverlayServerRequest request_data);
+  // Creates an endpoint fetcher for fetching the request data and fetches
+  // the request.
+  virtual std::unique_ptr<EndpointFetcher> CreateAndFetchEndpointFetcher(
+      lens::LensOverlayServerRequest request_data,
+      EndpointFetcherCallback callback);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -185,6 +192,10 @@ class LensOverlayQueryController {
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;
+
+  // Unowned IdentityManager for fetching access tokens. Could be null for
+  // incognito profiles.
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // The request counter, used to make sure requests are not sent out of order.
   int request_counter_ = 0;
