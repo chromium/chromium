@@ -8,6 +8,8 @@
 
 namespace payments::facilitated {
 
+FacilitatedPaymentsClient::~FacilitatedPaymentsClient() = default;
+
 bool FacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
   return false;

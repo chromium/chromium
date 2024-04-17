@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
+#include "components/facilitated_payments/core/browser/payments/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -106,9 +107,30 @@ class FacilitatedPaymentsManager {
                            ShowsPixPaymentPromptWhenApiClientAvailable);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
+      ApiClientNotAvailable_RiskDataNotLoaded_DoesNotTriggerLoadRiskData);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      ApiClientAvailable_RiskDataNotLoaded_TriggersLoadRiskData);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      ApiClientAvailable_RiskDataLoaded_DoesNotTriggerLoadRiskData);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
       DoesNotRetrieveClientTokenIfPixPaymentPromptRejected);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RetrievesClientTokenIfPixPaymentPromptAccepted);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      NoUserSelection_IsReadyToSendInitiatedPaymentRequestReturnsFalse);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      NoRiskData_IsReadyToSendInitiatedPaymentRequestReturnsFalse);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      NoClientToken_IsReadyToSendInitiatedPaymentRequestReturnsFalse);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      AllRequestDetailsAvailable_IsReadyToSendInitiatedPaymentRequestReturnsTrue);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
       ValidPixCodeDetectionResultDoesNotTriggerApiClient);
@@ -153,6 +175,9 @@ class FacilitatedPaymentsManager {
   // payment.
   void OnApiAvailabilityReceived(bool is_api_available);
 
+  // Invoked when risk data is fetched.
+  void OnRiskDataLoaded(const std::string& risk_data);
+
   // Called after showing the PIX the payment prompt.
   void OnPixPaymentPromptResult(bool is_prompt_accepted,
                                 int64_t selected_instrument_id);
@@ -160,6 +185,25 @@ class FacilitatedPaymentsManager {
   // Called after retrieving the client token from the facilitated payment API.
   // If not empty, the client token can be used for initiating payment.
   void OnGetClientToken(std::vector<uint8_t> client_token);
+
+  // Returns true if everything that's required for making a payment request is
+  // available.
+  bool IsReadyToSendInitiatedPaymentRequest();
+
+  // Makes a payment request to the Payments server after the user has selected
+  // the account for making the payment.
+  void SendInitiatePaymentRequest();
+
+  void set_initiate_payment_request_details_for_testing(
+      std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
+          initiate_payment_request_details) {
+    initiate_payment_request_details_ =
+        std::move(initiate_payment_request_details);
+  }
+
+  void set_selected_instrument_id_for_testing(int64_t selected_instrument_id) {
+    selected_instrument_id_ = selected_instrument_id;
+  }
 
   // Owner.
   raw_ref<FacilitatedPaymentsDriver> driver_;
@@ -189,6 +233,11 @@ class FacilitatedPaymentsManager {
 
   // The instrument identifier that was selected in the payment prompt.
   std::optional<int64_t> selected_instrument_id_;
+
+  // Contains the details required for the `InitiatePayment` request to be sent
+  // to the Payments server.
+  std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
+      initiate_payment_request_details_;
 
   base::WeakPtrFactory<FacilitatedPaymentsManager> weak_ptr_factory_{this};
 };

@@ -1065,6 +1065,9 @@ static_library("ui") {
       "//ui/android",
       "//url",
     ]
+
+    # TODO(b/335257259): Resolve circular deps.
+    allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
   } else {
     # !is_android
     sources += [

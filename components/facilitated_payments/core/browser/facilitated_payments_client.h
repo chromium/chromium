@@ -8,13 +8,14 @@
 #include <cstdint>
 
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/payments/risk_data_loader.h"
 
 namespace payments::facilitated {
 
 // A cross-platform client interface for showing UI for non-form based FOPs.
-class FacilitatedPaymentsClient {
+class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
  public:
-  virtual ~FacilitatedPaymentsClient() = default;
+  ~FacilitatedPaymentsClient() override;
 
   // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
   // If the UI was shown, then returns true and later invokes the `callback`

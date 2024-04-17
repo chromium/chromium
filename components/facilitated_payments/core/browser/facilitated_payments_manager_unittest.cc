@@ -99,6 +99,10 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               ShowPixPaymentPrompt,
               (base::OnceCallback<void(bool, int64_t)>),
               (override));
+  MOCK_METHOD(void,
+              LoadRiskData,
+              (base::OnceCallback<void(const std::string&)>),
+              (override));
 };
 
 class FacilitatedPaymentsManagerTest : public testing::Test {
@@ -766,6 +770,38 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnApiAvailabilityReceived(true);
 }
 
+// If the API is not available, request for risk data is not made.
+TEST_F(FacilitatedPaymentsManagerTest,
+       ApiClientNotAvailable_RiskDataNotLoaded_DoesNotTriggerLoadRiskData) {
+  EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
+
+  manager_->OnApiAvailabilityReceived(false);
+}
+
+// If the API is available, and the risk data has already loaded from a previous
+// call, request for risk data is not made.
+TEST_F(FacilitatedPaymentsManagerTest,
+       ApiClientAvailable_RiskDataLoaded_DoesNotTriggerLoadRiskData) {
+  EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
+
+  std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
+      request_details =
+          std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->risk_data_ = "seems pretty risky";
+  manager_->set_initiate_payment_request_details_for_testing(
+      std::move(request_details));
+  manager_->OnApiAvailabilityReceived(true);
+}
+
+// If the API is available, and the risk data is empty, request for risk data is
+// made.
+TEST_F(FacilitatedPaymentsManagerTest,
+       ApiClientAvailable_RiskDataNotLoaded_TriggersLoadRiskData) {
+  EXPECT_CALL(*client_, LoadRiskData(testing::_));
+
+  manager_->OnApiAvailabilityReceived(true);
+}
+
 // If a user has rejected the PIX payment prompt, then the manager does not
 // retrieve a client token from the facilitated payments API client.
 TEST_F(FacilitatedPaymentsManagerTest,
@@ -784,6 +820,63 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
   manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
                                      /*selected_instrument_id=*/-1);
+}
+
+TEST_F(FacilitatedPaymentsManagerTest,
+       NoUserSelection_IsReadyToSendInitiatedPaymentRequestReturnsFalse) {
+  std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
+      request_details =
+          std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->risk_data_ = "seems pretty risky";
+  request_details->client_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->set_initiate_payment_request_details_for_testing(
+      std::move(request_details));
+
+  EXPECT_FALSE(manager_->IsReadyToSendInitiatedPaymentRequest());
+}
+
+TEST_F(FacilitatedPaymentsManagerTest,
+       NoRiskData_IsReadyToSendInitiatedPaymentRequestReturnsFalse) {
+  std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
+      request_details =
+          std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->client_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->set_initiate_payment_request_details_for_testing(
+      std::move(request_details));
+  manager_->set_selected_instrument_id_for_testing(13);
+
+  EXPECT_FALSE(manager_->IsReadyToSendInitiatedPaymentRequest());
+}
+
+TEST_F(FacilitatedPaymentsManagerTest,
+       NoClientToken_IsReadyToSendInitiatedPaymentRequestReturnsFalse) {
+  std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
+      request_details =
+          std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->risk_data_ = "seems pretty risky";
+  manager_->set_initiate_payment_request_details_for_testing(
+      std::move(request_details));
+  manager_->set_selected_instrument_id_for_testing(13);
+
+  EXPECT_FALSE(manager_->IsReadyToSendInitiatedPaymentRequest());
+}
+
+TEST_F(
+    FacilitatedPaymentsManagerTest,
+    AllRequestDetailsAvailable_IsReadyToSendInitiatedPaymentRequestReturnsTrue) {
+  std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
+      request_details =
+          std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->risk_data_ = "seems pretty risky";
+  request_details->client_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->set_initiate_payment_request_details_for_testing(
+      std::move(request_details));
+  manager_->set_selected_instrument_id_for_testing(13);
+
+  EXPECT_TRUE(manager_->IsReadyToSendInitiatedPaymentRequest());
 }
 
 // A test fixture for the facilitated payment manager with the

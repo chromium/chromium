@@ -42,6 +42,19 @@ class FakeFacilitatedPaymentsAgent : public mojom::FacilitatedPaymentsAgent {
   mojo::AssociatedReceiver<mojom::FacilitatedPaymentsAgent> receiver_{this};
 };
 
+// A mock for the facilitated payment "client" interface, used for loading risk
+// data, and showing the PIX payment prompt.
+class FakeFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
+ public:
+  FakeFacilitatedPaymentsClient() = default;
+  ~FakeFacilitatedPaymentsClient() override = default;
+
+  MOCK_METHOD(void,
+              LoadRiskData,
+              (base::OnceCallback<void(const std::string&)>),
+              (override));
+};
+
 class ContentFacilitatedPaymentsDriverTest
     : public content::RenderViewHostTestHarness,
       public ::testing::WithParamInterface<mojom::PixCodeDetectionResult> {
@@ -50,7 +63,7 @@ class ContentFacilitatedPaymentsDriverTest
   void SetUp() override {
     decider_ =
         std::make_unique<optimization_guide::TestOptimizationGuideDecider>();
-    client_ = std::make_unique<FacilitatedPaymentsClient>();
+    client_ = std::make_unique<FakeFacilitatedPaymentsClient>();
     agent_ = std::make_unique<FakeFacilitatedPaymentsAgent>();
     content::RenderViewHostTestHarness::SetUp();
 

@@ -33,6 +33,10 @@ class ChromeFacilitatedPaymentsClient
       const ChromeFacilitatedPaymentsClient&) = delete;
   ~ChromeFacilitatedPaymentsClient() override;
 
+  // RiskDataLoader:
+  void LoadRiskData(base::OnceCallback<void(const std::string&)>
+                        on_risk_data_loaded_callback) override;
+
  private:
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
 

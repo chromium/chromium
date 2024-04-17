@@ -24,7 +24,10 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
     : driver_(*driver),
       client_(*client),
       api_client_(std::move(api_client)),
-      optimization_guide_decider_(optimization_guide_decider) {
+      optimization_guide_decider_(optimization_guide_decider),
+      initiate_payment_request_details_(
+          std::make_unique<
+              FacilitatedPaymentsInitiatePaymentRequestDetails>()) {
   DCHECK(optimization_guide_decider_);
   // TODO(b/314826708): Check if at least 1 GPay linked PIX account is
   // available for the user. If not, do not register the PIX allowlist.
@@ -36,9 +39,10 @@ FacilitatedPaymentsManager::~FacilitatedPaymentsManager() = default;
 void FacilitatedPaymentsManager::Reset() {
   pix_code_detection_attempt_count_ = 0;
   ukm_source_id_ = 0;
-  weak_ptr_factory_.InvalidateWeakPtrs();
   pix_code_detection_triggering_timer_.Stop();
+  initiate_payment_request_details_.reset();
   selected_instrument_id_ = std::nullopt;
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void FacilitatedPaymentsManager::
@@ -149,9 +153,30 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     return;
   }
 
+  // Before showing the payment prompt, load the risk data required for
+  // initiating payment request. The risk data is collected once per page load
+  // if a PIX code was detected.
+  if (initiate_payment_request_details_->risk_data_.empty()) {
+    client_->LoadRiskData(
+        base::BindOnce(&FacilitatedPaymentsManager::OnRiskDataLoaded,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   client_->ShowPixPaymentPrompt(
       base::BindOnce(&FacilitatedPaymentsManager::OnPixPaymentPromptResult,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FacilitatedPaymentsManager::OnRiskDataLoaded(
+    const std::string& risk_data) {
+  initiate_payment_request_details_->risk_data_ = risk_data;
+
+  // Populating the risk data and showing the payment prompt may occur
+  // asynchronously. If the user has already selected the payment account, send
+  // the request to initiate payment.
+  if (IsReadyToSendInitiatedPaymentRequest()) {
+    SendInitiatePaymentRequest();
+  }
 }
 
 void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
@@ -169,10 +194,22 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
 
 void FacilitatedPaymentsManager::OnGetClientToken(
     std::vector<uint8_t> client_token) {
-  // TODO(rouslan): If the client token is not empty, call the
-  // ChromePaymentsService.InitiatePayment with the client token,  instrument
-  // ID, and PIX string parameters. See:
-  // go/pix-chrome-initiate-fm-dd
+  initiate_payment_request_details_->client_token_ = client_token;
+
+  if (IsReadyToSendInitiatedPaymentRequest()) {
+    SendInitiatePaymentRequest();
+  }
+}
+
+bool FacilitatedPaymentsManager::IsReadyToSendInitiatedPaymentRequest() {
+  return selected_instrument_id_.has_value() &&
+         !initiate_payment_request_details_->risk_data_.empty() &&
+         !initiate_payment_request_details_->client_token_.empty();
+}
+
+void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
+  // TODO(b/300334562): Populate the request details and send the initiate
+  // payment request.
 }
 
 }  // namespace payments::facilitated

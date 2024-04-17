@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_PAYMENTS_FACILITATED_PAYMENTS_INITIATE_PAYMENT_REQUEST_DETAILS_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_PAYMENTS_FACILITATED_PAYMENTS_INITIATE_PAYMENT_REQUEST_DETAILS_H_
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 namespace payments::facilitated {
 
 // Contains information to make a `FacilitatedPaymentsInitiatePaymentRequest`.
@@ -15,7 +19,10 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
       const FacilitatedPaymentsInitiatePaymentRequestDetails&) = delete;
   FacilitatedPaymentsInitiatePaymentRequestDetails& operator=(
       const FacilitatedPaymentsInitiatePaymentRequestDetails&) = delete;
-  ~FacilitatedPaymentsInitiatePaymentRequestDetails() = default;
+  ~FacilitatedPaymentsInitiatePaymentRequestDetails();
+
+  std::string risk_data_;
+  std::vector<uint8_t> client_token_;
 };
 
 }  // namespace payments::facilitated
