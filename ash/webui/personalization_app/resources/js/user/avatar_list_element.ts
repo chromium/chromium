@@ -429,7 +429,8 @@ export class AvatarListElement extends WithPersonalizationStore {
       assert(
           !url.startsWith('chrome://image/'),
           'The URL shouldn\'t be sanitized');
-      return `background-image: url('${getAvatarUrl(url)}&staticEncode=true')`;
+      return `background-image: url('${
+          getAvatarUrl(url, /*staticEncode=*/ true)}')`;
     }
     return '';
   }
