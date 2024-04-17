@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_TYPES_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_TYPES_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
