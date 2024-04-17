@@ -197,6 +197,23 @@ bool IsContextualPanelEnabled() {
   return base::FeatureList::IsEnabled(kContextualPanel);
 }
 
+constexpr base::FeatureParam<int> kLargeContextualPanelEntrypointDelayInSeconds{
+    &kContextualPanel,
+    /*name=*/"large-entrypoint-delay-seconds", /*default_value=*/2};
+
+int LargeContextualPanelEntrypointDelayInSeconds() {
+  return kLargeContextualPanelEntrypointDelayInSeconds.Get();
+}
+
+constexpr base::FeatureParam<int>
+    kLargeContextualPanelEntrypointDisplayedInSeconds{
+        &kContextualPanel,
+        /*name=*/"large-entrypoint-displayed-seconds", /*default_value=*/5};
+
+int LargeContextualPanelEntrypointDisplayedInSeconds() {
+  return kLargeContextualPanelEntrypointDisplayedInSeconds.Get();
+}
+
 BASE_FEATURE(kNonModalDefaultBrowserPromoImpressionLimit,
              "NonModalDefaultBrowserPromoImpressionLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);

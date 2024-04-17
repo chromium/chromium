@@ -194,6 +194,19 @@ BASE_DECLARE_FEATURE(kContextualPanel);
 
 bool IsContextualPanelEnabled();
 
+// A parameter representing how many seconds delay before the large Contextual
+// Panel Entrypoint is shown (timer starts after the normal entrypoint is
+// shown).
+extern const base::FeatureParam<int>
+    kLargeContextualPanelEntrypointDelayInSeconds;
+// A parameter representing how many seconds the large Contextual Panel
+// Entrypoint is shown for, which includes disabling fullscreen.
+extern const base::FeatureParam<int>
+    kLargeContextualPanelEntrypointDisplayedInSeconds;
+
+int LargeContextualPanelEntrypointDelayInSeconds();
+int LargeContextualPanelEntrypointDisplayedInSeconds();
+
 // Feature flag to control the maximum amount of non-modal DB promo impressions
 // server-side. Enabled by default to always have a default impression limit
 // value.

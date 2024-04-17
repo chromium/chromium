@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_browser_agent.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 @interface ContextualPanelEntrypointMediator () <
@@ -82,29 +83,36 @@
   // Start timers since we can show the large entrypoint.
   __weak ContextualPanelEntrypointMediator* weakSelf = self;
 
-  // TODO(crbug.com/330702363): Make amount of time Finchable.
+  void (^cleanupAndTransitionToSmallEntrypoint)() = ^{
+    [weakSelf.consumer transitionToSmallEntrypoint];
+    [weakSelf.delegate enableFullscreen];
+  };
+
+  void (^setupAndTransitionToLargeEntrypoint)() = ^{
+    ContextualPanelEntrypointMediator* strongSelf = weakSelf;
+
+    if (![strongSelf.delegate
+            canShowLargeContextualPanelEntrypoint:strongSelf]) {
+      return;
+    }
+
+    strongSelf->_contextualPanelBrowserAgent
+        ->SetLargeEntrypointShownForCurrentTab(true);
+    [strongSelf.delegate disableFullscreen];
+    [strongSelf.consumer transitionToLargeEntrypoint];
+
+    strongSelf->_transitionToSmallEntrypointTimer =
+        std::make_unique<base::OneShotTimer>();
+    strongSelf->_transitionToSmallEntrypointTimer->Start(
+        FROM_HERE,
+        base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()),
+        base::BindOnce(cleanupAndTransitionToSmallEntrypoint));
+  };
+
   _transitionToLargeEntrypointTimer = std::make_unique<base::OneShotTimer>();
   _transitionToLargeEntrypointTimer->Start(
-      FROM_HERE, base::Seconds(3), base::BindOnce(^{
-        ContextualPanelEntrypointMediator* strongSelf = weakSelf;
-
-        if (![strongSelf.delegate
-                canShowLargeContextualPanelEntrypoint:strongSelf]) {
-          return;
-        }
-
-        strongSelf->_contextualPanelBrowserAgent
-            ->SetLargeEntrypointShownForCurrentTab(true);
-        [strongSelf.delegate disableFullscreen];
-        [strongSelf.consumer transitionToLargeEntrypoint];
-      }));
-
-  _transitionToSmallEntrypointTimer = std::make_unique<base::OneShotTimer>();
-  _transitionToSmallEntrypointTimer->Start(
-      FROM_HERE, base::Seconds(8), base::BindOnce(^{
-        [weakSelf.consumer transitionToSmallEntrypoint];
-        [weakSelf.delegate enableFullscreen];
-      }));
+      FROM_HERE, base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()),
+      base::BindOnce(setupAndTransitionToLargeEntrypoint));
 }
 
 #pragma mark - private
