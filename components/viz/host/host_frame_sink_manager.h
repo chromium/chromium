@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -205,6 +206,28 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
                            std::unique_ptr<CopyOutputRequest> request,
                            bool capture_exact_surface_id = false);
 
+  using ScreenshotDestinationReadyCallback = base::OnceCallback<void(
+      const blink::SameDocNavigationScreenshotDestinationToken&
+          destination_token,
+      SkBitmap copy_output)>;
+  // Sets the callback which is invoked when a `CopyOutputResult` associated
+  // with `destination_token` is received by the host/browser process from the
+  // Viz process. Must be called once per `destination_token`.
+  // This is used to save screenshots for same-document navigations committed in
+  // the renderer process.
+  void SetOnCopyOutputReadyCallback(
+      const blink::SameDocNavigationScreenshotDestinationToken&
+          destination_token,
+      ScreenshotDestinationReadyCallback callback);
+
+  // Invalidates the `ScreenshotDestinationReadyCallback` for
+  // `destination_token`. Used when the destination is no longer eligible for
+  // storing the screenshot (e.g., a later-arrival screenshot after the
+  // destination is destroyed).
+  void InvalidateCopyOutputReadyCallback(
+      const blink::SameDocNavigationScreenshotDestinationToken&
+          destination_token);
+
   void Throttle(const std::vector<FrameSinkId>& ids, base::TimeDelta interval);
   void StartThrottlingAllFrameSinks(base::TimeDelta interval);
   void StopThrottlingAllFrameSinks();
@@ -320,6 +343,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       const std::vector<int32_t>& thread_ids,
       VerifyThreadIdsDoNotBelongToHostCallback callback) override;
 #endif
+  void OnScreenshotCaptured(
+      const blink::SameDocNavigationScreenshotDestinationToken&
+          destination_token,
+      std::unique_ptr<CopyOutputResult> copy_output_result) override;
 
   // Connections to/from FrameSinkManagerImpl.
   mojo::Remote<mojom::FrameSinkManager> frame_sink_manager_remote_;
@@ -350,6 +377,13 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   // This is kept in sync with implementation.
   DebugRendererSettings debug_renderer_settings_;
+
+  // When Viz sends the screenshot back to the host process,
+  // `ScreenshotDestinationReadyCallback` is invoked to stash the screenshot to
+  // the correct destination.
+  base::flat_map<blink::SameDocNavigationScreenshotDestinationToken,
+                 ScreenshotDestinationReadyCallback>
+      screenshot_destinations_;
 
   base::WeakPtrFactory<HostFrameSinkManager> weak_ptr_factory_{this};
 };

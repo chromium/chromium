@@ -894,6 +894,13 @@ void FrameSinkManagerImpl::ClearSurfaceAnimationManager(
   navigation_to_animation_manager_.erase(navigation_id);
 }
 
+void FrameSinkManagerImpl::OnScreenshotCaptured(
+    const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
+    std::unique_ptr<CopyOutputResult> copy_output_result) {
+  client_->OnScreenshotCaptured(destination_token,
+                                std::move(copy_output_result));
+}
+
 void FrameSinkManagerImpl::StartFrameCountingForTest(
     base::TimeTicks start_time,
     base::TimeDelta bucket_size) {

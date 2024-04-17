@@ -113,6 +113,10 @@ class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
       const std::vector<int32_t>& thread_ids,
       VerifyThreadIdsDoNotBelongToHostCallback callback) override {}
 #endif
+  void OnScreenshotCaptured(
+      const blink::SameDocNavigationScreenshotDestinationToken&
+          destination_token,
+      std::unique_ptr<CopyOutputResult> copy_output_result) override {}
 };
 
 class CompositorFrameSinkSupportTest : public testing::Test {

@@ -20,7 +20,9 @@ import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_info.mojom";
 import "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom";
+import "services/viz/public/mojom/compositing/copy_output_result.mojom";
 import "services/viz/public/mojom/compositing/video_detector_observer.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Initialization parameters for a RootCompositorFrameSink.
 struct RootCompositorFrameSinkParams {
@@ -246,4 +248,15 @@ interface FrameSinkManagerClient {
   [EnableIf=is_android]
   VerifyThreadIdsDoNotBelongToHost(array<int32> thread_ids)
       => (bool passed_verification);
+
+  // Allows the GPU process to send the result of a screenshot back to the host
+  // process. The host stores the screenshot to the destination specified by
+  // `destination_token`.
+  //
+  // This is used to copy a screenshot after same-document navigation committed
+  // in the renderer process.
+  OnScreenshotCaptured(
+    blink.mojom.SameDocNavigationScreenshotDestinationToken destination_token,
+    CopyOutputResult copy_output_result
+  );
 };

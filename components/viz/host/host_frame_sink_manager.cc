@@ -300,6 +300,22 @@ void HostFrameSinkManager::RequestCopyOfOutput(
                                            capture_exact_surface_id);
 }
 
+void HostFrameSinkManager::SetOnCopyOutputReadyCallback(
+    const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
+    ScreenshotDestinationReadyCallback callback) {
+  CHECK(screenshot_destinations_.find(destination_token) ==
+        screenshot_destinations_.end());
+  screenshot_destinations_[destination_token] = std::move(callback);
+}
+
+void HostFrameSinkManager::InvalidateCopyOutputReadyCallback(
+    const blink::SameDocNavigationScreenshotDestinationToken&
+        destination_token) {
+  auto it = screenshot_destinations_.find(destination_token);
+  CHECK(it != screenshot_destinations_.end());
+  screenshot_destinations_.erase(it);
+}
+
 void HostFrameSinkManager::Throttle(const std::vector<FrameSinkId>& ids,
                                     base::TimeDelta interval) {
   frame_sink_manager_->Throttle(ids, interval);
@@ -416,6 +432,20 @@ void HostFrameSinkManager::VerifyThreadIdsDoNotBelongToHost(
   std::move(callback).Run(CheckThreadIdsDoNotBelongToCurrentProcess(tids));
 }
 #endif
+
+void HostFrameSinkManager::OnScreenshotCaptured(
+    const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
+    std::unique_ptr<CopyOutputResult> copy_output_result) {
+  auto it = screenshot_destinations_.find(destination_token);
+  if (it == screenshot_destinations_.end()) {
+    return;
+  }
+  SkBitmap immutable =
+      copy_output_result->ScopedAccessSkBitmap().GetOutScopedBitmap();
+  immutable.setImmutable();
+  std::move(it->second).Run(destination_token, std::move(immutable));
+  screenshot_destinations_.erase(it);
+}
 
 uint32_t HostFrameSinkManager::CacheBackBufferForRootSink(
     const FrameSinkId& root_sink_id) {

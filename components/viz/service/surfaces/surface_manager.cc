@@ -607,6 +607,11 @@ void SurfaceManager::DropTemporaryReference(const SurfaceId& surface_id) {
   RemoveTemporaryReferenceImpl(surface_id, RemovedReason::DROPPED);
 }
 
+void SurfaceManager::RemoveTemporaryReferenceAfterCopy(
+    const SurfaceId& surface_id) {
+  RemoveTemporaryReferenceImpl(surface_id, RemovedReason::COPIED);
+}
+
 SurfaceAllocationGroup* SurfaceManager::GetOrCreateAllocationGroupForSurfaceId(
     const SurfaceId& surface_id) {
   std::unique_ptr<SurfaceAllocationGroup>& allocation_group =

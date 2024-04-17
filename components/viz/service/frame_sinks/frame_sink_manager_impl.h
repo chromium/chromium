@@ -286,6 +286,17 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     return frame_counter_ ? &frame_counter_.value() : nullptr;
   }
 
+  // Sends `copy_output_result` tagged by `destination_token` back to
+  // `mojom::FrameSinkManagerClient`.
+  void OnScreenshotCaptured(
+      const blink::SameDocNavigationScreenshotDestinationToken&
+          destination_token,
+      std::unique_ptr<CopyOutputResult> copy_output_result);
+
+  base::WeakPtr<FrameSinkManagerImpl> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   friend class FrameSinkManagerTest;
   friend class CompositorFrameSinkSupportTest;
@@ -470,6 +481,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   // Counts frames for test.
   std::optional<FrameCounter> frame_counter_;
+
+  base::WeakPtrFactory<FrameSinkManagerImpl> weak_factory_{this};
 };
 
 }  // namespace viz

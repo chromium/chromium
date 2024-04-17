@@ -94,6 +94,20 @@ gfx::Rect IntersectInSpace(const gfx::Rect& rect,
   return intersected.value_or(gfx::Rect{});
 }
 
+void RemoveSurfaceReferenceAndDispatchCopyOutputRequestCallback(
+    base::WeakPtr<FrameSinkManagerImpl> frame_sink_manager,
+    SurfaceId copied_surface,
+    const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
+    std::unique_ptr<CopyOutputResult> result) {
+  if (!frame_sink_manager) {
+    return;
+  }
+  frame_sink_manager->surface_manager()->RemoveTemporaryReferenceAfterCopy(
+      copied_surface);
+  frame_sink_manager->OnScreenshotCaptured(destination_token,
+                                           std::move(result));
+}
+
 }  // namespace
 
 CompositorFrameSinkSupport::CompositorFrameSinkSupport(
@@ -890,6 +904,26 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
 
     current_surface = surface_manager_->CreateSurface(
         weak_factory_.GetWeakPtr(), surface_info);
+
+    // The previous surface needs to be valid to generate a screenshot.
+    if (frame.metadata.screenshot_destination.has_value() && prev_surface) {
+      surface_manager_->AddTemporaryReference(last_created_surface_id_);
+      auto copy_request = std::make_unique<CopyOutputRequest>(
+          CopyOutputRequest::ResultFormat::RGBA,
+          CopyOutputRequest::ResultDestination::kSystemMemory,
+          base::BindOnce(
+              &RemoveSurfaceReferenceAndDispatchCopyOutputRequestCallback,
+              frame_sink_manager_->GetWeakPtr(), last_created_surface_id_,
+              frame.metadata.screenshot_destination.value()));
+      copy_request->set_result_task_runner(
+          base::SequencedTaskRunner::GetCurrentDefault());
+
+      RequestCopyOfOutput(
+          PendingCopyOutputRequest(last_created_surface_id_.local_surface_id(),
+                                   SubtreeCaptureId{}, std::move(copy_request),
+                                   /*capture_exact_id=*/true));
+    }
+
     if (!current_surface) {
       TRACE_EVENT_INSTANT0("viz", "Surface belongs to another client",
                            TRACE_EVENT_SCOPE_THREAD);

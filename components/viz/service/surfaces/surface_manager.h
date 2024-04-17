@@ -188,6 +188,13 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // next display frame. We will notify SurfaceObservers accordingly.
   void SurfaceWillBeDrawn(Surface* surface);
 
+  // Adds a temporary reference to |surface_id|. The reference will not have an
+  // owner initially.
+  void AddTemporaryReference(const SurfaceId& surface_id);
+
+  // Removes the temporary reference after the `surface_id` is copied.
+  void RemoveTemporaryReferenceAfterCopy(const SurfaceId& surface_id);
+
   // Removes temporary reference to |surface_id| and older surfaces.
   void DropTemporaryReference(const SurfaceId& surface_id);
 
@@ -244,6 +251,7 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
     DROPPED = 1,   // The surface won't be embedded so it was dropped.
     SKIPPED = 2,   // A newer surface was embedded and the surface was skipped.
     EXPIRED = 4,   // The surface was never embedded and expired.
+    COPIED = 5,    // The surface was copied.
     COUNT
   };
 
@@ -265,10 +273,6 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
 
   // Returns whether |surface_id| has a temporary reference or not.
   bool HasTemporaryReference(const SurfaceId& surface_id) const;
-
-  // Adds a temporary reference to |surface_id|. The reference will not have an
-  // owner initially.
-  void AddTemporaryReference(const SurfaceId& surface_id);
 
   // Removes temporary reference to |surface_id| and older surfaces. The
   // |reason| for removing will be recorded with UMA.
@@ -364,8 +368,6 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // Maximum length of uncommitted queue, zero means all frames are committed
   // automatically.
   const size_t max_uncommitted_frames_;
-
-  base::WeakPtrFactory<SurfaceManager> weak_factory_{this};
 };
 
 }  // namespace viz
