@@ -3016,6 +3016,13 @@ const char kReduceTransferSizeUpdatedIPCDescription[] =
     "When enabled, the network service will send TransferSizeUpdatedIPC IPC "
     "only when DevTools is attached or the request is for an ad request.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kReplaceSyncPromosWithSignInPromosName[] =
+    "Replace all sync-related UI with sign-in ones";
+const char kReplaceSyncPromosWithSignInPromosDescription[] =
+    "When enabled, all sync-related promos will be replaced by sign-in ones.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kResetShortcutCustomizationsName[] =
     "Reset all shortcut customizations";
 const char kResetShortcutCustomizationsDescription[] =

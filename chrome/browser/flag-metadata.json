@@ -7285,6 +7285,11 @@
     "expiry_milestone": 130
   },
   {
+      "name": "replace-sync-promos-with-sign-in-promos",
+      "owners": [ "mastiz@chromium.org", "bsazonov@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com" ],
+      "expiry_milestone": 130
+  },
+  {
     "name": "request-desktop-site-window-setting",
     "owners": [ "shuyng@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 126

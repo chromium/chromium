@@ -17176,6 +17176,7 @@ from previous Chrome versions.
   <int value="-1786020274" label="AppSpecificHistory:enabled"/>
   <int value="-1784831690" label="Bento:disabled"/>
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
+  <int value="-1784452112" label="ReplaceSyncPromosWithSignInPromos:enabled"/>
   <int value="-1783790234"
       label="AutofillEnableOfferNotificationCrossTabTracking:enabled"/>
   <int value="-1782853869"
@@ -18685,6 +18686,7 @@ from previous Chrome versions.
   <int value="-1121931029" label="DownloadsForeground:enabled"/>
   <int value="-1121780009" label="AutofillEnableManuallFallbackIPH:enabled"/>
   <int value="-1120594059" label="PowerBookmarkBackend:enabled"/>
+  <int value="-1120215471" label="ReplaceSyncPromosWithSignInPromos:disabled"/>
   <int value="-1120188661" label="PolicyLogsPageAndroid:enabled"/>
   <int value="-1119700637" label="ui-disable-partial-swap"/>
   <int value="-1119552494" label="SyncTrustedVaultPassphraseRecovery:disabled"/>

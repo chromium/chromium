@@ -1763,6 +1763,11 @@ extern const char kReduceIPAddressChangeNotificationName[];
 extern const char kReduceIPAddressChangeNotificationDescription[];
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kReplaceSyncPromosWithSignInPromosName[];
+extern const char kReplaceSyncPromosWithSignInPromosDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kRestrictGamepadAccessName[];
 extern const char kRestrictGamepadAccessDescription[];
 
