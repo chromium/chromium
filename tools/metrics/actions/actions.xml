@@ -24109,6 +24109,14 @@ should be able to be added at any place in this file.
   <description>User in the iOS tab grid closed a regular tab.</description>
 </action>
 
+<action name="MobileTabGridCloseTabGroupControlTapped">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid tapped on the close control of a tab group cell.
+  </description>
+</action>
+
 <action name="MobileTabGridCreateIncognitoTab">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
@@ -24502,6 +24510,14 @@ should be able to be added at any place in this file.
   <owner>michaeldo@chromium.org</owner>
   <description>
     User in the iOS tab grid used the tab context menu to enter selection mode.
+  </description>
+</action>
+
+<action name="MobileTabGridTabGroupCellTapped">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid tapped on a tab group cell.
   </description>
 </action>
 

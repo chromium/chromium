@@ -455,7 +455,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     UICollectionViewCell* collectionViewCell =
         [self.collectionView cellForItemAtIndexPath:path];
     if (![collectionViewCell isKindOfClass:[GridCell class]]) {
-      // TODO(crbug.com/1513165): Remove once the transition annimation for the
+      // TODO(crbug.com/334885429): Update once the transition animation for the
       // group cells is available.
       continue;
     }
@@ -944,8 +944,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionViewCell* collectionViewCell =
       [self.collectionView cellForItemAtIndexPath:indexPath];
   if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
-    // TODO(crbug.com/1513165): Remove once the annimations for group cells are
-    // available.
     return nil;
   }
   GridCell* gridCell = ObjCCastStrict<GridCell>(collectionViewCell);
@@ -1100,7 +1098,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - GroupGridCellDelegate
 
 - (void)closeButtonTappedForGroupCell:(GroupGridCell*)cell {
-  // TODO(crbug.com/1513165): Add the closing metrics for groups.
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridCloseTabGroupControlTapped"));
   [self.mutator closeItemWithIdentifier:cell.itemIdentifier];
 }
 
@@ -1823,6 +1822,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       break;
     }
     case GridItemType::Group: {
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGridTabGroupCellTapped"));
       const TabGroup* group = itemIdentifier.tabGroupItem.tabGroup;
       [self.delegate gridViewController:self didSelectGroup:group];
       break;
