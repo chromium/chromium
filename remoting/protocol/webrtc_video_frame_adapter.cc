@@ -45,6 +45,9 @@ webrtc::VideoFrame WebrtcVideoFrameAdapter::CreateVideoFrame(
   return webrtc::VideoFrame::Builder()
       .set_video_frame_buffer(adapter)
       .set_update_rect(video_update_rect)
+      // Added for b/333806004 - webrtc::FrameCadenceAdapterImpl requires
+      // video-frames to have monotonically increasing timestamps.
+      .set_timestamp_us(base::TimeTicks::Now().since_origin().InMicroseconds())
       .build();
 }
 
