@@ -61,31 +61,9 @@ class CORE_EXPORT AnchorEvaluator {
     kTop,
     kBottom,
 
-    // anchor() functions used for computing inset-area offsets before
-    // inset-area is modifying the containing block size. These are kept
-    // separately from the explicit anchor() functions for caching purposes in
-    // AnchorResults because anchor(left) yield a different result depending on
-    // whether the inset-area has modified the containing block size or not.
-    kBaseLeft,
-    kBaseRight,
-    kBaseTop,
-    kBaseBottom,
-
     // anchor-size()
     kSize
   };
-
-  static bool IsBaseMode(AnchorEvaluator::Mode mode) {
-    switch (mode) {
-      case Mode::kBaseLeft:
-      case Mode::kBaseRight:
-      case Mode::kBaseTop:
-      case Mode::kBaseBottom:
-        return true;
-      default:
-        return false;
-    }
-  }
 
   // Evaluates an anchor() or anchor-size() query.
   // Returns |nullopt| if the query is invalid (e.g., no targets or wrong
