@@ -1,0 +1,6 @@
+include_rules = [
+  "+skia/ext/skia_utils_ios.h",
+  "+third_party/blink/public/mojom/choosers/color_chooser.mojom.h",
+  "+third_party/skia/include/core/SkColor.h",
+  "+ui/gfx/native_widget_types.h",
+]

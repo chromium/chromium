@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/embedder_support/ios/delegate/color_chooser/color_chooser_ios.h"
 #import "content/public/browser/navigation_entry.h"
 #import "content/public/browser/web_contents.h"
 #import "ios/web/content/content_browser_context.h"
@@ -738,6 +739,14 @@ void ContentWebState::OnKeyboardShow(NSNotification* notification) {
 
 void ContentWebState::OnKeyboardHide(NSNotification* notification) {
   keyboard_height_ = 0;
+}
+
+std::unique_ptr<content::ColorChooser> ContentWebState::OpenColorChooser(
+    content::WebContents* web_contents,
+    SkColor color,
+    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
+  return std::make_unique<web_contents_delegate_ios::ColorChooserIOS>(
+      web_contents, color, suggestions);
 }
 
 }  // namespace web

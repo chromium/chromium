@@ -200,6 +200,11 @@ class ContentWebState : public WebState,
   int GetVirtualKeyboardHeight(content::WebContents* web_contents) override;
   bool OnlyExpandTopControlsAtPageTop() override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
+  std::unique_ptr<content::ColorChooser> OpenColorChooser(
+      content::WebContents* web_contents,
+      SkColor color,
+      const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions)
+      override;
 
  private:
   // Helper method to register notification observers.

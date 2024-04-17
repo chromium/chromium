@@ -2864,7 +2864,7 @@
     {
       name: "PagePopup",
       // Android does not have support for PagePopup
-      status: {"Android": "", "default": "stable"},
+      status: {"Android": "", "iOS": "", "default": "stable"},
     },
     {
       name: "PageRevealEvent",

@@ -40,6 +40,7 @@ source_set("content") {
     ":send_webkit_message_js",
     "//base",
     "//build:blink_buildflags",
+    "//components/embedder_support/ios:web_contents_delegate",
     "//components/js_injection/browser",
     "//content/public/browser",
     "//ios/web/annotations",
