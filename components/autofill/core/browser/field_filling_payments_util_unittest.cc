@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -475,7 +476,7 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
       CreditCardFieldParser::DetermineExpirationDateFormat(
           field, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, NO_SERVER_DATA,
           NO_SERVER_DATA);
-  field.set_heuristic_type(HeuristicSource::kLegacy,
+  field.set_heuristic_type(GetActiveHeuristicSource(),
                            format.digits_in_expiration_year == 2
                                ? CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
                                : CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -143,7 +144,7 @@ std::unique_ptr<FormStructure> BuildFormStructure(
                                             nullptr);
   } else {
     for (size_t i = 0; i < fields.size(); ++i) {
-      form_structure->field(i)->set_heuristic_type(HeuristicSource::kLegacy,
+      form_structure->field(i)->set_heuristic_type(GetActiveHeuristicSource(),
                                                    fields[i].heuristic_type);
     }
   }
