@@ -327,7 +327,8 @@ class AccountSelectionViewBase {
       const IdentityProviderDisplayData& idp_display_data,
       bool should_hover,
       bool should_include_idp,
-      bool is_modal_dialog = false);
+      bool is_modal_dialog = false,
+      int additional_vertical_padding = 0);
 
   // Returns a StyledLabel containing a disclosure label. The label links to
   // privacy policy and terms of service URLs, if available.

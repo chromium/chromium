@@ -100,7 +100,8 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const content::IdentityRequestAccount& account,
       bool should_hover,
       bool show_disclosure_label,
-      bool show_separator);
+      bool show_separator,
+      int additional_row_vertical_padding);
 
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.
@@ -158,6 +159,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   // View containing the title.
   raw_ptr<views::Label> title_label_ = nullptr;
+
+  // View containing the body.
+  raw_ptr<views::Label> body_label_ = nullptr;
 
   // View containing the brand icon image.
   raw_ptr<BrandIconImageView> brand_icon_ = nullptr;

@@ -317,11 +317,10 @@ AccountSelectionModalView::CreateAccountChooserHeader(
   SetLabelProperties(title_label_);
 
   // Add the body.
-  views::Label* body_label =
-      header->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
-          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
-  SetLabelProperties(body_label);
+  body_label_ = header->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
+  SetLabelProperties(body_label_);
   return header;
 }
 
@@ -342,12 +341,15 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
   content->AddChildView(std::make_unique<views::Separator>());
 
   size_t num_rows = 0;
+  constexpr int kMultipleAccountsVerticalPadding = 2;
   for (const auto& idp_display_data : idp_display_data_list) {
     for (const auto& account : idp_display_data.accounts) {
-      content->AddChildView(CreateAccountRow(account, idp_display_data,
-                                             /*should_hover=*/true,
-                                             /*should_include_idp=*/false,
-                                             /*is_modal_dialog=*/true));
+      content->AddChildView(CreateAccountRow(
+          account, idp_display_data,
+          /*should_hover=*/true,
+          /*should_include_idp=*/false,
+          /*is_modal_dialog=*/true,
+          /*additional_vertical_padding=*/kMultipleAccountsVerticalPadding));
       // Add separator after each account row.
       content->AddChildView(std::make_unique<views::Separator>());
     }
@@ -367,6 +369,11 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
 
   ConfigureBrandImageView(brand_icon_,
                           idp_display_data_list[0].idp_metadata.brand_icon_url);
+
+  // Show the "Choose an account to continue" label.
+  CHECK(body_label_);
+  body_label_->SetVisible(/*visible=*/true);
+
   account_chooser_ =
       AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
 
@@ -441,7 +448,8 @@ AccountSelectionModalView::CreateSingleAccountChooser(
     const content::IdentityRequestAccount& account,
     bool should_hover,
     bool show_disclosure_label,
-    bool show_separator) {
+    bool show_separator,
+    int additional_row_vertical_padding) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -455,7 +463,8 @@ AccountSelectionModalView::CreateSingleAccountChooser(
   // Add account row.
   row->AddChildView(CreateAccountRow(account, idp_display_data, should_hover,
                                      /*should_include_idp=*/false,
-                                     /*is_modal_dialog=*/true));
+                                     /*is_modal_dialog=*/true,
+                                     additional_row_vertical_padding));
 
   // Add separator after the account row.
   if (show_separator) {
@@ -486,11 +495,17 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
 
   ConfigureBrandImageView(brand_icon_,
                           idp_display_data.idp_metadata.brand_icon_url);
-  account_chooser_ =
-      AddChildView(CreateSingleAccountChooser(idp_display_data, account,
-                                              /*should_hover=*/true,
-                                              /*show_disclosure_label=*/false,
-                                              /*show_separator=*/true));
+
+  // Show the "Choose an account to continue" label.
+  CHECK(body_label_);
+  body_label_->SetVisible(/*visible=*/true);
+
+  account_chooser_ = AddChildView(CreateSingleAccountChooser(
+      idp_display_data, account,
+      /*should_hover=*/true,
+      /*show_disclosure_label=*/false,
+      /*show_separator=*/true,
+      /*additional_row_vertical_padding=*/kVerticalPadding));
 
   std::optional<views::Button::PressedCallback> use_other_account_callback =
       std::nullopt;
@@ -544,12 +559,18 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
 
   ConfigureBrandImageView(brand_icon_,
                           idp_display_data.idp_metadata.brand_icon_url);
+
+  // Hide the "Choose an account to continue" label.
+  CHECK(body_label_);
+  body_label_->SetVisible(/*visible=*/false);
+
   account_chooser_ = AddChildView(CreateSingleAccountChooser(
       idp_display_data, account,
       /*should_hover=*/false,
       /*show_disclosure_label=*/account.login_state ==
           Account::LoginState::kSignUp,
-      /*show_separator=*/false));
+      /*show_separator=*/false,
+      /*additional_row_vertical_padding=*/0));
   AddChildView(CreateButtonRow(
       base::BindRepeating(
           &AccountSelectionViewBase::Observer::OnAccountSelected,

@@ -310,7 +310,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     const IdentityProviderDisplayData& idp_display_data,
     bool should_hover,
     bool should_include_idp,
-    bool is_modal_dialog) {
+    bool is_modal_dialog,
+    int additional_vertical_padding) {
   int avatar_size = is_modal_dialog ? kModalAvatarSize : kDesiredAvatarSize;
   views::style::TextStyle account_name_style =
       is_modal_dialog ? views::style::STYLE_BODY_3_MEDIUM
@@ -396,10 +397,10 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         /*subtitle=*/base::UTF8ToUTF16(account.email),
         /*secondary_view=*/std::move(arrow_icon_view),
         /*add_vertical_label_spacing=*/true, footer);
-    row->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(/*vertical=*/is_modal_dialog ? kVerticalSpacing : 0,
-                        /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing
-                                                       : kLeftRightPadding)));
+    row->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+        /*vertical=*/additional_vertical_padding,
+        /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing
+                                       : kLeftRightPadding)));
     row->SetTitleTextStyle(account_name_style, ui::kColorDialogBackground,
                            /*color_id=*/std::nullopt);
     row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL, account_email_style);
@@ -413,7 +414,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(
-          /*vertical=*/kVerticalSpacing,
+          /*vertical=*/kVerticalSpacing + additional_vertical_padding,
           /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing : 0),
       kLeftRightPadding));
   row->AddChildView(std::move(account_image_view));
