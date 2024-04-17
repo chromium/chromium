@@ -146,6 +146,87 @@ class SpanWriter {
     return Write(U64ToNativeEndian(value));
   }
 
+  // For a SpanWriter over bytes, we can write integer values directly to those
+  // bytes as a memcpy. Returns true if there was room remaining and the bytes
+  // were written.
+  //
+  // These copy the bytes into the buffer in big endian order.
+  bool WriteI8BigEndian(int8_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I8ToBigEndian(value));
+  }
+  bool WriteI16BigEndian(int16_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I16ToBigEndian(value));
+  }
+  bool WriteI32BigEndian(int32_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I32ToBigEndian(value));
+  }
+  bool WriteI64BigEndian(int64_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I64ToBigEndian(value));
+  }
+
+  // For a SpanWriter over bytes, we can write integer values directly to those
+  // bytes as a memcpy. Returns true if there was room remaining and the bytes
+  // were written.
+  //
+  // These copy the bytes into the buffer in little endian order.
+  bool WriteI8LittleEndian(int8_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I8ToLittleEndian(value));
+  }
+  bool WriteI16LittleEndian(int16_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I16ToLittleEndian(value));
+  }
+  bool WriteI32LittleEndian(int32_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I32ToLittleEndian(value));
+  }
+  bool WriteI64LittleEndian(int64_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I64ToLittleEndian(value));
+  }
+
+  // For a SpanWriter over bytes, we can write integer values directly to those
+  // bytes as a memcpy. Returns true if there was room remaining and the bytes
+  // were written.
+  //
+  // These copy the bytes into the buffer in native endian order. Note that this
+  // is almost never what you want to do. Native ordering only makes sense for
+  // byte buffers that are only meant to stay in memory and never be written to
+  // the disk or network.
+  bool WriteI8NativeEndian(int8_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I8ToNativeEndian(value));
+  }
+  bool WriteI16NativeEndian(int16_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I16ToNativeEndian(value));
+  }
+  bool WriteI32NativeEndian(int32_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I32ToNativeEndian(value));
+  }
+  bool WriteI64NativeEndian(int64_t value)
+    requires(std::same_as<T, uint8_t>)
+  {
+    return Write(I64ToNativeEndian(value));
+  }
+
   // Returns the number of objects remaining to be written to the original span.
   size_t remaining() const { return buf_.size(); }
   // Returns the objects that have not yet been written to, as a span.

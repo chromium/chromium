@@ -160,9 +160,9 @@ TEST(SpanReaderTest, ReadCopy) {
   }
 }
 
-TEST(SpanReaderTest, ReadBigEndian) {
-  const std::array<uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                          uint8_t{4}, uint8_t{5}};
+TEST(SpanReaderTest, ReadBigEndian_Unsigned) {
+  const std::array<uint8_t, 5u> kArray = {1, 2, 3, 4, 5};
+  const std::array<uint8_t, 9u> kBigArray = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
   {
     uint8_t val;
@@ -173,7 +173,6 @@ TEST(SpanReaderTest, ReadBigEndian) {
     EXPECT_EQ(r.remaining(), 3u);
     EXPECT_EQ(val, 0x02u);
   }
-
   {
     uint16_t val;
 
@@ -183,7 +182,6 @@ TEST(SpanReaderTest, ReadBigEndian) {
     EXPECT_EQ(r.remaining(), 2u);
     EXPECT_EQ(val, 0x0203u);
   }
-
   {
     uint32_t val;
 
@@ -193,11 +191,6 @@ TEST(SpanReaderTest, ReadBigEndian) {
     EXPECT_EQ(r.remaining(), 0u);
     EXPECT_EQ(val, 0x02030405u);
   }
-
-  std::array<uint8_t, 9u> kBigArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                       uint8_t{4}, uint8_t{5}, uint8_t{6},
-                                       uint8_t{7}, uint8_t{8}, uint8_t{9}};
-
   {
     uint64_t val;
 
@@ -209,9 +202,51 @@ TEST(SpanReaderTest, ReadBigEndian) {
   }
 }
 
-TEST(SpanReaderTest, ReadLittleEndian) {
-  const std::array<uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                          uint8_t{4}, uint8_t{5}};
+TEST(SpanReaderTest, ReadBigEndian_Signed) {
+  const std::array<uint8_t, 5u> kArray = {1, 2, 3, 4, 5};
+  const std::array<uint8_t, 9u> kBigArray = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+  {
+    int8_t val;
+
+    auto r = SpanReader(base::span(kArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI8BigEndian(val));
+    EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(val, 0x02);
+  }
+  {
+    int16_t val;
+
+    auto r = SpanReader(base::span(kArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI16BigEndian(val));
+    EXPECT_EQ(r.remaining(), 2u);
+    EXPECT_EQ(val, 0x0203);
+  }
+  {
+    int32_t val;
+
+    auto r = SpanReader(base::span(kArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI32BigEndian(val));
+    EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(val, 0x02030405);
+  }
+  {
+    int64_t val;
+
+    auto r = SpanReader(base::span(kBigArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI64BigEndian(val));
+    EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(val, 0x0203040506070809ll);
+  }
+}
+
+TEST(SpanReaderTest, ReadLittleEndian_Unsigned) {
+  const std::array<uint8_t, 5u> kArray = {1, 2, 3, 4, 5};
+  const std::array<uint8_t, 9u> kBigArray = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
   {
     uint8_t val;
@@ -222,7 +257,6 @@ TEST(SpanReaderTest, ReadLittleEndian) {
     EXPECT_EQ(r.remaining(), 3u);
     EXPECT_EQ(val, 0x02u);
   }
-
   {
     uint16_t val;
 
@@ -232,7 +266,6 @@ TEST(SpanReaderTest, ReadLittleEndian) {
     EXPECT_EQ(r.remaining(), 2u);
     EXPECT_EQ(val, 0x0302u);
   }
-
   {
     uint32_t val;
 
@@ -242,11 +275,6 @@ TEST(SpanReaderTest, ReadLittleEndian) {
     EXPECT_EQ(r.remaining(), 0u);
     EXPECT_EQ(val, 0x05040302u);
   }
-
-  std::array<uint8_t, 9u> kBigArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                       uint8_t{4}, uint8_t{5}, uint8_t{6},
-                                       uint8_t{7}, uint8_t{8}, uint8_t{9}};
-
   {
     uint64_t val;
 
@@ -258,9 +286,51 @@ TEST(SpanReaderTest, ReadLittleEndian) {
   }
 }
 
-TEST(SpanReaderTest, ReadNativeEndian) {
-  const std::array<uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                          uint8_t{4}, uint8_t{5}};
+TEST(SpanReaderTest, ReadLittleEndian_Signed) {
+  const std::array<uint8_t, 5u> kArray = {1, 2, 3, 4, 5};
+  const std::array<uint8_t, 9u> kBigArray = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+  {
+    int8_t val;
+
+    auto r = SpanReader(base::span(kArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI8LittleEndian(val));
+    EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(val, 0x02);
+  }
+  {
+    int16_t val;
+
+    auto r = SpanReader(base::span(kArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI16LittleEndian(val));
+    EXPECT_EQ(r.remaining(), 2u);
+    EXPECT_EQ(val, 0x0302);
+  }
+  {
+    int32_t val;
+
+    auto r = SpanReader(base::span(kArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI32LittleEndian(val));
+    EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(val, 0x05040302);
+  }
+  {
+    int64_t val;
+
+    auto r = SpanReader(base::span(kBigArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI64LittleEndian(val));
+    EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(val, 0x0908070605040302ll);
+  }
+}
+
+TEST(SpanReaderTest, ReadNativeEndian_Unsigned) {
+  const std::array<uint8_t, 5u> kArray = {1, 2, 3, 4, 5};
+  const std::array<uint8_t, 9u> kBigArray = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
   {
     uint8_t val;
@@ -271,7 +341,6 @@ TEST(SpanReaderTest, ReadNativeEndian) {
     EXPECT_EQ(r.remaining(), 3u);
     EXPECT_EQ(val, 0x02u);
   }
-
   {
     uint16_t val;
 
@@ -281,7 +350,6 @@ TEST(SpanReaderTest, ReadNativeEndian) {
     EXPECT_EQ(r.remaining(), 2u);
     EXPECT_EQ(val, 0x0302u);
   }
-
   {
     uint32_t val;
 
@@ -291,11 +359,6 @@ TEST(SpanReaderTest, ReadNativeEndian) {
     EXPECT_EQ(r.remaining(), 0u);
     EXPECT_EQ(val, 0x05040302u);
   }
-
-  std::array<uint8_t, 9u> kBigArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                       uint8_t{4}, uint8_t{5}, uint8_t{6},
-                                       uint8_t{7}, uint8_t{8}, uint8_t{9}};
-
   {
     uint64_t val;
 
@@ -307,9 +370,50 @@ TEST(SpanReaderTest, ReadNativeEndian) {
   }
 }
 
+TEST(SpanReaderTest, ReadNativeEndian_Signed) {
+  const std::array<uint8_t, 5u> kArray = {1, 2, 3, 4, 5};
+  const std::array<uint8_t, 9u> kBigArray = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+  {
+    int8_t val;
+
+    auto r = SpanReader(base::span(kArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI8NativeEndian(val));
+    EXPECT_EQ(r.remaining(), 3u);
+    EXPECT_EQ(val, 0x02);
+  }
+  {
+    int16_t val;
+
+    auto r = SpanReader(base::span(kArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI16NativeEndian(val));
+    EXPECT_EQ(r.remaining(), 2u);
+    EXPECT_EQ(val, 0x0302);
+  }
+  {
+    int32_t val;
+
+    auto r = SpanReader(base::span(kArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI32NativeEndian(val));
+    EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(val, 0x05040302);
+  }
+  {
+    int64_t val;
+
+    auto r = SpanReader(base::span(kBigArray));
+    EXPECT_TRUE(r.Skip(1u));
+    EXPECT_TRUE(r.ReadI64NativeEndian(val));
+    EXPECT_EQ(r.remaining(), 0u);
+    EXPECT_EQ(val, 0x0908070605040302ll);
+  }
+}
+
 TEST(SpanReaderTest, ReadChar) {
-  std::array<const uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                          uint8_t{4}, uint8_t{5}};
+  std::array<const uint8_t, 5u> kArray = {1, 2, 3, 4, 5};
 
   auto r = SpanReader(base::span(kArray));
   EXPECT_EQ(r.num_read(), 0u);

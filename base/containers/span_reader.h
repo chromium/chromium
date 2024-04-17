@@ -165,6 +165,87 @@ class SpanReader {
     return ReadAnd<8>([&](auto buf) { value = U64FromNativeEndian(buf); });
   }
 
+  // For a SpanReader over bytes, we can read integer values directly from those
+  // bytes as a memcpy. Returns true if there was room remaining and the bytes
+  // were read.
+  //
+  // These treat the bytes from the buffer as being in big endian order.
+  bool ReadI8BigEndian(int8_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<1>([&](auto buf) { value = I8FromBigEndian(buf); });
+  }
+  bool ReadI16BigEndian(int16_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<2>([&](auto buf) { value = I16FromBigEndian(buf); });
+  }
+  bool ReadI32BigEndian(int32_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<4>([&](auto buf) { value = I32FromBigEndian(buf); });
+  }
+  bool ReadI64BigEndian(int64_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<8>([&](auto buf) { value = I64FromBigEndian(buf); });
+  }
+
+  // For a SpanReader over bytes, we can read integer values directly from those
+  // bytes as a memcpy. Returns true if there was room remaining and the bytes
+  // were read.
+  //
+  // These treat the bytes from the buffer as being in little endian order.
+  bool ReadI8LittleEndian(int8_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<1>([&](auto buf) { value = I8FromLittleEndian(buf); });
+  }
+  bool ReadI16LittleEndian(int16_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<2>([&](auto buf) { value = I16FromLittleEndian(buf); });
+  }
+  bool ReadI32LittleEndian(int32_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<4>([&](auto buf) { value = I32FromLittleEndian(buf); });
+  }
+  bool ReadI64LittleEndian(int64_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<8>([&](auto buf) { value = I64FromLittleEndian(buf); });
+  }
+
+  // For a SpanReader over bytes, we can read integer values directly from those
+  // bytes as a memcpy. Returns true if there was room remaining and the bytes
+  // were read.
+  //
+  // These treat the bytes from the buffer as being in native endian order. Note
+  // that this is almost never what you want to do. Native ordering only makes
+  // sense for byte buffers that are only meant to stay in memory and never be
+  // written to the disk or network.
+  bool ReadI8NativeEndian(int8_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<1>([&](auto buf) { value = I8FromNativeEndian(buf); });
+  }
+  bool ReadI16NativeEndian(int16_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<2>([&](auto buf) { value = I16FromNativeEndian(buf); });
+  }
+  bool ReadI32NativeEndian(int32_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<4>([&](auto buf) { value = I32FromNativeEndian(buf); });
+  }
+  bool ReadI64NativeEndian(int64_t& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<8>([&](auto buf) { value = I64FromNativeEndian(buf); });
+  }
+
   // For a SpanReader over bytes, reads one byte and returns it as a `char`,
   // which may be signed or unsigned depending on the platform. Returns true if
   // there was room remaining and the byte was read.

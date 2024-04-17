@@ -153,10 +153,8 @@ bool ParseVDMX(int* y_max,
 
       if (pixel_size == target_pixel_size) {
         int16_t temp_y_max, temp_y_min;
-        if (!base::OptionalUnwrapTo(reader.Read<2u>(), temp_y_max,
-                                    base::I16FromBigEndian) ||
-            !base::OptionalUnwrapTo(reader.Read<2u>(), temp_y_min,
-                                    base::I16FromBigEndian)) {
+        if (!reader.ReadI16BigEndian(temp_y_max) ||
+            !reader.ReadI16BigEndian(temp_y_min)) {
           return false;
         }
         *y_min = temp_y_min;

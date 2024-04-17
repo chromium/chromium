@@ -67,9 +67,8 @@ bool SignalKeyInternalFromBinary(const std::string& input,
   reader.ReadChar(output->prefix.kind);
   reader.Skip(sizeof(SignalKeyInternal::Prefix::padding));
   reader.ReadU64BigEndian(output->prefix.name_hash);
-
-  output->time_range_end_sec = base::I64FromBigEndian(*reader.Read<8u>());
-  output->time_range_start_sec = base::I64FromBigEndian(*reader.Read<8u>());
+  reader.ReadI64BigEndian(output->time_range_end_sec);
+  reader.ReadI64BigEndian(output->time_range_start_sec);
   CHECK_EQ(reader.remaining(), 0u);
   return true;
 }
