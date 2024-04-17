@@ -215,7 +215,9 @@ class VIEWS_EXPORT ViewAccessibility {
 
   void SetIsSelected(bool selected);
 
-  // Hides this view from the accessibility APIs.
+  // Hides this view from the accessibility APIs. Keep in mind that this is not
+  // the sole determinant of whether the ignored state is set. See
+  // `AdjustIgnoredState`.
   void SetIsIgnored(bool is_ignored);
   virtual bool GetIsIgnored() const;
 
@@ -413,6 +415,12 @@ class VIEWS_EXPORT ViewAccessibility {
 
   bool pruned_ = false;
 
+  // This is set to true when the view is explicitly marked as ignored by
+  // `SetIsIgnored`. It is not the only condition that will cause a view to have
+  // the ignored accessible state, as `pruned_` and `is_leaf_` can also cause
+  // this. See `AdjustIgnoredState`.
+  bool should_be_ignored_ = false;
+
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
   base::WeakPtr<Widget> next_focus_ = nullptr;
@@ -442,6 +450,8 @@ class VIEWS_EXPORT ViewAccessibility {
   void UnpruneSubtree();
 
   void SetState(ax::mojom::State state, bool is_enabled);
+
+  void AdjustIgnoredState();
 
   bool ignore_missing_widget_for_testing_ = false;
 };

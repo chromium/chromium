@@ -239,19 +239,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
 
-  // The ignored state depends on more than just the kIgnored state of the data,
-  // for instance it also depends on if the view has been pruned from the tree.
-  // And since some of those states we keep track of in member variables, we
-  // need to add this check here at the end so that if those states were set, we
-  // add the kIgnored state to the final AXNodeData.
-  // TODO(accessibility): We'll eventually want to replace this with a more
-  // robust and less ambiguous system, such as what Blink does on the render
-  // side. We might need something like ComputeIsHidden(), which could try to
-  // mimic what Blink does when computing 'ignoredness' of a node.
-  if (ViewAccessibility::GetIsIgnored()) {
-    data->AddState(ax::mojom::State::kIgnored);
-  }
-
   // This was previously found earlier in the function. It has been moved here,
   // after the call to `ViewAccessibility::Merge`, so that we only check the
   // `data` after all the attributes have been set. Otherwise, there was a bug
@@ -420,6 +407,7 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   }
 
   data_.role = role;
+  AdjustIgnoredState();
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
@@ -642,22 +630,18 @@ void ViewAccessibility::SetIsSelected(bool selected) {
 }
 
 void ViewAccessibility::SetIsIgnored(bool is_ignored) {
-  if (is_ignored == data_.IsIgnored()) {
+  if (is_ignored == should_be_ignored_) {
     return;
   }
 
-  if (is_ignored) {
-    data_.AddState(ax::mojom::State::kIgnored);
-  } else {
-    data_.RemoveState(ax::mojom::State::kIgnored);
-  }
+  should_be_ignored_ = is_ignored;
 
+  AdjustIgnoredState();
   view_->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
 bool ViewAccessibility::GetIsIgnored() const {
-  return data_.HasState(ax::mojom::State::kIgnored) ||
-         ViewAccessibility::IsChildOfLeaf() || GetIsPruned();
+  return data_.HasState(ax::mojom::State::kIgnored);
 }
 
 void ViewAccessibility::OverrideNativeWindowTitle(const std::string& title) {
@@ -796,6 +780,7 @@ void ViewAccessibility::PruneSubtree() {
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().pruned_ = true;
+    child->GetViewAccessibility().AdjustIgnoredState();
     child->GetViewAccessibility().PruneSubtree();
   }
 
@@ -808,7 +793,7 @@ void ViewAccessibility::UnpruneSubtree() {
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().pruned_ = false;
-
+    child->GetViewAccessibility().AdjustIgnoredState();
     // If we encounter a node that has already been explicitly set to be a leaf,
     // don't unprune it/its subtree. Otherwise we could end up in situations
     // where we have a node that is set to be a leaf, but has unpruned children.
@@ -829,5 +814,11 @@ void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
   } else {
     data_.RemoveState(state);
   }
+}
+
+void ViewAccessibility::AdjustIgnoredState() {
+  bool is_ignored =
+      should_be_ignored_ || pruned_ || data_.role == ax::mojom::Role::kNone;
+  SetState(ax::mojom::State::kIgnored, is_ignored);
 }
 }  // namespace views
