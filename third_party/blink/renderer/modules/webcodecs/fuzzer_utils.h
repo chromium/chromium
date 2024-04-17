@@ -112,6 +112,10 @@ String ToAacFormat(wc_fuzzer::AacFormat format);
 
 String ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode);
 
+String ToOpusSignal(wc_fuzzer::OpusSignal opus_signal);
+
+String ToOpusApplication(wc_fuzzer::OpusApplication opus_application);
+
 String ToAccelerationType(
     wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference type);
 

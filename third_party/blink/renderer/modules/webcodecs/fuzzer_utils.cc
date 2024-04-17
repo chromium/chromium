@@ -180,6 +180,12 @@ AudioEncoderConfig* MakeAudioEncoderConfig(
     if (proto.opus().has_usedtx()) {
       opus->setUsedtx(proto.opus().usedtx());
     }
+    if (proto.opus().has_signal()) {
+      opus->setSignal(ToOpusSignal(proto.opus().signal()));
+    }
+    if (proto.opus().has_application()) {
+      opus->setApplication(ToOpusApplication(proto.opus().application()));
+    }
   }
 
   return config;
@@ -267,6 +273,28 @@ String ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode) {
       return "variable";
     case wc_fuzzer::CONSTANT:
       return "constant";
+  }
+}
+
+String ToOpusSignal(wc_fuzzer::OpusSignal opus_signal) {
+  switch (opus_signal) {
+    case wc_fuzzer::AUTO:
+      return "auto";
+    case wc_fuzzer::MUSIC:
+      return "music";
+    case wc_fuzzer::VOICE:
+      return "voice";
+  }
+}
+
+String ToOpusApplication(wc_fuzzer::OpusApplication opus_application) {
+  switch (opus_application) {
+    case wc_fuzzer::VOIP:
+      return "voip";
+    case wc_fuzzer::AUDIO:
+      return "audio";
+    case wc_fuzzer::LOWDELAY:
+      return "lowdelay";
   }
 }
 
