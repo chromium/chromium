@@ -160,6 +160,10 @@ void AutomationManagerAura::AllAutomationExtensionsGone() {
 }
 
 void AutomationManagerAura::ExtensionListenerAdded() {
+  if (!enabled_) {
+    return;
+  }
+
   Reset(true /* reset serializer */);
 }
 
@@ -230,6 +234,10 @@ void AutomationManagerAura::OnChildWindowRemoved(
 
 void AutomationManagerAura::OnEvent(views::AXAuraObjWrapper* aura_obj,
                                     ax::mojom::Event event_type) {
+  if (!enabled_) {
+    return;
+  }
+
   PostEvent(aura_obj->GetUniqueId(), event_type);
 }
 
