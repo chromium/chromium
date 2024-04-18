@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "services/viz/public/mojom/compositing/shared_quad_state.mojom-shared.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
@@ -18,7 +18,8 @@
 namespace mojo {
 
 struct OptSharedQuadState {
-  raw_ptr<const viz::SharedQuadState> sqs;
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
+  RAW_PTR_EXCLUSION const viz::SharedQuadState* sqs = nullptr;
 };
 
 template <>

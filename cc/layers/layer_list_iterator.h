@@ -6,10 +6,10 @@
 #define CC_LAYERS_LAYER_LIST_ITERATOR_H_
 
 #include <stdlib.h>
+
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "cc/cc_export.h"
 
 namespace cc {
@@ -18,6 +18,8 @@ class Layer;
 
 // This visits a tree of layers in drawing order.
 class CC_EXPORT LayerListIterator {
+  STACK_ALLOCATED();
+
  public:
   explicit LayerListIterator(Layer* root_layer);
   LayerListIterator(const LayerListIterator& other);
@@ -40,15 +42,14 @@ class CC_EXPORT LayerListIterator {
   // The implementation of this iterator is currently tied tightly to the layer
   // tree, but it should be straightforward to reimplement in terms of a list
   // when it's ready.
-
-  // `current_layer` is not a raw_ptr<...> for performance reasons (based on
-  // analysis of sampling profiler data and tab_search:top100:2020).
-  RAW_PTR_EXCLUSION Layer* current_layer_;
+  Layer* current_layer_ = nullptr;
 
   std::vector<size_t> list_indices_;
 };
 
 class CC_EXPORT LayerListConstIterator {
+  STACK_ALLOCATED();
+
  public:
   explicit LayerListConstIterator(const Layer* root_layer);
   LayerListConstIterator(const LayerListConstIterator& other);
@@ -68,11 +69,13 @@ class CC_EXPORT LayerListConstIterator {
   const Layer* operator*() const { return current_layer_; }
 
  private:
-  raw_ptr<const Layer> current_layer_;
+  const Layer* current_layer_;
   std::vector<size_t> list_indices_;
 };
 
 class CC_EXPORT LayerListReverseIterator {
+  STACK_ALLOCATED();
+
  public:
   explicit LayerListReverseIterator(Layer* root_layer);
   LayerListReverseIterator(const LayerListReverseIterator& other);
@@ -94,11 +97,13 @@ class CC_EXPORT LayerListReverseIterator {
  private:
   void DescendToRightmostInSubtree();
 
-  raw_ptr<Layer> current_layer_;
+  Layer* current_layer_ = nullptr;
   std::vector<size_t> list_indices_;
 };
 
 class CC_EXPORT LayerListReverseConstIterator {
+  STACK_ALLOCATED();
+
  public:
   explicit LayerListReverseConstIterator(const Layer* root_layer);
   LayerListReverseConstIterator(const LayerListReverseConstIterator& other);
@@ -120,7 +125,7 @@ class CC_EXPORT LayerListReverseConstIterator {
  private:
   void DescendToRightmostInSubtree();
 
-  raw_ptr<const Layer> current_layer_;
+  const Layer* current_layer_ = nullptr;
   std::vector<size_t> list_indices_;
 };
 }  // namespace cc

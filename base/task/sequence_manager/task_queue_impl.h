@@ -21,6 +21,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -100,8 +101,8 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
   struct DeferredNonNestableTask {
     Task task;
 
-    // `task_queue` is not a raw_ptr<...> for performance reasons (based on
-    // analysis of sampling profiler data and tab_search:top100:2020).
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of sampling
+    // profiler data and tab_search:top100:2020).
     RAW_PTR_EXCLUSION internal::TaskQueueImpl* task_queue;
 
     WorkQueueType work_queue_type;
@@ -313,7 +314,9 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
 
     base::internal::OperationsController operations_controller_;
     // Pointer might be stale, access guarded by |operations_controller_|
-    raw_ptr<TaskQueueImpl> outer_;
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of
+    // speedometer3).
+    RAW_PTR_EXCLUSION TaskQueueImpl* outer_ = nullptr;
   };
 
   class TaskRunner final : public SingleThreadTaskRunner {
@@ -371,7 +374,9 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     void UnregisterTaskQueue() { task_queue_impl_ = nullptr; }
 
    private:
-    raw_ptr<TaskQueueImpl> task_queue_impl_;
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of
+    // speedometer3).
+    RAW_PTR_EXCLUSION TaskQueueImpl* task_queue_impl_ = nullptr;
     const scoped_refptr<const AssociatedThreadId> associated_thread_;
   };
 

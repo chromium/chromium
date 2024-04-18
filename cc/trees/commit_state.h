@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 #include "cc/cc_export.h"
@@ -157,8 +158,8 @@ struct CC_EXPORT CommitState {
   std::vector<UIResourceRequest> ui_resource_request_queue;
   base::flat_map<UIResourceId, gfx::Size> ui_resource_sizes;
   PropertyTreesChangeState property_trees_change_state;
-  base::flat_set<raw_ptr<Layer, CtnExperimental>>
-      layers_that_should_push_properties;
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
+  RAW_PTR_EXCLUSION base::flat_set<Layer*> layers_that_should_push_properties;
 
   // Specific scrollers may request clobbering the active delta value on the
   // compositor when committing the current scroll offset to ensure the scroll

@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/time/time.h"
@@ -88,7 +89,9 @@ class BASE_EXPORT WakeUpQueue {
 
   struct ScheduledWakeUp {
     WakeUp wake_up;
-    raw_ptr<internal::TaskQueueImpl> queue;
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of
+    // speedometer3).
+    RAW_PTR_EXCLUSION internal::TaskQueueImpl* queue = nullptr;
 
     bool operator>(const ScheduledWakeUp& other) const {
       return wake_up.latest_time() > other.wake_up.latest_time();
