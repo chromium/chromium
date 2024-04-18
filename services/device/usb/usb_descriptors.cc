@@ -200,10 +200,8 @@ void OnReadStringDescriptor(
     scoped_refptr<base::RefCountedBytes> buffer,
     size_t length) {
   if (status == UsbTransferStatus::COMPLETED) {
-    auto to_read = base::span(*buffer).first(length);
     std::u16string string;
-    if (ParseUsbStringDescriptor(
-            std::vector<uint8_t>(to_read.begin(), to_read.end()), &string)) {
+    if (ParseUsbStringDescriptor(base::span(*buffer).first(length), &string)) {
       std::move(callback).Run(std::move(string));
       return;
     }
@@ -364,22 +362,32 @@ void ReadUsbDescriptors(
                      std::move(callback)));
 }
 
-bool ParseUsbStringDescriptor(const std::vector<uint8_t>& descriptor,
+bool ParseUsbStringDescriptor(base::span<const uint8_t> descriptor,
                               std::u16string* output) {
-  if (descriptor.size() < 2 || descriptor[1] != kStringDescriptorType)
+  if (descriptor.size() < 2u) {
     return false;
+  }
+
+  auto [header, body] = descriptor.split_at(2u);
+  if (header[1u] != kStringDescriptorType) {
+    return false;
+  }
 
   // Let the device return a buffer larger than the actual string but prefer the
   // length reported inside the descriptor.
-  size_t length = descriptor[0];
-  length = std::min(length, descriptor.size());
-  if (length < 2)
+  const size_t length_bytes =
+      std::min<size_t>(header[0u], header.size() + body.size());
+  // The header's size is included in the length. If not, it's malformed.
+  if (length_bytes < header.size()) {
     return false;
+  }
+  const size_t body_bytes = length_bytes - header.size();
+  const size_t body_chars = body_bytes / sizeof(char16_t);
 
   // The string is returned by the device in UTF-16LE.
-  *output =
-      std::u16string(reinterpret_cast<const char16_t*>(descriptor.data() + 2),
-                     (length - 2) / sizeof(char16_t));
+  output->resize(body_chars);
+  base::as_writable_byte_span(*output).copy_from(
+      body.first(body_chars * sizeof(char16_t)));
   return true;
 }
 
