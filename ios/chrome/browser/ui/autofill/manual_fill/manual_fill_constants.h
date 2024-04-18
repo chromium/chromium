@@ -31,6 +31,13 @@ enum class ManualFillDataType {
   kAddress,
 };
 
+// Possible payment field types when manually filling a form.
+enum class PaymentFieldType {
+  kCardNumber = 0,
+  kExpirationMonth,
+  kExpirationYear,
+};
+
 }  // namespace manual_fill
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_CONSTANTS_H_

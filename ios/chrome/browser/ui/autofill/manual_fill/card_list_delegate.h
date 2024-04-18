@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_CARD_LIST_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_CARD_LIST_DELEGATE_H_
 
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card.h"
 
 @class CrURL;
@@ -19,7 +20,8 @@
 - (void)openCardSettings;
 
 // Opens credit card unlock, through CVC, prompt.
-- (void)requestFullCreditCard:(ManualFillCreditCard*)card;
+- (void)requestFullCreditCard:(ManualFillCreditCard*)card
+                    fieldType:(manual_fill::PaymentFieldType)fieldType;
 
 // Opens URL in a bottom sheet view with the given title.
 - (void)openURL:(CrURL*)url withTitle:(NSString*)title;
