@@ -696,7 +696,6 @@ crbug.com/1488973 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/gl
 crbug.com/1488978 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/1488979 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1492234 [ chromeos cros-chrome chromeos-board-jacuzzi angle-opengles passthrough arm ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
-crbug.com/1492241 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 # Broadly flaky unsymbolized crashes on Jacuzzi
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/* [ RetryOnFailure ]
 
