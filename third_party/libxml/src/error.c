@@ -698,8 +698,7 @@ xmlVRaiseError(xmlStructuredErrorFunc schannel,
     if (code == XML_ERR_OK)
         return(0);
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-    if ((code == XML_ERR_INTERNAL_ERROR) ||
-        (code == XML_ERR_ARGUMENT)) {
+    if (code == XML_ERR_INTERNAL_ERROR) {
         fprintf(stderr, "Unexpected error: %d\n", code);
         abort();
     }
@@ -730,7 +729,12 @@ xmlVRaiseError(xmlStructuredErrorFunc schannel,
     } else if (xmlStructuredError != NULL) {
         xmlStructuredError(xmlStructuredErrorContext, to);
     } else if (channel != NULL) {
-        if ((ctxt == NULL) && (channel == xmlGenericErrorDefaultFunc))
+        /* Don't invoke legacy error handlers */
+        if ((channel == xmlGenericErrorDefaultFunc) ||
+            (channel == xmlParserError) ||
+            (channel == xmlParserWarning) ||
+            (channel == xmlParserValidityError) ||
+            (channel == xmlParserValidityWarning))
             xmlFormatError(to, xmlGenericError, xmlGenericErrorContext);
         else
 	    channel(data, "%s", to->message);
@@ -785,6 +789,42 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
     return(res);
 }
 
+static void
+xmlVFormatLegacyError(void *ctx, const char *level,
+                      const char *fmt, va_list ap) {
+    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
+    xmlParserInputPtr input = NULL;
+    xmlParserInputPtr cur = NULL;
+    xmlChar *str = NULL;
+
+    if (ctxt != NULL) {
+	input = ctxt->input;
+	if ((input != NULL) && (input->filename == NULL) &&
+	    (ctxt->inputNr > 1)) {
+	    cur = input;
+	    input = ctxt->inputTab[ctxt->inputNr - 2];
+	}
+	xmlParserPrintFileInfo(input);
+    }
+
+    xmlGenericError(xmlGenericErrorContext, "%s: ", level);
+
+    xmlStrVASPrintf(&str, MAX_ERR_MSG_SIZE, fmt, ap);
+    if (str != NULL) {
+        xmlGenericError(xmlGenericErrorContext, "%s", (char *) str);
+	xmlFree(str);
+    }
+
+    if (ctxt != NULL) {
+	xmlParserPrintFileContext(input);
+	if (cur != NULL) {
+	    xmlParserPrintFileInfo(cur);
+	    xmlGenericError(xmlGenericErrorContext, "\n");
+	    xmlParserPrintFileContext(cur);
+	}
+    }
+}
+
 /**
  * xmlParserError:
  * @ctx:  an XML parser context
@@ -797,9 +837,11 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
 void
 xmlParserError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 {
-    xmlParserCtxtPtr ctxt = ctx;
+    va_list ap;
 
-    xmlFormatError(&ctxt->lastError, xmlGenericError, xmlGenericErrorContext);
+    va_start(ap, msg);
+    xmlVFormatLegacyError(ctx, "error", msg, ap);
+    va_end(ap);
 }
 
 /**
@@ -814,9 +856,11 @@ xmlParserError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 void
 xmlParserWarning(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 {
-    xmlParserCtxtPtr ctxt = ctx;
+    va_list ap;
 
-    xmlFormatError(&ctxt->lastError, xmlGenericError, xmlGenericErrorContext);
+    va_start(ap, msg);
+    xmlVFormatLegacyError(ctx, "warning", msg, ap);
+    va_end(ap);
 }
 
 /**
@@ -831,9 +875,11 @@ xmlParserWarning(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 void
 xmlParserValidityError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 {
-    xmlParserCtxtPtr ctxt = ctx;
+    va_list ap;
 
-    xmlFormatError(&ctxt->lastError, xmlGenericError, xmlGenericErrorContext);
+    va_start(ap, msg);
+    xmlVFormatLegacyError(ctx, "validity error", msg, ap);
+    va_end(ap);
 }
 
 /**
@@ -848,9 +894,11 @@ xmlParserValidityError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 void
 xmlParserValidityWarning(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 {
-    xmlParserCtxtPtr ctxt = ctx;
+    va_list ap;
 
-    xmlFormatError(&ctxt->lastError, xmlGenericError, xmlGenericErrorContext);
+    va_start(ap, msg);
+    xmlVFormatLegacyError(ctx, "validity warning", msg, ap);
+    va_end(ap);
 }
 
 
@@ -1307,6 +1355,8 @@ xmlErrString(xmlParserErrors code) {
             errmsg = "already in use"; break;
         case XML_IO_EAFNOSUPPORT:
             errmsg = "unknown address family"; break;
+        case XML_IO_UNSUPPORTED_PROTOCOL:
+            errmsg = "unsupported protocol"; break;
 
         default:
             errmsg = "Unregistered error message";

@@ -234,9 +234,10 @@ extra_post_call = {
               xmlFreeNode(old) ; old = NULL ; }
 \t  ret_val = NULL;""",
    "xmlTextMerge": 
-       """if ((first != NULL) && (first->type != XML_TEXT_NODE)) {
+       """if (ret_val == NULL) {
               xmlUnlinkNode(second);
-              xmlFreeNode(second) ; second = NULL ; }""",
+              xmlFreeNode(second) ; second = NULL ;
+              ret_val = first; }""",
    "xmlBuildQName": 
        """if ((ret_val != NULL) && (ret_val != ncname) &&
               (ret_val != prefix) && (ret_val != memory))

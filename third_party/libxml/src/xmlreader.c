@@ -222,7 +222,19 @@ xmlTextReaderFreeProp(xmlTextReaderPtr reader, xmlAttrPtr cur) {
     if (cur->children != NULL)
         xmlTextReaderFreeNodeList(reader, cur->children);
 
-    DICT_FREE(cur->name);
+    if (cur->id != NULL) {
+        /*
+         * Operating in streaming mode, attr is gonna disappear
+         */
+        cur->id->attr = NULL;
+        if (cur->id->name != NULL)
+            DICT_FREE(cur->id->name);
+        cur->id->name = cur->name;
+        cur->name = NULL;
+    } else {
+        DICT_FREE(cur->name);
+    }
+
     if ((reader != NULL) && (reader->ctxt != NULL) &&
         (reader->ctxt->freeAttrsNr < MAX_FREE_NODES)) {
         cur->next = reader->ctxt->freeAttrs;
@@ -2866,20 +2878,17 @@ xmlTextReaderReadAttributeValue(xmlTextReaderPtr reader) {
  */
 const xmlChar *
 xmlTextReaderConstEncoding(xmlTextReaderPtr reader) {
-    xmlDocPtr doc = NULL;
-    if (reader == NULL)
-	return(NULL);
-    if (reader->doc != NULL)
-        doc = reader->doc;
-    else if (reader->ctxt != NULL)
-	doc = reader->ctxt->myDoc;
-    if (doc == NULL)
-	return(NULL);
+    const xmlChar *encoding = NULL;
 
-    if (doc->encoding == NULL)
-	return(NULL);
-    else
-      return(CONSTSTR(doc->encoding));
+    if (reader == NULL)
+        return(NULL);
+
+    if (reader->ctxt != NULL)
+        encoding = xmlGetActualEncoding(reader->ctxt);
+    else if (reader->doc != NULL)
+        encoding = reader->doc->encoding;
+
+    return(CONSTSTR(encoding));
 }
 
 

@@ -2980,13 +2980,6 @@ xmlSplitQName(xmlParserCtxtPtr ctxt, const xmlChar *name, xmlChar **prefixOut) {
 
     if (cur == NULL) return(NULL);
 
-#ifndef XML_XML_NAMESPACE
-    /* xml: prefix is not really a namespace */
-    if ((cur[0] == 'x') && (cur[1] == 'm') &&
-        (cur[2] == 'l') && (cur[3] == ':'))
-	return(xmlStrdup(name));
-#endif
-
     /* nasty but well=formed */
     if (cur[0] == ':')
 	return(xmlStrdup(name));
@@ -4287,7 +4280,7 @@ xmlExpandEntitiesInAttValue(xmlParserCtxtPtr ctxt, const xmlChar *str,
  */
 static xmlChar *
 xmlParseAttValueInternal(xmlParserCtxtPtr ctxt, int *attlen, int *alloc,
-                         int normalize) {
+                         int normalize, int isNamespace) {
     unsigned maxLength = (ctxt->options & XML_PARSE_HUGE) ?
                          XML_MAX_HUGE_LENGTH :
                          XML_MAX_TEXT_LENGTH;
@@ -4295,6 +4288,10 @@ xmlParseAttValueInternal(xmlParserCtxtPtr ctxt, int *attlen, int *alloc,
     xmlChar *ret;
     int c, l, quote, flags, chunkSize;
     int inSpace = 1;
+    int replaceEntities;
+
+    /* Always expand namespace URIs */
+    replaceEntities = (ctxt->replaceEntities) || (isNamespace);
 
     xmlSBufInit(&buf, maxLength);
 
@@ -4407,7 +4404,7 @@ xmlParseAttValueInternal(xmlParserCtxtPtr ctxt, int *attlen, int *alloc,
             if (val == 0)
                 goto error;
 
-            if ((val == '&') && (!ctxt->replaceEntities)) {
+            if ((val == '&') && (!replaceEntities)) {
                 /*
                  * The reparsing will be done in xmlStringGetNodeList()
                  * called by the attribute() function in SAX.c
@@ -4445,12 +4442,12 @@ xmlParseAttValueInternal(xmlParserCtxtPtr ctxt, int *attlen, int *alloc,
                 continue;
 
             if (ent->etype == XML_INTERNAL_PREDEFINED_ENTITY) {
-                if ((ent->content[0] == '&') && (!ctxt->replaceEntities))
+                if ((ent->content[0] == '&') && (!replaceEntities))
                     xmlSBufAddCString(&buf, "&#38;", 5);
                 else
                     xmlSBufAddString(&buf, ent->content, ent->length);
                 inSpace = 0;
-            } else if (ctxt->replaceEntities) {
+            } else if (replaceEntities) {
                 xmlExpandEntityInAttValue(ctxt, &buf, ent->content, ent,
                                           normalize, &inSpace, ctxt->inputNr,
                                           /* check */ 1);
@@ -4551,7 +4548,7 @@ error:
 xmlChar *
 xmlParseAttValue(xmlParserCtxtPtr ctxt) {
     if ((ctxt == NULL) || (ctxt->input == NULL)) return(NULL);
-    return(xmlParseAttValueInternal(ctxt, NULL, NULL, 0));
+    return(xmlParseAttValueInternal(ctxt, NULL, NULL, 0, 0));
 }
 
 /**
@@ -8784,6 +8781,7 @@ xmlParseAttribute2(xmlParserCtxtPtr ctxt,
     const xmlChar *prefix, *name;
     xmlChar *val = NULL, *internal_val = NULL;
     int normalize = 0;
+    int isNamespace;
 
     *value = NULL;
     GROW;
@@ -8819,7 +8817,10 @@ xmlParseAttribute2(xmlParserCtxtPtr ctxt,
     if (RAW == '=') {
         NEXT;
         SKIP_BLANKS;
-        val = xmlParseAttValueInternal(ctxt, len, alloc, normalize);
+        isNamespace = (((prefix == NULL) && (name == ctxt->str_xmlns)) ||
+                       (prefix == ctxt->str_xmlns));
+        val = xmlParseAttValueInternal(ctxt, len, alloc, normalize,
+                                       isNamespace);
         if (val == NULL)
             goto error;
     } else {
@@ -8910,7 +8911,7 @@ xmlAttrHashInsert(xmlParserCtxtPtr ctxt, unsigned size, const xmlChar *name,
             int nsIndex = (int) (ptrdiff_t) atts[2];
 
             if ((nsIndex == NS_INDEX_EMPTY) ? (uri == NULL) :
-                (nsIndex == NS_INDEX_XML) ? (uri == ctxt->str_xml) :
+                (nsIndex == NS_INDEX_XML) ? (uri == ctxt->str_xml_ns) :
                 (uri == ctxt->nsTab[nsIndex * 2 + 1]))
                 return(bucket->index);
         }

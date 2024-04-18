@@ -86,7 +86,7 @@ AC_ARG_WITH(icu,
 AC_ARG_WITH(iso8859x,
 [  --with-iso8859x         ISO-8859-X support if no iconv (on)])
 AC_ARG_WITH(lzma,
-[  --with-lzma[[=DIR]]       use liblzma in DIR (on)])
+[  --with-lzma[[=DIR]]       use liblzma in DIR (off)])
 AC_ARG_WITH(mem_debug,
 [  --with-mem-debug        memory debugging module (off)])
 AC_ARG_WITH(modules,
@@ -128,7 +128,7 @@ AC_ARG_WITH(xptr,
 AC_ARG_WITH(xptr-locs,
 [  --with-xptr-locs        XPointer ranges and points (off)])
 AC_ARG_WITH(zlib,
-[  --with-zlib[[=DIR]]       use libz in DIR (on)])
+[  --with-zlib[[=DIR]]       use libz in DIR (off)])
 
 AC_ARG_WITH(minimum,
 [  --with-minimum          build a minimally sized library (off)])
@@ -907,9 +907,11 @@ dnl Checks for zlib library.
 dnl
 WITH_ZLIB=0
 
-if test "$with_zlib" = "no"; then
-    echo "Disabling zlib compression support"
-else
+if test "$with_zlib" != "no" && \
+   (test "$with_zlib" != "" || test "$with_legacy" = "yes")
+then
+    echo "Enabling zlib compression support"
+
     if test "$with_zlib" != "yes"; then
         Z_DIR=$with_zlib
     fi
@@ -959,9 +961,11 @@ dnl Checks for lzma library.
 dnl
 WITH_LZMA=0
 
-if test "$with_lzma" = "no"; then
-    echo "Disabling lzma compression support"
-else
+if test "$with_lzma" != "no" && \
+   (test "$with_lzma" != "" || test "$with_legacy" = "yes")
+then
+    echo "Enabling lzma compression support"
+
     if test "$with_lzma" != "yes"; then
         LZMA_DIR=$with_lzma
     fi

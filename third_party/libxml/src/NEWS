@@ -20,6 +20,11 @@ downstream test suites accordingly.
 
 Support for HTTP POST was removed.
 
+Support for zlib and liblzma is now disabled by default and has to be
+enabled by passing --with-zlib or --with-lzma to configure. In legacy
+mode (--with-legacy) compression support is enabled by default as
+before.
+
 
 v2.12.0: Nov 16 2023
 

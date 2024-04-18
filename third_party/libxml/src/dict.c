@@ -23,12 +23,6 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
 
 #include "private/dict.h"
 #include "private/globals.h"
@@ -911,6 +905,16 @@ xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
 /*
  * Pseudo-random generator
  */
+
+#ifdef _WIN32
+  #define WIN32_LEAN_AND_MEAN
+  #include <windows.h>
+#elif defined(HAVE_GETENTROPY)
+  #ifdef HAVE_UNISTD_H
+    #include <unistd.h>
+  #endif
+#endif
+#include <time.h>
 
 static xmlMutex xmlRngMutex;
 

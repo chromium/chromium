@@ -28,10 +28,6 @@ XML_HIDDEN int
 xmlBufAdd(xmlBufPtr buf, const xmlChar *str, int len);
 XML_HIDDEN int
 xmlBufCat(xmlBufPtr buf, const xmlChar *str);
-XML_HIDDEN int
-xmlBufCCat(xmlBufPtr buf, const char *str);
-XML_HIDDEN int
-xmlBufWriteQuotedString(xmlBufPtr buf, const xmlChar *string);
 
 XML_HIDDEN size_t
 xmlBufAvail(const xmlBufPtr buf);

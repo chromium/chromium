@@ -5,25 +5,29 @@ this patch file. This patch is safe because it reverts the random number
 generation behavior before a recent libxml upstream patch.
 
 diff --git a/dict.c b/dict.c
-index 5c9f3aa2..7a492895 100644
+index c843bb7b..96435d52 100644
 --- a/dict.c
 +++ b/dict.c
-@@ -24,14 +24,10 @@
- #include <stdlib.h>
- #include <string.h>
- #include <time.h>
--#ifdef HAVE_SYS_RANDOM_H
--#include <sys/random.h>
--#endif
- 
+@@ -909,17 +909,12 @@ xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
  #ifdef _WIN32
- #define WIN32_LEAN_AND_MEAN
- #include <windows.h>
--#include <bcrypt.h>
+   #define WIN32_LEAN_AND_MEAN
+   #include <windows.h>
+-  #include <bcrypt.h>
+ #elif defined(HAVE_GETENTROPY)
+   #ifdef HAVE_UNISTD_H
+     #include <unistd.h>
+   #endif
+-  #ifdef HAVE_SYS_RANDOM_H
+-    #include <sys/random.h>
+-  #endif
+-#else
+-  #include <time.h>
  #endif
++#include <time.h>
  
- #include "private/dict.h"
-@@ -926,29 +922,6 @@ xmlInitRandom(void) {
+ static xmlMutex xmlRngMutex;
+ 
+@@ -931,29 +926,6 @@ xmlInitRandom(void) {
      xmlInitMutex(&xmlRngMutex);
  
      {
@@ -53,7 +57,7 @@ index 5c9f3aa2..7a492895 100644
          int var;
  
          globalRngState[0] =
-@@ -957,7 +930,6 @@ xmlInitRandom(void) {
+@@ -962,7 +934,6 @@ xmlInitRandom(void) {
          globalRngState[1] =
                  HASH_ROL((unsigned) ((size_t) &xmlRngMutex & 0xFFFFFFFF), 16) ^
                  HASH_ROL((unsigned) ((size_t) &var & 0xFFFFFFFF), 24);

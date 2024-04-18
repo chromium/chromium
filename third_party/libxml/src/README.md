@@ -21,8 +21,8 @@ This code is released under the MIT License, see the Copyright file.
 
 ## Build instructions
 
-libxml2 can be built with GNU Autotools, CMake, or several other build
-systems in platform-specific subdirectories.
+libxml2 can be built with GNU Autotools, CMake, meson or several other
+build systems in platform-specific subdirectories.
 
 ### Autotools (for POSIX systems like Linux, BSD, macOS)
 
@@ -53,7 +53,7 @@ The following options disable or enable code modules and relevant symbols:
     --with-iconv[=DIR]      iconv support (on)
     --with-icu              ICU support (off)
     --with-iso8859x         ISO-8859-X support if no iconv (on)
-    --with-lzma[=DIR]       use liblzma in DIR (on)
+    --with-lzma[=DIR]       use liblzma in DIR (off)
     --with-mem-debug        memory debugging module (off)
     --with-modules          dynamic modules support (on)
     --with-output           serialization support (on)
@@ -74,7 +74,7 @@ The following options disable or enable code modules and relevant symbols:
     --with-xinclude         XInclude 1.0 support (on)
     --with-xpath            XPath 1.0 support (on)
     --with-xptr             XPointer support (on)
-    --with-zlib[=DIR]       use libz in DIR (on)
+    --with-zlib[=DIR]       use libz in DIR (off)
 
 Other options:
 
@@ -121,24 +121,40 @@ Common CMake options include:
 You can also open the libxml source directory with its CMakeLists.txt
 directly in various IDEs such as CLion, QtCreator, or Visual Studio.
 
+### Meson
+
+Libxml can also be built with meson. Without option, simply call
+
+meson setup builddir
+ninja -C builddir
+
+To add options, see the meson_options.txt file. For example:
+
+meson setup -Dprefix=$prefix -Dftp=true -Dhistory=true -Dicu=true -Dhttp=true builddir
+
+To install libxml:
+
+ninja -C builddir install
+
+To launch tests:
+
+meson test -C builddir
+
 ## Dependencies
 
 Libxml does not require any other libraries. A platform with somewhat
 recent POSIX support should be sufficient (please report any violation
 to this rule you may find).
 
-However, if found at configuration time, libxml will detect and use
-the following libraries:
+The iconv function is required for conversion of character encodings.
+This function is part of POSIX.1-2001. If your platform doesn't provide
+iconv, you need an external libiconv library, for example
+[GNU libiconv](https://www.gnu.org/software/libiconv/). Alternatively,
+you can use [ICU](https://icu.unicode.org/).
 
-- [libz](https://zlib.net/), a highly portable and widely available
-  compression library.
-- [liblzma](https://tukaani.org/xz/), another compression library.
-- [libiconv](https://www.gnu.org/software/libiconv/), a character encoding
-  conversion library. The iconv function is part of POSIX.1-2001, so
-  libiconv isn't required on modern UNIX-like systems like Linux, BSD or
-  macOS.
-- [ICU](https://icu.unicode.org/), a Unicode library. Mainly useful as an
-  alternative to iconv on Windows. Unnecessary on most other systems.
+If enabled, libxml uses [libz](https://zlib.net/) or
+[liblzma](https://tukaani.org/xz/) to support reading compressed files.
+Use of this feature is discouraged.
 
 ## Contributing
 

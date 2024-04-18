@@ -1,0 +1,280 @@
+
+# AC_ARG_WITH / AC_ARG_ENABLE in configure.ac
+# [X] c14n
+# [X] catalog
+# [M] coverage    - use meson, not minimum
+# [X] debugging
+# [X] fexceptions
+# [X] ftp         - not minimum
+# [X] history
+# [X] html
+# [X] http
+# [X] iconv
+# [X] icu         - not minimum
+# [X] ipv6
+# [X] iso8859x
+# [X] legacy
+# [X] lzma
+# [X] mem-debug
+# [X] modules
+# [X] output
+# [X] pattern
+# [X] push
+# [ ] python
+# [X] reader
+# [X] readline
+# [X] regexps
+# [ ] run-debug   - not used
+# [X] sax1
+# [X] schemas
+# [X] schematron
+# [X] threads
+# [X] thread-alloc
+# [X] tls
+# [X] tree
+# [X] valid
+# [X] writer
+# [X] xinclude
+# [X] xpath
+# [X] xptr
+# [X] xptr-locs
+# [X] zlib
+
+# [X] minimum
+# [X] ipv6
+
+
+option('c14n',
+  type: 'boolean',
+  value: true,
+  description: 'Canonical XML 1.0 support'
+)
+
+option('catalog',
+  type: 'boolean',
+  value: true,
+  description: 'XML Catalogs support'
+)
+
+option('debuging',
+  type: 'boolean',
+  value: true,
+  description: 'Debugging module and shell'
+)
+
+option('fexceptions',
+  type: 'boolean',
+  value: false,
+  description: 'add GCC flag -fexceptions for C++ exceptions'
+)
+
+option('ftp',
+  type: 'boolean',
+  value: false,
+  description: 'FTP support'
+)
+
+option('history',
+  type: 'boolean',
+  value: false,
+  description: 'History support for shell'
+)
+
+option('html',
+  type: 'boolean',
+  value: true,
+  description: 'HTML parser'
+)
+
+option('http',
+  type: 'boolean',
+  value: true,
+  description: 'HTTP support'
+)
+
+# TODO meson custom dependency
+option('iconv',
+  type: 'boolean',
+  value: true,
+  description: 'iconv support'
+)
+
+option('icu',
+  type: 'boolean',
+  value: false,
+  description: 'ICU support'
+)
+
+option('ipv6',
+  type: 'boolean',
+  value: true,
+  description: 'Compilation of IPv6 code'
+)
+
+option('iso8859x',
+  type: 'boolean',
+  value: true,
+  description: 'ISO-8859-X support if no iconv'
+)
+
+option('legacy',
+  type: 'boolean',
+  value: false,
+  description: 'Maximum ABI compatibility'
+)
+
+option('lzma',
+  type: 'boolean',
+  value: false,
+  description: 'LZMA support'
+)
+
+option('mem-debug',
+  type: 'boolean',
+  value: false,
+  description: 'Memory debugging module'
+)
+
+option('modules',
+  type: 'boolean',
+  value: true,
+  description: 'Dynamic modules support'
+)
+
+option('output',
+  type: 'boolean',
+  value: true,
+  description: 'Serialization support'
+)
+
+option('pattern',
+  type: 'boolean',
+  value: true,
+  description: 'xmlPattern selection interface'
+)
+
+option('push',
+  type: 'boolean',
+  value: true,
+  description: 'push parser interfaces'
+)
+
+option('python',
+  type: 'boolean',
+  value: true,
+  description: 'Python bindings'
+)
+
+option('reader',
+  type: 'boolean',
+  value: true,
+  description: 'xmlReader parsing interface'
+)
+
+option('readline',
+  type: 'boolean',
+  value: true,
+  description: 'use readline in DIR (for shell history)'
+)
+
+option('regexps',
+  type: 'boolean',
+  value: true,
+  description: 'Regular expressions support'
+)
+
+option('run-debug',
+  type: 'boolean',
+  value: false,
+  description: 'Runtime debugging module'
+)
+
+option('sax1',
+  type: 'boolean',
+  value: true,
+  description: 'Older SAX1 interface'
+)
+
+option('schemas',
+  type: 'boolean',
+  value: true,
+  description: 'XML Schemas 1.0 and RELAX NG support'
+)
+
+option('schematron',
+  type: 'boolean',
+  value: true,
+  description: 'Schematron support'
+)
+
+option('threads',
+  type: 'boolean',
+  value: true,
+  description: 'Multithreading support'
+)
+
+option('thread-alloc',
+  type: 'boolean',
+  value: false,
+  description: 'per-thread malloc hooks'
+)
+
+option('tls',
+  type: 'boolean',
+  value: false,
+  description: 'thread-local storage'
+)
+
+option('tree',
+  type: 'boolean',
+  value: true,
+  description: 'DOM like tree manipulation APIs'
+)
+
+option('valid',
+  type: 'boolean',
+  value: true,
+  description: 'DTD validation support'
+)
+
+option('writer',
+  type: 'boolean',
+  value: true,
+  description: 'xmlWriter serialization interface'
+)
+
+option('xinclude',
+  type: 'boolean',
+  value: true,
+  description: 'XInclude 1.0 support'
+)
+
+option('xpath',
+  type: 'boolean',
+  value: true,
+  description: 'XPath 1.0 support'
+)
+
+option('xptr',
+  type: 'boolean',
+  value: true,
+  description: 'XPointer support'
+)
+
+option('xptr-locs',
+  type: 'boolean',
+  value: false,
+  description: 'XPointer ranges and points'
+)
+
+option('zlib',
+  type: 'boolean',
+  value: false,
+  description: 'ZLIB support'
+)
+
+option('minimum',
+  type: 'boolean',
+  value: false,
+  description: 'build a minimally sized library (default=false)'
+)

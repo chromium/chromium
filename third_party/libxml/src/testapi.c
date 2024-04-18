@@ -23412,9 +23412,10 @@ test_xmlTextMerge(void) {
         second = gen_xmlNodePtr_in(n_second, 1);
 
         ret_val = xmlTextMerge(first, second);
-        if ((first != NULL) && (first->type != XML_TEXT_NODE)) {
+        if (ret_val == NULL) {
               xmlUnlinkNode(second);
-              xmlFreeNode(second) ; second = NULL ; }
+              xmlFreeNode(second) ; second = NULL ;
+              ret_val = first; }
         desret_xmlNodePtr(ret_val);
         call_tests++;
         des_xmlNodePtr_in(n_first, first, 0);

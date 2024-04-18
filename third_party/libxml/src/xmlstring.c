@@ -499,10 +499,10 @@ xmlStrncatNew(const xmlChar *str1, const xmlChar *str2, int len) {
         if (len < 0)
             return(NULL);
     }
-    if ((str2 == NULL) || (len == 0))
-        return(xmlStrdup(str1));
     if (str1 == NULL)
         return(xmlStrndup(str2, len));
+    if ((str2 == NULL) || (len == 0))
+        return(xmlStrdup(str1));
 
     size = xmlStrlen(str1);
     if ((size < 0) || (size > INT_MAX - len))
@@ -1106,8 +1106,9 @@ xmlUTF8Strloc(const xmlChar *utf, const xmlChar *utfchar) {
  * Create a substring from a given UTF-8 string
  * Note:  positions are given in units of UTF-8 chars
  *
- * Returns a pointer to a newly created string
- * or NULL if any problem
+ * Returns a pointer to a newly created string or NULL if the
+ * start index is out of bounds or a memory allocation failed.
+ * If len is too large, the result is truncated.
  */
 
 xmlChar *
@@ -1122,16 +1123,18 @@ xmlUTF8Strsub(const xmlChar *utf, int start, int len) {
     /*
      * Skip over any leading chars
      */
-    for (i = 0;i < start;i++) {
-        if ((ch=*utf++) == 0) return(NULL);
-        if ( ch & 0x80 ) {
-            /* if not simple ascii, verify proper format */
-            if ( (ch & 0xc0) != 0xc0 )
-                return(NULL);
-            /* then skip over remaining bytes for this char */
-            while ( (ch <<= 1) & 0x80 )
-                if ( (*utf++ & 0xc0) != 0x80 )
+    for (i = 0; i < start; i++) {
+        ch = *utf++;
+        if (ch == 0)
+            return(NULL);
+        /* skip over remaining bytes for this char */
+        if (ch & 0x80) {
+            ch <<= 1;
+            while (ch & 0x80) {
+                if (*utf++ == 0)
                     return(NULL);
+                ch <<= 1;
+            }
         }
     }
 
