@@ -21,6 +21,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace global_media_controls {
 class MediaItemUIDeviceSelector;
 class MediaItemUIFooter;
@@ -111,5 +115,9 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
 
 // Returns the MediaColorTheme for the updated media UI.
 media_message_center::MediaColorTheme GetMediaColorTheme();
+
+// Return the vector icon for display for the given cast device icon type.
+const gfx::VectorIcon& GetVectorIcon(
+    global_media_controls::mojom::IconType icon);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_HELPER_H_

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
+#include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -17,15 +20,19 @@
 namespace {
 
 constexpr gfx::Size kPreferredSize{370, 0};
+constexpr gfx::Size kCloseButtonSize{20, 20};
 
 constexpr int kBackgroundBorderThickness = 1;
 constexpr int kBackgroundCornerRadius = 8;
+constexpr int kDeviceEntryCornerRadius = 4;
+constexpr int kBackgroundSeparator = 8;
+constexpr int kDeviceContainerSeparator = 4;
+constexpr int kDeviceEntrySeparator = 8;
+constexpr int kCloseButtonIconSize = 16;
+constexpr int kDeviceEntryIconSize = 20;
 
 constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 8);
 constexpr gfx::Insets kCastToRowInsets = gfx::Insets::VH(0, 8);
-
-constexpr int kCloseButtonIconSize = 16;
-constexpr gfx::Size kCloseButtonSize = gfx::Size(20, 20);
 
 }  // namespace
 
@@ -47,7 +54,8 @@ CastDeviceSelectorView::CastDeviceSelectorView(
       media_color_theme_.device_selector_background_color_id,
       kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kBackgroundInsets));
+      views::BoxLayout::Orientation::kVertical, kBackgroundInsets,
+      kBackgroundSeparator));
 
   // |cast_to_row| holds the cast to label and the close button.
   auto* cast_to_row = AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -79,6 +87,7 @@ CastDeviceSelectorView::CastDeviceSelectorView(
       AddChildView(std::make_unique<views::BoxLayoutView>());
   device_container_view_->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
+  device_container_view_->SetBetweenChildSpacing(kDeviceContainerSeparator);
 
   if (show_devices) {
     ShowDevices();
@@ -120,11 +129,10 @@ void CastDeviceSelectorView::OnDevicesUpdated(
     std::vector<global_media_controls::mojom::DevicePtr> devices) {
   device_container_view_->RemoveAllChildViews();
   for (const auto& device : devices) {
-    auto device_view = std::make_unique<CastDeviceEntryViewAsh>(
+    auto device_view = BuildCastDeviceEntryView(
         base::BindRepeating(&CastDeviceSelectorView::OnCastDeviceSelected,
                             base::Unretained(this), device->id),
-        media_color_theme_.primary_foreground_color_id,
-        media_color_theme_.secondary_foreground_color_id, device);
+        base::UTF8ToUTF16(device->name), device->icon);
     device_container_view_->AddChildView(std::move(device_view));
   }
   if (media_item_ui_updated_view_) {
@@ -136,6 +144,31 @@ void CastDeviceSelectorView::OnDevicesUpdated(
 
 ///////////////////////////////////////////////////////////////////////////////
 // CastDeviceSelectorView implementations:
+
+std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
+    views::Button::PressedCallback callback,
+    const std::u16string& text,
+    global_media_controls::mojom::IconType icon) {
+  std::unique_ptr<HoverButton> device_entry_button;
+  if (icon == global_media_controls::mojom::IconType::kThrobber) {
+    device_entry_button = std::make_unique<HoverButton>(
+        std::move(callback), media_router::CreateThrobber(), text);
+  } else {
+    device_entry_button = std::make_unique<HoverButton>(
+        std::move(callback),
+        ui::ImageModel::FromVectorIcon(
+            GetVectorIcon(icon),
+            media_color_theme_.secondary_foreground_color_id,
+            kDeviceEntryIconSize),
+        text);
+  }
+  device_entry_button->SetLabelStyle(views::style::STYLE_BODY_2);
+  device_entry_button->SetEnabledTextColorIds(
+      media_color_theme_.secondary_foreground_color_id);
+  device_entry_button->SetImageLabelSpacing(kDeviceEntrySeparator);
+  device_entry_button->SetFocusRingCornerRadius(kDeviceEntryCornerRadius);
+  return device_entry_button;
+}
 
 void CastDeviceSelectorView::OnCastDeviceSelected(
     const std::string& device_id) {
@@ -165,6 +198,10 @@ void CastDeviceSelectorView::UpdateVisibility() {
 global_media_controls::MediaActionButton*
 CastDeviceSelectorView::GetCloseButtonForTesting() {
   return close_button_;
+}
+
+views::View* CastDeviceSelectorView::GetDeviceContainerViewForTesting() {
+  return device_container_view_;
 }
 
 BEGIN_METADATA(CastDeviceSelectorView)

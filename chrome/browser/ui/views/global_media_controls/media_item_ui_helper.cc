@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
@@ -310,4 +311,22 @@ media_message_center::MediaColorTheme GetMediaColorTheme() {
   theme.error_container_color_id = ui::kColorSysErrorContainer;
   theme.focus_ring_color_id = ui::kColorSysStateFocusRing;
   return theme;
+}
+
+const gfx::VectorIcon& GetVectorIcon(
+    global_media_controls::mojom::IconType icon) {
+  switch (icon) {
+    case global_media_controls::mojom::IconType::kInfo:
+      return kInfoIcon;
+    case global_media_controls::mojom::IconType::kSpeaker:
+      return kSpeakerIcon;
+    case global_media_controls::mojom::IconType::kSpeakerGroup:
+      return kSpeakerGroupIcon;
+    case global_media_controls::mojom::IconType::kInput:
+      return kInputIcon;
+    case global_media_controls::mojom::IconType::kThrobber:
+    case global_media_controls::mojom::IconType::kTv:
+    case global_media_controls::mojom::IconType::kUnknown:
+      return kTvIcon;
+  }
 }

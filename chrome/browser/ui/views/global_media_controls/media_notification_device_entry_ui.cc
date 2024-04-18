@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/vector_icons/vector_icons.h"
@@ -53,26 +54,6 @@ void ChangeEntryColor(views::ImageView* image_view,
   }
 }
 
-const gfx::VectorIcon* GetVectorIcon(
-    global_media_controls::mojom::IconType icon) {
-  switch (icon) {
-    case global_media_controls::mojom::IconType::kInfo:
-      return &vector_icons::kInfoOutlineIcon;
-    case global_media_controls::mojom::IconType::kSpeaker:
-      return &kSpeakerIcon;
-    case global_media_controls::mojom::IconType::kSpeakerGroup:
-      return &kSpeakerGroupIcon;
-    case global_media_controls::mojom::IconType::kInput:
-      return &kInputIcon;
-    case global_media_controls::mojom::IconType::kTv:
-      return &kTvIcon;
-    // In these cases the icon is a placeholder and doesn't actually get shown.
-    case global_media_controls::mojom::IconType::kThrobber:
-    case global_media_controls::mojom::IconType::kUnknown:
-      return &kTvIcon;
-  }
-}
-
 // foreground_color_id is only set for CastDeviceEntryViewAsh.
 std::unique_ptr<views::ImageView> CreateIconView(
     const gfx::VectorIcon* icon,
@@ -96,7 +77,7 @@ std::unique_ptr<views::View> CreateIconView(
   if (icon == global_media_controls::mojom::IconType::kThrobber) {
     return media_router::CreateThrobber();
   }
-  return CreateIconView(GetVectorIcon(icon), foreground_color_id);
+  return CreateIconView(&GetVectorIcon(icon), foreground_color_id);
 }
 
 std::unique_ptr<views::ImageView> GetAudioDeviceIcon() {
@@ -178,7 +159,7 @@ CastDeviceEntryView::CastDeviceEntryView(
     SkColor foreground_color,
     SkColor background_color,
     const global_media_controls::mojom::DevicePtr& device)
-    : DeviceEntryUI(device->id, device->name, GetVectorIcon(device->icon)),
+    : DeviceEntryUI(device->id, device->name, &GetVectorIcon(device->icon)),
       HoverButton(std::move(callback),
                   CreateIconView(device->icon),
                   base::UTF8ToUTF16(device->name),
@@ -230,7 +211,7 @@ CastDeviceEntryViewAsh::CastDeviceEntryViewAsh(
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     const global_media_controls::mojom::DevicePtr& device)
-    : DeviceEntryUI(device->id, device->name, GetVectorIcon(device->icon)),
+    : DeviceEntryUI(device->id, device->name, &GetVectorIcon(device->icon)),
       HoverButton(std::move(callback),
                   CreateIconView(device->icon, foreground_color_id),
                   base::UTF8ToUTF16(device->name)),

@@ -21,6 +21,8 @@ namespace views {
 class BoxLayoutView;
 }  // namespace views
 
+class HoverButton;
+
 // CastDeviceSelectorView holds a list of devices available for casting the
 // given media session. This is used within MediaDialogView on non-CrOS desktop
 // platforms and replaces MediaItemUIDeviceSelectorView when the
@@ -58,10 +60,16 @@ class CastDeviceSelectorView
 
   // Helper functions for testing:
   global_media_controls::MediaActionButton* GetCloseButtonForTesting();
+  views::View* GetDeviceContainerViewForTesting();
 
  private:
-  friend class CastDeviceSelectorViewTest;
+  // Build a device entry view for the given device information.
+  std::unique_ptr<HoverButton> BuildCastDeviceEntryView(
+      views::Button::PressedCallback callback,
+      const std::u16string& text,
+      global_media_controls::mojom::IconType icon);
 
+  // Callback for when a device is selected by user.
   void OnCastDeviceSelected(const std::string& device_id);
 
   // Update the visibility of the whole view which changes its size too.

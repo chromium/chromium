@@ -61,6 +61,7 @@ class CastDeviceSelectorViewTest : public ChromeViewsTestBase {
     return devices;
   }
 
+  MockDeviceListHost* device_list_host() { return device_list_host_.get(); }
   CastDeviceSelectorView* view() { return cast_device_selector_view_; }
 
  private:
@@ -99,4 +100,17 @@ TEST_F(CastDeviceSelectorViewTest, CloseButtonCheck) {
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(view()->GetVisible());
+}
+
+TEST_F(CastDeviceSelectorViewTest, DeviceEntryCheck) {
+  CreateCastDeviceSelectorView(/*show_devices=*/true);
+  view()->OnDevicesUpdated(CreateDevices());
+  EXPECT_NE(view()->GetDeviceContainerViewForTesting(), nullptr);
+  for (views::View* child :
+       view()->GetDeviceContainerViewForTesting()->children()) {
+    EXPECT_CALL(*device_list_host(), SelectDevice(kTestDeviceId));
+    views::test::ButtonTestApi(static_cast<views::Button*>(child))
+        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                    gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  }
 }
