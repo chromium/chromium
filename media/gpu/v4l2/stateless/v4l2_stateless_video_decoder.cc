@@ -230,7 +230,10 @@ void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   decode_request_queue_.push(
       DecodeRequest(std::move(buffer), std::move(decode_cb), bitstream_id));
 
-  ServiceDecodeRequestQueue();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue,
+                     weak_ptr_factory_for_events_.GetWeakPtr()));
 }
 
 void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
@@ -816,9 +819,8 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
   } while (!done);
 
   if (current_decode_request_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(current_decode_request_->decode_cb),
-                                  DecoderStatus::Codes::kOk));
+    std::move(current_decode_request_->decode_cb)
+        .Run(DecoderStatus::Codes::kOk);
 
     // There are multiple locations that the decode callback is run. For tracing
     // purposes only the common path is considered. The reset/flush/error/etc.
