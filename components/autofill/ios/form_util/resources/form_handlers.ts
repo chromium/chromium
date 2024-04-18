@@ -340,17 +340,24 @@ function findPasswordForm(elements: Element[]): HTMLFormElement|undefined {
 }
 
 /**
- * Finds the renderer IDs of the formless password input elements in an array of
+ * Finds the renderer IDs of the formless input elements in an array of
  * elements.
  *
  * @param elements Array of elements within which to search.
- * @return Renderer ids of the formless password fields.
+ * @return Renderer ids of the formless fields. When XHR submission detection is
+ *     disabled, only returns password fields.
  */
-function findFormlessPasswordFieldsIds(elements: Element[]): string[] {
+function findFormlessFieldsIds(elements: Element[]): string[] {
+  const returnAllInputElements =
+      gCrWeb.autofill_form_features.isAutofillXHRSubmissionDetectionEnabled();
+
+
+
   return elements
       .filter(
-          e => e.tagName === 'INPUT' && !(e as HTMLInputElement).form &&
-              isPasswordField(e))
+          e => gCrWeb.fill.isAutofillableElement(e) &&
+              !(e as HTMLInputElement).form &&
+              (returnAllInputElements || isPasswordField(e)))
       .map(gCrWeb.fill.getUniqueID);
 }
 
@@ -400,28 +407,51 @@ function trackFormMutationsOld(delay: number): void {
 
       const removedFormElements =
           findAllFormElementsInNodes(mutation.removedNodes);
-      const pwdFormGone = findPasswordForm(removedFormElements);
-      if (pwdFormGone) {
+
+      // When detecting XHR submissions for Autofill is enabled, all forms are
+      // sent to the browser to determine if one of them was submitted. Fallback
+      // to the old behavior that only sends the first removed password form.
+      let forms: Element[];
+      const xhrEnabled = gCrWeb.autofill_form_features
+                             .isAutofillXHRSubmissionDetectionEnabled();
+
+      if (xhrEnabled) {
+        forms = removedFormElements.filter(e => e.tagName === 'FORM');
+      } else {
+        const removedPasswordForm = findPasswordForm(removedFormElements);
+        forms = removedPasswordForm ? [removedPasswordForm] : [];
+      }
+
+      const removedFormlessFieldsIds =
+          findFormlessFieldsIds(removedFormElements);
+      const formlessFieldsWereRemoved = removedFormlessFieldsIds.length > 0;
+
+      // Send removed forms and unowned field id's in the same message when XHR
+      // submissions are enabled.
+      if (forms.length > 0 || (xhrEnabled && formlessFieldsWereRemoved)) {
         // Handle the removed password form case.
-        const formRendererID = gCrWeb.fill.getUniqueID(pwdFormGone);
+        // Send the removed forms identifiers to the browser.
+        const filteredFormIDs =
+            forms.map(form => gCrWeb.fill.getUniqueID(form));
         const msg = {
-          'command': 'pwdform.removal',
+          'command': 'form.removal',
           'frameID': gCrWeb.message.getFrameId(),
-          // TODO(crbug.com/328464301): Send all removed forms to browser.
-          'removedFormIDs': gCrWeb.stringify([formRendererID]),
+          'removedFormIDs': gCrWeb.stringify(filteredFormIDs),
+          'removedFieldIDs':
+              xhrEnabled ? gCrWeb.stringify(removedFormlessFieldsIds) : null,
         };
         sendFormMutationMessagesAfterDelay([msg], delay);
         return;
       }
 
-      const removedFormlessPasswordFieldsIds =
-          findFormlessPasswordFieldsIds(removedFormElements);
-      if (removedFormlessPasswordFieldsIds.length > 0) {
-        // Handle the removed formless password field case.
+      // When XHR submissions are enabled, formless fields were already
+      // processed above.
+      if (!xhrEnabled && formlessFieldsWereRemoved) {
+        // Handle the removed formless field case.
         const msg = {
-          'command': 'pwdform.removal',
+          'command': 'form.removal',
           'frameID': gCrWeb.message.getFrameId(),
-          'removedFieldIDs': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
+          'removedFieldIDs': gCrWeb.stringify(removedFormlessFieldsIds),
         };
         sendFormMutationMessagesAfterDelay([msg], delay);
         return;
@@ -507,31 +537,52 @@ function trackFormMutationsNew(delay: number): void {
         continue;
       }
 
-      const pwdFormGone = findPasswordForm(removedFormElements);
-      if (!removedFormMessage && pwdFormGone) {
-        // Handle the removed password form case.
-        const formRendererID = gCrWeb.fill.getUniqueID(pwdFormGone);
-        removedFormMessage = {
-          'command': 'pwdform.removal',
-          'frameID': gCrWeb.message.getFrameId(),
-          'removedFormIDs': gCrWeb.stringify([formRendererID]),
-        };
-        continue;
-      } else if (pwdFormGone) {
-        ++formMsgBatchMetadata.dropCount;
-        continue;
+      // When detecting XHR submissions for Autofill is enabled, all forms are
+      // sent to the browser to determine if one of them was submitted. Fallback
+      // to the old behavior that only sends the first removed password form.
+      let forms: Element[];
+      const xhrEnabled = gCrWeb.autofill_form_features
+                             .isAutofillXHRSubmissionDetectionEnabled();
+
+      if (xhrEnabled) {
+        forms = removedFormElements.filter(e => e.tagName === 'FORM');
+      } else {
+        const removedPasswordForm = findPasswordForm(removedFormElements);
+        forms = removedPasswordForm ? [removedPasswordForm] : [];
       }
 
-      const removedFormlessPasswordFieldsIds =
-          findFormlessPasswordFieldsIds(removedFormElements);
-      const formlessFieldsWereRemoved =
-          removedFormlessPasswordFieldsIds.length > 0;
+      const removedFormlessFieldsIds =
+          findFormlessFieldsIds(removedFormElements);
+      const formlessFieldsWereRemoved = removedFormlessFieldsIds.length > 0;
+
+      // Send removed forms and unowned field id's in the same message when XHR
+      // submissions are enabled.
+      if (forms.length > 0 || (xhrEnabled && formlessFieldsWereRemoved)) {
+        // Drop removed form message if there is one scheduled.
+        if (removedFormMessage) {
+          ++formMsgBatchMetadata.dropCount;
+          continue;
+        } else {
+          // Send the removed forms identifiers to the browser.
+          const filteredFormIDs =
+              forms.map(form => gCrWeb.fill.getUniqueID(form));
+          removedFormMessage = {
+            'command': 'form.removal',
+            'frameID': gCrWeb.message.getFrameId(),
+            'removedFormIDs': gCrWeb.stringify(filteredFormIDs),
+            'removedFieldIDs':
+                xhrEnabled ? gCrWeb.stringify(removedFormlessFieldsIds) : null,
+          };
+          continue;
+        }
+      }
+
       if (!removedFormMessage && formlessFieldsWereRemoved) {
-        // Handle the removed formless password field case.
+        // Handle the removed formless field case.
         removedFormMessage = {
-          'command': 'pwdform.removal',
+          'command': 'form.removal',
           'frameID': gCrWeb.message.getFrameId(),
-          'removedFieldIDs': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
+          'removedFieldIDs': gCrWeb.stringify(removedFormlessFieldsIds),
         };
         continue;
       } else if (formlessFieldsWereRemoved) {
