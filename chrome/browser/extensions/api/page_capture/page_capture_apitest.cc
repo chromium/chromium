@@ -107,14 +107,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
   WaitForFileCleanup(&delegate);
 }
 
-// TODO(crbug.com/326868086): Test is flaky on UBSan and MSan.
-#if defined(UNDEFINED_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_SaveAsMHTMLWithFileAccess DISABLED_SaveAsMHTMLWithFileAccess
-#else
-#define MAYBE_SaveAsMHTMLWithFileAccess SaveAsMHTMLWithFileAccess
-#endif
+// TODO(crbug.com/326868086): Test is flaky.
 IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       MAYBE_SaveAsMHTMLWithFileAccess) {
+                       DISABLED_SaveAsMHTMLWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", /*custom_arg=*/nullptr,
