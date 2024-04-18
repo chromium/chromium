@@ -6,8 +6,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager_impl.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"

@@ -1053,6 +1053,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         # Needed to use QUICHE API.
         r'chrome/browser/ip_protection/.*',
         r'services/network/web_transport.*',
+        # Needed to integrate with //third_party/nearby
+        r'components/cross_device/nearby/system_clock.cc',
         _THIRD_PARTY_EXCEPT_BLINK  # Not an error in third_party folders.
       ],
     ),

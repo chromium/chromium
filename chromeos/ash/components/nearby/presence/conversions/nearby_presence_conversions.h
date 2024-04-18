@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_SHARING_NEARBY_NEARBY_PRESENCE_CONVERSIONS_H_
-#define CHROME_SERVICES_SHARING_NEARBY_NEARBY_PRESENCE_CONVERSIONS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CONVERSIONS_NEARBY_PRESENCE_CONVERSIONS_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CONVERSIONS_NEARBY_PRESENCE_CONVERSIONS_H_
 
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom-forward.h"
 #include "mojo/public/mojom/base/absl_status.mojom-forward.h"
@@ -47,4 +47,4 @@ mojom::PresenceDevicePtr BuildPresenceMojomDevice(
 
 }  // namespace ash::nearby::presence
 
-#endif  // CHROME_SERVICES_SHARING_NEARBY_NEARBY_PRESENCE_CONVERSIONS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CONVERSIONS_NEARBY_PRESENCE_CONVERSIONS_H_

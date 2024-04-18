@@ -5069,8 +5069,6 @@ static_library("browser") {
       "nearby_sharing/metrics/throughput_metric_logger.h",
       "nearby_sharing/nearby_confirmation_manager.cc",
       "nearby_sharing/nearby_confirmation_manager.h",
-      "nearby_sharing/nearby_connections_manager_impl.cc",
-      "nearby_sharing/nearby_connections_manager_impl.h",
       "nearby_sharing/nearby_notification_delegate.h",
       "nearby_sharing/nearby_notification_handler.cc",
       "nearby_sharing/nearby_notification_handler.h",

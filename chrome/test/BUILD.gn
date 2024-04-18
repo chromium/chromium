@@ -8548,7 +8548,6 @@ test("unit_tests") {
       "../browser/nearby_sharing/mock_nearby_sharing_service.cc",
       "../browser/nearby_sharing/mock_nearby_sharing_service.h",
       "../browser/nearby_sharing/nearby_confirmation_manager_unittest.cc",
-      "../browser/nearby_sharing/nearby_connections_manager_impl_unittest.cc",
       "../browser/nearby_sharing/nearby_notification_manager_unittest.cc",
       "../browser/nearby_sharing/nearby_per_session_discovery_manager_unittest.cc",
       "../browser/nearby_sharing/nearby_receive_manager_unittest.cc",

@@ -9,6 +9,8 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 static_library("conversions") {
   sources = [
+    "nearby_presence_conversions.cc",
+    "nearby_presence_conversions.h",
     "proto_conversions.cc",
     "proto_conversions.h",
   ]
@@ -25,6 +27,7 @@ static_library("conversions") {
     "//third_party/nearby:connections_local_credential_proto",
     "//third_party/nearby:connections_metadata_proto",
     "//third_party/nearby:platform_api_comm",
+    "//third_party/nearby:presence_types",
   ]
 }
 

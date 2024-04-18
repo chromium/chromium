@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/nearby_connections.h"
 
 #include <stdint.h>
+
 #include <sstream>
 
 #include "ash/public/cpp/network_config_service.h"
@@ -19,9 +20,9 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
-#include "chrome/services/sharing/nearby/nearby_presence_conversions.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
+#include "chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/sharing/nearby/nearby_presence_conversions.h"
+#include "chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h"
 
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "third_party/nearby/src/presence/data_element.h"

@@ -3,6 +3,10 @@
 # found in the LICENSE file.
 
 include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  '-chrome',
+
   '+ash/constants/ash_features.h',
   '+device/bluetooth',
   '+services/network/public',
@@ -10,6 +14,15 @@ include_rules = [
   '+third_party/abseil-cpp/absl/time/time.h',
   '+third_party/nearby',
   '+unicode/locid.h',
+
+  # Existing dependencies within //chrome. Whenever possible, avoid adding new
+  # //chrome dependencies to this list. Dependencies within //chrome are listed
+  # on a per- directory basis. See //tools/chromeos/gen_deps.sh for details.
+  '+chrome/browser/nearby_sharing/common/nearby_share_features.h',
+  '+chrome/services/sharing/nearby/platform',
+  '+chrome/services/sharing/nearby/test_support',
+  '+chrome/services/sharing/webrtc',
+
   '+chromeos/ash/components/login/login_state/login_state.h',
   '+chromeos/ash/components/network/proxy/ui_proxy_config_service.h',
   '+chromeos/ash/components/network/managed_network_configuration_handler.h',

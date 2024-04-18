@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager_impl.h"
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h"
 #include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
