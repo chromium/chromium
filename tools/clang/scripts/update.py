@@ -18,6 +18,7 @@ import sys
 assert sys.version_info >= (3, 0), 'This script requires Python 3.'
 
 import argparse
+import glob
 import os
 import platform
 import shutil
@@ -277,7 +278,11 @@ def UpdatePackage(package_name, host_os, dir=LLVM_BUILD_DIR):
     os.remove(OLD_STAMP_FILE)
 
   expected_stamp = ','.join([PACKAGE_VERSION] + target_os)
-  if ReadStampFile(stamp_file) == expected_stamp:
+  # This file is created by first class GCS deps. If this file exists,
+  # clear the entire directory and download with this script instead.
+  if glob.glob(os.path.join(dir, '.*_is_first_class_gcs')):
+    RmTree(dir)
+  elif ReadStampFile(stamp_file) == expected_stamp:
     return 0
 
   # Updating the main clang package nukes the output dir. Any other packages
