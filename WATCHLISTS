@@ -1136,10 +1136,14 @@
                   'media/cdm/|' \
                   'third_party/widevine/cdm/'
     },
-    'enterprise_connectors': {
-        'filepath': 'chrome/browser/enterprise/connectors/|' \
-                    'chrome/browser/safe_browsing/cloud_content_scanning/|' \
-                    'components/enterprise/common/proto/'
+    'enterprise_data_protection': {
+      'filepath': 'chrome/browser/enterprise/connectors/|' \
+                  'chrome/browser/enterprise/data_controls/|' \
+                  'chrome/browser/enterprise/data_protection/|' \
+                  'chrome/browser/enterprise/watermark/|' \
+                  'chrome/browser/safe_browsing/cloud_content_scanning/|' \
+                  'components/enterprise/common/|' \
+                  'components/enterprise/data_controls/|'
     },
     'exo': {
       'filepath': 'components/exo',
@@ -2907,7 +2911,7 @@
              'jonmann+watch-eche@chromium.org',
              'pushi+watch-eche@google.com'],
     'eme': ['eme-reviews@chromium.org'],
-    'enterprise_connectors': ['dpr-eng@google.com'],
+    'enterprise_data_protection': ['dpr-eng@google.com'],
     'exo': ['crostini-ui+exo@chromium.org',
             'yhanada+watchexo@chromium.org'],
     'explore_sites': ['chili+watch@chromium.org',
