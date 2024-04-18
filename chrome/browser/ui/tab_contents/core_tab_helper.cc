@@ -56,9 +56,7 @@
 #include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/image/image_util.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -418,20 +416,6 @@ void CoreTabHelper::SearchByImageImpl(
       std::move(chrome_render_frame), src_url, additional_query_params,
       use_side_panel, is_image_translate, thumbnail_min_area,
       thumbnail_max_width, thumbnail_max_height));
-}
-
-std::unique_ptr<content::WebContents> CoreTabHelper::SwapWebContents(
-    std::unique_ptr<content::WebContents> new_contents,
-    bool did_start_load,
-    bool did_finish_load) {
-#if BUILDFLAG(IS_ANDROID)
-  TabAndroid* tab = TabAndroid::FromWebContents(web_contents());
-  return tab->SwapWebContents(std::move(new_contents), did_start_load,
-                              did_finish_load);
-#else
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  return browser->SwapWebContents(web_contents(), std::move(new_contents));
-#endif
 }
 
 // static

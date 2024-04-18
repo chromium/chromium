@@ -1948,17 +1948,6 @@ void OpenUpdateChromeDialog(Browser* browser) {
   }
 }
 
-void ToggleDistilledView(Browser* browser) {
-  auto* current_web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (dom_distiller::url_utils::IsDistilledPage(
-          current_web_contents->GetLastCommittedURL())) {
-    ReturnToOriginalPage(current_web_contents);
-  } else {
-    DistillCurrentPageAndView(current_web_contents);
-  }
-}
-
 bool CanRequestTabletSite(WebContents* current_tab) {
   return current_tab &&
          current_tab->GetController().GetLastCommittedEntry() != nullptr;

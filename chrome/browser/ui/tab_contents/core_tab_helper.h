@@ -105,11 +105,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   base::TimeTicks new_tab_start_time() const { return new_tab_start_time_; }
   int content_restrictions() const { return content_restrictions_; }
 
-  std::unique_ptr<content::WebContents> SwapWebContents(
-      std::unique_ptr<content::WebContents> new_contents,
-      bool did_start_load,
-      bool did_finish_load);
-
  private:
   explicit CoreTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<CoreTabHelper>;

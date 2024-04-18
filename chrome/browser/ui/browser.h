@@ -714,10 +714,6 @@ class Browser : public TabStripModelObserver,
   // Saving can be disabled e.g. for the DevTools window.
   bool CanSaveContents(content::WebContents* web_contents) const;
 
-  std::unique_ptr<content::WebContents> SwapWebContents(
-      content::WebContents* old_contents,
-      std::unique_ptr<content::WebContents> new_contents);
-
   // Returns whether favicon should be shown.
   bool ShouldDisplayFavicon(content::WebContents* web_contents) const;
 

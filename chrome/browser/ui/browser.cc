@@ -1571,32 +1571,6 @@ void Browser::UpdateInspectedWebContentsIfNecessary(
   }
 }
 
-std::unique_ptr<content::WebContents> Browser::SwapWebContents(
-    content::WebContents* old_contents,
-    std::unique_ptr<content::WebContents> new_contents) {
-  // Copies the background color and contents of the old WebContents to a new
-  // one that replaces it on the screen. This allows the new WebContents to
-  // have something to show before having loaded any contents. As a result, we
-  // avoid flashing white when navigating from a site with a dark background to
-  // another site with a dark background.
-  if (old_contents && new_contents) {
-    RenderWidgetHostView* old_view =
-        old_contents->GetPrimaryMainFrame()->GetView();
-    RenderWidgetHostView* new_view =
-        new_contents->GetPrimaryMainFrame()->GetView();
-    if (old_view && new_view)
-      new_view->TakeFallbackContentFrom(old_view);
-  }
-
-  // Clear the task manager tag. The TabStripModel will associate its own task
-  // manager tag.
-  task_manager::WebContentsTags::ClearTag(new_contents.get());
-
-  int index = tab_strip_model_->GetIndexOfWebContents(old_contents);
-  DCHECK_NE(TabStripModel::kNoTab, index);
-  return tab_strip_model_->ReplaceWebContentsAt(index, std::move(new_contents));
-}
-
 bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return source == tab_strip_model_->GetActiveWebContents();

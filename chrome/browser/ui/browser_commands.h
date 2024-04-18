@@ -233,7 +233,6 @@ void ToggleShowFullURLs(Browser* browser);
 void ShowAppMenu(Browser* browser);
 void ShowAvatarMenu(Browser* browser);
 void OpenUpdateChromeDialog(Browser* browser);
-void ToggleDistilledView(Browser* browser);
 bool CanRequestTabletSite(content::WebContents* current_tab);
 bool IsRequestingTabletSite(Browser* browser);
 void ToggleRequestTabletSite(Browser* browser);
