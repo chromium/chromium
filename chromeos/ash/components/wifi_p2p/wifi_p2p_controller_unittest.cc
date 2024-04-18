@@ -205,4 +205,31 @@ TEST_F(WifiP2PControllerTest,
   WifiP2PController::Shutdown();
 }
 
+TEST_F(WifiP2PControllerTest, GetP2PCapabilities) {
+  auto capabilities_dict =
+      base::Value::Dict().Set(shill::kP2PCapabilitiesGroupReadinessProperty,
+                              shill::kP2PCapabilitiesGroupReadinessReady);
+  capabilities_dict.Set(shill::kP2PCapabilitiesClientReadinessProperty,
+                        shill::kP2PCapabilitiesClientReadinessReady);
+  ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
+      shill::kP2PCapabilitiesProperty, base::Value(capabilities_dict.Clone()));
+
+  Init();
+
+  WifiP2PController::WifiP2PCapabilities result =
+      WifiP2PController::Get()->GetP2PCapabilities();
+  EXPECT_TRUE(result.is_owner_ready);
+  EXPECT_TRUE(result.is_client_ready);
+
+  capabilities_dict.Set(shill::kP2PCapabilitiesClientReadinessProperty,
+                        shill::kP2PCapabilitiesClientReadinessNotReady);
+  ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
+      shill::kP2PCapabilitiesProperty, base::Value(capabilities_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+
+  result = WifiP2PController::Get()->GetP2PCapabilities();
+  EXPECT_TRUE(result.is_owner_ready);
+  EXPECT_FALSE(result.is_client_ready);
+}
+
 }  // namespace ash

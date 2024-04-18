@@ -98,7 +98,11 @@ bool ValidateWifiDirectCredentails(const std::string& ssid,
 
 WifiP2PController::WifiP2PController() = default;
 
-WifiP2PController::~WifiP2PController() = default;
+WifiP2PController::~WifiP2PController() {
+  if (ShillManagerClient::Get()) {
+    ShillManagerClient::Get()->RemovePropertyChangedObserver(this);
+  }
+}
 
 void WifiP2PController::Init() {
   ShillManagerClient::Get()->SetProperty(
@@ -107,6 +111,11 @@ void WifiP2PController::Init() {
       base::BindOnce(&WifiP2PController::OnSetManagerPropertyFailure,
                      weak_ptr_factory_.GetWeakPtr(),
                      shill::kP2PAllowedProperty));
+
+  ShillManagerClient::Get()->AddPropertyChangedObserver(this);
+  ShillManagerClient::Get()->GetProperties(
+      base::BindOnce(&WifiP2PController::OnGetManagerProperties,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WifiP2PController::OnSetManagerPropertyFailure(
@@ -302,6 +311,56 @@ void WifiP2PController::ConnectToWifiP2PGroup(const std::string& ssid,
       base::BindOnce(&WifiP2PController::OnCreateOrConnectP2PGroupFailure,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback_split.second)));
+}
+
+const WifiP2PController::WifiP2PCapabilities&
+WifiP2PController::GetP2PCapabilities() const {
+  return wifi_p2p_capabilities_;
+}
+
+void WifiP2PController::OnPropertyChanged(const std::string& key,
+                                          const base::Value& value) {
+  if (key == shill::kP2PCapabilitiesProperty) {
+    NET_LOG(EVENT) << "WifiP2PController: Registered a property change event "
+                      "on kP2PCapabilitiesProperty";
+    UpdateP2PCapabilities(value.GetDict());
+  }
+}
+
+void WifiP2PController::OnGetManagerProperties(
+    std::optional<base::Value::Dict> properties) {
+  if (!properties) {
+    NET_LOG(ERROR)
+        << "WifiP2PController: Failed to get shill manager properties.";
+    return;
+  }
+  const base::Value::Dict* value =
+      properties->FindDict(shill::kP2PCapabilitiesProperty);
+  if (!value) {
+    NET_LOG(ERROR) << "WifiP2PController: No dictionary value for: "
+                   << shill::kP2PCapabilitiesProperty;
+    return;
+  }
+
+  UpdateP2PCapabilities(*value);
+}
+
+void WifiP2PController::UpdateP2PCapabilities(
+    const base::Value::Dict& capabilities) {
+  const std::string* group_readiness =
+      capabilities.FindString(shill::kP2PCapabilitiesGroupReadinessProperty);
+  const std::string* client_readiness =
+      capabilities.FindString(shill::kP2PCapabilitiesClientReadinessProperty);
+
+  if (group_readiness) {
+    wifi_p2p_capabilities_.is_owner_ready =
+        (*group_readiness == shill::kP2PCapabilitiesGroupReadinessReady);
+  }
+
+  if (client_readiness) {
+    wifi_p2p_capabilities_.is_client_ready =
+        (*client_readiness == shill::kP2PCapabilitiesClientReadinessReady);
+  }
 }
 
 }  // namespace ash

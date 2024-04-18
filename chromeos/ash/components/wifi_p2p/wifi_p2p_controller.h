@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 
 namespace ash {
 
@@ -22,7 +23,8 @@ namespace ash {
 // 4. Disconnect from a p2p group
 // 5. Fetch p2p group/client properties
 // 6. Tag socket to a WiFi direct group network rules.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
+    : public ShillPropertyChangedObserver {
  public:
   // Sets the global instance. Must be called before any calls to Get().
   static void Initialize();
@@ -44,6 +46,21 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController {
     uint32_t frequency;
     // Unique ID to identify the network in Patchpanel.
     int network_id;
+  };
+
+  struct WifiP2PCapabilities {
+    WifiP2PCapabilities(const bool is_owner_ready, const bool is_client_ready)
+        : is_owner_ready(is_owner_ready), is_client_ready(is_client_ready) {}
+
+    ~WifiP2PCapabilities() = default;
+
+    // Whether platform is ready for creating p2p GO interface without any
+    // concurrency conflict.
+    bool is_owner_ready;
+
+    // Whether platform is ready for creating p2p GC interface without any
+    // concurrency conflict.
+    bool is_client_ready;
   };
 
   enum OperationResult {
@@ -98,13 +115,21 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController {
                              std::optional<uint32_t> frequency,
                              WifiP2PGroupCallback callback);
 
+  void OnGetManagerProperties(std::optional<base::Value::Dict> properties);
+
+  const WifiP2PCapabilities& GetP2PCapabilities() const;
+
  private:
   WifiP2PController();
   WifiP2PController(const WifiP2PController&) = delete;
   WifiP2PController& operator=(const WifiP2PController&) = delete;
-  ~WifiP2PController();
+  ~WifiP2PController() override;
 
   void Init();
+
+  // ShillPropertyChangedObserver overrides
+  void OnPropertyChanged(const std::string& key,
+                         const base::Value& value) override;
 
   void OnCreateOrConnectP2PGroupSuccess(bool create_group,
                                         WifiP2PGroupCallback callback,
@@ -122,6 +147,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController {
   void OnSetManagerPropertyFailure(const std::string& property_name,
                                    const std::string& error_name,
                                    const std::string& error_message);
+
+  void UpdateP2PCapabilities(const base::Value::Dict& capabilities);
+
+  WifiP2PCapabilities wifi_p2p_capabilities_{false, false};
 
   base::WeakPtrFactory<WifiP2PController> weak_ptr_factory_{this};
 };
