@@ -81,11 +81,6 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
       base::OnceCallback<void(const base::Version&)> callback,
       bool is_installed);
 
-  // Called after gettin version from CrOSComponentManager::GetVersion.
-  void OnGetVersionFromComponentManager(
-      base::OnceCallback<void(const base::Version&)> callback,
-      const base::Version& version);
-
   // Called in Unload sequence.
   // Unloading hops threads. This is called after we check whether Lacros was
   // installed and maybe clean up the user directory.
