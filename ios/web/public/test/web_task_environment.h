@@ -30,13 +30,9 @@
 // WebTaskEnvironment lives. The destructor of WebTaskEnvironment runs remaining
 // TestWebThreads tasks and remaining BLOCK_SHUTDOWN thread pool tasks.
 //
-// Some tests using the IO thread expect a MessageLoopForIO. Passing IO_MAINLOOP
-// will use a MessageLoopForIO for the main MessageLoop. Most of the time, this
-// avoids needing to use a REAL_IO_THREAD.
-
-namespace base {
-class MessageLoop;
-}  // namespace base
+// Some tests using the IO thread expect a MessageLoopForIO. Passing
+// MainThreadType::IO will use a MessageLoopForIO for the main MessageLoop.
+// Most of the time, this avoids needing to use a IOThreadType::REAL_THREAD.
 
 namespace web {
 
@@ -44,15 +40,6 @@ class TestWebThread;
 
 class WebTaskEnvironment : public base::test::TaskEnvironment {
  public:
-  // Used to specify the type of MessageLoop that backs the UI thread, and
-  // which of the named WebThreads should be backed by a real
-  // threads. The UI thread is always the main thread in a unit test.
-  enum Options {
-    DEFAULT = 0,
-    IO_MAINLOOP = 1 << 0,
-    REAL_IO_THREAD = 1 << 1,
-  };
-
   // This type will determine which events will be pumped by the main
   // thread. Note that the default is different from TaskEnvironment.
   enum class MainThreadType {
@@ -89,11 +76,6 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
             base::trait_helpers::GetEnum<IOThreadType,  //
                                          IOThreadType::DEFAULT>(traits...),
             base::trait_helpers::NotATraitTag()) {}
-
-  explicit WebTaskEnvironment(
-      int options = Options::DEFAULT,
-      base::test::TaskEnvironment::TimeSource time_source =
-          base::test::TaskEnvironment::TimeSource::DEFAULT);
 
   WebTaskEnvironment(const WebTaskEnvironment&) = delete;
   WebTaskEnvironment& operator=(const WebTaskEnvironment&) = delete;

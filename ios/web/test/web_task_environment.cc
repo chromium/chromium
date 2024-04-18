@@ -31,17 +31,6 @@ base::test::TaskEnvironment::MainThreadType ConvertMainThreadType(
 
 }  // namespace
 
-WebTaskEnvironment::WebTaskEnvironment(
-    int options,
-    base::test::TaskEnvironment::TimeSource time_source)
-    : WebTaskEnvironment(
-          time_source,
-          ((options & IO_MAINLOOP) == IO_MAINLOOP ? MainThreadType::IO
-                                                  : MainThreadType::UI),
-          ((options & REAL_IO_THREAD) == REAL_IO_THREAD
-               ? IOThreadType::REAL_THREAD
-               : IOThreadType::DEFAULT)) {}
-
 WebTaskEnvironment::WebTaskEnvironment(TimeSource time_source,
                                        MainThreadType main_thread_type,
                                        IOThreadType io_thread_type,
