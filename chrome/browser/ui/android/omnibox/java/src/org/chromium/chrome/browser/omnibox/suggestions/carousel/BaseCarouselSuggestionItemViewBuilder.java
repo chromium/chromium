@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileView;
@@ -80,13 +79,12 @@ public class BaseCarouselSuggestionItemViewBuilder {
         applyViewBackground(tile);
 
         // Update the background color of the solid circle around the icon (typically a favicon).
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            Drawable modernizedBackground =
-                    OmniboxResourceProvider.getDrawable(
-                            context, R.drawable.tile_view_icon_background_modern_updated);
-            View iconBackground = tile.findViewById(R.id.tile_view_icon_background);
-            iconBackground.setBackground(modernizedBackground);
-        }
+        Drawable modernizedBackground =
+                OmniboxResourceProvider.getDrawable(
+                        context, R.drawable.tile_view_icon_background_modern_updated);
+        View iconBackground = tile.findViewById(R.id.tile_view_icon_background);
+        iconBackground.setBackground(modernizedBackground);
+
         return tile;
     }
 
