@@ -71,6 +71,16 @@ class SiteEngagementServiceAndroid;
 class SiteEngagementService : public KeyedService,
                               public SiteEngagementScoreProvider {
  public:
+  // Sets of URLs that are used to filter engagement details.
+  class URLSets {
+   public:
+    using Type = uint32_t;
+    // Includes http:// and https:// sites.
+    static constexpr Type HTTP = 1 << 0;
+    // Includes chrome:// and chrome-untrusted:// sites.
+    static constexpr Type WEB_UI = 1 << 1;
+  };
+
   // The provider allows code agnostic to the embedder (e.g. in
   // //components) to retrieve the SiteEngagementService. It should be set by
   // each embedder that uses the SiteEngagementService, via SetServiceProvider.
@@ -122,12 +132,13 @@ class SiteEngagementService : public KeyedService,
   static double GetScoreFromSettings(HostContentSettingsMap* settings,
                                      const GURL& origin);
 
-  // Retrieves all details. Can be called from a background thread. |now| must
-  // be the current timestamp. Takes a scoped_refptr to keep
-  // HostContentSettingsMap alive. See crbug.com/901287.
+  // Retrieves all details for origins within `scheme_set`. Can be called
+  // from a background thread. `now` must be the current timestamp. Takes a
+  // scoped_refptr to keep HostContentSettingsMap alive. See crbug.com/901287.
   static std::vector<mojom::SiteEngagementDetails> GetAllDetailsInBackground(
       base::Time now,
-      scoped_refptr<HostContentSettingsMap> map);
+      scoped_refptr<HostContentSettingsMap> map,
+      URLSets::Type url_set = URLSets::HTTP);
 
   // Returns whether |score| is at least the given |level| of engagement.
   static bool IsEngagementAtLeast(double score,
@@ -143,13 +154,15 @@ class SiteEngagementService : public KeyedService,
   // Returns the engagement level of |url|.
   blink::mojom::EngagementLevel GetEngagementLevel(const GURL& url) const;
 
-  // Returns an array of engagement score details for all origins which have
-  // a score, whether due to direct engagement, or other factors that cause
-  // an engagement bonus to be applied.
+  // Returns an array of engagement score details for all origins that are
+  // in `scheme_set` and have a score. A origin can have a score due to
+  // direct engagement, or other factors that cause an engagement bonus to
+  // be applied.
   //
   // Note that this method is quite expensive, so try to avoid calling it in
   // performance-critical code.
-  std::vector<mojom::SiteEngagementDetails> GetAllDetails() const;
+  std::vector<mojom::SiteEngagementDetails> GetAllDetails(
+      URLSets::Type url_set = URLSets::HTTP) const;
 
   // Update the engagement score of |url| for a notification interaction.
   void HandleNotificationInteraction(const GURL& url);

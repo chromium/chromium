@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/site_engagement/content/site_engagement_helper.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -115,6 +117,10 @@ WebUIContentsWrapper::WebUIContentsWrapper(
                                                   webui_name);
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
+  if (site_engagement::SiteEngagementService::IsEnabled()) {
+    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
+        web_contents_.get());
+  }
 
   if (webui_resizes_host_) {
     EnableAutoResizeForWebContents(web_contents_.get());

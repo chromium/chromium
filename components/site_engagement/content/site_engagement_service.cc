@@ -38,6 +38,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -110,9 +111,26 @@ mojom::SiteEngagementDetails GetDetailsImpl(base::Clock* clock,
   return CreateEngagementScoreImpl(clock, origin, map).GetDetails();
 }
 
+bool IsUrlInUrlSet(const GURL& url,
+                   SiteEngagementService::URLSets::Type url_set) {
+  if ((url_set & SiteEngagementService::URLSets::HTTP) &&
+      url.SchemeIsHTTPOrHTTPS()) {
+    return true;
+  }
+
+  if ((url_set & SiteEngagementService::URLSets::WEB_UI) &&
+      (url.SchemeIs(content::kChromeUIScheme) ||
+       url.SchemeIs(content::kChromeUIUntrustedScheme))) {
+    return true;
+  }
+
+  return false;
+}
+
 std::vector<mojom::SiteEngagementDetails> GetAllDetailsImpl(
     base::Clock* clock,
-    HostContentSettingsMap* map) {
+    HostContentSettingsMap* map,
+    SiteEngagementService::URLSets::Type url_set) {
   std::set<GURL> origins = GetEngagementOriginsFromContentSettings(map);
 
   std::vector<mojom::SiteEngagementDetails> details;
@@ -121,7 +139,9 @@ std::vector<mojom::SiteEngagementDetails> GetAllDetailsImpl(
   for (const GURL& origin : origins) {
     if (!origin.is_valid())
       continue;
-    details.push_back(GetDetailsImpl(clock, origin, map));
+    if (IsUrlInUrlSet(origin, url_set)) {
+      details.push_back(GetDetailsImpl(clock, origin, map));
+    }
   }
 
   return details;
@@ -204,10 +224,11 @@ double SiteEngagementService::GetScoreFromSettings(
 std::vector<mojom::SiteEngagementDetails>
 SiteEngagementService::GetAllDetailsInBackground(
     base::Time now,
-    scoped_refptr<HostContentSettingsMap> map) {
+    scoped_refptr<HostContentSettingsMap> map,
+    URLSets::Type url_set) {
   StoppedClock clock(now);
   base::AssertLongCPUWorkAllowed();
-  return GetAllDetailsImpl(&clock, map.get());
+  return GetAllDetailsImpl(&clock, map.get(), url_set);
 }
 
 // static
@@ -261,13 +282,14 @@ blink::mojom::EngagementLevel SiteEngagementService::GetEngagementLevel(
   return CreateEngagementScore(url).GetEngagementLevel();
 }
 
-std::vector<mojom::SiteEngagementDetails> SiteEngagementService::GetAllDetails()
-    const {
+std::vector<mojom::SiteEngagementDetails> SiteEngagementService::GetAllDetails(
+    URLSets::Type url_set) const {
   if (IsLastEngagementStale())
     CleanupEngagementScores(true);
   return GetAllDetailsImpl(
       clock_,
-      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context_));
+      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context_),
+      url_set);
 }
 
 void SiteEngagementService::HandleNotificationInteraction(const GURL& url) {
@@ -488,7 +510,8 @@ void SiteEngagementService::MaybeRecordMetrics() {
       base::BindOnce(&GetAllDetailsInBackground, now,
                      base::WrapRefCounted(
                          permissions::PermissionsClient::Get()->GetSettingsMap(
-                             browser_context_))),
+                             browser_context_)),
+                     URLSets::HTTP),
       base::BindOnce(&SiteEngagementService::RecordMetrics,
                      weak_factory_.GetWeakPtr()));
 }
@@ -520,7 +543,8 @@ void SiteEngagementService::RecordMetrics(
 }
 
 bool SiteEngagementService::ShouldRecordEngagement(const GURL& url) const {
-  return url.SchemeIsHTTPOrHTTPS();
+  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(content::kChromeUIScheme) ||
+         url.SchemeIs(content::kChromeUIUntrustedScheme);
 }
 
 base::Time SiteEngagementService::GetLastEngagementTime() const {

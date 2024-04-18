@@ -57,6 +57,7 @@ export class SiteEngagementAppElement extends CustomElement {
   engagementDetailsProvider: SiteEngagementDetailsProviderInterface =
       SiteEngagementDetailsProvider.getRemote();
   private updateInterval: number|null = null;
+  private showWebUiPages: boolean = false;
   private sortKey: string = 'totalScore';
   private sortReverse: boolean = true;
   private whenPopulatedResolver: PromiseResolver<void> = new PromiseResolver();
@@ -87,6 +88,12 @@ export class SiteEngagementAppElement extends CustomElement {
         this.renderTable();
       });
     }
+
+    const showWebUiPagesCheckbox =
+        this.getRequiredElement<HTMLInputElement>('#show-webui-pages-checkbox');
+    showWebUiPagesCheckbox.addEventListener(
+        'change',
+        () => this.handleShowWebUiPages(showWebUiPagesCheckbox.checked));
 
     this.updateEngagementTable();
     this.enableAutoupdate();
@@ -197,6 +204,14 @@ export class SiteEngagementAppElement extends CustomElement {
   }
 
   /**
+   * Show chrome:// and chrome-untrusted:// pages.
+   */
+  private handleShowWebUiPages(show: boolean) {
+    this.showWebUiPages = show;
+    this.renderTable();
+  }
+
+  /**
    * Remove all rows from the engagement table.
    */
   private clearTable() {
@@ -223,6 +238,12 @@ export class SiteEngagementAppElement extends CustomElement {
 
     assert(this.info);
     this.info.forEach((info) => {
+      if (!this.showWebUiPages &&
+          (info.origin.url.startsWith('chrome://') ||
+           info.origin.url.startsWith('chrome-untrusted://'))) {
+        return;
+      }
+
       // Round all scores to 2 decimal places.
       info.baseScore = roundScore(info.baseScore);
       info.installedBonus = roundScore(info.installedBonus);

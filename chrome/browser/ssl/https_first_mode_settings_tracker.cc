@@ -509,7 +509,8 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
           &site_engagement::SiteEngagementService::GetAllDetailsInBackground,
           clock_->Now(),
           base::WrapRefCounted(
-              HostContentSettingsMapFactory::GetForProfile(profile_))),
+              HostContentSettingsMapFactory::GetForProfile(profile_)),
+          site_engagement::SiteEngagementService::URLSets::HTTP),
       base::BindOnce(&HttpsFirstModeService::ProcessEngagedSitesList,
                      weak_factory_.GetWeakPtr(), std::move(done_callback)));
 }

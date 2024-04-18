@@ -5,9 +5,10 @@
 import 'chrome://site-engagement/app.js';
 
 import type {SiteEngagementAppElement} from 'chrome://site-engagement/app.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('SiteEngagement', function() {
+  const APP_URL = 'chrome://site-engagement/';
   const EXAMPLE_URL_1 = 'http://example.com/';
   const EXAMPLE_URL_2 = 'http://shmlexample.com/';
 
@@ -67,9 +68,23 @@ suite('SiteEngagement', function() {
     firstRow.scoreInput.value = '50';
     firstRow.scoreInput.dispatchEvent(new Event('change'));
 
-    const {info} =
+    let {info} =
         await app.engagementDetailsProvider.getSiteEngagementDetails();
+    info = info.filter(i => i.origin.url !== APP_URL);
     assertEquals(firstRow.origin.textContent, info[0]!.origin.url);
     assertEquals(50, info[0]!.baseScore);
+  });
+
+  test('show webui pages', async function() {
+    const showWebUiPagesCheckbox =
+        app.getRequiredElement<HTMLInputElement>(
+            '#show-webui-pages-checkbox');
+    showWebUiPagesCheckbox.click();
+    const {info} =
+        await app.engagementDetailsProvider.getSiteEngagementDetails();
+    assertTrue(info.some(i => i.origin.url === APP_URL));
+    assertDeepEquals(
+        [EXAMPLE_URL_1, EXAMPLE_URL_2, APP_URL].toSorted(),
+        getCells().map(c => c.origin.textContent).toSorted());
   });
 });

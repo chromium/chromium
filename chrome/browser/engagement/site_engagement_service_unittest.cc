@@ -1631,4 +1631,35 @@ TEST_F(SiteEngagementServiceTest, GetAllDetailsIncludesBonusOnlyScores) {
   EXPECT_EQ(2u, details.size());
 }
 
+TEST_F(SiteEngagementServiceTest, GetAllDetailsFilterByURLSets) {
+  GURL http_url("http://www.google.com/");
+  GURL webui_url("chrome://history");
+
+  EXPECT_EQ(0u, service_->GetAllDetails().size());
+
+  // Add a HTTP url.
+  service_->ResetBaseScoreForURL(http_url, 5);
+  // Add a WebUI url.
+  service_->ResetBaseScoreForURL(webui_url, 5);
+
+  {
+    // By default, GetAllDetails() returns http:// and https:// sites.
+    std::vector<mojom::SiteEngagementDetails> details =
+        service_->GetAllDetails();
+    EXPECT_EQ(1u, details.size());
+    EXPECT_EQ(http_url, details[0].origin);
+  }
+
+  {
+    // Request scores from both HTTP and WebUI sites.
+    std::vector<mojom::SiteEngagementDetails> details = service_->GetAllDetails(
+        site_engagement::SiteEngagementService::URLSets::HTTP |
+        site_engagement::SiteEngagementService::URLSets::WEB_UI);
+    EXPECT_EQ(2u, details.size());
+    EXPECT_TRUE(http_url == details[0].origin || http_url == details[1].origin);
+    EXPECT_TRUE(webui_url == details[0].origin ||
+                webui_url == details[1].origin);
+  }
+}
+
 }  // namespace site_engagement
