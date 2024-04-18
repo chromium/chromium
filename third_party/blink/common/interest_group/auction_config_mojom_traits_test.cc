@@ -148,6 +148,25 @@ TEST(AuctionConfigMojomTraitsTest, SellerDecisionUrlMismatch) {
   EXPECT_FALSE(SerializeAndDeserialize(auction_config));
 }
 
+// Tests that decision logic GURLs exceeding max length can be passed through
+// Mojo and will be converted into invalid, empty GURLs, and passing in invalid
+// URLs works as well.
+TEST(AuctionConfigMojomTraitsTest, SellerDecisionUrlTooLong) {
+  GURL seller_url =
+      GURL("https://seller.test/" + std::string(url::kMaxURLChars, '1'));
+  AuctionConfig auction_config = CreateBasicAuctionConfig(seller_url);
+
+  AuctionConfig auction_config_clone;
+  bool success =
+      mojo::test::SerializeAndDeserialize<blink::mojom::AuctionAdConfig>(
+          auction_config, auction_config_clone);
+  ASSERT_TRUE(success);
+  EXPECT_EQ(auction_config.seller, auction_config_clone.seller);
+  EXPECT_EQ(GURL(), auction_config_clone.decision_logic_url);
+
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config_clone));
+}
+
 TEST(AuctionConfigMojomTraitsTest, SellerScoringSignalsUrlMismatch) {
   AuctionConfig auction_config =
       CreateBasicAuctionConfig(GURL("http://seller.test"));

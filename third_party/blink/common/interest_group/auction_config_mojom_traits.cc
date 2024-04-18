@@ -385,12 +385,21 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
     return false;
   }
 
-  // `decision_logic_url` and, if present, `trusted_scoring_signals_url` must
-  // share the seller's origin, and must be HTTPS. Need to explicitly check the
-  // scheme because some non-HTTPS URLs may have HTTPS origins (e.g., blob
-  // URLs). Trusted signals URLs also have additional restrictions (no query,
-  // etc).
-  if ((out->decision_logic_url &&
+  // If present and valid, `decision_logic_url` and
+  // `trusted_scoring_signals_url` must share the seller's origin, and must be
+  // HTTPS. Need to explicitly check the scheme because some non-HTTPS URLs may
+  // have HTTPS origins (e.g., blob URLs). Trusted signals URLs also have
+  // additional restrictions (no query, etc).
+  //
+  // Invalid GURLs are allowed through because even though the renderer code
+  // doesn't let invalid GURLs through, trying to pass a too-long GURL through
+  // Mojo results in an invalid GURL on the other side. Rather than preventing
+  // that from happening through, GURL consumers generally just let such GURLs
+  // flow to the network stack, where they return network errors, so we copy
+  // that behavior with auctions. Even when one component of an auction has
+  // invalid GURLs due to this, other components may not, and it's possible
+  // there's a winner.
+  if ((out->decision_logic_url && out->decision_logic_url->is_valid() &&
        !out->IsHttpsAndMatchesSellerOrigin(*out->decision_logic_url)) ||
       (out->trusted_scoring_signals_url &&
        !out->IsValidTrustedScoringSignalsURL(

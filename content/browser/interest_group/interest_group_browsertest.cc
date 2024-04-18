@@ -410,17 +410,16 @@ class NetworkResponder {
   NetworkResponder(const NetworkResponder&) = delete;
   NetworkResponder& operator=(const NetworkResponder&) = delete;
 
-  void RegisterNetworkResponse(
-      const std::string& url_path,
-      const std::string& body,
-      const std::string& mime_type = "application/json",
-      ResponseHeaders extra_response_headers = {}) {
+  void RegisterNetworkResponse(const std::string& url_path,
+                               std::string_view body,
+                               std::string_view mime_type = "application/json",
+                               ResponseHeaders extra_response_headers = {}) {
     base::AutoLock auto_lock(response_map_lock_);
     Response response;
     response.body = body;
     response.mime_type = mime_type;
     response.extra_response_headers = std::move(extra_response_headers);
-    response_map_[url_path] = response;
+    response_map_[url_path] = std::move(response);
   }
 
   struct SubresourceResponse {
@@ -5438,6 +5437,156 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, origin, url, url_with_pass)));
   WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAuctionWithTooLongDecisionLogicUrl) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+
+  // Create almost-too-long and too-long seller script URLs.
+  std::string almost_too_long_seller_url_base = origin.GetURL().spec();
+  GURL almost_too_long_seller_url = GURL(
+      almost_too_long_seller_url_base +
+      std::string(url::kMaxURLChars - almost_too_long_seller_url_base.size(),
+                  '1'));
+  GURL too_long_seller_url = GURL(almost_too_long_seller_url.spec() + "2");
+  ASSERT_EQ(too_long_seller_url.spec().size(), url::kMaxURLChars + 1);
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Join an interest group. All that matters is it will bid, and has an ad.
+  ASSERT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        origin.host(), "/interest_group/bidding_logic.js"))
+                    .SetAds({{{url, /*metadata=*/std::nullopt}}})
+                    .Build()));
+
+  // Register a response for both the almost too long seller path and the too
+  // long seller path. Latter should never be requested, but if it is, the
+  // server should respond with a valid script, to make this test fail if that
+  // script is ever unexpectedly download and run.
+  const std::string_view kDecisionLogicScript = R"(
+      function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                       browserSignals) {
+        return bid;
+      };)";
+  network_responder_->RegisterNetworkResponse(almost_too_long_seller_url.path(),
+                                              kDecisionLogicScript,
+                                              "application/javascript");
+  network_responder_->RegisterNetworkResponse(too_long_seller_url.path(),
+                                              kDecisionLogicScript,
+                                              "application/javascript");
+
+  EXPECT_EQ(url, RunAuctionAndWaitForUrl(
+                     JsReplace(R"({
+      seller: $1,
+      decisionLogicURL: $2,
+      interestGroupBuyers: [$1]
+    })",
+                               origin, almost_too_long_seller_url)));
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicURL: $2,
+      interestGroupBuyers: [$1]
+    })",
+                                                 origin, too_long_seller_url)));
+}
+
+// Run two multi-seller auctions with two components. In the first auction, both
+// components have too-long decision logic URLs, and there should be no winner.
+// In the second auction, one component has a too-long URL. There should be a
+// winner.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunComponentAuctionWithTooLongDecisionLogicUrl) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+
+  // Create too-long seller script URL.
+  std::string too_long_seller_url_base = origin.GetURL().spec();
+  GURL too_long_seller_url =
+      GURL(too_long_seller_url_base +
+           std::string(url::kMaxURLChars - too_long_seller_url_base.size() + 1,
+                       '1'));
+  ASSERT_EQ(too_long_seller_url.spec().size(), url::kMaxURLChars + 1);
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Join an interest group. All that matters is it will bid, and has an ad.
+  ASSERT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        origin.host(), "/interest_group/bidding_logic.js"))
+                    .SetAds({{{url, /*metadata=*/std::nullopt}}})
+                    .Build()));
+
+  // Run an auction where both component auctions have too-long decision logic
+  // URLs. There should be no winner.
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        auctionSignals: "bidderAllowsComponentAuction,"+
+                        "sellerAllowsComponentAuction",
+        componentAuctions:
+            [{
+              seller: $1,
+              decisionLogicURL: $3,
+              interestGroupBuyers: [$1],
+              auctionSignals: "bidderAllowsComponentAuction,"+
+                              "sellerAllowsComponentAuction"
+            },
+            {
+              seller: $1,
+              decisionLogicURL: $3,
+              interestGroupBuyers: [$1],
+              auctionSignals: "bidderAllowsComponentAuction,"+
+                              "sellerAllowsComponentAuction"
+            }]
+      })",
+      origin,
+      embedded_https_test_server().GetURL(origin.host(),
+                                          "/interest_group/decision_logic.js"),
+      too_long_seller_url);
+  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
+
+  // Run an auction where only one component auction has a too-long decision
+  // logic URLs. There should be a winner from the other component auction.
+  std::string auction_config2 = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        auctionSignals: "bidderAllowsComponentAuction,"+
+                        "sellerAllowsComponentAuction",
+        componentAuctions:
+            [{
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1],
+              auctionSignals: "bidderAllowsComponentAuction,"+
+                              "sellerAllowsComponentAuction"
+            },
+            {
+              seller: $1,
+              decisionLogicURL: $3,
+              interestGroupBuyers: [$1],
+              auctionSignals: "bidderAllowsComponentAuction,"+
+                              "sellerAllowsComponentAuction"
+            }]
+      })",
+      origin,
+      embedded_https_test_server().GetURL(origin.host(),
+                                          "/interest_group/decision_logic.js"),
+      too_long_seller_url);
+  EXPECT_EQ(url, RunAuctionAndWaitForUrl(auction_config2));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -11586,7 +11735,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, CrossOrigin) {
   network_responder_->RegisterNetworkResponse(seller_logic_url.path(), R"(
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  // Reject bits if trustedScoringSignals is not received.
+  // Reject bids if trustedScoringSignals is not received.
   if (trustedScoringSignals.renderURL[browserSignals.renderURL] === "foo")
     return bid;
   return 0;
