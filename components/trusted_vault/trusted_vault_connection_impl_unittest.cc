@@ -83,6 +83,7 @@ trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
 constexpr char kTestSerializedWrappedPIN[] = "wrapped PIN";
 constexpr char kTestMemberPublicKey[] = "public key";
 constexpr int kTestKeyVersion = 100;
+constexpr int kTestGPMExpirySeconds = 1000000;
 
 enum class Member {
   kPhysical,
@@ -126,9 +127,12 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
         member->set_member_type(trusted_vault_pb::SecurityDomainMember::
                                     MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN);
         member->mutable_member_metadata()->set_usable_for_retrieval(true);
-        member->mutable_member_metadata()
-            ->mutable_google_password_manager_pin_metadata()
-            ->set_encrypted_pin_hash(kTestSerializedWrappedPIN);
+        auto* gpm_metadata =
+            member->mutable_member_metadata()
+                ->mutable_google_password_manager_pin_metadata();
+        gpm_metadata->mutable_expiration_time()->set_seconds(
+            kTestGPMExpirySeconds);
+        gpm_metadata->set_encrypted_pin_hash(kTestSerializedWrappedPIN);
         break;
     }
   }
@@ -479,7 +483,8 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1234),
-          key_pair->public_key(), GpmPinMetadata(old_public_key, metadata),
+          key_pair->public_key(),
+          GpmPinMetadata(old_public_key, metadata, /*expiry=*/base::Time()),
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
 
@@ -1100,8 +1105,9 @@ TEST_P(TrustedVaultConnectionImplTest,
 TEST_P(TrustedVaultConnectionImplTest,
        DownloadAuthenticationFactorsRegistrationState_Cases) {
   using State = DownloadAuthenticationFactorsRegistrationStateResult::State;
-  const GpmPinMetadata gpm_pin_metadata(kTestMemberPublicKey,
-                                        kTestSerializedWrappedPIN);
+  const GpmPinMetadata gpm_pin_metadata(
+      kTestMemberPublicKey, kTestSerializedWrappedPIN,
+      /*expiry=*/base::Time::FromTimeT(kTestGPMExpirySeconds));
   const struct TestCase {
     // responses contains the set of security domain members included in each
     // page of results from the "server".

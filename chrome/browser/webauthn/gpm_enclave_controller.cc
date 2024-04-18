@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -377,7 +378,12 @@ void GPMEnclaveController::OnAccountStateDownloaded(
 
   FIDO_LOG(EVENT) << "Download account state result: " << state_str
                   << ", key_version: " << result.key_version.value_or(0)
-                  << ", has PIN: " << result.gpm_pin_metadata.has_value();
+                  << ", has PIN: " << result.gpm_pin_metadata.has_value()
+                  << ", expiry: "
+                  << (result.gpm_pin_metadata.has_value()
+                          ? base::TimeFormatAsIso8601(
+                                result.gpm_pin_metadata->expiry)
+                          : "<none>");
 
   if (result.gpm_pin_metadata) {
     pin_metadata_ = std::move(result.gpm_pin_metadata);

@@ -626,7 +626,8 @@ TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
-                                    GetTestWrappedPIN().SerializeAsString()),
+                                    GetTestWrappedPIN().SerializeAsString(),
+                                    /*expiry=*/base::Time()),
       add_callback.callback()));
   add_callback.WaitForCallback();
 
@@ -652,7 +653,8 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
   // A wrapped PIN that isn't a valid protobuf should be rejected.
   EXPECT_FALSE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
-                                    "nonsense wrapped PIN"),
+                                    "nonsense wrapped PIN",
+                                    /*expiry=*/base::Time()),
       add_callback.callback()));
 
   // A valid protobuf, but which fails invariants, should be rejected.
@@ -660,7 +662,8 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
   wrapped_pin.set_wrapped_pin("too short");
   EXPECT_FALSE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
-                                    wrapped_pin.SerializeAsString()),
+                                    wrapped_pin.SerializeAsString(),
+                                    /*expiry=*/base::Time()),
       add_callback.callback()));
 }
 
@@ -805,7 +808,8 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceToAccount) {
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
-                                    GetTestWrappedPIN().SerializeAsString()),
+                                    GetTestWrappedPIN().SerializeAsString(),
+                                    /*expiry=*/base::Time()),
       add_callback.callback()));
   add_callback.WaitForCallback();
   EXPECT_FALSE(std::get<0>(add_callback.result().value()));

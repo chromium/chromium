@@ -1917,7 +1917,8 @@ class EnclaveManager::StateMachine {
         *primary_account_info_, std::move(*member_keys_source),
         *secure_box_pub_key,
         trusted_vault::GpmPinMetadata(previous_pin_public_key,
-                                      std::move(wrapped_pin_proto_serialized)),
+                                      std::move(wrapped_pin_proto_serialized),
+                                      /*expiry=*/base::Time()),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
   }

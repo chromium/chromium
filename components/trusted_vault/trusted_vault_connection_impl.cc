@@ -257,6 +257,11 @@ void ProcessJoinSecurityDomainsResponse(
       *last_key_version);
 }
 
+base::Time ToTime(const trusted_vault_pb::Timestamp& proto) {
+  return base::Time::UnixEpoch() + base::Seconds(proto.seconds()) +
+         base::Nanoseconds(proto.nanos());
+}
+
 void ProcessDownloadKeysResponse(
     std::unique_ptr<DownloadKeysResponseHandler> response_handler,
     TrustedVaultConnection::DownloadNewKeysCallback callback,
@@ -403,10 +408,11 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
       if (member.member_type() == trusted_vault_pb::SecurityDomainMember::
                                       MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN &&
           member.member_metadata().has_google_password_manager_pin_metadata()) {
+        const auto& pin_metadata =
+            member.member_metadata().google_password_manager_pin_metadata();
         result_.gpm_pin_metadata.emplace(
-            member.public_key(), member.member_metadata()
-                                     .google_password_manager_pin_metadata()
-                                     .encrypted_pin_hash());
+            member.public_key(), pin_metadata.encrypted_pin_hash(),
+            ToTime(pin_metadata.expiration_time()));
       }
     }
 

@@ -639,8 +639,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   registration_state_result.key_version = kSecretVersion;
   registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
-      "public key", EnclaveManager::MakeWrappedPINForTesting(
-                        kSecurityDomainSecret, "123456"));
+      "public key",
+      EnclaveManager::MakeWrappedPINForTesting(kSecurityDomainSecret, "123456"),
+      /*expiry=*/base::Time::Now() + base::Seconds(10000));
   SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
 
   security_domain_service_->pretend_there_are_members();

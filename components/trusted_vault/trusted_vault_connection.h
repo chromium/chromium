@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -82,7 +83,8 @@ enum class TrustedVaultRecoverabilityStatus {
 // a trusted vault.
 struct GpmPinMetadata {
   GpmPinMetadata(std::optional<std::string> public_key,
-                 std::string wrapped_pin);
+                 std::string wrapped_pin,
+                 base::Time expiry);
   GpmPinMetadata(const GpmPinMetadata&);
   GpmPinMetadata& operator=(const GpmPinMetadata&);
   GpmPinMetadata(GpmPinMetadata&&);
@@ -99,6 +101,9 @@ struct GpmPinMetadata {
   std::optional<std::string> public_key;
   // The encrypted PIN value, for validation.
   std::string wrapped_pin;
+  // The time when the underlying recovery-key-store entry will expire. Ignored
+  // when uploading.
+  base::Time expiry;
 };
 
 // The result of calling
