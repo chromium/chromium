@@ -127,6 +127,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="MonoAudio"/>
     <variant name="OnScreenKeyboard"/>
     <variant name="OOBEStartupSound"/>
+    <variant name="PdfOcr"/>
     <variant name="ReducedAnimations"/>
     <variant name="SelectToSpeak"/>
     <variant name="SpokenFeedback" summary="ChromeVox Spoken Feedback"/>

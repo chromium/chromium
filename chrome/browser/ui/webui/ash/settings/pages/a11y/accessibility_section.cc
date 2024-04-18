@@ -1432,6 +1432,11 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Accessibility.ReducedAnimations.Enabled",
           value.GetBool());
       return true;
+    case mojom::Setting::kPdfOcrOnOff:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.PdfOcr.Enabled",
+          value.GetBool());
+      return true;
     default:
       return false;
   }
