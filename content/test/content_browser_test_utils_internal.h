@@ -326,9 +326,6 @@ class ShowPopupWidgetWaiter
   int32_t routing_id_ = MSG_ROUTING_NONE;
   int32_t process_id_ = 0;
   raw_ptr<RenderFrameHostImpl> frame_host_;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  raw_ptr<WebContentsImpl> web_contents_;
-#endif
 };
 
 // This observer waits until WebContentsObserver::OnRendererUnresponsive

@@ -161,12 +161,6 @@ RenderWidgetHostImpl* RenderFrameHostDelegate::CreateNewPopupWidget(
   return nullptr;
 }
 
-bool RenderFrameHostDelegate::ShowPopupMenu(
-    RenderFrameHostImpl* render_frame_host,
-    const gfx::Rect& bounds) {
-  return false;
-}
-
 std::vector<RenderFrameHostImpl*>
 RenderFrameHostDelegate::GetActiveTopLevelDocumentsInBrowsingContextGroup(
     RenderFrameHostImpl* render_frame_host) {

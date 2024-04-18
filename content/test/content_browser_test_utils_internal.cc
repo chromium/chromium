@@ -582,8 +582,7 @@ ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
                                              RenderFrameHostImpl* frame_host)
     : frame_host_(frame_host) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  web_contents_ = web_contents;
-  web_contents_->set_show_popup_menu_callback_for_testing(base::BindOnce(
+  frame_host->set_show_popup_menu_callback_for_testing(base::BindOnce(
       &ShowPopupWidgetWaiter::ShowPopupMenu, base::Unretained(this)));
 #endif
   frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
@@ -605,7 +604,7 @@ void ShowPopupWidgetWaiter::Wait() {
 
 void ShowPopupWidgetWaiter::Stop() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  web_contents_->set_show_popup_menu_callback_for_testing(base::NullCallback());
+  frame_host_->set_show_popup_menu_callback_for_testing(base::NullCallback());
 #endif
   frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
   frame_host_ = nullptr;

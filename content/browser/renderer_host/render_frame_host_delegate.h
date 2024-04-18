@@ -600,13 +600,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget);
 
-  // Returns true if the popup is shown through WebContentsObserver. Else, the
-  // Android / Mac flavors of `RenderViewHostDelegateView` will show the popup
-  // menu correspondingly, and `WebContentsViewChildFrame` will show the popup
-  // for Mac's GuestView.
-  virtual bool ShowPopupMenu(RenderFrameHostImpl* render_frame_host,
-                             const gfx::Rect& bounds);
-
   virtual void DidLoadResourceFromMemoryCache(
       RenderFrameHostImpl* source,
       const GURL& url,

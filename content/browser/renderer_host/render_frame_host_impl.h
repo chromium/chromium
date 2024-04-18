@@ -2372,6 +2372,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void TextSelectionChanged(const std::u16string& text,
                             uint32_t offset,
                             const gfx::Range& range) override;
+  void set_show_popup_menu_callback_for_testing(
+      base::OnceCallback<void(const gfx::Rect&)> callback) {
+    show_popup_menu_callback_for_testing_ = std::move(callback);
+  }
   void ShowPopupMenu(
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
@@ -5172,6 +5176,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // in the renderer process with a sequential value to guarantee that each
   // nonce returned is unique.
   base::Uuid base_auction_nonce_;
+
+  base::OnceCallback<void(const gfx::Rect&)>
+      show_popup_menu_callback_for_testing_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

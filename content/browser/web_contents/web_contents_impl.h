@@ -821,8 +821,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
       override;
-  bool ShowPopupMenu(RenderFrameHostImpl* render_frame_host,
-                     const gfx::Rect& bounds) override;
   void DidLoadResourceFromMemoryCache(
       RenderFrameHostImpl* source,
       const GURL& url,
@@ -1400,11 +1398,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     gfx::NativeView view;
   };
   CaptureTarget GetCaptureTarget();
-
-  void set_show_popup_menu_callback_for_testing(
-      base::OnceCallback<void(const gfx::Rect&)> callback) {
-    show_popup_menu_callback_ = std::move(callback);
-  }
 
   // Sets the value in tests to ensure expected ordering and correctness.
   void set_minimum_delay_between_loading_updates_for_testing(
@@ -2428,8 +2421,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   base::TimeTicks last_back_navigation_hint_time_ = base::TimeTicks::Min();
 
   viz::FrameSinkId xr_render_target_;
-
-  base::OnceCallback<void(const gfx::Rect&)> show_popup_menu_callback_;
 
   // Allows the app in the current WebContents to opt-in to exposing
   // information to apps that capture it.

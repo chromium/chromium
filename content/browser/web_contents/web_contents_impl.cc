@@ -10193,28 +10193,6 @@ void WebContentsImpl::DidChangeScreenOrientation() {
   last_screen_orientation_change_time_ = ui::EventTimeForNow();
 }
 
-// TODO(crbug.com/328100331): This method should be renamed since it doesn't
-// actually show a popup menu.
-bool WebContentsImpl::ShowPopupMenu(RenderFrameHostImpl* render_frame_host,
-                                    const gfx::Rect& bounds) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ShowPopupMenu",
-                        "render_frame_host", render_frame_host);
-
-  if (visibility_ != Visibility::VISIBLE) {
-    // Don't create popups for hidden tabs. http://crbug.com/1521345
-    // Returning true here makes RenderFrameHostImpl::ShowPopupMenu abort
-    // before showing a popup.
-    return true;
-  }
-
-  DCHECK(render_frame_host->IsActive());
-  if (show_popup_menu_callback_) {
-    std::move(show_popup_menu_callback_).Run(bounds);
-    return true;
-  }
-  return false;
-}
-
 void WebContentsImpl::UpdateWebContentsVisibility(Visibility visibility) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::UpdateWebContentsVisibility",

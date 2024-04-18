@@ -7869,7 +7869,14 @@ void RenderFrameHostImpl::ShowPopupMenu(
     return;
   }
 
-  if (delegate()->ShowPopupMenu(this, bounds)) {
+  if (delegate()->GetVisibility() != Visibility::VISIBLE) {
+    // Don't create popups for hidden tabs. https://crbug.com/1521345
+    send_did_cancel(std::move(popup_client));
+    return;
+  }
+
+  if (show_popup_menu_callback_for_testing_) {
+    std::move(show_popup_menu_callback_for_testing_).Run(bounds);
     send_did_cancel(std::move(popup_client));
     return;
   }
