@@ -1677,8 +1677,12 @@ void Widget::OnNativeWidgetDestroying() {
 }
 
 void Widget::OnNativeWidgetDestroyed() {
-  for (WidgetObserver& observer : observers_)
+  // Mark the widget as closed so that DeleteDelegate() won't call
+  // InvalidateLayout().
+  widget_closed_ = true;
+  for (WidgetObserver& observer : observers_) {
     observer.OnWidgetDestroyed(this);
+  }
 
   if (widget_delegate_) {
     widget_delegate_->DeleteDelegate();
