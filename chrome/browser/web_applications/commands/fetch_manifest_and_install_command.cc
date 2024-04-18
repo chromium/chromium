@@ -470,9 +470,9 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   GetMutableDebugValue().Set("skip_page_favicons_on_initial_download",
                              skip_page_favicons_on_initial_download_);
 
-  app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id);
   command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(noop_lock_), {app_id_},
+      std::move(noop_lock_),
+      {GenerateAppIdFromManifestId(web_app_info_->manifest_id)},
       base::BindOnce(
           &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
           weak_ptr_factory_.GetWeakPtr()));
@@ -602,6 +602,8 @@ void FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog(
     }
   }
 
+  CHECK(web_app_info_);
+
   // In kUseFallbackInfoWhenNotInstallable mode, we skip favicons if the
   // manifest looks valid. However, if the icon download fails, we are no longer
   // installable & thus fall back to favicons.
@@ -623,8 +625,6 @@ void FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog(
             weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-
-  DCHECK(web_app_info_);
 
   PopulateProductIcons(web_app_info_.get(), &icons_map);
   PopulateOtherIcons(web_app_info_.get(), icons_map);
@@ -709,6 +709,9 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
     should_reparent_tab = false;
   }
 #endif
+  if (install_surface_ == webapps::WebappInstallSource::DEVTOOLS) {
+    should_reparent_tab = false;
+  }
 
   if (should_reparent_tab && can_reparent_tab &&
       (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser)) {

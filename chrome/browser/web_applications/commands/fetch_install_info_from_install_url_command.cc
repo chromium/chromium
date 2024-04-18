@@ -30,12 +30,6 @@ std::ostream& operator<<(std::ostream& os, FetchInstallInfoResult result) {
       return os << "kAppInfoObtained";
     case FetchInstallInfoResult::kWebContentsDestroyed:
       return os << "kWebContentsDestroyed";
-    case FetchInstallInfoResult::kInstallUrlInvalid:
-      return os << "kInstallUrlInvalid";
-    case FetchInstallInfoResult::kManifestIdInvalid:
-      return os << "kManifestIdInvalid";
-    case FetchInstallInfoResult::kParentManifestIdInvalid:
-      return os << "kParentManifestIdInvalid";
     case FetchInstallInfoResult::kUrlLoadingFailure:
       return os << "kUrlLoadingFailure";
     case FetchInstallInfoResult::kNoValidManifest:
@@ -98,18 +92,6 @@ void FetchInstallInfoFromInstallUrlCommand::StartWithLock(
     CompleteCommandAndSelfDestruct(
         FetchInstallInfoResult::kWebContentsDestroyed,
         /*install_info=*/nullptr);
-    return;
-  }
-
-  if (!install_url_.is_valid()) {
-    CompleteCommandAndSelfDestruct(FetchInstallInfoResult::kInstallUrlInvalid,
-                                   /*install_info=*/nullptr);
-    return;
-  }
-
-  if (!manifest_id_.is_valid()) {
-    CompleteCommandAndSelfDestruct(FetchInstallInfoResult::kManifestIdInvalid,
-                                   /*install_info=*/nullptr);
     return;
   }
 

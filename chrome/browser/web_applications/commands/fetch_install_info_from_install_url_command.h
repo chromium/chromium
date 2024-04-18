@@ -24,9 +24,6 @@ class WebAppDataRetriever;
 enum class FetchInstallInfoResult {
   kAppInfoObtained,
   kWebContentsDestroyed,
-  kInstallUrlInvalid,
-  kManifestIdInvalid,
-  kParentManifestIdInvalid,
   kUrlLoadingFailure,
   kNoValidManifest,
   kWrongManifestId,
@@ -74,9 +71,9 @@ class FetchInstallInfoFromInstallUrlCommand
 
   std::unique_ptr<SharedWebContentsLock> lock_;
 
-  webapps::ManifestId manifest_id_;
-  GURL install_url_;
-  std::optional<webapps::ManifestId> parent_manifest_id_;
+  const webapps::ManifestId manifest_id_;
+  const GURL install_url_;
+  const std::optional<webapps::ManifestId> parent_manifest_id_;
 
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;

@@ -68,9 +68,7 @@ class InstallFromInfoCommand
 
   raw_ref<Profile> profile_;
 
-  webapps::ManifestId manifest_id_;
-  webapps::AppId app_id_;
-  std::vector<webapps::AppId> apps_or_extensions_to_uninstall_;
+  const webapps::AppId app_id_;
 
   std::unique_ptr<AppLock> lock_;
 

@@ -52,9 +52,9 @@ InstallFromInfoCommand::InstallFromInfoCommand(
                           webapps::InstallResultCode::
                               kCancelledOnWebAppProviderShuttingDown)),
       profile_(*profile),
-      manifest_id_(GetManifestIdWithBackup(*install_info)),
       app_id_(GetAppIdWithBackup(*install_info)) {
-  GetMutableDebugValue().Set("manifest_id", manifest_id_.spec());
+  GetMutableDebugValue().Set("manifest_id",
+                             GetManifestIdWithBackup(*install_info).spec());
   GetMutableDebugValue().Set("app_id", app_id_);
   install_from_info_job_ = std::make_unique<InstallFromInfoJob>(
       profile, *GetMutableDebugValue().EnsureDict("install_from_info_job"),
