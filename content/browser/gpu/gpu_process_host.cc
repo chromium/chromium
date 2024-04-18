@@ -291,6 +291,7 @@ static const char* const kSwitchNames[] = {
     switches::kOzonePlatform,
     switches::kDisableExplicitDmaFences,
     switches::kOzoneDumpFile,
+    switches::kEnableNativeGpuMemoryBuffers,
 #endif
 #if BUILDFLAG(IS_LINUX)
     switches::kX11Display,
