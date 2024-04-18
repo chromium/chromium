@@ -93,7 +93,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.ATTRIBUTION_BEHAVIOR,
                 Features.WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
                 Features.MUTE_AUDIO,
-                Features.WEB_AUTHENTICATION + Features.DEV_SUFFIX,
+                Features.WEB_AUTHENTICATION,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
