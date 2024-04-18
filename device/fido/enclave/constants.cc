@@ -87,6 +87,7 @@ const char kRequestWrappedSecretKey[] = "wrapped_secret";
 const char kRequestSecretKey[] = "secret";
 const char kRequestCounterIDKey[] = "counter_id";
 const char kRequestVaultHandleWithoutTypeKey[] = "vault_handle_without_type";
+const char kRequestWrappedPINDataKey[] = "wrapped_pin_data";
 
 const char kResponseSuccessKey[] = "ok";
 const char kResponseErrorKey[] = "err";
@@ -98,6 +99,7 @@ const char kRecoveryKeyStoreWrapCommandName[] = "recovery_key_store/wrap";
 const char kPasskeysWrapPinCommandName[] = "passkeys/wrap_pin";
 const char kRecoveryKeyStoreWrapAsMemberCommandName[] =
     "recovery_key_store/wrap_as_member";
+const char kRecoveryKeyStoreRewrapCommandName[] = "recovery_key_store/rewrap";
 
 const char kRegisterPubKeysKey[] = "pub_keys";
 const char kRegisterDeviceIdKey[] = "device_id";

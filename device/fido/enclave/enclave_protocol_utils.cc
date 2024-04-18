@@ -50,7 +50,6 @@ const size_t kCredentialIdSize = 16;
 const char kRequestDataKey[] = "request";
 const char kRequestClientDataJSONKey[] = "client_data_json";
 const char kRequestClaimedPINKey[] = "claimed_pin";
-const char kRequestWrappedPINDataKey[] = "wrapped_pin_data";
 
 // JSON keys for GetAssertion request fields.
 const char kGetAssertionRequestProtobufKey[] = "protobuf";

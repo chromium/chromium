@@ -152,6 +152,8 @@ class EnclaveManager : public KeyedService {
   void ChangePIN(std::string updated_pin,
                  std::optional<std::string> rapt,
                  Callback callback);
+  // Renew the current PIN. Requires `has_wrapped_pin` to be true.
+  void RenewPIN(Callback callback);
 
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.

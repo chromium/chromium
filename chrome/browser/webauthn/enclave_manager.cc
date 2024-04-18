@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/enclave_manager.h"
 
+#include <cstdint>
 #include <utility>
 #include <variant>
 
@@ -14,6 +15,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -60,6 +62,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/features.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -90,6 +93,7 @@ struct EnclaveManager::StoreKeysArgs {
 struct EnclaveManager::PendingAction {
   EnclaveManager::Callback callback;
   bool want_registration = false;
+  bool renew_pin = false;
   std::unique_ptr<StoreKeysArgs> store_keys_args;
   bool setup_account = false;
   std::string pin;                  // the PIN to add to an account.
@@ -172,6 +176,13 @@ base::span<const uint8_t, N> ToSizedSpan(const std::string& s) {
   CHECK_EQ(s.size(), N);
   const uint8_t* data = reinterpret_cast<const uint8_t*>(s.data());
   return base::span<const uint8_t, N>(data, N);
+}
+
+template <size_t N>
+std::array<uint8_t, N> ToArray(base::span<const uint8_t, N> in) {
+  std::array<uint8_t, N> ret;
+  base::ranges::copy(in, ret.begin());
+  return ret;
 }
 
 std::vector<uint8_t> ToVector(const std::string& s) {
@@ -469,6 +480,22 @@ cbor::Value::ArrayValue BuildRecoveryKeyStorePINChangeEnclaveRequest(
   return requests;
 }
 
+// Build an enclave request to renew a PIN.
+cbor::Value BuildPINRenewalRequest(std::string cert_xml,
+                                   std::string sig_xml,
+                                   base::span<const uint8_t> wrapped_secret,
+                                   base::span<const uint8_t> wrapped_pin) {
+  cbor::Value::MapValue request;
+  request.emplace(enclave::kRequestCommandKey,
+                  enclave::kRecoveryKeyStoreRewrapCommandName);
+  request.emplace(enclave::kRecoveryKeyStoreCertXml, ToVector(cert_xml));
+  request.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
+  request.emplace(enclave::kRequestWrappedSecretKey, wrapped_secret);
+  request.emplace(enclave::kRequestWrappedPINDataKey, wrapped_pin);
+
+  return cbor::Value(std::move(request));
+}
+
 cbor::Value ConcatEnclaveRequests(cbor::Value::ArrayValue head,
                                   cbor::Value::ArrayValue tail) {
   for (auto& request : tail) {
@@ -677,13 +704,28 @@ std::optional<std::string> CBORListOfBytestringToASN1Sequence(
   return cert_path;
 }
 
+// Stores public metadata about a PIN. This is recorded in, for example, the
+// Vault metadata so that MagicArch can show the correct UI and accept GPM PIN
+// entries.
+struct PinMetadata {
+  static PinMetadata FromProto(const EnclaveLocalState::WrappedPIN& pin) {
+    return PinMetadata{
+        .n = pin.hash_difficulty(),
+        .is_six_digits =
+            pin.form() == EnclaveLocalState::WrappedPIN::FORM_SIX_DIGITS,
+        .salt = ToArray<16>(ToSizedSpan<16>(pin.hash_salt()))};
+  }
+
+  int n = 0;  // The scrypt `N` parameter.
+  bool is_six_digits = false;
+  std::array<uint8_t, 16> salt;
+};
+
 // Convert the response to an enclave "recovery_key_store/wrap" command, into a
 // protobuf that can be sent to the recovery key store service.
 std::optional<std::unique_ptr<trusted_vault_pb::Vault>>
 RecoveryKeyStoreWrapResponseToProto(
-    base::span<const uint8_t> scrypt_salt,
-    int scrypt_n,
-    bool is_six_digits,
+    const PinMetadata& pin_metadata,
     const cbor::Value& recovery_key_store_wrap_response) {
   if (!recovery_key_store_wrap_response.is_map()) {
     return std::nullopt;
@@ -750,12 +792,12 @@ RecoveryKeyStoreWrapResponseToProto(
   asymmetric_key_pair->set_wrapping_key(VecToString(wrapped_wrapping_key));
 
   trusted_vault_pb::VaultMetadata metadata;
-  metadata.set_lskf_type(is_six_digits
+  metadata.set_lskf_type(pin_metadata.is_six_digits
                              ? trusted_vault_pb::VaultMetadata::PIN
                              : trusted_vault_pb::VaultMetadata::PASSWORD);
   metadata.set_hash_type(trusted_vault_pb::VaultMetadata::SCRYPT);
-  metadata.set_hash_salt(VecToString(scrypt_salt));
-  metadata.set_hash_difficulty(scrypt_n);
+  metadata.set_hash_salt(VecToString(pin_metadata.salt));
+  metadata.set_hash_difficulty(pin_metadata.n);
   metadata.set_cert_path(std::move(*cert_path));
 
   std::string metadata_bytes;
@@ -818,37 +860,35 @@ struct HashedPIN {
     auto ret = std::make_unique<EnclaveLocalState::WrappedPIN>();
     ret->set_claim_key(VecToString(claim_key));
     ret->set_generation(generation);
-    ret->set_form(this->is_six_digits
+    ret->set_form(this->metadata.is_six_digits
                       ? EnclaveLocalState::WrappedPIN::FORM_SIX_DIGITS
                       : EnclaveLocalState::WrappedPIN::FORM_ARBITRARY);
     ret->set_hash(EnclaveLocalState::WrappedPIN::HASH_SCRYPT);
-    ret->set_hash_difficulty(this->n);
-    ret->set_hash_salt(VecToString(this->salt));
+    ret->set_hash_difficulty(this->metadata.n);
+    ret->set_hash_salt(VecToString(this->metadata.salt));
 
     return ret;
   }
 
-  int n = 0;  // The scrypt `N` parameter.
-  bool is_six_digits = false;
-  uint8_t salt[16];
+  PinMetadata metadata;
   uint8_t hashed[32];
 };
 
 std::unique_ptr<HashedPIN> HashPINSlowly(std::string_view pin) {
   auto hashed = std::make_unique<HashedPIN>();
-  RAND_bytes(hashed->salt, sizeof(hashed->salt));
+  RAND_bytes(hashed->metadata.salt.data(), hashed->metadata.salt.size());
   // This is the primary work factor in scrypt. This value matches
   // the original recommended parameters. Those are a little out
   // of date in 2024, but Android is using 4096. Since this work
   // factor falls on the server when MagicArch is used, I've stuck
   // with this norm.
-  hashed->n = 16384;
-  hashed->is_six_digits =
+  hashed->metadata.n = 16384;
+  hashed->metadata.is_six_digits =
       pin.size() == 6 && base::ranges::all_of(pin, [](char c) -> bool {
         return c >= '0' && c <= '9';
       });
-  CHECK(EVP_PBE_scrypt(pin.data(), pin.size(), hashed->salt,
-                       sizeof(hashed->salt), hashed->n, 8, 1,
+  CHECK(EVP_PBE_scrypt(pin.data(), pin.size(), hashed->metadata.salt.data(),
+                       hashed->metadata.salt.size(), hashed->metadata.n, 8, 1,
                        /*max_mem=*/0, hashed->hashed, sizeof(hashed->hashed)));
   return hashed;
 }
@@ -889,6 +929,46 @@ std::vector<uint8_t> EncryptWrappedPIN(
       cbor_bytes, nonce, /*additional_data=*/base::span<const uint8_t>());
   wrapped_pin.insert(wrapped_pin.begin(), std::begin(nonce), std::end(nonce));
   return wrapped_pin;
+}
+
+// Parse a Vault and security domain member keys from a CBOR map. These maps
+// result from enclave operations that return a Vault for insertion into the
+// security domain.
+static std::optional<std::pair<std::unique_ptr<trusted_vault_pb::Vault>,
+                               trusted_vault::MemberKeysSource>>
+ParseVaultAndMemberResponse(const int32_t key_version,
+                            const PinMetadata& pin_metadata,
+                            const cbor::Value::MapValue& response) {
+  auto it = response.find(cbor::Value("wrapped"));
+  if (it == response.end()) {
+    FIDO_LOG(ERROR) << "response missing 'wrapped'";
+    return std::nullopt;
+  }
+  std::optional<std::unique_ptr<trusted_vault_pb::Vault>> vault =
+      RecoveryKeyStoreWrapResponseToProto(pin_metadata, it->second);
+  if (!vault) {
+    FIDO_LOG(ERROR) << "Failed to translate response into an UpdateVaultProto";
+    return std::nullopt;
+  }
+
+  it = response.find(cbor::Value("wrapped_sds"));
+  if (it == response.end() || !it->second.is_bytestring()) {
+    FIDO_LOG(ERROR) << "response has invalid 'wrapped_sds'";
+    return std::nullopt;
+  }
+  const std::vector<uint8_t>& wrapped_sds = it->second.GetBytestring();
+
+  it = response.find(cbor::Value("member_proof"));
+  if (it == response.end() || !it->second.is_bytestring()) {
+    FIDO_LOG(ERROR) << "response has invalid 'member_proof'";
+    return std::nullopt;
+  }
+  const std::vector<uint8_t>& member_proof = it->second.GetBytestring();
+
+  auto member_keys_source = trusted_vault::PrecomputedMemberKeys(
+      key_version, wrapped_sds, member_proof);
+
+  return std::make_pair(std::move(*vault), std::move(member_keys_source));
 }
 
 }  // namespace
@@ -940,6 +1020,7 @@ class EnclaveManager::StateMachine {
     kJoiningPINToDomain,
     kJoiningUpdatedPINToDomain,
     kChangingPIN,
+    kRenewingPIN,
   };
 
   enum class FetchedFile {
@@ -1055,6 +1136,10 @@ class EnclaveManager::StateMachine {
       case State::kJoiningUpdatedPINToDomain:
         DoJoiningUpdatedPINToDomain(std::move(event));
         break;
+
+      case State::kRenewingPIN:
+        DoRenewingPIN(std::move(event));
+        break;
     }
 
     FIDO_LOG(EVENT) << ToString(initial_state) << " -" << event_str << "-> "
@@ -1122,6 +1207,8 @@ class EnclaveManager::StateMachine {
         return "ChangingPIN";
       case State::kJoiningUpdatedPINToDomain:
         return "JoiningUpdatedPINToDomain";
+      case State::kRenewingPIN:
+        return "RenewingPIN";
     }
   }
 
@@ -1260,6 +1347,18 @@ class EnclaveManager::StateMachine {
       rapt_ = std::move(action_->rapt);
       state_ = State::kHashingPIN;
       HashPIN(std::move(action_->updated_pin));
+      return;
+    }
+
+    if (action_->renew_pin) {
+      if (!user_->registered()) {
+        state_ = State::kStop;
+        return;
+      }
+
+      is_pin_renewal_ = true;
+      state_ = State::kDownloadingRecoveryKeyStoreKeys;
+      DownloadRecoveryKeyStoreKeys();
       return;
     }
 
@@ -1579,17 +1678,8 @@ class EnclaveManager::StateMachine {
     }
     wrapped_pin_proto_ = hashed_pin_->ToWrappedPIN(generation);
 
-    cert_xml_loader_ = FetchURL(
-        manager_->url_loader_factory_.get(),
-        device::enclave::kRecoveryKeyStoreCertFileURL,
-        base::BindOnce(&StateMachine::FetchComplete,
-                       weak_ptr_factory_.GetWeakPtr(), FetchedFile::kCertFile));
-    sig_xml_loader_ = FetchURL(
-        manager_->url_loader_factory_.get(),
-        device::enclave::kRecoveryKeyStoreSigFileURL,
-        base::BindOnce(&StateMachine::FetchComplete,
-                       weak_ptr_factory_.GetWeakPtr(), FetchedFile::kSigFile));
     state_ = State::kDownloadingRecoveryKeyStoreKeys;
+    DownloadRecoveryKeyStoreKeys();
   }
 
   void DoDownloadingRecoveryKeyStoreKeys(Event event) {
@@ -1640,13 +1730,15 @@ class EnclaveManager::StateMachine {
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
 
     if (is_pin_update_) {
-      // The commands to send to the enclave are different if changing a PIN.
       SendPINChangeRequest(std::move(token));
-      return;
+    } else if (is_pin_renewal_) {
+      SendPINRenewalRequest(std::move(token));
+    } else {
+      SendPINWrappingRequest(std::move(token));
     }
+  }
 
-    // We have everything needed to make the enclave request to wrap the hashed
-    // PIN for transmission to the recovery key store.
+  void SendPINWrappingRequest(std::string token) {
     state_ = State::kWrappingPIN;
     enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
@@ -1704,6 +1796,19 @@ class EnclaveManager::StateMachine {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void SendPINRenewalRequest(std::string token) {
+    state_ = State::kRenewingPIN;
+    enclave::Transact(
+        manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
+        std::move(token), std::nullopt,
+        BuildPINRenewalRequest(std::move(*cert_xml_), std::move(*sig_xml_),
+                               GetCurrentWrappedSecretForUser(user_).second,
+                               ToSpan(user_->wrapped_pin().wrapped_pin())),
+        manager_->HardwareKeySigningCallback(),
+        base::BindOnce(&StateMachine::OnEnclaveResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   void DoWrappingPIN(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1728,8 +1833,7 @@ class EnclaveManager::StateMachine {
             ->second;
 
     std::optional<std::unique_ptr<trusted_vault_pb::Vault>> vault =
-        RecoveryKeyStoreWrapResponseToProto(hashed_pin_->salt, hashed_pin_->n,
-                                            hashed_pin_->is_six_digits,
+        RecoveryKeyStoreWrapResponseToProto(hashed_pin_->metadata,
                                             recovery_key_store_wrap_response);
     if (!vault) {
       FIDO_LOG(ERROR)
@@ -1772,7 +1876,8 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    if (!is_pin_update_) {
+    const bool updating_pin_member = is_pin_update_ || is_pin_renewal_;
+    if (!updating_pin_member) {
       CHECK(wrapped_pin_proto_->wrapped_pin().empty());
       wrapped_pin_proto_->set_wrapped_pin(BuildWrappedPIN(
           *hashed_pin_, /*generation=*/0,
@@ -1791,18 +1896,18 @@ class EnclaveManager::StateMachine {
     const std::string previous_pin_public_key = user_->pin_public_key();
     // If changing the PIN, there must be a previous PIN member public key.
     // If setting a first PIN, there must not be one.
-    CHECK(!previous_pin_public_key.empty() == is_pin_update_);
+    CHECK_EQ(!previous_pin_public_key.empty(), updating_pin_member);
     user_->set_pin_public_key(vault_public_key);
 
-    state_ = is_pin_update_ ? State::kJoiningUpdatedPINToDomain
-                            : State::kJoiningPINToDomain;
+    state_ = updating_pin_member ? State::kJoiningUpdatedPINToDomain
+                                 : State::kJoiningPINToDomain;
     std::optional<trusted_vault::MemberKeysSource> member_keys_source =
         std::move(member_keys_source_);
-    // If changing a PIN then `member_keys_source` will have been populated by
-    // the enclave. Otherwise a new PIN is being set and
+    // If changing or renewing a PIN then `member_keys_source` will have been
+    // populated by the enclave. Otherwise a new PIN is being set and
     // `store_keys_args_for_joining_` will contain the security domain secret,
     // which is sufficient for calculating the member keys.
-    CHECK_EQ(member_keys_source.has_value(), is_pin_update_);
+    CHECK_EQ(member_keys_source.has_value(), updating_pin_member);
     if (!member_keys_source) {
       member_keys_source = trusted_vault::GetTrustedVaultKeysWithVersions(
           store_keys_args_for_joining_->keys,
@@ -1892,51 +1997,59 @@ class EnclaveManager::StateMachine {
     wrapped_pin_proto_->set_wrapped_pin(
         VecToString(wrapped_pin_value.GetBytestring()));
 
-    const cbor::Value& wrap_as_member_response_value =
-        response.GetArray()[1]
-            .GetMap()
+    UploadVaultAndMemberFromResponse(hashed_pin_->metadata,
+                                     response.GetArray()[1]);
+  }
+
+  void DoRenewingPIN(Event event) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    state_ = State::kStop;
+    if (absl::holds_alternative<Failure>(event)) {
+      return;
+    }
+
+    cbor::Value response =
+        std::move(absl::get_if<EnclaveResponse>(&event)->value());
+    if (!IsAllOk(response, 1)) {
+      FIDO_LOG(ERROR) << "PIN renewal resulted in error response: "
+                      << cbor::DiagnosticWriter::Write(response);
+      return;
+    }
+
+    // The new wrapped PIN is the same as the current one.
+    wrapped_pin_proto_ =
+        std::make_unique<EnclaveLocalState::WrappedPIN>(user_->wrapped_pin());
+
+    UploadVaultAndMemberFromResponse(
+        PinMetadata::FromProto(*wrapped_pin_proto_), response.GetArray()[0]);
+  }
+
+  // Start the process of uploading a Vault, and inserting it into the security
+  // domain, based on an enclave response. The `response` value should be an
+  // element from an enclave's response array. I.e. including the "ok" wrapping.
+  // It's assumed that `IsAllOk` has been checked and that the response is not
+  // an error. The `vault_` and `member_keys_source_` fields will be updated on
+  // success.
+  bool UploadVaultAndMemberFromResponse(const PinMetadata& pin_metadata,
+                                        const cbor::Value& response) {
+    const cbor::Value& response_value =
+        response.GetMap()
             .find(cbor::Value(enclave::kResponseSuccessKey))
             ->second;
-    if (!wrap_as_member_response_value.is_map()) {
-      FIDO_LOG(ERROR) << "wrap_as_member response was not a map";
-      return;
+    if (!response_value.is_map()) {
+      FIDO_LOG(ERROR) << "response was not a map";
+      return false;
     }
-    const cbor::Value::MapValue& wrap_as_member_response =
-        wrap_as_member_response_value.GetMap();
-
-    auto it = wrap_as_member_response.find(cbor::Value("wrapped"));
-    if (it == wrap_as_member_response.end()) {
-      FIDO_LOG(ERROR) << "wrap_as_member response missing 'wrapped'";
-      return;
+    const int32_t key_version = GetCurrentWrappedSecretForUser(user_).first;
+    std::optional<std::pair<std::unique_ptr<trusted_vault_pb::Vault>,
+                            trusted_vault::MemberKeysSource>>
+        result = ParseVaultAndMemberResponse(key_version, pin_metadata,
+                                             response_value.GetMap());
+    if (!result) {
+      return false;
     }
-    std::optional<std::unique_ptr<trusted_vault_pb::Vault>> vault =
-        RecoveryKeyStoreWrapResponseToProto(hashed_pin_->salt, hashed_pin_->n,
-                                            hashed_pin_->is_six_digits,
-                                            it->second);
-    if (!vault) {
-      FIDO_LOG(ERROR)
-          << "Failed to translate response into an UpdateVaultProto";
-      return;
-    }
-    vault_ = std::move(*vault);
-
-    it = wrap_as_member_response.find(cbor::Value("wrapped_sds"));
-    if (it == wrap_as_member_response.end() || !it->second.is_bytestring()) {
-      FIDO_LOG(ERROR) << "wrap_as_member has invalid 'wrapped_sds'";
-      return;
-    }
-    const std::vector<uint8_t>& wrapped_sds = it->second.GetBytestring();
-
-    it = wrap_as_member_response.find(cbor::Value("member_proof"));
-    if (it == wrap_as_member_response.end() || !it->second.is_bytestring()) {
-      FIDO_LOG(ERROR) << "wrap_as_member has invalid 'member_proof'";
-      return;
-    }
-    const std::vector<uint8_t>& member_proof = it->second.GetBytestring();
-
-    int32_t key_version = GetCurrentWrappedSecretForUser(user_).first;
-    member_keys_source_ = trusted_vault::PrecomputedMemberKeys(
-        key_version, wrapped_sds, member_proof);
+    std::tie(vault_, member_keys_source_) = std::move(*result);
 
     state_ = State::kWaitingForRecoveryKeyStore;
     recovery_key_store_request_ =
@@ -1951,6 +2064,7 @@ class EnclaveManager::StateMachine {
                   machine->Process(status);
                 },
                 weak_ptr_factory_.GetWeakPtr()));
+    return true;
   }
 
   void JoinSecurityDomain() {
@@ -2043,6 +2157,19 @@ class EnclaveManager::StateMachine {
     return VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes));
   }
 
+  void DownloadRecoveryKeyStoreKeys() {
+    cert_xml_loader_ = FetchURL(
+        manager_->url_loader_factory_.get(),
+        device::enclave::kRecoveryKeyStoreCertFileURL,
+        base::BindOnce(&StateMachine::FetchComplete,
+                       weak_ptr_factory_.GetWeakPtr(), FetchedFile::kCertFile));
+    sig_xml_loader_ = FetchURL(
+        manager_->url_loader_factory_.get(),
+        device::enclave::kRecoveryKeyStoreSigFileURL,
+        base::BindOnce(&StateMachine::FetchComplete,
+                       weak_ptr_factory_.GetWeakPtr(), FetchedFile::kSigFile));
+  }
+
   const raw_ptr<EnclaveManager> manager_;
   // local_state_ contains a copy of the EnclaveManager's state from when this
   // StateMachine was created.
@@ -2076,6 +2203,8 @@ class EnclaveManager::StateMachine {
   // True if a PIN is being hashed in order to change it, rather than to set
   // a new PIN on an account.
   bool is_pin_update_ = false;
+  // True if the GPM PIN is being renewed without knowing or changing it.
+  bool is_pin_renewal_ = false;
   // If changing a PIN, this holds a ReAuthentication Proof Token (RAPT), if
   // the user is authenticating the request via doing a GAIA reauth.
   std::optional<std::string> rapt_;
@@ -2242,6 +2371,18 @@ void EnclaveManager::ChangePIN(std::string updated_pin,
   action->callback = std::move(callback);
   action->updated_pin = std::move(updated_pin);
   action->rapt = std::move(rapt);
+  pending_actions_.emplace_back(std::move(action));
+  Act();
+}
+
+void EnclaveManager::RenewPIN(EnclaveManager::Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(user_->registered());
+  CHECK(user_->has_wrapped_pin());
+
+  auto action = std::make_unique<PendingAction>();
+  action->callback = std::move(callback);
+  action->renew_pin = true;
   pending_actions_.emplace_back(std::move(action));
   Act();
 }

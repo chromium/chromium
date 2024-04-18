@@ -826,6 +826,37 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
   EXPECT_FALSE(std::get<0>(add_callback.result().value()));
 }
 
+TEST_F(EnclaveManagerTest, RenewPIN) {
+  ASSERT_TRUE(Register());
+
+  const std::string pin = "123456";
+
+  BoolCallback setup_callback;
+  manager_.SetupWithPIN(pin, setup_callback.callback());
+  setup_callback.WaitForCallback();
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+
+  BoolCallback renew_callback;
+  manager_.RenewPIN(renew_callback.callback());
+  renew_callback.WaitForCallback();
+  EXPECT_TRUE(std::get<0>(renew_callback.result().value()));
+
+  // The number of PIN members must not have increased because the upload should
+  // have reused the vault handle etc of the original.
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+
+  const std::optional<std::vector<uint8_t>> security_domain_secret =
+      FakeMagicArch::RecoverWithPIN(pin, *security_domain_service_,
+                                    *recovery_key_store_);
+  CHECK(security_domain_secret.has_value());
+  EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
+}
+
 // Tests that rely on `ScopedMockUnexportableKeyProvider` only work on
 // platforms where EnclaveManager uses `GetUnexportableKeyProvider`, as opposed
 // to `GetSoftwareUnsecureUnexportableKeyProvider`.
