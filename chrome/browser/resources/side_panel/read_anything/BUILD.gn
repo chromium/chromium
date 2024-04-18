@@ -20,7 +20,10 @@ build_webui("build") {
     "read_anything_toolbar.ts",
     "voice_selection_menu.ts",
   ]
-  non_web_component_files = [ "common.ts" ]
+  non_web_component_files = [
+    "common.ts",
+    "voice_language_util.ts",
+  ]
   icons_html_files = [ "icons.html" ]
 
   ts_composite = true

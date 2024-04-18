@@ -20,6 +20,8 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
+import type {VoicePackStatus} from './voice_language_util.js';
+import {mojoVoicePackStatusToVoicePackStatusEnum} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -167,12 +169,6 @@ if (chrome.readingMode) {
   };
 }
 
-export enum VoicePackStatus {
-  NOT_INSTALLED,
-  INSTALLING,
-  INSTALLED,
-  ERROR,
-}
 
 export enum PauseActionSource {
   DEFAULT,
@@ -753,19 +749,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (!lang) {
       return;
     }
-    // The following possible values of "status" is a union of enum values of
-    // enum InstallationState and enum ErrorCode in read_anything.mojom
-    let voicePackStatus: VoicePackStatus;
-    if (status === 'kNotInstalled') {
-      voicePackStatus = VoicePackStatus.NOT_INSTALLED;
-    } else if (status === 'kInstalling') {
-      voicePackStatus = VoicePackStatus.INSTALLING;
-    } else if (status === 'kInstalled') {
-      voicePackStatus = VoicePackStatus.INSTALLED;
-    } else {
-      // TODO (b/331795122) Handle install errors on the UI
-      voicePackStatus = VoicePackStatus.ERROR;
-    }
+    const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     this.voicePackInstallStatus =
         {...this.voicePackInstallStatus, [lang]: voicePackStatus};
     // TODO (b/335472298) Handle voice menu downloading voice spinners

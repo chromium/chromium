@@ -48,6 +48,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageUtil) {
+  RunSidePanelTest("side_panel/read_anything/voice_language_util_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudFlag) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_flag_test.js",
                    "mocha.run()");

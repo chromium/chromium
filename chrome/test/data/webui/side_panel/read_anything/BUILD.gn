@@ -31,6 +31,7 @@ build_webui_tests("build") {
     "language_menu_test.ts",
     "links_toggled_integration.ts",
     "common.ts",
+    "voice_language_util_test.ts",
     "read_aloud_update_content_selection.ts",
     "read_aloud_update_content_selection_pdf.ts",
     "read_aloud_highlighting_test.ts",
