@@ -427,6 +427,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.RestrictedNoticeCheckIsMismatched"
+    enum="Boolean" expires_after="2024-08-28">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records mismatches between the calculated restricted notice requirement and
+    any overrides applied to the Privacy Sandbox restricted notice param.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.StartupState"
     enum="SettingsPrivacySandboxStartupStates" expires_after="2024-09-01">
   <owner>sauski@google.com</owner>

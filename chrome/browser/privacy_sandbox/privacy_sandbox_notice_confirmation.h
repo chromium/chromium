@@ -33,6 +33,18 @@ bool IsConsentRequired();
  */
 bool IsNoticeRequired();
 
+/**
+ * Determines whether the Privacy Sandbox Ads Restricted notice is required.
+ *
+ * This function evaluates several criteria related to the Privacy Sandbox
+ * feature,  other Privacy Sandbox notice requirements, and potential feature
+ * overrides to decide if a restricted notice is necessary.
+ *
+ * Returns `true` if a Privacy Sandbox restricted notice is enabled.
+ *
+ */
+bool IsRestrictedNoticeRequired();
+
 }  // namespace privacy_sandbox
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_CONFIRMATION_H_

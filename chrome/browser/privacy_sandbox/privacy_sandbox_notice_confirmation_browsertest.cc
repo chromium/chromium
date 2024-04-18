@@ -253,5 +253,104 @@ INSTANTIATE_TEST_SUITE_P(
             .expect_required = false,
         }));
 
+class PrivacySandboxRestrictedNoticeConfirmationTest
+    : public PrivacySandboxConfirmationTestBase {};
+
+base::test::FeatureRefAndParams RestrictedNoticeFeature() {
+  return {kPrivacySandboxSettings4,
+          {{kPrivacySandboxSettings4RestrictedNoticeName, "true"}}};
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxRestrictedNoticeConfirmationTest,
+                       RestrictedNoticeTest) {
+  // Setup
+  base::HistogramTester histogram_tester;
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry(
+      GetParam().variation_country);
+
+  EXPECT_EQ(IsRestrictedNoticeRequired(), GetParam().expect_required);
+  histogram_tester.ExpectBucketCount(
+      "Settings.PrivacySandbox.RestrictedNoticeCheckIsMismatched", true,
+      GetParam().expect_mismatch_histogram_true);
+  histogram_tester.ExpectBucketCount(
+      "Settings.PrivacySandbox.RestrictedNoticeCheckIsMismatched", false,
+      GetParam().expect_mismatch_histogram_false);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PrivacySandboxRestrictedNoticeConfirmationTest,
+    testing::Values(
+        // Consent Required, Feature Not Overridden.
+        PrivacySandboxConfirmationTestData{
+            .variation_country = "gb",
+            // Expectations
+            .expect_required = true,
+        },
+        // Notice Required, Feature Not Overridden.
+        PrivacySandboxConfirmationTestData{
+            .variation_country = "us",
+            // Expectations
+            .expect_required = true,
+        },
+        // Consent Not required. Notice Not required - Feature Overridden.
+        // restricted-notice param not set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {{kPrivacySandboxSettings4, {{}}}},
+            .variation_country = "",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_false = true,
+        },
+        // Consent Not required. Notice Not required - Feature Overridden.
+        // restricted-notice param set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {RestrictedNoticeFeature()},
+            .variation_country = "",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_true = true,
+        },
+        // Notice required - Feature Overridden. restricted-notice param set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features =
+                {{kPrivacySandboxSettings4,
+                  {{kPrivacySandboxSettings4NoticeRequiredName, "true"},
+                   {kPrivacySandboxSettings4RestrictedNoticeName, "true"}}}},
+            .variation_country = "",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_false = true,
+        },
+        // Consent required - Feature Overridden. restricted-notice param set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features =
+                {{kPrivacySandboxSettings4,
+                  {{kPrivacySandboxSettings4ConsentRequiredName, "true"},
+                   {kPrivacySandboxSettings4RestrictedNoticeName, "true"}}}},
+            .variation_country = "",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_false = true,
+        },
+        // Notice required - Feature Overridden. restricted-notice param Not
+        // set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {NoticeFeature()},
+            .variation_country = "",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_true = true,
+        },
+        // Consent required - Feature Overridden. restricted-notice param Not
+        // set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {ConsentFeature()},
+            .variation_country = "",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_true = true,
+        }));
+
 }  // namespace
 }  // namespace privacy_sandbox
