@@ -12,6 +12,8 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
+
 namespace {
 #if defined(_M_X64)
 #pragma pack(push, 1)
@@ -188,9 +190,9 @@ NTSTATUS ServiceResolverThunk::Setup(const void* target_module,
     return ret;
 
   size_t thunk_bytes = GetThunkSize();
-  std::unique_ptr<char[]> thunk_buffer(new char[thunk_bytes]);
+  auto thunk_buffer = base::HeapArray<char>::Uninit(thunk_bytes);
   ServiceFullThunk* thunk =
-      reinterpret_cast<ServiceFullThunk*>(thunk_buffer.get());
+      reinterpret_cast<ServiceFullThunk*>(thunk_buffer.data());
 
   if (!IsFunctionAService(&thunk->original))
     return STATUS_OBJECT_NAME_COLLISION;
