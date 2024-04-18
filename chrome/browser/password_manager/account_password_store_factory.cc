@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/password_manager/affiliations_prefetcher_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
@@ -24,8 +23,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
+#include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
@@ -114,13 +114,11 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 #if BUILDFLAG(IS_ANDROID)
       new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
           profile->GetPath(), profile->GetPrefs(),
-          /*unsynced_deletions_notifier=*/nullptr,
-          AffiliationsPrefetcherFactory::GetForProfile(profile)));
+          /*unsynced_deletions_notifier=*/nullptr));
 #else
       new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
           profile->GetPath(), profile->GetPrefs(),
-          std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile),
-          /*affiliations_prefetcher=*/nullptr));
+          std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile)));
 #endif
 
   affiliations::AffiliationService* affiliation_service =
@@ -143,8 +141,11 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Android gets logins with affiliations directly from the backend.
-  AffiliationsPrefetcherFactory::GetForProfile(profile)->RegisterPasswordStore(
-      ps.get());
+  std::unique_ptr<password_manager::PasswordAffiliationSourceAdapter>
+      password_affiliation_adapter = std::make_unique<
+          password_manager::PasswordAffiliationSourceAdapter>();
+  password_affiliation_adapter->RegisterPasswordStore(ps.get());
+  affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
 #endif
 
   return ps;

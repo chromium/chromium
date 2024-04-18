@@ -4,13 +4,16 @@
 
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/password_manager/affiliations_prefetcher_factory.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
-#include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/password_manager/core/browser/affiliation/passkey_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/model_type_store.h"
@@ -38,7 +41,7 @@ PasskeyModelFactory::PasskeyModelFactory()
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  DependsOn(AffiliationsPrefetcherFactory::GetInstance());
+  DependsOn(AffiliationServiceFactory::GetInstance());
 }
 
 PasskeyModelFactory::~PasskeyModelFactory() = default;
@@ -53,8 +56,11 @@ PasskeyModelFactory::BuildServiceInstanceForBrowserContext(
   // Do not instantiate the affiliation service for guest profiles, since the
   // password manager does not run for them.
   if (!profile->IsGuestSession()) {
-    AffiliationsPrefetcherFactory::GetForProfile(profile)->RegisterPasskeyModel(
-        sync_bridge.get());
+    std::unique_ptr<password_manager::PasskeyAffiliationSourceAdapter> adapter =
+        std::make_unique<password_manager::PasskeyAffiliationSourceAdapter>(
+            sync_bridge.get());
+    AffiliationServiceFactory::GetForProfile(profile)->RegisterSource(
+        std::move(adapter));
   }
   return sync_bridge;
 }

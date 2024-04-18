@@ -9,6 +9,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -45,7 +46,8 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
     PrefService* prefs,
     std::unique_ptr<password_manager::PasswordStoreBuiltInBackend>
         built_in_backend,
-    password_manager::AffiliationsPrefetcher* affiliations_prefetcher) {
+    password_manager::PasswordAffiliationSourceAdapter&
+        password_affiliation_adapter) {
   base::UmaHistogramBoolean(
       "PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated",
       !prefs->GetBoolean(password_manager::prefs::
@@ -72,7 +74,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
           password_manager::PasswordStoreBackendMigrationDecorator>(
           std::move(built_in_backend),
           std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
-              prefs, affiliations_prefetcher),
+              prefs, password_affiliation_adapter),
           prefs);
     // UPM M2: The password store proxy backend is created. No migrations are
     // needed.
@@ -80,7 +82,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
       return std::make_unique<AndroidBackendWithDoubleDeletion>(
           std::move(built_in_backend),
           std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
-              prefs, affiliations_prefetcher));
+              prefs, password_affiliation_adapter));
     // Old UPM: support for local passwords in GMSCore is unavailable for some
     // reason.
     case UseUpmLocalAndSeparateStoresState::kOff: {
@@ -90,7 +92,8 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
       // storage requests go to the built-in backend instead.
       auto android_account_backend = std::make_unique<
           password_manager::PasswordStoreAndroidAccountBackend>(
-          prefs, affiliations_prefetcher, password_manager::kProfileStore);
+          prefs, &password_affiliation_adapter,
+          password_manager::kProfileStore);
       if (base::FeatureList::IsEnabled(
               password_manager::features::
                   kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
@@ -119,7 +122,8 @@ std::unique_ptr<password_manager::PasswordStoreBackend>
 CreateProfilePasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
-    password_manager::AffiliationsPrefetcher* affiliations_prefetcher) {
+    password_manager::PasswordAffiliationSourceAdapter&
+        password_affiliation_adapter) {
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
 
   auto is_profile_db_empty_cb =
@@ -150,7 +154,7 @@ CreateProfilePasswordStoreBackend(
   // This are the absolute minimum requirements to have any version of UPM.
   if (password_manager_android_util::AreMinUpmRequirementsMet()) {
     return CreateProfilePasswordStoreBackendForUpmAndroid(
-        prefs, std::move(built_in_backend), affiliations_prefetcher);
+        prefs, std::move(built_in_backend), password_affiliation_adapter);
   }
   return built_in_backend;
 #endif
@@ -161,8 +165,7 @@ CreateAccountPasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
     std::unique_ptr<password_manager::UnsyncedCredentialsDeletionNotifier>
-        unsynced_deletions_notifier,
-    password_manager::AffiliationsPrefetcher* affiliations_prefetcher) {
+        unsynced_deletions_notifier) {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForAccountStorage(
           login_db_directory));
@@ -187,6 +190,7 @@ CreateAccountPasswordStoreBackend(
           std::move(login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs),
       std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-          prefs, affiliations_prefetcher, password_manager::kAccountStore));
+          prefs, /*password_affiliation_adapter=*/nullptr,
+          password_manager::kAccountStore));
 #endif
 }

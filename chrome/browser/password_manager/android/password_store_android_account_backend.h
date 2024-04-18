@@ -18,7 +18,7 @@ class SyncService;
 namespace password_manager {
 
 class AffiliatedMatchHelper;
-class AffiliationsPrefetcher;
+class PasswordAffiliationSourceAdapter;
 
 // This class processes passwords only from an account.
 class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
@@ -28,7 +28,7 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   // or account password store.
   PasswordStoreAndroidAccountBackend(
       PrefService* prefs,
-      AffiliationsPrefetcher* affiliations_prefetcher,
+      PasswordAffiliationSourceAdapter* password_affiliation_adapter,
       password_manager::IsAccountStore is_account_store);
 
   PasswordStoreAndroidAccountBackend(
@@ -38,7 +38,7 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
       std::unique_ptr<PasswordSyncControllerDelegateAndroid>
           sync_controller_delegate,
       PrefService* prefs,
-      AffiliationsPrefetcher* affiliations_prefetcher);
+      PasswordAffiliationSourceAdapter* password_affiliation_adapter);
   ~PasswordStoreAndroidAccountBackend() override;
 
   // PasswordStoreAndroidBackend implementation
@@ -116,7 +116,7 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   // called.
   void SyncShutdown();
 
-  raw_ptr<AffiliationsPrefetcher> affiliations_prefetcher_ = nullptr;
+  const raw_ptr<PasswordAffiliationSourceAdapter> password_affiliation_adapter_;
   raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 

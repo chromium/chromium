@@ -21,12 +21,15 @@ class PasswordAffiliationSourceAdapter
       public PasswordStoreInterface::Observer,
       public PasswordStoreConsumer {
  public:
-  explicit PasswordAffiliationSourceAdapter(PasswordStoreInterface* store);
+  PasswordAffiliationSourceAdapter();
   ~PasswordAffiliationSourceAdapter() override;
 
   // AffiliationSource:
   void GetFacets(AffiliationSource::ResultCallback response_callback) override;
   void StartObserving(AffiliationSource::Observer* observer) override;
+
+  // Registers the store to be observed for login changes.
+  void RegisterPasswordStore(PasswordStoreInterface* store);
 
   // Disables fetching facets that require affiliations and stops observing
   // password changes.
@@ -49,7 +52,7 @@ class PasswordAffiliationSourceAdapter
 
   AffiliationSource::ResultCallback on_password_forms_received_callback_;
 
-  const raw_ptr<PasswordStoreInterface> store_;
+  raw_ptr<PasswordStoreInterface> store_ = nullptr;
   raw_ptr<AffiliationSource::Observer> observer_ = nullptr;
 
   base::ScopedObservation<PasswordStoreInterface,

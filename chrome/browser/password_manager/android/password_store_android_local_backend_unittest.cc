@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 
 #include <jni.h>
+
 #include <cstdint>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -17,8 +18,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
-#include "components/affiliations/core/browser/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
+#include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -39,7 +39,6 @@ using testing::Return;
 using testing::VariantWith;
 using testing::WithArg;
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
-using affiliations::MockAffiliationService;
 
 constexpr JobId kJobId{1337};
 constexpr char kTestUrl[] = "https://example.com";
@@ -75,11 +74,6 @@ std::vector<PasswordForm> CreateTestLogins() {
 class PasswordStoreAndroidLocalBackendTest : public testing::Test {
  protected:
   PasswordStoreAndroidLocalBackendTest() {
-    mock_affiliation_service_ =
-        std::make_unique<testing::NiceMock<MockAffiliationService>>();
-    affiliations_prefetcher_ =
-        std::make_unique<AffiliationsPrefetcher>(mock_affiliation_service());
-
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs_.registry()->RegisterBooleanPref(prefs::kUserReceivedGMSCoreError,
@@ -105,9 +99,6 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
     return lifecycle_helper_;
   }
   PrefService* prefs() { return &prefs_; }
-  MockAffiliationService* mock_affiliation_service() {
-    return mock_affiliation_service_.get();
-  }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -118,7 +109,7 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
   void ResetBackend() {
     backend_ = std::make_unique<PasswordStoreAndroidLocalBackend>(
         CreateMockBridgeHelper(), CreateFakeLifecycleHelper(), &prefs_,
-        affiliations_prefetcher_.get());
+        password_affiliation_adapter_);
   }
 
  private:
@@ -137,8 +128,7 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
     return new_helper;
   }
 
-  std::unique_ptr<MockAffiliationService> mock_affiliation_service_;
-  std::unique_ptr<AffiliationsPrefetcher> affiliations_prefetcher_;
+  PasswordAffiliationSourceAdapter password_affiliation_adapter_;
   std::unique_ptr<PasswordStoreAndroidLocalBackend> backend_;
   raw_ptr<NiceMock<MockPasswordStoreAndroidBackendBridgeHelper>> bridge_helper_;
   raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;

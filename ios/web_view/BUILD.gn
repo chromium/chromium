@@ -200,8 +200,6 @@ ios_web_view_sources = [
   "internal/passwords/cwv_weak_check_utils_internal.h",
   "internal/passwords/web_view_account_password_store_factory.h",
   "internal/passwords/web_view_account_password_store_factory.mm",
-  "internal/passwords/web_view_affiliations_prefetcher_factory.h",
-  "internal/passwords/web_view_affiliations_prefetcher_factory.mm",
   "internal/passwords/web_view_bulk_leak_check_service_factory.h",
   "internal/passwords/web_view_bulk_leak_check_service_factory.mm",
   "internal/passwords/web_view_password_feature_manager.h",

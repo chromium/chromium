@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
-#include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
+#include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 
@@ -16,7 +16,7 @@ namespace password_manager {
 
 PasswordStoreAndroidLocalBackend::PasswordStoreAndroidLocalBackend(
     PrefService* prefs,
-    AffiliationsPrefetcher* affiliations_prefetcher)
+    PasswordAffiliationSourceAdapter& password_affiliation_adapter)
     : PasswordStoreAndroidLocalBackend(
           // The local android backend can only be created for the profile
           // store.
@@ -24,20 +24,20 @@ PasswordStoreAndroidLocalBackend::PasswordStoreAndroidLocalBackend(
               password_manager::kProfileStore),
           std::make_unique<PasswordManagerLifecycleHelperImpl>(),
           prefs,
-          affiliations_prefetcher) {}
+          password_affiliation_adapter) {}
 
 PasswordStoreAndroidLocalBackend::PasswordStoreAndroidLocalBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
     PrefService* prefs,
-    AffiliationsPrefetcher* affiliations_prefetcher)
+    PasswordAffiliationSourceAdapter& password_affiliation_adapter)
     : PasswordStoreAndroidBackend(std::move(bridge_helper),
                                   std::move(lifecycle_helper),
                                   prefs) {
-  // AccountBackend doesn't call `DisablePrefetching` when sync is turned off.
+  // AccountBackend doesn't call `DisableSource` when sync is turned off.
   // This is why we have to explicitly call it here whenever local GMSCore is
   // created.
-  affiliations_prefetcher->DisablePrefetching();
+  password_affiliation_adapter.DisableSource();
 }
 
 PasswordStoreAndroidLocalBackend::~PasswordStoreAndroidLocalBackend() = default;

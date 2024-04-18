@@ -16,7 +16,7 @@ class ModelTypeControllerDelegate;
 namespace password_manager {
 
 class AffiliatedMatchHelper;
-class AffiliationsPrefetcher;
+class PasswordAffiliationSourceAdapter;
 
 // This class processes passwords only from an account.
 class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
@@ -24,14 +24,14 @@ class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
  public:
   PasswordStoreAndroidLocalBackend(
       PrefService* prefs,
-      AffiliationsPrefetcher* affiliations_prefetcher);
+      PasswordAffiliationSourceAdapter& password_affiliation_adapter);
 
   // Only for testing.
   PasswordStoreAndroidLocalBackend(
       std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
       PrefService* prefs,
-      AffiliationsPrefetcher* affiliations_prefetcher);
+      PasswordAffiliationSourceAdapter& password_affiliation_adapter);
   ~PasswordStoreAndroidLocalBackend() override;
 
   // PasswordStoreAndroidBackend implementation
