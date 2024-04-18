@@ -165,8 +165,16 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 // Linux test environment doesn't allow setting default via the
 // chrome://settings/defaultBrowser page.
 #if !BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/335553725): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RemovesAllBrowserPromptsOnSettingsChange \
+  DISABLED_RemovesAllBrowserPromptsOnSettingsChange
+#else
+#define MAYBE_RemovesAllBrowserPromptsOnSettingsChange \
+  RemovesAllBrowserPromptsOnSettingsChange
+#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
-                       RemovesAllBrowserPromptsOnSettingsChange) {
+                       MAYBE_RemovesAllBrowserPromptsOnSettingsChange) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       InstrumentTab(kFirstTabContents),
