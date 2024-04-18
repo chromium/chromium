@@ -42,6 +42,8 @@ _EXCLUDED_PATHS = (
     r".+_pb2(_grpc)?\.py$",
     r".+/pnacl_shim\.c$",
     r"^gpu/config/.*_list_json\.cc$",
+    # TODO(crbug.com/332933533) Remove this exception.
+    r"^tools/bisect/.*",
     r"tools/md_browser/.*\.css$",
     # Test pages for Maps telemetry tests.
     r"tools/perf/page_sets/maps_perf_test.*",
@@ -3710,6 +3712,7 @@ def CheckPythonDevilInit(input_api, output_api):
         affected_file,
         files_to_skip=(_EXCLUDED_PATHS + input_api.DEFAULT_FILES_TO_SKIP + (
             r'^build/android/devil_chromium\.py',
+            r'^tools/bisect/.*',
             r'^third_party/.*',
         )),
         files_to_check=[r'.*\.py$'])
