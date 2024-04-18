@@ -214,7 +214,7 @@ id<GREYMatcher> PasteToSearchButton() {
 // Returns Copy button from the location bar context menu.
 id<GREYMatcher> CopyContextMenuButton() {
   int copyButtonId = IDS_IOS_SHARE_MENU_COPY;
-  if ([ChromeEarlGrey isBottomOmniboxSteadyStateEnabled]) {
+  if ([ChromeEarlGrey isBottomOmniboxAvailable]) {
     copyButtonId = IDS_IOS_COPY_LINK_ACTION_TITLE;
   }
   return grey_allOf(

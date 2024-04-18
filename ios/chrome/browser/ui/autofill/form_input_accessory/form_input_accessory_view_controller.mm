@@ -114,14 +114,14 @@ using manual_fill::ManualFillDataType;
 
   self.view = self.formInputAccessoryView;
 
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [self updateOmniboxTypingShieldVisibility];
   }
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [self updateOmniboxTypingShieldVisibility];
   }
 }
@@ -474,7 +474,6 @@ using manual_fill::ManualFillDataType;
 }
 
 - (void)updateOmniboxTypingShieldVisibility {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   if (!self.formInputAccessoryView) {
     return;
   }

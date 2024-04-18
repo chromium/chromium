@@ -53,7 +53,6 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
         GetExpandedTopToolbarHeight() - GetCollapsedTopToolbarHeight();
     if (top_delta < FLT_EPSILON &&
         GetCollapsedBottomToolbarHeight() >= FLT_EPSILON) {
-      CHECK(IsBottomOmniboxSteadyStateEnabled());
       CGFloat bottom_delta =
           GetExpandedBottomToolbarHeight() - GetCollapsedBottomToolbarHeight();
       return bottom_delta;

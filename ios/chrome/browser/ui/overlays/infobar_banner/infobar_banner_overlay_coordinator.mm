@@ -92,7 +92,7 @@
   CGFloat omniboxMaxY = CGRectGetMaxY(omniboxFrame);
 
   // Use the top toolbar's layout guide when the omnibox is at the bottom.
-  if (IsBottomOmniboxSteadyStateEnabled() && topOmnibox.hidden) {
+  if (topOmnibox.hidden) {
     UIView* topToolbar =
         [layoutGuideCenter referencedViewUnderName:kPrimaryToolbarGuide];
     CGRect topToolbarFrame = [topToolbar convertRect:topToolbar.bounds

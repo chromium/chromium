@@ -239,7 +239,6 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
     // centered.
     [locationBarViewController.view updateConstraintsIfNeeded];
   } else {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
     [self.view setLocationBarView:nil];
     self.view.locationBarContainer.hidden = YES;
   }

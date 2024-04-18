@@ -175,7 +175,6 @@ bool FullscreenControllerImpl::IsForceFullscreenMode() const {
 }
 
 void FullscreenControllerImpl::EnterForceFullscreenMode() {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   if (IsForceFullscreenMode()) {
     return;
   }
@@ -189,7 +188,6 @@ void FullscreenControllerImpl::EnterForceFullscreenMode() {
 }
 
 void FullscreenControllerImpl::ExitForceFullscreenMode() {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   if (!IsForceFullscreenMode()) {
     return;
   }

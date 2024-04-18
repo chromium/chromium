@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import <stddef.h>
 #import <stdint.h>
+
 #import <cmath>
 
 #import "base/apple/foundation_util.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
@@ -429,4 +431,8 @@ CGFloat DeviceCornerRadius() {
   const BOOL isRoundedDevice =
       (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
   return isRoundedDevice ? 40.0 : 0.0;
+}
+
+bool IsBottomOmniboxAvailable() {
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
 }

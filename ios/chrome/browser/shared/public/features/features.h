@@ -242,10 +242,6 @@ extern const char kBottomOmniboxDefaultSettingParamSafariSwitcher[];
 // Feature flag to change the default position of the omnibox.
 BASE_DECLARE_FEATURE(kBottomOmniboxDefaultSetting);
 
-// Returns true if the bottom omnibox feature is enabled. This does not check
-// that the omnibox is currently at the bottom.
-bool IsBottomOmniboxSteadyStateEnabled();
-
 // Feature flag to enable the bottom omnibox FRE promo.
 BASE_DECLARE_FEATURE(kBottomOmniboxPromoFRE);
 

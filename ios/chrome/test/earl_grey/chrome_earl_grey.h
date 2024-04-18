@@ -54,6 +54,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns YES if running on an iPad.
 - (BOOL)isIPadIdiom;
 
+// Returns YES if running on an iPhone.
+- (BOOL)isIPhoneIdiom;
+
 // YES if the current interface language uses RTL layout.
 - (BOOL)isRTL;
 
@@ -80,6 +83,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Takes a snapshot of memory usage by calling into the internal
 // framework (should only be used by performance tests)
 - (void)primesTakeMemorySnapshot:(NSString*)eventName;
+
+// Returns whether the bottom omnibox steady state feature is enabled.
+- (BOOL)isBottomOmniboxAvailable;
 
 #pragma mark - History Utilities (EG2)
 
@@ -739,9 +745,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns whether the Web Channels feature is enabled.
 - (BOOL)isWebChannelsEnabled;
-
-// Returns whether the bottom omnibox steady state feature is enabled.
-- (BOOL)isBottomOmniboxSteadyStateEnabled;
 
 // Returns whether the unfocused omnibox is at the bottom.
 - (BOOL)isUnfocusedOmniboxAtBottom;

@@ -161,7 +161,7 @@
   self.orchestrator.editViewAnimatee =
       [self.locationBarCoordinator editViewAnimatee];
 
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [self.toolbarMediator setInitialOmniboxPosition];
   } else {
     [self.primaryToolbarCoordinator
@@ -329,7 +329,6 @@
 
 - (CGFloat)collapsedPrimaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
     // TODO(crbug.com/1473629): Find out why primary toolbar height cannot be
     // zero. This is a temporary fix for the pdf bug.
     return 1.0;
@@ -341,7 +340,6 @@
 
 - (CGFloat)expandedPrimaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
     // TODO(crbug.com/1473629): Find out why primary toolbar height cannot be
     // zero. This is a temporary fix for the pdf bug.
     return 1.0;
@@ -358,7 +356,6 @@
 
 - (CGFloat)collapsedSecondaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
     return ToolbarCollapsedHeight(
         self.traitEnvironment.traitCollection.preferredContentSizeCategory);
   }
@@ -372,7 +369,6 @@
   CGFloat height =
       self.secondaryToolbarViewController.view.intrinsicContentSize.height;
   if (_omniboxPosition == ToolbarType::kSecondary) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
     height += ToolbarExpandedHeight(
         self.traitEnvironment.traitCollection.preferredContentSizeCategory);
   }

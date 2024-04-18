@@ -1232,10 +1232,6 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
 }
 
-+ (BOOL)isBottomOmniboxSteadyStateEnabled {
-  return IsBottomOmniboxSteadyStateEnabled();
-}
-
 #pragma mark - ContentSettings
 
 + (ContentSetting)popupPrefValue {

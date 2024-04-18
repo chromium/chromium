@@ -70,8 +70,6 @@
       self.buttonFactory.toolbarConfiguration.backgroundColor;
   if (self.hasOmnibox) {
     self.view.locationBarContainer.hidden = NO;
-  } else {
-    DCHECK(IsBottomOmniboxSteadyStateEnabled());
   }
 }
 

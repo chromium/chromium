@@ -553,9 +553,6 @@
 // Returns whether the Web Channels feature is enabled.
 + (BOOL)isWebChannelsEnabled;
 
-// Returns whether the bottom omnibox steady state feature is enabled.
-+ (BOOL)isBottomOmniboxSteadyStateEnabled;
-
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

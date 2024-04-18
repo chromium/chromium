@@ -1438,11 +1438,8 @@ enum HeaderBehaviour {
       self.toolbarCoordinator.secondaryToolbarViewController.view;
   self.secondaryToolbarHeightConstraint = [toolbarView.heightAnchor
       constraintEqualToConstant:[self secondaryToolbarHeightWithInset]];
-  if (IsBottomOmniboxSteadyStateEnabled()) {
-    // The bottom toolbar can be constraint to the keyboard in some cases.
-    self.secondaryToolbarHeightConstraint.priority =
-        UILayoutPriorityRequired - 1;
-  }
+  // The bottom toolbar can be constraint to the keyboard in some cases.
+  self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
   self.secondaryToolbarHeightConstraint.active = YES;
   AddSameConstraintsToSides(
       self.view, toolbarView,
@@ -1923,7 +1920,6 @@ enum HeaderBehaviour {
     return 0.0;
   }
   // Height is non-zero only when bottom omnibox is enabled.
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   return self.rootSafeAreaInsets.bottom + height;
 }
 
@@ -2510,11 +2506,6 @@ enum HeaderBehaviour {
 #pragma mark - ToolbarHeightDelegate
 
 - (void)toolbarsHeightChanged {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
-
-  // TODO(crbug.com/1455093): Check if other components are impacted here.
-  // Fullscreen, TextZoom, FindInPage.
-
   // Toolbar state must be updated before `updateForFullscreenProgress` as the
   // later uses the insets from fullscreen model.
   [self updateToolbarState];
@@ -2527,14 +2518,12 @@ enum HeaderBehaviour {
 }
 
 - (void)secondaryToolbarMovedAboveKeyboard {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   // Lower the height constraint priority, allowing UIKeyboardLayoutGuide to
   // move the toolbar above the keyboard.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityDefaultHigh;
 }
 
 - (void)secondaryToolbarRemovedFromKeyboard {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   // Return to required priority, otherwise UIKeyboardLayoutGuide would set the
   // toolbar minimum height to the bottom safe area.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;

@@ -77,7 +77,7 @@ void CheckProgressViewVisibleWithProgress(CGFloat progress) {
                                           visibleProgressView, progress)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  if ([ChromeEarlGrey isBottomOmniboxSteadyStateEnabled]) {
+  if ([ChromeEarlGrey isBottomOmniboxAvailable]) {
     [[EarlGrey selectElementWithMatcher:hiddenProgressView]
         assertWithMatcher:grey_notVisible()];
   }
@@ -88,7 +88,7 @@ void CheckProgressViewNotVisible() {
   [[EarlGrey selectElementWithMatcher:ProgressViewInPrimaryToolbar()]
       assertWithMatcher:grey_notVisible()];
 
-  if ([ChromeEarlGrey isBottomOmniboxSteadyStateEnabled]) {
+  if ([ChromeEarlGrey isBottomOmniboxAvailable]) {
     [[EarlGrey selectElementWithMatcher:ProgressViewInSecondaryToolbar()]
         assertWithMatcher:grey_notVisible()];
   }

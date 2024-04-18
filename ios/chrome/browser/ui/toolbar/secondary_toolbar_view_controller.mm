@@ -40,7 +40,7 @@
   [self.layoutGuideCenter referenceView:self.view
                               underName:kSecondaryToolbarGuide];
 
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(keyboardWillHide:)
@@ -74,7 +74,6 @@
     // has `isAccessibilityElement` equals NO to let the user interact with the
     // omnibox on voice over. In this mode, logic to dismiss the keyboard is
     // handled here in `SecondaryToolbarViewController`.
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
     CHECK([self hasOmnibox]);
     UIResponder* responder = GetFirstResponder();
     [responder resignFirstResponder];
@@ -87,7 +86,7 @@
   [super updateForFullscreenProgress:progress];
 
   CGFloat alphaValue = fmax(progress * 1.1 - 0.1, 0);
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     self.view.buttonStackView.alpha = alphaValue;
   }
 
@@ -151,8 +150,6 @@
 /// `constraintToKeyboard`, the toolbar is collapsed above the keyboard.
 - (void)constraintToKeyboard:(BOOL)constraintToKeyboard
             withNotification:(NSNotification*)notification {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
-
   if (constraintToKeyboard) {
     if ([self.keyboardStateProvider keyboardIsActiveForWebContent]) {
       // Enable the constraint only when the keyboard is showing for web

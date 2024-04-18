@@ -135,6 +135,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return idiom == UIUserInterfaceIdiomPad;
 }
 
+- (BOOL)isIPhoneIdiom {
+  UIUserInterfaceIdiom idiom =
+      [[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] userInterfaceIdiom];
+
+  return idiom == UIUserInterfaceIdiomPhone;
+}
+
 - (BOOL)isRTL {
   return [ChromeEarlGreyAppInterface isRTL];
 }
@@ -169,6 +176,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (void)primesTakeMemorySnapshot:(NSString*)eventName {
   [ChromeEarlGreyAppInterface primesTakeMemorySnapshot:eventName];
+}
+
+- (BOOL)isBottomOmniboxAvailable {
+  return self.isIPhoneIdiom;
 }
 
 #pragma mark - History Utilities (EG2)
@@ -1404,13 +1415,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isWebChannelsEnabled];
 }
 
-- (BOOL)isBottomOmniboxSteadyStateEnabled {
-  return [ChromeEarlGreyAppInterface isBottomOmniboxSteadyStateEnabled];
-}
-
 - (BOOL)isUnfocusedOmniboxAtBottom {
-  return self.isBottomOmniboxSteadyStateEnabled && !self.isIPadIdiom &&
-         self.isSplitToolbarMode &&
+  return !self.isIPadIdiom && self.isSplitToolbarMode &&
          [self userBooleanPref:prefs::kBottomOmnibox];
 }
 

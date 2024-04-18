@@ -573,7 +573,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 - (void)setOriginalPrefService:(PrefService*)originalPrefService {
   _originalPrefService = originalPrefService;
-  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService) {
+  if (IsBottomOmniboxAvailable() && _originalPrefService) {
     _bottomOmniboxEnabled =
         [[PrefBackedBoolean alloc] initWithPrefService:_originalPrefService
                                               prefName:prefs::kBottomOmnibox];
@@ -765,7 +765,6 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   if (observableBoolean == _bottomOmniboxEnabled) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
     [self.consumer newOmniboxPositionIsBottom:_bottomOmniboxEnabled.value];
   }
 }

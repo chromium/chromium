@@ -7,6 +7,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
@@ -168,7 +169,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     [self.viewController didMoveToParentViewController:parentVC];
 
     BOOL enableFocusAnimation =
-        IsBottomOmniboxSteadyStateEnabled() && isFocusingOmnibox &&
+        IsBottomOmniboxAvailable() && isFocusingOmnibox &&
         _unfocusedOmniboxToolbarType == ToolbarType::kSecondary;
 
     [self initialLayoutAnimated:enableFocusAnimation];
@@ -327,7 +328,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 /// Animates the popup for omnibox focus.
 - (void)animatePopupOnOmniboxFocus {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   __weak __typeof__(self) weakSelf = self;
   self.viewController.view.alpha = 0.0;
   self.popupTopConstraint.constant = kFadeAnimationVerticalOffset;

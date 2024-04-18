@@ -197,4 +197,7 @@ bool IsScrollViewScrolledToBottom(UIScrollView* scroll_view);
 // Returns the approximate corner radius of the current device.
 CGFloat DeviceCornerRadius();
 
+// Returns whether bottom omnibox is an available option.
+bool IsBottomOmniboxAvailable();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_UIKIT_UI_UTIL_H_

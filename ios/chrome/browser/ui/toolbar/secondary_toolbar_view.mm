@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -131,7 +132,7 @@ UIView* SecondaryToolbarLocationBarContainerView(
 - (void)willMoveToSuperview:(UIView*)newSuperview {
   [super willMoveToSuperview:newSuperview];
 
-  if (IsBottomOmniboxSteadyStateEnabled() && newSuperview) {
+  if (IsBottomOmniboxAvailable() && newSuperview) {
     _locationBarKeyboardConstraint.active = NO;
 
     // UIKeyboardLayoutGuide is updated sooner in superview's
@@ -193,7 +194,7 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
   UILayoutGuide* safeArea = self.safeAreaLayoutGuide;
 
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     self.buttonStackView.backgroundColor = self.backgroundColor;
     self.collapsedToolbarButton = SecondaryToolbarCollapsedToolbarButton();
     self.locationBarContainer =
@@ -308,7 +309,6 @@ UIView* SecondaryToolbarLocationBarContainerView(
 }
 
 - (void)setLocationBarView:(UIView*)locationBarView {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   if (_locationBarView == locationBarView) {
     return;
   }

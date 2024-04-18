@@ -211,7 +211,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     return;
   }
 
-  BOOL isBottomOmnibox = IsBottomOmniboxSteadyStateEnabled() &&
+  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
                          _prefService->GetBoolean(prefs::kBottomOmnibox);
   BubbleArrowDirection arrowDirection =
       isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;

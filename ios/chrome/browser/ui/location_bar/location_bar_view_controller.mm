@@ -569,7 +569,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
   __weak __typeof__(self) weakSelf = self;
   UIImage* pasteImage = nil;
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     pasteImage =
         DefaultSymbolWithPointSize(kPasteActionSymbol, kSymbolActionPointSize);
 
@@ -649,7 +649,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   // Show Top or Bottom Address Bar action.
-  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService &&
+  if (IsBottomOmniboxAvailable() && _originalPrefService &&
       IsSplitToolbarMode(self)) {
     NSString* title = nil;
     UIImage* image = nil;
@@ -692,7 +692,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   // Reverse the array manually when preferredMenuElementOrder is not available.
-  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService) {
+  if (IsBottomOmniboxAvailable() && _originalPrefService) {
     if (!base::ios::IsRunningOnIOS16OrLater()) {
       if (_originalPrefService->GetBoolean(prefs::kBottomOmnibox)) {
         menuElements =
@@ -727,7 +727,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                      return [weakSelf contextMenuUIMenu:suggestedActions];
                    }];
 
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     if (@available(iOS 16, *)) {
       configuration.preferredMenuElementOrder =
           UIContextMenuConfigurationElementOrderPriority;

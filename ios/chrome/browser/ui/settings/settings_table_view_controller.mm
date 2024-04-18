@@ -443,7 +443,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [super viewWillAppear:animated];
   // Update the `_safetyCheckItem` icon when returning to this view controller.
   [self updateSafetyCheckItemTrailingIcon];
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     // Update the address bar new IPH badge here as it depends on the number of
     // time it's shown.
     [self updateAddressBarNewIPHBadge];
@@ -478,7 +478,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
   }
 
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [model addItem:[self addressBarPreferenceItem]
         toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
   }
@@ -1965,7 +1965,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // Add or remove the "new" IPH badge from the address bar settings row. The
 // badge is shown a maximum of `kMaxShowCountNewIPHBadge` times.
 - (void)updateAddressBarNewIPHBadge {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   CHECK(_addressBarPreferenceItem);
 
   if (!_browserState) {

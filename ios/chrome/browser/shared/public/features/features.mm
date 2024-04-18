@@ -253,13 +253,6 @@ BASE_FEATURE(kBottomOmniboxDefaultSetting,
              "BottomOmniboxDefaultSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsBottomOmniboxSteadyStateEnabled() {
-  // Bottom omnibox is only available on phones.
-  // TODO(crbug.com/1508532): Cleanup usage of this function as the feature flag
-  // is now enabled by default.
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
-}
-
 BASE_FEATURE(kBottomOmniboxPromoFRE,
              "BottomOmniboxPromoFRE",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -272,7 +265,7 @@ const char kBottomOmniboxPromoParam[] = "BottomOmniboxPromoParam";
 const char kBottomOmniboxPromoParamForced[] = "Forced";
 
 bool IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType type) {
-  if (!IsBottomOmniboxSteadyStateEnabled()) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return false;
   }
   if ((type == BottomOmniboxPromoType::kFRE ||
