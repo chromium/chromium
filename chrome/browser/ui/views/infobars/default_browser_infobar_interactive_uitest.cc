@@ -52,23 +52,13 @@ const WebContentsInteractionTestUtil::DeepQuery kDefaultBrowserButton = {
     "settings-default-browser-page", "cr-button"};
 }  // namespace
 
-class DefaultBrowserInfobarInteractiveTest
-    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
+class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndDisableFeature(
         features::kDefaultBrowserPromptRefresh);
 
     InteractiveBrowserTest::SetUp();
-  }
-
-  ConfirmInfoBar* GetActiveInfoBar() {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    infobars::ContentInfoBarManager* infobar_manager =
-        infobars::ContentInfoBarManager::FromWebContents(web_contents);
-    CHECK(infobar_manager);
-    return static_cast<ConfirmInfoBar*>(infobar_manager->infobars()[0]);
   }
 
  private:
@@ -85,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarInteractiveTest,
 }
 
 class DefaultBrowserInfobarWithRefreshInteractiveTest
-    : public DefaultBrowserInfobarInteractiveTest {
+    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -142,15 +132,8 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       InSameContext(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId)));
 }
 
-// TODO(crbug.com/335474941): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_RemovesAllBrowserPromptsOnAccept \
-  DISABLED_RemovesAllBrowserPromptsOnAccept
-#else
-#define MAYBE_RemovesAllBrowserPromptsOnAccept RemovesAllBrowserPromptsOnAccept
-#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
-                       MAYBE_RemovesAllBrowserPromptsOnAccept) {
+                       RemovesAllBrowserPromptsOnAccept) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
