@@ -120,7 +120,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, OmniboxExtension) {
 TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
   // An extension with a page action...
   auto extension = extensions::ExtensionBuilder("Foo")
-                       .SetAction(extensions::ActionInfo::TYPE_PAGE)
+                       .SetAction(extensions::ActionInfo::Type::kPage)
                        .Build();
   extension_service()->AddExtension(extension.get());
 
@@ -141,7 +141,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
 TEST_F(ExtensionInstalledBubbleModelTest, ExtensionWithKeyBinding) {
   // An extension with a browser action and a key binding...
   auto builder = extensions::ExtensionBuilder("Foo");
-  builder.SetAction(extensions::ActionInfo::TYPE_BROWSER);
+  builder.SetAction(extensions::ActionInfo::Type::kBrowser);
   AddBrowserActionKeyBinding(&builder, "Alt+Shift+E");
   auto extension = builder.Build();
 

@@ -227,15 +227,15 @@ void ExtensionActionAPI::DispatchExtensionActionClicked(
   events::HistogramValue histogram_value = events::UNKNOWN;
   const char* event_name = nullptr;
   switch (extension_action.action_type()) {
-    case ActionInfo::TYPE_ACTION:
+    case ActionInfo::Type::kAction:
       histogram_value = events::ACTION_ON_CLICKED;
       event_name = "action.onClicked";
       break;
-    case ActionInfo::TYPE_BROWSER:
+    case ActionInfo::Type::kBrowser:
       histogram_value = events::BROWSER_ACTION_ON_CLICKED;
       event_name = "browserAction.onClicked";
       break;
-    case ActionInfo::TYPE_PAGE:
+    case ActionInfo::Type::kPage:
       histogram_value = events::PAGE_ACTION_ON_CLICKED;
       event_name = "pageAction.onClicked";
       break;
@@ -352,7 +352,7 @@ ExtensionFunction::ResponseAction ExtensionActionFunction::Run() {
   } else {
     // Page actions do not have a default tabId.
     EXTENSION_FUNCTION_VALIDATE(extension_action_->action_type() !=
-                                ActionInfo::TYPE_PAGE);
+                                ActionInfo::Type::kPage);
   }
   return RunExtensionAction();
 }
@@ -623,7 +623,7 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
   // This API is only available to extensions with the "action" key in the
   // manifest, so they should always have an action.
   DCHECK(action);
-  DCHECK_EQ(ActionInfo::TYPE_ACTION, action->action_type());
+  DCHECK_EQ(ActionInfo::Type::kAction, action->action_type());
 
   const bool is_pinned =
       ToolbarActionsModel::Get(Profile::FromBrowserContext(browser_context()))

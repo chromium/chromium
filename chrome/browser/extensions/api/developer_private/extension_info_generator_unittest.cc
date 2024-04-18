@@ -1226,10 +1226,10 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
     ActionInfo::Type action_type;
     const int manifest_version;
   } test_cases[] = {
-      {"browser action", "_execute_browser_action", ActionInfo::TYPE_BROWSER,
+      {"browser action", "_execute_browser_action", ActionInfo::Type::kBrowser,
        2},
-      {"page action", "_execute_page_action", ActionInfo::TYPE_PAGE, 2},
-      {"action", "_execute_action", ActionInfo::TYPE_ACTION, 3},
+      {"page action", "_execute_page_action", ActionInfo::Type::kPage, 2},
+      {"action", "_execute_action", ActionInfo::Type::kAction, 3},
   };
 
   for (const auto& test_case : test_cases) {

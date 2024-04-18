@@ -564,8 +564,9 @@ bool ExtensionActionViewController::CanHandleAccelerators() const {
   // always checking IsEnabled(). It's weird to use a keyboard shortcut on a
   // disabled action (in most cases, this will result in opening the context
   // menu).
-  if (extension_action_->action_type() == extensions::ActionInfo::TYPE_PAGE)
+  if (extension_action_->action_type() == extensions::ActionInfo::Type::kPage) {
     return IsEnabled(view_delegate_->GetCurrentWebContents());
+  }
   return true;
 }
 

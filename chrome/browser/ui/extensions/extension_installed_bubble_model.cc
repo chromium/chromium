@@ -49,12 +49,12 @@ std::u16string MakeHowToUseText(const extensions::ActionInfo* action,
     extra = command->accelerator().GetShortcutText();
 
   int message_id = 0;
-  if (action && action->type == extensions::ActionInfo::TYPE_BROWSER) {
+  if (action && action->type == extensions::ActionInfo::Type::kBrowser) {
     message_id =
         extra.empty()
             ? IDS_EXTENSION_INSTALLED_BROWSER_ACTION_INFO
             : IDS_EXTENSION_INSTALLED_BROWSER_ACTION_INFO_WITH_SHORTCUT;
-  } else if (action && action->type == extensions::ActionInfo::TYPE_PAGE) {
+  } else if (action && action->type == extensions::ActionInfo::Type::kPage) {
     message_id = extra.empty()
                      ? IDS_EXTENSION_INSTALLED_PAGE_ACTION_INFO
                      : IDS_EXTENSION_INSTALLED_PAGE_ACTION_INFO_WITH_SHORTCUT;

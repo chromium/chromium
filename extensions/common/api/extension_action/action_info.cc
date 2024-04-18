@@ -43,12 +43,12 @@ ActionInfoData::~ActionInfoData() = default;
 
 ActionInfo::ActionInfo(Type type) : type(type), synthesized(false) {
   switch (type) {
-    case TYPE_PAGE:
-      default_state = STATE_DISABLED;
+    case ActionInfo::Type::kPage:
+      default_state = ActionInfo::DefaultState::kDisabled;
       break;
-    case TYPE_BROWSER:
-    case TYPE_ACTION:
-      default_state = STATE_ENABLED;
+    case ActionInfo::Type::kBrowser:
+    case ActionInfo::Type::kAction:
+      default_state = ActionInfo::DefaultState::kEnabled;
       break;
   }
 }
@@ -137,7 +137,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
   if (const base::Value* default_state = dict.Find(keys::kActionDefaultState)) {
     // The default_state key is only valid for TYPE_ACTION; throw an error for
     // others.
-    if (type != TYPE_ACTION) {
+    if (type != ActionInfo::Type::kAction) {
       *error = errors::kDefaultStateShouldNotBeSet;
       return nullptr;
     }
@@ -149,8 +149,8 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
       return nullptr;
     }
     result->default_state = default_state->GetString() == kEnabled
-                                ? ActionInfo::STATE_ENABLED
-                                : ActionInfo::STATE_DISABLED;
+                                ? ActionInfo::DefaultState::kEnabled
+                                : ActionInfo::DefaultState::kDisabled;
   }
 
   return result;
@@ -178,13 +178,13 @@ void ActionInfo::SetExtensionActionInfo(Extension* extension,
 const char* ActionInfo::GetManifestKeyForActionType(ActionInfo::Type type) {
   const char* action_key = nullptr;
   switch (type) {
-    case ActionInfo::TYPE_BROWSER:
+    case ActionInfo::Type::kBrowser:
       action_key = manifest_keys::kBrowserAction;
       break;
-    case ActionInfo::TYPE_PAGE:
+    case ActionInfo::Type::kPage:
       action_key = manifest_keys::kPageAction;
       break;
-    case ActionInfo::TYPE_ACTION:
+    case ActionInfo::Type::kAction:
       action_key = manifest_keys::kAction;
       break;
   }

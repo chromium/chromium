@@ -268,7 +268,7 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("browser_action")
             .SetLocation(ManifestLocation::kInternal)
-            .SetAction(extensions::ActionInfo::TYPE_BROWSER)
+            .SetAction(extensions::ActionInfo::Type::kBrowser)
             .Build();
     add_extension(extension.get());
     ExtensionInstallProto install = ConstructProto(*extension);
@@ -280,7 +280,7 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("page_action")
             .SetLocation(ManifestLocation::kInternal)
-            .SetAction(extensions::ActionInfo::TYPE_PAGE)
+            .SetAction(extensions::ActionInfo::Type::kPage)
             .Build();
     add_extension(extension.get());
     ExtensionInstallProto install = ConstructProto(*extension);

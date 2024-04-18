@@ -105,7 +105,7 @@ TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV2) {
   ASSERT_TRUE(extension);
 
   const ActionInfo* action_info =
-      GetActionInfoOfType(*extension, ActionInfo::TYPE_PAGE);
+      GetActionInfoOfType(*extension, ActionInfo::Type::kPage);
   ASSERT_TRUE(action_info);
 }
 
@@ -122,9 +122,9 @@ TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV3) {
   ASSERT_TRUE(extension);
 
   const ActionInfo* action_info =
-      GetActionInfoOfType(*extension, ActionInfo::TYPE_ACTION);
+      GetActionInfoOfType(*extension, ActionInfo::Type::kAction);
   ASSERT_TRUE(action_info);
-  EXPECT_EQ(ActionInfo::STATE_DISABLED, action_info->default_state);
+  EXPECT_EQ(ActionInfo::DefaultState::kDisabled, action_info->default_state);
 }
 
 // A parameterized test suite to test each different extension action key
@@ -267,13 +267,13 @@ TEST_P(ExtensionActionManifestTest, Invalid) {
 
   const char* expected_error = nullptr;
   switch (GetParam()) {
-    case ActionInfo::TYPE_BROWSER:
+    case ActionInfo::Type::kBrowser:
       expected_error = manifest_errors::kInvalidBrowserAction;
       break;
-    case ActionInfo::TYPE_PAGE:
+    case ActionInfo::Type::kPage:
       expected_error = manifest_errors::kInvalidPageAction;
       break;
-    case ActionInfo::TYPE_ACTION:
+    case ActionInfo::Type::kAction:
       expected_error = manifest_errors::kInvalidAction;
       break;
   }
@@ -351,7 +351,7 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
   constexpr char kDefaultStateInvalid[] = R"({"default_state": "foo"})";
 
   // default_state is only valid for "action" types.
-  const bool default_state_allowed = GetParam() == ActionInfo::TYPE_ACTION;
+  const bool default_state_allowed = GetParam() == ActionInfo::Type::kAction;
   const std::string key_disallowed_error =
       base::UTF16ToUTF8(manifest_errors::kDefaultStateShouldNotBeSet);
   const std::string invalid_action_error =
@@ -367,12 +367,14 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
   } test_cases[] = {
       {kDefaultStateDisabled,
        default_state_allowed ? nullptr : key_disallowed_error.c_str(),
-       default_state_allowed ? std::make_optional(ActionInfo::STATE_DISABLED)
-                             : std::nullopt},
+       default_state_allowed
+           ? std::make_optional(ActionInfo::DefaultState::kDisabled)
+           : std::nullopt},
       {kDefaultStateEnabled,
        default_state_allowed ? nullptr : key_disallowed_error.c_str(),
-       default_state_allowed ? std::make_optional(ActionInfo::STATE_ENABLED)
-                             : std::nullopt},
+       default_state_allowed
+           ? std::make_optional(ActionInfo::DefaultState::kEnabled)
+           : std::nullopt},
       {kDefaultStateInvalid,
        default_state_allowed ? invalid_action_error.c_str()
                              : key_disallowed_error.c_str(),
@@ -401,8 +403,8 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionActionManifestTest,
-                         testing::Values(ActionInfo::TYPE_BROWSER,
-                                         ActionInfo::TYPE_PAGE,
-                                         ActionInfo::TYPE_ACTION));
+                         testing::Values(ActionInfo::Type::kBrowser,
+                                         ActionInfo::Type::kPage,
+                                         ActionInfo::Type::kAction));
 
 }  // namespace extensions

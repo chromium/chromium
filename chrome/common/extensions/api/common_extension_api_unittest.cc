@@ -1003,7 +1003,7 @@ TEST(ExtensionAPITest, ManifestKeys) {
       ExtensionAPI::CreateWithDefaultConfiguration());
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("Test").SetAction(ActionInfo::TYPE_BROWSER).Build();
+      ExtensionBuilder("Test").SetAction(ActionInfo::Type::kBrowser).Build();
 
   EXPECT_TRUE(extension_api
                   ->IsAvailable("browserAction", extension.get(),

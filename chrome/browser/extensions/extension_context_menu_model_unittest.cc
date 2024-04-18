@@ -103,13 +103,13 @@ void Increment(int* i, bool granted) {
 MenuItem::Context MenuItemContextForActionType(ActionInfo::Type type) {
   MenuItem::Context context = MenuItem::ALL;
   switch (type) {
-    case ActionInfo::TYPE_BROWSER:
+    case ActionInfo::Type::kBrowser:
       context = MenuItem::BROWSER_ACTION;
       break;
-    case ActionInfo::TYPE_PAGE:
+    case ActionInfo::Type::kPage:
       context = MenuItem::PAGE_ACTION;
       break;
-    case ActionInfo::TYPE_ACTION:
+    case ActionInfo::Type::kAction:
       context = MenuItem::ACTION;
       break;
   }
@@ -1813,7 +1813,9 @@ TEST_F(ExtensionContextMenuModelTest, HistogramTest_CustomCommand) {
 
   InitializeEmptyExtensionService();
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").SetAction(ActionInfo::TYPE_BROWSER).Build();
+      ExtensionBuilder("extension")
+          .SetAction(ActionInfo::Type::kBrowser)
+          .Build();
   InitializeAndAddExtension(*extension);
 
   MenuManager* const manager = CreateMenuManager();
@@ -1852,8 +1854,9 @@ TEST_P(ExtensionActionContextMenuModelTest,
 
   MenuManager* const manager = CreateMenuManager();
 
-  std::set<ActionInfo::Type> mismatched_types = {
-      ActionInfo::TYPE_PAGE, ActionInfo::TYPE_BROWSER, ActionInfo::TYPE_ACTION};
+  std::set<ActionInfo::Type> mismatched_types = {ActionInfo::Type::kPage,
+                                                 ActionInfo::Type::kBrowser,
+                                                 ActionInfo::Type::kAction};
   mismatched_types.erase(GetParam());
 
   // Currently, there are no associated context menu items.
@@ -1984,9 +1987,9 @@ TEST_P(ExtensionActionContextMenuModelTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionActionContextMenuModelTest,
-                         testing::Values(ActionInfo::TYPE_PAGE,
-                                         ActionInfo::TYPE_BROWSER,
-                                         ActionInfo::TYPE_ACTION));
+                         testing::Values(ActionInfo::Type::kPage,
+                                         ActionInfo::Type::kBrowser,
+                                         ActionInfo::Type::kAction));
 
 class ExtensionContextMenuModelWithUserHostControlsTest
     : public ExtensionContextMenuModelTest,

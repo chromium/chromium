@@ -125,9 +125,9 @@ TEST_P(ExtensionActionAPIUnitTest, ActionLocalization) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionActionAPIUnitTest,
-                         testing::Values(ActionInfo::TYPE_BROWSER,
-                                         ActionInfo::TYPE_PAGE,
-                                         ActionInfo::TYPE_ACTION));
+                         testing::Values(ActionInfo::Type::kBrowser,
+                                         ActionInfo::Type::kPage,
+                                         ActionInfo::Type::kAction));
 
 }  // namespace
 }  // namespace extensions

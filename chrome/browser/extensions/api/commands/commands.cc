@@ -37,21 +37,21 @@ ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
   extensions::Command browser_action;
   bool active = false;
   if (command_service->GetExtensionActionCommand(
-          extension_->id(), extensions::ActionInfo::TYPE_BROWSER,
+          extension_->id(), extensions::ActionInfo::Type::kBrowser,
           extensions::CommandService::ALL, &browser_action, &active)) {
     command_list.Append(CreateCommandValue(browser_action, active));
   }
 
   extensions::Command action;
   if (command_service->GetExtensionActionCommand(
-          extension_->id(), extensions::ActionInfo::TYPE_ACTION,
+          extension_->id(), extensions::ActionInfo::Type::kAction,
           extensions::CommandService::ALL, &action, &active)) {
     command_list.Append(CreateCommandValue(action, active));
   }
 
   extensions::Command page_action;
   if (command_service->GetExtensionActionCommand(
-          extension_->id(), extensions::ActionInfo::TYPE_PAGE,
+          extension_->id(), extensions::ActionInfo::Type::kPage,
           extensions::CommandService::ALL, &page_action, &active)) {
     command_list.Append(CreateCommandValue(page_action, active));
   }

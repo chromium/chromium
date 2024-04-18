@@ -18,15 +18,15 @@ class Extension;
 
 struct ActionInfo {
   // The types of extension actions.
-  enum Type {
-    TYPE_ACTION,
-    TYPE_BROWSER,
-    TYPE_PAGE,
+  enum class Type {
+    kAction,
+    kBrowser,
+    kPage,
   };
 
-  enum DefaultState {
-    STATE_ENABLED,
-    STATE_DISABLED,
+  enum class DefaultState {
+    kEnabled,
+    kDisabled,
   };
 
   explicit ActionInfo(Type type);

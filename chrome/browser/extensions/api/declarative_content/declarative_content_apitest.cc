@@ -545,8 +545,9 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
   ASSERT_TRUE(action);
 
   // Ensure actions are hidden (so that the ShowAction() rule has an effect).
-  if (action->default_state() == ActionInfo::STATE_DISABLED)
+  if (action->default_state() == ActionInfo::DefaultState::kDisabled) {
     action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
+  }
 
   // Open the tab to invoke the APIs, as well as test the action visibility.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -578,9 +579,10 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
 
   // If an extension had no action specified in the manifest, it will get a
   // synthesized page action.
-  ActionInfo::Type expected_type = action_type.value_or(ActionInfo::TYPE_PAGE);
+  ActionInfo::Type expected_type =
+      action_type.value_or(ActionInfo::Type::kPage);
   EXPECT_EQ(expected_type, action->action_type());
-  EXPECT_EQ(expected_type == ActionInfo::TYPE_PAGE ? 1u : 0u,
+  EXPECT_EQ(expected_type == ActionInfo::Type::kPage ? 1u : 0u,
             extension_action_test_util::GetVisiblePageActionCount(tab));
 }
 
@@ -591,17 +593,17 @@ IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
 
 IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
                        PageActionInManifest) {
-  TestShowAction(ActionInfo::TYPE_PAGE);
+  TestShowAction(ActionInfo::Type::kPage);
 }
 
 IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
                        BrowserActionInManifest) {
-  TestShowAction(ActionInfo::TYPE_BROWSER);
+  TestShowAction(ActionInfo::Type::kBrowser);
 }
 
 IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
                        ActionInManifest) {
-  TestShowAction(ActionInfo::TYPE_ACTION);
+  TestShowAction(ActionInfo::Type::kAction);
 }
 
 // Tests that rules from manifest are added and evaluated properly.

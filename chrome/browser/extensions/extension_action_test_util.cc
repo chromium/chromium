@@ -44,7 +44,7 @@ size_t GetPageActionCount(content::WebContents* web_contents,
     ExtensionAction* extension_action =
         action_manager->GetExtensionAction(*extension);
     if (extension_action &&
-        extension_action->action_type() == ActionInfo::TYPE_PAGE &&
+        extension_action->action_type() == ActionInfo::Type::kPage &&
         (!only_count_visible || extension_action->GetIsVisible(tab_id.id()))) {
       ++count;
     }

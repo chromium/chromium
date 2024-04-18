@@ -183,7 +183,7 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
 TEST_F(ExtensionActionViewControllerUnitTest,
        ExtensionActionWantsToRunAppearance) {
   const std::string id =
-      CreateAndAddExtension("extension", extensions::ActionInfo::TYPE_PAGE)
+      CreateAndAddExtension("extension", extensions::ActionInfo::Type::kPage)
           ->id();
 
   content::WebContents* web_contents = GetActiveWebContents();
@@ -204,7 +204,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 // Tests the appearance of browser actions with blocked script actions.
 TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
-      "browser_action", extensions::ActionInfo::TYPE_BROWSER,
+      "browser_action", extensions::ActionInfo::Type::kBrowser,
       {"https://www.google.com/*"});
 
   extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
@@ -247,7 +247,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
 // Tests the appearance of page actions with blocked script actions.
 TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
-      "page_action", extensions::ActionInfo::TYPE_PAGE,
+      "page_action", extensions::ActionInfo::Type::kPage,
       {"https://www.google.com/*"});
 
   extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
@@ -345,7 +345,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
 TEST_F(ExtensionActionViewControllerUnitTest,
        ExtensionActionContextMenuVisibility) {
   std::string id =
-      CreateAndAddExtension("extension", extensions::ActionInfo::TYPE_BROWSER)
+      CreateAndAddExtension("extension", extensions::ActionInfo::Type::kBrowser)
           ->id();
 
   // Check that the context menu has the proper string for the action's pinned
@@ -561,7 +561,7 @@ scoped_refptr<const extensions::Extension>
 ExtensionActionViewControllerGrayscaleTest::CreateExtension(
     PermissionType permission_type) {
   extensions::ExtensionBuilder builder("extension");
-  builder.SetAction(extensions::ActionInfo::TYPE_BROWSER)
+  builder.SetAction(extensions::ActionInfo::Type::kBrowser)
       .SetLocation(ManifestLocation::kInternal);
   constexpr char kHostGoogle[] = "https://www.google.com/*";
   switch (permission_type) {
@@ -608,7 +608,7 @@ TEST_F(ExtensionActionViewControllerGrayscaleTest,
 
 TEST_F(ExtensionActionViewControllerUnitTest, RuntimeHostsTooltip) {
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
-      "extension name", extensions::ActionInfo::TYPE_BROWSER,
+      "extension name", extensions::ActionInfo::Type::kBrowser,
       {"https://www.google.com/*"});
 
   extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
@@ -720,7 +720,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
 // interaction except for restricted URLs.
 TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
-      "active tab", extensions::ActionInfo::TYPE_BROWSER, {"activeTab"});
+      "active tab", extensions::ActionInfo::Type::kBrowser, {"activeTab"});
 
   // Navigate the browser to google.com. Since clicking the extension would
   // grant access to the page, the page interaction status should show as
@@ -814,7 +814,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 // See https://crbug.com/888121
 TEST_F(ExtensionActionViewControllerUnitTest, TestGetIconWithNullWebContents) {
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
-      "extension name", extensions::ActionInfo::TYPE_BROWSER,
+      "extension name", extensions::ActionInfo::Type::kBrowser,
       {"https://example.com/"});
 
   extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
@@ -855,12 +855,12 @@ class ExtensionActionViewControllerFeatureUnitTest
 // Tests hover card status after changing user site settings and site access.
 TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetHoverCardStatus) {
   std::string url_string = "https://example.com/";
-  auto extensionA =
-      CreateAndAddExtension("Extension A", extensions::ActionInfo::TYPE_ACTION);
+  auto extensionA = CreateAndAddExtension(
+      "Extension A", extensions::ActionInfo::Type::kAction);
   auto extensionB = CreateAndAddExtensionWithGrantedHostPermissions(
-      "Extension B", extensions::ActionInfo::TYPE_ACTION, {url_string});
+      "Extension B", extensions::ActionInfo::Type::kAction, {url_string});
   auto extensionC = CreateAndAddExtensionWithGrantedHostPermissions(
-      "Extension c", extensions::ActionInfo::TYPE_ACTION, {url_string});
+      "Extension c", extensions::ActionInfo::Type::kAction, {url_string});
 
   AddTab(browser(), GURL(url_string));
   content::WebContents* web_contents = GetActiveWebContents();
@@ -931,7 +931,7 @@ TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetTooltip) {
   std::u16string extension_name = u"Extension";
   std::string requested_url_string = "https://requested.com/";
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
-      base::UTF16ToUTF8(extension_name), extensions::ActionInfo::TYPE_ACTION,
+      base::UTF16ToUTF8(extension_name), extensions::ActionInfo::Type::kAction,
       {requested_url_string});
 
   // Navigate to a site the extension requests access to.
@@ -1029,12 +1029,12 @@ class ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest
 TEST_F(ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest,
        GetHoverCardStatus) {
   std::string url_string = "https://example.com/";
-  auto extensionA =
-      CreateAndAddExtension("Extension A", extensions::ActionInfo::TYPE_ACTION);
+  auto extensionA = CreateAndAddExtension(
+      "Extension A", extensions::ActionInfo::Type::kAction);
   auto extensionB = CreateAndAddExtensionWithGrantedHostPermissions(
-      "Extension B", extensions::ActionInfo::TYPE_ACTION, {url_string});
+      "Extension B", extensions::ActionInfo::Type::kAction, {url_string});
   auto extensionC = CreateAndAddExtensionWithGrantedHostPermissions(
-      "Extension c", extensions::ActionInfo::TYPE_ACTION, {url_string});
+      "Extension c", extensions::ActionInfo::Type::kAction, {url_string});
 
   AddTab(browser(), GURL(url_string));
   content::WebContents* web_contents = GetActiveWebContents();

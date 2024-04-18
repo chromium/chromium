@@ -91,7 +91,8 @@ ExtensionAction::ExtensionAction(const Extension& extension,
       extension_name_(extension.name()),
       action_type_(manifest_data.type),
       default_state_(manifest_data.default_state) {
-  SetIsVisible(kDefaultTabId, default_state_ == ActionInfo::STATE_ENABLED);
+  SetIsVisible(kDefaultTabId,
+               default_state_ == ActionInfo::DefaultState::kEnabled);
   Populate(extension, manifest_data);
 }
 

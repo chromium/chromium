@@ -401,13 +401,13 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
 
     const Command* new_command = nullptr;
     switch (type) {
-      case ActionInfo::TYPE_ACTION:
+      case ActionInfo::Type::kAction:
         new_command = CommandsInfo::GetActionCommand(extension);
         break;
-      case ActionInfo::TYPE_BROWSER:
+      case ActionInfo::Type::kBrowser:
         new_command = CommandsInfo::GetBrowserActionCommand(extension);
         break;
-      case ActionInfo::TYPE_PAGE:
+      case ActionInfo::Type::kPage:
         new_command = CommandsInfo::GetPageActionCommand(extension);
         break;
     }
@@ -416,11 +416,11 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
     // new extension, or the only command specified is synthesized (i.e.,
     // assigned to ui::VKEY_UNKNOWN), which happens for browser action commands.
     // See CommandsHandler::MaybeSetBrowserActionDefault().
-    // TODO(devlin): Should this logic apply to ActionInfo::TYPE_ACTION?
+    // TODO(devlin): Should this logic apply to ActionInfo::Type::kAction?
     // See https://crbug.com/893373.
     const bool should_relinquish =
         !new_command ||
-        (type == ActionInfo::TYPE_BROWSER &&
+        (type == ActionInfo::Type::kBrowser &&
          new_command->accelerator().key_code() == ui::VKEY_UNKNOWN);
 
     if (!should_relinquish)
@@ -433,8 +433,8 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
   // commands for actions they don't have, so we should just be able to query
   // for a single action type.
   for (ActionInfo::Type type :
-       {ActionInfo::TYPE_ACTION, ActionInfo::TYPE_BROWSER,
-        ActionInfo::TYPE_PAGE}) {
+       {ActionInfo::Type::kAction, ActionInfo::Type::kBrowser,
+        ActionInfo::Type::kPage}) {
     remove_overrides_if_unused(type);
   }
 }
@@ -697,13 +697,13 @@ bool CommandService::GetExtensionActionCommand(const ExtensionId& extension_id,
 
   const Command* requested_command = nullptr;
   switch (action_type) {
-    case ActionInfo::TYPE_BROWSER:
+    case ActionInfo::Type::kBrowser:
       requested_command = CommandsInfo::GetBrowserActionCommand(extension);
       break;
-    case ActionInfo::TYPE_PAGE:
+    case ActionInfo::Type::kPage:
       requested_command = CommandsInfo::GetPageActionCommand(extension);
       break;
-    case ActionInfo::TYPE_ACTION:
+    case ActionInfo::Type::kAction:
       requested_command = CommandsInfo::GetActionCommand(extension);
       break;
   }

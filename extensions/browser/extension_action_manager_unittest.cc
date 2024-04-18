@@ -127,8 +127,8 @@ TEST_P(ExtensionActionManagerTest, TestDontOverrideIfDefaultsProvided) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionActionManagerTest,
-                         testing::Values(ActionInfo::TYPE_ACTION,
-                                         ActionInfo::TYPE_BROWSER,
-                                         ActionInfo::TYPE_PAGE));
+                         testing::Values(ActionInfo::Type::kAction,
+                                         ActionInfo::Type::kBrowser,
+                                         ActionInfo::Type::kPage));
 
 }  // namespace extensions

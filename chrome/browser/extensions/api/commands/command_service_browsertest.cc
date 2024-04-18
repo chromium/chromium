@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
     Command command;
     bool active = false;
     EXPECT_TRUE(command_service->GetExtensionActionCommand(
-        extension->id(), ActionInfo::TYPE_BROWSER, CommandService::ALL,
+        extension->id(), ActionInfo::Type::kBrowser, CommandService::ALL,
         &command, &active));
 
     EXPECT_EQ(kBasicBrowserActionKeybinding,
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
     Command command;
     bool active = false;
     EXPECT_TRUE(command_service->GetExtensionActionCommand(
-        extension->id(), ActionInfo::TYPE_BROWSER, CommandService::ALL,
+        extension->id(), ActionInfo::Type::kBrowser, CommandService::ALL,
         &command, &active));
 
     EXPECT_EQ(kBasicAlternateKeybinding,
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
     Command command;
     bool active = true;
     EXPECT_TRUE(command_service->GetExtensionActionCommand(
-        extension->id(), ActionInfo::TYPE_BROWSER, CommandService::ALL,
+        extension->id(), ActionInfo::Type::kBrowser, CommandService::ALL,
         &command, &active));
 
     EXPECT_EQ(kBasicBrowserActionKeybinding,
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
     Command command;
     bool active = false;
     EXPECT_TRUE(command_service->GetExtensionActionCommand(
-        extension->id(), ActionInfo::TYPE_BROWSER, CommandService::ACTIVE,
+        extension->id(), ActionInfo::Type::kBrowser, CommandService::ACTIVE,
         &command, &active));
 
     EXPECT_EQ(kBasicBrowserActionKeybinding,
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
     Command command;
     bool active = false;
     EXPECT_TRUE(command_service->GetExtensionActionCommand(
-        extension->id(), ActionInfo::TYPE_BROWSER, CommandService::ACTIVE,
+        extension->id(), ActionInfo::Type::kBrowser, CommandService::ACTIVE,
         &command, &active));
 
     EXPECT_EQ(kBasicAlternateKeybinding,
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
     Command command;
     bool active = false;
     EXPECT_FALSE(command_service->GetExtensionActionCommand(
-        extension->id(), ActionInfo::TYPE_BROWSER, CommandService::ACTIVE,
+        extension->id(), ActionInfo::Type::kBrowser, CommandService::ACTIVE,
         &command, &active));
   }
 }

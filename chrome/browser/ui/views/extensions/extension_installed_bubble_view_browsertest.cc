@@ -35,9 +35,9 @@ class ExtensionInstalledBubbleViewsBrowserTest
     extensions::ExtensionBuilder builder(type);
 
     if (type == "BrowserAction") {
-      builder.SetAction(extensions::ActionInfo::TYPE_BROWSER);
+      builder.SetAction(extensions::ActionInfo::Type::kBrowser);
     } else if (type == "PageAction") {
-      builder.SetAction(extensions::ActionInfo::TYPE_PAGE);
+      builder.SetAction(extensions::ActionInfo::Type::kPage);
     }
 
     if (type == "SignInPromo" || type == "NoAction") {

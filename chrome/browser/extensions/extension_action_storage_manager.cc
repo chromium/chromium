@@ -204,8 +204,9 @@ void ExtensionActionStorageManager::OnExtensionLoaded(
     const Extension* extension) {
   ExtensionAction* action = ExtensionActionManager::Get(browser_context_)
                                 ->GetExtensionAction(*extension);
-  if (!action || action->action_type() != ActionInfo::TYPE_BROWSER)
+  if (!action || action->action_type() != ActionInfo::Type::kBrowser) {
     return;
+  }
 
   StateStore* store = GetStateStore();
   if (store) {
@@ -225,7 +226,7 @@ void ExtensionActionStorageManager::OnExtensionActionUpdated(
   // settings can't be persisted across browser sessions.
   bool for_default_tab = !web_contents;
   if (browser_context_ == browser_context &&
-      extension_action->action_type() == ActionInfo::TYPE_BROWSER &&
+      extension_action->action_type() == ActionInfo::Type::kBrowser &&
       for_default_tab) {
     WriteToStorage(extension_action);
   }
@@ -256,7 +257,7 @@ void ExtensionActionStorageManager::ReadFromStorage(
 
   ExtensionAction* action = ExtensionActionManager::Get(browser_context_)
                                 ->GetExtensionAction(*extension);
-  if (!action || action->action_type() != ActionInfo::TYPE_BROWSER) {
+  if (!action || action->action_type() != ActionInfo::Type::kBrowser) {
     // This can happen if the extension is updated between startup and when the
     // storage read comes back, and the update removes the browser action.
     // http://crbug.com/349371

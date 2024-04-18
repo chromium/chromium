@@ -1639,7 +1639,7 @@ AutotestPrivateGetExtensionsInfoFunction::Run() {
             .Set("allowedInIncognito",
                  util::IsIncognitoEnabled(id, browser_context()))
             .Set("hasPageAction",
-                 action && action->action_type() == ActionInfo::TYPE_PAGE));
+                 action && action->action_type() == ActionInfo::Type::kPage));
   }
 
   return RespondNow(WithArguments(

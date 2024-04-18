@@ -51,7 +51,7 @@ bool ExtensionActionHandler::Parse(Extension* extension,
                                    std::u16string* error) {
   const char* key = nullptr;
   const char* error_key = nullptr;
-  ActionInfo::Type type = ActionInfo::TYPE_ACTION;
+  ActionInfo::Type type = ActionInfo::Type::kAction;
   if (extension->manifest()->FindKey(manifest_keys::kAction)) {
     key = manifest_keys::kAction;
     error_key = manifest_errors::kInvalidAction;
@@ -66,7 +66,7 @@ bool ExtensionActionHandler::Parse(Extension* extension,
     }
     key = manifest_keys::kPageAction;
     error_key = manifest_errors::kInvalidPageAction;
-    type = ActionInfo::TYPE_PAGE;
+    type = ActionInfo::Type::kPage;
   }
 
   if (extension->manifest()->FindKey(manifest_keys::kBrowserAction)) {
@@ -77,7 +77,7 @@ bool ExtensionActionHandler::Parse(Extension* extension,
     }
     key = manifest_keys::kBrowserAction;
     error_key = manifest_errors::kInvalidBrowserAction;
-    type = ActionInfo::TYPE_BROWSER;
+    type = ActionInfo::Type::kBrowser;
   }
 
   if (key) {
@@ -107,12 +107,13 @@ bool ExtensionActionHandler::Parse(Extension* extension,
     // browser action) for MV2 because the action should not be seen as enabled
     // on every page. We achieve the same in MV3 by adjusting the default
     // state to be disabled by default.
-    type = extension->manifest_version() >= 3 ? ActionInfo::TYPE_ACTION
-                                              : ActionInfo::TYPE_PAGE;
+    type = extension->manifest_version() >= 3 ? ActionInfo::Type::kAction
+                                              : ActionInfo::Type::kPage;
     auto action_info = std::make_unique<ActionInfo>(type);
     action_info->synthesized = true;
-    if (type == ActionInfo::TYPE_ACTION)
-      action_info->default_state = ActionInfo::STATE_DISABLED;
+    if (type == ActionInfo::Type::kAction) {
+      action_info->default_state = ActionInfo::DefaultState::kDisabled;
+    }
 
     ActionInfo::SetExtensionActionInfo(extension, std::move(action_info));
   }

@@ -77,15 +77,15 @@ bool MenuItemMatchesAction(const std::optional<ActionInfo::Type> action_type,
   if (contexts.Contains(MenuItem::ALL))
     return true;
   if (contexts.Contains(MenuItem::PAGE_ACTION) &&
-      (*action_type == ActionInfo::TYPE_PAGE)) {
+      (*action_type == ActionInfo::Type::kPage)) {
     return true;
   }
   if (contexts.Contains(MenuItem::BROWSER_ACTION) &&
-      (*action_type == ActionInfo::TYPE_BROWSER)) {
+      (*action_type == ActionInfo::Type::kBrowser)) {
     return true;
   }
   if (contexts.Contains(MenuItem::ACTION) &&
-      (*action_type == ActionInfo::TYPE_ACTION)) {
+      (*action_type == ActionInfo::Type::kAction)) {
     return true;
   }
 

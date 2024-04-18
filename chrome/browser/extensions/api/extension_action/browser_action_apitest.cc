@@ -128,7 +128,7 @@ class BrowserActionApiTest : public ExtensionApiTest {
     ExtensionAction* extension_action =
         ExtensionActionManager::Get(browser->profile())
             ->GetExtensionAction(extension);
-    return extension_action->action_type() == ActionInfo::TYPE_BROWSER
+    return extension_action->action_type() == ActionInfo::Type::kBrowser
                ? extension_action
                : nullptr;
   }

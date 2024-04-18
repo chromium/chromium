@@ -29,7 +29,7 @@ std::unique_ptr<ActionInfo> PageActionManifestTest::LoadAction(
   scoped_refptr<Extension> extension = LoadAndExpectSuccess(
       manifest_filename.c_str());
   const ActionInfo* page_action_info =
-      GetActionInfoOfType(*extension, ActionInfo::TYPE_PAGE);
+      GetActionInfoOfType(*extension, ActionInfo::Type::kPage);
   EXPECT_TRUE(page_action_info);
   if (page_action_info)
     return std::make_unique<ActionInfo>(*page_action_info);
@@ -43,7 +43,7 @@ TEST_F(PageActionManifestTest, ManifestVersion2DoesntAllowLegacyKeys) {
       LoadAndExpectSuccess("page_action_manifest_version_2.json"));
   ASSERT_TRUE(extension.get());
   const ActionInfo* page_action_info =
-      GetActionInfoOfType(*extension, ActionInfo::TYPE_PAGE);
+      GetActionInfoOfType(*extension, ActionInfo::Type::kPage);
   ASSERT_TRUE(page_action_info);
 
   EXPECT_TRUE(page_action_info->default_icon.empty());
@@ -88,7 +88,7 @@ TEST_F(PageActionManifestTest, LoadPageActionHelper) {
   scoped_refptr<const Extension> extension =
       LoadAndExpectSuccess("page_action_default_popup.json");
   const ActionInfo* extension_action =
-      GetActionInfoOfType(*extension, ActionInfo::TYPE_PAGE);
+      GetActionInfoOfType(*extension, ActionInfo::Type::kPage);
   ASSERT_TRUE(extension_action);
   EXPECT_EQ(extension->url().Resolve(kPopupHtmlFile),
             extension_action->default_popup_url);
