@@ -227,7 +227,7 @@ BASE_FEATURE(kForwardMemoryPressureEventsToGpuProcess,
 // renderer side for iframe creation.
 BASE_FEATURE(kFrameRoutingCache,
              "FrameRoutingCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kFrameRoutingCacheResponseSize{
     &kFrameRoutingCache, "responseSize", 4};
 
