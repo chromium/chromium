@@ -72,7 +72,7 @@ void* sk_realloc_throw(void* addr, size_t size) {
     // our allocators, which should placate UBSAN.
     size_t old_size = sk_malloc_size(addr, 0);
     void* result = sk_malloc_throw(size);
-    memcpy(result, addr, std::min(size, old_size));
+    sk_careful_memcpy(result, addr, std::min(size, old_size));
     sk_free(addr);
     return result;
 #else
