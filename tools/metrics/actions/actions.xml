@@ -24502,6 +24502,54 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGroupUserCanceledGroupEdition">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab group edition view, canceled the group edition.
+  </description>
+</action>
+
+<action name="MobileTabGroupUserCanceledNewGroupCreation">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab group edition view, canceled the group creation.
+  </description>
+</action>
+
+<action name="MobileTabGroupUserCreatedNewGroup">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab group edition view, confirmed the group creation.
+  </description>
+</action>
+
+<action name="MobileTabGroupUserUpdatedGroup">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab group edition view, updated the group.
+  </description>
+</action>
+
+<action name="MobileTabGroupUserUpdatedGroupColor">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab group edition view, updated the color of the group.
+  </description>
+</action>
+
+<action name="MobileTabGroupUserUpdatedGroupName">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab group edition view, updated the name of the group.
+  </description>
+</action>
+
 <action name="MobileTabIncognitoGridTabGroupOpenTab">
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>

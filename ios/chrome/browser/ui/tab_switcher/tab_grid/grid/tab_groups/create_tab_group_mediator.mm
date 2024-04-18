@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_mediator.h"
 
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -120,8 +122,21 @@
   tab_groups::TabGroupVisualData visualData =
       tab_groups::TabGroupVisualData(base::SysNSStringToUTF16(title), colorID);
   if (_tabGroup) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGroupUserUpdatedGroup"));
+    if (![_tabGroup->GetRawTitle() isEqualToString:title]) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGroupUserUpdatedGroupName"));
+    }
+    if (![_tabGroup->GetColor()
+            isEqual:TabGroup::ColorForTabGroupColorId(colorID)]) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGroupUserUpdatedGroupColor"));
+    }
     _webStateList->UpdateGroupVisualData(_tabGroup, visualData);
   } else {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
     std::set<int> tabIndexes;
     for (web::WebStateID identifier : _identifiers) {
       int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
