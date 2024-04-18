@@ -578,9 +578,15 @@ void WelcomeScreen::InputMethodChanged(
 }
 
 void WelcomeScreen::SetQuickStartButtonVisibility(bool visible) {
-  if (visible && view_) {
+  if (!view_) {
+    return;
+  }
+
+  if (visible) {
     view_->SetQuickStartEnabled();
   }
+  base::UmaHistogramBoolean("QuickStart.WelcomeScreen.QuickStartButtonVisible",
+                            visible);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

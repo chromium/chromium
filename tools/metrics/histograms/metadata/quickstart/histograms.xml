@@ -427,6 +427,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.WelcomeScreen.QuickStartButtonVisible"
+    enum="Boolean" expires_after="2024-12-05">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether the Quick Start entry point button is visible on the Welcome Screen.
+    Emitted when the button visibility is determined. This metric is used for
+    understanding which users had Quick Start already enabled before an update
+    during finch experiment analysis.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.WifiTransferResult" enum="BooleanSuccess"
     expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>
