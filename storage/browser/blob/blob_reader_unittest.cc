@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -884,15 +885,15 @@ TEST_F(BlobReaderTest, FileSomeAsyncSegmentedOffsetsUnknownSizes) {
   current_value = 0;
   for (size_t i = 0; i < kNumItems; i++) {
     uint64_t offset = i % 3 == 0 ? 1 : 0;
-    std::unique_ptr<char[]> buf(new char[kItemSize + offset]);
+    auto buf = base::HeapArray<char>::Uninit(kItemSize + offset);
     if (offset > 0) {
-      memset(buf.get(), 7, offset);
+      memset(buf.data(), 7, offset);
     }
     for (size_t j = 0; j < kItemSize; j++) {
-      buf.get()[j + offset] = current_value++;
+      buf.data()[j + offset] = current_value++;
     }
     std::unique_ptr<FakeFileStreamReader> reader(new FakeFileStreamReader(
-        std::string(buf.get() + offset, kItemSize), kItemSize + offset));
+        std::string(buf.data() + offset, kItemSize), buf.size()));
     if (i % 4 != 0) {
       reader->SetAsyncRunner(
           base::SingleThreadTaskRunner::GetCurrentDefault().get());
