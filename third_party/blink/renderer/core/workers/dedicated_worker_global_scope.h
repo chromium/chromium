@@ -238,6 +238,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // Whether this worker has storage access (inherited from the parent
   // ExecutionContext).
   bool has_storage_access_;
+
+  // The timestamp taken when FetchAndRunClassicScript() is called.
+  base::TimeTicks fetch_classic_script_start_;
 };
 
 template <>

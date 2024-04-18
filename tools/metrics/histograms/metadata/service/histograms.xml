@@ -1958,6 +1958,17 @@ chromium-metrics-reviews@google.com.
   <token key="ServiceWorkerSchedulerOp" variants="ServiceWorkerSchedulerOp"/>
 </histogram>
 
+<histogram name="Worker.TopLevelScript.FetchClassicScriptTime" units="ms"
+    expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time in ms from when a dedicated worker starts to fetch a classic script
+    until the script starts to be evaluated. The value can only be taken for
+    PlzDedicatedWorker.
+  </summary>
+</histogram>
+
 <histogram name="Worker.TopLevelScript.LoadStartedTime" units="ms"
     expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>

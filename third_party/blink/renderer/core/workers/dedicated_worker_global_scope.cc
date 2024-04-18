@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
@@ -284,6 +285,11 @@ void DedicatedWorkerGlobalScope::FetchAndRunClassicScript(
     const v8_inspector::V8StackTraceId& stack_id) {
   DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   DCHECK(!IsContextPaused());
+  TRACE_EVENT("blink.worker",
+              "DedicatedWorkerGlobalScope::FetchAndRunClassicScript");
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "blink.worker", "DedicatedWorkerGlobalScope Fetch", TRACE_ID_LOCAL(this));
+  fetch_classic_script_start_ = base::TimeTicks::Now();
 
   // TODO(crbug.com/1177199): SetPolicyContainer once we passed down policy
   // container from DedicatedWorkerHost
@@ -432,6 +438,12 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
     const v8_inspector::V8StackTraceId& stack_id) {
   DCHECK(IsContextThread());
   DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
+  TRACE_EVENT("blink.worker",
+              "DedicatedWorkerGlobalScope::DidFetchClassicScript");
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "blink.worker", "DedicatedWorkerGlobalScope Fetch", TRACE_ID_LOCAL(this));
+  base::UmaHistogramTimes("Worker.TopLevelScript.FetchClassicScriptTime",
+                          base::TimeTicks::Now() - fetch_classic_script_start_);
 
   // Step 12. "If the algorithm asynchronously completes with null, then:"
   if (classic_script_loader->Failed()) {
