@@ -28,7 +28,7 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
-class DiscardableImageStore;
+
 class PaintOpBuffer;
 
 // This class is used for generating discardable images data (see DrawImage
@@ -85,14 +85,8 @@ class CC_PAINT_EXPORT DiscardableImageMap {
   }
 
  private:
-  friend class ScopedMetadataGenerator;
   friend class DiscardableImageMapTest;
-
-  std::unique_ptr<DiscardableImageStore> BeginGeneratingMetadata(
-      const gfx::Size& bounds);
-  void EndGeneratingMetadata(
-      std::vector<std::pair<DrawImage, gfx::Rect>> images,
-      base::flat_map<PaintImage::Id, gfx::Rect> image_id_to_rect);
+  class Generator;
 
   base::flat_map<PaintImage::Id, Rects> image_id_to_rects_;
   std::vector<AnimatedImageMetadata> animated_images_metadata_;
