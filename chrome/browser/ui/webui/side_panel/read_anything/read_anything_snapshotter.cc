@@ -16,6 +16,7 @@
 #include "components/paint_preview/browser/compositor_utils.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/common/recording_map.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/geometry/rect.h"
@@ -114,23 +115,8 @@ ReadAnythingSnapshotter::PrepareCompositeRequest(
     VLOG(2) << "Captured an empty screenshot";
     return nullptr;
   }
-
-  auto proto = map_and_proto.second;
-  auto region = base::WritableSharedMemoryRegion::Create(proto.ByteSizeLong());
-  if (!region.IsValid()) {
-    VLOG(2) << "Failed to allocate memory";
-    return nullptr;
-  }
-
-  auto mapping = region.Map();
-  if (!mapping.IsValid()) {
-    VLOG(2) << "Failed to map shared memory";
-    return nullptr;
-  }
-
-  proto.SerializeToArray(mapping.memory(), mapping.size());
-  begin_composite_request->proto =
-      base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
+  begin_composite_request->preview =
+      mojo_base::ProtoWrapper(map_and_proto.second);
   return begin_composite_request;
 }
 

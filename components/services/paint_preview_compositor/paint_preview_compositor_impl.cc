@@ -20,6 +20,7 @@
 #include "components/paint_preview/common/serial_utils.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -32,25 +33,6 @@
 namespace paint_preview {
 
 namespace {
-
-// Returns |nullopt| if |proto_memory| cannot be mapped or parsed.
-std::optional<PaintPreviewProto> ParsePaintPreviewProto(
-    const base::ReadOnlySharedMemoryRegion& proto_memory) {
-  auto mapping = proto_memory.Map();
-  if (!mapping.IsValid()) {
-    DVLOG(1) << "Failed to map proto in shared memory.";
-    return std::nullopt;
-  }
-
-  PaintPreviewProto paint_preview;
-  bool ok = paint_preview.ParseFromArray(mapping.memory(), mapping.size());
-  if (!ok) {
-    DVLOG(1) << "Failed to parse proto.";
-    return std::nullopt;
-  }
-
-  return {paint_preview};
-}
 
 std::optional<PaintPreviewFrame> BuildFrame(
     const base::UnguessableToken& token,
@@ -188,8 +170,7 @@ void PaintPreviewCompositorImpl::BeginSeparatedFrameComposite(
   frames_.clear();
 
   auto response = mojom::PaintPreviewBeginCompositeResponse::New();
-  std::optional<PaintPreviewProto> paint_preview =
-      ParsePaintPreviewProto(request->proto);
+  auto paint_preview = request->preview.As<PaintPreviewProto>();
   if (!paint_preview.has_value()) {
     // Cannot send a null token over mojo. This will be ignored downstream.
     response->root_frame_guid = base::UnguessableToken::Create();
@@ -283,8 +264,7 @@ void PaintPreviewCompositorImpl::BeginMainFrameComposite(
                "PaintPreviewCompositorImpl::BeginMainFrameComposite");
   frames_.clear();
   auto response = mojom::PaintPreviewBeginCompositeResponse::New();
-  std::optional<PaintPreviewProto> paint_preview =
-      ParsePaintPreviewProto(request->proto);
+  auto paint_preview = request->preview.As<PaintPreviewProto>();
   if (!paint_preview.has_value()) {
     response->root_frame_guid = base::UnguessableToken::Create();
     std::move(callback).Run(mojom::PaintPreviewCompositor::

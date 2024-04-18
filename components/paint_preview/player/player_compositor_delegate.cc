@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -33,6 +32,7 @@
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "components/version_info/version_info.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
@@ -74,21 +74,6 @@ BuildHitTesters(std::unique_ptr<PaintPreviewProto> proto) {
       std::move(hit_testers));
 }
 
-std::optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
-    paint_preview::PaintPreviewProto&& proto) {
-  TRACE_EVENT0("paint_preview", "PaintPreviewProto ToReadOnlySharedMemory");
-  auto region = base::WritableSharedMemoryRegion::Create(proto.ByteSizeLong());
-  if (!region.IsValid())
-    return std::nullopt;
-
-  auto mapping = region.Map();
-  if (!mapping.IsValid())
-    return std::nullopt;
-
-  proto.SerializeToArray(mapping.memory(), mapping.size());
-  return base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
-}
-
 paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
 PrepareCompositeRequest(std::unique_ptr<CaptureResult> capture_result) {
   TRACE_EVENT0("paint_preview", "PaintPreview PrepareCompositeRequest");
@@ -101,13 +86,8 @@ PrepareCompositeRequest(std::unique_ptr<CaptureResult> capture_result) {
   if (begin_composite_request->recording_map.empty())
     return nullptr;
 
-  auto read_only_proto =
-      ToReadOnlySharedMemory(std::move(map_and_proto.second));
-  if (!read_only_proto) {
-    DVLOG(1) << "Failed to read proto to read-only shared memory.";
-    return nullptr;
-  }
-  begin_composite_request->proto = std::move(read_only_proto.value());
+  begin_composite_request->preview =
+      mojo_base::ProtoWrapper(std::move(map_and_proto.second));
   return begin_composite_request;
 }
 

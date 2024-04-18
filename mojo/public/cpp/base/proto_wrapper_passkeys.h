@@ -13,6 +13,10 @@ class ReadMaskedDomainListProto;
 class PKIMetadataComponentInstallerService;
 }  // namespace component_updater
 
+namespace paint_preview {
+FORWARD_DECLARE_TEST(PaintPreviewCompositorBeginCompositeTest, InvalidProto);
+}  // namespace paint_preview
+
 namespace mojo_base {
 
 // PassKey that allows people to directly name or access the bytes of a wrapped
@@ -36,6 +40,9 @@ class ProtoWrapperBytes {
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ProtoWrapperTest, ToFromBytes);
+  FRIEND_TEST_ALL_PREFIXES(
+      paint_preview::PaintPreviewCompositorBeginCompositeTest,
+      InvalidProto);
 };
 
 }  // namespace mojo_base
