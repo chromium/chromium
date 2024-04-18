@@ -8,6 +8,7 @@
 #include <functional>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -46,6 +47,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/object_permission_context_base.h"
@@ -731,8 +733,9 @@ base::Value::Dict GetExceptionForPage(
   exception.Set(kSetting, setting_string);
 
   // Cookie exception types may have an expiration that should be shown.
-  if (content_type == ContentSettingsType::COOKIES && !expiration.is_null() &&
-      !incognito) {
+  if ((content_type == ContentSettingsType::COOKIES ||
+       content_type == ContentSettingsType::TRACKING_PROTECTION) &&
+      !expiration.is_null() && !incognito) {
     exception.Set(kDescription, GetExpirationDescription(expiration));
   }
 
@@ -960,6 +963,37 @@ void GetRawExceptionsForContentSettingsType(
   }
 }
 
+void Append3pcExceptions(Profile* profile,
+                         content::WebUI* web_ui,
+                         base::Value::List* exceptions) {
+  base::Value::List cookie_exceptions;
+  GetExceptionsForContentType(ContentSettingsType::COOKIES, profile, web_ui,
+                              /*incognito=*/false, &cookie_exceptions);
+  // Create a set of TP exceptions keyed off of <name, source>.
+  std::set<std::pair<std::string, std::string>> display_name_and_source;
+  for (const auto& exception : *exceptions) {
+    const auto& dict = exception.GetDict();
+    CHECK(dict.contains(kEmbeddingOrigin) && dict.contains(kSource));
+    display_name_and_source.insert(std::make_pair(
+        *dict.FindString(kEmbeddingOrigin), *dict.FindString(kSource)));
+  }
+
+  for (auto& cookie_exception : cookie_exceptions) {
+    auto& dict = cookie_exception.GetDict();
+    CHECK(dict.contains(kEmbeddingOrigin) && dict.contains(kSource) &&
+          dict.contains(kOrigin));
+    // Add 3PC exceptions that are not also TP exceptions.
+    if (*dict.FindString(kOrigin) == "*" &&
+        !display_name_and_source.contains(std::make_pair(
+            *dict.FindString(kEmbeddingOrigin), *dict.FindString(kSource)))) {
+      dict.Set(kDescription,
+               l10n_util::GetStringUTF16(
+                   IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL));
+      exceptions->Append(std::move(cookie_exception));
+    }
+  }
+}
+
 void GetExceptionsForContentType(ContentSettingsType type,
                                  Profile* profile,
                                  content::WebUI* web_ui,
@@ -1023,6 +1057,11 @@ void GetExceptionsForContentType(ContentSettingsType type,
     for (auto& exception : one_provider_exceptions) {
       exceptions->Append(std::move(exception));
     }
+  }
+
+  // The TP exceptions list should also contain 3PC exceptions.
+  if (type == ContentSettingsType::TRACKING_PROTECTION) {
+    Append3pcExceptions(profile, web_ui, exceptions);
   }
 }
 
