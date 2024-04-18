@@ -333,6 +333,7 @@ enum {
   kProfileDefaultContentSettingValuesTrackingProtection = 100275,
   kShowForwardButton = 100276,
   kAccessibilityMagnifierFollowsSts = 100277,
+  kAccessibilityReadAnythingLanguagesEnabled = 100278,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -430,6 +431,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityReadAnythingLinksEnabled,
      {syncable_prefs_ids::kAccessibilityReadAnythingLinksEnabled,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kAccessibilityReadAnythingLanguagesEnabled,
+     {syncable_prefs_ids::kAccessibilityReadAnythingLanguagesEnabled,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kLensRegionSearchEnabled,

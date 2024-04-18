@@ -61,6 +61,11 @@ inline constexpr char kAccessibilityReadAnythingOmniboxIconLabelShownCount[] =
 inline constexpr char kAccessibilityReadAnythingLinksEnabled[] =
     "settings.a11y.read_anything.links_enabled";
 
+// List of strings to represent the user's preferred
+// languages for the read anything UI.
+inline constexpr char kAccessibilityReadAnythingLanguagesEnabled[] =
+    "settings.a11y.read_anything.languages_enabled";
+
 }  // namespace prefs
 
 void RegisterReadAnythingProfilePrefs(

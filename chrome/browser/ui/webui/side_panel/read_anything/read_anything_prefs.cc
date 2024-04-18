@@ -54,6 +54,9 @@ void RegisterReadAnythingProfilePrefs(
     registry->RegisterIntegerPref(
         prefs::kAccessibilityReadAnythingHighlightColor, 0,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterListPref(
+        prefs::kAccessibilityReadAnythingLanguagesEnabled, base::Value::List(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
   if (features::IsReadAnythingOmniboxIconEnabled()) {
     registry->RegisterIntegerPref(
