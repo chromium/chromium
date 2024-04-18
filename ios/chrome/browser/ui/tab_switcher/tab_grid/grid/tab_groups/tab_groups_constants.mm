@@ -13,6 +13,11 @@ NSString* const kCreateTabGroupCreateButtonIdentifier =
 NSString* const kCreateTabGroupCancelButtonIdentifier =
     @"kCreateTabGroupCancelButtonIdentifier";
 
+NSString* const kTabGroupNewTabButtonIdentifier =
+    @"kTabGroupNewTabButtonIdentifier";
+NSString* const kTabGroupOverflowMenuButtonIdentifier =
+    @"kTabGroupOverflowMenuButtonIdentifier";
+
 const CGFloat kTabGroupPresentationDuration = 0.3;
 const CGFloat kTabGroupDismissalDuration = 0.25;
 const CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;

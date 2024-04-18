@@ -78,6 +78,7 @@ source_set("tab_groups_ui") {
     ":tab_group_consumer",
     ":tab_group_mutator",
     ":tab_groups_commands",
+    ":tab_groups_constant",
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",

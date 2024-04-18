@@ -13,6 +13,10 @@ extern NSString* const kCreateTabGroupTextFieldIdentifier;
 extern NSString* const kCreateTabGroupCreateButtonIdentifier;
 extern NSString* const kCreateTabGroupCancelButtonIdentifier;
 
+// Accessibility identifier for the tab group view.
+extern NSString* const kTabGroupNewTabButtonIdentifier;
+extern NSString* const kTabGroupOverflowMenuButtonIdentifier;
+
 // Timing constants for the animations of the TabGroup presentation/dismissal.
 extern const CGFloat kTabGroupPresentationDuration;
 extern const CGFloat kTabGroupDismissalDuration;

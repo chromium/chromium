@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -26,18 +27,22 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+// General.
+constexpr CGFloat kHorizontalMargin = 9;
+
+// Group title.
 constexpr CGFloat kColoredDotSize = 20;
 constexpr CGFloat kTitleHorizontalMargin = 16;
 constexpr CGFloat kTitleVerticalMargin = 10;
-constexpr CGFloat kHorizontalMargin = 9;
-constexpr CGFloat kPrimaryTitleMargin = 24;
 constexpr CGFloat kDotTitleSeparationMargin = 8;
+
+// Background.
 constexpr CGFloat kBackgroundAlpha = 0.6;
-constexpr CGFloat kSubTitleHorizontalPadding = 7;
-constexpr CGFloat kThreeDotButtonSize = 19;
-constexpr CGFloat kTitleBackgroundCornerRadius = 17;
+
+// Button.
 constexpr CGFloat kPlusImageSize = 20;
 
+// Animation.
 constexpr CGFloat kSmallMotionTranslationCompletion = 0.8;
 constexpr CGFloat kTranslationCompletion = 0;
 constexpr CGFloat kSmallMotionOriginScale = 0.8;
@@ -161,7 +166,6 @@ constexpr CGFloat kOriginScale = 0.1;
   [self configureNavigationBar];
   UIView* primaryTitle = [self configuredPrimaryTitle];
   _primaryTitle = primaryTitle;
-  UIView* secondaryTitle = [self configuredSubTitle];
 
   UIView* gridView = _gridViewController.view;
   gridView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -170,30 +174,20 @@ constexpr CGFloat kOriginScale = 0.1;
   [_gridViewController didMoveToParentViewController:self];
 
   [self.view addSubview:primaryTitle];
-  [self.view addSubview:secondaryTitle];
 
   [NSLayoutConstraint activateConstraints:@[
     [primaryTitle.leadingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
                        constant:kHorizontalMargin],
-    [primaryTitle.topAnchor constraintEqualToAnchor:_navigationBar.bottomAnchor
-                                           constant:kPrimaryTitleMargin],
-    [secondaryTitle.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kHorizontalMargin],
-    [secondaryTitle.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kHorizontalMargin],
-    [secondaryTitle.topAnchor constraintEqualToAnchor:primaryTitle.bottomAnchor
-                                             constant:kTitleVerticalMargin],
-    [gridView.topAnchor constraintEqualToAnchor:secondaryTitle.bottomAnchor
-                                       constant:kTitleVerticalMargin],
+    [primaryTitle.topAnchor
+        constraintEqualToAnchor:_navigationBar.bottomAnchor],
     [gridView.leadingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
     [gridView.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
     [gridView.bottomAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+    [gridView.topAnchor constraintEqualToAnchor:primaryTitle.bottomAnchor],
   ]];
 }
 
@@ -245,16 +239,27 @@ constexpr CGFloat kOriginScale = 0.1;
   return [[UINavigationItem alloc] init];
 }
 
-// Returns the navigation item which contain the plus button.
-- (UINavigationItem*)configuredPlusButton {
-  UINavigationItem* plus = [[UINavigationItem alloc] init];
+// Returns the navigation item which contain the plus button and the overflow
+// menu.
+- (UINavigationItem*)configuredRightNavigationItems {
+  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
   UIImage* plusImage = DefaultSymbolWithPointSize(kPlusSymbol, kPlusImageSize);
-  plus.rightBarButtonItem =
+  UIBarButtonItem* plusItem =
       [[UIBarButtonItem alloc] initWithImage:plusImage
                                        style:UIBarButtonItemStylePlain
                                       target:self
                                       action:@selector(didTapPlusButton)];
-  return plus;
+  plusItem.accessibilityIdentifier = kTabGroupNewTabButtonIdentifier;
+
+  UIImage* threeDotImage =
+      DefaultSymbolWithPointSize(kMenuSymbol, kPlusImageSize);
+  UIBarButtonItem* dotsItem =
+      [[UIBarButtonItem alloc] initWithImage:threeDotImage
+                                        menu:[self configuredTabGroupMenu]];
+  dotsItem.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
+
+  navigationItem.rightBarButtonItems = @[ dotsItem, plusItem ];
+  return navigationItem;
 }
 
 // Configures the navigation bar.
@@ -263,7 +268,7 @@ constexpr CGFloat kOriginScale = 0.1;
   _navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
   _navigationBar.items = @[
     [self configuredBackButton],
-    [self configuredPlusButton],
+    [self configuredRightNavigationItems],
   ];
 
   // Make the navigation bar transparent so it completly match the view.
@@ -330,7 +335,6 @@ constexpr CGFloat kOriginScale = 0.1;
 - (UIView*)configuredPrimaryTitle {
   UIView* fullTitleView = [[UIView alloc] initWithFrame:CGRectZero];
   fullTitleView.translatesAutoresizingMaskIntoConstraints = NO;
-  fullTitleView.layer.cornerRadius = kTitleBackgroundCornerRadius;
   fullTitleView.opaque = NO;
 
   _coloredDotView = [self groupColorDotView];
@@ -356,34 +360,6 @@ constexpr CGFloat kOriginScale = 0.1;
                                                constant:kTitleVerticalMargin],
   ]];
   return fullTitleView;
-}
-
-// Returns the configured sub titles view.
-- (UIView*)configuredSubTitle {
-  UIView* subTitleView = [[UIView alloc] initWithFrame:CGRectZero];
-  subTitleView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  UIButton* menuButton = [[ExtendedTouchTargetButton alloc] init];
-  menuButton.translatesAutoresizingMaskIntoConstraints = NO;
-  menuButton.menu = [self configuredTabGroupMenu];
-  menuButton.showsMenuAsPrimaryAction = YES;
-  [menuButton
-      setImage:DefaultSymbolWithPointSize(kMenuSymbol, kThreeDotButtonSize)
-      forState:UIControlStateNormal];
-  menuButton.tintColor = UIColor.whiteColor;
-
-  [subTitleView addSubview:menuButton];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [menuButton.trailingAnchor
-        constraintEqualToAnchor:subTitleView.trailingAnchor
-                       constant:-kSubTitleHorizontalPadding],
-    [subTitleView.heightAnchor constraintEqualToAnchor:menuButton.heightAnchor],
-    [menuButton.centerYAnchor
-        constraintEqualToAnchor:subTitleView.centerYAnchor],
-  ]];
-
-  return subTitleView;
 }
 
 // Displays the menu to rename and change the color of the currently displayed
