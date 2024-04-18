@@ -88,6 +88,14 @@ _kind_to_lite_js_type = {
     mojom.INT32: "mojo.internal.Int32",
     mojom.UINT32: "mojo.internal.Uint32",
     mojom.FLOAT: "mojo.internal.Float",
+    mojom.NULLABLE_BOOL: "mojo.internal.Bool",
+    mojom.NULLABLE_INT8: "mojo.internal.Int8",
+    mojom.NULLABLE_UINT8: "mojo.internal.Uint8",
+    mojom.NULLABLE_INT16: "mojo.internal.Int16",
+    mojom.NULLABLE_UINT16: "mojo.internal.Uint16",
+    mojom.NULLABLE_INT32: "mojo.internal.Int32",
+    mojom.NULLABLE_UINT32: "mojo.internal.Uint32",
+    mojom.NULLABLE_FLOAT: "mojo.internal.Float",
     mojom.HANDLE: "mojo.internal.Handle",
     mojom.DCPIPE: "mojo.internal.Handle",
     mojom.DPPIPE: "mojo.internal.Handle",
@@ -103,6 +111,9 @@ _kind_to_lite_js_type = {
     mojom.INT64: "mojo.internal.Int64",
     mojom.UINT64: "mojo.internal.Uint64",
     mojom.DOUBLE: "mojo.internal.Double",
+    mojom.NULLABLE_INT64: "mojo.internal.Int64",
+    mojom.NULLABLE_UINT64: "mojo.internal.Uint64",
+    mojom.NULLABLE_DOUBLE: "mojo.internal.Double",
     mojom.STRING: "mojo.internal.String",
     mojom.NULLABLE_STRING: "mojo.internal.String",
 }
@@ -447,7 +458,7 @@ class Generator(generator.Generator):
   def _GetSpecType(self, kind):
     def get_spec(kind):
       if self._IsPrimitiveKind(kind):
-        return _kind_to_lite_js_type[mojom.EnsureUnnullable(kind)]
+        return _kind_to_lite_js_type[kind]
       if mojom.IsArrayKind(kind):
         return "mojo.internal.Array(%s, %s)" % (get_spec(
             kind.kind), "true" if mojom.IsNullableKind(kind.kind) else "false")
