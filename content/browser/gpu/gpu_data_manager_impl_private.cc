@@ -564,9 +564,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
     // support software compositing or sometimes fail dawn initialization.
     // TODO(b/323953910): Eliminate this fallback on each platform once Graphite
     // stability is sufficient on that platform.
-#if !BUILDFLAG(IS_MAC)
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GL);
-#endif
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GRAPHITE);
   } else {
     // On Fuchsia Vulkan must be used when it's enabled by the WebEngine

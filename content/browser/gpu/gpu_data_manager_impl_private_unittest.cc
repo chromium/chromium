@@ -476,11 +476,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
-#if BUILDFLAG(IS_MAC)
-  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
-#else
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
-#endif
 }
 
 // Android and Chrome OS do not support software compositing, while Fuchsia does
@@ -517,11 +513,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
-
-#if !BUILDFLAG(IS_MAC)
-  // Mac is the only platform that doesn't fallback to Ganesh/GL first.
   manager->FallBackToNextGpuMode();
-#endif
 
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());

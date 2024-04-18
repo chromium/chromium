@@ -158,14 +158,6 @@ crbug.com/1297151 [ mac intel debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
-# Frequent failures on Mac AMD ASAN there are frequent timeout failures even
-# with RetryOnFailure and no obvious cause.
-crbug.com/1399895 [ mac amd release asan ] GpuCrash_InfoForHardwareGpu [ Skip ]
-crbug.com/1399895 [ mac amd release asan ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
-
-# Also flakes on Mac Intel ASAN as well.
-crbug.com/1489852 [ mac intel release asan ] GpuCrash_InfoForHardwareGpu [ Skip ]
-
 # Vulkan enabled on linux, the crash fallback logic is different.
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
@@ -199,8 +191,10 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGL2UnpackImag
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
-# Fails with Graphite on Windows
+# Fails with Graphite on Windows and Mac
 crbug.com/329145823 [ win release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ mac release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
