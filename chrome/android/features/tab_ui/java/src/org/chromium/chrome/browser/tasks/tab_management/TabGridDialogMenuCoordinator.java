@@ -161,7 +161,7 @@ public class TabGridDialogMenuCoordinator {
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
                             R.string.tab_grid_dialog_toolbar_edit_group_color,

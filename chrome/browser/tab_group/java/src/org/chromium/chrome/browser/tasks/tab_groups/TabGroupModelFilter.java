@@ -155,7 +155,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         mActualGroupCount++;
         boolean didCreateNewGroup = true;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             // If the destination group already has an assigned color, then this action is not
             // for a new tab group creation. Currently, the only case where this would be called
             // and it is not a new tab group creation is when a tab group is restored from the
@@ -242,7 +242,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             boolean didCreateNewGroup =
                     !isTabInTabGroup(sourceTab) && !isTabInTabGroup(destinationTab);
 
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                 destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
                 // If the destination group already has an assigned color, then this action is not
                 // for a new tab group creation. Currently, the only case where this would be called
@@ -370,7 +370,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
         int destinationGroupColorId = INVALID_COLOR_ID;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
         }
 
