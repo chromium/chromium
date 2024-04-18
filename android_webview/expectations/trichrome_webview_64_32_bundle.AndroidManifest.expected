@@ -68,6 +68,16 @@
         android:targetActivity="org.chromium.android_webview.devui.MainActivity"
         android:visibleToInstantApps="true">
     </activity-alias>  # DIFF-ANCHOR: b7cc06e9
+    <activity-alias  # DIFF-ANCHOR: a4f5e364
+        android:name="org.chromium.android_webview.devui.LauncherActivity"
+        android:exported="true"
+        android:label="WebView DevTools"
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity">
+      <intent-filter>  # DIFF-ANCHOR: a5330430
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>  # DIFF-ANCHOR: a5330430
+    </activity-alias>  # DIFF-ANCHOR: a4f5e364
     <meta-data android:name="$PACKAGE.WebViewLibrary" android:value="libmonochrome_64.so"/>
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="0"/>
