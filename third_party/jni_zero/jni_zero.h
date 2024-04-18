@@ -723,7 +723,7 @@ ScopedJavaLocalRef<J> ToJniType(JNIEnv*, const T&);
 template <typename ContainerType>
 struct ConvertArray;
 
-#if defined(__cpp_concepts) && __cpp_concepts >= 202002L
+#if defined(__cpp_concepts) && __cpp_concepts >= 201907L
 
 namespace internal {
 template <typename T>
