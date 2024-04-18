@@ -14,9 +14,12 @@
 #include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
+#include "ui/aura/client/window_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
+#include "ui/wm/core/capture_controller.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -269,6 +272,16 @@ bool WmGestureHandler::EndScroll() {
                        std::clamp(scroll_y, 0.f, kVerticalThresholdDp),
                        /*scroll_in_progress=*/false)
                  : false;
+    }
+
+    // If the event should be captured by other normal window, do not handle
+    // this event as overview handling gesture. If it is captured by non-normal
+    // window (e.g. menu/popup), we can force enter overview mode.
+    aura::Window* capture_window =
+        ::wm::CaptureController::Get()->GetCaptureWindow();
+    if (capture_window &&
+        capture_window->GetType() == aura::client::WINDOW_TYPE_NORMAL) {
+      return false;
     }
 
     if (std::fabs(scroll_x) < std::fabs(scroll_y)) {

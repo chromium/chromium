@@ -604,6 +604,48 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, DisabledIfWindowCycleListOpen) {
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 }
 
+IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, VerticalAndHorizontalScroll) {
+  auto event_generator = CreateEventGenerator(browser());
+  constexpr int kOffset = 100;
+
+  {
+    // If y offset is larger than x offset, the event should be recognized as a
+    // vertical scroll and should not begin scrubbing.
+    ui::ScrollEvent vertical_scroll_event(
+        ui::ET_SCROLL, gfx::Point(0, 0), ui::EventTimeForNow(), 0,
+        /*x_offset=*/0, /*y_offset=*/kOffset,
+        /*x_offset_ordinal_=*/0, /*y_offset=*/kOffset,
+        kScrubbingGestureFingerCount);
+    event_generator->Dispatch(&vertical_scroll_event);
+    EXPECT_FALSE(vertical_scroll_event.handled());
+  }
+
+  {
+    // If x offset is larger than y offset, the event should be recognized as a
+    // horizontal scroll and should begin scrubbing.
+    ui::ScrollEvent horizontal_scroll_event(
+        ui::ET_SCROLL, gfx::Point(0, 0), ui::EventTimeForNow(), 0,
+        /*x_offset=*/kOffset, /*y_offset=*/0,
+        /*x_offset_ordinal_=*/kOffset, /*y_offset=*/0,
+        kScrubbingGestureFingerCount);
+    event_generator->Dispatch(&horizontal_scroll_event);
+    EXPECT_TRUE(horizontal_scroll_event.handled());
+  }
+
+  {
+    // Finish scrubbing by dispatching fling scroll event. For finishing the
+    // event, it is not required to be horizontal scroll. This happens for
+    // example when the user start scrubbing with a horizontal scroll and the
+    // fingers go up at the end of the scroll.
+    ui::ScrollEvent fling_scroll_event(
+        ui::ET_SCROLL_FLING_START, gfx::Point(0, 0), ui::EventTimeForNow(), 0,
+        /*x_offset=*/0, /*y_offset=*/kOffset,
+        /*x_offset_ordinal_=*/0, /*y_offset=*/kOffset, 0);
+    event_generator->Dispatch(&fling_scroll_event);
+    EXPECT_TRUE(fling_scroll_event.handled());
+  }
+}
+
 // Check scroll events other than 3-fingers scroll are not handled by
 // TabScrubber.
 IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, EventHandling) {

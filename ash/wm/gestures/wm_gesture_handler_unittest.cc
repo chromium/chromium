@@ -30,6 +30,7 @@
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
 #include "ui/events/devices/device_hotplug_event_observer.h"
 #include "ui/events/devices/input_device.h"
@@ -37,6 +38,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/capture_controller.h"
 
 namespace ash {
 
@@ -261,6 +263,80 @@ TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
                               GetOffsetY(-10), num_fingers);
   GetEventGenerator()->Dispatch(&fling_start);
   EXPECT_TRUE(InOverviewSession());
+}
+
+TEST_F(WmGestureHandlerTest, EnterOverviewWithNormalCaptureWindow) {
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  constexpr int num_fingers = 3;
+  base::TimeDelta step_delay(base::Milliseconds(5));
+
+  // If 3 finger scroll event while there is a capture window is set to the
+  // normal type window, we should not handle the event as entering overview
+  // mode.
+  std::unique_ptr<aura::Window> normal_window =
+      CreateTestWindow(gfx::Rect(100, 100));
+  ::wm::CaptureController::Get()->SetCapture(normal_window.get());
+
+  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+                               timestamp, 0, 0, 0, 0, 0, num_fingers);
+  GetEventGenerator()->Dispatch(&fling_cancel);
+
+  // Send ET_SCROLL events to initializae ScrollData.
+  for (int i = 0; i < 10; ++i) {
+    timestamp += step_delay;
+    ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, 0,
+                         GetOffsetY(10), 0, GetOffsetY(10), num_fingers);
+    GetEventGenerator()->Dispatch(&move);
+  }
+
+  timestamp += step_delay;
+
+  ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+                              timestamp, 0, 0, GetOffsetY(-10), 0,
+                              GetOffsetY(-10), num_fingers);
+  GetEventGenerator()->Dispatch(&fling_start);
+  EXPECT_FALSE(InOverviewSession());
+  ::wm::CaptureController::Get()->ReleaseCapture(normal_window.get());
+}
+
+TEST_F(WmGestureHandlerTest, EnterOverviewWithPopupCaptureWindow) {
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  constexpr int num_fingers = 3;
+  base::TimeDelta step_delay(base::Milliseconds(5));
+
+  // If 3 finger scroll event while there is a capture window is set to the
+  // window by not normal, we should ignore the capture state and handle the
+  // event as entering overview mode.
+  std::unique_ptr<aura::Window> normal_window =
+      CreateTestWindow(gfx::Rect(100, 100));
+  std::unique_ptr<aura::Window> popup_window =
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_POPUP);
+  popup_window->Init(ui::LAYER_NOT_DRAWN);
+  popup_window->SetBounds(gfx::Rect(100, 100));
+  normal_window->AddChild(popup_window.get());
+  popup_window->Show();
+  ::wm::CaptureController::Get()->SetCapture(popup_window.get());
+
+  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+                               timestamp, 0, 0, 0, 0, 0, num_fingers);
+  GetEventGenerator()->Dispatch(&fling_cancel);
+
+  // Send ET_SCROLL events to initializae ScrollData.
+  for (int i = 0; i < 10; ++i) {
+    timestamp += step_delay;
+    ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, 0,
+                         GetOffsetY(10), 0, GetOffsetY(10), num_fingers);
+    GetEventGenerator()->Dispatch(&move);
+  }
+
+  timestamp += step_delay;
+
+  ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+                              timestamp, 0, 0, GetOffsetY(-10), 0,
+                              GetOffsetY(-10), num_fingers);
+  GetEventGenerator()->Dispatch(&fling_start);
+  EXPECT_TRUE(InOverviewSession());
+  ::wm::CaptureController::Get()->ReleaseCapture(popup_window.get());
 }
 
 // Test switch desk is disabled when screen is pinned.

@@ -23,6 +23,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -88,10 +89,13 @@ void TabScrubberChromeOS::SynthesizedScrollEvent(float x_offset,
   // event passed from wayland.
   ui::EventType event_type =
       is_fling_scroll_event ? ui::ET_SCROLL_FLING_START : ui::ET_SCROLL;
+  // Set `y_offset` as zero so that its absolute value is always not larger than
+  // that of `x_offset` to represent the horizontal scroll.
+  constexpr float y_offset = 0.f;
   ui::ScrollEvent event(event_type, gfx::PointF(), gfx::PointF(),
                         ui::EventTimeForNow(),
-                        /*flags=*/0, x_offset,
-                        /*y_offset=*/0.f, /*x_offset_ordinal=*/0.f,
+                        /*flags=*/0, x_offset, y_offset,
+                        /*x_offset_ordinal=*/0.f,
                         /*y_offset_ordinal=*/0.f, kFingerCount);
   OnScrollEvent(&event);
 }
@@ -155,6 +159,12 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
     return;
   }
 
+  // If the scroll is vertical, do not start scrubbing.
+  if (!scrubbing_ &&
+      std::abs(event->x_offset()) < std::abs(event->y_offset())) {
+    return;
+  }
+
   // We are handling the event.
   event->SetHandled();
 
@@ -201,6 +211,14 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
 void TabScrubberChromeOS::OnBrowserRemoved(Browser* browser) {
   if (browser != browser_)
     return;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (browser_) {
+    BrowserView::GetBrowserViewForBrowser(browser_)
+        ->GetWidget()
+        ->ReleaseCapture();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   activate_timer_.Stop();
   swipe_x_ = -1;
@@ -273,6 +291,13 @@ void TabScrubberChromeOS::BeginScrub(BrowserView* browser_view,
   }
 
   tab_strip_->AddObserver(this);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Capture the event so that the scroll event will not be handled by other
+  // clients. This is required to work well with overview mode gesture, and not
+  // needed for Lacros since the overview mode handling is done on Ash.
+  browser_view->GetWidget()->SetCapture(/*view=*/nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool TabScrubberChromeOS::FinishScrub(bool activate) {
@@ -281,6 +306,11 @@ bool TabScrubberChromeOS::FinishScrub(bool activate) {
 
   if (browser_ && browser_->window()) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    browser_view->GetWidget()->ReleaseCapture();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     TabStrip* tab_strip = browser_view->tabstrip();
     if (activate && highlighted_tab_ != -1) {
       Tab* tab = tab_strip->tab_at(highlighted_tab_);
