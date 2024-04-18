@@ -971,6 +971,8 @@ FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
                                     primary_height.ascent);
     result_height.descent = std::min(LayoutUnit(result_height.descent.Ceil()),
                                      primary_height.descent);
+    result_height.Move(line_item.rect.offset.block_offset +
+                       primary_height.ascent);
     return result_height;
   }
   if (const auto& layout_result = line_item.layout_result) {
