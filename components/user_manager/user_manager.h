@@ -487,13 +487,6 @@ class USER_MANAGER_EXPORT UserManager {
   // user's session.
   virtual bool HasBrowserRestarted() const = 0;
 
-  // Schedules CheckAndResolveLocale using given task runner and
-  // |on_resolved_callback| as reply callback.
-  virtual void ScheduleResolveLocale(
-      const std::string& locale,
-      base::OnceClosure on_resolved_callback,
-      std::string* out_resolved_locale) const = 0;
-
   // Returns true if |image_index| is a valid default user image index.
   virtual bool IsValidDefaultUserImageId(int image_index) const = 0;
 

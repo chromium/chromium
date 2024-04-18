@@ -401,7 +401,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Updates user account after locale was resolved.
   void DoUpdateAccountLocale(const AccountId& account_id,
-                             std::unique_ptr<std::string> resolved_locale);
+                             const std::string& resolved_locale);
 
   void RemoveLegacySupervisedUser(const AccountId& account_id);
 

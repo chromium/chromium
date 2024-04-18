@@ -7,6 +7,7 @@ include_rules = [
   "+components/crash/core/common",
   "+google_apis/gaia/gaia_auth_util.h",
   "+third_party/skia/include",
+  "+ui/base/l10n",
   "+ui/base/resource",
   "+ui/chromeos/resources",
   "+ui/gfx/codec",

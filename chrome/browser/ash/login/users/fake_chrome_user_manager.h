@@ -123,9 +123,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
-  void ScheduleResolveLocale(const std::string& locale,
-                             base::OnceClosure on_resolved_callback,
-                             std::string* out_resolved_locale) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
   user_manager::MultiUserSignInPolicyController*
   GetMultiUserSignInPolicyController() override;

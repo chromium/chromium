@@ -283,14 +283,6 @@ bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
          user_manager::kSupervisedUserDomain;
 }
 
-void FakeChromeUserManager::ScheduleResolveLocale(
-    const std::string& locale,
-    base::OnceClosure on_resolved_callback,
-    std::string* out_resolved_locale) const {
-  NOTIMPLEMENTED();
-  return;
-}
-
 bool FakeChromeUserManager::IsValidDefaultUserImageId(int image_index) const {
   return default_user_image::IsValidIndex(image_index);
 }

@@ -107,7 +107,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/wm/core/wm_core_switches.h"
 
 namespace ash {
@@ -146,12 +145,6 @@ void OnRemoveUserComplete(const AccountId& account_id,
     LOG(ERROR) << "Removal of cryptohome for " << account_id.Serialize()
                << " failed, return code: " << error->get_cryptohome_error();
   }
-}
-
-// Runs on SequencedWorkerPool thread. Passes resolved locale to UI thread.
-void ResolveLocale(const std::string& raw_locale,
-                   std::string* resolved_locale) {
-  std::ignore = l10n_util::CheckAndResolveLocale(raw_locale, resolved_locale);
 }
 
 bool GetUserLockAttributes(const user_manager::User* user,
@@ -986,17 +979,6 @@ bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
          user_manager::kSupervisedUserDomain;
-}
-
-void ChromeUserManagerImpl::ScheduleResolveLocale(
-    const std::string& locale,
-    base::OnceClosure on_resolved_callback,
-    std::string* out_resolved_locale) const {
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(ResolveLocale, locale,
-                     base::Unretained(out_resolved_locale)),
-      std::move(on_resolved_callback));
 }
 
 bool ChromeUserManagerImpl::IsValidDefaultUserImageId(int image_index) const {

@@ -29,6 +29,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -42,6 +44,7 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -1424,29 +1427,31 @@ void UserManagerBase::SendMultiUserSignInMetrics() {
 
 void UserManagerBase::UpdateUserAccountLocale(const AccountId& account_id,
                                               const std::string& locale) {
-  std::unique_ptr<std::string> resolved_locale(new std::string());
   if (!locale.empty() && locale != delegate_->GetApplicationLocale()) {
-    // std::move will nullptr out |resolved_locale|, so cache the underlying
-    // ptr.
-    std::string* raw_resolved_locale = resolved_locale.get();
-    ScheduleResolveLocale(
-        locale,
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](const std::string& locale) {
+              std::string resolved_locale;
+              std::ignore =
+                  l10n_util::CheckAndResolveLocale(locale, &resolved_locale);
+              return resolved_locale;
+            },
+            locale),
         base::BindOnce(&UserManagerBase::DoUpdateAccountLocale,
-                       weak_factory_.GetWeakPtr(), account_id,
-                       std::move(resolved_locale)),
-        raw_resolved_locale);
+                       weak_factory_.GetWeakPtr(), account_id));
   } else {
-    resolved_locale = std::make_unique<std::string>(locale);
-    DoUpdateAccountLocale(account_id, std::move(resolved_locale));
+    DoUpdateAccountLocale(account_id, locale);
   }
 }
 
 void UserManagerBase::DoUpdateAccountLocale(
     const AccountId& account_id,
-    std::unique_ptr<std::string> resolved_locale) {
+    const std::string& resolved_locale) {
   User* user = FindUserAndModify(account_id);
-  if (user && resolved_locale)
-    user->SetAccountLocale(*resolved_locale);
+  if (user) {
+    user->SetAccountLocale(resolved_locale);
+  }
 }
 
 void UserManagerBase::DeleteUser(User* user) {
