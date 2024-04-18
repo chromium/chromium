@@ -42,6 +42,19 @@ interface Option {
   value: number;
 }
 
+interface SliderData {
+  min: number;
+  max: number;
+  step: number;
+  defaultValue: number;
+}
+
+interface TickData {
+  tick: number;
+  percent: number;
+  defaultValue: number;
+}
+
 export interface SettingsCursorAndTouchpadPageElement {
   $: {
     pointerSubpageButton: CrLinkRowElement,
@@ -364,7 +377,12 @@ export class SettingsCursorAndTouchpadPageElement extends
    * between 0 and 1.
    */
   private mouseKeysAccelerationTicks_(): SliderTick[] {
-    return this.buildLinearTicks_(0, 1);
+    return this.buildLinearTicks_({
+      min: 0,
+      max: 1,
+      step: 0.1,
+      defaultValue: 0.2,
+    });
   }
 
   /**
@@ -372,22 +390,29 @@ export class SettingsCursorAndTouchpadPageElement extends
    * between 1 and 10.
    */
   private mouseKeysMaxSpeedTicks_(): SliderTick[] {
-    return this.buildLinearTicks_(1, 10);
+    return this.buildLinearTicks_({
+      min: 1,
+      max: 10,
+      step: 1,
+      defaultValue: 5,
+    });
   }
 
   /**
    * A helper to build a set of ticks between |min| and |max| (inclusive) spaced
-   * evenly by 10%.
+   * evenly by |step|.
    */
-  private buildLinearTicks_(min: number, max: number): SliderTick[] {
+  private buildLinearTicks_(data: SliderData): SliderTick[] {
     const ticks: SliderTick[] = [];
 
-    // Avoid floating point addition errors by scaling everything by 10.
-    min *= 10;
-    max *= 10;
-    const step = (max - min) / 10;
-    for (let tickValue = min; tickValue <= max; tickValue += step) {
-      ticks.push(this.initTick_((tickValue - min) / ((max - min) * 10)));
+    const count = (data.max - data.min) / data.step;
+    for (let i = 0; i <= count; i++) {
+      const tickValue = data.step * i + data.min;
+      ticks.push(this.initTick_({
+        tick: tickValue,
+        percent: tickValue / data.max,
+        defaultValue: data.defaultValue,
+      }));
     }
     return ticks;
   }
@@ -395,13 +420,13 @@ export class SettingsCursorAndTouchpadPageElement extends
   /**
    * Initializes i18n labels for ticks arrays.
    */
-  private initTick_(tick: number): SliderTick {
-    const value = Math.round(100 * tick);
+  private initTick_(data: TickData): SliderTick {
+    const value = Math.round(100 * data.percent);
     const strValue = value.toFixed(0);
-    const label = strValue === '100' ?
+    const label = data.tick.toFixed(1) === data.defaultValue.toFixed(1) ?
         this.i18n('defaultPercentage', strValue) :
         this.i18n('percentage', strValue);
-    return {label: label, value: tick, ariaValue: value};
+    return {label: label, value: data.tick, ariaValue: value};
   }
 
   private onFaceGazeCursorSettingsClick_(): void {
