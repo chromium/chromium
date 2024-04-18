@@ -24,15 +24,26 @@ android_library("java") {
   srcjar_deps = [ ":jni" ]
 
   deps = [
+    ":java_resources",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/facilitated_payments/ui/android:public_java",
+    "//chrome/browser/touch_to_fill/common/android:java",
+    "//chrome/browser/touch_to_fill/common/android:java_resources",
     "//components/browser_ui/bottomsheet/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/facilitated_payments_payment_methods_sheet_header_item.xml",
+    "java/res/values/dimens.xml",
   ]
 }
 

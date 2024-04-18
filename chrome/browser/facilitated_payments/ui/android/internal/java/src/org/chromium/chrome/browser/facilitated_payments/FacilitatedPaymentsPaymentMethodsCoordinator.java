@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
@@ -15,6 +16,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
  * Implements the FacilitatedPaymentsPaymentMethodsComponent. It uses a bottom sheet to let the user
@@ -55,6 +57,22 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
                 view,
                 FacilitatedPaymentsPaymentMethodsViewBinder
                         ::bindFacilitatedPaymentsPaymentMethodsView);
+    }
+
+    /**
+     * Register payment methods items to RecyclerViewAdapter.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link FacilitatedPaymentsPaymentMethodsView} to update.
+     */
+    public static void setUpPaymentMethodsItems(
+            PropertyModel model, FacilitatedPaymentsPaymentMethodsView view) {
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(model.get(SHEET_ITEMS));
+        adapter.registerType(
+                HEADER,
+                FacilitatedPaymentsPaymentMethodsViewBinder::createHeaderItemView,
+                FacilitatedPaymentsPaymentMethodsViewBinder::bindHeaderView);
+        view.getSheetItemListView().setAdapter(adapter);
     }
 
     PropertyModel createModel() {

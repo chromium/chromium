@@ -4,12 +4,19 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
  * Provides functions that map {@link FacilitatedPaymentsPaymentMethodsProperties} changes in a
@@ -30,9 +37,41 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
         if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
         } else if (propertyKey == SHEET_ITEMS) {
-            SimpleRecyclerViewAdapter adapter =
-                    new SimpleRecyclerViewAdapter(model.get(SHEET_ITEMS));
-            view.setSheetItemListAdapter(adapter);
+            FacilitatedPaymentsPaymentMethodsCoordinator.setUpPaymentMethodsItems(model, view);
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    private FacilitatedPaymentsPaymentMethodsViewBinder() {}
+
+    /**
+     * Factory used to create a new header inside the ListView inside the
+     * FacilitatedPaymentsPaymentMethodsView.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createHeaderItemView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(
+                        R.layout.facilitated_payments_payment_methods_sheet_header_item,
+                        parent,
+                        false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindHeaderView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == IMAGE_DRAWABLE_ID) {
+            ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
+            sheetHeaderImage.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                            view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
