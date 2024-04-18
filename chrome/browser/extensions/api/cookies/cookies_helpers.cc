@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -241,6 +242,12 @@ bool ValidateCookieApiPartitionKey(
       return false;
     }
     net_partition_key = key.value();
+    // Record 'well formatted' uma here so that we count only coercible
+    // partition keys.
+    base::UmaHistogramBoolean(
+        "Extensions.CookieAPIPartitionKeyWellFormatted",
+        net::SchemefulSite::Deserialize(partition_key->top_level_site.value())
+                .Serialize() == partition_key->top_level_site.value());
   }
   return true;
 }

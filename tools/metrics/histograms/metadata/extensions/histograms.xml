@@ -541,6 +541,19 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram name="Extensions.CookieAPIPartitionKeyWellFormatted"
+    enum="BooleanEnabled" expires_after="2025-04-18">
+  <owner>arichiv@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Emits when a valid partitionKey argument is supplied to chrome.cookies APIs
+    getting/editing cookies.
+
+    The enum value is true when the partitonKey is 'well formatted' (identical
+    to a SchemefulSite) and false when the partitonKey is otherwise coercible.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.CorruptExtensionDisabledReason"
     enum="CorruptExtensionDisabledReason" expires_after="2024-11-20">
   <owner>jlulejian@chromium.org</owner>
