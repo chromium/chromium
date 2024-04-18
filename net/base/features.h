@@ -463,6 +463,10 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseSingleProxy;
 // functionality.
 NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyAlwaysProxy;
 
+// Fallback to direct when connections to IP protection proxies fail. This
+// defaults to true and is intended for development of the QUIC functionality.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyFallbackToDirect;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).

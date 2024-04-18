@@ -453,6 +453,11 @@ const base::FeatureParam<std::string> kIpPrivacyAlwaysProxy{
     /*name=*/"IpPrivacyAlwaysProxy",
     /*default_value=*/""};
 
+const base::FeatureParam<bool> kIpPrivacyFallbackToDirect{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyFallbackToDirect",
+    /*default_value=*/true};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).

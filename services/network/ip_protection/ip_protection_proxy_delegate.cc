@@ -154,17 +154,20 @@ void IpProtectionProxyDelegate::OnResolveProxy(
       }
     }
   }
-  // Final fallback is to DIRECT.
-  auto direct_proxy_chain = net::ProxyChain::Direct();
-  if (net::features::kIpPrivacyDirectOnly.Get()) {
-    // To enable measuring how much traffic would be proxied (for
-    // experimentation and planning purposes), mark the direct
-    // proxy chain as being for IP Protection when `kIpPrivacyDirectOnly` is
-    // true. When it is false, we only care about traffic that actually went
-    // through the IP Protection proxies, so don't set this flag.
-    direct_proxy_chain = net::ProxyChain::ForIpProtection({});
+
+  if (net::features::kIpPrivacyFallbackToDirect.Get()) {
+    // Final fallback is to DIRECT.
+    auto direct_proxy_chain = net::ProxyChain::Direct();
+    if (net::features::kIpPrivacyDirectOnly.Get()) {
+      // To enable measuring how much traffic would be proxied (for
+      // experimentation and planning purposes), mark the direct
+      // proxy chain as being for IP Protection when `kIpPrivacyDirectOnly` is
+      // true. When it is false, we only care about traffic that actually went
+      // through the IP Protection proxies, so don't set this flag.
+      direct_proxy_chain = net::ProxyChain::ForIpProtection({});
+    }
+    proxy_list.AddProxyChain(std::move(direct_proxy_chain));
   }
-  proxy_list.AddProxyChain(std::move(direct_proxy_chain));
 
   if (VLOG_IS_ON(3)) {
     dvlog(base::StrCat({"setting proxy list (before deprioritization) to ",
