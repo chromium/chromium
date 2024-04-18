@@ -38,24 +38,6 @@ const char kAcceleratedVideoEncodeName[] = "Hardware-accelerated video encode";
 const char kAcceleratedVideoEncodeDescription[] =
     "Hardware-accelerated video encode where available.";
 
-#if BUILDFLAG(ENABLE_PDF)
-const char kAccessiblePDFFormName[] = "Accessible PDF Forms";
-const char kAccessiblePDFFormDescription[] =
-    "Enables accessibility support for PDF forms.";
-
-const char kPdfOopifName[] = "OOPIF for PDF Viewer";
-const char kPdfOopifDescription[] =
-    "Use an OOPIF for the PDF Viewer, instead of a GuestView.";
-
-const char kPdfPortfolioName[] = "PDF portfolio";
-const char kPdfPortfolioDescription[] = "Enable PDF portfolio feature.";
-
-const char kPdfUseSkiaRendererName[] = "Use Skia Renderer";
-const char kPdfUseSkiaRendererDescription[] =
-    "Use Skia as the PDF renderer. This flag will have no effect if the "
-    "renderer choice is controlled by an enterprise policy.";
-#endif
-
 const char kAppDeduplicationServiceFondueName[] =
     "Identify duplicate app groups.";
 const char kAppDeduplicationServiceFondueDescription[] =
@@ -2781,9 +2763,8 @@ const char kPasswordManagerShadowDomSupportName[] =
 const char kPasswordManagerShadowDomSupportDescription[] =
     "Enables form filling and saving for password forms in shadow DOM.";
 
-extern const char kPasswordManualFallbackAvailableName[] =
-    "Password manual fallback";
-extern const char kPasswordManualFallbackAvailableDescription[] =
+const char kPasswordManualFallbackAvailableName[] = "Password manual fallback";
+const char kPasswordManualFallbackAvailableDescription[] =
     "Enables triggering password suggestions through the context menu";
 
 const char kPasswordParsingOnSaveUsesPredictionsName[] =
@@ -7851,6 +7832,30 @@ const char kPaintPreviewDemoDescription[] =
     "If enabled a menu item is added to the Android main menu to demo paint "
     "previews.";
 #endif  // ENABLE_PAINT_PREVIEW && BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PDF)
+const char kAccessiblePDFFormName[] = "Accessible PDF Forms";
+const char kAccessiblePDFFormDescription[] =
+    "Enables accessibility support for PDF forms.";
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+const char kPdfInk2Name[] = "PDF Ink Signatures";
+const char kPdfInk2Description[] =
+    "Enables the ability to annotate PDFs using a new ink library.";
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+const char kPdfOopifName[] = "OOPIF for PDF Viewer";
+const char kPdfOopifDescription[] =
+    "Use an OOPIF for the PDF Viewer, instead of a GuestView.";
+
+const char kPdfPortfolioName[] = "PDF portfolio";
+const char kPdfPortfolioDescription[] = "Enable PDF portfolio feature.";
+
+const char kPdfUseSkiaRendererName[] = "Use Skia Renderer";
+const char kPdfUseSkiaRendererDescription[] =
+    "Use Skia as the PDF renderer. This flag will have no effect if the "
+    "renderer choice is controlled by an enterprise policy.";
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_VR)
 const char kWebXrHandInputName[] = "WebXR Hand Input";

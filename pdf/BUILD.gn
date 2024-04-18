@@ -21,6 +21,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ENABLE_INK=$enable_ink",
+    "ENABLE_PDF_INK2=$enable_pdf_ink2",
     "ENABLE_PDF=$enable_pdf",
   ]
 }

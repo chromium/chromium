@@ -23,6 +23,10 @@ BASE_DECLARE_FEATURE(kPdfPortfolio);
 BASE_DECLARE_FEATURE(kPdfUseSkiaRenderer);
 BASE_DECLARE_FEATURE(kPdfXfaSupport);
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+BASE_DECLARE_FEATURE(kPdfInk2);
+#endif
+
 }  // namespace chrome_pdf::features
 
 #endif  // PDF_PDF_FEATURES_H_

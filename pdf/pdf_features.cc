@@ -5,6 +5,7 @@
 #include "pdf/pdf_features.h"
 
 #include "base/feature_list.h"
+#include "pdf/buildflags.h"
 
 namespace chrome_pdf::features {
 
@@ -36,5 +37,9 @@ BASE_FEATURE(kPdfUseSkiaRenderer,
 BASE_FEATURE(kPdfXfaSupport,
              "PdfXfaSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+BASE_FEATURE(kPdfInk2, "PdfInk2", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 }  // namespace chrome_pdf::features

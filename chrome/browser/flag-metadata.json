@@ -6652,6 +6652,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "pdf-ink2",
+    "owners": [ "andyphan@chromium.org", "awscreen@chromium.org", "thestig@chromium.org" ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "pdf-ocr",
     "owners": [ "rhalavati@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130

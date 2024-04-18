@@ -53,20 +53,6 @@ extern const char kAcceleratedVideoDecodeDescription[];
 extern const char kAcceleratedVideoEncodeName[];
 extern const char kAcceleratedVideoEncodeDescription[];
 
-#if BUILDFLAG(ENABLE_PDF)
-extern const char kAccessiblePDFFormName[];
-extern const char kAccessiblePDFFormDescription[];
-
-extern const char kPdfOopifName[];
-extern const char kPdfOopifDescription[];
-
-extern const char kPdfPortfolioName[];
-extern const char kPdfPortfolioDescription[];
-
-extern const char kPdfUseSkiaRendererName[];
-extern const char kPdfUseSkiaRendererDescription[];
-#endif
-
 extern const char kAlignWakeUpsName[];
 extern const char kAlignWakeUpsDescription[];
 
@@ -4572,6 +4558,25 @@ extern const char kEnableOopPrintDriversDescription[];
 extern const char kPaintPreviewDemoName[];
 extern const char kPaintPreviewDemoDescription[];
 #endif  // ENABLE_PAINT_PREVIEW && BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PDF)
+extern const char kAccessiblePDFFormName[];
+extern const char kAccessiblePDFFormDescription[];
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+extern const char kPdfInk2Name[];
+extern const char kPdfInk2Description[];
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+extern const char kPdfOopifName[];
+extern const char kPdfOopifDescription[];
+
+extern const char kPdfPortfolioName[];
+extern const char kPdfPortfolioDescription[];
+
+extern const char kPdfUseSkiaRendererName[];
+extern const char kPdfUseSkiaRendererDescription[];
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_VR)
 extern const char kWebXrInternalsName[];
