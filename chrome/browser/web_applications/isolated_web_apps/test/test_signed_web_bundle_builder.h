@@ -58,7 +58,9 @@ class TestSignedWebBundleBuilder {
   explicit TestSignedWebBundleBuilder(
       web_package::WebBundleSigner::Ed25519KeyPair key_pair =
           web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom(),
-      web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {});
+      web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {
+          /*integrity_block_errors=*/{},
+          /*signatures_errors=*/{}});
 
   static constexpr std::string_view kTestManifestUrl =
       "/.well-known/manifest.webmanifest";

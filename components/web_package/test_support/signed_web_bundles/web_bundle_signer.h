@@ -21,7 +21,14 @@ namespace web_package {
 // `WebBundleBuilder` class to create signed web bundles.
 class WebBundleSigner {
  public:
-  enum class ErrorForTesting {
+  enum class IntegrityBlockErrorForTesting {
+    kMinValue = 0,
+    kInvalidIntegrityBlockStructure = kMinValue,
+    kInvalidVersion,
+    kMaxValue = kInvalidVersion
+  };
+
+  enum class IntegritySignatureErrorForTesting {
     kMinValue = 0,
     kInvalidSignatureLength = kMinValue,
     kInvalidPublicKeyLength,
@@ -29,15 +36,31 @@ class WebBundleSigner {
     kNoPublicKeySignatureStackEntryAttribute,
     kAdditionalSignatureStackEntryAttribute,
     kAdditionalSignatureStackEntryElement,
-    kInvalidIntegrityBlockStructure,
-    kInvalidVersion,
     kWrongSignatureStackEntryAttributeNameLength,
     kMaxValue = kWrongSignatureStackEntryAttributeNameLength
   };
 
-  using ErrorsForTesting = base::EnumSet<ErrorForTesting,
-                                         ErrorForTesting::kMinValue,
-                                         ErrorForTesting::kMaxValue>;
+  using IntegritySignatureErrorsForTesting =
+      base::EnumSet<IntegritySignatureErrorForTesting,
+                    IntegritySignatureErrorForTesting::kMinValue,
+                    IntegritySignatureErrorForTesting::kMaxValue>;
+
+  using IntegrityBlockErrorsForTesting =
+      base::EnumSet<IntegrityBlockErrorForTesting,
+                    IntegrityBlockErrorForTesting::kMinValue,
+                    IntegrityBlockErrorForTesting::kMaxValue>;
+
+  struct ErrorsForTesting {
+    ErrorsForTesting(IntegrityBlockErrorsForTesting integrity_block_errors,
+                     const std::vector<IntegritySignatureErrorsForTesting>&
+                         signatures_errors);
+    ErrorsForTesting(const ErrorsForTesting& other);
+    ErrorsForTesting& operator=(const ErrorsForTesting& other);
+    ~ErrorsForTesting();
+
+    IntegrityBlockErrorsForTesting integrity_block_errors;
+    std::vector<IntegritySignatureErrorsForTesting> signatures_errors;
+  };
 
   struct Ed25519KeyPair {
     static Ed25519KeyPair CreateRandom(bool produce_invalid_signature = false);
@@ -66,12 +89,13 @@ class WebBundleSigner {
   // Creates an integrity block with the given signature stack entries.
   static cbor::Value CreateIntegrityBlock(
       const cbor::Value::ArrayValue& signature_stack,
-      ErrorsForTesting errors_for_testing = {});
+      IntegrityBlockErrorsForTesting errors_for_testing = {});
 
   static cbor::Value CreateIntegrityBlockForBundle(
       base::span<const uint8_t> unsigned_bundle,
       const std::vector<KeyPair>& key_pairs,
-      ErrorsForTesting errors_for_testing = {});
+      ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
+                                             /*signatures_errors=*/{}});
 
   // Signs an unsigned bundle with the given key pairs, in order. I.e. the first
   // key pair will sign the unsigned bundle, the second key pair will sign the
@@ -79,7 +103,8 @@ class WebBundleSigner {
   static std::vector<uint8_t> SignBundle(
       base::span<const uint8_t> unsigned_bundle,
       const std::vector<KeyPair>& key_pairs,
-      ErrorsForTesting errors_for_testing = {});
+      ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
+                                             /*signatures_errors=*/{}});
 };
 
 }  // namespace web_package

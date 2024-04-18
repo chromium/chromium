@@ -722,8 +722,9 @@ class InstallIsolatedWebAppCommandBundleTest
     TestSignedWebBundleBuilder::BuildOptions build_options;
     if (bundle_info_.has_error) {
       build_options.SetErrorsForTesting(
-          {web_package::WebBundleSigner::ErrorForTesting::
-               kInvalidIntegrityBlockStructure});
+          {{web_package::WebBundleSigner::IntegrityBlockErrorForTesting::
+                kInvalidIntegrityBlockStructure},
+           {}});
     }
 
     TestSignedWebBundleBuilder builder;

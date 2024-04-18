@@ -45,6 +45,11 @@ namespace web_app {
 
 namespace {
 
+using IntegritySignatureErrorForTesting =
+    web_package::WebBundleSigner::IntegritySignatureErrorForTesting;
+using IntegrityBlockErrorForTesting =
+    web_package::WebBundleSigner::IntegrityBlockErrorForTesting;
+
 using base::test::ErrorIs;
 using base::test::HasValue;
 using testing::Eq;
@@ -97,7 +102,6 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  using ErrorForTesting = web_package::WebBundleSigner::ErrorForTesting;
   using VerificationAction = SignedWebBundleReader::SignatureVerificationAction;
 
   std::unique_ptr<SignedWebBundleReader> CreateReaderAndInitialize(
@@ -220,7 +224,9 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
       TestSignedWebBundleBuilder::BuildOptions()
           .SetBaseUrl(kUrl)
           .SetIndexHTMLContent(kHtmlString)
-          .SetErrorsForTesting({ErrorForTesting::kInvalidVersion}),
+          .SetErrorsForTesting(
+              {{IntegrityBlockErrorForTesting::kInvalidVersion},
+               /*signatures_errors=*/{}}),
       parse_status_future.GetCallback());
 
   auto parse_status = parse_status_future.Take();
@@ -241,7 +247,8 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
       TestSignedWebBundleBuilder::BuildOptions()
           .SetBaseUrl(kUrl)
           .SetErrorsForTesting(
-              {ErrorForTesting::kInvalidIntegrityBlockStructure}),
+              {{IntegrityBlockErrorForTesting::kInvalidIntegrityBlockStructure},
+               /*signatures_errors=*/{}}),
       parse_status_future.GetCallback());
 
   auto parse_status = parse_status_future.Take();
@@ -979,8 +986,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class UnsecureSignedWebBundleReaderTest : public testing::Test {
  protected:
-  using ErrorForTesting = web_package::WebBundleSigner::ErrorForTesting;
-
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     SetTrustedWebBundleIdsForTesting(
@@ -1023,12 +1028,16 @@ TEST_F(UnsecureSignedWebBundleReaderTest, ReadValidId) {
 }
 
 TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {
-  for (auto error : {ErrorForTesting::kInvalidSignatureLength,
-                     ErrorForTesting::kInvalidPublicKeyLength,
-                     ErrorForTesting::kWrongSignatureStackEntryAttributeName,
-                     ErrorForTesting::kNoPublicKeySignatureStackEntryAttribute,
-                     ErrorForTesting::kAdditionalSignatureStackEntryAttribute,
-                     ErrorForTesting::kAdditionalSignatureStackEntryElement}) {
+  for (auto error : {IntegritySignatureErrorForTesting::kInvalidSignatureLength,
+                     IntegritySignatureErrorForTesting::kInvalidPublicKeyLength,
+                     IntegritySignatureErrorForTesting::
+                         kWrongSignatureStackEntryAttributeName,
+                     IntegritySignatureErrorForTesting::
+                         kNoPublicKeySignatureStackEntryAttribute,
+                     IntegritySignatureErrorForTesting::
+                         kAdditionalSignatureStackEntryAttribute,
+                     IntegritySignatureErrorForTesting::
+                         kAdditionalSignatureStackEntryElement}) {
     std::string swbn_file_name =
         base::NumberToString(base::to_underlying(error)) + "_test.swbn";
     SCOPED_TRACE(Message() << "Running testcase: "
@@ -1036,7 +1045,7 @@ TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {
 
     TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault(
         TestSignedWebBundleBuilder::BuildOptions().SetErrorsForTesting(
-            {error}));
+            {/*integrity_block_errors=*/{}, {{error}}}));
     base::FilePath path =
         temp_dir_.GetPath().Append(base::FilePath::FromASCII(swbn_file_name));
     ASSERT_THAT(base::WriteFile(path, bundle.data), IsTrue());

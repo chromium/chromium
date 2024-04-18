@@ -18,28 +18,33 @@ namespace web_package {
 
 namespace {
 
-using ErrorForTesting = WebBundleSigner::ErrorForTesting;
-using ErrorsForTesting = WebBundleSigner::ErrorsForTesting;
+using IntegrityBlockErrorForTesting =
+    WebBundleSigner::IntegrityBlockErrorForTesting;
+using IntegritySignatureErrorForTesting =
+    WebBundleSigner::IntegritySignatureErrorForTesting;
+using IntegritySignatureErrorsForTesting =
+    WebBundleSigner::IntegritySignatureErrorsForTesting;
 
 cbor::Value CreateSignatureStackEntryAttributes(
     const Ed25519PublicKey& public_key,
-    ErrorsForTesting errors_for_testing = {}) {
+    IntegritySignatureErrorsForTesting errors_for_testing = {}) {
   std::vector<uint8_t> public_key_bytes = base::ToVector(public_key.bytes());
-  if (errors_for_testing.Has(ErrorForTesting::kInvalidPublicKeyLength)) {
+  if (errors_for_testing.Has(
+          IntegritySignatureErrorForTesting::kInvalidPublicKeyLength)) {
     public_key_bytes.push_back(42);
   }
 
   cbor::Value::MapValue attributes;
 
-  if (!errors_for_testing.Has(
-          ErrorForTesting::kNoPublicKeySignatureStackEntryAttribute)) {
-    if (errors_for_testing.Has(
-            ErrorForTesting::kWrongSignatureStackEntryAttributeName)) {
+  if (!errors_for_testing.Has(IntegritySignatureErrorForTesting::
+                                  kNoPublicKeySignatureStackEntryAttribute)) {
+    if (errors_for_testing.Has(IntegritySignatureErrorForTesting::
+                                   kWrongSignatureStackEntryAttributeName)) {
       // Add a typo: "ee" instead of "ed".
       attributes[cbor::Value("ee25519PublicKey")] =
           cbor::Value(public_key_bytes);
     } else if (errors_for_testing.Has(
-                   ErrorForTesting::
+                   IntegritySignatureErrorForTesting::
                        kWrongSignatureStackEntryAttributeNameLength)) {
       attributes[cbor::Value("ed25519")] = cbor::Value(public_key_bytes);
 
@@ -49,8 +54,8 @@ cbor::Value CreateSignatureStackEntryAttributes(
     }
   }
 
-  if (errors_for_testing.Has(
-          ErrorForTesting::kAdditionalSignatureStackEntryAttribute)) {
+  if (errors_for_testing.Has(IntegritySignatureErrorForTesting::
+                                 kAdditionalSignatureStackEntryAttribute)) {
     attributes[cbor::Value("foo")] = cbor::Value(42);
   }
 
@@ -60,8 +65,9 @@ cbor::Value CreateSignatureStackEntryAttributes(
 cbor::Value CreateSignatureStackEntry(
     const Ed25519PublicKey& public_key,
     std::vector<uint8_t> signature,
-    ErrorsForTesting errors_for_testing = {}) {
-  if (errors_for_testing.Has(ErrorForTesting::kInvalidSignatureLength)) {
+    IntegritySignatureErrorsForTesting errors_for_testing = {}) {
+  if (errors_for_testing.Has(
+          IntegritySignatureErrorForTesting::kInvalidSignatureLength)) {
     signature.push_back(42);
   }
 
@@ -70,8 +76,8 @@ cbor::Value CreateSignatureStackEntry(
       CreateSignatureStackEntryAttributes(public_key, errors_for_testing));
   entry.emplace_back(signature);
 
-  if (errors_for_testing.Has(
-          ErrorForTesting::kAdditionalSignatureStackEntryElement)) {
+  if (errors_for_testing.Has(IntegritySignatureErrorForTesting::
+                                 kAdditionalSignatureStackEntryElement)) {
     entry.emplace_back("foo");
   }
 
@@ -95,22 +101,34 @@ std::vector<uint8_t> SignMessage(
 
 }  // namespace
 
+WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
+    IntegrityBlockErrorsForTesting bundle_errors,
+    const std::vector<IntegritySignatureErrorsForTesting>& signatures_errors)
+    : integrity_block_errors(std::move(bundle_errors)),
+      signatures_errors(signatures_errors) {}
+
+WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
+    const ErrorsForTesting& other) = default;
+WebBundleSigner::ErrorsForTesting& WebBundleSigner::ErrorsForTesting::operator=(
+    const ErrorsForTesting& other) = default;
+WebBundleSigner::ErrorsForTesting::~ErrorsForTesting() = default;
+
 cbor::Value WebBundleSigner::CreateIntegrityBlock(
     const cbor::Value::ArrayValue& signature_stack,
-    ErrorsForTesting errors_for_testing) {
+    IntegrityBlockErrorsForTesting errors_for_testing) {
   cbor::Value::ArrayValue integrity_block;
   // magic bytes
   integrity_block.emplace_back(cbor::Value::BinaryValue(
       {0xF0, 0x9F, 0x96, 0x8B, 0xF0, 0x9F, 0x93, 0xA6}));
   // version
   integrity_block.emplace_back(
-      errors_for_testing.Has(ErrorForTesting::kInvalidVersion)
+      errors_for_testing.Has(IntegrityBlockErrorForTesting::kInvalidVersion)
           ? cbor::Value::BinaryValue({'1', 'p', '\0', '\0'})  // Invalid.
           : cbor::Value::BinaryValue({'1', 'b', '\0', '\0'}));
   // signature stack
   integrity_block.emplace_back(signature_stack);
   if (errors_for_testing.Has(
-          ErrorForTesting::kInvalidIntegrityBlockStructure)) {
+          IntegrityBlockErrorForTesting::kInvalidIntegrityBlockStructure)) {
     integrity_block.emplace_back(signature_stack);
   }
 
@@ -121,6 +139,10 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
     base::span<const uint8_t> unsigned_bundle,
     const std::vector<KeyPair>& key_pairs,
     ErrorsForTesting errors_for_testing) {
+  CHECK(errors_for_testing.signatures_errors.empty() ||
+        errors_for_testing.signatures_errors.size() == key_pairs.size());
+  auto use_signatures_errors = !errors_for_testing.signatures_errors.empty();
+
   // Calculate the SHA512 hash of the bundle.
   auto secure_hash = crypto::SecureHash::Create(crypto::SecureHash::SHA512);
   secure_hash->Update(unsigned_bundle.data(), unsigned_bundle.size());
@@ -128,10 +150,12 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
   secure_hash->Finish(unsigned_bundle_hash.data(), unsigned_bundle_hash.size());
 
   std::vector<cbor::Value> signature_stack;
-  for (const KeyPair& key_pair : key_pairs) {
+  for (size_t i = 0; i < key_pairs.size(); ++i) {
+    const auto& key_pair = key_pairs[i];
     // Create an integrity block with all previous signature stack entries.
-    std::optional<std::vector<uint8_t>> integrity_block = cbor::Writer::Write(
-        CreateIntegrityBlock(signature_stack, errors_for_testing));
+    std::optional<std::vector<uint8_t>> integrity_block =
+        cbor::Writer::Write(CreateIntegrityBlock(
+            signature_stack, errors_for_testing.integrity_block_errors));
 
     absl::visit(
         base::Overloaded{[&](const auto& key_pair) {
@@ -145,14 +169,20 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
                .integrity_block_cbor = *integrity_block,
                .attributes_cbor = *attributes});
 
+          IntegritySignatureErrorsForTesting errors;
+          if (use_signatures_errors) {
+            errors = errors_for_testing.signatures_errors[i];
+          }
+
           signature_stack.push_back(CreateSignatureStackEntry(
               key_pair.public_key, SignMessage(payload_to_sign, key_pair),
-              errors_for_testing));
+              errors));
         }},
         key_pair);
   }
 
-  return CreateIntegrityBlock(signature_stack, errors_for_testing);
+  return CreateIntegrityBlock(signature_stack,
+                              errors_for_testing.integrity_block_errors);
 }
 
 std::vector<uint8_t> WebBundleSigner::SignBundle(

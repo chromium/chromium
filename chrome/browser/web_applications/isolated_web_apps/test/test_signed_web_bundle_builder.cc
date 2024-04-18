@@ -74,7 +74,8 @@ TestSignedWebBundleBuilder::BuildOptions::BuildOptions()
                                                              kTestPrivateKey)),
       version_(base::Version("1.0.0")),
       app_name_("Simple Isolated App"),
-      errors_for_testing_({}) {}
+      errors_for_testing_(
+          {/*integrity_block_errors=*/{}, /*signatures_errors=*/{}}) {}
 
 TestSignedWebBundleBuilder::BuildOptions::BuildOptions(const BuildOptions&) =
     default;

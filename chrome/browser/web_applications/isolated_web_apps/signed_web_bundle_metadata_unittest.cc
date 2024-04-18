@@ -156,8 +156,9 @@ TEST_F(SignedWebBundleMetadataTest, FailsWhenWebBundleIdNotTrusted) {
 TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
   IsolatedWebAppUrlInfo url_info = WriteBundleToDisk(
       TestSignedWebBundleBuilder::BuildOptions().SetErrorsForTesting(
-          {web_package::WebBundleSigner::ErrorForTesting::
-               kInvalidIntegrityBlockStructure}));
+          {{web_package::WebBundleSigner::IntegrityBlockErrorForTesting::
+                kInvalidIntegrityBlockStructure},
+           {}}));
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   FakeWebContentsManager& fake_web_contents_manager =
       static_cast<FakeWebContentsManager&>(

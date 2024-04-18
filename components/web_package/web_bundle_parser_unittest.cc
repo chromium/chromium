@@ -206,7 +206,8 @@ struct SignedWebBundleAndKeys {
 
 SignedWebBundleAndKeys SignBundle(
     const std::vector<uint8_t>& unsigned_bundle,
-    WebBundleSigner::ErrorsForTesting errors_for_testing = {},
+    WebBundleSigner::ErrorsForTesting errors_for_testing = {
+        /*integrity_block_errors=*/{}, /*signatures_errors=*/{}},
     size_t num_signatures = 1) {
   std::vector<WebBundleSigner::KeyPair> key_pairs;
   for (size_t i = 0; i < num_signatures; ++i) {
@@ -772,7 +773,9 @@ TEST_F(WebBundleParserTest, SignedBundleSignatureStackWithMultipleEntries) {
 
   auto unsigned_bundle = CreateSmallBundle();
   auto bundle_and_keys =
-      SignBundle(unsigned_bundle, /*errors_for_testing=*/{}, num_signatures);
+      SignBundle(unsigned_bundle, /*errors_for_testing=*/
+                 {/*integrity_block_errors=*/{}, /*signatures_errors=*/{}},
+                 num_signatures);
   TestDataSource data_source(bundle_and_keys.bundle);
 
   ASSERT_OK_AND_ASSIGN(auto integrity_block,
@@ -831,8 +834,8 @@ TEST_F(WebBundleParserTest, SignedBundleUnknownVersion) {
 TEST_F(WebBundleParserTest, SignedBundleEmptySignatureStack) {
   WebBundleBuilder builder;
   std::vector<uint8_t> unsigned_bundle = builder.CreateBundle();
-  std::vector<uint8_t> signed_bundle(
-      *cbor::Writer::Write(WebBundleSigner::CreateIntegrityBlock({})));
+  std::vector<uint8_t> signed_bundle(*cbor::Writer::Write(
+      WebBundleSigner::CreateIntegrityBlock(/*signature_stack=*/{})));
   signed_bundle.insert(signed_bundle.end(), unsigned_bundle.begin(),
                        unsigned_bundle.end());
   TestDataSource data_source(signed_bundle);
@@ -848,9 +851,10 @@ TEST_F(WebBundleParserTest, SignedBundleEmptySignatureStack) {
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
   auto unsigned_bundle = CreateSmallBundle();
-  auto bundle_and_keys =
-      SignBundle(unsigned_bundle,
-                 {WebBundleSigner::ErrorForTesting::kInvalidSignatureLength});
+  auto bundle_and_keys = SignBundle(
+      unsigned_bundle, {/*integrity_block_errors=*/{},
+                        {{WebBundleSigner::IntegritySignatureErrorForTesting::
+                              kInvalidSignatureLength}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
   auto result = ParseSignedBundleIntegrityBlock(&data_source);
@@ -865,9 +869,10 @@ TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureStackEntryLength) {
   auto unsigned_bundle = CreateSmallBundle();
-  auto bundle_and_keys =
-      SignBundle(unsigned_bundle, {WebBundleSigner::ErrorForTesting::
-                                       kAdditionalSignatureStackEntryElement});
+  auto bundle_and_keys = SignBundle(
+      unsigned_bundle, {/*integrity_block_errors=*/{},
+                        {{WebBundleSigner::IntegritySignatureErrorForTesting::
+                              kAdditionalSignatureStackEntryElement}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
   auto result = ParseSignedBundleIntegrityBlock(&data_source);
@@ -882,8 +887,9 @@ TEST_F(WebBundleParserTest, SignedBundleWrongSignatureStackEntryLength) {
 TEST_F(WebBundleParserTest, SignedBundleWrongAdditionalAttribute) {
   auto unsigned_bundle = CreateSmallBundle();
   auto bundle_and_keys = SignBundle(
-      unsigned_bundle, {WebBundleSigner::ErrorForTesting::
-                            kAdditionalSignatureStackEntryAttribute});
+      unsigned_bundle, {/*integrity_block_errors=*/{},
+                        {{WebBundleSigner::IntegritySignatureErrorForTesting::
+                              kAdditionalSignatureStackEntryAttribute}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
   auto result = ParseSignedBundleIntegrityBlock(&data_source);
@@ -899,8 +905,9 @@ TEST_F(WebBundleParserTest, SignedBundleWrongAdditionalAttribute) {
 TEST_F(WebBundleParserTest, SignedBundleNoPublicKeyAttribute) {
   auto unsigned_bundle = CreateSmallBundle();
   auto bundle_and_keys = SignBundle(
-      unsigned_bundle, {WebBundleSigner::ErrorForTesting::
-                            kNoPublicKeySignatureStackEntryAttribute});
+      unsigned_bundle, {/*integrity_block_errors=*/{},
+                        {{WebBundleSigner::IntegritySignatureErrorForTesting::
+                              kNoPublicKeySignatureStackEntryAttribute}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
   auto result = ParseSignedBundleIntegrityBlock(&data_source);
@@ -915,9 +922,10 @@ TEST_F(WebBundleParserTest, SignedBundleNoPublicKeyAttribute) {
 
 TEST_F(WebBundleParserTest, SignedBundleWrongPublicKeyAttributeName) {
   auto unsigned_bundle = CreateSmallBundle();
-  auto bundle_and_keys =
-      SignBundle(unsigned_bundle, {WebBundleSigner::ErrorForTesting::
-                                       kWrongSignatureStackEntryAttributeName});
+  auto bundle_and_keys = SignBundle(
+      unsigned_bundle, {/*integrity_block_errors=*/{},
+                        {{WebBundleSigner::IntegritySignatureErrorForTesting::
+                              kWrongSignatureStackEntryAttributeName}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
   auto result = ParseSignedBundleIntegrityBlock(&data_source);
@@ -930,8 +938,9 @@ TEST_F(WebBundleParserTest, SignedBundleWrongPublicKeyAttributeName) {
 TEST_F(WebBundleParserTest, SignedBundleWrongPublicKeyAttributeLength) {
   auto unsigned_bundle = CreateSmallBundle();
   auto bundle_and_keys = SignBundle(
-      unsigned_bundle, {WebBundleSigner::ErrorForTesting::
-                            kWrongSignatureStackEntryAttributeNameLength});
+      unsigned_bundle, {/*integrity_block_errors=*/{},
+                        {{WebBundleSigner::IntegritySignatureErrorForTesting::
+                              kWrongSignatureStackEntryAttributeNameLength}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
   auto result = ParseSignedBundleIntegrityBlock(&data_source);
@@ -943,9 +952,10 @@ TEST_F(WebBundleParserTest, SignedBundleWrongPublicKeyAttributeLength) {
 
 TEST_F(WebBundleParserTest, SignedBundleWrongPublicKeyLength) {
   auto unsigned_bundle = CreateSmallBundle();
-  auto bundle_and_keys =
-      SignBundle(unsigned_bundle,
-                 {WebBundleSigner::ErrorForTesting::kInvalidPublicKeyLength});
+  auto bundle_and_keys = SignBundle(
+      unsigned_bundle, {/*integrity_block_errors=*/{},
+                        {{WebBundleSigner::IntegritySignatureErrorForTesting::
+                              kInvalidPublicKeyLength}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
   auto result = ParseSignedBundleIntegrityBlock(&data_source);
