@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.when;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,9 +19,15 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.hub.LoadHint;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 
 import java.util.function.DoubleConsumer;
 
@@ -27,9 +35,25 @@ import java.util.function.DoubleConsumer;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupsPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
+    @Mock private ProfileProvider mProfileProvider;
+    @Mock private Profile mProfile;
+    @Mock FaviconHelper.Natives mFaviconHelperJniMock;
+
+    private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
+            new OneshotSupplierImpl<>();
+
+    @Before
+    public void setUp() {
+        when(mFaviconHelperJniMock.init()).thenReturn(1L);
+        mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
+        ApplicationProvider.getApplicationContext().setTheme(R.style.Theme_BrowserUI_DayNight);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        mProfileSupplier.set(mProfileProvider);
+    }
 
     @Test
     public void testNotifyLoadHint() {
@@ -37,7 +61,8 @@ public class TabGroupsPaneUnitTest {
                 new TabGroupsPane(
                         ApplicationProvider.getApplicationContext(),
                         LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
-                        mOnToolbarAlphaChange);
+                        mOnToolbarAlphaChange,
+                        mProfileSupplier);
         assertEquals(0, pane.getRootView().getChildCount());
 
         pane.notifyLoadHint(LoadHint.HOT);
@@ -53,7 +78,8 @@ public class TabGroupsPaneUnitTest {
                 new TabGroupsPane(
                         ApplicationProvider.getApplicationContext(),
                         LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
-                        mOnToolbarAlphaChange);
+                        mOnToolbarAlphaChange,
+                        mProfileSupplier);
         pane.notifyLoadHint(LoadHint.HOT);
         pane.destroy();
         assertEquals(0, pane.getRootView().getChildCount());
@@ -65,7 +91,8 @@ public class TabGroupsPaneUnitTest {
                 new TabGroupsPane(
                         ApplicationProvider.getApplicationContext(),
                         LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
-                        mOnToolbarAlphaChange);
+                        mOnToolbarAlphaChange,
+                        mProfileSupplier);
         pane.notifyLoadHint(LoadHint.HOT);
         pane.notifyLoadHint(LoadHint.COLD);
         pane.destroy();
@@ -78,7 +105,8 @@ public class TabGroupsPaneUnitTest {
                 new TabGroupsPane(
                         ApplicationProvider.getApplicationContext(),
                         LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
-                        mOnToolbarAlphaChange);
+                        mOnToolbarAlphaChange,
+                        mProfileSupplier);
         pane.destroy();
         assertEquals(0, pane.getRootView().getChildCount());
     }

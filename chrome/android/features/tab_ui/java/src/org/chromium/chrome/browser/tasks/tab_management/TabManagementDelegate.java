@@ -204,12 +204,14 @@ public interface TabManagementDelegate {
      * @param context Used to inflate UI.
      * @param tabModelSelector Used to pull tab data from.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
+     * @param profileProviderSupplier The supplier for profiles.
      * @return The pane implementation that displays and allows interactions with tab groups.
      */
     Pane createTabGroupsPane(
             @NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
-            @NonNull DoubleConsumer onToolbarAlphaChange);
+            @NonNull DoubleConsumer onToolbarAlphaChange,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier);
 
     /**
      * Create a TabGroupCreationDialogManager when creating a new tab group.

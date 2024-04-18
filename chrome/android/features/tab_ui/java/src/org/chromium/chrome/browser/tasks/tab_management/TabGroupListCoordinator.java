@@ -11,6 +11,8 @@ import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -33,7 +35,8 @@ public class TabGroupListCoordinator {
     private final SimpleRecyclerViewAdapter mSimpleRecyclerViewAdapter;
     private TabGroupListMediator mTabGroupListMediator;
 
-    public TabGroupListCoordinator(Context context, TabGroupModelFilter filter) {
+    public TabGroupListCoordinator(
+            Context context, TabGroupModelFilter filter, ProfileProvider profileProvider) {
         ModelList modelList = new ModelList();
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
@@ -47,7 +50,12 @@ public class TabGroupListCoordinator {
         mRecyclerView.setAdapter(mSimpleRecyclerViewAdapter);
         mRecyclerView.setItemAnimator(null);
 
-        mTabGroupListMediator = new TabGroupListMediator(modelList, filter);
+        TabListFaviconProvider tabListFaviconProvider =
+                new TabListFaviconProvider(
+                        context, /* isTabStrip= */ false, R.dimen.default_favicon_corner_radius);
+        // Native should always be initialized at this point.
+        tabListFaviconProvider.initWithNative(profileProvider.getOriginalProfile());
+        mTabGroupListMediator = new TabGroupListMediator(modelList, filter, tabListFaviconProvider);
     }
 
     /** Returns the root view of this component, allowing the parent to anchor in the hierarchy. */

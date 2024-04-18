@@ -221,14 +221,16 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     public Pane createTabGroupsPane(
             @NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
-            @NonNull DoubleConsumer onToolbarAlphaChange) {
+            @NonNull DoubleConsumer onToolbarAlphaChange,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier) {
         LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () ->
                                 tabModelSelector
                                         .getTabModelFilterProvider()
                                         .getTabModelFilter(false));
-        return new TabGroupsPane(context, tabModelFilterSupplier, onToolbarAlphaChange);
+        return new TabGroupsPane(
+                context, tabModelFilterSupplier, onToolbarAlphaChange, profileProviderSupplier);
     }
 
     @Override

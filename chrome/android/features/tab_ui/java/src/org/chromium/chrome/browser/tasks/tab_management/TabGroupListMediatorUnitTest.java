@@ -5,11 +5,20 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_LEFT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_RIGHT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_LEFT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_RIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
+
+import android.graphics.drawable.Drawable;
 
 import androidx.core.util.Pair;
 import androidx.test.filters.SmallTest;
@@ -26,6 +35,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -33,12 +43,14 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,6 +65,11 @@ public class TabGroupListMediatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
+    @Mock private TabListFaviconProvider mTabListFaviconProvider;
+    @Mock private Callback<Drawable> mFaviconCallback1;
+    @Mock private Callback<Drawable> mFaviconCallback2;
+    @Mock private Callback<Drawable> mFaviconCallback3;
+    @Mock private Callback<Drawable> mFaviconCallback4;
 
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
@@ -67,7 +84,7 @@ public class TabGroupListMediatorUnitTest {
     @SmallTest
     public void testNoTabs() {
         when(mTabGroupModelFilter.getCount()).thenReturn(0);
-        new TabGroupListMediator(mModelList, mTabGroupModelFilter);
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
         assertEquals(0, mModelList.size());
     }
 
@@ -79,7 +96,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab);
         when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(false);
 
-        new TabGroupListMediator(mModelList, mTabGroupModelFilter);
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
         assertEquals(0, mModelList.size());
     }
 
@@ -94,7 +111,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getTabGroupTitle(0)).thenReturn("Title");
         when(mTabGroupModelFilter.getTabGroupColor(0)).thenReturn(TabGroupColorId.BLUE);
 
-        new TabGroupListMediator(mModelList, mTabGroupModelFilter);
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
         assertEquals(1, mModelList.size());
 
         PropertyModel model = mModelList.get(0).model;
@@ -124,7 +141,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabModel.getTabById(1)).thenReturn(tab1);
         when(mTabModel.getTabById(2)).thenReturn(tab2);
 
-        new TabGroupListMediator(mModelList, mTabGroupModelFilter);
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
         assertEquals(1, mModelList.size());
 
         PropertyModel model = mModelList.get(0).model;
@@ -154,7 +171,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getTabGroupColor(1)).thenReturn(TabGroupColorId.BLUE);
         when(mTabGroupModelFilter.getTabGroupColor(3)).thenReturn(TabGroupColorId.RED);
 
-        new TabGroupListMediator(mModelList, mTabGroupModelFilter);
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
         assertEquals(2, mModelList.size());
 
         PropertyModel model1 = mModelList.get(0).model;
@@ -169,7 +186,8 @@ public class TabGroupListMediatorUnitTest {
     @Test
     @SmallTest
     public void testObservation() {
-        TabGroupListMediator mediator = new TabGroupListMediator(mModelList, mTabGroupModelFilter);
+        TabGroupListMediator mediator =
+                new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
         assertEquals(0, mModelList.size());
 
         MockTab tab = new MockTab(0, mProfile);
@@ -213,9 +231,175 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getRelatedTabList(0)).thenReturn(Collections.singletonList(tab));
         when(mTabGroupModelFilter.getTabGroupColor(0)).thenReturn(TabGroupColorId.BLUE);
 
-        new TabGroupListMediator(mModelList, mTabGroupModelFilter);
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
         assertEquals(1, mModelList.size());
         // 0 is the default value.
         assertEquals(0, mModelList.get(0).model.get(COLOR_INDEX));
+    }
+
+    @Test
+    @SmallTest
+    public void testFavicons_one() {
+        MockTab tab1 = new MockTab(1, mProfile);
+        tab1.setUrl(JUnitTestGURLs.URL_1);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab1);
+        when(mTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(true);
+        when(mTabGroupModelFilter.getRelatedTabList(1)).thenReturn(Arrays.asList(tab1));
+
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
+
+        assertEquals(1, mModelList.size());
+        PropertyModel propertyModel = mModelList.get(0).model;
+        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
+        assertNull(propertyModel.get(ASYNC_FAVICON_TOP_RIGHT));
+        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT));
+        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
+        assertNull(propertyModel.get(PLUS_COUNT));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_1), eq(false), eq(mFaviconCallback1));
+    }
+
+    @Test
+    @SmallTest
+    public void testFavicons_two() {
+        MockTab tab1 = new MockTab(1, mProfile);
+        tab1.setUrl(JUnitTestGURLs.URL_1);
+        MockTab tab2 = new MockTab(2, mProfile);
+        tab2.setUrl(JUnitTestGURLs.URL_2);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab1);
+        when(mTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(true);
+        when(mTabGroupModelFilter.getRelatedTabList(1)).thenReturn(Arrays.asList(tab1, tab2));
+
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
+
+        assertEquals(1, mModelList.size());
+        PropertyModel propertyModel = mModelList.get(0).model;
+        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
+        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
+        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT));
+        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
+        assertNull(propertyModel.get(PLUS_COUNT));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_1), eq(false), eq(mFaviconCallback1));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_2), eq(false), eq(mFaviconCallback2));
+    }
+
+    @Test
+    @SmallTest
+    public void testFavicons_three() {
+        MockTab tab1 = new MockTab(1, mProfile);
+        tab1.setUrl(JUnitTestGURLs.URL_1);
+        MockTab tab2 = new MockTab(2, mProfile);
+        tab2.setUrl(JUnitTestGURLs.URL_2);
+        MockTab tab3 = new MockTab(1, mProfile);
+        tab3.setUrl(JUnitTestGURLs.URL_3);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab1);
+        when(mTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(true);
+        when(mTabGroupModelFilter.getRelatedTabList(1)).thenReturn(Arrays.asList(tab1, tab2, tab3));
+
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
+
+        assertEquals(1, mModelList.size());
+        PropertyModel propertyModel = mModelList.get(0).model;
+        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
+        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
+        propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT).accept(mFaviconCallback3);
+        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
+        assertNull(propertyModel.get(PLUS_COUNT));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_1), eq(false), eq(mFaviconCallback1));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_2), eq(false), eq(mFaviconCallback2));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_3), eq(false), eq(mFaviconCallback3));
+    }
+
+    @Test
+    @SmallTest
+    public void testFavicons_four() {
+        MockTab tab1 = new MockTab(1, mProfile);
+        tab1.setUrl(JUnitTestGURLs.URL_1);
+        MockTab tab2 = new MockTab(2, mProfile);
+        tab2.setUrl(JUnitTestGURLs.URL_2);
+        MockTab tab3 = new MockTab(1, mProfile);
+        tab3.setUrl(JUnitTestGURLs.URL_3);
+        MockTab tab4 = new MockTab(2, mProfile);
+        tab4.setUrl(JUnitTestGURLs.BLUE_1);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab1);
+        when(mTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(true);
+        when(mTabGroupModelFilter.getRelatedTabList(1))
+                .thenReturn(Arrays.asList(tab1, tab2, tab3, tab4));
+
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
+
+        assertEquals(1, mModelList.size());
+        PropertyModel propertyModel = mModelList.get(0).model;
+        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
+        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
+        propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT).accept(mFaviconCallback3);
+        propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT).accept(mFaviconCallback4);
+        assertNull(propertyModel.get(PLUS_COUNT));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_1), eq(false), eq(mFaviconCallback1));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_2), eq(false), eq(mFaviconCallback2));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_3), eq(false), eq(mFaviconCallback3));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.BLUE_1), eq(false), eq(mFaviconCallback4));
+    }
+
+    @Test
+    @SmallTest
+    public void testFavicons_five() {
+        MockTab tab1 = new MockTab(1, mProfile);
+        tab1.setUrl(JUnitTestGURLs.URL_1);
+        MockTab tab2 = new MockTab(2, mProfile);
+        tab2.setUrl(JUnitTestGURLs.URL_2);
+        MockTab tab3 = new MockTab(1, mProfile);
+        tab3.setUrl(JUnitTestGURLs.URL_3);
+        MockTab tab4 = new MockTab(2, mProfile);
+        tab4.setUrl(JUnitTestGURLs.BLUE_1);
+        MockTab tab5 = new MockTab(2, mProfile);
+        tab5.setUrl(JUnitTestGURLs.BLUE_2);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab1);
+        when(mTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(true);
+        when(mTabGroupModelFilter.getRelatedTabList(1))
+                .thenReturn(Arrays.asList(tab1, tab2, tab3, tab4, tab5));
+
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter, mTabListFaviconProvider);
+
+        assertEquals(1, mModelList.size());
+        PropertyModel propertyModel = mModelList.get(0).model;
+        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
+        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
+        propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT).accept(mFaviconCallback3);
+        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
+        assertEquals(2, propertyModel.get(PLUS_COUNT).intValue());
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_1), eq(false), eq(mFaviconCallback1));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_2), eq(false), eq(mFaviconCallback2));
+        verify(mTabListFaviconProvider)
+                .getFaviconDrawableForUrlAsync(
+                        eq(JUnitTestGURLs.URL_3), eq(false), eq(mFaviconCallback3));
     }
 }

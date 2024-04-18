@@ -5,34 +5,53 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_LEFT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_RIGHT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_LEFT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_RIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CREATION_MILLIS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
+
+import android.graphics.drawable.Drawable;
 
 import androidx.core.util.Pair;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.AsyncDrawable;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
 public class TabGroupListMediator {
+    private static final WritableObjectPropertyKey[] FAVICON_ORDER = {
+        ASYNC_FAVICON_TOP_LEFT,
+        ASYNC_FAVICON_TOP_RIGHT,
+        ASYNC_FAVICON_BOTTOM_LEFT,
+        ASYNC_FAVICON_BOTTOM_RIGHT
+    };
+
     private final ModelList mModelList;
     private final TabGroupModelFilter mFilter;
+    private final TabListFaviconProvider mTabListFaviconProvider;
     private final CallbackController mCallbackController = new CallbackController();
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
@@ -132,10 +151,15 @@ public class TabGroupListMediator {
     /**
      * @param modelList Side effect is adding items to this list.
      * @param filter Used to read current tab groups.
+     * @param tabListFaviconProvider Used to fetch favicon images for some tabs.
      */
-    public TabGroupListMediator(ModelList modelList, TabGroupModelFilter filter) {
+    public TabGroupListMediator(
+            ModelList modelList,
+            TabGroupModelFilter filter,
+            TabListFaviconProvider tabListFaviconProvider) {
         mModelList = modelList;
         mFilter = filter;
+        mTabListFaviconProvider = tabListFaviconProvider;
         mFilter.addTabGroupObserver(mFilterObserver);
         mFilter.addObserver(mTabModelObserver);
         // TODO(b:324935209): Watch for title and color changes.
@@ -176,12 +200,26 @@ public class TabGroupListMediator {
 
         // TODO(b:324935209): Use sync data instead of active tab groups.
         for (Tab rootTab : getAllRootTabs()) {
-            int tabId = rootTab.getId();
             PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
-            // PropertyModel propertyModel = new PropertyModel(ALL_KEYS);
-
-            // TODO(b:324911877): Create drawable icon.
-            // propertyModel.set(TabGroupRowProperties.START_DRAWABLE, null);
+            int tabId = rootTab.getId();
+            List<Tab> relatedTabs = mFilter.getRelatedTabList(tabId);
+            int numberOfTabs = relatedTabs.size();
+            int numberOfCorners = FAVICON_ORDER.length;
+            int standardCorners = numberOfCorners - 1;
+            for (int i = 0; i < standardCorners; i++) {
+                if (relatedTabs.size() > i) {
+                    builder.with(FAVICON_ORDER[i], buildAsyncDrawable(relatedTabs.get(i)));
+                } else {
+                    break;
+                }
+            }
+            if (relatedTabs.size() == numberOfCorners) {
+                builder.with(
+                        FAVICON_ORDER[standardCorners],
+                        buildAsyncDrawable(relatedTabs.get(standardCorners)));
+            } else if (numberOfTabs > numberOfCorners) {
+                builder.with(PLUS_COUNT, numberOfTabs - standardCorners);
+            }
 
             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                 @TabGroupColorId int colorIndex = mFilter.getTabGroupColor(tabId);
@@ -189,7 +227,6 @@ public class TabGroupListMediator {
             }
 
             String userTitle = mFilter.getTabGroupTitle(tabId);
-            int numberOfTabs = mFilter.getRelatedTabList(tabId).size();
             Pair<String, Integer> titleData = new Pair<>(userTitle, numberOfTabs);
             builder.with(TITLE_DATA, titleData);
 
@@ -201,8 +238,15 @@ public class TabGroupListMediator {
             // builder.with(TabGroupRowProperties.OPEN_RUNNABLE, null);
             // builder.with(TabGroupRowProperties.DELETE_RUNNABLE, null);
 
-            ListItem listItem = new ListItem(0, builder.build());
+            PropertyModel propertyModel = builder.build();
+            ListItem listItem = new ListItem(0, propertyModel);
             mModelList.add(listItem);
         }
+    }
+
+    private AsyncDrawable buildAsyncDrawable(Tab tab) {
+        return (Callback<Drawable> callback) ->
+                mTabListFaviconProvider.getFaviconDrawableForUrlAsync(
+                        tab.getUrl(), /* isIncognito= */ false, callback);
     }
 }

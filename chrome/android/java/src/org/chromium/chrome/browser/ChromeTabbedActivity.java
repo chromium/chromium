@@ -987,7 +987,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private Pane createTabGroupsPane() {
         return TabManagementDelegateProvider.getDelegate()
-                .createTabGroupsPane(this, getTabModelSelector(), adaptOnToolbarAlphaChange());
+                .createTabGroupsPane(
+                        this,
+                        getTabModelSelector(),
+                        adaptOnToolbarAlphaChange(),
+                        getProfileProviderSupplier());
     }
 
     private void createGridTabSwitcher(
