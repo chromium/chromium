@@ -586,7 +586,7 @@ BASE_FEATURE(kAutofillContentEditableChangeEvents,
 // TODO(crbug.com/1453650): Remove when launched.
 BASE_FEATURE(kAutofillTrackProfileTokenQuality,
              "AutofillTrackProfileTokenQuality",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to use the combined heuristic and the autocomplete section
 // implementation for section splitting or not. See https://crbug.com/1076175.
