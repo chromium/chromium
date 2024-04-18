@@ -301,23 +301,27 @@ std::ostream& operator<<(std::ostream& os,
 
 std::ostream& operator<<(std::ostream& os, const LcppData& data) {
   os << "[" << data.host() << "," << data.last_visit_time() << "]" << std::endl;
+  os << data.lcpp_stat();
+  return os;
+}
 
+std::ostream& operator<<(std::ostream& os, const LcppStat& stat) {
   // Output lcp_element_locator_stat.
   os << "\t\t" << "lcp_element_locator_stat:" << std::endl;
-  os << data.lcpp_stat().lcp_element_locator_stat();
+  os << stat.lcp_element_locator_stat();
 
   // Output lcp_script_url_stat.
   os << "\t\t"
      << "lcp_script_url_stat:" << std::endl;
-  os << data.lcpp_stat().lcp_script_url_stat();
+  os << stat.lcp_script_url_stat();
 
   // Output fetched_font_url_stat.
   os << "\t\t" << "fetched_font_url_stat:" << std::endl;
-  os << data.lcpp_stat().fetched_font_url_stat();
+  os << stat.fetched_font_url_stat();
 
   // Output fetched_subresource_url_stat.
   os << "\t\t" << "fetched_subresource_url_stat:" << std::endl;
-  os << data.lcpp_stat().fetched_subresource_url_stat();
+  os << stat.fetched_subresource_url_stat();
 
   return os;
 }

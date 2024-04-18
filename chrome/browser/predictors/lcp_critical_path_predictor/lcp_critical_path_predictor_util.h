@@ -96,9 +96,11 @@ bool IsValidLcppStat(const LcppStat& lcpp_stat);
 // Returns true if the url is valid for learning.
 bool IsURLValidForLcpp(const GURL& url);
 
-// Returns the key string for the url. The url should be true for
+// Returns the first level path of the url. The url should be true for
 // the above IsURLValidForLcpp(url).
-std::string GetLCPPDatabaseKey(const GURL& url);
+// This function can return empty string if the URL doesn't have
+// the first level path or it length exceeds kLCPPMultipleKeyMaxPathLength.
+std::string GetFirstLevelPath(const GURL& url);
 
 }  // namespace predictors
 

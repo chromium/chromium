@@ -32,6 +32,7 @@
 #include "net/base/network_isolation_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -132,11 +133,15 @@ class ResourcePrefetchPredictorTest : public testing::Test {
   }
 
   void ResetPredictor(bool small_db = true) {
+    LoadingPredictorConfig config;
+    PopulateTestConfig(&config, small_db);
+    ResetPredictor(config);
+  }
+
+  void ResetPredictor(const LoadingPredictorConfig& config) {
     if (loading_predictor_)
       loading_predictor_->Shutdown();
 
-    LoadingPredictorConfig config;
-    PopulateTestConfig(&config, small_db);
     loading_predictor_ =
         std::make_unique<LoadingPredictor>(config, profile_.get());
     predictor_ = loading_predictor_->resource_prefetch_predictor();
@@ -175,6 +180,24 @@ class ResourcePrefetchPredictorTest : public testing::Test {
     LcppDataInputs inputs;
     inputs.subresource_urls = subresource_urls;
     predictor_->LearnLcpp(url, inputs);
+  }
+
+  void TestLearnLcppURL(
+      const std::vector<std::pair<std::string, std::string>>& url_keys,
+      const base::Location& location = FROM_HERE) {
+    std::map<std::string, int> frequency;
+    for (const auto& url_key : url_keys) {
+      const std::string& url = url_key.first;
+      const std::string& key = url_key.second;
+      LearnLcpp(GURL(url), "/#a", {});
+      // Confirm 'url' was learned as 'key'.
+      auto stat = predictor_->GetLcppStat(GURL("http://" + key));
+      EXPECT_TRUE(stat) << location.ToString() << url;
+      LcppData expected;
+      InitializeLcpElementLocatorBucket(expected, "/#a", ++frequency[key]);
+      EXPECT_EQ(expected.lcpp_stat(), *stat)
+          << location.ToString() << url << *stat;
+    }
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -1319,6 +1342,90 @@ TEST_F(ResourcePrefetchPredictorTest, WhenLcppDataIsCorrupted_ResetData) {
     InitializeLcpElementLocatorBucket(data, "/#a", 1);
     EXPECT_EQ(data, mock_tables_->lcpp_table_.data_["a.test"]);
   }
+}
+
+TEST_F(ResourcePrefetchPredictorTest, LcppMaxHosts) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 3u;
+  ResetPredictor(config);
+  InitializePredictor();
+
+  const GURL url_a("http://a.test");
+  EXPECT_FALSE(predictor_->GetLcppStat(url_a));
+
+  LearnLcpp(url_a, "/#a", {});
+  EXPECT_TRUE(predictor_->GetLcppStat(url_a));
+
+  const GURL url_b("http://b.test");
+  LearnLcpp(url_b, "/#a", {});
+  const GURL url_c("http://c.test");
+  LearnLcpp(url_c, "/#a", {});
+  EXPECT_TRUE(predictor_->GetLcppStat(url_a));
+  EXPECT_TRUE(predictor_->GetLcppStat(url_b));
+  EXPECT_TRUE(predictor_->GetLcppStat(url_c));
+
+  const GURL url_d("http://d.test");
+  LearnLcpp(url_d, "/#a", {});
+  EXPECT_TRUE(predictor_->GetLcppStat(url_d));
+  // Confirm first host is dropped.
+  EXPECT_FALSE(predictor_->GetLcppStat(url_a));
+}
+
+TEST_F(ResourcePrefetchPredictorTest, LcppLearnURL) {
+  const std::vector<std::pair<std::string, std::string>> url_keys = {
+      {"http://a.test", "a.test"},
+      {"http://a.test/", "a.test"},
+      {"http://a.test/foo", "a.test"},
+      {"http://a.test/bar?q=c", "a.test"},
+      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "a.test"},
+  };
+
+  TestLearnLcppURL(url_keys);
+}
+
+TEST_F(ResourcePrefetchPredictorTest, LcppLearnURLMultipleKey) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(blink::features::kLCPPMultipleKey);
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 100u;
+  config.lcpp_histogram_sliding_window_size = 10u;
+  ResetPredictor(config);
+  InitializePredictor();
+
+  const std::string long_host =
+      std::string(ResourcePrefetchPredictorTables::kMaxStringLength - 10, 'a') +
+      ".test";
+  const size_t max_path_length = base::checked_cast<size_t>(
+      blink::features::kLCPPMultipleKeyMaxPathLength.Get());
+  const std::string long_path = "/" + std::string(max_path_length - 1, 'b');
+  const std::string too_long_path =
+      "/" + std::string(max_path_length + 1, 'c') + "/bar";
+  const std::vector<std::pair<std::string, std::string>> url_keys = {
+      {"http://a.test", "a.test"},
+      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "a.test/foo;bar"},
+      {"http://a.test/", "a.test"},
+      {"http://a.test/foo.html", "a.test"},
+      {"http://a.test/foo", "a.test/foo"},
+      {"http://a.test/foo/", "a.test/foo"},
+      {"http://a.test/foo/bar", "a.test/foo"},
+      {"http://a.test/foo/bar/", "a.test/foo"},
+      {"http://a.test/foo/bar/baz.com", "a.test/foo"},
+      {"http://a.test/bar?q=c", "a.test/bar"},
+      {"http://a.test/foo/bar?q=c", "a.test/foo"},
+      {"http://a.test" + long_path, "a.test" + long_path},
+      {"http://a.test" + long_path + "/bar", "a.test" + long_path},
+      {"http://a.test" + long_path + "bar", "a.test"},
+      {"http://" + long_host + "/bar", long_host + "/bar"},
+      // Both valid but if the concated key is too long, take only host.
+      {"http://" + long_host + long_path, long_host},
+      // Too long path is ignored.
+      {"http://a.test" + too_long_path, "a.test"},
+      // Invalid length path in subdirectory is also ignored.
+      {"http://a.test/bar" + too_long_path, "a.test/bar"}};
+
+  TestLearnLcppURL(url_keys);
 }
 
 }  // namespace predictors

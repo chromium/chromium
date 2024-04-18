@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -68,6 +69,23 @@ GURL CreateRedirectURL(const std::string& scheme,
                        const std::string& host,
                        std::uint16_t port) {
   return GURL(scheme + "://" + host + ":" + base::NumberToString(port));
+}
+
+std::string GetLCPPDatabaseKey(const GURL& url) {
+  CHECK(IsURLValidForLcpp(url));
+
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey)) {
+    return url.host();
+  }
+  const std::string first_level_path = GetFirstLevelPath(url);
+  const size_t key_length = url.host().length() + first_level_path.length();
+  if (key_length > ResourcePrefetchPredictorTables::kMaxStringLength) {
+    // The key must not be longer than `kMaxStringLength`.
+    // Note that we confirmed that url.host() is less than the limit in
+    // `IsURLValidForLcpp()`.
+    return url.host();
+  }
+  return url.host() + first_level_path;
 }
 
 }  // namespace

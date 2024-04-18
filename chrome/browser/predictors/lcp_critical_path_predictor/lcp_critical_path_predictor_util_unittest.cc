@@ -725,71 +725,45 @@ TEST(LcppKeyTest, InvalidURLs) {
   }
 }
 
-void TestGetLCPPDatabaseKey(
-    const std::vector<std::pair<std::string, std::string>>& url_keys,
-    const base::Location& location = FROM_HERE) {
-  for (const auto& url_key : url_keys) {
-    const GURL url(url_key.first);
-    EXPECT_TRUE(IsURLValidForLcpp(url)) << location.ToString() << url_key.first;
-    const std::optional<std::string> key = GetLCPPDatabaseKey(url);
-    EXPECT_TRUE(key.has_value()) << location.ToString() << url_key.first;
-    EXPECT_EQ(url_key.second, *key) << location.ToString() << url_key.first;
-  }
-}
-
-TEST(LcppKeyTest, GetLCPPDatabaseKey) {
-  const std::vector<std::pair<std::string, std::string>> url_keys = {
-      {"http://a.test", "a.test"},
-      {"http://a.test/", "a.test"},
-      {"http://a.test/foo", "a.test"},
-      {"http://a.test/bar?q=c", "a.test"},
-      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "a.test"},
-  };
-
-  TestGetLCPPDatabaseKey(url_keys);
-}
-
 size_t GetLCPPMultipleKeyMaxPathLength() {
   static const size_t max_length = base::checked_cast<size_t>(
       blink::features::kLCPPMultipleKeyMaxPathLength.Get());
   return max_length;
 }
 
-TEST(LcppMultipleKeyTest, GetLCPPDatabaseKey) {
+TEST(LcppMultipleKeyTest, GetFirstLevelPath) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(blink::features::kLCPPMultipleKey);
 
-  const std::string long_host =
-      std::string(ResourcePrefetchPredictorTables::kMaxStringLength - 10, 'a') +
-      ".test";
   const size_t max_path_length = GetLCPPMultipleKeyMaxPathLength();
   const std::string long_path = "/" + std::string(max_path_length - 1, 'b');
   const std::string too_long_path =
       "/" + std::string(max_path_length + 1, 'c') + "/bar";
   const std::vector<std::pair<std::string, std::string>> url_keys = {
-      {"http://a.test", "a.test"},
-      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "a.test/foo;bar"},
-      {"http://a.test/", "a.test"},
-      {"http://a.test/foo.html", "a.test"},
-      {"http://a.test/foo", "a.test/foo"},
-      {"http://a.test/foo/", "a.test/foo"},
-      {"http://a.test/foo/bar", "a.test/foo"},
-      {"http://a.test/foo/bar/", "a.test/foo"},
-      {"http://a.test/foo/bar/baz.com", "a.test/foo"},
-      {"http://a.test/bar?q=c", "a.test/bar"},
-      {"http://a.test/foo/bar?q=c", "a.test/foo"},
-      {"http://a.test" + long_path, "a.test" + long_path},
-      {"http://a.test" + long_path + "/bar", "a.test" + long_path},
-      {"http://a.test" + long_path + "bar", "a.test"},
-      {"http://" + long_host + "/bar", long_host + "/bar"},
-      // Both valid but if the concated key is too long, take only host.
-      {"http://" + long_host + long_path, long_host},
+      {"http://a.test", ""},
+      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "/foo;bar"},
+      {"http://a.test/", ""},
+      {"http://a.test/foo.html", ""},
+      {"http://a.test/foo", "/foo"},
+      {"http://a.test/foo/", "/foo"},
+      {"http://a.test/foo/bar", "/foo"},
+      {"http://a.test/foo/bar/", "/foo"},
+      {"http://a.test/foo/bar/baz.com", "/foo"},
+      {"http://a.test/bar?q=c", "/bar"},
+      {"http://a.test/foo/bar?q=c", "/foo"},
+      {"http://a.test" + long_path, long_path},
+      {"http://a.test" + long_path + "/bar", long_path},
+      {"http://a.test" + long_path + "bar", ""},
       // Too long path is ignored.
-      {"http://a.test" + too_long_path, "a.test"},
+      {"http://a.test" + too_long_path, ""},
       // Invalid length path in subdirectory is also ignored.
-      {"http://a.test/bar" + too_long_path, "a.test/bar"}};
+      {"http://a.test/bar" + too_long_path, "/bar"}};
 
-  TestGetLCPPDatabaseKey(url_keys);
+  for (const auto& url_key : url_keys) {
+    const GURL url(url_key.first);
+    EXPECT_TRUE(IsURLValidForLcpp(url)) << url_key.first;
+    EXPECT_EQ(GetFirstLevelPath(url), url_key.second) << url_key.first;
+  }
 }
 
 }  // namespace predictors

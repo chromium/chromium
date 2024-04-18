@@ -788,16 +788,12 @@ bool IsURLValidForLcpp(const GURL& url) {
          url.host().size() <= ResourcePrefetchPredictorTables::kMaxStringLength;
 }
 
-std::string GetLCPPDatabaseKey(const GURL& url) {
+std::string GetFirstLevelPath(const GURL& url) {
   CHECK(IsURLValidForLcpp(url));
-
-  if (!base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey)) {
-    return url.host();
-  }
 
   const std::string path = url.path();
   if (path.length() < 2) {  // path == "/"
-    return url.host();
+    return std::string();
   }
   // Say path is "/foo/baz", find second '/' to cut out the first level path
   // "/foo".
@@ -814,20 +810,13 @@ std::string GetLCPPDatabaseKey(const GURL& url) {
         path_view.length() == max_path_length + 1) {
       // Assume having a file extension is a file and
       // path should not be a file name nor exceed the length limit
-      return url.host();
+      return std::string();
     }
     first_level_path_length = path_view.length();
   } else {
     first_level_path_length = second_slash_pos;
   }
-  const size_t key_length = url.host().length() + first_level_path_length;
-  if (key_length > ResourcePrefetchPredictorTables::kMaxStringLength) {
-    // The key must not be longer than `kMaxStringLength`.
-    // Note that we confirmed that url.host() is less than the limit in
-    // `IsURLValidForLcpp()`.
-    return url.host();
-  }
-  return url.host() + url.path().substr(0, first_level_path_length);
+  return url.path().substr(0, first_level_path_length);
 }
 
 }  // namespace predictors

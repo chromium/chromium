@@ -123,6 +123,7 @@ std::ostream& operator<<(std::ostream& os, const PreconnectRequest& request);
 std::ostream& operator<<(std::ostream& os,
                          const PreconnectPrediction& prediction);
 std::ostream& operator<<(std::ostream& os, const LcppData& data);
+std::ostream& operator<<(std::ostream& os, const LcppStat& stat);
 std::ostream& operator<<(std::ostream& os,
                          const LcpElementLocatorBucket& bucket);
 
