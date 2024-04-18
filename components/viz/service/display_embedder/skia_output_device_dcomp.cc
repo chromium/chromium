@@ -462,10 +462,10 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
     params->rounded_corner_bounds = dc_layer.rounded_corners;
     params->nearest_neighbor_filter = dc_layer.nearest_neighbor_filter;
 
-    params->protected_video_type = dc_layer.protected_video_type;
-    params->color_space = dc_layer.color_space;
-    params->hdr_metadata = dc_layer.hdr_metadata;
-    params->possible_video_fullscreen_letterboxing =
+    params->video_params.protected_video_type = dc_layer.protected_video_type;
+    params->video_params.color_space = dc_layer.color_space;
+    params->video_params.hdr_metadata = dc_layer.hdr_metadata;
+    params->video_params.possible_video_fullscreen_letterboxing =
         dc_layer.possible_video_fullscreen_letterboxing;
 
     // Schedule DC layer overlay to be presented at next SwapBuffers().

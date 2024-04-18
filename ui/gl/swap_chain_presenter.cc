@@ -768,7 +768,8 @@ void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
       visual_transform, visual_clip_rect);
 
   // Adjustment for the full screen letterboxing scenario.
-  if (!size_adjusted && params.possible_video_fullscreen_letterboxing) {
+  if (!size_adjusted &&
+      params.video_params.possible_video_fullscreen_letterboxing) {
     AdjustTargetForFullScreenLetterboxing(
         monitor_size, params, overlay_onscreen_rect, swap_chain_size,
         visual_transform, visual_clip_rect, dest_size, target_rect);
@@ -793,7 +794,8 @@ void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeededF(
       visual_transform, visual_clip_rect);
 
   // Adjustment for the full screen letterboxing scenario.
-  if (!size_adjusted && params.possible_video_fullscreen_letterboxing) {
+  if (!size_adjusted &&
+      params.video_params.possible_video_fullscreen_letterboxing) {
     AdjustTargetForFullScreenLetterboxingF(
         monitor_size_float, params, overlay_onscreen_rect, swap_chain_size,
         visual_transform, visual_clip_rect, dest_size, target_rect);
@@ -1983,7 +1985,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
 
   bool swap_chain_resized = swap_chain_size_ != swap_chain_size;
 
-  gfx::ColorSpace input_color_space = params.color_space;
+  gfx::ColorSpace input_color_space = params.video_params.color_space;
   if (!input_color_space.IsValid()) {
     input_color_space = gfx::ColorSpace::CreateREC709();
   }
@@ -2000,14 +2002,15 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
       enable_vp_auto_hdr_ && !is_on_battery_power_;
 
   bool use_hdr_swap_chain =
-      ((content_is_hdr && params.hdr_metadata.IsValid()) || use_vp_auto_hdr);
+      ((content_is_hdr && params.video_params.hdr_metadata.IsValid()) ||
+       use_vp_auto_hdr);
 
-  DXGI_FORMAT swap_chain_format =
-      GetSwapChainFormat(params.protected_video_type, use_hdr_swap_chain);
+  DXGI_FORMAT swap_chain_format = GetSwapChainFormat(
+      params.video_params.protected_video_type, use_hdr_swap_chain);
 
   bool swap_chain_format_changed = swap_chain_format != swap_chain_format_;
-  bool toggle_protected_video =
-      swap_chain_protected_video_type_ != params.protected_video_type;
+  bool toggle_protected_video = swap_chain_protected_video_type_ !=
+                                params.video_params.protected_video_type;
 
   bool contents_changed = last_overlay_image_ != params.overlay_image;
 
@@ -2049,7 +2052,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   if (!swap_chain_ || swap_chain_resized || swap_chain_format_changed ||
       toggle_protected_video) {
     if (!ReallocateSwapChain(swap_chain_size, swap_chain_format,
-                             params.protected_video_type)) {
+                             params.video_params.protected_video_type)) {
       ReleaseSwapChainResources();
       return false;
     }
@@ -2069,9 +2072,9 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   }
 
   std::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
-  if (params.hdr_metadata.IsValid()) {
-    stream_metadata =
-        gl::HDRMetadataHelperWin::HDRMetadataToDXGI(params.hdr_metadata);
+  if (params.video_params.hdr_metadata.IsValid()) {
+    stream_metadata = gl::HDRMetadataHelperWin::HDRMetadataToDXGI(
+        params.video_params.hdr_metadata);
   }
 
   if (!VideoProcessorBlt(std::move(input_texture), input_level,
@@ -2299,7 +2302,8 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
     dcomp_surface_proxy->SetRect(mapped_rect);
   }
 
-  dcomp_surface_proxy->SetProtectedVideoType(params.protected_video_type);
+  dcomp_surface_proxy->SetProtectedVideoType(
+      params.video_params.protected_video_type);
 
   // If |dcomp_surface_proxy| size is {1, 1}, the texture was initialized
   // without knowledge of output size; reset |content_| so it's not added to the

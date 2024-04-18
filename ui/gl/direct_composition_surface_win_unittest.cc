@@ -325,7 +325,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
   }
 
@@ -351,7 +351,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
   }
 
@@ -375,7 +375,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
   }
 
@@ -414,7 +414,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
   }
 
@@ -444,7 +444,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
   }
 
@@ -481,7 +481,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
   }
 
@@ -505,7 +505,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
   }
 
@@ -542,8 +542,8 @@ TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
     params->overlay_image.emplace(texture_size, texture);
     params->quad_rect = gfx::Rect(window_size);
     params->content_rect = gfx::RectF(texture_size);
-    params->color_space = gfx::ColorSpace::CreateREC709();
-    params->protected_video_type = gfx::ProtectedVideoType::kClear;
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.protected_video_type = gfx::ProtectedVideoType::kClear;
 
     surface_->ScheduleDCLayer(std::move(params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -566,8 +566,9 @@ TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
     params->overlay_image.emplace(texture_size, texture);
     params->quad_rect = gfx::Rect(window_size);
     params->content_rect = gfx::RectF(texture_size);
-    params->color_space = gfx::ColorSpace::CreateREC709();
-    params->protected_video_type = gfx::ProtectedVideoType::kSoftwareProtected;
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.protected_video_type =
+        gfx::ProtectedVideoType::kSoftwareProtected;
 
     surface_->ScheduleDCLayer(std::move(params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -629,7 +630,7 @@ class DirectCompositionPixelTest : public DirectCompositionSurfaceTest,
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(content_rect);
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -704,7 +705,7 @@ class DirectCompositionVideoPixelTest : public DirectCompositionPixelTest {
       params->overlay_image.emplace(texture_size, texture);
       params->content_rect = gfx::RectF(texture_size);
       params->quad_rect = gfx::Rect(texture_size);
-      params->color_space = color_space;
+      params->video_params.color_space = color_space;
       surface_->ScheduleDCLayer(std::move(params));
     }
 
@@ -718,7 +719,7 @@ class DirectCompositionVideoPixelTest : public DirectCompositionPixelTest {
       params->overlay_image.emplace(texture_size, texture);
       params->content_rect = gfx::RectF(texture_size);
       params->quad_rect = gfx::Rect(window_size);
-      params->color_space = color_space;
+      params->video_params.color_space = color_space;
       surface_->ScheduleDCLayer(std::move(params));
     }
 
@@ -783,7 +784,7 @@ TEST_P(DirectCompositionPixelTest, SoftwareVideoSwapchain) {
       DCLayerOverlayImage(y_size, nv12_pixmap.data(), stride);
   params->content_rect = gfx::RectF(y_size);
   params->quad_rect = gfx::Rect(window_size);
-  params->color_space = gfx::ColorSpace::CreateREC709();
+  params->video_params.color_space = gfx::ColorSpace::CreateREC709();
   surface_->ScheduleDCLayer(std::move(params));
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -861,7 +862,7 @@ TEST_P(DirectCompositionPixelTest, SkipVideoLayerEmptyContentsRect) {
   auto params = std::make_unique<DCLayerOverlayParams>();
   params->overlay_image.emplace(texture_size, texture);
   params->quad_rect = gfx::Rect(window_size);
-  params->color_space = gfx::ColorSpace::CreateREC709();
+  params->video_params.color_space = gfx::ColorSpace::CreateREC709();
   surface_->ScheduleDCLayer(std::move(params));
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -1021,7 +1022,7 @@ TEST_P(DirectCompositionPixelTest, ResizeVideoLayer) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = gfx::Rect(window_size);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -1044,7 +1045,7 @@ TEST_P(DirectCompositionPixelTest, ResizeVideoLayer) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(30, 30);
     params->quad_rect = gfx::Rect(window_size);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -1070,7 +1071,7 @@ TEST_P(DirectCompositionPixelTest, ResizeVideoLayer) {
     params->content_rect = gfx::RectF(50, 50);
     params->quad_rect = on_screen_rect;
     params->clip_rect = on_screen_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -1102,7 +1103,7 @@ TEST_P(DirectCompositionPixelTest, ResizeVideoLayer) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(50, 50);
     params->quad_rect = on_screen_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -1205,7 +1206,7 @@ TEST_P(DirectCompositionPixelTest, SwapChainImage) {
         DCLayerOverlayImage(swap_chain_size, swap_chain);
     dc_layer_params->content_rect = gfx::RectF(swap_chain_size);
     dc_layer_params->quad_rect = gfx::Rect(window_size);
-    dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateSRGB();
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -1231,7 +1232,7 @@ TEST_P(DirectCompositionPixelTest, SwapChainImage) {
         DCLayerOverlayImage(swap_chain_size, swap_chain);
     dc_layer_params->content_rect = gfx::RectF(swap_chain_size);
     dc_layer_params->quad_rect = gfx::Rect(window_size);
-    dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateSRGB();
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -1255,7 +1256,7 @@ TEST_P(DirectCompositionPixelTest, SwapChainImage) {
         DCLayerOverlayImage(swap_chain_size, swap_chain);
     dc_layer_params->content_rect = gfx::RectF(swap_chain_size);
     dc_layer_params->quad_rect = gfx::Rect(window_size);
-    dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateSRGB();
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -1279,7 +1280,7 @@ TEST_P(DirectCompositionPixelTest, SwapChainImage) {
         DCLayerOverlayImage(swap_chain_size, swap_chain);
     dc_layer_params->content_rect = gfx::RectF(swap_chain_size);
     dc_layer_params->quad_rect = gfx::Rect(window_size);
-    dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateSRGB();
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
@@ -1436,7 +1437,7 @@ void RunBufferCountTest(scoped_refptr<DirectCompositionSurfaceWin> surface,
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = gfx::Rect(window_size);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     surface->ScheduleDCLayer(std::move(params));
   }
 
@@ -1496,7 +1497,7 @@ TEST_F(DirectCompositionSurfaceTest, VisualsReused) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     // Overlay
     params->z_order = 1;
     surface_->ScheduleDCLayer(std::move(params));
@@ -1520,7 +1521,7 @@ TEST_F(DirectCompositionSurfaceTest, VisualsReused) {
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::RectF(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     // Underlay
     params->z_order = -1;
     surface_->ScheduleDCLayer(std::move(params));
@@ -1547,7 +1548,7 @@ void ScheduleDCLayer(scoped_refptr<DirectCompositionSurfaceWin> surface,
   params->overlay_image = DCLayerOverlayImage(swap_chain_size, swap_chain);
   params->content_rect = gfx::RectF(swap_chain_size);
   params->quad_rect = gfx::Rect(100, 100);
-  params->color_space = gfx::ColorSpace::CreateSRGB();
+  params->video_params.color_space = gfx::ColorSpace::CreateSRGB();
   params->z_order = z_order;
   surface->ScheduleDCLayer(std::move(params));
 }

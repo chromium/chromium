@@ -303,7 +303,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(100, 100);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
   }
 
@@ -328,7 +328,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(100, 100);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
   }
 
@@ -351,7 +351,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(100, 100);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
   }
 
@@ -387,7 +387,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
   }
 
@@ -414,7 +414,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
   }
 
@@ -447,7 +447,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
   }
 
@@ -469,7 +469,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
   }
 
@@ -502,8 +502,8 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(window_size);
-    params->color_space = gfx::ColorSpace::CreateREC709();
-    params->protected_video_type = gfx::ProtectedVideoType::kClear;
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.protected_video_type = gfx::ProtectedVideoType::kClear;
 
     presenter_->ScheduleDCLayer(std::move(params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -524,8 +524,9 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(window_size);
-    params->color_space = gfx::ColorSpace::CreateREC709();
-    params->protected_video_type = gfx::ProtectedVideoType::kSoftwareProtected;
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.protected_video_type =
+        gfx::ProtectedVideoType::kSoftwareProtected;
 
     presenter_->ScheduleDCLayer(std::move(params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -719,7 +720,7 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
         DCLayerOverlayImage(texture_size, texture),
         /*content_rect_override=*/gfx::RectF(content_rect));
     params->quad_rect = quad_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -877,7 +878,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
       auto params =
           CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
       params->quad_rect = gfx::Rect(texture_size);
-      params->color_space = color_space;
+      params->video_params.color_space = color_space;
       presenter_->ScheduleDCLayer(std::move(params));
     }
 
@@ -889,7 +890,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
       auto params =
           CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
       params->quad_rect = gfx::Rect(window_size);
-      params->color_space = color_space;
+      params->video_params.color_space = color_space;
       presenter_->ScheduleDCLayer(std::move(params));
     }
 
@@ -945,7 +946,7 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
   auto params = CreateParamsFromImage(
       DCLayerOverlayImage(y_size, nv12_pixmap.data(), stride));
   params->quad_rect = gfx::Rect(window_size);
-  params->color_space = gfx::ColorSpace::CreateREC709();
+  params->video_params.color_space = gfx::ColorSpace::CreateREC709();
   presenter_->ScheduleDCLayer(std::move(params));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1011,7 +1012,7 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
       CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture),
                             /*content_rect_override=*/gfx::RectF());
   params->quad_rect = gfx::Rect(window_size);
-  params->color_space = gfx::ColorSpace::CreateREC709();
+  params->video_params.color_space = gfx::ColorSpace::CreateREC709();
   presenter_->ScheduleDCLayer(std::move(params));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1158,7 +1159,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(window_size);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1180,7 +1181,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture),
                               /*content_rect_override=*/gfx::RectF(30, 30));
     params->quad_rect = gfx::Rect(window_size);
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1204,7 +1205,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = on_screen_rect;
     params->clip_rect = on_screen_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1234,7 +1235,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = on_screen_rect;
-    params->color_space = gfx::ColorSpace::CreateREC709();
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1330,7 +1331,6 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
     dc_layer_params->quad_rect = gfx::Rect(window_size);
-    dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
     dc_layer_params->z_order = 1;
 
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
@@ -1353,7 +1353,6 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
     dc_layer_params->quad_rect = gfx::Rect(window_size);
-    dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
 
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1373,7 +1372,6 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
     dc_layer_params->quad_rect = gfx::Rect(window_size);
-    dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
 
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1393,7 +1391,6 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
     dc_layer_params->quad_rect = gfx::Rect(window_size);
-    dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
 
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -2222,7 +2219,7 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
   auto params =
       CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
   params->quad_rect = gfx::Rect(window_size);
-  params->color_space = gfx::ColorSpace::CreateREC709();
+  params->video_params.color_space = gfx::ColorSpace::CreateREC709();
   presenter_->ScheduleDCLayer(std::move(params));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -2343,9 +2340,9 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -2393,9 +2390,9 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -2451,9 +2448,9 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -2531,9 +2528,9 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -2620,9 +2617,9 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -2654,9 +2651,9 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -2693,9 +2690,9 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -2744,9 +2741,9 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -2794,9 +2791,9 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -2852,9 +2849,9 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -2932,9 +2929,9 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
-    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -3045,7 +3042,7 @@ TEST_P(DCompPresenterFullscreenRoundingTest,
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
 
@@ -3151,7 +3148,7 @@ TEST_P(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
     dc_layer_params->quad_rect = quad_rect;
     dc_layer_params->transform = quad_to_root_transform;
     dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params->z_order = 1;
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
 
