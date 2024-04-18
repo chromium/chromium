@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/capture_mode/base_capture_mode_session.h"
-#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
@@ -191,15 +190,11 @@ class GameDashboardBehavior : public CaptureModeBehavior,
 
   // CaptureModeBehavior:
   void AttachToSession() override {
-    CaptureModeController* controller = CaptureModeController::Get();
-
-    did_ever_start_with_camera_ |=
-        controller->camera_controller()->selected_camera().is_valid();
-
     cached_configs_ = GetCaptureModeSessionConfigs();
 
     SetCaptureModeSessionConfigs(capture_mode_configs_);
 
+    CaptureModeController* controller = CaptureModeController::Get();
     BaseCaptureModeSession* session = controller->capture_mode_session();
     CHECK(session);
     if (!pre_selected_window_) {
@@ -235,9 +230,7 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   bool ShouldDemoToolsSettingsBeIncluded() const override { return false; }
   bool ShouldGifBeSupported() const override { return false; }
   bool ShouldShowUserNudge() const override { return false; }
-  bool ShouldAutoSelectFirstCamera() const override {
-    return !did_ever_start_with_camera_;
-  }
+  bool ShouldAutoSelectFirstCamera() const override { return true; }
 
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<GameCaptureBarView>();
@@ -293,12 +286,6 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   int GetCaptureBarWidth() const override { return kGameCaptureBarWidth; }
 
  private:
-  // We only auto-select the first available camera (if none is selected) only
-  // if no Game Dashboard-initiated sessions ever started with a camera
-  // selection. Once a session starts with a camera on, all subsequent sessions
-  // will just continue using the most recent system-wide camera selection.
-  bool did_ever_start_with_camera_ = false;
-
   raw_ptr<aura::Window> pre_selected_window_ = nullptr;
   base::WeakPtrFactory<GameDashboardBehavior> weak_ptr_factory_{this};
 };
