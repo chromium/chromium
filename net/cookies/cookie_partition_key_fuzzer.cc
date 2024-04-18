@@ -20,24 +20,60 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   GURL url(url_str);
   if (!url.is_valid())
     return 0;
+
+  bool has_cross_site_ancestor = data_provider.ConsumeBool();
   CookiePartitionKey::AncestorChainBit ancestor_chain_bit =
-      data_provider.ConsumeBool()
-          ? CookiePartitionKey::AncestorChainBit::kCrossSite
-          : CookiePartitionKey::AncestorChainBit::kSameSite;
+      has_cross_site_ancestor ? CookiePartitionKey::AncestorChainBit::kCrossSite
+                              : CookiePartitionKey::AncestorChainBit::kSameSite;
 
-  std::optional<CookiePartitionKey> partition_key = std::make_optional(
-      CookiePartitionKey::FromURLForTesting(url, ancestor_chain_bit));
+  // Unlike FromURLForTesting and FromUntrustedInput, FromStorage requires the
+  // top_level_site string passed in be formatted exactly as a SchemefulSite
+  // would serialize it. Unlike FromURLForTesting, FromUntrustedInput and
+  // FromStorage require the top_level_site not be opaque.
+  base::expected<std::optional<CookiePartitionKey>, std::string>
+      partition_key_from_string_strict =
+          CookiePartitionKey::FromStorage(url_str, has_cross_site_ancestor);
+  base::expected<CookiePartitionKey, std::string>
+      partition_key_from_string_loose = CookiePartitionKey::FromUntrustedInput(
+          url_str, has_cross_site_ancestor);
+  CookiePartitionKey partition_key_from_url =
+      CookiePartitionKey::FromURLForTesting(url, ancestor_chain_bit);
 
-  bool is_opaque = url::Origin::Create(url).opaque();
-  CHECK_NE(is_opaque, CookiePartitionKey::Serialize(partition_key).has_value());
-
-  CHECK_NE(is_opaque, CookiePartitionKey::FromUntrustedInput(
-                          url_str, partition_key->IsThirdParty())
-                          .has_value());
-
-  if (!is_opaque) {
-    CHECK(std::make_optional(CookiePartitionKey::FromURLForTesting(
-              url, ancestor_chain_bit)) == partition_key);
+  if (partition_key_from_string_strict.has_value() &&
+      partition_key_from_string_strict.value().has_value()) {
+    // If we can deserialize from string while being strict the three keys
+    // should be identical.
+    CHECK_EQ(**partition_key_from_string_strict, partition_key_from_url);
+    CHECK_EQ(**partition_key_from_string_strict,
+             *partition_key_from_string_loose);
+    // This implies we can re-serialize.
+    base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_partition_key =
+            CookiePartitionKey::Serialize(**partition_key_from_string_strict);
+    CHECK(serialized_partition_key.has_value());
+    // The serialization should match the initial values.
+    CHECK_EQ(serialized_partition_key->TopLevelSite(), url_str);
+    CHECK_EQ(serialized_partition_key->has_cross_site_ancestor(),
+             has_cross_site_ancestor);
+  } else if (partition_key_from_string_loose.has_value()) {
+    // If we can deserialize from string while being loose then two keys
+    // should be identical.
+    CHECK_EQ(*partition_key_from_string_loose, partition_key_from_url);
+    // This implies we can re-serialize.
+    base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_partition_key =
+            CookiePartitionKey::Serialize(*partition_key_from_string_loose);
+    // The serialization should match the initial values.
+    CHECK_EQ(serialized_partition_key->TopLevelSite(),
+             SchemefulSite(url).Serialize());
+    CHECK_EQ(serialized_partition_key->has_cross_site_ancestor(),
+             has_cross_site_ancestor);
+  } else {
+    // If we cannot deserialize from string at all then top_level_site must be
+    // opaque.
+    CHECK(partition_key_from_url.site().opaque());
   }
 
   return 0;
