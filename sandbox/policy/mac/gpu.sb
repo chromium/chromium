@@ -40,9 +40,7 @@
 )
 
 ; Needed for metal decoding - https://crbug.com/957217
-(if (>= os-version 1014)
-  (allow mach-lookup (xpc-service-name "com.apple.MTLCompilerService"))
-)
+(allow mach-lookup (xpc-service-name "com.apple.MTLCompilerService"))
 
 ; Allow access to the Apple Neural Engine for the Shape Detection API.
 ; https://crbug.com/1382442

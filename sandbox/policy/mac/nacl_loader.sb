@@ -36,9 +36,6 @@
   (global-name "com.apple.system.notification_center")
 )
 
-(if (>= os-version 1014)
-  (begin
-    (allow sysctl-read (sysctl-name "kern.tcsm_enable"))
-    (allow sysctl-write (sysctl-name "kern.tcsm_enable"))
-    (allow sysctl-read (sysctl-name "kern.tcsm_available"))
-))
+(allow sysctl-read (sysctl-name "kern.tcsm_enable"))
+(allow sysctl-write (sysctl-name "kern.tcsm_enable"))
+(allow sysctl-read (sysctl-name "kern.tcsm_available"))
