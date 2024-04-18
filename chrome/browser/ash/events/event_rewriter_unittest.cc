@@ -63,6 +63,7 @@
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchpad_device.h"
 #include "ui/events/event.h"
@@ -327,6 +328,10 @@ using KeyCapsLock = TestKey<ui::DomCode::CAPS_LOCK,
                             ui::DomKey::CAPS_LOCK,
                             ui::VKEY_CAPITAL,
                             ui::EF_MOD3_DOWN>;
+using KeyFunction = TestKey<ui::DomCode::FN,
+                            ui::DomKey::FN,
+                            ui::VKEY_FUNCTION,
+                            ui::EF_FUNCTION_DOWN>;
 
 // Function keys.
 using KeyEscape =
@@ -683,6 +688,8 @@ class EventRewriterTestBase : public ChromeAshTestBase {
          ui::VKEY_LWIN},
         {ui::EF_MOD3_DOWN, ui::DomCode::CAPS_LOCK, ui::DomKey::CAPS_LOCK,
          ui::VKEY_CAPITAL},
+        {ui::EF_FUNCTION_DOWN, ui::DomCode::FN, ui::DomKey::FN,
+         ui::VKEY_FUNCTION},
     };
 
     // Send modifier key press events to update rewriter's modifier flag state.
@@ -1691,6 +1698,86 @@ TEST_P(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
   EXPECT_EQ(KeyA::Typed(), RunRewriter(KeyA::Typed()));
 
   input_method_manager_mock_->set_mod3_used(false);
+}
+
+TEST_P(EventRewriterTest, TestRewriteToFunction) {
+  // Remap RightAlt to Control
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  IntegerPrefMember control;
+  InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
+                      ui::mojom::ModifierKey::kFunction);
+
+  IntegerPrefMember search;
+  InitModifierKeyPref(&search, ::prefs::kLanguageRemapSearchKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
+                      ui::mojom::ModifierKey::kFunction);
+
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // A + rewritten modifiers produce events with function flag down.
+    EXPECT_EQ(KeyA::Typed(ui::EF_FUNCTION_DOWN),
+              RunRewriter(KeyA::Typed(), ui::EF_CONTROL_DOWN));
+    EXPECT_EQ(KeyA::Typed(ui::EF_FUNCTION_DOWN),
+              RunRewriter(KeyA::Typed(), ui::EF_COMMAND_DOWN));
+
+    // After command + control are released, events are not affected.
+    EXPECT_EQ(KeyA::Typed(), RunRewriter(KeyA::Typed()));
+  }
+}
+
+TEST_P(EventRewriterTest, TestRewriteFromFunction) {
+  // Function is only available when InputDeviceSettingsSplit is enabled.
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kInputDeviceSettingsSplit);
+
+  // Remap Function to Control
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kFunction,
+                      ui::mojom::ModifierKey::kControl);
+
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    EXPECT_EQ(KeyLControl::Typed(), RunRewriter(KeyFunction::Typed()));
+
+    // A + rewritten modifiers produce events with function flag down.
+    EXPECT_EQ(KeyA::Typed(ui::EF_CONTROL_DOWN),
+              RunRewriter(KeyA::Typed(), ui::EF_FUNCTION_DOWN));
+    // After command + control are released, events are not affected.
+    EXPECT_EQ(KeyA::Typed(), RunRewriter(KeyA::Typed()));
+  }
+
+  // Remap Function to CapsLock
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kFunction,
+                      ui::mojom::ModifierKey::kCapsLock);
+
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Toggle CapsLock on
+    EXPECT_EQ(KeyCapsLock::Typed(ui::EF_CAPS_LOCK_ON),
+              RunRewriter(KeyFunction::Typed(ui::EF_CAPS_LOCK_ON)));
+
+    // Toggle CapsLock off
+    EXPECT_EQ(KeyCapsLock::Typed(), RunRewriter(KeyFunction::Typed()));
+  }
+
+  // Remap Function to Void
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kFunction,
+                      ui::mojom::ModifierKey::kVoid);
+
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    EXPECT_EQ(KeyUnknown::Typed(), RunRewriter(KeyFunction::Typed()));
+  }
+
+  scoped_feature_list_.Reset();
 }
 
 // TODO(crbug.com/1179893): Remove once the feature is enabled permanently.

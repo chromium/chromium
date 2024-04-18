@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <stddef.h>
+
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
@@ -25,6 +26,7 @@
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/ash/event_property.h"
 #include "ui/events/ash/event_rewriter_metrics.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_device_id_event_rewriter.h"
@@ -190,7 +192,11 @@ constexpr struct ModifierRemapping {
      ui::mojom::ModifierKey::kAssistant,
      prefs::kLanguageRemapAssistantKeyTo,
      {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
-      VKEY_ASSISTANT}}};
+      VKEY_ASSISTANT}},
+    {EF_FUNCTION_DOWN,
+     ui::mojom::ModifierKey::kFunction,
+     nullptr,
+     {EF_FUNCTION_DOWN, DomCode::FN, DomKey::FN, VKEY_FUNCTION}}};
 
 // Finds the remapping for Neo Mod3 in the list. Used only to set the value of
 // |kModifierRemappingIsoLevel5ShiftMod3|.
@@ -1288,6 +1294,11 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
           GetRemappedKey(device_id, mojom::ModifierKey::kAssistant,
                          prefs::kLanguageRemapAssistantKeyTo, delegate_);
       break;
+    case DomCode::FN:
+      characteristic_flag = EF_FUNCTION_DOWN;
+      remapped_key = GetRemappedKey(device_id, mojom::ModifierKey::kFunction,
+                                    "", delegate_);
+      break;
     default:
       break;
   }
@@ -1412,10 +1423,15 @@ int EventRewriterAsh::GetRemappedModifierMasks(int device_id,
       default:
         break;
     }
-    if (!remapped_key && kModifierRemappings[i].pref_name) {
-      remapped_key =
-          GetRemappedKey(device_id, kModifierRemappings[i].remap_to,
-                         kModifierRemappings[i].pref_name, delegate_);
+    // ISO Level 5 Shift should already be handled, so do not try to remap it
+    // here.
+    if (!remapped_key &&
+        &kModifierRemappings[i] != kModifierRemappingIsoLevel5ShiftMod3) {
+      const std::string pref_name = kModifierRemappings[i].pref_name
+                                        ? kModifierRemappings[i].pref_name
+                                        : "";
+      remapped_key = GetRemappedKey(device_id, kModifierRemappings[i].remap_to,
+                                    pref_name, delegate_);
     }
     if (remapped_key) {
       unmodified_flags &= ~kModifierRemappings[i].flag;

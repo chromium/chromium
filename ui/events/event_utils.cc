@@ -319,6 +319,8 @@ std::vector<base::StringPiece> EventFlagsNames(int event_flags) {
     names.push_back("ALTGR_DOWN");
   if (event_flags & EF_MOD3_DOWN)
     names.push_back("MOD3_DOWN");
+  if (event_flags & EF_FUNCTION_DOWN)
+    names.push_back("FUNCTION_DOWN");
   if (event_flags & EF_NUM_LOCK_ON)
     names.push_back("NUM_LOCK_ON");
   if (event_flags & EF_CAPS_LOCK_ON)

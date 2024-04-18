@@ -75,6 +75,10 @@ EventRewriterDelegateImpl::GetKeyboardRemappedModifierValue(
     const std::string& pref_name) const {
   // `modifier_key` and `device_id` are unused when the flag is disabled.
   if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    if (pref_name.empty()) {
+      return std::nullopt;
+    }
+
     // If we're at the login screen, try to get the pref from the global prefs
     // dictionary.
     int value;

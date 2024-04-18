@@ -4,6 +4,7 @@
 
 #include "ui/events/ash/keyboard_modifier_event_rewriter.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -12,8 +13,10 @@
 #include "ui/events/ash/event_property.h"
 #include "ui/events/ash/event_rewriter_metrics.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_rewriter_continuation.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -237,9 +240,9 @@ std::unique_ptr<KeyEvent> KeyboardModifierEventRewriter::BuildRewrittenEvent(
 EventFlags KeyboardModifierEventRewriter::RewriteModifierFlags(
     EventFlags flags) const {
   // Bit mask of modifier flags to be rewritten.
-  constexpr EventFlags kTargetModifierFlags = EF_CONTROL_DOWN | EF_ALT_DOWN |
-                                              EF_COMMAND_DOWN | EF_ALTGR_DOWN |
-                                              EF_MOD3_DOWN | EF_CAPS_LOCK_ON;
+  constexpr EventFlags kTargetModifierFlags =
+      EF_CONTROL_DOWN | EF_ALT_DOWN | EF_COMMAND_DOWN | EF_ALTGR_DOWN |
+      EF_MOD3_DOWN | EF_CAPS_LOCK_ON | EF_FUNCTION_DOWN;
   flags &= ~kTargetModifierFlags;
 
   // Recalculate modifier flags from the currently pressed keys.
@@ -333,11 +336,16 @@ std::optional<DomCode> KeyboardModifierEventRewriter::GetRemappedDomCode(
       pref_name = prefs::kLanguageRemapAssistantKeyTo;
       break;
 
+    case DomCode::FN:
+      modifier_key = mojom::ModifierKey::kFunction;
+      break;
+
     default:
       // No remapping.
       return std::nullopt;
   }
-  CHECK(!pref_name.empty());
+  CHECK(!pref_name.empty() ||
+        ash::features::IsInputDeviceSettingsSplitEnabled());
 
   auto modifier_value = delegate_->GetKeyboardRemappedModifierValue(
       device_id, modifier_key, std::string(pref_name));
@@ -362,8 +370,9 @@ std::optional<DomCode> KeyboardModifierEventRewriter::GetRemappedDomCode(
     case mojom::ModifierKey::kIsoLevel5ShiftMod3:
       LOG(FATAL) << "Unexpected IsoLevel5ShiftMod3 config";
     case mojom::ModifierKey::kFunction:
+      return DomCode::FN;
     case mojom::ModifierKey::kRightAlt:
-      // TODO(dpad, b/328316040): Implement for function and right alt.
+      // TODO(dpad, b/328316040): Implement for right alt.
       NOTIMPLEMENTED();
       return std::nullopt;
   }
