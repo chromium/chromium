@@ -35,10 +35,6 @@ interface UtteranceSettings {
   rate: number;
 }
 
-interface VoicesByLanguage {
-  [lang: string]: SpeechSynthesisVoice[];
-}
-
 // TODO(crbug.com/1465029): Remove colors defined here once the Views toolbar is
 // removed.
 const style = getComputedStyle(document.body);
@@ -814,16 +810,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
                                      voicesForLanguage[0];
   }
 
-  private getVoicesByLanguage(): VoicesByLanguage {
-    return this.getVoices().reduce(
-        (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
-          (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
-              .push(voice);
-          return voicesByLang;
-        },
-        {});
-  }
-
   private getVoices(refresh: boolean = false): SpeechSynthesisVoice[] {
     if (!this.availableVoices || refresh) {
       let availableVoices = this.synth.getVoices();
@@ -1484,12 +1470,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
-    const selectedVoice = Object.entries(this.getVoicesByLanguage())
-                              .filter(([lang, _]) => lang)
-                              .flatMap(([_, voices]) => voices)
+    const selectedVoice = this.getVoices()
                               .filter(voice => voice.name === storedVoiceName);
 
-    assert(selectedVoice, 'Could not find stored selected voice');
     this.selectedVoice = selectedVoice ? selectedVoice[0] : this.defaultVoice();
   }
 
