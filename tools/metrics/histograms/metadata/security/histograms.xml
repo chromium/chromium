@@ -569,6 +569,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.Sandbox.LandlockState" enum="LandlockState"
+    expires_after="2025-04-16">
+  <owner>akhna@google.com</owner>
+  <owner>chromeos-hardening@google.com</owner>
+  <summary>
+    Logged when `ContentMainRunnerImpl::Initialize` is called from the browser
+    process.
+
+    Records the status of the Landlock LSM on the system, whether it is enabled,
+    available but disabled, not available, or undetermined.
+  </summary>
+</histogram>
+
 <histogram name="Security.SCTAuditing.NumPersistedReportsLoaded"
     units="reports" expires_after="2024-05-19">
   <owner>cthomp@chromium.org</owner>

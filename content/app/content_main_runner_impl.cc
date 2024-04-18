@@ -155,6 +155,7 @@
 #include "base/native_library.h"
 #include "base/rand_util.h"
 #include "content/public/common/zygote/sandbox_support_linux.h"
+#include "sandbox/policy/linux/sandbox_linux.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
 
@@ -1054,6 +1055,13 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
     tracing::EnableStartupTracingIfNeeded();
   }
 #endif  // BUILDFLAG(USE_ZYGOTE)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (process_type.empty()) {
+    // Check if Landlock is supported.
+    sandbox::policy::SandboxLinux::ReportLandlockStatus();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // Return -1 to indicate no early termination.
   return -1;

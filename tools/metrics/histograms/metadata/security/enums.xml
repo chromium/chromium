@@ -32,6 +32,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Enabled in Incognito"/>
 </enum>
 
+<enum name="LandlockState">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Not Supported"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
 <enum name="NewAcceptedDeviceType">
   <int value="0" label="Device which has valid name and id"/>
   <int value="1" label="Ephemeral device stored base on IP address"/>

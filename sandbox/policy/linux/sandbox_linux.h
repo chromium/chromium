@@ -242,6 +242,9 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // Only usable if StartBrokerProcess() was already called.
   bpf_dsl::ResultExpr HandleViaBroker(int sysno) const;
 
+  // Reports Landlock status through UMA metrics.
+  static void ReportLandlockStatus();
+
  private:
   friend struct base::DefaultSingletonTraits<SandboxLinux>;
 
@@ -274,9 +277,6 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // after transitioning to a new user namespace we don't allow this function
   // to fail.
   bool EngageNamespaceSandboxInternal(bool from_zygote);
-
-  // Reports Landlock status through UMA metrics.
-  void ReportLandlockStatus();
 
   // A file descriptor to /proc. It's dangerous to have it around as it could
   // allow for sandbox bypasses. It needs to be closed before we consider

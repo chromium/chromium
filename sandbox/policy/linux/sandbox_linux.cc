@@ -231,9 +231,6 @@ void SandboxLinux::PreinitializeSandbox() {
     }
   }
 
-  // Check if Landlock is supported.
-  ReportLandlockStatus();
-
   // Yama is a "global", system-level status. We assume it will not regress
   // after startup.
   const int yama_status = Yama::GetStatus();
@@ -713,7 +710,7 @@ void SandboxLinux::ReportLandlockStatus() {
     landlock_state = LandlockState::kEnabled;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Sandbox.LandlockState", landlock_state);
+  UMA_HISTOGRAM_ENUMERATION("Security.Sandbox.LandlockState", landlock_state);
 }
 
 }  // namespace policy
