@@ -41,6 +41,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/shared_storage_test_utils.h"
@@ -923,6 +924,12 @@ INSTANTIATE_TEST_SUITE_P(
     DescribePrefBrowserTestParams);
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
@@ -981,6 +988,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   AddSimpleModuleWithPermissionBypassed(GetActiveWebContents());
@@ -1042,6 +1055,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   AddSimpleModuleWithPermissionBypassed(GetActiveWebContents());
@@ -1245,6 +1264,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Clear) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletSet) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `set()` fails due to Shared Storage being disabled, there will be a
@@ -1271,6 +1296,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletSet) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletAppend) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `append()` fails due to Shared Storage being disabled, there will be a
@@ -1297,6 +1328,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletAppend) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletDelete) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `delete()` fails due to Shared Storage being disabled, there will be a
@@ -1323,6 +1360,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletDelete) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletClear) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `clear()` fails due to Shared Storage being disabled, there will be a
@@ -1349,6 +1392,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletClear) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletGet) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // To prevent failure in the case where Shared Storage is enabled, we set a
@@ -1386,6 +1435,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletGet) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletKeys) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `keys()` fails due to Shared Storage being disabled, there will be a
@@ -1414,6 +1469,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletKeys) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletEntries) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `entries()` fails due to Shared Storage being disabled, there will be a
@@ -1442,6 +1503,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletEntries) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletLength) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `length()` fails due to Shared Storage being disabled, there will be a
@@ -1468,6 +1535,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletLength) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletRemainingBudget) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   // If `remainingBudget()` fails due to Shared Storage being disabled, there
@@ -1495,6 +1568,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletRemainingBudget) {
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIterated) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
@@ -1585,6 +1664,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 ) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
+
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
@@ -1680,6 +1765,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 ) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
@@ -1766,6 +1857,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIteratedLessThanTenKeys) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
@@ -1849,6 +1946,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_PartiallyIteratedLessThanTenKeys) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
@@ -1944,6 +2047,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIteratedNoKeys) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
@@ -2117,6 +2226,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        AddModule_MultipleAddModuleError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2167,6 +2282,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2196,6 +2317,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_FunctionError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2225,6 +2352,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_FunctionError) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_ScriptError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2255,6 +2388,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_ScriptError) {
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        Run_UnexpectedCustomDataError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2323,9 +2462,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       blink::SharedStorageWorkletErrorType::kSelectURLWebVisible, 1);
 }
 
-// TODO(https://crbug.com/1484437): Fix flakes.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       DISABLED_SelectUrl_NotRegisteredError) {
+                       SelectUrl_NotRegisteredError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2373,18 +2517,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-// TODO(crbug.com/1485061): Test is flaky on ChromeOS and Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_SelectUrl_FunctionError DISABLED_SelectUrl_FunctionError
-#else
-#define MAYBE_SelectUrl_FunctionError SelectUrl_FunctionError
-#endif
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       MAYBE_SelectUrl_FunctionError) {
-  // TODO(crbug.com/1485061): Test is flaky on linux-bfcache-rel.
-  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    return;
-  }
+                       SelectUrl_FunctionError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2432,9 +2572,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-// TODO(https://crbug.com/1484437): Fix flakes.
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       DISABLED_SelectUrl_ScriptError) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2482,9 +2626,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-// TODO(https://crbug.com/1484437): Fix flakes.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       DISABLED_SelectUrl_UnexpectedCustomDataError) {
+                       SelectUrl_UnexpectedCustomDataError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2532,9 +2681,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-// TODO(https://crbug.com/1484437): Fix flakes.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       DISABLED_SelectUrl_OutOfRangeError) {
+                       SelectUrl_OutOfRangeError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2582,9 +2736,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-// TODO(https://crbug.com/1484437): Fix flakes.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       DISABLED_SelectUrl_ReturnValueToIntError) {
+                       SelectUrl_ReturnValueToIntError) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2670,6 +2829,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, DocumentTiming) {
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(),
@@ -2734,6 +2899,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
 // Flaky: https://crbug.com/1406845
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        DISABLED_WorkletNumPerPage_Two) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::RenderFrameHost* main_frame =
@@ -2774,6 +2945,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 // Flaky: https://crbug.com/1406845
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                        DISABLED_WorkletNumPerPage_Three) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   content::RenderFrameHost* main_frame =
@@ -2973,6 +3150,12 @@ class SharedStorageFencedFrameChromeBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
                        FencedFrameNavigateTop_BudgetWithdrawal) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndAttestationSettingsThenNavigateToMainHostPage();
 
   content::RenderFrameHost* iframe =
@@ -3020,6 +3203,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SharedStorageFencedFrameChromeBrowserTest,
     TwoFencedFrames_DifferentURNs_EachNavigateOnce_BudgetWithdrawalTwice) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   Set3rdPartyCookieAndAttestationSettingsThenNavigateToMainHostPage();
 
   content::RenderFrameHost* iframe1 =
@@ -3155,6 +3344,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
                        ContributeToHistogramViaRun) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   // This always enrolls the main host for Shared Storage, but only enrolls the
   // main host for Private Aggregation exactly when `ShouldEnrollMainHost()` is
   // true.
@@ -3186,6 +3381,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
                        ContributeToHistogramViaSelectURL) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   // This always enrolls the main host for Shared Storage, but only enrolls the
   // main host for Private Aggregation exactly when `ShouldEnrollMainHost()` is
   // true.
@@ -3218,6 +3419,12 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
                        WithContextId_NoPrivateAggregationJS) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   // This always enrolls the main host for Shared Storage, but only enrolls the
   // main host for Private Aggregation exactly when `ShouldEnrollMainHost()` is
   // true.
