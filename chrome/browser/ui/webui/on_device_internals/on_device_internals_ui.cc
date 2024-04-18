@@ -24,7 +24,7 @@
 #endif
 
 namespace {
-
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
   // This WebUI currently provides no way to dynamically configure the expected
   // output dimension of the TS model. Since the model is in flux and its output
@@ -40,7 +40,7 @@ on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
   }
   return on_device_model::LoadModelAssets(model_paths);
 }
-
+#endif
 }  // namespace
 
 OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
@@ -67,6 +67,16 @@ void OnDeviceInternalsUI::LoadModel(
     const base::FilePath& model_path,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // We treat the file path as a UUID on ChromeOS.
+  base::Uuid uuid = base::Uuid::ParseLowercase(model_path.value());
+  if (!uuid.is_valid()) {
+    std::move(callback).Run(
+        on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
+    return;
+  }
+  GetService().LoadPlatformModel(uuid, std::move(model), std::move(callback));
+#else
   // Warm the service while assets load in the background.
   std::ignore = GetService();
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -75,6 +85,7 @@ void OnDeviceInternalsUI::LoadModel(
       base::BindOnce(&OnDeviceInternalsUI::OnModelAssetsLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(model),
                      std::move(callback)));
+#endif
 }
 
 on_device_model::mojom::OnDeviceModelService&
