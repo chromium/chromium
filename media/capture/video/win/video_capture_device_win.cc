@@ -13,6 +13,7 @@
 #include <list>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
@@ -139,10 +140,10 @@ void VideoCaptureDeviceWin::GetPinCapabilityList(
     return;
   }
 
-  std::unique_ptr<BYTE[]> caps(new BYTE[byte_size]);
+  auto caps = base::HeapArray<BYTE>::Uninit(byte_size);
   for (int i = 0; i < count; ++i) {
     VideoCaptureDeviceWin::ScopedMediaType media_type;
-    hr = stream_config->GetStreamCaps(i, media_type.Receive(), caps.get());
+    hr = stream_config->GetStreamCaps(i, media_type.Receive(), caps.data());
     // GetStreamCaps() may return S_FALSE, so don't use FAILED() or SUCCEED()
     // macros here since they'll trigger incorrectly.
     if (hr != S_OK || !media_type.get()) {
@@ -452,14 +453,14 @@ void VideoCaptureDeviceWin::AllocateAndStart(
     return;
   }
 
-  std::unique_ptr<BYTE[]> caps(new BYTE[size]);
+  auto caps = base::HeapArray<BYTE>::Uninit(size);
   ScopedMediaType media_type;
 
   // Get the windows capability from the capture device.
   // GetStreamCaps can return S_FALSE which we consider an error. Therefore the
   // FAILED macro can't be used.
   hr = stream_config->GetStreamCaps(found_capability.media_type_index,
-                                    media_type.Receive(), caps.get());
+                                    media_type.Receive(), caps.data());
   if (hr != S_OK) {
     SetErrorState(media::VideoCaptureError::
                       kWinDirectShowFailedToGetCaptureDeviceCapabilities,

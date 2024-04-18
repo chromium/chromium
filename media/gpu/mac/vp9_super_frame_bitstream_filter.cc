@@ -7,6 +7,7 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "media/filters/vp9_raw_bits_reader.h"
 
@@ -192,7 +193,7 @@ bool VP9SuperFrameBitstreamFilter::BuildSuperFrame() {
   // Write superframe trailer which has size information for each buffer.
   size_t trailer_offset = 0;
   const size_t trailer_size = total_size - offset;
-  std::unique_ptr<uint8_t[]> trailer(new uint8_t[trailer_size]);
+  auto trailer = base::HeapArray<uint8_t>::Uninit(trailer_size);
 
   const uint8_t marker = kSuperFrameMarker + ((bytes_per_frame_size - 1) << 3) +
                          (partial_buffers_.size() - 1);
@@ -208,7 +209,7 @@ bool VP9SuperFrameBitstreamFilter::BuildSuperFrame() {
   DCHECK_EQ(trailer_offset, trailer_size - 1);
   trailer[trailer_offset] = marker;
 
-  OSStatus status = CMBlockBufferReplaceDataBytes(trailer.get(), data_.get(),
+  OSStatus status = CMBlockBufferReplaceDataBytes(trailer.data(), data_.get(),
                                                   offset, trailer_size);
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes failed.";
