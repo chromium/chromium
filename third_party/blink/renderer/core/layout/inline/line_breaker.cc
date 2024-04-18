@@ -340,6 +340,25 @@ LayoutUnit MaxLineWidth(const LineInfo& base_line,
   return max;
 }
 
+// Represents data associated with an `InlineItemResult`.
+class FastMinTextContext {
+  STACK_ALLOCATED();
+
+ public:
+  LayoutUnit HyphenInlineSize(InlineItemResult& item_result) const {
+    if (!hyphen_inline_size_) {
+      if (!item_result.hyphen) {
+        item_result.ShapeHyphen();
+      }
+      hyphen_inline_size_ = item_result.hyphen.InlineSize();
+    }
+    return *hyphen_inline_size_;
+  }
+
+ private:
+  mutable std::optional<LayoutUnit> hyphen_inline_size_;
+};
+
 }  // namespace
 
 inline bool LineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
@@ -1671,12 +1690,12 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
   DCHECK_EQ(shape_result.StartIndex(), item.StartOffset());
   DCHECK_GE(start_offset, shape_result.StartIndex());
   shape_result.EnsurePositionData();
+  FastMinTextContext context;
   const String& text = Text();
   const bool should_break_spaces = item.Style()->ShouldBreakSpaces();
   float min_width = 0;
   unsigned last_end_offset = 0;
   unsigned end_offset = start_offset + 1;
-  std::optional<LayoutUnit> hyphen_inline_size;
   while (start_offset < item.EndOffset()) {
     // TODO(crbug.com/332328872): `following()` scans back to the start of the
     // string. Resetting the ICU `BreakIterator` is faster than the scanning.
@@ -1702,12 +1721,6 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
       bool has_hyphen = text[non_hangable_run_end - 1] == kSoftHyphenCharacter;
       if (UNLIKELY(hyphenation_)) {
         // When 'hyphens: auto', compute all hyphenation opportunities.
-        if (!hyphen_inline_size) {
-          if (!item_result->hyphen) {
-            item_result->ShapeHyphen();
-          }
-          hyphen_inline_size = item_result->hyphen.InlineSize();
-        }
         const StringView word(text, start_offset, word_len);
         Vector<wtf_size_t, 8> locations = hyphenation_->HyphenLocations(word);
         // |locations| is a list of hyphenation points in the descending order.
@@ -1716,12 +1729,14 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
         DCHECK(!locations.Contains(0u));
         DCHECK(!locations.Contains(word_len));
         locations.push_back(0);
+        const LayoutUnit hyphen_inline_size =
+            context.HyphenInlineSize(*item_result);
         LayoutUnit max_part_width;
         for (const wtf_size_t location : locations) {
           LayoutUnit part_width = LayoutUnit::FromFloatCeil(ComputeWordWidth(
               shape_result, start_offset + location, start_offset + word_len));
           if (has_hyphen)
-            part_width += *hyphen_inline_size;
+            part_width += hyphen_inline_size;
           max_part_width = std::max(part_width, max_part_width);
           word_len = location;
           has_hyphen = true;
@@ -1733,14 +1748,10 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
 
         // Append hyphen-width to `word_width` if the word is hyphenated.
         if (has_hyphen) {
-          if (!hyphen_inline_size) {
-            if (!item_result->hyphen) {
-              item_result->ShapeHyphen();
-            }
-            hyphen_inline_size = item_result->hyphen.InlineSize();
-          }
+          const LayoutUnit hyphen_inline_size =
+              context.HyphenInlineSize(*item_result);
           word_width =
-              (LayoutUnit::FromFloatCeil(word_width) + *hyphen_inline_size)
+              (LayoutUnit::FromFloatCeil(word_width) + hyphen_inline_size)
                   .ToFloat();
         }
 
