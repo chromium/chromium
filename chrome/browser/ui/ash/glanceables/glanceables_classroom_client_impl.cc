@@ -90,8 +90,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings"
           chrome_policy {
-            GlanceablesEnabled {
-              GlanceablesEnabled: false
+            ContextualGoogleIntegrationsEnabled {
+              ContextualGoogleIntegrationsEnabled: false
             }
           }
         }

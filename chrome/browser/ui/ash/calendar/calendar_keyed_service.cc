@@ -61,9 +61,12 @@ constexpr net::NetworkTrafficAnnotationTag kCalendarTrafficAnnotation =
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
           chrome_policy {
-              CalendarIntegrationEnabled {
-                CalendarIntegrationEnabled: false
-              }
+            CalendarIntegrationEnabled {
+              CalendarIntegrationEnabled: false
+            }
+            ContextualGoogleIntegrationsEnabled {
+              ContextualGoogleIntegrationsEnabled: false
+            }
           }
         })");
 

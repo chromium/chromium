@@ -275,7 +275,7 @@ Refer to README.md for content description and update process.
  <item id="tachyon_ice_config_fetcher" added_in_milestone="98" content_hash_code="01e878b0" os_list="chromeos" file_path="chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.cc" />
  <item id="launcher_item_suggest" added_in_milestone="98" content_hash_code="04a4041e" os_list="chromeos" file_path="chrome/browser/ash/file_suggest/item_suggest_cache.cc" />
  <item id="ambient_client" added_in_milestone="98" content_hash_code="062d821f" os_list="chromeos" file_path="chrome/browser/ui/ash/ambient/ambient_client_impl.cc" />
- <item id="calendar_get_events" added_in_milestone="98" content_hash_code="0757d834" os_list="chromeos" file_path="chrome/browser/ui/ash/calendar/calendar_keyed_service.cc" />
+ <item id="calendar_get_events" added_in_milestone="98" content_hash_code="03c75d6f" os_list="chromeos" file_path="chrome/browser/ui/ash/calendar/calendar_keyed_service.cc" />
  <item id="edu_account_login_profile_image_fetcher" added_in_milestone="98" content_hash_code="0689301c" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/edu_account_login_handler.cc" />
  <item id="management_ui_customer_logo" added_in_milestone="98" content_hash_code="01a17a58" os_list="chromeos" file_path="chrome/browser/ui/webui/management/management_ui_handler_chromeos.cc" />
  <item id="gaia_reauth_token_fetcher" added_in_milestone="98" content_hash_code="04ff463d" os_list="chromeos" file_path="chrome/browser/ash/login/gaia_reauth_token_fetcher.cc" />
@@ -385,7 +385,7 @@ Refer to README.md for content description and update process.
  <item id="chrome_support_tool_file_upload" added_in_milestone="113" content_hash_code="04a07122" os_list="chromeos" file_path="chrome/browser/policy/messaging_layer/upload/file_upload_impl.cc" />
  <item id="service_worker_race_network_request" added_in_milestone="113" content_hash_code="01177377" os_list="linux,windows,android,chromeos" file_path="content/common/service_worker/race_network_request_url_loader_client.cc" />
  <item id="safe_browsing_ohttp_key_fetch" added_in_milestone="113" content_hash_code="0572fe6f" os_list="linux,windows,android,chromeos" file_path="components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.cc" />
- <item id="glanceables_tasks_integration" added_in_milestone="113" content_hash_code="033ddfed" os_list="chromeos" file_path="chrome/browser/ui/ash/glanceables/glanceables_keyed_service.cc" />
+ <item id="glanceables_tasks_integration" added_in_milestone="113" content_hash_code="01d7b518" os_list="chromeos" file_path="chrome/browser/ui/ash/glanceables/glanceables_keyed_service.cc" />
  <item id="bookmarks_image_fetcher" added_in_milestone="114" content_hash_code="01dd68ad" os_list="chromeos,linux,windows" file_path="chrome/browser/ui/views/bookmarks/bookmark_bubble_view.cc" />
  <item id="screensaver_image_downloader" added_in_milestone="114" content_hash_code="04a94c90" os_list="chromeos" file_path="ash/ambient/managed/screensaver_image_downloader.cc" />
  <item id="back_navigation_cache_query" added_in_milestone="114" content_hash_code="052f4fec" os_list="linux,windows,android,chromeos" file_path="content/browser/preloading/prerender/prerender_host_registry.cc" />
@@ -395,7 +395,7 @@ Refer to README.md for content description and update process.
  <item id="gaia_auth_rotate_bound_cookies" added_in_milestone="115" content_hash_code="064e7f51" os_list="linux,windows" file_path="chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc" />
  <item id="unified_state_determination_kill_switch" added_in_milestone="115" content_hash_code="01f51d8e" os_list="chromeos" file_path="chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.cc" />
  <item id="crash_file_uploader" added_in_milestone="115" content_hash_code="05f6902f" os_list="linux" file_path="remoting/host/crash/crash_file_uploader.cc" />
- <item id="glanceables_classroom_integration" added_in_milestone="115" content_hash_code="04025a83" os_list="chromeos" file_path="chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.cc" />
+ <item id="glanceables_classroom_integration" added_in_milestone="115" content_hash_code="048f5ccb" os_list="chromeos" file_path="chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.cc" />
  <item id="promise_app_service_download_icon" added_in_milestone="115" content_hash_code="00521032" os_list="chromeos" file_path="chrome/browser/apps/app_service/promise_apps/promise_app_service.cc" />
  <item id="iwa_update_manifest_fetcher" added_in_milestone="116" type="completing" content_hash_code="06867096" os_list="linux,windows,chromeos" semantics_fields="4,5,7,8,9" policy_fields="-1" file_path="chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.cc" />
  <item id="iwa_bundle_downloader" added_in_milestone="116" type="completing" content_hash_code="04d2beae" os_list="linux,windows,chromeos" semantics_fields="4,5,7,8,9" policy_fields="-1" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.cc" />
@@ -432,7 +432,7 @@ Refer to README.md for content description and update process.
  <item id="remoting_report_provisioning_error" added_in_milestone="120" content_hash_code="01928ee5" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
  <item id="webauthn_rp_id_check" added_in_milestone="121" content_hash_code="048c3faa" os_list="linux,windows,android,chromeos" file_path="content/browser/webauth/webauth_request_security_checker.cc" />
  <item id="devtools_cdp_console_insights" added_in_milestone="121" content_hash_code="051d2911" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/devtools_ui_bindings.cc" />
- <item id="tasks_integration" added_in_milestone="121" content_hash_code="0189cea5" os_list="chromeos" file_path="chrome/browser/ui/ash/api/tasks/chrome_tasks_delegate.cc" />
+ <item id="tasks_integration" added_in_milestone="121" content_hash_code="06b37a3d" os_list="chromeos" file_path="chrome/browser/ui/ash/api/tasks/chrome_tasks_delegate.cc" />
  <item id="metrics_report_appkm" added_in_milestone="121" content_hash_code="07bcd252" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="metrics_report_ukm_and_appkm" added_in_milestone="121" content_hash_code="0579d480" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="search_engine_adapter" added_in_milestone="121" content_hash_code="07bed22d" os_list="android" file_path="chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java" />

@@ -59,9 +59,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
-          policy_exception_justification:
-            "Experimental feature disabled by default. Policy not yet "
-            "implemented."
+          chrome_policy {
+            ContextualGoogleIntegrationsEnabled {
+              ContextualGoogleIntegrationsEnabled: false
+            }
+          }
         }
     )");
 
