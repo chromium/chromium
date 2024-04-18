@@ -649,6 +649,8 @@ def builder(
             //build/config/siso/config.star.
         siso_project: a string indicating the GCP project hosting the RBE
             instance and other Cloud services. e.g. logging, trace etc.
+            When it's not set, reclient_instance is used.
+            TODO: b/335361392 - Converge siso_project/reclient_instance into rbe_project.
         siso_enable_cloud_profiler: If True, enable cloud profiler in siso.
         siso_enable_cloud_trace: If True, enable cloud trace in siso.
         siso_experiments: a list of experiment flags for siso.
@@ -857,6 +859,8 @@ def builder(
             shadow_properties["$build/reclient"] = shadow_reclient
 
     siso_project = defaults.get_value("siso_project", siso_project)
+    if not siso_project and reclient:
+        siso_project = reclient["instance"]
     use_siso = defaults.get_value("siso_enabled", siso_enabled) and siso_project
     if use_siso:
         siso = {
