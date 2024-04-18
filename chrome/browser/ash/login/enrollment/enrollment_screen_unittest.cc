@@ -434,7 +434,7 @@ class EnrollmentScreenAttestationFlowTest
     policy::EnrollmentConfig config;
     config.mode = GetParam();
     config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+        policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
     DCHECK(config.is_mode_attestation())
         << "Config must be attestation: " << config;
 
@@ -534,7 +534,7 @@ class EnrollmentScreenAttestationFlowWithManualFallbackTest
     policy::EnrollmentConfig config;
     config.mode = policy::EnrollmentConfig::GetManualFallbackMode(GetParam());
     config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+        policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
     DCHECK(config.is_manual_fallback())
         << "Config must be manual fallback: " << config;
 

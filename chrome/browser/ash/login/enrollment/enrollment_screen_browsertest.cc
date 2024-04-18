@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollAfterRollbackSuccess) {
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
   enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
   enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
   enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, AttestationEnrollmentSuccess) {
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
   enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED);
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
   enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED);
@@ -483,9 +483,9 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   WizardContext context;
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
   enrollment_helper_.DisableAttributePromptUpdate();
-  enrollment_screen()->SetEnrollmentConfig(
-      CreateConfig(policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
-                   policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE));
+  enrollment_screen()->SetEnrollmentConfig(CreateConfig(
+      policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
+      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED));
   enrollment_screen()->Show(&context);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 
@@ -761,18 +761,18 @@ INSTANTIATE_TEST_SUITE_P(
         {policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED,
          policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION},
         {policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE},
+         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED},
         {policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE},
+         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED},
         {policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE}}));
+         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED}}));
 
 INSTANTIATE_TEST_SUITE_P(
     NotForcedEnrollment,
     AttestationEnrollmentErrorScreenTest,
     testing::ValuesIn(std::vector<EnrollmentErrorScreenTestParams>{
         {policy::EnrollmentConfig::MODE_ATTESTATION,
-         policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE}}));
+         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED}}));
 
 // Class to test TPM pre-enrollment check that happens only with
 // --tpm-is-dynamic switch enabled. Test parameter represents take TPM

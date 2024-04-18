@@ -98,9 +98,9 @@ struct EnrollmentConfig {
     AUTH_MECHANISM_INTERACTIVE = 0,
     // Automatic authentication relying on the attestation process.
     AUTH_MECHANISM_ATTESTATION = 1,
-    // Let the system determine the best mechanism (typically the one
-    // that requires the least user interaction).
-    AUTH_MECHANISM_BEST_AVAILABLE = 2,
+    // Prefer to use attestation enrollment, falling back to manual enrollment
+    // if attestation fails or manual enrollment is forced on the system.
+    AUTH_MECHANISM_ATTESTATION_PREFERRED = 2,
   };
 
   // An enumeration of assigned upgrades that a device can after initial

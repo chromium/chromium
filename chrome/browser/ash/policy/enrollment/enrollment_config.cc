@@ -109,7 +109,7 @@ std::string_view ToStringView(policy::EnrollmentConfig::AuthMechanism auth) {
   switch (auth) {
     CASE(AUTH_MECHANISM_INTERACTIVE);
     CASE(AUTH_MECHANISM_ATTESTATION);
-    CASE(AUTH_MECHANISM_BEST_AVAILABLE);
+    CASE(AUTH_MECHANISM_ATTESTATION_PREFERRED);
   }
 
   NOTREACHED_NORETURN();
@@ -151,7 +151,8 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
 
     case ZeroTouchEnrollmentMode::ENABLED:
       // Use the best mechanism, which may include attestation if available.
-      config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+      config.auth_mechanism =
+          EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
       break;
 
     case ZeroTouchEnrollmentMode::FORCED:
@@ -164,8 +165,10 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   // enrollment.
   const bool oobe_complete = local_state->GetBoolean(ash::prefs::kOobeComplete);
   if (oobe_complete &&
-      config.auth_mechanism == EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE)
+      config.auth_mechanism ==
+          EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED) {
     config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+  }
   // If OOBE is done and we are enrolled, check for need to recover enrollment.
   // Enrollment recovery is not implemented for Active Directory.
   if (oobe_complete && install_attributes.IsCloudManaged()) {
@@ -255,7 +258,7 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   if (IsEnrollingAfterRollback()) {
     config.mode = policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
     config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+        policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
   } else if (device_state_mode == kDeviceStateRestoreModeReEnrollmentEnforced) {
     config.mode = EnrollmentConfig::MODE_SERVER_FORCED;
     config.management_domain = device_state_management_domain;
@@ -265,11 +268,13 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   } else if (device_state_mode ==
              kDeviceStateRestoreModeReEnrollmentZeroTouch) {
     config.mode = EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
-    config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+    config.auth_mechanism =
+        EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
     config.management_domain = device_state_management_domain;
   } else if (device_state_mode == kDeviceStateInitialModeEnrollmentZeroTouch) {
     config.mode = EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED;
-    config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+    config.auth_mechanism =
+        EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
     config.management_domain = device_state_management_domain;
   } else if (pref_enrollment_auto_start_present && pref_enrollment_auto_start &&
              pref_enrollment_can_exit_present && !pref_enrollment_can_exit) {

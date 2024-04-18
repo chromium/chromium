@@ -207,7 +207,7 @@ INSTANTIATE_TEST_SUITE_P(
                        EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
                        EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE),
         ZeroTouchParam("",  // Flag set without a set value.
-                       EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE,
+                       EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
                        EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE),
         ZeroTouchParam("forced",
                        EnrollmentConfig::AUTH_MECHANISM_ATTESTATION,

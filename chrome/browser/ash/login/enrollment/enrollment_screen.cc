@@ -184,7 +184,7 @@ void EnrollmentScreen::SetEnrollmentConfig(
       current_auth_ = AUTH_ATTESTATION;
       next_auth_ = AUTH_ATTESTATION;
       break;
-    case EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE:
+    case EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED:
       if (TestForcesManualEnrollment()) {
         current_auth_ = AUTH_OAUTH;
         next_auth_ = AUTH_OAUTH;
