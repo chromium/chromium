@@ -101,6 +101,7 @@ constexpr char kOpCastTypeName[] = "cast";
 constexpr char kOpClipTypeName[] = "clip";
 constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
+constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
@@ -144,6 +145,8 @@ constexpr char kOpUpsampleNearestNeighborTypeName[] =
 constexpr char kOpParamX[] = "x";
 constexpr char kOpParamY[] = "y";
 constexpr char kOpDataTypeName[] = "dtype";
+constexpr char kOpParamAlpha[] = "alpha";
+constexpr char kOpParamBeta[] = "beta";
 
 // Hard coded path used in the model file to point at the weight path.
 constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
@@ -577,6 +580,11 @@ GraphBuilder::BuildCoreMLModel() {
             *operation->get_element_wise_unary(), block));
         break;
       }
+      case mojom::Operation::Tag::kLeakyRelu: {
+        RETURN_IF_ERROR(
+            AddOperationForLeakyRelu(*operation->get_leaky_relu(), block));
+        break;
+      }
       case mojom::Operation::Tag::kPool2d: {
         RETURN_IF_ERROR(AddOperationForPool2d(*operation->get_pool2d(), block));
         break;
@@ -632,7 +640,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kHardSwish:
       case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kInstanceNormalization:
-      case mojom::Operation::Tag::kLeakyRelu:
       case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
@@ -898,18 +905,16 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForClamp(
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
-  static constexpr char kParamAlpha[] = "alpha";
-  static constexpr char kParamBeta[] = "beta";
-
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpClipTypeName);
 
   SetInputWithName(*op->mutable_inputs(), kOpParamX, input_name);
-  SetInputsWithValues(*op->mutable_inputs(),
-                      {
-                          {kParamAlpha, CreateScalarImmediateValue(min_value)},
-                          {kParamBeta, CreateScalarImmediateValue(max_value)},
-                      });
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {
+          {kOpParamAlpha, CreateScalarImmediateValue(min_value)},
+          {kOpParamBeta, CreateScalarImmediateValue(max_value)},
+      });
 
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
   return base::ok();
@@ -1031,7 +1036,24 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
     PopulateNamedValueType(internal_output_name, output_operand.mil_data_type,
                            output_operand.dimensions, *op->add_outputs());
 
+    // Activation operations don't have input/output operand_id set, only
+    // optional params are set to be passed along.
     switch (operation.activation->which()) {
+      case webnn::mojom::Activation::Tag::kClamp: {
+        const webnn::mojom::Clamp& clamp = *operation.activation->get_clamp();
+        RETURN_IF_ERROR(AddOperationForClamp(
+            internal_output_name, output_operand.mil_data_type, clamp.min_value,
+            clamp.max_value, operation.output_operand_id, block));
+        break;
+      }
+      case webnn::mojom::Activation::Tag::kLeakyRelu: {
+        const webnn::mojom::LeakyRelu& leaky_relu =
+            *operation.activation->get_leaky_relu();
+        RETURN_IF_ERROR(AddOperationForLeakyRelu(
+            internal_output_name, output_operand.mil_data_type,
+            leaky_relu.alpha, operation.output_operand_id, block));
+        break;
+      }
       case webnn::mojom::Activation::Tag::kRelu: {
         RETURN_IF_ERROR(AddUnaryFloatsOperation(
             kOpReluTypeName, internal_output_name, output_operand.mil_data_type,
@@ -1056,19 +1078,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
             operation.output_operand_id, block));
         break;
       }
-      case webnn::mojom::Activation::Tag::kClamp: {
-        // The `clamp` operation doesn't have input/output operand_id set, only
-        // min_value and max_value options are set to be passed along.
-        const webnn::mojom::Clamp& clamp = *operation.activation->get_clamp();
-        RETURN_IF_ERROR(AddOperationForClamp(
-            internal_output_name, output_operand.mil_data_type, clamp.min_value,
-            clamp.max_value, operation.output_operand_id, block));
-        break;
-      }
       // TODO: crbug.com/41481333 Support these when implemented.
       case webnn::mojom::Activation::Tag::kElu:
       case webnn::mojom::Activation::Tag::kHardSigmoid:
-      case webnn::mojom::Activation::Tag::kLeakyRelu:
       case webnn::mojom::Activation::Tag::kLinear:
       case webnn::mojom::Activation::Tag::kSoftmax:
       case webnn::mojom::Activation::Tag::kSoftplus: {
@@ -1199,6 +1211,40 @@ GraphBuilder::AddOperationForElementwiseUnary(
       return NewNotSupportedError("Unimplemented Unary Operator.");
   }
   return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLeakyRelu(
+    std::string_view input_name,
+    CoreML::Specification::MILSpec::DataType input_mil_data_type,
+    float alpha,
+    uint64_t output_operand_id,
+    CoreML::Specification::MILSpec::Block& block) {
+  if (!kFloatDataTypes.contains(input_mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpLeakyReluTypeName);
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX, input_name);
+
+  SetInputWithValue(
+      *op->mutable_inputs(), kOpParamAlpha,
+      // TODO: crbug.com/41481333 - Consider using CoreML's support for float16
+      // when this value can be casted to float16 without a loss in precision.
+      CreateScalarImmediateValue<float>(alpha));
+
+  PopulateNamedValueType(output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLeakyRelu(
+    const mojom::LeakyRelu& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand = GetOperandInfo(operation.input_operand_id);
+  return AddOperationForLeakyRelu(input_operand.coreml_name,
+                                  input_operand.mil_data_type, operation.alpha,
+                                  operation.output_operand_id, block);
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForPool2d(

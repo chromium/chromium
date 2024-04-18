@@ -199,6 +199,15 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseUnary(const mojom::ElementWiseUnary& operation,
                                   CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLeakyRelu(
+      std::string_view input_name,
+      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      float alpha,
+      uint64_t output_operand_id,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLeakyRelu(
+      const mojom::LeakyRelu& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForPool2d(
       const mojom::Pool2d& operation,
       CoreML::Specification::MILSpec::Block& block);
