@@ -40,4 +40,10 @@ message DeletionOrigin {
 
   // Line of code where the deletion originated.
   optional int32 file_line_number = 4;
+
+  // Human-readable and extra optional version of `file_name_hash`. Since the
+  // file name can be long and includes the full path, this string is very
+  // likely truncated (and hence not guaranteed to be unique). Truncation will
+  // remove the beginning of the string rather than the end of it.
+  optional string file_name_possibly_truncated = 5;
 }

@@ -11,9 +11,31 @@
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
+#include "base/strings/string_util.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 
 namespace syncer {
+namespace {
+
+constexpr size_t kMaxFileNameBeforeTruncation = 30;
+
+// Truncates the filename to a maximum size by stripping, if needed, the
+// beginning of the string (usually path), which is less representative than the
+// end.
+std::string MaybeTruncateFileName(std::string_view file_name) {
+  if (file_name.size() <= kMaxFileNameBeforeTruncation) {
+    return std::string(file_name);
+  }
+
+  std::string result(
+      file_name.substr(file_name.size() - kMaxFileNameBeforeTruncation));
+  for (int i = 0; i < 3; i++) {
+    result[i] = '.';
+  }
+  return result;
+}
+
+}  // namespace
 
 // static
 DeletionOrigin DeletionOrigin::Unspecified() {
@@ -48,6 +70,10 @@ sync_pb::DeletionOrigin DeletionOrigin::ToProto(
   proto.set_chromium_version(std::string(chromium_version));
   proto.set_file_name_hash(base::PersistentHash((location_->file_name())));
   proto.set_file_line_number(location_->line_number());
+  if (base::IsStringASCII(location_->file_name())) {
+    proto.set_file_name_possibly_truncated(
+        MaybeTruncateFileName(location_->file_name()));
+  }
   return proto;
 }
 

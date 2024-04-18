@@ -568,6 +568,7 @@ VISIT_PROTO_FIELDS(const sync_pb::DeletionOrigin& proto) {
   VISIT(chromium_version);
   VISIT(file_name_hash);
   VISIT(file_line_number);
+  VISIT(file_name_possibly_truncated);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {

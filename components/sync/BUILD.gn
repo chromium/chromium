@@ -186,6 +186,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "base/client_tag_hash_unittest.cc",
+    "base/deletion_origin_unittest.cc",
     "base/model_type_unittest.cc",
     "base/page_transition_conversion_unittest.cc",
     "base/protobuf_unittest.cc",
