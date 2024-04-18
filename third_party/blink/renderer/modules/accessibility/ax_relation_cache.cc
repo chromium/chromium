@@ -724,10 +724,10 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   // Owned children must be in tree to avoid serialization issues.
   for (AXObject* child : validated_owned_children_result) {
     DCHECK(IsAriaOwned(child));
-    DCHECK(child->ComputeAccessibilityIsIgnoredButIncludedInTree())
+    DCHECK(child->ComputeIsIgnoredButIncludedInTree())
         << "Owned child not in tree: " << child
         << "\nRecompute included in tree: "
-        << child->ComputeAccessibilityIsIgnoredButIncludedInTree();
+        << child->ComputeIsIgnoredButIncludedInTree();
   }
 #endif
 
@@ -892,7 +892,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     GetReverseRelated(current_node, id_attr_to_text_relation_mapping_,
                       related_sources);
     for (AXObject* related : related_sources) {
-      if (related && related->LastKnownIsIncludedInTreeValue() &&
+      if (related && related->IsIncludedInTree() &&
           !related->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
       }
@@ -903,7 +903,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     if (current_node != node) {
       AXObject* obj = Get(current_node);
       if (obj &&
-          (!obj->LastKnownIsIgnoredValue() || obj->CanSetFocusAttribute()) &&
+          (!obj->IsIgnored() || obj->CanSetFocusAttribute()) &&
           obj->SupportsNameFromContents(/*recursive=*/false) &&
           !obj->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);

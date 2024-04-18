@@ -193,8 +193,8 @@ class BLINK_EXPORT WebAXObject {
 
   WebNode GetNode() const;
   WebDocument GetDocument() const;
-  bool AccessibilityIsIgnored() const;
-  bool AccessibilityIsIncludedInTree() const;
+  bool IsIgnored() const;
+  bool IsIncludedInTree() const;
 
   // Get the verb associated with performing the default action
   // on this object.

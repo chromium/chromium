@@ -64,7 +64,7 @@ class AXMenuListPopup final : public AXMockObject {
   bool IsVisible() const override;
   bool OnNativeClickAction() override;
   void AddChildren() override;
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
+  bool ComputeIsIgnored(IgnoredReasons* = nullptr) const override;
 
   AXMenuListOption* MenuListOptionAXObject(HTMLElement*);
   int GetSelectedIndex() const;

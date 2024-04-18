@@ -18,7 +18,7 @@ AXValidationMessage::AXValidationMessage(AXObjectCacheImpl& ax_object_cache)
 
 AXValidationMessage::~AXValidationMessage() {}
 
-bool AXValidationMessage::ComputeAccessibilityIsIgnored(
+bool AXValidationMessage::ComputeIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   return false;
 }

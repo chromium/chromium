@@ -216,7 +216,7 @@ const AXObject* BlinkAXTreeSource::GetFocusedObject() const {
 
 const AXObject* BlinkAXTreeSource::GetFromId(int32_t id) const {
   const AXObject* result = ax_object_cache_->ObjectFromAXID(id);
-  if (result && !result->AccessibilityIsIncludedInTree()) {
+  if (result && !result->IsIncludedInTree()) {
     DCHECK(false) << "Should not serialize an unincluded object:" << "\nChild: "
                   << result->ToString().Utf8();
     return nullptr;
@@ -251,7 +251,7 @@ AXObject* BlinkAXTreeSource::ChildAt(const AXObject* node, size_t index) const {
     return nullptr;
   }
 
-  if (!child->AccessibilityIsIncludedInTree()) {
+  if (!child->IsIncludedInTree()) {
     NOTREACHED(base::NotFatalUntil::M127)
         << "Should not receive unincluded child."
         << "\nChild: " << child->ToString().Utf8()
@@ -278,7 +278,7 @@ AXObject* BlinkAXTreeSource::GetParent(const AXObject* node) const {
 bool BlinkAXTreeSource::IsIgnored(const AXObject* node) const {
   if (!node || node->IsDetached())
     return false;
-  return node->LastKnownIsIgnoredValue();
+  return node->IsIgnored();
 }
 
 bool BlinkAXTreeSource::IsEqual(const AXObject* node1, const AXObject* node2) const {
@@ -304,7 +304,7 @@ void BlinkAXTreeSource::SerializeNode(const AXObject* src,
       ax_object_cache_->GetDocument().Lifecycle());
 #endif
 
-  if (!src || src->IsDetached() || !src->AccessibilityIsIncludedInTree()) {
+  if (!src || src->IsDetached() || !src->IsIncludedInTree()) {
     dst->AddState(ax::mojom::blink::State::kIgnored);
     dst->id = -1;
     dst->role = ax::mojom::blink::Role::kUnknown;

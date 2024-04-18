@@ -867,7 +867,7 @@ TEST_F(AccessibilityTest, PositionInHTMLLabel) {
 
   const AXObject* ax_label = GetAXObjectByElementId("label");
   ASSERT_NE(nullptr, ax_label);
-  ASSERT_FALSE(ax_label->AccessibilityIsIgnored());
+  ASSERT_FALSE(ax_label->IsIgnored());
   const AXObject* ax_label_text = ax_label->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_label_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_label_text->RoleValue());
@@ -942,10 +942,10 @@ TEST_F(AccessibilityTest, PositionInHTMLLabelIgnored) {
   // The HTML label element should be ignored.
   const AXObject* ax_label = GetAXObjectByElementId("label");
   ASSERT_NE(nullptr, ax_label);
-  ASSERT_TRUE(ax_label->AccessibilityIsIgnored());
+  ASSERT_TRUE(ax_label->IsIgnored());
   const AXObject* ax_label_text = ax_label->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_label_text);
-  ASSERT_TRUE(ax_label_text->AccessibilityIsIgnored());
+  ASSERT_TRUE(ax_label_text->IsIgnored());
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_label_text->RoleValue());
   const AXObject* ax_paragraph = GetAXObjectByElementId("paragraph");
   ASSERT_NE(nullptr, ax_paragraph);
@@ -1044,7 +1044,7 @@ TEST_F(AccessibilityTest, PositionInIgnoredObject) {
   const AXObject* ax_hidden = GetAXObjectByElementId("hidden");
   ASSERT_NE(nullptr, ax_hidden);
   ASSERT_EQ(ax::mojom::Role::kGenericContainer, ax_hidden->RoleValue());
-  ASSERT_TRUE(ax_hidden->AccessibilityIsIgnoredButIncludedInTree());
+  ASSERT_TRUE(ax_hidden->IsIgnoredButIncludedInTree());
 
   const AXObject* ax_visible = GetAXObjectByElementId("visible");
   ASSERT_NE(nullptr, ax_visible);
@@ -1133,7 +1133,7 @@ TEST_F(AccessibilityTest, BeforePositionInARIAHiddenShouldNotSkipARIAHidden) {
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_after->RoleValue());
   const AXObject* ax_hidden = GetAXObjectByElementId("ariaHidden");
   ASSERT_NE(nullptr, ax_hidden);
-  ASSERT_TRUE(ax_hidden->AccessibilityIsIgnored());
+  ASSERT_TRUE(ax_hidden->IsIgnored());
 
   const auto ax_position = AXPosition::CreatePositionAfterObject(*ax_before);
   const auto position = ax_position.ToPositionWithAffinity();
@@ -1166,7 +1166,7 @@ TEST_F(AccessibilityTest,
   ASSERT_NE(nullptr, ax_after);
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_after->RoleValue());
   ASSERT_NE(nullptr, GetAXObjectByElementId("ariaHidden"));
-  ASSERT_TRUE(GetAXObjectByElementId("ariaHidden")->AccessibilityIsIgnored());
+  ASSERT_TRUE(GetAXObjectByElementId("ariaHidden")->IsIgnored());
 
   const auto ax_position = AXPosition::CreatePositionBeforeObject(*ax_after);
   const auto position = ax_position.ToPositionWithAffinity();
@@ -1217,7 +1217,7 @@ TEST_F(AccessibilityTest, FromPositionInARIAHidden) {
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_after->RoleValue());
   const AXObject* ax_hidden = GetAXObjectByElementId("ariaHidden");
   ASSERT_NE(nullptr, ax_hidden);
-  ASSERT_TRUE(ax_hidden->AccessibilityIsIgnored());
+  ASSERT_TRUE(ax_hidden->IsIgnored());
 
   const auto position_first = Position::FirstPositionInNode(*hidden);
   // Since "ax_hidden" has a static text child, the AXPosition should move to an
@@ -1520,7 +1520,7 @@ TEST_F(AccessibilityTest, DISABLED_PositionInCSSContent) {
 
   const AXObject* ax_quote = GetAXObjectByElementId("quote");
   ASSERT_NE(nullptr, ax_quote);
-  ASSERT_TRUE(ax_quote->AccessibilityIsIgnored());
+  ASSERT_TRUE(ax_quote->IsIgnored());
   const AXObject* ax_quote_parent = ax_quote->ParentObjectUnignored();
   ASSERT_NE(nullptr, ax_quote_parent);
   ASSERT_EQ(4, ax_quote_parent->UnignoredChildCount());

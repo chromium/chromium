@@ -738,14 +738,14 @@ WebDocument WebAXObject::GetDocument() const {
   return WebDocument(document);
 }
 
-bool WebAXObject::AccessibilityIsIgnored() const {
+bool WebAXObject::IsIgnored() const {
   if (IsDetached())
     return false;
 
-  return private_->AccessibilityIsIgnored();
+  return private_->IsIgnored();
 }
 
-bool WebAXObject::AccessibilityIsIncludedInTree() const {
+bool WebAXObject::IsIncludedInTree() const {
   if (IsDetached())
     return false;
 
@@ -755,7 +755,7 @@ bool WebAXObject::AccessibilityIsIncludedInTree() const {
       << "Document lifecycle must be at LayoutClean or later, was "
       << private_->GetDocument()->Lifecycle().GetState();
 
-  return private_->AccessibilityIsIncludedInTree();
+  return private_->IsIncludedInTree();
 }
 
 unsigned WebAXObject::ColumnCount() const {

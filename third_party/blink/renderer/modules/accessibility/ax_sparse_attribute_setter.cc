@@ -94,7 +94,7 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
     AXObject* ax_element = object->AXObjectCache().Get(associated_element);
     if (!ax_element)
       continue;
-    if (!ax_element->AccessibilityIsIgnored())
+    if (!ax_element->IsIgnored())
       ax_ids.push_back(ax_element->AXObjectID());
   }
   node_data->AddIntListAttribute(attribute, ax_ids);
@@ -281,7 +281,7 @@ void AXNodeDataAOMPropertyClient::AddRelationListProperty(
     if (accessible_node) {
       Element* element = accessible_node->element();
       AXObject* ax_element = ax_object_cache_->Get(element);
-      if (ax_element && !ax_element->AccessibilityIsIgnored())
+      if (ax_element && !ax_element->IsIgnored())
         ax_ids.push_back(ax_element->AXObjectID());
     }
   }

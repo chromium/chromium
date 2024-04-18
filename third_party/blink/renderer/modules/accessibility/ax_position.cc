@@ -25,7 +25,7 @@ namespace blink {
 const AXPosition AXPosition::CreatePositionBeforeObject(
     const AXObject& child,
     const AXPositionAdjustmentBehavior adjustment_behavior) {
-  if (child.IsDetached() || !child.AccessibilityIsIncludedInTree())
+  if (child.IsDetached() || !child.IsIncludedInTree())
     return {};
 
   // If |child| is a text object, but not a text control, make behavior the same
@@ -54,7 +54,7 @@ const AXPosition AXPosition::CreatePositionBeforeObject(
 const AXPosition AXPosition::CreatePositionAfterObject(
     const AXObject& child,
     const AXPositionAdjustmentBehavior adjustment_behavior) {
-  if (child.IsDetached() || !child.AccessibilityIsIncludedInTree())
+  if (child.IsDetached() || !child.IsIncludedInTree())
     return {};
 
   // If |child| is a text object, but not a text control, make behavior the same
@@ -101,7 +101,7 @@ const AXPosition AXPosition::CreateFirstPositionInObject(
   // invalid position, because child count is not always accurate for such
   // objects.
   const AXObject* unignored_container =
-      !container.AccessibilityIsIncludedInTree()
+      !container.IsIncludedInTree()
           ? container.ParentObjectIncludedInTree()
           : &container;
   DCHECK(unignored_container);
@@ -136,7 +136,7 @@ const AXPosition AXPosition::CreateLastPositionInObject(
   // invalid position, because child count is not always accurate for such
   // objects.
   const AXObject* unignored_container =
-      !container.AccessibilityIsIncludedInTree()
+      !container.IsIncludedInTree()
           ? container.ParentObjectIncludedInTree()
           : &container;
   DCHECK(unignored_container);
@@ -196,7 +196,7 @@ const AXPosition AXPosition::FromPosition(
     return {};
 
   if (container_node->IsTextNode()) {
-    if (!container->AccessibilityIsIncludedInTree()) {
+    if (!container->IsIncludedInTree()) {
       // Find the closest DOM sibling that is unignored in the accessibility
       // tree.
       switch (adjustment_behavior) {
@@ -292,7 +292,7 @@ const AXPosition AXPosition::FromPosition(
   }
 
   DCHECK(container_node->IsContainerNode());
-  if (!container->AccessibilityIsIncludedInTree()) {
+  if (!container->IsIncludedInTree()) {
     container = container->ParentObjectIncludedInTree();
     if (!container)
       return {};
@@ -315,7 +315,7 @@ const AXPosition AXPosition::FromPosition(
       // |ax_child| might be nullptr because not all DOM nodes can have AX
       // objects. For example, the "head" element has no corresponding AX
       // object.
-      if (!ax_child || !ax_child->AccessibilityIsIncludedInTree()) {
+      if (!ax_child || !ax_child->IsIncludedInTree()) {
         // Find the closest DOM sibling that is present and unignored in the
         // accessibility tree.
         switch (adjustment_behavior) {
@@ -690,14 +690,14 @@ const AXPosition AXPosition::AsUnignoredPosition(
   // Case 1.
   // Neither text positions nor "after children" positions have a |child|
   // object.
-  if (!container->AccessibilityIsIncludedInTree() && child) {
+  if (!container->IsIncludedInTree() && child) {
     // |CreatePositionBeforeObject| already finds the unignored parent before
     // creating the new position, so we don't need to replicate the logic here.
     return CreatePositionBeforeObject(*child, adjustment_behavior);
   }
 
   // Cases 2 and 3.
-  if (!container->AccessibilityIsIncludedInTree()) {
+  if (!container->IsIncludedInTree()) {
     // Case 2.
     if (IsTextPosition()) {
       if (!container->ParentObjectIncludedInTree())
@@ -728,7 +728,7 @@ const AXPosition AXPosition::AsUnignoredPosition(
   }
 
   // Case 4.
-  if (child && !child->AccessibilityIsIncludedInTree()) {
+  if (child && !child->IsIncludedInTree()) {
     switch (adjustment_behavior) {
       case AXPositionAdjustmentBehavior::kMoveRight:
         return CreateLastPositionInObject(*container);
@@ -1076,7 +1076,7 @@ const AXObject* AXPosition::FindNeighboringUnignoredObject(
       while ((next_node = NodeTraversal::NextIncludingPseudo(*next_node,
                                                              container_node))) {
         const AXObject* next_object = ax_object_cache_impl->Get(next_node);
-        if (next_object && next_object->AccessibilityIsIncludedInTree())
+        if (next_object && next_object->IsIncludedInTree())
           return next_object;
       }
       return nullptr;
@@ -1094,7 +1094,7 @@ const AXObject* AXPosition::FindNeighboringUnignoredObject(
              previous_node != container_node) {
         const AXObject* previous_object =
             ax_object_cache_impl->Get(previous_node);
-        if (previous_object && previous_object->AccessibilityIsIncludedInTree())
+        if (previous_object && previous_object->IsIncludedInTree())
           return previous_object;
       }
       return nullptr;

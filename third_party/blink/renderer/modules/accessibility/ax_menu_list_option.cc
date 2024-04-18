@@ -145,7 +145,7 @@ bool AXMenuListOption::OnNativeSetSelectedAction(bool b) {
 // TODO(aleventhal) This override could go away, but it will cause a lot of
 // test changes, as invisible options inside of a collapsed <select> will become
 // ignored since they have no layout object.
-bool AXMenuListOption::ComputeAccessibilityIsIgnored(
+bool AXMenuListOption::ComputeIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   if (IsDetached()) {
     NOTREACHED();
@@ -164,7 +164,7 @@ bool AXMenuListOption::ComputeAccessibilityIsIgnored(
   }
 
   return !ParentObject() ||
-         ParentObject()->ComputeAccessibilityIsIgnored(ignored_reasons);
+         ParentObject()->ComputeIsIgnored(ignored_reasons);
 }
 
 void AXMenuListOption::GetRelativeBounds(

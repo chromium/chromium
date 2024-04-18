@@ -179,7 +179,7 @@ bool SearchForExactlyOneInnerImage(WebAXObject obj,
   }
 
   // Don't count ignored nodes toward depth.
-  int next_depth = obj.AccessibilityIsIgnored() ? max_depth : max_depth - 1;
+  int next_depth = obj.IsIgnored() ? max_depth : max_depth - 1;
 
   // Recurse.
   for (unsigned int i = 0; i < obj.ChildCount(); i++) {
@@ -299,7 +299,7 @@ void AXImageAnnotator::AddImageAnnotationsForNode(WebAXObject& src,
   static const int kMinImageAnnotationHeight = 16;
 
   // Reject ignored objects
-  if (src.AccessibilityIsIgnored()) {
+  if (src.IsIgnored()) {
     return;
   }
 
@@ -666,7 +666,7 @@ void AXImageAnnotator::MarkDirty(const blink::WebAXObject& image) const {
   blink::WebAXObject parent = image.ParentObject();
   for (int ancestor_count = 0; !parent.IsDetached() && ancestor_count < 2;
        parent = parent.ParentObject()) {
-    if (!parent.AccessibilityIsIgnored()) {
+    if (!parent.IsIgnored()) {
       ++ancestor_count;
       if (ui::IsLink(parent.Role()) || ui::IsPlatformDocument(parent.Role())) {
         render_accessibility_->MarkWebAXObjectDirty(parent);

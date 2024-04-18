@@ -30,7 +30,7 @@ class AXValidationMessage final : public AXMockObject {
   // Always a leaf.
   bool CanHaveChildren() const override { return false; }
   void AddChildren() override {}
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
+  bool ComputeIsIgnored(IgnoredReasons* = nullptr) const override;
   void GetRelativeBounds(AXObject** out_container,
                          gfx::RectF& out_bounds_in_container,
                          gfx::Transform& out_container_transform,

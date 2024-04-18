@@ -84,17 +84,17 @@ void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
   out_bounds_in_container.Offset(-parent_bounding_box.OffsetFromOrigin());
 }
 
-bool AXInlineTextBox::ComputeAccessibilityIsIgnored(
+bool AXInlineTextBox::ComputeIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   AXObject* parent = ParentObject();
   if (!parent)
     return false;
 
-  if (!parent->AccessibilityIsIgnored())
+  if (!parent->IsIgnored())
     return false;
 
   if (ignored_reasons)
-    parent->ComputeAccessibilityIsIgnored(ignored_reasons);
+    parent->ComputeIsIgnored(ignored_reasons);
 
   return true;
 }

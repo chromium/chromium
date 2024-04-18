@@ -66,12 +66,12 @@ AXRestriction AXMenuListPopup::Restriction() const {
              : kRestrictionNone;
 }
 
-bool AXMenuListPopup::ComputeAccessibilityIsIgnored(
+bool AXMenuListPopup::ComputeIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   // Base whether the menupopup is ignored on the containing <select>.
   if (parent_) {
     parent_->UpdateCachedAttributeValuesIfNeeded();
-    return parent_->ComputeAccessibilityIsIgnored(ignored_reasons);
+    return parent_->ComputeIsIgnored(ignored_reasons);
   }
 
   return kIgnoreObject;
@@ -143,7 +143,7 @@ void AXMenuListPopup::AddChildren() {
   for (auto* const option_element : html_select_element->GetOptionList()) {
     AXMenuListOption* option = MenuListOptionAXObject(option_element);
     CHECK_EQ(option->ParentObject(), this);
-    if (option && option->AccessibilityIsIncludedInTree()) {
+    if (option && option->IsIncludedInTree()) {
       DCHECK(!option->IsDetached());
       children_.push_back(option);
     }

@@ -133,7 +133,7 @@ void CheckTreeConsistency(
     HeapHashMap<AXID, Member<AXObject>>& all_objects = cache.GetObjects();
     for (const auto& id_to_object_entry : all_objects) {
       AXObject* obj = id_to_object_entry.value;
-      if (obj->LastKnownIsIncludedInTreeValue()) {
+      if (obj->IsIncludedInTree()) {
         if (!serializer.IsInClientTree(obj)) {
           if (obj->IsMissingParent()) {
             msg << "\n* Included node not serialized, is missing parent: "
@@ -142,7 +142,7 @@ void CheckTreeConsistency(
             msg << "\n* Included node not serialized, in closed document: "
                 << obj;
           } else {
-            bool included_state_stale = !obj->AccessibilityIsIncludedInTree();
+            bool included_state_stale = !obj->IsIncludedInTree();
             msg << "\n* Included node not serialized: " << obj;
             if (included_state_stale) {
               msg << "\n  Included state was stale.";
@@ -159,7 +159,7 @@ void CheckTreeConsistency(
         if (const AXObject* parent = serializer.ParentOf(id)) {
           msg << "\n* Parent = " << parent;
         }
-      } else if (!obj->LastKnownIsIncludedInTreeValue()) {
+      } else if (!obj->IsIncludedInTree()) {
         msg << "\n* Serialized an unincluded node: " << obj;
       }
     }

@@ -969,7 +969,7 @@ bool WebAXObjectProxy::IsIgnored() {
   if (!UpdateLayout()) {
     return false;
   }
-  return accessibility_object_.AccessibilityIsIgnored();
+  return accessibility_object_.IsIgnored();
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::ActiveDescendant() {

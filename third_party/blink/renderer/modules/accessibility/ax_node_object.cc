@@ -420,7 +420,7 @@ bool CanHaveInlineTextBoxChildren(const blink::AXObject* obj) {
   // Inline text boxes are included if and only if the parent is unignored.
   // If the parent is ignored but included in tree, the inline textbox is
   // still withheld.
-  return !obj->LastKnownIsIgnoredValue();
+  return !obj->IsIgnored();
 }
 
 bool HasLayoutText(const blink::AXObject* obj) {
@@ -944,7 +944,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   return kDefaultBehavior;
 }
 
-bool AXNodeObject::ComputeAccessibilityIsIgnored(
+bool AXNodeObject::ComputeIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   Node* node = GetNode();
 
@@ -1051,7 +1051,7 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
           ContainerListMarkerIncludingIgnored();
       if (list_marker_object &&
           (list_marker_object->GetLayoutObject()->IsListMarkerForSummary() ||
-           !list_marker_object->LastKnownIsIgnoredValue())) {
+           !list_marker_object->IsIgnored())) {
         if (ignored_reasons) {
           ignored_reasons->push_back(IgnoredReason(kAXPresentational));
         }
@@ -1065,7 +1065,7 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
     // cause the text to be unignored.
     if (IsUsedForLabelOrDescription()) {
       const AXObject* ancestor = ParentObject();
-      while (ancestor && ancestor->LastKnownIsIgnoredValue()) {
+      while (ancestor && ancestor->IsIgnored()) {
         if (ancestor->RoleValue() == ax::mojom::blink::Role::kLabelText) {
           if (ignored_reasons) {
             ignored_reasons->push_back(IgnoredReason(kAXPresentational));
@@ -2312,7 +2312,7 @@ void AXNodeObject::AccessibilityChildrenFromAOMProperty(
       // Only aria-labelledby and aria-describedby can target hidden elements.
       if (!child)
         continue;
-      if (child->AccessibilityIsIgnored() &&
+      if (child->IsIgnored() &&
           property != AOMRelationListProperty::kLabeledBy &&
           property != AOMRelationListProperty::kDescribedBy) {
         continue;
@@ -3249,7 +3249,7 @@ AXObject* AXNodeObject::InPageLinkTarget() const {
 #endif
 
   // Usually won't be ignored, but could be e.g. if aria-hidden.
-  if (ax_target->AccessibilityIsIgnored())
+  if (ax_target->IsIgnored())
     return nullptr;
 
   return ax_target;
@@ -3356,7 +3356,7 @@ AXObject::AXObjectVector AXNodeObject::RadioButtonsInGroup() const {
     for (AXObject* child : parent->UnignoredChildren()) {
       DCHECK(child);
       if (child->RoleValue() == ax::mojom::blink::Role::kRadioButton &&
-          child->AccessibilityIsIncludedInTree()) {
+          child->IsIncludedInTree()) {
         radio_buttons.push_back(child);
       }
     }
@@ -4569,7 +4569,7 @@ String AXNodeObject::TextAlternative(
         // No visible rendered text -- must be whitespace.
         // Either it is useful whitespace for separating words or not.
         if (layout_text->IsAllCollapsibleWhitespace()) {
-          if (LastKnownIsIgnoredValue()) {
+          if (IsIgnored()) {
             return "";
           }
           // If no textboxes, this was whitespace at the line's end.
@@ -4886,7 +4886,7 @@ String AXNodeObject::TextFromDescendants(
 bool AXNodeObject::IsNameFromLabelElement(HTMLElement* control) {
   // This duplicates some logic from TextAlternative()/NativeTextAlternative(),
   // but is necessary because IsNameFromLabelElement() needs to be called from
-  // ComputeAccessibilityIsIgnored(), which isn't allowed to call
+  // ComputeIsIgnored(), which isn't allowed to call
   // AXObjectCache().GetOrCreate() in random places in the tree.
 
   if (!control)
@@ -5224,7 +5224,7 @@ void AXNodeObject::LoadInlineTextBoxes() {
   while (!work_queue.empty()) {
     AXObject* work_obj = AXObjectCache().ObjectFromAXID(work_queue.front());
     work_queue.pop();
-    if (!work_obj || !work_obj->LastKnownIsIncludedInTreeValue()) {
+    if (!work_obj || !work_obj->IsIncludedInTree()) {
       continue;
     }
 
@@ -5611,7 +5611,7 @@ void AXNodeObject::AddChildAndCheckIncluded(AXObject* child,
                                             bool is_from_aria_owns) {
   if (!child)
     return;
-  DCHECK(child->LastKnownIsIncludedInTreeValue());
+  DCHECK(child->CachedIsIncludedInTree());
   AddChild(child, is_from_aria_owns);
 }
 
@@ -5643,11 +5643,11 @@ void AXNodeObject::InsertChild(AXObject* child,
   child->UpdateCachedAttributeValuesIfNeeded(
       /*notify_parent_of_ignored_changes*/ false);
 
-  if (!child->LastKnownIsIncludedInTreeValue()) {
+  if (!child->IsIncludedInTree()) {
     DCHECK(!is_from_aria_owns)
         << "Owned elements must be in tree: " << child
         << "\nRecompute included in tree: "
-        << child->ComputeAccessibilityIsIgnoredButIncludedInTree();
+        << child->ComputeIsIgnoredButIncludedInTree();
 
     // Get the ignored child's children and add to children of ancestor
     // included in tree. This will recurse if necessary, skipping levels of
@@ -6134,7 +6134,7 @@ AXObject::AXObjectVector AXNodeObject::ErrorMessageFromAria() const {
   AXObjectVector error_messages;
   for (Element* element : elements_from_attribute) {
     AXObject* obj = AXObjectCache().Get(element);
-    if (obj && !obj->AccessibilityIsIgnored()) {
+    if (obj && !obj->IsIgnored()) {
       error_messages.push_back(obj);
     }
   }
@@ -7387,7 +7387,7 @@ AXObject* AXNodeObject::AccessibilityHitTest(const gfx::Point& point) const {
   // non-layout children.
   result = result->ElementAccessibilityHitTest(point);
 
-  while (result && result->AccessibilityIsIgnored()) {
+  while (result && result->IsIgnored()) {
     // If this element is the label of a control, a hit test should return the
     // control. The label is ignored because it's already reflected in the name.
     if (auto* label = DynamicTo<HTMLLabelElement>(result->GetNode())) {
@@ -7446,7 +7446,7 @@ AXObject* AXNodeObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
     // the inline-block element. We exclude list markers since those technically
     // fulfill the inline-block condition.
     AXObject* ax_object = start_object->AXObjectCache().Get(current_node);
-    if (ax_object && ax_object->AccessibilityIsIncludedInTree() &&
+    if (ax_object && ax_object->IsIncludedInTree() &&
         !current_node->IsMarkerPseudoElement()) {
       if (ax_object->GetLayoutObject() &&
           ax_object->GetLayoutObject()->IsInline() &&
@@ -7463,7 +7463,7 @@ AXObject* AXNodeObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
 
     AXObject* tentative_child = start_object->AXObjectCache().Get(current_node);
 
-    if (tentative_child && tentative_child->AccessibilityIsIncludedInTree()) {
+    if (tentative_child && tentative_child->IsIncludedInTree()) {
       result = tentative_child;
     }
   }
@@ -7473,7 +7473,7 @@ AXObject* AXNodeObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
   // such as an AXInlineTextBox.
 
   // Relevant static text or pseudo element is always included.
-  if (!result->AccessibilityIsIncludedInTree()) {
+  if (!result->IsIncludedInTree()) {
     return nullptr;
   }
 
@@ -7507,7 +7507,7 @@ AXObject* AXNodeObject::NextOnLine() const {
     // A list marker should be followed by a list item on the same line.
     // Note that pseudo content is always included in the tree, so
     // NextSiblingIncludingIgnored() will succeed.
-    if (AccessibilityIsIncludedInTree()) {
+    if (IsIncludedInTree()) {
       return GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
           NextSiblingIncludingIgnored(), true);
     }
@@ -7616,7 +7616,7 @@ AXObject* AXNodeObject::PreviousOnLine() const {
     return nullptr;
   }
 
-  AXObject* previous_sibling = AccessibilityIsIncludedInTree()
+  AXObject* previous_sibling = IsIncludedInTree()
                                    ? PreviousSiblingIncludingIgnored()
                                    : nullptr;
   if (previous_sibling && previous_sibling->GetLayoutObject() &&

@@ -563,7 +563,7 @@ protocol::Response InspectorAccessibilityAgent::getPartialAXTree(
     return protocol::Response::Success();
   }
 
-  if (inspected_ax_object && !inspected_ax_object->AccessibilityIsIgnored())
+  if (inspected_ax_object && !inspected_ax_object->IsIgnored())
     AddChildren(*inspected_ax_object, true, *nodes, cache);
 
   AXObject* parent_ax_object;
@@ -598,7 +598,7 @@ void InspectorAccessibilityAgent::AddAncestors(
       BuildProtocolAXNodeForAXObject(first_ancestor);
   // Since the inspected node is ignored it is missing from the first ancestors
   // childIds. We therefore add it to maintain the tree structure:
-  if (!inspected_ax_object || inspected_ax_object->AccessibilityIsIgnored()) {
+  if (!inspected_ax_object || inspected_ax_object->IsIgnored()) {
     auto child_ids = std::make_unique<protocol::Array<AXNodeId>>();
     auto* existing_child_ids = first_parent_node_object->getChildIds(nullptr);
 
@@ -649,7 +649,7 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForAXObject(
     AXObject& ax_object,
     bool force_name_and_role) const {
   std::unique_ptr<protocol::Accessibility::AXNode> protocol_node;
-  if (ax_object.AccessibilityIsIgnored()) {
+  if (ax_object.IsIgnored()) {
     protocol_node =
         BuildProtocolAXNodeForIgnoredAXObject(ax_object, force_name_and_role);
   } else {
@@ -705,7 +705,7 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForIgnoredAXObject(
 
   // Compute and attach reason for node to be ignored:
   AXObject::IgnoredReasons ignored_reasons;
-  ax_object.ComputeAccessibilityIsIgnored(&ignored_reasons);
+  ax_object.ComputeIsIgnored(&ignored_reasons);
   auto ignored_reason_properties =
       std::make_unique<protocol::Array<AXProperty>>();
   for (IgnoredReason& reason : ignored_reasons)
@@ -996,7 +996,7 @@ void InspectorAccessibilityAgent::AddChildren(
     // If the node is ignored or has no corresponding DOM node, we include
     // another layer of children.
     if (follow_ignored &&
-        (descendant->AccessibilityIsIgnoredButIncludedInTree() ||
+        (descendant->IsIgnoredButIncludedInTree() ||
          !descendant->GetNode())) {
       reachable.AppendRange(descendant->ChildrenIncludingIgnored().rbegin(),
                             descendant->ChildrenIncludingIgnored().rend());
@@ -1093,7 +1093,7 @@ void InspectorAccessibilityAgent::CompleteQuery(AXQuery& query) {
   while (!reachable.empty()) {
     AXObject* ax_object = reachable.back();
     if (ax_object->IsDetached() ||
-        !ax_object->AccessibilityIsIncludedInTree()) {
+        !ax_object->IsIncludedInTree()) {
       reachable.pop_back();
       continue;
     }
@@ -1104,7 +1104,7 @@ void InspectorAccessibilityAgent::CompleteQuery(AXQuery& query) {
         ax_object->ChildrenIncludingIgnored();
     reachable.AppendRange(children.rbegin(), children.rend());
 
-    const bool ignored = ax_object->AccessibilityIsIgnored();
+    const bool ignored = ax_object->IsIgnored();
     // if querying by name: skip if name of current object does not match.
     // For now, we need to handle names of ignored nodes separately, since they
     // do not get a name assigned when serializing to AXNodeData.
@@ -1221,7 +1221,7 @@ void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
                                                ax::mojom::blink::Event event) {
   if (!enabled_.Get())
     return;
-  DCHECK(ax_object->AccessibilityIsIncludedInTree());
+  DCHECK(ax_object->IsIncludedInTree());
 
   switch (event) {
     case ax::mojom::blink::Event::kLoadComplete: {
@@ -1254,14 +1254,14 @@ void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
                                                    bool subtree) {
   if (!enabled_.Get())
     return;
-  DCHECK(ax_object->AccessibilityIsIncludedInTree());
+  DCHECK(ax_object->IsIncludedInTree());
   if (subtree) {
     HeapVector<Member<AXObject>> reachable;
     reachable.push_back(ax_object);
     while (!reachable.empty()) {
       AXObject* descendant = reachable.back();
       reachable.pop_back();
-      DCHECK(descendant->AccessibilityIsIncludedInTree());
+      DCHECK(descendant->IsIncludedInTree());
       if (!MarkAXObjectDirty(descendant))
         continue;
       const AXObject::AXObjectVector& children =

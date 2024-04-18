@@ -64,7 +64,7 @@ void AXVirtualObject::AddChildren() {
     ax_child->UpdateCachedAttributeValuesIfNeeded(
         /*notify_parent_of_ignored_changes*/ false);
     DCHECK(!ax_child->IsDetached());
-    DCHECK(ax_child->AccessibilityIsIncludedInTree());
+    DCHECK(ax_child->IsIncludedInTree());
 
     children_.push_back(ax_child);
   }

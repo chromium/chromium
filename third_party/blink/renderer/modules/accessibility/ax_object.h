@@ -505,12 +505,23 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Is the element in the tab order?
   bool IsKeyboardFocusable() const;
 
+  // Whether objects are included in the tree. Nodes that are included in the
+  // tree are serialized, even if they are ignored. This allows browser-side
+  // accessibility code to have a more accurate representation of the tree. e.g.
+  // inspect hidden nodes referenced by labeled-by, know where line breaking
+  // elements are, etc.
+  bool IsIncludedInTree() const;
+  bool IsIncludedInTree();
+  bool CachedIsIncludedInTree();
+
   // Whether objects are ignored, i.e. hidden from the AT.
-  bool AccessibilityIsIgnored() const { return cached_is_ignored_; }
-  bool AccessibilityIsIgnored();
-  // Whether objects are ignored but included in the tree.
-  bool AccessibilityIsIgnoredButIncludedInTree() const;
-  bool AccessibilityIsIgnoredButIncludedInTree();
+  bool IsIgnored() const;
+  bool IsIgnored();
+
+  // Whether an ignored object should still be included in the serialized tree.
+  bool IsIgnoredButIncludedInTree() const;
+  bool IsIgnoredButIncludedInTree();
+
   // Is visibility:hidden or display:none being used to hide this element.
   bool IsHiddenViaStyle() const { return cached_is_hidden_via_style_; }
   bool IsHiddenViaStyle();
@@ -526,14 +537,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   }
   bool IsUsedForLabelOrDescription();
 
-  // Whether objects are included in the tree. Nodes that are included in the
-  // tree are serialized, even if they are ignored. This allows browser-side
-  // accessibility code to have a more accurate representation of the tree. e.g.
-  // inspect hidden nodes referenced by labeled-by, know where line breaking
-  // elements are, etc.
-  bool AccessibilityIsIncludedInTree() const;
   typedef HeapVector<IgnoredReason> IgnoredReasons;
-  virtual bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const;
+  virtual bool ComputeIsIgnored(IgnoredReasons* = nullptr) const;
   bool ShouldIgnoreForHiddenOrInert(IgnoredReasons* = nullptr) const;
   bool IsInert() const { return cached_is_inert_; }
   bool IsInert();
@@ -552,14 +557,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     return cached_is_descendant_of_disabled_node_;
   }
   bool IsDescendantOfDisabledNode();
-  bool ComputeAccessibilityIsIgnoredButIncludedInTree();
+  bool ComputeIsIgnoredButIncludedInTree();
   const AXObject* GetAtomicTextFieldAncestor(int max_levels_to_check = 3) const;
   const AXObject* DatetimeAncestor() const;
   bool ComputeIsDescendantOfDisabledNode();
-  // TODO(accessibility): Remove these.
-  bool LastKnownIsIgnoredValue() const;
-  bool LastKnownIsIgnoredButIncludedInTreeValue() const;
-  bool LastKnownIsIncludedInTreeValue() const;
   // Some objects, such as table header containers, could be the children of
   // more than one object but have only one primary parent.
   bool HasIndirectChildren() const;

@@ -932,7 +932,7 @@ AXObject* AXObjectCacheImpl::FocusedObject() {
 
   // the HTML element, for example, is focusable but has an AX object that is
   // ignored
-  if (!obj->AccessibilityIsIncludedInTree())
+  if (!obj->IsIncludedInTree())
     obj = obj->ParentObjectIncludedInTree();
 
   return obj;
@@ -1541,7 +1541,7 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
   // Inline textboxes are included if and only if the parent is unignored.
   // If the parent is ignored but included in tree, the inline textbox is
   // still withheld.
-  if (parent->LastKnownIsIgnoredValue()) {
+  if (parent->IsIgnored()) {
     return nullptr;
   }
 
@@ -1640,7 +1640,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
     return;
 
 #if DCHECK_IS_ON()
-  if (obj->LastKnownIsIncludedInTreeValue()) {
+  if (obj->CachedIsIncludedInTree()) {
     --included_node_count_;
   }
 #endif
@@ -2315,7 +2315,7 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
 
   if (obj) {
     if (obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
-        obj->AccessibilityIsIncludedInTree()) {
+        obj->IsIncludedInTree()) {
       if (obj->ShouldLoadInlineTextBoxes()) {
         // Update inline text box children.
         ChildrenChangedWithCleanLayout(optional_node_for_relation_update, obj);
@@ -2726,7 +2726,7 @@ AXObject* AXObjectCacheImpl::InvalidateChildren(AXObject* obj) {
     // Any ancestor up to the first included ancestor can contain the
     // now-detached child in it's cached children, and therefore must update
     // children.
-    if (ancestor->LastKnownIsIncludedInTreeValue()) {
+    if (ancestor->CachedIsIncludedInTree()) {
       break;
     }
 
@@ -2742,7 +2742,7 @@ AXObject* AXObjectCacheImpl::InvalidateChildren(AXObject* obj) {
     return nullptr;
 
   // Return ancestor to fire children changed notification on.
-  DCHECK(ancestor->LastKnownIsIncludedInTreeValue())
+  DCHECK(ancestor->CachedIsIncludedInTree())
       << "ChildrenChanged() must only be called on included nodes: "
       << ancestor;
 
@@ -2947,10 +2947,10 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
     DCHECK(!object->ChildrenNeedToUpdateCachedValues())
         << "Cached values for children should not require an update: "
         << "\n* Object: " << object;
-    if (object->AccessibilityIsIncludedInTree()) {
+    if (object->IsIncludedInTree()) {
       // All cached children must be included.
       for (const auto& child : object->CachedChildrenIncludingIgnored()) {
-        CHECK(child->AccessibilityIsIncludedInTree())
+        CHECK(child->IsIncludedInTree())
             << "Included parent cannot have unincluded child:" << "\n* Parent: "
             << object << "\n* Child: " << child;
       }
@@ -4901,7 +4901,7 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
   }
   MarkAXObjectDirtyWithCleanLayoutHelper(obj, active_event_from_,
                                          active_event_from_action_);
-  if (!obj->AccessibilityIsIncludedInTree()) {
+  if (!obj->IsIncludedInTree()) {
     obj = obj->ParentObjectIncludedInTree();
   }
   for (auto agent : agents_) {
@@ -4920,7 +4920,7 @@ void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
 }
 
 void AXObjectCacheImpl::NotifySubtreeDirty(AXObject* obj) {
-  DUMP_WILL_BE_CHECK(obj->AccessibilityIsIncludedInTree());
+  DUMP_WILL_BE_CHECK(obj->IsIncludedInTree());
 
   // Note: if there is no serializer yet, then there is nothing to mark dirty
   // for serialization purposes yet -- effectively everything starts out dirty
@@ -4937,7 +4937,7 @@ void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
   if (!obj) {
     return;
   }
-  if (!obj->AccessibilityIsIncludedInTree()) {
+  if (!obj->IsIncludedInTree()) {
     for (const auto& included_child : obj->ChildrenIncludingIgnored()) {
       MarkAXSubtreeDirtyWithCleanLayout(included_child);
     }
@@ -5060,7 +5060,7 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
   }
 
   // Return included in tree object.
-  if (obj->AccessibilityIsIncludedInTree())
+  if (obj->IsIncludedInTree())
     return obj;
 
   return obj->ParentObjectIncludedInTree();
@@ -5267,7 +5267,7 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
   CHECK(!IsFrozen());
 
   // If not included, cannot be serialized, so there is no need to queue.
-  if (!obj->LastKnownIsIncludedInTreeValue()) {
+  if (!obj->IsIncludedInTree()) {
     return;
   }
 
@@ -5333,7 +5333,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     // cas a children changed will also be fired on the included ancestor. The
     // children changed event on the ancestor means that attempting to
     // serialize this unincluded object is not necessary.
-    if (!obj->LastKnownIsIncludedInTreeValue())
+    if (!obj->IsIncludedInTree())
       continue;
 
     DCHECK(obj->AXObjectID());
@@ -5447,7 +5447,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
 
 #if DCHECK_IS_ON()
 void AXObjectCacheImpl::UpdateIncludedNodeCount(const AXObject* obj) {
-  if (obj->LastKnownIsIncludedInTreeValue()) {
+  if (obj->IsIncludedInTree()) {
     ++included_node_count_;
   } else {
     --included_node_count_;
@@ -5485,8 +5485,8 @@ void AXObjectCacheImpl::GetImagesToAnnotate(
     std::vector<ui::AXNodeData*>& nodes) {
   for (auto& node : update.nodes) {
     AXObject* src = ObjectFromAXID(node.id);
-    if (!src || src->IsDetached() || !src->AccessibilityIsIncludedInTree() ||
-        (src->AccessibilityIsIgnored() &&
+    if (!src || src->IsDetached() || !src->IsIncludedInTree() ||
+        (src->IsIgnored() &&
          !node.HasState(ax::mojom::blink::State::kFocusable))) {
       continue;
     }
