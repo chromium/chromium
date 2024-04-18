@@ -328,8 +328,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   scoped_refptr<ServiceWorkerRegistration> GetLiveRegistration(
       int64_t registration_id);
   void AddLiveRegistration(ServiceWorkerRegistration* registration);
-  // RemoveLiveRegistration removes registration from |live_registrations_|
-  // and notifies all observers of the id of the registration removed.
+  // Erases the live registration for `registration_id`, if found.
   void RemoveLiveRegistration(int64_t registration_id);
   const std::map<int64_t, ServiceWorkerRegistration*>& GetLiveRegistrations()
       const {
