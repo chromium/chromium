@@ -7,6 +7,8 @@
 
 #include <string_view>
 
+#include "base/component_export.h"
+
 namespace unexportable_keys {
 
 // Enum containing all supported types of background TPM operations.
@@ -17,6 +19,7 @@ enum class BackgroundTaskType { kGenerateKey, kFromWrappedKey, kSign };
 // Converts `BackgroundTaskType` to a histogram suffix string. The string is
 // prepended with "." symbol so it can be directly concatenated with a base
 // histogram name.
+COMPONENT_EXPORT(UNEXPORTABLE_KEYS)
 std::string_view GetBackgroundTaskTypeSuffixForHistograms(
     BackgroundTaskType type);
 

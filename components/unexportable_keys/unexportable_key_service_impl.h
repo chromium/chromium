@@ -30,7 +30,8 @@ class MaybePendingUnexportableKeyId;
 
 class UnexportableKeyTaskManager;
 
-class UnexportableKeyServiceImpl : public UnexportableKeyService {
+class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
+    : public UnexportableKeyService {
  public:
   // `task_manager` must outlive `UnexportableKeyServiceImpl`.
   explicit UnexportableKeyServiceImpl(UnexportableKeyTaskManager& task_manager);

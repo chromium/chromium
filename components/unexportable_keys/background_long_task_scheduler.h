@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -38,7 +39,7 @@ class BackgroundTask;
 //   TODO(b/263249728): support dynamic priorities.
 // - Task cancellation. A task never runs if it gets cancelled before it's been
 //   posted on the background thread.
-class BackgroundLongTaskScheduler {
+class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) BackgroundLongTaskScheduler {
  public:
   explicit BackgroundLongTaskScheduler(
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);

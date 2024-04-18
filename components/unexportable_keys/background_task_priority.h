@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <string_view>
 
+#include "base/component_export.h"
+
 namespace unexportable_keys {
 
 // Ordered list of priorities supported by the unexportable key task manager.
@@ -33,6 +35,7 @@ constexpr size_t kNumTaskPriorities =
 // Converts `BackgroundTaskPriority` to a histogram suffix string. The string is
 // prepended with "." symbol so it can be directly concatenated with a base
 // histogram name.
+COMPONENT_EXPORT(UNEXPORTABLE_KEYS)
 std::string_view GetBackgroundTaskPrioritySuffixForHistograms(
     BackgroundTaskPriority priority);
 

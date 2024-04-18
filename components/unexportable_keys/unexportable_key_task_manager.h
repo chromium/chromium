@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -38,7 +39,7 @@ namespace unexportable_keys {
 //
 // Read documentation to `BackgroundLongTaskScheduler` for details on how the
 // tasks are getting scheduled.
-class UnexportableKeyTaskManager {
+class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
  public:
   explicit UnexportableKeyTaskManager(
       crypto::UnexportableKeyProvider::Config config);

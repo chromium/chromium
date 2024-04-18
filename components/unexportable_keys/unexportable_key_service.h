@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_SERVICE_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_SERVICE_H_
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -48,7 +49,8 @@ namespace unexportable_keys {
 // 4. Use obtained key ID to sign data:
 //
 //  service.SignSlowlyAsync(*key_id, kData, kPriority, std::move(callback));
-class UnexportableKeyService : public KeyedService {
+class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService
+    : public KeyedService {
  public:
   UnexportableKeyService() = default;
 

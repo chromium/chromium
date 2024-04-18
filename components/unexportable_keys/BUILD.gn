@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("unexportable_keys") {
+component("unexportable_keys") {
   sources = [
     "background_long_task_scheduler.cc",
     "background_long_task_scheduler.h",
@@ -31,6 +31,8 @@ static_library("unexportable_keys") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  defines = [ "IS_UNEXPORTABLE_KEYS_IMPL" ]
+
   public_deps = [
     "//base",
     "//components/keyed_service/core",
@@ -47,7 +49,7 @@ source_set("test_support") {
     "fake_unexportable_key_service.h",
   ]
 
-  deps = [ ":unexportable_keys" ]
+  public_deps = [ ":unexportable_keys" ]
 }
 
 source_set("unit_tests") {
