@@ -237,13 +237,11 @@ void ManifestManager::ParseManifestFromPage(const KURL& document_url,
 
   manifest_url_ = manifest_url.value_or(KURL());
   manifest_ = parser.TakeManifest();
-  if (document_url.IsValid() && !document_url.IsEmpty()) {
-    // As long as the document_url is valid, we should always have a start_url
-    // and manifest_id, as any errors still have fallbacks back to the
-    // document_url.
-    CHECK(!manifest_->start_url.IsEmpty() && manifest_->start_url.IsValid());
-    CHECK(!manifest_->id.IsEmpty() && manifest_->id.IsValid());
-  }
+  // We should always have a start_url, manifest_id, and scope, as any errors
+  // still have fallbacks back to the document_url.
+  CHECK(!manifest_->start_url.IsEmpty() && manifest_->start_url.IsValid());
+  CHECK(!manifest_->id.IsEmpty() && manifest_->id.IsValid());
+  CHECK(!manifest_->scope.IsEmpty() && manifest_->scope.IsValid());
 
   RecordMetrics(*manifest_);
   ResolveCallbacks(ResolveState::kSuccess);
