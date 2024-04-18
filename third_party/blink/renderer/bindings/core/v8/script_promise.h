@@ -193,6 +193,12 @@ class ScriptPromise : public ScriptPromiseUntyped {
     return promise;
   }
 
+  void MarkAsSilent() {
+    if (!IsEmpty()) {
+      V8Promise()->MarkAsSilent();
+    }
+  }
+
  private:
   template <typename IDLType>
   friend class ScriptPromiseResolver;

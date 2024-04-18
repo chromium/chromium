@@ -19,14 +19,14 @@ ReadableStreamGenericReader::ReadableStreamGenericReader() = default;
 
 ReadableStreamGenericReader::~ReadableStreamGenericReader() = default;
 
-ScriptPromiseUntyped ReadableStreamGenericReader::closed(
-    ScriptState* script_state) const {
+ScriptPromise<IDLUndefined> ReadableStreamGenericReader::closed(
+    ScriptState*) const {
   // https://streams.spec.whatwg.org/#default-reader-closed
   // 1. Return this.[[closedPromise]].
-  return closed_promise_->GetScriptPromiseUntyped(script_state);
+  return closed_promise_;
 }
 
-ScriptPromiseUntyped ReadableStreamGenericReader::cancel(
+ScriptPromise<IDLUndefined> ReadableStreamGenericReader::cancel(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   return cancel(script_state,
@@ -35,7 +35,7 @@ ScriptPromiseUntyped ReadableStreamGenericReader::cancel(
                 exception_state);
 }
 
-ScriptPromiseUntyped ReadableStreamGenericReader::cancel(
+ScriptPromise<IDLUndefined> ReadableStreamGenericReader::cancel(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
@@ -46,13 +46,11 @@ ScriptPromiseUntyped ReadableStreamGenericReader::cancel(
     exception_state.ThrowTypeError(
         "This readable stream reader has been released and cannot be used to "
         "cancel its previous owner stream");
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // 3. Return ! ReadableStreamReaderGenericCancel(this, reason).
-  v8::Local<v8::Promise> result =
-      GenericCancel(script_state, this, reason.V8Value());
-  return ScriptPromiseUntyped(script_state, result);
+  return GenericCancel(script_state, this, reason.V8Value());
 }
 
 void ReadableStreamGenericReader::GenericRelease(
@@ -72,26 +70,21 @@ void ReadableStreamGenericReader::GenericRelease(
 
   // 4. If stream.[[state]] is "readable", reject reader.[[closedPromise]] with
   // a TypeError exception.
-  if (stream->state_ == ReadableStream::kReadable) {
-    reader->closed_promise_->MarkAsSilent(isolate);
-    reader->closed_promise_->Reject(
-        script_state,
-        v8::Exception::TypeError(V8String(
-            isolate,
-            "This readable stream reader has been released and cannot be used "
-            "to monitor the stream's state")));
-  } else {
-    // 5. Otherwise, set reader.[[closedPromise]] to a promise rejected with a
-    // TypeError exception.
-    reader->closed_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
-        script_state, v8::Exception::TypeError(V8String(
-                          isolate,
-                          "This readable stream reader has been released and "
-                          "cannot be used to monitor the stream's state")));
+  // 5. Otherwise, set reader.[[closedPromise]] to a promise rejected with a
+  // TypeError exception.
+  if (stream->state_ != ReadableStream::kReadable) {
+    reader->closed_resolver_ =
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+    reader->closed_promise_ = reader->closed_resolver_->Promise();
   }
+  reader->closed_promise_.MarkAsSilent();
+  reader->closed_resolver_->Reject(v8::Exception::TypeError(V8String(
+      isolate,
+      "This readable stream reader has been released and cannot be used "
+      "to monitor the stream's state")));
 
   // 6. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
-  reader->closed_promise_->MarkAsHandled(isolate);
+  reader->closed_promise_.MarkAsHandled();
 
   // 7. Perform ! stream.[[controller]].[[ReleaseSteps]]().
   stream->readable_stream_controller_->ReleaseSteps();
@@ -104,12 +97,13 @@ void ReadableStreamGenericReader::GenericRelease(
 }
 
 void ReadableStreamGenericReader::Trace(Visitor* visitor) const {
+  visitor->Trace(closed_resolver_);
   visitor->Trace(closed_promise_);
   visitor->Trace(owner_readable_stream_);
   ScriptWrappable::Trace(visitor);
 }
 
-v8::Local<v8::Promise> ReadableStreamGenericReader::GenericCancel(
+ScriptPromise<IDLUndefined> ReadableStreamGenericReader::GenericCancel(
     ScriptState* script_state,
     ReadableStreamGenericReader* reader,
     v8::Local<v8::Value> reason) {
@@ -136,20 +130,20 @@ void ReadableStreamGenericReader::GenericInitialize(
 
   // 2. Set stream.[[reader]] to reader.
   stream->reader_ = reader;
+  reader->closed_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  reader->closed_promise_ = reader->closed_resolver_->Promise();
 
   switch (stream->state_) {
     // 3. If stream.[[state]] is "readable",
     case ReadableStream::kReadable:
       // a. Set reader.[[closedPromise]] to a new promise.
-      reader->closed_promise_ =
-          MakeGarbageCollected<StreamPromiseResolver>(script_state);
       break;
 
     // 4. Otherwise, if stream.[[state]] is "closed",
     case ReadableStream::kClosed:
       // a. Set reader.[[closedPromise]] to a promise resolved with undefined.
-      reader->closed_promise_ =
-          StreamPromiseResolver::CreateResolvedWithUndefined(script_state);
+      reader->closed_resolver_->Resolve();
       break;
 
     // 5. Otherwise,
@@ -159,11 +153,11 @@ void ReadableStreamGenericReader::GenericInitialize(
 
       // b. Set reader.[[closedPromise]] to a promise rejected with stream.
       //    [[storedError]].
-      reader->closed_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
-          script_state, stream->GetStoredError(isolate));
+      reader->closed_promise_.MarkAsSilent();
+      reader->closed_resolver_->Reject(stream->GetStoredError(isolate));
 
       // c. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
-      reader->closed_promise_->MarkAsHandled(isolate);
+      reader->closed_promise_.MarkAsHandled();
       break;
   }
 }

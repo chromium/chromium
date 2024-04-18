@@ -114,7 +114,8 @@ class ByteStreamTeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       auto cancel_result = ReadableStream::Cancel(
           script_state, engine_->stream_, composite_reason);
       //     iii. Resolve cancelPromise with cancelResult.
-      engine_->cancel_promise_->Resolve(script_state, cancel_result);
+      engine_->cancel_promise_->Resolve(script_state,
+                                        cancel_result.V8Promise());
     }
     //   d. Return cancelPromise.
     return engine_->cancel_promise_->V8Promise(isolate);
@@ -536,13 +537,11 @@ void ByteStreamTeeEngine::ForwardReaderError(
     Member<ReadableStreamGenericReader> reader_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(),
-      this_reader->ClosedPromise()->V8Promise(script_state->GetIsolate()),
-      nullptr,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<RejectFunction>(this, this_reader)));
+  StreamThenPromise(script_state->GetContext(),
+                    this_reader->closed(script_state).V8Promise(), nullptr,
+                    MakeGarbageCollected<ScriptFunction>(
+                        script_state, MakeGarbageCollected<RejectFunction>(
+                                          this, this_reader)));
 }
 
 void ByteStreamTeeEngine::PullWithDefaultReader(

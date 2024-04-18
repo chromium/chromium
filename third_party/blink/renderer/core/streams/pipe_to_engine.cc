@@ -104,9 +104,10 @@ class PipeToEngine::WrappedPromiseReaction final
   PromiseReaction method_;
 };
 
-ScriptPromiseUntyped PipeToEngine::Start(ReadableStream* readable,
-                                         WritableStream* destination,
-                                         ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> PipeToEngine::Start(
+    ReadableStream* readable,
+    WritableStream* destination,
+    ExceptionState& exception_state) {
   // 1. Assert: source implements ReadableStream.
   DCHECK(readable);
 
@@ -149,7 +150,8 @@ ScriptPromiseUntyped PipeToEngine::Start(ReadableStream* readable,
   DCHECK(!is_shutting_down_);
 
   // 13. Let promise be a new promise.
-  promise_ = MakeGarbageCollected<StreamPromiseResolver>(script_state_);
+  promise_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state_);
 
   // 14. If signal is not undefined,
   if (auto* signal = pipe_options_->Signal()) {
@@ -157,7 +159,7 @@ ScriptPromiseUntyped PipeToEngine::Start(ReadableStream* readable,
     //      return promise.
     if (signal->aborted()) {
       AbortAlgorithm(signal);
-      return promise_->GetScriptPromiseUntyped(script_state_.Get());
+      return promise_->Promise();
     }
 
     //   c. Add abortAlgorithm to signal.
@@ -176,7 +178,7 @@ ScriptPromiseUntyped PipeToEngine::Start(ReadableStream* readable,
     // and
     //     3. Closing must be propagated forward: if source.[[state]] is or
     //        becomes "closed", ...
-    ThenPromise(reader_->ClosedPromise()->V8Promise(isolate),
+    ThenPromise(reader_->closed(script_state_).V8Promise(),
                 &PipeToEngine::OnReaderClosed, &PipeToEngine::ReadableError);
 
     // Need to detect error when we are not writing. This corresponds to this
@@ -193,7 +195,7 @@ ScriptPromiseUntyped PipeToEngine::Start(ReadableStream* readable,
   }
 
   // 16. Return promise.
-  return promise_->GetScriptPromiseUntyped(script_state_.Get());
+  return promise_->Promise();
 }
 
 bool PipeToEngine::CheckInitialState() {
@@ -277,9 +279,7 @@ v8::Local<v8::Promise> PipeToEngine::AbortAlgorithmAction() {
   //      2. Otherwise, return a promise resolved with undefined.
   if (!pipe_options_->PreventCancel() &&
       ReadableStream::IsReadable(Readable())) {
-    actions.push_back(ScriptPromiseUntyped(
-        script_state_,
-        ReadableStream::Cancel(script_state_, Readable(), error)));
+    actions.push_back(ReadableStream::Cancel(script_state_, Readable(), error));
   }
 
   return ScriptPromiseUntyped::All(script_state_.Get(), actions)
@@ -544,10 +544,10 @@ void PipeToEngine::Finalize(v8::MaybeLocal<v8::Value> error_maybe) {
   v8::Local<v8::Value> error;
   if (error_maybe.ToLocal(&error)) {
     // e. If error was given, reject promise with error.
-    promise_->Reject(script_state_, error);
+    promise_->Reject(error);
   } else {
     // f. Otherwise, resolve promise with undefined.
-    promise_->ResolveWithUndefined(script_state_);
+    promise_->Resolve();
   }
 }
 
@@ -576,7 +576,8 @@ v8::Local<v8::Promise> PipeToEngine::WritableStreamAbortAction() {
 }
 
 v8::Local<v8::Promise> PipeToEngine::ReadableStreamCancelAction() {
-  return ReadableStream::Cancel(script_state_, Readable(), ShutdownError());
+  return ReadableStream::Cancel(script_state_, Readable(), ShutdownError())
+      .V8Promise();
 }
 
 v8::Local<v8::Promise>

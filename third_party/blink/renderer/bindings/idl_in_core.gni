@@ -553,7 +553,6 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/streams/queuing_strategy_init.idl",
   "//third_party/blink/renderer/core/streams/readable_byte_stream_controller.idl",
   "//third_party/blink/renderer/core/streams/readable_stream.idl",
-  "//third_party/blink/renderer/core/streams/readable_stream_byob_read_result.idl",
   "//third_party/blink/renderer/core/streams/readable_stream_byob_reader.idl",
   "//third_party/blink/renderer/core/streams/readable_stream_byob_request.idl",
   "//third_party/blink/renderer/core/streams/readable_stream_default_controller.idl",

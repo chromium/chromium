@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_PIPE_TO_ENGINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_PIPE_TO_ENGINE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -19,7 +21,6 @@ class PipeOptions;
 class ReadableStream;
 class ReadableStreamDefaultReader;
 class ScriptState;
-class StreamPromiseResolver;
 class WritableStream;
 class WritableStreamDefaultWriter;
 
@@ -41,9 +42,9 @@ class PipeToEngine final : public GarbageCollected<PipeToEngine> {
   PipeToEngine& operator=(const PipeToEngine&) = delete;
 
   // This is the main entrypoint for ReadableStreamPipeTo().
-  ScriptPromiseUntyped Start(ReadableStream* readable,
-                             WritableStream* destination,
-                             ExceptionState&);
+  ScriptPromise<IDLUndefined> Start(ReadableStream* readable,
+                                    WritableStream* destination,
+                                    ExceptionState&);
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(script_state_);
@@ -188,7 +189,7 @@ class PipeToEngine final : public GarbageCollected<PipeToEngine> {
   Member<PipeOptions> pipe_options_;
   Member<ReadableStreamDefaultReader> reader_;
   Member<WritableStreamDefaultWriter> writer_;
-  Member<StreamPromiseResolver> promise_;
+  Member<ScriptPromiseResolver<IDLUndefined>> promise_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
   TraceWrapperV8Reference<v8::Promise> last_write_;
   Action shutdown_action_;

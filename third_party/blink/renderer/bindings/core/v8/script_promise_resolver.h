@@ -210,6 +210,12 @@ class CORE_EXPORT ScriptPromiseResolverBase
     return true;
   }
 
+  void OverrideScriptStateToCurrentContext() {
+    v8::Isolate* isolate = script_state_->GetIsolate();
+    CHECK(isolate->InContext());
+    script_state_ = ScriptState::From(isolate->GetCurrentContext());
+  }
+
   void NotifyResolveOrReject();
   void ResolveOrRejectImmediately();
   void ScheduleResolveOrReject();
@@ -217,7 +223,7 @@ class CORE_EXPORT ScriptPromiseResolverBase
 
   TraceWrapperV8Reference<v8::Promise::Resolver> resolver_;
   ResolutionState state_;
-  const Member<ScriptState> script_state_;
+  Member<ScriptState> script_state_;
   TraceWrapperV8Reference<v8::Value> value_;
   const ExceptionContext exception_context_;
   String script_url_;
@@ -253,6 +259,18 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
     if (!PrepareToResolveOrReject<kResolving>()) {
       return;
     }
+    ResolveOrReject<IDLResolvedType, BlinkType>(value);
+  }
+
+  // This Resolve() variant completely ignores the ScriptState given in the
+  // constructor and resolves in the current context. This is not the default
+  // behavior and should only be used if a WPT needs it.
+  template <typename BlinkType>
+  void ResolveOverridingToCurrentContext(BlinkType value) {
+    if (!PrepareToResolveOrReject<kResolving>()) {
+      return;
+    }
+    OverrideScriptStateToCurrentContext();
     ResolveOrReject<IDLResolvedType, BlinkType>(value);
   }
 
