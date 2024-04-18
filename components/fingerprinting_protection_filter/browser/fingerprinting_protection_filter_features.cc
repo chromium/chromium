@@ -6,6 +6,9 @@
 
 namespace fingerprinting_protection_filter::features {
 
+// When enabled, loads the Fingerprinting Protection component and evaluates
+// resource requests on certain pages against the Fingerprinting Protection
+// blocklist, possibly blocks via a subresource filter.
 BASE_FEATURE(kEnableFingerprintingProtectionFilter,
              "EnableFingerprintingProtectionFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);

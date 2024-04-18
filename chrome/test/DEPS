@@ -31,6 +31,7 @@ include_rules = [
   "+components/favicon/core",
   "+components/feature_engagement",
   "+components/find_in_page",
+  "+components/fingerprinting_protection_filter/browser",
   "+components/gcm_driver/instance_id",
   "+components/global_media_controls",
   "+components/google/core/common",

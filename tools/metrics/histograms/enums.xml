@@ -18982,8 +18982,6 @@ from previous Chrome versions.
   <int value="-985845117" label="Cardboard:enabled"/>
   <int value="-985445963" label="TabSearchFuzzySearch:disabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
-  <int value="-983747413"
-      label="EnableFingerprintingProtectionBlockList:enabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
   <int value="-983335806" label="DelegatedCompositing:disabled"/>
   <int value="-983087919"
@@ -19137,6 +19135,8 @@ from previous Chrome versions.
   <int value="-914210146" label="enable-web-based-signin"/>
   <int value="-914097698" label="EnableDbusAndX11StatusIcons:disabled"/>
   <int value="-913925109" label="FilesExtractArchive:disabled"/>
+  <int value="-913908307"
+      label="EnableFingerprintingProtectionFilter:disabled"/>
   <int value="-913629421" label="CastStreamingVp8:enabled"/>
   <int value="-913571703" label="TabAndLinkDragDropAndroid:enabled"/>
   <int value="-913294939" label="DriveFS:enabled"/>
@@ -20689,8 +20689,6 @@ from previous Chrome versions.
   <int value="-215580565"
       label="OmniboxEnableClipboardProviderImageSuggestions:disabled"/>
   <int value="-215534141" label="NativeWindowNavButtons:enabled"/>
-  <int value="-215370258"
-      label="EnableFingerprintingProtectionBlockList:disabled"/>
   <int value="-215103767" label="ShoppingList:disabled"/>
   <int value="-215048684" label="NtpComprehensiveThemeRealbox:disabled"/>
   <int value="-214859547" label="OmniboxActionsUISimplification:enabled"/>
@@ -24668,6 +24666,7 @@ from previous Chrome versions.
   <int value="1569327162" label="ButterOnDesktopFollowup:enabled"/>
   <int value="1570051274" label="ProductSpecifications:disabled"/>
   <int value="1570178909" label="NewOverviewLayout:enabled"/>
+  <int value="1570786077" label="EnableFingerprintingProtectionFilter:enabled"/>
   <int value="1571640975" label="EcheLauncherIconsInMoreAppsButton:enabled"/>
   <int value="1571998166" label="DetectingHeavyPages:disabled"/>
   <int value="1572464760" label="pwa-update-dialog-for-name-and-icon:disabled"/>

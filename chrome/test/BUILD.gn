@@ -1843,6 +1843,7 @@ if (!is_android) {
       "//components/feature_engagement/test:test_support",
       "//components/feedback:feedback",
       "//components/feedback/redaction_tool",
+      "//components/fingerprinting_protection_filter/browser",
       "//components/flags_ui",
       "//components/heavy_ad_intervention",
       "//components/history/content/browser",

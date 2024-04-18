@@ -9,6 +9,7 @@
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
@@ -232,7 +233,8 @@ class SubresourceFilterBrowserTestFingerprintingProtectionDisabled
  public:
   SubresourceFilterBrowserTestFingerprintingProtectionDisabled() {
     feature_list_.InitAndDisableFeature(
-        features::kEnableFingerprintingProtectionBlocklist);
+        fingerprinting_protection_filter::features::
+            kEnableFingerprintingProtectionFilter);
   }
 
  private:
@@ -251,7 +253,8 @@ class SubresourceFilterBrowserTestFingerprintingProtectionEnabled
  public:
   SubresourceFilterBrowserTestFingerprintingProtectionEnabled() {
     feature_list_.InitAndEnableFeature(
-        features::kEnableFingerprintingProtectionBlocklist);
+        fingerprinting_protection_filter::features::
+            kEnableFingerprintingProtectionFilter);
   }
 
  private:

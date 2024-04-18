@@ -94,6 +94,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_state.h"
@@ -11096,7 +11097,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFingerprintingProtectionBlocklistName,
      flag_descriptions::kEnableFingerprintingProtectionBlocklistDescription,
      kOsAll,
-     FEATURE_VALUE_TYPE(features::kEnableFingerprintingProtectionBlocklist)},
+     FEATURE_VALUE_TYPE(fingerprinting_protection_filter::features::
+                            kEnableFingerprintingProtectionFilter)},
 
 #if BUILDFLAG(IS_WIN)
     {"authenticate-using-new-windows-hello-api",

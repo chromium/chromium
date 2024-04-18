@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_constants.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 
@@ -140,7 +141,8 @@ AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
 void RegisterAntiFingerprintingBlockedDomainListComponent(
     ComponentUpdateService* cus) {
   if (!base::FeatureList::IsEnabled(
-          features::kEnableFingerprintingProtectionBlocklist)) {
+          fingerprinting_protection_filter::features::
+              kEnableFingerprintingProtectionFilter)) {
     return;
   }
 

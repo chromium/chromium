@@ -2,18 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("browser") {
+source_set("browser") {
   sources = [
     "fingerprinting_protection_filter_constants.cc",
     "fingerprinting_protection_filter_constants.h",
-    "fingerprinting_protection_filter_features.cc",
-    "fingerprinting_protection_filter_features.h",
     "fingerprinting_protection_page_activation_throttle.cc",
     "fingerprinting_protection_page_activation_throttle.h",
     "fingerprinting_protection_web_contents_helper.cc",
     "fingerprinting_protection_web_contents_helper.h",
   ]
   public_deps = [
+    ":features",
     "//base",
     "//components/subresource_filter/content/shared/browser",
     "//components/subresource_filter/core/browser",
@@ -23,4 +22,14 @@ static_library("browser") {
     "//components/subresource_filter/core/common",
     "//components/subresource_filter/core/mojom",
   ]
+}
+
+component("features") {
+  output_name = "fingerprinting_protection_filter_features"
+  defines = [ "IS_FINGERPRINTING_PROTECTION_FILTER_FEATURES_IMPL" ]
+  sources = [
+    "fingerprinting_protection_filter_features.cc",
+    "fingerprinting_protection_filter_features.h",
+  ]
+  public_deps = [ "//base" ]
 }

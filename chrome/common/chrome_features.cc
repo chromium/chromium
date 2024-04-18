@@ -397,13 +397,6 @@ BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, resource requests on certain pages will be evaluated against
-// the Fingerprinting Protection blocklist and possibly blocked via a
-// subresource filter.
-BASE_FEATURE(kEnableFingerprintingProtectionBlocklist,
-             "EnableFingerprintingProtectionBlockList",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 // Lazy initialize IndividualSettings for extensions from enterprise policy
 // that are not installed.

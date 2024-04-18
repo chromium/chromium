@@ -102,6 +102,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_constants.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -1142,8 +1143,8 @@ subresource_filter::RulesetService*
 BrowserProcessImpl::fingerprinting_protection_ruleset_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!created_fingerprinting_protection_ruleset_service_ &&
-      base::FeatureList::IsEnabled(
-          features::kEnableFingerprintingProtectionBlocklist)) {
+      base::FeatureList::IsEnabled(fingerprinting_protection_filter::features::
+                                       kEnableFingerprintingProtectionFilter)) {
     CreateFingerprintingProtectionRulesetService();
   }
   return fingerprinting_protection_ruleset_service_.get();
