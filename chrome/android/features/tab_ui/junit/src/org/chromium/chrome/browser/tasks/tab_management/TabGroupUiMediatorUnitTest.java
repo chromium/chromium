@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -90,6 +91,8 @@ public class TabGroupUiMediatorUnitTest {
     private static final int TAB1_ROOT_ID = TAB1_ID;
     private static final int TAB2_ROOT_ID = TAB2_ID;
     private static final int TAB3_ROOT_ID = TAB2_ID;
+    private static final int PRIMARY_BACKGROUND_COLOR = Color.WHITE;
+    private static final int INCOGNITO_BACKGROUND_COLOR = Color.GRAY;
 
     @Mock BottomControlsCoordinator.BottomControlsVisibilityController mVisibilityController;
     @Mock TabGroupUiMediator.ResetHandler mResetHandler;
@@ -188,7 +191,9 @@ public class TabGroupUiMediatorUnitTest {
                         mLayoutStateProviderSupplier,
                         mIncognitoStateProvider,
                         mDialogControllerSupplier,
-                        mOmniboxFocusStateSupplier);
+                        mOmniboxFocusStateSupplier,
+                        PRIMARY_BACKGROUND_COLOR,
+                        INCOGNITO_BACKGROUND_COLOR);
 
         if (currentTab == null) {
             verifyNeverReset();
@@ -1022,6 +1027,22 @@ public class TabGroupUiMediatorUnitTest {
         mIncognitoStateObserverArgumentCaptor.getValue().onIncognitoStateChanged(true);
 
         assertThat(mModel.get(TabGroupUiProperties.IS_INCOGNITO), equalTo(true));
+        assertThat(
+                mModel.get(TabGroupUiProperties.BACKGROUND_COLOR),
+                equalTo(INCOGNITO_BACKGROUND_COLOR));
+        mVisibilityControllerInOrder
+                .verify(mVisibilityController)
+                .setBottomControlsColor(INCOGNITO_BACKGROUND_COLOR);
+
+        mIncognitoStateObserverArgumentCaptor.getValue().onIncognitoStateChanged(false);
+
+        assertThat(mModel.get(TabGroupUiProperties.IS_INCOGNITO), equalTo(false));
+        assertThat(
+                mModel.get(TabGroupUiProperties.BACKGROUND_COLOR),
+                equalTo(PRIMARY_BACKGROUND_COLOR));
+        mVisibilityControllerInOrder
+                .verify(mVisibilityController)
+                .setBottomControlsColor(PRIMARY_BACKGROUND_COLOR);
     }
 
     @Test

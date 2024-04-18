@@ -556,7 +556,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mTabModelSelectorSupplier.get(),
                         mLayoutManagerSupplier,
                         mFullscreenManager,
-                        mEdgeToEdgeControllerSupplier);
+                        mEdgeToEdgeControllerSupplier,
+                        mBrowserControlsManager);
     }
 
     @Override

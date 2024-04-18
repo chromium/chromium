@@ -1130,6 +1130,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabModelObserver.java",
   "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaver.java",
   "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImpl.java",
+  "java/src/org/chromium/chrome/browser/tabbed_mode/BottomAttachedUiObserver.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/TabbedAppMenuPropertiesDelegate.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/TabbedNavigationBarColorController.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java",

@@ -21,6 +21,8 @@ class TabGroupUiProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey LEFT_BUTTON_DRAWABLE_ID =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey BACKGROUND_COLOR =
+            new PropertyModel.WritableIntPropertyKey();
 
     /**
      * Integer, but not {@link PropertyModel.WritableIntPropertyKey} so that we can force update on
@@ -41,6 +43,7 @@ class TabGroupUiProperties {
                 IS_MAIN_CONTENT_VISIBLE,
                 IS_INCOGNITO,
                 LEFT_BUTTON_DRAWABLE_ID,
+                BACKGROUND_COLOR,
                 INITIAL_SCROLL_INDEX,
                 LEFT_BUTTON_CONTENT_DESCRIPTION,
                 RIGHT_BUTTON_CONTENT_DESCRIPTION

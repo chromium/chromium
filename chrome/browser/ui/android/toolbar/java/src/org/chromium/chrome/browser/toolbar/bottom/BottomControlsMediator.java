@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
@@ -59,6 +60,9 @@ class BottomControlsMediator
 
     /** The bottom controls visibility. */
     private boolean mIsBottomControlsVisible;
+
+    /** The background color for the bottom controls. */
+    private @ColorInt int mBottomControlsColor;
 
     /** Whether any overlay panel is showing. */
     private boolean mIsOverlayPanelShowing;
@@ -144,6 +148,10 @@ class BottomControlsMediator
         updateAndroidViewVisibility();
     }
 
+    void setBottomControlsColor(@ColorInt int color) {
+        mBottomControlsColor = color;
+    }
+
     /** Clean up anything that needs to be when the bottom controls component is destroyed. */
     void destroy() {
         mCallbackController.destroy();
@@ -185,6 +193,11 @@ class BottomControlsMediator
         // player when it is shown again following browser UI being recreated.
         if (mReadAloudRestoringSupplier.get()) {
             mModel.set(BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y, -bottomControlsMinHeight);
+        }
+        // A min height greater than 0 suggests the presence of some other UI component underneath
+        // the bottom controls.
+        if (bottomControlsMinHeight == 0) {
+            mBrowserControlsSizer.notifyBackgroundColor(mBottomControlsColor);
         }
     }
 

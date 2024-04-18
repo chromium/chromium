@@ -133,7 +133,7 @@ class TabGridDialogViewBinder {
                 ViewUtils.requestLayout(viewHolder.contentView, "TabGridDialogViewBinder.bind");
             }
         } else if (PRIMARY_COLOR == propertyKey) {
-            viewHolder.toolbarView.setPrimaryColor(model.get(PRIMARY_COLOR));
+            viewHolder.toolbarView.setContentBackgroundColor(model.get(PRIMARY_COLOR));
             viewHolder.contentView.setBackgroundColor(model.get(PRIMARY_COLOR));
         } else if (TINT == propertyKey) {
             if (model.get(TINT) != null) {

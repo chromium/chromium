@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.IS_MAIN_CONTENT_VISIBLE;
@@ -54,6 +55,8 @@ class TabGroupUiViewBinder {
             viewHolder.toolbarView.setIsIncognito(model.get(IS_INCOGNITO));
         } else if (LEFT_BUTTON_DRAWABLE_ID == propertyKey) {
             viewHolder.toolbarView.setLeftButtonDrawableId(model.get(LEFT_BUTTON_DRAWABLE_ID));
+        } else if (BACKGROUND_COLOR == propertyKey) {
+            viewHolder.toolbarView.setContentBackgroundColor(model.get(BACKGROUND_COLOR));
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
             int index = (Integer) model.get(INITIAL_SCROLL_INDEX);
             LinearLayoutManager manager =

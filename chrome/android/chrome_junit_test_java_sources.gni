@@ -345,6 +345,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/tab/TabViewManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabModelObserverUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImplUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/tabbed_mode/BottomAttachedUiObserverTest.java",
   "junit/src/org/chromium/chrome/browser/tabbed_mode/TabbedAppMenuPropertiesDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tabbed_mode/TabbedNavigationBarColorControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tabmodel/ArchivedTabModelSelectorImplTest.java",

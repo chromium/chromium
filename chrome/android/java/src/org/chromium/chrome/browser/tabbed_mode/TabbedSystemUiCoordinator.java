@@ -10,6 +10,7 @@ import android.view.Window;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -34,13 +35,16 @@ public class TabbedSystemUiCoordinator {
      * @param fullscreenManager The {@link FullscreenManager} used for containing activity
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} to detect when
      *     the UI is being drawn edge to edge.
+     * @param browserControlsStateProvider Supplies a {@link BrowserControlsStateProvider} for the
+     *     browser controls.
      */
     public TabbedSystemUiCoordinator(
             Window window,
             TabModelSelector tabModelSelector,
             @Nullable ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
@@ -49,7 +53,8 @@ public class TabbedSystemUiCoordinator {
                             tabModelSelector,
                             layoutManagerSupplier,
                             fullscreenManager,
-                            edgeToEdgeControllerSupplier);
+                            edgeToEdgeControllerSupplier,
+                            browserControlsStateProvider);
         }
     }
 

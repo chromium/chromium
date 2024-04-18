@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import androidx.annotation.ColorInt;
+
 /** An interface for retrieving and monitoring browser controls state. */
 public interface BrowserControlsStateProvider {
     /** An observer to be notified of browser controls changes */
@@ -39,10 +41,14 @@ public interface BrowserControlsStateProvider {
 
         /** Called when the visibility of the controls container changes. */
         default void onAndroidControlsVisibilityChanged(int visibility) {}
+
+        /** Called when the background color of the controls container changes. */
+        default void onBottomControlsBackgroundColorChanged(@ColorInt int color) {}
     }
 
     /**
      * Add an observer to be notified of browser controls events.
+     *
      * @param obs The observer to add.
      */
     void addObserver(Observer obs);

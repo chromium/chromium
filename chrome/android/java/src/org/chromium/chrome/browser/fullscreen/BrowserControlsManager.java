@@ -10,6 +10,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -504,6 +505,13 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         return mControlContainer == null
                 ? View.INVISIBLE
                 : mControlContainer.getView().getVisibility();
+    }
+
+    @Override
+    public void notifyBackgroundColor(@ColorInt int color) {
+        for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+            obs.onBottomControlsBackgroundColorChanged(color);
+        }
     }
 
     @Override

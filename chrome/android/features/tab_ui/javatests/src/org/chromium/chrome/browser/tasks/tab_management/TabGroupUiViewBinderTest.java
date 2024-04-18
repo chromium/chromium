@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -19,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.annotation.ColorInt;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.annotation.UiThreadTest;
@@ -77,7 +77,10 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
                             new LinearLayoutManager(
                                     getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
-                    mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
+                    mModel =
+                            new PropertyModel.Builder(TabGroupUiProperties.ALL_KEYS)
+                                    .with(TabGroupUiProperties.BACKGROUND_COLOR, Color.WHITE)
+                                    .build();
                     mMCP =
                             PropertyModelChangeProcessor.create(
                                     mModel,
@@ -161,14 +164,23 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testSetIncognito() {
         mModel.set(TabGroupUiProperties.IS_INCOGNITO, false);
-        @ColorInt int lightColor = ((ColorDrawable) mMainContent.getBackground()).getColor();
         ColorStateList lightRightImageTint = mRightButton.getImageTintList();
         ColorStateList lightLeftImageTint = mLeftButton.getImageTintList();
 
         mModel.set(TabGroupUiProperties.IS_INCOGNITO, true);
-        assertNotEquals(lightColor, ((ColorDrawable) mMainContent.getBackground()).getColor());
         assertNotEquals(lightRightImageTint, mLeftButton.getImageTintList());
         assertNotEquals(lightLeftImageTint, mRightButton.getImageTintList());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetBackgroundColor() {
+        mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, Color.WHITE);
+        assertEquals(Color.WHITE, ((ColorDrawable) mMainContent.getBackground()).getColor());
+
+        mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, Color.BLACK);
+        assertEquals(Color.BLACK, ((ColorDrawable) mMainContent.getBackground()).getColor());
     }
 
     @Test

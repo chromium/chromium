@@ -202,6 +202,7 @@ public class MiniPlayerMediator {
     }
 
     private void growBottomControls() {
+        mBrowserControlsSizer.notifyBackgroundColor(mModel.get(Properties.BACKGROUND_COLOR_ARGB));
         setBottomControlsHeight(
                 mBrowserControlsSizer.getBottomControlsHeight() + mLayoutHeightPx, mLayoutHeightPx);
     }

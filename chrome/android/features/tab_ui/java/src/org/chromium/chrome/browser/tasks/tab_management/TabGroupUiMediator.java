@@ -8,7 +8,9 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -111,6 +114,8 @@ public class TabGroupUiMediator implements BackPressHandler {
     private Callback<Boolean> mOmniboxFocusObserver;
     private boolean mIsTabGroupUiVisible;
     private boolean mIsShowingOverViewMode;
+    private final @ColorInt int mPrimaryBackgroundColor;
+    private final @ColorInt int mIncognitoBackgroundColor;
 
     TabGroupUiMediator(
             Context context,
@@ -125,6 +130,37 @@ public class TabGroupUiMediator implements BackPressHandler {
                     LazyOneshotSupplier<TabGridDialogMediator.DialogController>
                             dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
+        this(
+                context,
+                visibilityController,
+                resetHandler,
+                model,
+                tabModelSelector,
+                tabCreatorManager,
+                layoutStateProviderSupplier,
+                incognitoStateProvider,
+                dialogControllerSupplier,
+                omniboxFocusStateSupplier,
+                SemanticColorUtils.getDialogBgColor(context),
+                context.getColor(org.chromium.chrome.R.color.dialog_bg_color_dark_baseline));
+    }
+
+    @VisibleForTesting
+    TabGroupUiMediator(
+            Context context,
+            BottomControlsVisibilityController visibilityController,
+            ResetHandler resetHandler,
+            PropertyModel model,
+            TabModelSelector tabModelSelector,
+            TabCreatorManager tabCreatorManager,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
+            IncognitoStateProvider incognitoStateProvider,
+            @Nullable
+                    LazyOneshotSupplier<TabGridDialogMediator.DialogController>
+                            dialogControllerSupplier,
+            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            @ColorInt int primaryBackgroundColor,
+            @ColorInt int incognitoBackgroundColor) {
         mContext = context;
         mResetHandler = resetHandler;
         mModel = model;
@@ -134,6 +170,8 @@ public class TabGroupUiMediator implements BackPressHandler {
         mIncognitoStateProvider = incognitoStateProvider;
         mTabGridDialogControllerSupplier = dialogControllerSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
+        mPrimaryBackgroundColor = primaryBackgroundColor;
+        mIncognitoBackgroundColor = incognitoBackgroundColor;
 
         if (layoutStateProviderSupplier.get() != null
                 && (layoutStateProviderSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)
@@ -317,6 +355,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         mIncognitoStateObserver =
                 (isIncognito) -> {
                     mModel.set(TabGroupUiProperties.IS_INCOGNITO, isIncognito);
+                    setBottomControlsBackgroundColor(isIncognito);
                 };
 
         filterProvider.addTabModelFilterObserver(mTabModelObserver);
@@ -347,6 +386,13 @@ public class TabGroupUiMediator implements BackPressHandler {
                                 .addObserver(mBackPressStateSupplier::set);
                     });
         }
+    }
+
+    private void setBottomControlsBackgroundColor(boolean isIncognito) {
+        @ColorInt
+        int backgroundColor = isIncognito ? mIncognitoBackgroundColor : mPrimaryBackgroundColor;
+        mVisibilityController.setBottomControlsColor(backgroundColor);
+        mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, backgroundColor);
     }
 
     void setupLeftButtonDrawable(int drawableId) {
