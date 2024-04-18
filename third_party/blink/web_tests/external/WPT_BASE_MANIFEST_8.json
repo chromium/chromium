@@ -168069,6 +168069,19 @@
        {}
       ]
      ],
+     "selection-over-highlight-001.html": [
+      "57078cf83b38e317c4c070347fe43c9e440ff6f9",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/selection-over-highlight-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "selection-overlay-and-grammar-001.html": [
       "19768c73897155fc03fa063aa9001c5b74521b6e",
       [
@@ -327682,6 +327695,10 @@
       "c93e8cb92450a3f61a9c25b810268a9589212b5b",
       []
      ],
+     "selection-over-highlight-001-ref.html": [
+      "f75017d5ec5d903bd484f0a6881e3ce1cd826c30",
+      []
+     ],
      "selection-paint-image-notref.html": [
       "ba1e97dffd8e3cbf1d113b8a68a099dd3fb36824",
       []
@@ -353900,8 +353917,44 @@
       "8760e59d21f6f4e5a26de27395fe1b8a5151dac2",
       []
      ],
+     "auction-config-passed-to-worklets.https.window_1-5-expected.txt": [
+      "f77f9c2558b705aa88085378e5053056609c19a9",
+      []
+     ],
+     "auction-config.https.window_1-5-expected.txt": [
+      "4cc1615072d925c84f183ed7a7df430a60857927",
+      []
+     ],
+     "auction-config.https.window_6-10-expected.txt": [
+      "f3d6faf35f280728c0196a886213bfbfc9d83c8d",
+      []
+     ],
+     "component-ads.https.window_16-last-expected.txt": [
+      "bb41d8c0f99cfd686604cc28eac66926ffda45f3",
+      []
+     ],
+     "component-auction.https.window_16-last-expected.txt": [
+      "afdb5eace277d60b5121e56f8c1369463348de83",
+      []
+     ],
+     "deprecated-render-url-replacements.https.window_1-5-expected.txt": [
+      "7f0d162804e0a73856824f74047c0679eb2e2132",
+      []
+     ],
+     "deprecated-render-url-replacements.https.window_11-15-expected.txt": [
+      "661d00139fcde3bfcd43fc70b7951cc86290d949",
+      []
+     ],
+     "deprecated-render-url-replacements.https.window_16-last-expected.txt": [
+      "ccdfedec62359d5afc20d7bfc7a6bf213046983a",
+      []
+     ],
+     "deprecated-render-url-replacements.https.window_6-10-expected.txt": [
+      "8462c72e91f776da0fe2efa81d806f8fac6bac04",
+      []
+     ],
      "kanon-status-below-threshold.https.window-expected.txt": [
-      "89e64d0dde16b3e32e235a39669e7ca954a3aa67",
+      "e27cfa443a0dcc5447592dc9af5d987467910dbd",
       []
      ],
      "resources": {
@@ -353934,7 +353987,7 @@
        []
       ],
       "fledge-util.sub.js": [
-       "32162e933a50ffc83d709e7d83718eeb1bc98914",
+       "a7d0f63830d63bebf964aed74038b1fbbb2a75e7",
        []
       ],
       "fledge_http_server_util.py": [
@@ -354159,7 +354212,7 @@
       []
      ],
      "cross-origin-ancestor-activeelement-after-child-lose-focus-helper.html": [
-      "83d39d5c70d2ec2cf63773e834597d67f00f2aa4",
+      "fe96614517207faf2381b947d713fa9bbc01b886",
       []
      ],
      "focus-already-focused-iframe-deep-different-site-outer.sub.html": [
@@ -441484,6 +441537,13 @@
        {}
       ]
      ],
+     "position-try-backdrop.html": [
+      "6bf2262c69af6ec2f883435177c49db93c135b67",
+      [
+       null,
+       {}
+      ]
+     ],
      "position-try-cascade-layer-reorder.html": [
       "4f38806f604f612065783c9b3253fb1f6bda0184",
       [
@@ -485038,7 +485098,7 @@
    "dpub-aam": {
     "role": {
      "roles.html": [
-      "b9840976e1f001d182540cadfbe88c3c7c4d0403",
+      "62e33b95fa786e007371e1de29a25a260a79206d",
       [
        null,
        {
@@ -519748,7 +519808,7 @@
       ]
      ],
      "auction-config-passed-to-worklets.https.window.js": [
-      "9b12d077baf08afe508279a94f9dde9b2fbcf63b",
+      "7780957739e435825f186500f56a6e102e9c2c32",
       [
        "fledge/tentative/auction-config-passed-to-worklets.https.window.html?1-5",
        {
@@ -519991,7 +520051,7 @@
       ]
      ],
      "auction-config.https.window.js": [
-      "5fa4fa252fde97d02795bf1013ce0df7afdc70e1",
+      "28ed147071858ee6c5f0f3acdaf1d2d636b1ad4a",
       [
        "fledge/tentative/auction-config.https.window.html?1-5",
        {
@@ -520054,7 +520114,11 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
@@ -520122,7 +520186,11 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
@@ -520190,7 +520258,11 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
@@ -520258,7 +520330,11 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
@@ -520326,7 +520402,11 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
@@ -520394,7 +520474,11 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
@@ -520462,7 +520546,11 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
@@ -520530,14 +520618,18 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/auction-config.https.window.html?46-last",
+       "fledge/tentative/auction-config.https.window.html?45-50",
        {
         "script_metadata": [
          [
@@ -520598,7 +520690,83 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/auction-config.https.window.html?50-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?40-45"
+         ],
+         [
+          "variant",
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
@@ -520666,7 +520834,11 @@
          ],
          [
           "variant",
-          "?46-last"
+          "?45-50"
+         ],
+         [
+          "variant",
+          "?50-last"
          ]
         ],
         "timeout": "long"
@@ -520853,7 +521025,7 @@
       ]
      ],
      "component-ads.https.window.js": [
-      "6b22585d578959030c508a144dab2ba10dfb11f6",
+      "8493025429ed83b49f5117f0b3f237e03ccf64a5",
       [
        "fledge/tentative/component-ads.https.window.html?1-5",
        {
@@ -521032,7 +521204,7 @@
       ]
      ],
      "component-auction.https.window.js": [
-      "015c20a5c247925aa5e7a0e18ac5eea676083a48",
+      "bf804e68579937f8192ba6bf377e0ed6fdedf501",
       [
        "fledge/tentative/component-auction.https.window.html?1-5",
        {
@@ -521962,6 +522134,185 @@
          [
           "variant",
           "?33-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "deprecated-render-url-replacements.https.window.js": [
+      "4f8bc1cc7f0f5cd12b78a8cb05f787841b63f120",
+      [
+       "fledge/tentative/deprecated-render-url-replacements.https.window.html?1-5",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/deprecated-render-url-replacements.https.window.html?11-15",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/deprecated-render-url-replacements.https.window.html?16-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/deprecated-render-url-replacements.https.window.html?6-10",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-last"
          ]
         ],
         "timeout": "long"
@@ -529079,7 +529430,7 @@
      ]
     ],
     "cross-origin-ancestor-activeelement-after-child-lose-focus.sub.html": [
-     "35844bc91fb56c0446c9a433114af52b8970ddb1",
+     "1b84b43f1c487b708405e41ed96565b487d8708b",
      [
       null,
       {
@@ -565943,7 +566294,7 @@
         ]
        ],
        "the-anchor-attribute-003.tentative.html": [
-        "ec2d8d5ead9673e307350bc7346a5f3b971a391b",
+        "e8c12c784f53d086e42c16eb8ed5f9572354c25a",
         [
          null,
          {}
@@ -632546,6 +632897,13 @@
      ],
      "navigation-timing-extended.https.html": [
       "acb02c6fe1f56ae9cf4d61516fdbf05306050914",
+      [
+       null,
+       {}
+      ]
+     ],
+     "navigation-timing-sizes.https.html": [
+      "b3b1b5fe35a0099de2892f387e0f4d0d4876fda0",
       [
        null,
        {}
