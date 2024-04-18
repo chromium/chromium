@@ -268,33 +268,39 @@ void AddViewPasswordDetailsChildSuggestion(autofill::Suggestion& suggestion) {
   suggestion.children.emplace_back(std::move(view_password_details));
 }
 
-autofill::Suggestion GetManualFallbackSuggestion(
+void AppendManualFallbackSuggestions(
     const CredentialUIEntry& credential,
     IsTriggeredOnPasswordForm on_password_form,
-    IsCrossDomain is_cross_origin) {
-  // TODO(b/335383206): figure out if suggestions should be shown for all
-  // affiliated domains or for a certain primary domain.
-  const std::u16string kDisplaySingonRealm =
-      base::UTF8ToUTF16(credential.GetAffiliatedDomains()[0].name);
-  autofill::Suggestion suggestion(kDisplaySingonRealm,
-                                  autofill::PopupItemId::kPasswordEntry);
-  bool replaced;
-  const std::u16string maybe_username =
-      ReplaceEmptyUsername(credential.username, &replaced);
-  suggestion.additional_label = maybe_username;
-  suggestion.icon = autofill::Suggestion::Icon::kGlobe;
-  suggestion.payload = autofill::Suggestion::PasswordSuggestionDetails(
-      credential.password, kDisplaySingonRealm, is_cross_origin.value());
-  suggestion.is_acceptable = on_password_form.value();
+    IsCrossDomain is_cross_origin,
+    std::vector<autofill::Suggestion>* suggestions) {
+  // A separate suggestion with the same (username, password) pair is displayed
+  // for every affiliated domain. For example, if the credential was saved on
+  // apple.com and icloud.com, there will be 2 suggestions for both of these
+  // websites.
+  for (const CredentialUIEntry::DomainInfo& domain_info :
+       credential.GetAffiliatedDomains()) {
+    const std::u16string kDisplaySingonRealm =
+        base::UTF8ToUTF16(domain_info.name);
+    autofill::Suggestion suggestion(kDisplaySingonRealm,
+                                    autofill::PopupItemId::kPasswordEntry);
+    bool replaced;
+    const std::u16string maybe_username =
+        ReplaceEmptyUsername(credential.username, &replaced);
+    suggestion.additional_label = maybe_username;
+    suggestion.icon = autofill::Suggestion::Icon::kGlobe;
+    suggestion.payload = autofill::Suggestion::PasswordSuggestionDetails(
+        credential.password, kDisplaySingonRealm, is_cross_origin.value());
+    suggestion.is_acceptable = on_password_form.value();
 
-  if (!replaced) {
-    AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
+    if (!replaced) {
+      AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
+    }
+    AddFillPasswordChildSuggestion(suggestion, credential, is_cross_origin);
+    suggestion.children.emplace_back(autofill::PopupItemId::kSeparator);
+    AddViewPasswordDetailsChildSuggestion(suggestion);
+
+    suggestions->emplace_back(std::move(suggestion));
   }
-  AddFillPasswordChildSuggestion(suggestion, credential, is_cross_origin);
-  suggestion.children.emplace_back(autofill::PopupItemId::kSeparator);
-  AddViewPasswordDetailsChildSuggestion(suggestion);
-
-  return suggestion;
 }
 
 }  // namespace
@@ -413,8 +419,8 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
   std::set<std::string> suggested_signon_realms;
   for (const auto& form : suggested_credentials) {
     suggested_signon_realms.insert(form.signon_realm);
-    suggestions.emplace_back(GetManualFallbackSuggestion(
-        CredentialUIEntry(form), on_password_form, IsCrossDomain(false)));
+    AppendManualFallbackSuggestions(CredentialUIEntry(form), on_password_form,
+                                    IsCrossDomain(false), &suggestions);
   }
 
   if (generate_sections) {
@@ -436,8 +442,9 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
           return suggested_signon_realms.count(signon_realm);
         },
         &CredentialFacet::signon_realm);
-    suggestions.emplace_back(GetManualFallbackSuggestion(
-        credential, on_password_form, IsCrossDomain(!has_suggested_realm)));
+    AppendManualFallbackSuggestions(credential, on_password_form,
+                                    IsCrossDomain(!has_suggested_realm),
+                                    &suggestions);
   }
 
   base::ranges::sort(suggestions.begin() + relevant_section_offset,

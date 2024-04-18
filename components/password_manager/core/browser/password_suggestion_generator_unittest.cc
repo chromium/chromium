@@ -282,7 +282,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
-       ManualFallback_AllPasswords_FirstDomainIsUsed) {
+       ManualFallback_AllPasswords_AllDomainsAreUsed) {
   PasswordForm form_1 =
       CreateEntry("example@google.com", "password", GURL("https://google.com/"),
                   PasswordForm::MatchType::kExact);
@@ -294,16 +294,23 @@ TEST_F(PasswordSuggestionGeneratorTest,
       GenerateAllPasswordsSection({entry}, IsTriggeredOnPasswordForm(true));
 
   // Only the first domain is used to create the suggestion.
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"google.com",
-                              u"example@google.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true,
-                              Suggestion::PasswordSuggestionDetails(
-                                  u"password", u"google.com",
-                                  /*is_cross_domain=*/true)),
-                          EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          EqualsManualFallbackSuggestion(
+              PopupItemId::kPasswordEntry, u"amazon.com", u"example@google.com",
+              Suggestion::Icon::kGlobe,
+              /*is_acceptable=*/true,
+              Suggestion::PasswordSuggestionDetails(u"password", u"amazon.com",
+                                                    /*is_cross_domain=*/true)),
+          EqualsManualFallbackSuggestion(
+              PopupItemId::kPasswordEntry, u"google.com", u"example@google.com",
+              Suggestion::Icon::kGlobe,
+              /*is_acceptable=*/true,
+              Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
+                                                    /*is_cross_domain=*/true)),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsManageManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
