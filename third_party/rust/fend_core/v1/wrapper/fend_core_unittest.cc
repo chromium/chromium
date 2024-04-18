@@ -25,44 +25,44 @@ using ::testing::Optional;
 #endif
 
 TEST(MAYBE_FendCoreTest, SimpleMath) {
-  std::optional<std::string> result = evaluate("1 + 1");
+  std::optional<std::string> result = evaluate("1 + 1", /*timeout_in_ms=*/0);
   EXPECT_THAT(result, Optional(Eq("2")));
 }
 
 TEST(MAYBE_FendCoreTest, NoApproxString) {
-  std::optional<std::string> result = evaluate("1/3");
+  std::optional<std::string> result = evaluate("1/3", /*timeout_in_ms=*/0);
   EXPECT_THAT(result, Optional(Eq("0.3333333333")));
 }
 
 TEST(MAYBE_FendCoreTest, FiltersTrivialResult) {
-  std::optional<std::string> result = evaluate("1");
+  std::optional<std::string> result = evaluate("1", /*timeout_in_ms=*/0);
   EXPECT_THAT(result, std::nullopt);
 }
 
 TEST(MAYBE_FendCoreTest, FiltersUnitOnlyQueries) {
-  std::optional<std::string> result = evaluate("meter");
+  std::optional<std::string> result = evaluate("meter", /*timeout_in_ms=*/0);
   EXPECT_THAT(result, std::nullopt);
 }
 
 TEST(MAYBE_FendCoreTest, FiltersLambdaResults) {
-  std::optional<std::string> result = evaluate("sqrt");
+  std::optional<std::string> result = evaluate("sqrt", /*timeout_in_ms=*/0);
   EXPECT_THAT(result, std::nullopt);
 }
 
 TEST(MAYBE_FendCoreTest, UnitConversion) {
-  std::optional<std::string> result = evaluate("2 miles in meters");
+  std::optional<std::string> result = evaluate("2 miles in meters", /*timeout_in_ms=*/0);
   EXPECT_THAT(result, Optional(Eq("3218.688 meters")));
 }
 
 // This test passes MSan as it does not allocate on the Rust side. However, we
 // should still disable this in case `fend_core` starts allocating on this test.
 TEST(MAYBE_FendCoreTest, HandlesInvalidInput) {
-  std::optional<std::string> result = evaluate("abc");
+  std::optional<std::string> result = evaluate("abc", /*timeout_in_ms=*/0);
   EXPECT_EQ(result, std::nullopt);
 }
 
 TEST(MAYBE_FendCoreTest, CanTimeout) {
-  std::optional<std::string> result = evaluate("10**100000");
+  std::optional<std::string> result = evaluate("10**100000", /*timeout_in_ms=*/500);
   EXPECT_EQ(result, std::nullopt);
 }
 

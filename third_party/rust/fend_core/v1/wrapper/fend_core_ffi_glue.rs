@@ -4,13 +4,13 @@
 
 use std::time::Instant;
 
-const TIMEOUT_IN_MS: u128 = 100;
 const NOAPPROX_PREFIX: &str = "@noapprox ";
 
 #[cxx::bridge(namespace = "fend_core")]
 mod ffi {
     extern "Rust" {
-        fn evaluate_using_rust(query: &[u8], out_result: &mut String) -> bool;
+        // If `timeout_in_ms` = 0, there is no timeout.
+        fn evaluate_using_rust(query: &[u8], out_result: &mut String, timeout_in_ms: u32) -> bool;
     }
 }
 
@@ -31,17 +31,19 @@ impl fend_core::Interrupt for TimeoutInterrupt {
     }
 }
 
-pub fn evaluate_using_rust(query: &[u8], out_result: &mut String) -> bool {
+pub fn evaluate_using_rust(query: &[u8], out_result: &mut String, timeout_in_ms: u32) -> bool {
     let Ok(query_str) = std::str::from_utf8(query) else {
         return false;
     };
     let mut context = fend_core::Context::new();
-    let interrupt = TimeoutInterrupt::new_with_timeout(TIMEOUT_IN_MS);
-    match fend_core::evaluate_with_interrupt(
-        &(NOAPPROX_PREFIX.to_owned() + query_str),
-        &mut context,
-        &interrupt,
-    ) {
+    let full_query = NOAPPROX_PREFIX.to_owned() + query_str;
+    let result = if timeout_in_ms > 0 {
+        let interrupt = TimeoutInterrupt::new_with_timeout(timeout_in_ms.into());
+        fend_core::evaluate_with_interrupt(&full_query, &mut context, &interrupt)
+    } else {
+        fend_core::evaluate(&full_query, &mut context)
+    };
+    match result {
         Err(_) => false,
         Ok(result) => {
             *out_result = result.get_main_result().to_string();

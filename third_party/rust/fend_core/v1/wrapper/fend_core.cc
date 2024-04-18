@@ -12,9 +12,9 @@
 
 namespace fend_core {
 
-std::optional<std::string> evaluate(std::string_view query) {
+std::optional<std::string> evaluate(std::string_view query, unsigned int timeout_in_ms) {
   rust::String rust_result;
-  if (evaluate_using_rust(base::StringPieceToRustSlice(query), rust_result)) {
+  if (evaluate_using_rust(base::StringPieceToRustSlice(query), rust_result, timeout_in_ms)) {
     std::string result(rust_result);
     if (result.ends_with(query) || result.starts_with("\\")) {
       return std::nullopt;
