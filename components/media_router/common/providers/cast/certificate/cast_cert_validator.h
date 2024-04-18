@@ -152,6 +152,7 @@ void CastTrustStoreClearForTesting();
     std::unique_ptr<CertVerificationContext>* context,
     CastDeviceCertPolicy* policy,
     const CastCRL* crl,
+    const CastCRL* fallback_crl,
     CRLPolicy crl_policy);
 
 // This is an overloaded version of VerifyDeviceCert that allows
