@@ -189,12 +189,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 // Debug reporting runtime flag/JS API.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBiddingAndScoringDebugReportingAPI);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlinkHeapCompaction);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlinkHeapConcurrentMarking);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlinkHeapConcurrentSweeping);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlinkHeapIncrementalMarking);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlinkHeapIncrementalMarkingStress);
-
 // If enabled, navigation IPCs are prioritized in blink.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBlinkSchedulerPrioritizeNavigationIPCs);

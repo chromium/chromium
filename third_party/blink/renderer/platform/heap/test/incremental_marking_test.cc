@@ -1332,9 +1332,6 @@ TEST_F(IncrementalMarkingTest, AdjustMarkedBytesOnMarkedBackingStore) {
 
   // Disable concurrent sweeping to check that sweeping is not in progress after
   // the FinishGC call.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kBlinkHeapConcurrentSweeping);
   using Container = HeapVector<Member<LinkedObject>>;
   Persistent<Container> holder(MakeGarbageCollected<Container>());
   WeakPersistent<Container> canary(holder.Get());

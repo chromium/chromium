@@ -321,29 +321,6 @@ BASE_FEATURE(kBiddingAndScoringDebugReportingAPI,
              "BiddingAndScoringDebugReportingAPI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Blink garbage collection.
-// Enables compaction of backing stores on Blink's heap.
-BASE_FEATURE(kBlinkHeapCompaction,
-             "BlinkHeapCompaction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Enables concurrently marking Blink's heap.
-BASE_FEATURE(kBlinkHeapConcurrentMarking,
-             "BlinkHeapConcurrentMarking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Enables concurrently sweeping Blink's heap.
-BASE_FEATURE(kBlinkHeapConcurrentSweeping,
-             "BlinkHeapConcurrentSweeping",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Enables incrementally marking Blink's heap.
-BASE_FEATURE(kBlinkHeapIncrementalMarking,
-             "BlinkHeapIncrementalMarking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Enables a marking stress mode that schedules more garbage collections and
-// also adds additional verification passes.
-BASE_FEATURE(kBlinkHeapIncrementalMarkingStress,
-             "BlinkHeapIncrementalMarkingStress",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable intervention for download that was initiated from or occurred in an ad
 // frame without user activation.
 BASE_FEATURE(kBlockingDownloadsInAdFrameWithoutUserActivation,
