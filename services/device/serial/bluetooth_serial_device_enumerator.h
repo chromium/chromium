@@ -43,7 +43,7 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
       mojom::SerialPortManager::GetDevicesCallback callback);
 
   void DeviceAddedOrChanged(std::string_view device_address,
-                            base::StringPiece16 device_name,
+                            std::u16string_view device_name,
                             BluetoothDevice::UUIDSet service_class_ids,
                             bool is_connected);
   void DeviceRemoved(const std::string& device_address);
@@ -82,7 +82,7 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
       base::flat_map<DeviceServiceInfo, base::UnguessableToken>;
 
   void AddOrUpdateService(std::string_view device_address,
-                          base::StringPiece16 device_name,
+                          std::u16string_view device_name,
                           const BluetoothUUID& service_class_id,
                           bool is_connected);
   void OnInitialEnumerationComplete();

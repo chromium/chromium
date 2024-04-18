@@ -4,6 +4,7 @@
 
 #include "services/image_annotation/annotator.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -585,8 +586,8 @@ std::string Annotator::FormatJsonRequest(
   for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; ++it) {
     // Re-encode image bytes into base64, which can be represented in JSON.
     std::string base64_data = base::Base64Encode(
-        base::StringPiece(reinterpret_cast<const char*>(it->image_bytes.data()),
-                          it->image_bytes.size()));
+        std::string_view(reinterpret_cast<const char*>(it->image_bytes.data()),
+                         it->image_bytes.size()));
 
     // TODO(crbug.com/916420): accept and propagate page language info to
     //                         improve OCR accuracy.

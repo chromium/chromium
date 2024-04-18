@@ -5,6 +5,7 @@
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -158,8 +159,8 @@ scoped_refptr<net::CRLSet> ParseCRLSet(mojo_base::BigBuffer crl_set) {
   // The BigBuffer comes from a trusted process, so we don't need to copy the
   // data out before parsing.
   if (!net::CRLSet::Parse(
-          base::StringPiece(reinterpret_cast<const char*>(crl_set.data()),
-                            crl_set.size()),
+          std::string_view(reinterpret_cast<const char*>(crl_set.data()),
+                           crl_set.size()),
           &result)) {
     return nullptr;
   }

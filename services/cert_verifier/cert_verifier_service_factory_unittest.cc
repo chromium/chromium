@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -128,7 +129,7 @@ std::tuple<int, net::CertVerifyResult> Verify(
 
 void UpdateCRLSetWithTestFile(
     CertVerifierServiceFactoryImpl* cv_service_factory_impl,
-    base::StringPiece crlset_file_name) {
+    std::string_view crlset_file_name) {
   std::string crl_set_bytes;
   EXPECT_TRUE(base::ReadFileToString(
       net::GetTestCertsDirectory().AppendASCII(crlset_file_name),

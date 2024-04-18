@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/accessibility/features/v8_utils.h"
+
+#include <string_view>
+
 #include "v8-array-buffer.h"
 #include "v8-container.h"
 
@@ -48,7 +51,7 @@ v8::Local<v8::Value> V8ValueConverter::ToV8Value(
       return v8::Number::New(isolate, value);
     }
 
-    v8::Local<v8::Value> operator()(base::StringPiece value) {
+    v8::Local<v8::Value> operator()(std::string_view value) {
       return v8::String::NewFromUtf8(isolate, value.data(),
                                      v8::NewStringType::kNormal, value.length())
           .ToLocalChecked();

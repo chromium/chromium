@@ -4,6 +4,7 @@
 
 #include "services/accessibility/features/devtools/os_devtools_session.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -22,7 +23,7 @@ std::vector<uint8_t> GetStringBytes(const v8_inspector::StringView& s) {
   if (s.is8Bit()) {
     return std::vector<uint8_t>(s.characters8(), s.characters8() + s.length());
   }
-  std::string converted = base::UTF16ToUTF8(base::StringPiece16(
+  std::string converted = base::UTF16ToUTF8(std::u16string_view(
       reinterpret_cast<const char16_t*>(s.characters16()), s.length()));
   const uint8_t* data = reinterpret_cast<const uint8_t*>(converted.data());
   return std::vector<uint8_t>(data, data + converted.size());

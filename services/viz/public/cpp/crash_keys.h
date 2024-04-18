@@ -5,13 +5,13 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_CRASH_KEYS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_CRASH_KEYS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace viz {
 
 // Sets a crash key to indicate what structure triggered a deserialization error
 // in viz mojom code.
-void SetDeserializationCrashKeyString(base::StringPiece str);
+void SetDeserializationCrashKeyString(std::string_view str);
 
 }  // namespace viz
 

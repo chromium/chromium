@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/containers/contains.h"
@@ -451,7 +452,7 @@ bool ParseHost(std::string_view host, mojom::CSPSource* csp_source) {
   if (host.empty())
     return false;
 
-  std::vector<base::StringPiece> host_pieces = base::SplitStringPiece(
+  std::vector<std::string_view> host_pieces = base::SplitStringPiece(
       host, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   for (int i = 0; const std::string_view& piece : host_pieces) {
     // Only a trailing dot is allowed.

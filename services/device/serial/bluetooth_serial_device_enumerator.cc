@@ -4,6 +4,8 @@
 
 #include "services/device/serial/bluetooth_serial_device_enumerator.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/scoped_observation.h"
@@ -23,7 +25,7 @@ namespace device {
 namespace {
 
 mojom::SerialPortInfoPtr CreatePort(std::string_view device_address,
-                                    base::StringPiece16 device_name,
+                                    std::u16string_view device_name,
                                     const BluetoothUUID& service_class_id,
                                     bool connected) {
   auto port = mojom::SerialPortInfo::New();
@@ -178,7 +180,7 @@ void BluetoothSerialDeviceEnumerator::GetDevicesAfterInitialEnumeration(
 
 void BluetoothSerialDeviceEnumerator::DeviceAddedOrChanged(
     std::string_view device_address,
-    base::StringPiece16 device_name,
+    std::u16string_view device_name,
     BluetoothDevice::UUIDSet service_class_ids,
     bool is_connected) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -190,7 +192,7 @@ void BluetoothSerialDeviceEnumerator::DeviceAddedOrChanged(
 
 void BluetoothSerialDeviceEnumerator::AddOrUpdateService(
     std::string_view device_address,
-    base::StringPiece16 device_name,
+    std::u16string_view device_name,
     const BluetoothUUID& service_class_id,
     bool is_connected) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
