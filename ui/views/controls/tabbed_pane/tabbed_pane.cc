@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -132,17 +131,19 @@ void TabbedPaneTab::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 gfx::Size TabbedPaneTab::CalculatePreferredSize() const {
-  NOTREACHED_NORETURN() << "Use CalculatePreferredSize(SizeBounds)";
-}
-
-gfx::Size TabbedPaneTab::CalculatePreferredSize(
-    const SizeBounds& available_size) const {
   int width = preferred_title_width_ + GetInsets().width();
   if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kHighlight &&
-      tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kVertical) {
+      tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kVertical)
     width = std::max(width, 192);
-  }
   return gfx::Size(width, 32);
+}
+
+int TabbedPaneTab::GetHeightForWidth(int w) const {
+  // Because we set the LayoutManager, it will use
+  // LayoutManager::GetPreferredHeightForWidth by default, but this is not
+  // consistent with the fixed height desired by CalculatePreferredSize, so we
+  // override it and call it manually.
+  return CalculatePreferredSize().height();
 }
 
 void TabbedPaneTab::GetAccessibleNodeData(ui::AXNodeData* data) {

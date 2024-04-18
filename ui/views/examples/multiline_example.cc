@@ -86,27 +86,28 @@ class MultilineExample::RenderTextView : public View {
     render_text_->Draw(canvas);
   }
 
-  gfx::Size CalculatePreferredSize(
-      const SizeBounds& available_size) const override {
-    int w = available_size.width().value_or(0);
-    if (w == 0) {
-      // Turn off multiline mode to get the single-line text size, which is the
-      // preferred size for this view.
-      render_text_->SetMultiline(false);
-      gfx::Size size(render_text_->GetContentWidth(),
-                     render_text_->GetStringSize().height());
-      size.Enlarge(GetInsets().width(), GetInsets().height());
-      render_text_->SetMultiline(true);
-      return size;
-    }
+  gfx::Size CalculatePreferredSize() const override {
+    // Turn off multiline mode to get the single-line text size, which is the
+    // preferred size for this view.
+    render_text_->SetMultiline(false);
+    gfx::Size size(render_text_->GetContentWidth(),
+                   render_text_->GetStringSize().height());
+    size.Enlarge(GetInsets().width(), GetInsets().height());
+    render_text_->SetMultiline(true);
+    return size;
+  }
 
+  int GetHeightForWidth(int w) const override {
+    // TODO(ckocagil): Why does this happen?
+    if (w == 0)
+      return View::GetHeightForWidth(w);
     const gfx::Rect old_rect = render_text_->display_rect();
     gfx::Rect rect = old_rect;
     rect.set_width(w - GetInsets().width());
     render_text_->SetDisplayRect(rect);
     int height = render_text_->GetStringSize().height() + GetInsets().height();
     render_text_->SetDisplayRect(old_rect);
-    return gfx::Size(w, height);
+    return height;
   }
 
   void OnThemeChanged() override {

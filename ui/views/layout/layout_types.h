@@ -62,10 +62,6 @@ class VIEWS_EXPORT SizeBound {
     return is_bounded() ? std::min(this->value(), value) : value;
   }
 
-  constexpr int value_or(int defaule_value) const {
-    return is_bounded() ? value() : defaule_value;
-  }
-
   void operator+=(const SizeBound& rhs);
   void operator-=(const SizeBound& rhs);
 
