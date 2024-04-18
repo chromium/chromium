@@ -3180,6 +3180,38 @@ def _CalculateAddedDeps(os_path, old_contents, new_contents):
             results.add(os_path.join(added_dep, 'DEPS'))
     return results
 
+def CheckForNewDEPSDownloadFromGoogleStorageHooks(input_api, output_api):
+    """Checks that there are no new download_from_google_storage hooks"""
+    for f in input_api.AffectedFiles(include_deletes=False):
+        filename = input_api.os_path.basename(f.LocalPath())
+        if filename == 'DEPS':
+            old_hooks = _ParseDeps('\n'.join(f.OldContents()))['hooks']
+            new_hooks = _ParseDeps('\n'.join(f.NewContents()))['hooks']
+            old_name_to_hook = {hook['name']: hook for hook in old_hooks}
+            new_name_to_hook = {hook['name']: hook for hook in new_hooks}
+            added_hook_names = set(new_name_to_hook.keys()) - set(
+                old_name_to_hook.keys())
+            if not added_hook_names:
+                return []
+            new_download_from_google_storage_hooks = []
+            for new_hook in added_hook_names:
+                hook = new_name_to_hook[new_hook]
+                action_cmd = hook['action']
+                if any('download_from_google_storage' in arg
+                        for arg in action_cmd):
+                    new_download_from_google_storage_hooks.append(new_hook)
+            if new_download_from_google_storage_hooks:
+                return [
+                    output_api.PresubmitError(
+                        'Please do not add new download_from_google_storage '
+                        'hooks. Instead, add a `gcs` dep_type entry to `deps`. '
+                        'See https://chromium.googlesource.com/chromium/src.git'
+                        '/+/refs/heads/main/docs/gcs_dependencies.md for more '
+                        'info. Added hooks:',
+                        items=new_download_from_google_storage_hooks)
+                ]
+    return []
+
 
 def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
     """When a dependency prefixed with + is added to a DEPS file, we
