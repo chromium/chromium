@@ -648,8 +648,15 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   content::RunAllTasksUntilIdle();
 }
 
+// TODO(crbug.com/335362001): Re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OpenSearchResultOnPrimaryDisplay \
+  DISABLED_OpenSearchResultOnPrimaryDisplay
+#else
+#define MAYBE_OpenSearchResultOnPrimaryDisplay OpenSearchResultOnPrimaryDisplay
+#endif
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
-                       OpenSearchResultOnPrimaryDisplay) {
+                       MAYBE_OpenSearchResultOnPrimaryDisplay) {
   display::test::DisplayManagerTestApi display_manager(
       ash::ShellTestApi().display_manager());
   display_manager.UpdateDisplay("400x300,500x400");
