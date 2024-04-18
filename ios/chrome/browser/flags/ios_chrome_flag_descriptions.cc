@@ -986,12 +986,6 @@ const char kSpotlightReadingListSourceName[] = "Show Reading List in Spotlight";
 const char kSpotlightReadingListSourceDescription[] =
     "Donate Reading List items to iOS Search Engine Spotlight";
 
-const char kSyncRememberCustomPassphraseAfterSignoutName[] =
-    "Remember custom passphrase after sign-out";
-const char kSyncRememberCustomPassphraseAfterSignoutDescription[] =
-    "Remember custom passphrase after sign-out, instead of asking the user to "
-    "re-enter it after every sign-in.";
-
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

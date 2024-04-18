@@ -158,11 +158,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self
-          isRunningTest:@selector(testRememberCustomPassphraseAfterSignout)]) {
-    config.features_enabled.push_back(
-        syncer::kSyncRememberCustomPassphraseAfterSignout);
-  }
   if ([self isRunningTest:@selector
             (testPersonalizeGoogleServicesSettingsDismissedOnSignOut)]) {
     config.additional_args.push_back(

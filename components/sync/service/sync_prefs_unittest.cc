@@ -52,17 +52,8 @@ class SyncPrefsTest : public testing::Test {
   signin::GaiaIdHash gaia_id_hash_;
 };
 
-TEST_F(SyncPrefsTest, EncryptionBootstrapTokenForSyncingUser) {
-  ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
-  sync_prefs_->SetEncryptionBootstrapToken("token");
-  EXPECT_EQ("token", sync_prefs_->GetEncryptionBootstrapToken());
-  sync_prefs_->ClearAllEncryptionBootstrapTokens();
-  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
-}
 
 TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccountSignedOut) {
-  base::test::ScopedFeatureList enable_keep_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
   auto gaia_id_hash_empty = signin::GaiaIdHash::FromGaiaId("");
   EXPECT_TRUE(
       sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_empty)
@@ -70,8 +61,6 @@ TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccountSignedOut) {
 }
 
 TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccount) {
-  base::test::ScopedFeatureList enable_keep_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
   ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_)
                   .empty());
   sync_prefs_->SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash_);
@@ -88,8 +77,6 @@ TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccount) {
 }
 
 TEST_F(SyncPrefsTest, ClearEncryptionBootstrapTokenPerAccount) {
-  base::test::ScopedFeatureList enable_keep_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
   ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_)
                   .empty());
   sync_prefs_->SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash_);
@@ -1012,9 +999,6 @@ TEST_F(SyncPrefsMigrationTest, LeavesPasswordsAloneIfDisabledByPolicy) {
 #endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
-  base::test::ScopedFeatureList enable_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
-
   SyncPrefs prefs(&pref_service_);
   // Passphrase is not set.
   ASSERT_TRUE(prefs.GetEncryptionBootstrapToken().empty());
@@ -1026,23 +1010,7 @@ TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
       prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_empty).empty());
 }
 
-TEST_F(SyncPrefsMigrationTest, PassphraseMigrationFeatureDisabled) {
-  base::test::ScopedFeatureList disable_account_passphrase;
-  disable_account_passphrase.InitAndDisableFeature(
-      kSyncRememberCustomPassphraseAfterSignout);
-
-  SyncPrefs prefs(&pref_service_);
-  prefs.SetEncryptionBootstrapToken("token");
-  prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
-  EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token");
-  EXPECT_TRUE(
-      prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_).empty());
-}
-
 TEST_F(SyncPrefsMigrationTest, PassphraseMigrationDone) {
-  base::test::ScopedFeatureList enable_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
-
   SyncPrefs prefs(&pref_service_);
   prefs.SetEncryptionBootstrapToken("token");
   prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
@@ -1056,9 +1024,6 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationDone) {
 }
 
 TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnce) {
-  base::test::ScopedFeatureList enable_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
-
   SyncPrefs prefs(&pref_service_);
   prefs.SetEncryptionBootstrapToken("token");
   prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
@@ -1076,9 +1041,6 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnce) {
 }
 
 TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnceWithBrowserRestart) {
-  base::test::ScopedFeatureList enable_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
-
   {
     SyncPrefs prefs(&pref_service_);
     prefs.SetEncryptionBootstrapToken("token");

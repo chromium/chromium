@@ -1320,8 +1320,6 @@ TEST_F(SyncServiceImplTest,
 }
 
 TEST_F(SyncServiceImplTest, DisableSyncOnClientClearsPassphrasePrefForAccount) {
-  base::test::ScopedFeatureList enable_keep_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
   const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
 
   SignInWithoutSyncConsent();
@@ -1356,8 +1354,6 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClientClearsPassphrasePrefForAccount) {
 
 TEST_F(SyncServiceImplTest,
        DisableSyncOnClientClearsPassphrasePrefForSyncingAccount) {
-  base::test::ScopedFeatureList enable_keep_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
   const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
 
   PopulatePrefsForInitialSyncFeatureSetupComplete();
@@ -1392,8 +1388,6 @@ TEST_F(SyncServiceImplTest,
 }
 
 TEST_F(SyncServiceImplTest, EncryptionObsoleteClearsPassphrasePrefForAccount) {
-  base::test::ScopedFeatureList enable_keep_account_passphrase(
-      kSyncRememberCustomPassphraseAfterSignout);
   const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
 
   SignInWithoutSyncConsent();

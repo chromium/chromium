@@ -879,11 +879,6 @@ extern const char kSpotlightReadingListSourceDescription[];
 extern const char kStartSurfaceName[];
 extern const char kStartSurfaceDescription[];
 
-// Title and description for the flag to control if custom passphrase should be
-// remembered after sign-out.
-extern const char kSyncRememberCustomPassphraseAfterSignoutName[];
-extern const char kSyncRememberCustomPassphraseAfterSignoutDescription[];
-
 // Title and description for the flag to control if Chrome Sync should use the
 // sandbox servers.
 extern const char kSyncSandboxName[];

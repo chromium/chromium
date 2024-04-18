@@ -203,12 +203,11 @@ class SyncPrefs {
 
   // The encryption bootstrap token is used for explicit passphrase users
   // (usually custom passphrase) and represents a user-entered passphrase.
-  // TODO(crbug.com/40069260): Cleanup *EncryptionBootstrapToken when
-  // kSyncRememberCustomPassphraseAfterSignout is fully rolled-out. The Set/Get
-  // methods will not be used, but ClearAllEncryptionBootstrapTokens will still
-  // be needed to clear the gaia-keyed pref on signout for syncing users. It
-  // should be removed only when kMigrateSyncingUserToSignedIn is fully
-  // rolled-out.
+  // TODO(crbug.com/325201878): Set/Get EncryptionBootstrapToken are only used
+  // in SyncPrefsMigrationTest and should be removed with the migration
+  // logic. ClearAllEncryptionBootstrapTokens is only needed to clear the
+  // gaia-keyed pref on signout for syncing users. It should be removed only
+  // when kMigrateSyncingUserToSignedIn is fully rolled-out.
   std::string GetEncryptionBootstrapToken() const;
   void SetEncryptionBootstrapToken(const std::string& token);
   void ClearAllEncryptionBootstrapTokens();

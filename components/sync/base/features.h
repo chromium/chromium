@@ -198,10 +198,6 @@ BASE_DECLARE_FEATURE(kSyncSchedulerUseWallClockTimer);
 BASE_DECLARE_FEATURE(kSyncShowIdentityErrorsForSignedInUsers);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// If enabled, custom passphrase will be remembered after sign-out. Otherwise,
-// it is cleared on sign-out.
-BASE_DECLARE_FEATURE(kSyncRememberCustomPassphraseAfterSignout);
-
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, WebAPK data will be synced for Backup&Restore purposes.
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);

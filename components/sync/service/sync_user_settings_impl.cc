@@ -451,34 +451,27 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypePreferred() const {
 }
 
 std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
-  if (base::FeatureList::IsEnabled(kSyncRememberCustomPassphraseAfterSignout)) {
-    const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
-    if (gaia_id.empty()) {
-      return std::string();
-    }
-    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
-    CHECK(gaia_id_hash.IsValid());
-    return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash);
+  const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+  if (gaia_id.empty()) {
+    return std::string();
   }
-  return prefs_->GetEncryptionBootstrapToken();
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
+  CHECK(gaia_id_hash.IsValid());
+  return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash);
 }
 
 void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
     const std::string& token) {
-  if (base::FeatureList::IsEnabled(kSyncRememberCustomPassphraseAfterSignout)) {
-    const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
-    if (gaia_id.empty()) {
-      // TODO(crbug.com/1505100): Convert to NOTREACHED_NORETURN.
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
-          << "Must not set passphrase while signed out";
-      return;
-    }
-    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
-    CHECK(gaia_id_hash.IsValid());
-    prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id_hash);
+  const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+  if (gaia_id.empty()) {
+    // TODO(crbug.com/1505100): Convert to NOTREACHED_NORETURN.
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Must not set passphrase while signed out";
     return;
   }
-  prefs_->SetEncryptionBootstrapToken(token);
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
+  CHECK(gaia_id_hash.IsValid());
+  prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id_hash);
 }
 
 }  // namespace syncer

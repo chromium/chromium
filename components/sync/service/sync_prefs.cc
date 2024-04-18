@@ -573,16 +573,14 @@ void SyncPrefs::ClearCachedPassphraseType() {
 
 std::string SyncPrefs::GetEncryptionBootstrapToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This is only called when kSyncRememberCustomPassphraseAfterSignout is
-  // disabled.
+  // This is deprecated, it's only called in SyncPrefsMigrationTest.
   return pref_service_->GetString(
       prefs::internal::kSyncEncryptionBootstrapToken);
 }
 
 void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This is only called when kSyncRememberCustomPassphraseAfterSignout is
-  // disabled.
+  // This is deprecated, it's only called in SyncPrefsMigrationTest.
   pref_service_->SetString(prefs::internal::kSyncEncryptionBootstrapToken,
                            token);
 }
@@ -603,8 +601,6 @@ void SyncPrefs::ClearAllEncryptionBootstrapTokens() {
 
 std::string SyncPrefs::GetEncryptionBootstrapTokenForAccount(
     const signin::GaiaIdHash& gaia_id_hash) const {
-  // This is only called when kSyncRememberCustomPassphraseAfterSignout is
-  // enabled.
   CHECK(gaia_id_hash.IsValid());
   const std::string* account_passphrase =
       pref_service_
@@ -616,8 +612,6 @@ std::string SyncPrefs::GetEncryptionBootstrapTokenForAccount(
 void SyncPrefs::SetEncryptionBootstrapTokenForAccount(
     const std::string& token,
     const signin::GaiaIdHash& gaia_id_hash) {
-  // This is only called when kSyncRememberCustomPassphraseAfterSignout is
-  // enabled.
   CHECK(gaia_id_hash.IsValid());
   {
     ScopedDictPrefUpdate update_account_passphrase_dict(
@@ -982,12 +976,6 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
 
 void SyncPrefs::MaybeMigrateCustomPassphrasePref(
     const signin::GaiaIdHash& gaia_id_hash) {
-  if (!base::FeatureList::IsEnabled(
-          kSyncRememberCustomPassphraseAfterSignout)) {
-    pref_service_->ClearPref(
-        kSyncEncryptionBootstrapTokenPerAccountMigrationDone);
-    return;
-  }
 
   if (pref_service_->GetBoolean(
           kSyncEncryptionBootstrapTokenPerAccountMigrationDone)) {
@@ -1015,8 +1003,6 @@ void SyncPrefs::MaybeMigrateCustomPassphrasePref(
     base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
     all_accounts.Set(gaia_id_hash.ToBase64(), token);
   }
-  CHECK(GetEncryptionBootstrapTokenForAccount(gaia_id_hash) ==
-        GetEncryptionBootstrapToken());
   return;
 }
 
