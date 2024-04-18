@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/webui/ui_bundled/translate_internals/ios_translate_internals_handler.h"
 
+#import <string_view>
+
 #import "components/translate/core/common/language_detection_details.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
@@ -29,13 +31,13 @@ IOSTranslateInternalsHandler::GetVariationsService() {
 }
 
 void IOSTranslateInternalsHandler::RegisterMessageCallback(
-    base::StringPiece message,
+    std::string_view message,
     MessageCallback callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
 void IOSTranslateInternalsHandler::CallJavascriptFunction(
-    base::StringPiece function_name,
+    std::string_view function_name,
     base::span<const base::ValueView> args) {
   web_ui()->CallJavascriptFunction(function_name, args);
 }

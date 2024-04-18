@@ -6,6 +6,8 @@
 
 #import <dispatch/dispatch.h>
 
+#import <string_view>
+
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
@@ -77,7 +79,7 @@ std::string WebViewWebClient::GetUserAgent(web::UserAgentType type) const {
   }
 }
 
-base::StringPiece WebViewWebClient::GetDataResource(
+std::string_view WebViewWebClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) const {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

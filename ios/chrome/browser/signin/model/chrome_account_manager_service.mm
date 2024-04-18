@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
+#import <string_view>
+
 #import "base/check.h"
 #import "base/memory/raw_ref.h"
 #import "base/strings/sys_string_conversions.h"
@@ -193,7 +195,7 @@ bool ChromeAccountManagerService::IsValidIdentity(
 }
 
 bool ChromeAccountManagerService::IsEmailRestricted(
-    base::StringPiece email) const {
+    std::string_view email) const {
   return restriction_.IsAccountRestricted(email);
 }
 
@@ -209,7 +211,7 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
-    base::StringPiece gaia_id) const {
+    std::string_view gaia_id) const {
   // Do not iterate if the gaia ID is invalid. This is duplicated here
   // to avoid allocating a NSString unnecessarily.
   if (gaia_id.empty())

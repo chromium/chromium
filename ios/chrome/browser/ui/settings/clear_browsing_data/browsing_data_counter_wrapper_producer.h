@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_BROWSING_DATA_COUNTER_WRAPPER_PRODUCER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "ios/chrome/browser/browsing_data/model/browsing_data_counter_wrapper.h"
 
@@ -15,7 +16,7 @@ class ChromeBrowserState;
 @interface BrowsingDataCounterWrapperProducer : NSObject
 
 - (std::unique_ptr<BrowsingDataCounterWrapper>)
-    createCounterWrapperWithPrefName:(base::StringPiece)prefName
+    createCounterWrapperWithPrefName:(std::string_view)prefName
                         browserState:(ChromeBrowserState*)browserState
                          prefService:(PrefService*)prefService
                     updateUiCallback:

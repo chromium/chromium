@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 
+#import <string_view>
+
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -79,7 +81,7 @@ const bookmarks::BookmarkNode* PrepareSubscription(
     BOOL unsubscribe_callback) {
   bookmarks::BookmarkModel* bookmark_model =
       shopping_service->GetBookmarkModelUsedForSync();
-  base::StringPiece title = kBookmarkTitle;
+  std::string_view title = kBookmarkTitle;
   const bookmarks::BookmarkNode* product =
       commerce::AddProductBookmark(bookmark_model, base::UTF8ToUTF16(title),
                                    GURL(kTestUrl), kClusterId, true);

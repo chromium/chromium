@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string_view>
+
 #import "base/apple/bundle_locations.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
@@ -289,7 +291,7 @@ std::u16string ChromeWebClient::GetLocalizedString(int message_id) const {
   return l10n_util::GetStringUTF16(message_id);
 }
 
-base::StringPiece ChromeWebClient::GetDataResource(
+std::string_view ChromeWebClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) const {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

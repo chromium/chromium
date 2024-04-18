@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string_view>
+
 #import "base/check_op.h"
 #import "base/ios/ns_error_util.h"
 #import "base/notreached.h"
@@ -62,8 +64,8 @@ NSString* GetErrorPage(const GURL& url,
   std::string extracted_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceStringForScale(
           IDR_NET_ERROR_HTML, scale_factor);
-  base::StringPiece template_html(extracted_string.data(),
-                                  extracted_string.size());
+  std::string_view template_html(extracted_string.data(),
+                                 extracted_string.size());
 
   if (template_html.empty())
     NOTREACHED() << "unable to load template. ID: " << IDR_NET_ERROR_HTML;

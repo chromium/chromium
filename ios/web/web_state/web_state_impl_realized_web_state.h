@@ -6,6 +6,7 @@
 #define IOS_WEB_WEB_STATE_WEB_STATE_IMPL_REALIZED_WEB_STATE_H_
 
 #include <map>
+#include <string_view>
 
 #import "base/memory/raw_ptr.h"
 #import "ios/web/public/web_state_observer.h"
@@ -125,7 +126,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void ClearWebUI();
   bool HasWebUI() const;
   void HandleWebUIMessage(const GURL& source_url,
-                          base::StringPiece message,
+                          std::string_view message,
                           const base::Value::List& args);
   void SetContentsMimeType(const std::string& mime_type);
   void ShouldAllowRequest(

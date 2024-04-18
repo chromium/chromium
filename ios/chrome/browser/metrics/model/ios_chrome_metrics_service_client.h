@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
@@ -82,7 +83,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   std::unique_ptr<metrics::MetricsLogUploader> CreateUploader(
       const GURL& server_url,
       const GURL& insecure_server_url,
-      base::StringPiece mime_type,
+      std::string_view mime_type,
       metrics::MetricsLogUploader::MetricServiceType service_type,
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;

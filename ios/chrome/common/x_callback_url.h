@@ -7,8 +7,8 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "url/gurl.h"
 
 // Returns true if `url` is compliant with the x-callback-url specs.
@@ -17,14 +17,14 @@ bool IsXCallbackURL(const GURL& url);
 // Returns a GURL compliant with the x-callback-url specs (simple version with
 // no parameters set, see XCallbackURLWithParameters for constructing complex
 // URLs).
-GURL CreateXCallbackURL(base::StringPiece scheme, base::StringPiece action);
+GURL CreateXCallbackURL(std::string_view scheme, std::string_view action);
 
 // Returns a GURL compliant with the x-callback-url specs.
 // See http://x-callback-url.com/specifications/ for specifications.
 // `scheme` must not be empty, all other parameters may be.
 GURL CreateXCallbackURLWithParameters(
-    base::StringPiece scheme,
-    base::StringPiece action,
+    std::string_view scheme,
+    std::string_view action,
     const GURL& success_url,
     const GURL& error_url,
     const GURL& cancel_url,

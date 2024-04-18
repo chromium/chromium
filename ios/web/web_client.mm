@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string_view>
+
 #import "ios/web/common/features.h"
 #import "ios/web/public/init/web_main_parts.h"
 #import "url/gurl.h"
@@ -49,10 +51,10 @@ std::u16string WebClient::GetLocalizedString(int message_id) const {
   return std::u16string();
 }
 
-base::StringPiece WebClient::GetDataResource(
+std::string_view WebClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) const {
-  return base::StringPiece();
+  return std::string_view();
 }
 
 base::RefCountedMemory* WebClient::GetDataResourceBytes(int resource_id) const {

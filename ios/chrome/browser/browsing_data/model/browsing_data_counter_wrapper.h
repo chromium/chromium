@@ -6,9 +6,9 @@
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_COUNTER_WRAPPER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
 class ChromeBrowserState;
@@ -24,7 +24,7 @@ class BrowsingDataCounterWrapper {
   // This method returns the counter corresponding to the data type specified by
   // `pref_name` or null if there is no such counter.
   static std::unique_ptr<BrowsingDataCounterWrapper> CreateCounterWrapper(
-      base::StringPiece pref_name,
+      std::string_view pref_name,
       ChromeBrowserState* browser_state,
       PrefService* pref_service,
       UpdateUICallback update_ui_callback);

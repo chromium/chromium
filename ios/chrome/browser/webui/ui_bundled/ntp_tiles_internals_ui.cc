@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/webui/ui_bundled/ntp_tiles_internals_ui.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "components/grit/dev_ui_components_resources.h"
@@ -50,10 +51,10 @@ class IOSNTPTilesInternalsMessageHandlerBridge
   PrefService* GetPrefs() override;
   using MessageCallback =
       base::RepeatingCallback<void(const base::Value::List&)>;
-  void RegisterMessageCallback(base::StringPiece message,
+  void RegisterMessageCallback(std::string_view message,
                                MessageCallback callback) override;
   void CallJavascriptFunctionSpan(
-      base::StringPiece name,
+      std::string_view name,
       base::span<const base::ValueView> values) override;
 
   ntp_tiles::NTPTilesInternalsMessageHandler handler_;
@@ -94,13 +95,13 @@ PrefService* IOSNTPTilesInternalsMessageHandlerBridge::GetPrefs() {
 }
 
 void IOSNTPTilesInternalsMessageHandlerBridge::RegisterMessageCallback(
-    base::StringPiece message,
+    std::string_view message,
     MessageCallback callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
 void IOSNTPTilesInternalsMessageHandlerBridge::CallJavascriptFunctionSpan(
-    base::StringPiece name,
+    std::string_view name,
     base::span<const base::ValueView> values) {
   web_ui()->CallJavascriptFunction(name, values);
 }

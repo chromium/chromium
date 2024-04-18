@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/omnibox_position/metrics.h"
 
 #import <memory>
+#import <string_view>
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
@@ -30,11 +31,11 @@ class MockFieldTrialRegister
  public:
   MOCK_METHOD(void,
               RegisterFieldTrial,
-              (base::StringPiece trial_name, base::StringPiece group_name));
+              (std::string_view trial_name, std::string_view group_name));
 
   MOCK_METHOD(void,
               RegisterSubsegmentFieldTrialIfNeeded,
-              (base::StringPiece trial_name,
+              (std::string_view trial_name,
                segmentation_platform::proto::SegmentId segment_id,
                int subsegment_rank));
 };

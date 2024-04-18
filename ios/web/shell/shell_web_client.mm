@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string_view>
+
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/web/common/user_agent.h"
@@ -58,7 +60,7 @@ std::string ShellWebClient::GetUserAgent(UserAgentType type) const {
   return web::BuildMobileUserAgent("CriOS/36.77.34.45");
 }
 
-base::StringPiece ShellWebClient::GetDataResource(
+std::string_view ShellWebClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) const {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_CONSTANTS_H_
 
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #import "base/values.h"
 
 namespace promos_manager {
@@ -89,10 +89,10 @@ struct Impression {
 std::string NameForPromo(Promo promo);
 
 // Returns a string representation of the short name for the provided `promo`.
-base::StringPiece ShortNameForPromo(Promo promo);
+std::string_view ShortNameForPromo(Promo promo);
 
 // Returns promos_manager::Promo for string `promo`.
-std::optional<Promo> PromoForName(base::StringPiece promo);
+std::optional<Promo> PromoForName(std::string_view promo);
 
 std::optional<Impression> ImpressionFromDict(const base::Value::Dict& dict);
 

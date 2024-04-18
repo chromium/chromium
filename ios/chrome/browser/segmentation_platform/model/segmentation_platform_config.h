@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_SEGMENTATION_PLATFORM_CONFIG_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "components/segmentation_platform/public/field_trial_register.h"
@@ -29,10 +30,10 @@ class IOSFieldTrialRegisterImpl : public FieldTrialRegister {
       delete;
 
   // FieldTrialRegister:
-  void RegisterFieldTrial(base::StringPiece trial_name,
-                          base::StringPiece group_name) override;
+  void RegisterFieldTrial(std::string_view trial_name,
+                          std::string_view group_name) override;
 
-  void RegisterSubsegmentFieldTrialIfNeeded(base::StringPiece trial_name,
+  void RegisterSubsegmentFieldTrialIfNeeded(std::string_view trial_name,
                                             proto::SegmentId segment_id,
                                             int subsegment_rank) override;
 };

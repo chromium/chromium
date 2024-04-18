@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 
 #import <memory>
+#import <string_view>
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/template_url.h"
@@ -87,13 +88,13 @@ TEST_F(ExtensionSearchEngineDataUpdaterTest, AddGoogleSearchEngine) {
   ASSERT_FALSE(StoredSupportsSearchByImage());
 
   TemplateURLData google_template_url_data(
-      u" shortname ", u" keyword ", "https://google.com", base::StringPiece(),
-      base::StringPiece(), base::StringPiece(), base::StringPiece(),
-      base::StringPiece(), base::StringPiece(), base::StringPiece(),
-      base::StringPiece(), base::StringPiece(), base::StringPiece(),
-      base::StringPiece(), base::StringPiece(), base::StringPiece(),
-      base::StringPiece(), {}, base::StringPiece(), base::StringPiece(),
-      base::StringPiece16(), base::Value::List(), false, false, 0);
+      u" shortname ", u" keyword ", "https://google.com", std::string_view(),
+      std::string_view(), std::string_view(), std::string_view(),
+      std::string_view(), std::string_view(), std::string_view(),
+      std::string_view(), std::string_view(), std::string_view(),
+      std::string_view(), std::string_view(), std::string_view(),
+      std::string_view(), {}, std::string_view(), std::string_view(),
+      std::u16string_view(), base::Value::List(), false, false, 0);
   TemplateURL google_template_url(google_template_url_data);
 
   template_url_service_->SetUserSelectedDefaultSearchProvider(

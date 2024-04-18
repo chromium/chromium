@@ -4,6 +4,8 @@
 
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 
+#import <string_view>
+
 #import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -64,8 +66,8 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
         continue;
       }
 
-      base::StringPiece cp_value(static_cast<const char*>(annotation->value()),
-                                 annotation->size());
+      std::string_view cp_value(static_cast<const char*>(annotation->value()),
+                                annotation->size());
       return std::string(cp_value);
     }
     EXPECT_TRUE(false);

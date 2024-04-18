@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_config.h"
 
 #import <memory>
+#import <string_view>
 
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
@@ -63,8 +64,8 @@ IOSFieldTrialRegisterImpl::IOSFieldTrialRegisterImpl() = default;
 IOSFieldTrialRegisterImpl::~IOSFieldTrialRegisterImpl() = default;
 
 void IOSFieldTrialRegisterImpl::RegisterFieldTrial(
-    base::StringPiece trial_name,
-    base::StringPiece group_name) {
+    std::string_view trial_name,
+    std::string_view group_name) {
   // See this comment for limitations of using this API:
   // chrome/browser/segmentation_platform/segmentation_platform_config.cc.
   IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
@@ -73,7 +74,7 @@ void IOSFieldTrialRegisterImpl::RegisterFieldTrial(
 }
 
 void IOSFieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
-    base::StringPiece trial_name,
+    std::string_view trial_name,
     SegmentId segment_id,
     int subsegment_rank) {
   // Per target checks should be replaced by making this as a ModelProvider

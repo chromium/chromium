@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/first_run/model/first_run.h"
 
+#import <string_view>
+
 #import "base/files/file.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
@@ -85,7 +87,7 @@ startup_metric_utils::FirstRunSentinelCreationResult FirstRun::CreateSentinel(
     return startup_metric_utils::FirstRunSentinelCreationResult::
         kFilePathExists;
   GetSentinelInfoGlobal() = std::nullopt;
-  bool success = base::WriteFile(first_run_sentinel, base::StringPiece());
+  bool success = base::WriteFile(first_run_sentinel, std::string_view());
   if (error)
     *error = base::File::GetLastFileError();
 

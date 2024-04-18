@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
 
+#import <string_view>
+
 #import "base/check_op.h"
 #import "base/strings/string_piece.h"
 
@@ -19,7 +21,7 @@ ButtonConfig::ButtonConfig(NSString* title, UIAlertActionStyle style)
 }
 
 ButtonConfig::ButtonConfig(NSString* title,
-                           base::StringPiece user_action_name,
+                           std::string_view user_action_name,
                            UIAlertActionStyle style)
     : title(title), user_action_name(user_action_name), style(style) {
   DCHECK_GT(title.length, 0U);

@@ -7,6 +7,7 @@
 
 #import <memory>
 #import <optional>
+#include <string_view>
 
 #import "ios/web/public/web_client.h"
 
@@ -27,7 +28,7 @@ class WebViewWebClient : public web::WebClient {
   void AddAdditionalSchemes(Schemes* schemes) const override;
   bool IsAppSpecificURL(const GURL& url) const override;
   std::string GetUserAgent(web::UserAgentType type) const override;
-  base::StringPiece GetDataResource(
+  std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) const override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;

@@ -4,6 +4,8 @@
 
 #include "ios/chrome/common/x_callback_url.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -26,26 +28,27 @@ bool IsXCallbackURL(const GURL& url) {
   if (url.IsStandard())
     return url.host_piece() == kXCallbackURLHost;
 
-  base::StringPiece path_piece = url.path_piece();
+  std::string_view path_piece = url.path_piece();
   if (base::StartsWith(path_piece, "//"))
-    path_piece = path_piece.substr(2, base::StringPiece::npos);
+    path_piece = path_piece.substr(2, std::string_view::npos);
 
   size_t pos = path_piece.find('/', 0);
-  if (pos != base::StringPiece::npos)
+  if (pos != std::string_view::npos) {
     path_piece = path_piece.substr(0, pos);
+  }
 
   return path_piece == kXCallbackURLHost;
 }
 
-GURL CreateXCallbackURL(base::StringPiece scheme, base::StringPiece action) {
+GURL CreateXCallbackURL(std::string_view scheme, std::string_view action) {
   return CreateXCallbackURLWithParameters(scheme, action, GURL(), GURL(),
                                           GURL(),
                                           std::map<std::string, std::string>());
 }
 
 GURL CreateXCallbackURLWithParameters(
-    base::StringPiece scheme,
-    base::StringPiece action,
+    std::string_view scheme,
+    std::string_view action,
     const GURL& success_url,
     const GURL& error_url,
     const GURL& cancel_url,

@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/browsing_data/model/browsing_data_counter_wrapper.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -32,7 +34,7 @@ namespace {
 // for `browser_state` related to a given deletion preference `pref_name`.
 std::unique_ptr<browsing_data::BrowsingDataCounter>
 CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
-                                    base::StringPiece pref_name) {
+                                    std::string_view pref_name) {
   if (pref_name == browsing_data::prefs::kDeleteBrowsingHistory) {
     return std::make_unique<browsing_data::HistoryCounter>(
         ios::HistoryServiceFactory::GetForBrowserStateIfExists(
@@ -71,7 +73,7 @@ CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
 // static
 std::unique_ptr<BrowsingDataCounterWrapper>
 BrowsingDataCounterWrapper::CreateCounterWrapper(
-    base::StringPiece pref_name,
+    std::string_view pref_name,
     ChromeBrowserState* browser_state,
     PrefService* pref_service,
     UpdateUICallback update_ui_callback) {

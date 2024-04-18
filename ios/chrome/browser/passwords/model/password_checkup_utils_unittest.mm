@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 
+#import <string_view>
+
 #import "base/strings/string_piece.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
@@ -61,8 +63,8 @@ using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::WarningType;
 
-PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece16 password) {
+PasswordForm MakeSavedPassword(std::string_view signon_realm,
+                               std::u16string_view password) {
   PasswordForm form;
   form.url = GURL(signon_realm);
   form.signon_realm = std::string(signon_realm);

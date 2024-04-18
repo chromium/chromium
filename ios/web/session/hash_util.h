@@ -6,9 +6,9 @@
 #define IOS_WEB_SESSION_HASH_UTIL_H_
 
 #include <functional>
+#include <string_view>
 #include <tuple>
 
-#include "base/strings/string_piece.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 
@@ -28,9 +28,9 @@ struct Hasher<T*> : Hasher<const T*> {};
 template <>
 struct Hasher<net::SHA256HashValue> {
   size_t operator()(const net::SHA256HashValue& value) const {
-    const base::StringPiece value_string_piece(
+    const std::string_view value_string_piece(
         reinterpret_cast<const char*>(&value.data[0]), sizeof(value.data));
-    return Hasher<base::StringPiece>{}(value_string_piece);
+    return Hasher<std::string_view>{}(value_string_piece);
   }
 };
 

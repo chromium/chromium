@@ -7,6 +7,8 @@
 #import <stddef.h>
 #import <stdint.h>
 
+#import <string_view>
+
 #import "base/compiler_specific.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
@@ -305,7 +307,7 @@ bool WebStateImpl::HasWebUI() const {
 }
 
 void WebStateImpl::HandleWebUIMessage(const GURL& source_url,
-                                      base::StringPiece message,
+                                      std::string_view message,
                                       const base::Value::List& args) {
   RealizedState()->HandleWebUIMessage(source_url, message, args);
 }

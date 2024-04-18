@@ -12,13 +12,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
@@ -161,10 +161,10 @@ class WebState : public base::SupportsUserData {
     // GenericPendingReceiver.
     using Callback =
         base::RepeatingCallback<void(mojo::GenericPendingReceiver*)>;
-    void AddInterface(base::StringPiece interface_name, Callback callback);
+    void AddInterface(std::string_view interface_name, Callback callback);
 
     // Removes a callback added by AddInterface.
-    void RemoveInterface(base::StringPiece interface_name);
+    void RemoveInterface(std::string_view interface_name);
 
     // Attempts to bind `receiver` by matching its interface name against the
     // callbacks registered on this InterfaceBinder.

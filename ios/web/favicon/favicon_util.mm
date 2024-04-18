@@ -7,6 +7,8 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <WebKit/WebKit.h>
 
+#import <string_view>
+
 #import "base/logging.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_split.h"
@@ -47,7 +49,7 @@ bool ExtractFaviconURL(const base::Value::List& favicons,
           sizes_string, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
           base::SPLIT_WANT_NONEMPTY);
       for (const auto& cut : split_sizes) {
-        std::vector<base::StringPiece> pieces = base::SplitStringPiece(
+        std::vector<std::string_view> pieces = base::SplitStringPiece(
             cut, "x", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
         int width = 0, height = 0;
         if (pieces.size() != 2 || !base::StringToInt(pieces[0], &width) ||

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #import "base/memory/raw_ptr.h"
@@ -33,12 +34,12 @@ class WebUIIOSImpl : public web::WebUIIOS,
   void SetController(std::unique_ptr<WebUIIOSController> controller) override;
   void AddMessageHandler(
       std::unique_ptr<WebUIIOSMessageHandler> handler) override;
-  void RegisterMessageCallback(base::StringPiece message,
+  void RegisterMessageCallback(std::string_view message,
                                MessageCallback callback) override;
   void ProcessWebUIIOSMessage(const GURL& source_url,
-                              base::StringPiece message,
+                              std::string_view message,
                               const base::Value::List& args) override;
-  void CallJavascriptFunction(base::StringPiece function_name,
+  void CallJavascriptFunction(std::string_view function_name,
                               base::span<const base::ValueView> args) override;
   void ResolveJavascriptCallback(const base::ValueView callback_id,
                                  const base::ValueView response) override;

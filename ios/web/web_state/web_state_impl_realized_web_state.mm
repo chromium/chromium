@@ -4,6 +4,8 @@
 
 #import "ios/web/web_state/web_state_impl_realized_web_state.h"
 
+#import <string_view>
+
 #import "base/check.h"
 #import "base/compiler_specific.h"
 #import "base/functional/bind.h"
@@ -387,7 +389,7 @@ bool WebStateImpl::RealizedWebState::HasWebUI() const {
 
 void WebStateImpl::RealizedWebState::HandleWebUIMessage(
     const GURL& source_url,
-    base::StringPiece message,
+    std::string_view message,
     const base::Value::List& args) {
   if (!HasWebUI()) {
     return;

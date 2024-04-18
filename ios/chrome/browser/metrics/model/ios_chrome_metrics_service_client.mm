@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.h"
 
 #import <UIKit/UIKit.h>
-
 #import <stdint.h>
+
 #import <string>
+#import <string_view>
 #import <utility>
 #import <vector>
 
@@ -246,7 +247,7 @@ std::unique_ptr<metrics::MetricsLogUploader>
 IOSChromeMetricsServiceClient::CreateUploader(
     const GURL& server_url,
     const GURL& insecure_server_url,
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     metrics::MetricsLogUploader::MetricServiceType service_type,
     const metrics::MetricsLogUploader::UploadCallback& on_upload_complete) {
   return std::make_unique<metrics::NetMetricsLogUploader>(

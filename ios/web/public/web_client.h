@@ -9,10 +9,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "ios/web/common/user_agent.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -92,8 +92,9 @@ class WebClient {
   // Returns a string resource given its id.
   virtual std::u16string GetLocalizedString(int message_id) const;
 
-  // Returns the contents of a resource in a StringPiece given the resource id.
-  virtual base::StringPiece GetDataResource(
+  // Returns the contents of a resource in a std::string_view given the resource
+  // id.
+  virtual std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) const;
 

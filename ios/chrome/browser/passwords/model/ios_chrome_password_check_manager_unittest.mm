@@ -6,6 +6,7 @@
 
 #import <memory>
 #import <string>
+#import <string_view>
 #import <vector>
 
 #import "base/functional/bind.h"
@@ -83,9 +84,9 @@ std::unique_ptr<KeyedService> MakeMockPasswordCheckManagerObserver(
   return std::make_unique<MockBulkLeakCheckService>();
 }
 
-PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece16 username,
-                               base::StringPiece16 password = kPassword116) {
+PasswordForm MakeSavedPassword(std::string_view signon_realm,
+                               std::u16string_view username,
+                               std::u16string_view password = kPassword116) {
   PasswordForm form;
   form.url = GURL(signon_realm);
   form.signon_realm = std::string(signon_realm);

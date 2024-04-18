@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
 
 #import <memory>
+#import <string_view>
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -157,7 +158,7 @@ class NewTabPageMediatorTest : public PlatformTest {
             std::make_unique<TemplateURL>(template_url_data)));
   }
 
-  void OverrideSearchEngineChoiceCountry(base::StringPiece country) {
+  void OverrideSearchEngineChoiceCountry(std::string_view country) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, country);
   }

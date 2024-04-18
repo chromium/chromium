@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sessions/session_util.h"
 
+#import <string_view>
+
 #import "base/check_op.h"
 #import "base/files/file_path.h"
 #import "base/strings/strcat.h"
@@ -21,7 +23,7 @@ namespace session_util {
 namespace {
 
 // Suffix appended to the SceneState session identifier for inactive Browsers.
-constexpr base::StringPiece kInactiveBrowserIdentifierSuffix = "-Inactive";
+constexpr std::string_view kInactiveBrowserIdentifierSuffix = "-Inactive";
 
 }  // namespace
 

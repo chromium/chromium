@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_mediator.h"
 
+#import <string_view>
+
 #import "base/check_op.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -132,7 +134,7 @@ using alert_overlays::AlertResponse;
 - (void (^)(AlertAction* action))actionForButtonAtIndexRow:(size_t)row
                                                     column:(size_t)column {
   __weak __typeof__(self) weakSelf = self;
-  base::StringPiece actionName =
+  std::string_view actionName =
       self.alertRequest->button_configs()[row][column].user_action_name;
   return ^(AlertAction*) {
     if (!actionName.empty()) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/passwords/cwv_reuse_check_service_internal.h"
+#import <string_view>
 
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -17,9 +17,8 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
-
+#import "ios/web_view/internal/passwords/cwv_reuse_check_service_internal.h"
 #import "testing/gtest/include/gtest/gtest.h"
-
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -34,10 +33,10 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using password_manager::PasswordForm;
 
 PasswordForm GenerateSavedPassword(
-    base::StringPiece signon_realm,
-    base::StringPiece16 username,
-    base::StringPiece16 password,
-    base::StringPiece16 username_element = u"",
+    std::string_view signon_realm,
+    std::u16string_view username,
+    std::u16string_view password,
+    std::u16string_view username_element = u"",
     PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);

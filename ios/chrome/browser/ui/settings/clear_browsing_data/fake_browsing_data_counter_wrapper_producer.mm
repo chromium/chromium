@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
 
+#import <string_view>
+
 @implementation FakeBrowsingDataCounterWrapperProducer
 
 - (std::unique_ptr<BrowsingDataCounterWrapper>)
-    createCounterWrapperWithPrefName:(base::StringPiece)prefName
+    createCounterWrapperWithPrefName:(std::string_view)prefName
                         browserState:(ChromeBrowserState*)browserState
                          prefService:(PrefService*)prefService
                     updateUiCallback:

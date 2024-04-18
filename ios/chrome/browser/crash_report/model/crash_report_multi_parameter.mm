@@ -6,6 +6,7 @@
 
 #import <memory>
 #import <optional>
+#import <string_view>
 
 #import "base/check.h"
 #import "base/json/json_writer.h"
@@ -35,23 +36,23 @@ const int kMaximumMultiParameterValueSize = 256;
   return self;
 }
 
-- (void)removeValue:(base::StringPiece)key {
+- (void)removeValue:(std::string_view)key {
   _dictionary.Remove(key);
   [self updateCrashReport];
 }
 
-- (void)setValue:(base::StringPiece)key withValue:(int)value {
+- (void)setValue:(std::string_view)key withValue:(int)value {
   _dictionary.Set(key, value);
   [self updateCrashReport];
 }
 
-- (void)incrementValue:(base::StringPiece)key {
+- (void)incrementValue:(std::string_view)key {
   const int value = _dictionary.FindInt(key).value_or(0);
   _dictionary.Set(key, value + 1);
   [self updateCrashReport];
 }
 
-- (void)decrementValue:(base::StringPiece)key {
+- (void)decrementValue:(std::string_view)key {
   const std::optional<int> maybe_value = _dictionary.FindInt(key);
   if (maybe_value.has_value()) {
     const int value = maybe_value.value();
