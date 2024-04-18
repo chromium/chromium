@@ -51,7 +51,7 @@ suite('realtimeCpuChartTestSuite', function() {
    */
   function getFrameDuration() {
     assertTrue(!!realtimeCpuChartElement);
-    return realtimeCpuChartElement.frameDuration_;
+    return realtimeCpuChartElement.frameDuration;
   }
 
   /**
@@ -60,7 +60,7 @@ suite('realtimeCpuChartTestSuite', function() {
    */
   function getPaddings() {
     assertTrue(!!realtimeCpuChartElement);
-    return realtimeCpuChartElement.padding_;
+    return realtimeCpuChartElement.padding;
   }
 
   /**

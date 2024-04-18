@@ -40,7 +40,7 @@ build_webui("build") {
     "network_troubleshooting.ts",
     "overview_card.ts",
     "percent_bar_chart.ts",
-    "realtime_cpu_chart.js",
+    "realtime_cpu_chart.ts",
     "routine_result_entry.ts",
     "routine_result_list.ts",
     "routine_section.ts",
@@ -84,6 +84,7 @@ build_webui("build") {
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",

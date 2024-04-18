@@ -111,12 +111,12 @@
     background-color: var(--chart-system-line-color);
   }
 </style>
-<svg id="chart" width$="[[width_]]" height$="[[height_]]" aria-hidden="true">
+<svg id="chart" width$="[[width]]" height$="[[height]]" aria-hidden="true">
   <g id="chartGroup">
     <defs>
       <!-- Define chart area and boundaries -->
       <clipPath id="defClip">
-        <rect width$="[[graphWidth_]]" height$="[[graphHeight_]]"></rect>
+        <rect width$="[[graphWidth]]" height$="[[graphHeight]]"></rect>
       </clipPath>
       <!-- Chart area gradient -->
       <linearGradient id="user-gradient" gradientTransform="rotate(90)">
@@ -141,7 +141,7 @@
     <div id="legend-bar" class="user"></div>
     <label id="userLabel">[[i18n('cpuUsageUser')]]</label>
     <span id="userData" aria-labelledby="userLabel">
-      [[getPercentageLabel_(user)]]
+      [[getPercentageLabel(user)]]
     </span>
   </div>
   <div class="divider"></div>
@@ -149,7 +149,7 @@
     <div id="legend-bar" class="system"></div>
     <label id="systemLabel">[[i18n('cpuUsageSystem')]]</label>
     <span id="systemData" aria-labelledby="systemLabel">
-      [[getPercentageLabel_(system)]]
+      [[getPercentageLabel(system)]]
     </span>
   </div>
 </div>
