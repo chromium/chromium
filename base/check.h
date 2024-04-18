@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/macros/if.h"
 #include "base/macros/is_empty.h"
-#include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 
 // This header defines the CHECK, DCHECK, and DPCHECK macros.

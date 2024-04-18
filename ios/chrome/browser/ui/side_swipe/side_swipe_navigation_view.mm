@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_navigation_view.h"
 
+#import <cmath>
 #import <numbers>
 
 #import "base/check.h"

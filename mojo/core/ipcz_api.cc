@@ -9,6 +9,8 @@
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 #include "third_party/ipcz/src/api.h"
 
+#include <vector>
+
 namespace mojo::core {
 
 namespace {

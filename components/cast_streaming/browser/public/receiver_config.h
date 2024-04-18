@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_PUBLIC_RECEIVER_CONFIG_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"

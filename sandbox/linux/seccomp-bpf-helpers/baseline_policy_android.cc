@@ -12,6 +12,7 @@
 #include <linux/nbd.h>
 #include <linux/net.h>
 #include <linux/userfaultfd.h>
+#include <sched.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
 #include <sys/types.h>

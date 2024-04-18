@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <vector>
+
 namespace password_manager {
 class AffiliatedGroup;
 struct CredentialUIEntry;

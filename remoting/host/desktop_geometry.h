@@ -9,6 +9,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+#include <vector>
+
 namespace remoting {
 using DesktopScreenId = intptr_t;
 

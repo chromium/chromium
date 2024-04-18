@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/win/scoped_handle.h"
 #include "components/power_metrics/energy_metrics_provider.h"

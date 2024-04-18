@@ -7,6 +7,8 @@
 
 #include "base/strings/cstring_view.h"
 
+#include <vector>
+
 namespace base {
 namespace {
 

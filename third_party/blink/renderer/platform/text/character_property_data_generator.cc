@@ -20,6 +20,7 @@
 #include <fstream>
 #include <iterator>
 #include <memory>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
