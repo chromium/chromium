@@ -368,6 +368,9 @@ class CORE_EXPORT LineBreaker {
   // same flow.
   bool resume_block_in_inline_in_same_flow_ = false;
 
+  // TODO(crbug.com/333630754): Remove when `FasterMinContent` is stabilized.
+  bool use_faster_min_content_ = false;
+
 #if DCHECK_IS_ON()
   bool has_considered_creating_break_token_ = false;
 #endif

@@ -400,6 +400,8 @@ LineBreaker::LineBreaker(InlineNode node,
                             node.UseFirstLineStyle()),
       sticky_images_quirk_(mode != LineBreakerMode::kContent &&
                            node.IsStickyImagesQuirkForContentSize()),
+      use_faster_min_content_(
+          RuntimeEnabledFeatures::FasterMinContentEnabled()),
       items_data_(node.ItemsData(use_first_line_style_)),
       end_item_index_(items_data_.items.size()),
       text_content_(
@@ -833,7 +835,12 @@ void LineBreaker::NextLine(LineInfo* line_info) {
 void LineBreaker::BreakLine(LineInfo* line_info) {
   DCHECK(!line_info->IsLastLine());
   const HeapVector<InlineItem>& items = Items();
-  state_ = LineBreakState::kContinue;
+  // If `kMinContent`, the line will overflow. Avoid calling `HandleOverflow()`
+  // for the performance.
+  state_ =
+      use_faster_min_content_ && UNLIKELY(mode_ == LineBreakerMode::kMinContent)
+          ? LineBreakState::kOverflow
+          : LineBreakState::kContinue;
   trailing_whitespace_ = WhitespaceState::kLeading;
   while (state_ != LineBreakState::kDone) {
     // If we reach at the end of the block, this is the last line.
@@ -3963,8 +3970,14 @@ void LineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
             (overflow_wrap == EOverflowWrap::kBreakWord &&
              mode_ == LineBreakerMode::kContent);
       }
-      if (UNLIKELY(override_break_anywhere_ && break_anywhere_if_overflow_)) {
-        line_break_type = LineBreakType::kBreakCharacter;
+      if (UNLIKELY(break_anywhere_if_overflow_)) {
+        if (UNLIKELY(override_break_anywhere_)) {
+          line_break_type = LineBreakType::kBreakCharacter;
+        } else if (use_faster_min_content_ &&
+                   UNLIKELY(mode_ == LineBreakerMode::kMinContent)) {
+          override_break_anywhere_ = true;
+          line_break_type = LineBreakType::kBreakCharacter;
+        }
       }
       break_iterator_.SetBreakType(line_break_type);
     }
