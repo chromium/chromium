@@ -1101,6 +1101,10 @@ interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
     method constructor
+interface LanguageTranslator
+    attribute @@toStringTag
+    method constructor
+    method translate
 interface Lock
     attribute @@toStringTag
     getter mode
@@ -1879,6 +1883,11 @@ interface TransformStreamDefaultController
     method enqueue
     method error
     method terminate
+interface Translation
+    attribute @@toStringTag
+    method canTranslate
+    method constructor
+    method createTranslator
 interface TrustedHTML
     static method fromLiteral
     attribute @@toStringTag
@@ -3390,6 +3399,7 @@ interface WorkerGlobalScope : EventTarget
     getter performance
     getter scheduler
     getter self
+    getter translation
     getter trustedTypes
     method atob
     method btoa

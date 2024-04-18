@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/bundz_translation/translation_manager_impl.h"
 #include "chrome/browser/cart/commerce_hint_service.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
@@ -103,9 +104,11 @@
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
@@ -1084,6 +1087,11 @@ void PopulateChromeFrameBinders(
   map->Add<blink::mojom::WebPrintingService>(
       base::BindRepeating(&printing::CreateWebPrintingServiceForFrame));
 #endif
+
+  if (base::FeatureList::IsEnabled(blink::features::kEnableTranslationAPI)) {
+    map->Add<blink::mojom::TranslationManager>(
+        base::BindRepeating(&TranslationManagerImpl::Create));
+  }
 }
 
 void PopulateChromeWebUIFrameBinders(

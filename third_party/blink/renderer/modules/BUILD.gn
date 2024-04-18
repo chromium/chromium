@@ -130,6 +130,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/netinfo",
     "//third_party/blink/renderer/modules/nfc",
     "//third_party/blink/renderer/modules/notifications",
+    "//third_party/blink/renderer/modules/on_device_translation",
     "//third_party/blink/renderer/modules/payments",
     "//third_party/blink/renderer/modules/payments/goods",
     "//third_party/blink/renderer/modules/peerconnection",

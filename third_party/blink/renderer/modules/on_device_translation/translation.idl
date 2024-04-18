@@ -1,0 +1,34 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum TranslationAvailability {
+  "readily",
+  "after-download",
+  "no"
+};
+
+[
+  RuntimeEnabled=TranslationAPI,
+  Exposed=(Window,Worker)
+]
+interface Translation {
+  [
+    RuntimeEnabled=TranslationAPI,
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<TranslationAvailability> canTranslate(
+    TranslationLanguageOptions options
+  );
+  [
+    RuntimeEnabled=TranslationAPI,
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<LanguageTranslator> createTranslator(
+    TranslationLanguageOptions options
+  );
+};

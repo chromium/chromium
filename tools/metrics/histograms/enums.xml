@@ -11511,6 +11511,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4943" label="V8DeviceProperties_UniqueId_AttributeGetter"/>
   <int value="4944"
       label="SharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient"/>
+  <int value="4945" label="V8LanguageTranslator_Translate_Method"/>
+  <int value="4946" label="V8Translation_CanTranslate_Method"/>
+  <int value="4947" label="V8Translation_CreateTranslator_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

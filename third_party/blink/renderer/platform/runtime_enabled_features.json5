@@ -3923,6 +3923,11 @@
       name: "TranslateService",
     },
     {
+      name: "TranslationAPI",
+      status: "test",
+      base_feature: "EnableTranslationAPI",
+    },
+    {
       name: "TrustedTypeBeforePolicyCreationEvent",
       status: "experimental",
     },

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -53,7 +54,16 @@ ScriptPromise<IDLString> LanguageTranslator::translate(
   translator_remote_->Translate(
       input, WTF::BindOnce(
                  [](ScriptPromiseResolver<IDLString>* resolver,
-                    const WTF::String& output) { resolver->Resolve(output); },
+                    const WTF::String& output) {
+                   if (output.IsNull()) {
+                     resolver->Reject(DOMException::Create(
+                         "Unable to translate the given text.",
+                         DOMException::GetErrorName(
+                             DOMExceptionCode::kNotReadableError)));
+                   } else {
+                     resolver->Resolve(output);
+                   }
+                 },
                  WrapPersistent(resolver)));
 
   return promise;

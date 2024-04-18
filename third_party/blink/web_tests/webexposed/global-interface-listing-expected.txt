@@ -5715,6 +5715,10 @@ interface KeyframeEffect : AnimationEffect
     setter composite
     setter pseudoElement
     setter target
+interface LanguageTranslator
+    attribute @@toStringTag
+    method constructor
+    method translate
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element
@@ -10106,6 +10110,11 @@ interface TransitionEvent : Event
     getter propertyName
     getter pseudoElement
     method constructor
+interface Translation
+    attribute @@toStringTag
+    method canTranslate
+    method constructor
+    method createTranslator
 interface TreeWalker
     attribute @@toStringTag
     getter currentNode
@@ -13029,6 +13038,7 @@ namespace console
     getter styleMedia
     getter toolbar
     getter top
+    getter translation
     getter trustedTypes
     getter visualViewport
     getter window
