@@ -398,6 +398,13 @@ This is a union type. Exactly one field is set.
 | timeoutSeconds | number | Length of time to listen to the volume button events. The value should be positive and less or equal to 600 seconds |
 
 ### CreateNetworkBandwidthRoutineArguments
+
+Checks the network bandwidth and reports the speed info.
+
+This routine is supported when `oem-name` in cros-config is set and not empty
+string. The external service for the routine is not available for the
+unrecognized devices.
+
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 
