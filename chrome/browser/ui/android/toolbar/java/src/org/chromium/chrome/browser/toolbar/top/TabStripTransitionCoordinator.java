@@ -397,10 +397,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         // TODO(crbug.com/41494086): Remove #invalidate after CaptureObservers respect a null
         // dirtyRect input.
         mHandler.post(
-                () -> {
-                    resourceAdapter.invalidate(null);
-                    resourceAdapter.triggerBitmapCapture();
-                });
+                mCallbackController.makeCancelable(
+                        () -> {
+                            resourceAdapter.invalidate(null);
+                            resourceAdapter.triggerBitmapCapture();
+                        }));
     }
 
     /**
