@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_clear_last_error.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "build/build_config.h"
@@ -633,11 +632,6 @@ class BASE_EXPORT LogMessage {
   // The file and line information passed in to the constructor.
   const char* const file_;
   const int line_;
-
-  // This is useful since the LogMessage class uses a lot of Win32 calls
-  // that will lose the value of GLE and the code that called the log function
-  // will have lost the thread error value when the log call returns.
-  base::ScopedClearLastError last_error_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void InitWithSyslogPrefix(base::StringPiece filename,

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/logging.h"
+
 #include <sstream>
 #include <string>
 
@@ -10,11 +12,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/sanitizer_buildflags.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -22,13 +25,14 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX)
+#include <errno.h>
 #include <signal.h>
 #include <unistd.h>
+
 #include "base/posix/eintr_wrapper.h"
 #endif  // BUILDFLAG(IS_POSIX)
 
@@ -915,6 +919,81 @@ TEST_F(LoggingTest, BuildCrashString) {
       42, LOGGING_ERROR);
   msg.stream() << "Hello";
   EXPECT_EQ("file.cc:42: Hello", msg.BuildCrashString());
+}
+
+TEST_F(LoggingTest, SystemErrorNotChanged) {
+  auto set_last_error = [](logging::SystemErrorCode error) {
+#if BUILDFLAG(IS_WIN)
+    ::SetLastError(error);
+#else
+    errno = error;
+#endif
+  };
+
+  SystemErrorCode during_streaming = 0;
+  SystemErrorCode set_during_streaming = 0;
+
+  set_last_error(SystemErrorCode(123));
+  LOG(WARNING) << (during_streaming = GetLastSystemErrorCode())
+               << (set_last_error(SystemErrorCode(42)),
+                   set_during_streaming = GetLastSystemErrorCode());
+
+  // Initializing the LogMessage shouldn't change the observable error code.
+  EXPECT_EQ(SystemErrorCode(123), during_streaming);
+  // Verify that we can set and get the error code during streaming.
+  EXPECT_EQ(SystemErrorCode(42), set_during_streaming);
+  // Verify that the last set error code (during streaming) is preserved after
+  // logging as well.
+  EXPECT_EQ(SystemErrorCode(42), GetLastSystemErrorCode());
+
+  // Repeat the test above but using PLOG.
+  during_streaming = 0;
+  set_during_streaming = 0;
+  set_last_error(SystemErrorCode(123));
+  PLOG(ERROR) << (during_streaming = GetLastSystemErrorCode())
+              << (set_last_error(SystemErrorCode(42)),
+                  set_during_streaming = GetLastSystemErrorCode());
+
+  EXPECT_EQ(SystemErrorCode(123), during_streaming);
+  EXPECT_EQ(SystemErrorCode(42), set_during_streaming);
+  EXPECT_EQ(SystemErrorCode(42), GetLastSystemErrorCode());
+}
+
+TEST_F(LoggingTest, CorrectSystemErrorUsed) {
+  auto set_last_error = [](logging::SystemErrorCode error) {
+#if BUILDFLAG(IS_WIN)
+    ::SetLastError(error);
+#else
+    errno = error;
+#endif
+  };
+
+  // Use a static because only captureless lambdas can be converted to a
+  // function pointer for SetLogMessageHandler().
+  static base::NoDestructor<std::string> log_string;
+  SetLogMessageHandler([](int severity, const char* file, int line,
+                          size_t start, const std::string& str) -> bool {
+    *log_string = str;
+    return true;
+  });
+
+  const SystemErrorCode kTestError = 28;
+  const std::string kExpectedSystemErrorMsg =
+      SystemErrorCodeToString(kTestError);
+
+  set_last_error(kTestError);
+  PLOG(ERROR);
+
+  // Test that the last system error code got printed as expected.
+  EXPECT_NE(std::string::npos, log_string->find(kExpectedSystemErrorMsg));
+
+  if (DCHECK_IS_ON()) {
+    *log_string = "";
+    set_last_error(kTestError);
+    DPLOG(ERROR);
+
+    EXPECT_NE(std::string::npos, log_string->find(kExpectedSystemErrorMsg));
+  }
 }
 
 TEST_F(LoggingTest, BuildTimeVLOG) {

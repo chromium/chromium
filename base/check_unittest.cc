@@ -15,6 +15,7 @@
 #include "base/macros/concat.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -22,6 +23,14 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include <errno.h>
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace {
 
@@ -82,7 +91,7 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
   } while (0)
 #else
 #define EXPECT_CHECK(msg, check_expr) \
-  EXPECT_DEATH_IF_SUPPORTED(check_expr, CHECK_MATCHER(__LINE__, msg))
+  BASE_EXPECT_DEATH(check_expr, CHECK_MATCHER(__LINE__, msg))
 #endif  // !CHECK_WILL_STREAM()
 
 // Macro which expects a DCHECK to fire if DCHECKs are enabled.
@@ -91,7 +100,7 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
 #define EXPECT_DCHECK(msg, check_expr)                                         \
   do {                                                                         \
     if (DCHECK_IS_ON() && logging::LOGGING_DCHECK == logging::LOGGING_FATAL) { \
-      EXPECT_DEATH_IF_SUPPORTED(check_expr, CHECK_MATCHER(__LINE__, msg));     \
+      BASE_EXPECT_DEATH(check_expr, CHECK_MATCHER(__LINE__, msg));             \
     } else if (DCHECK_IS_ON()) {                                               \
       ScopedExpectDumpWithoutCrashing expect_dump;                             \
       check_expr;                                                              \
@@ -736,6 +745,44 @@ TEST(CheckDeathTest, NotReachedNotFatalUntil) {
   // Fatal in current major version.
   EXPECT_CHECK("Check failed: false. foo", NOTREACHED(kCurrentMilestone)
                                                << "foo");
+}
+
+TEST(CheckDeathTest, CorrectSystemErrorUsed) {
+  const logging::SystemErrorCode kTestError = 28;
+  const std::string kExpectedCheckMessageRegex = base::StrCat(
+      {" Check failed: false. ", base::NumberToString(kTestError)});
+  const std::string kExpectedPCheckMessageRegex =
+      base::StrCat({" Check failed: false. ", base::NumberToString(kTestError),
+                    ": ", logging::SystemErrorCodeToString(kTestError)});
+
+  auto set_last_error = [](logging::SystemErrorCode error) {
+#if BUILDFLAG(IS_WIN)
+    ::SetLastError(error);
+#else
+    errno = error;
+#endif
+  };
+
+  // Test that the last system error code was used as expected.
+  set_last_error(kTestError);
+  EXPECT_CHECK(kExpectedCheckMessageRegex,
+               CHECK(false) << logging::GetLastSystemErrorCode());
+
+  set_last_error(kTestError);
+  EXPECT_DCHECK(kExpectedCheckMessageRegex,
+                DCHECK(false) << logging::GetLastSystemErrorCode());
+
+  set_last_error(kTestError);
+  EXPECT_CHECK(kExpectedPCheckMessageRegex,
+               PCHECK(false) << logging::GetLastSystemErrorCode());
+
+  set_last_error(kTestError);
+  EXPECT_DCHECK(kExpectedPCheckMessageRegex,
+                DPCHECK(false) << logging::GetLastSystemErrorCode());
+
+  set_last_error(kTestError);
+  EXPECT_DCHECK(kExpectedCheckMessageRegex,
+                NOTREACHED() << logging::GetLastSystemErrorCode());
 }
 
 }  // namespace

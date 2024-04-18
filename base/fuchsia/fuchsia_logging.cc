@@ -11,6 +11,7 @@
 
 #include "base/location.h"
 #include "base/process/process.h"
+#include "base/scoped_clear_last_error.h"
 #include "base/strings/stringprintf.h"
 
 namespace logging {
@@ -26,6 +27,9 @@ ZxLogMessage::~ZxLogMessage() {
 }
 
 void ZxLogMessage::AppendError() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   // zx_status_t error values are negative, so log the numeric version as
   // decimal rather than hex. This is also useful to match zircon/errors.h for
   // grepping.

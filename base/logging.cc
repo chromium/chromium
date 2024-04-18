@@ -40,6 +40,7 @@
 #include "base/pending_task.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_handle.h"
+#include "base/scoped_clear_last_error.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -698,6 +699,9 @@ LogMessage::~LogMessage() {
 }
 
 void LogMessage::Flush() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   size_t stack_start = stream_.str().length();
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
     !BUILDFLAG(IS_AIX)
@@ -929,6 +933,9 @@ std::string LogMessage::BuildCrashString() const {
 
 // writes the common header info to the stream
 void LogMessage::Init(const char* file, int line) {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   base::StringPiece filename(file);
   size_t last_slash_pos = filename.find_last_of("\\/");
   if (last_slash_pos != base::StringPiece::npos)
@@ -1092,6 +1099,9 @@ Win32ErrorLogMessage::~Win32ErrorLogMessage() {
 }
 
 void Win32ErrorLogMessage::AppendError() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   stream() << ": " << SystemErrorCodeToString(err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
@@ -1117,6 +1127,9 @@ ErrnoLogMessage::~ErrnoLogMessage() {
 }
 
 void ErrnoLogMessage::AppendError() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   stream() << ": " << SystemErrorCodeToString(err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
