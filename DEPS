@@ -435,7 +435,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ios_webkit
   # and whatever else without interference from each other.
-  'ios_webkit_revision': '59e9de61b7b36507836fa8b098e8839d7d995b13',
+  'ios_webkit_revision': 'f8c0fe750d94b7db23d193c0b1f31858c2537620',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libexpat
   # and whatever else without interference from each other.
