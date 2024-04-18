@@ -20,6 +20,7 @@
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
+#include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
@@ -85,6 +86,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(bookmark)
 DEFINE_SPECIFICS_TO_VALUE_TEST(collaboration_group)
 DEFINE_SPECIFICS_TO_VALUE_TEST(compare)
 DEFINE_SPECIFICS_TO_VALUE_TEST(contact_info)
+DEFINE_SPECIFICS_TO_VALUE_TEST(cookie)
 DEFINE_SPECIFICS_TO_VALUE_TEST(device_info)
 DEFINE_SPECIFICS_TO_VALUE_TEST(dictionary)
 DEFINE_SPECIFICS_TO_VALUE_TEST(extension)

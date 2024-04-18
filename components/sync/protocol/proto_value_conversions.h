@@ -28,6 +28,7 @@ class ClientToServerResponse;
 class CollaborationGroupSpecifics;
 class CompareSpecifics;
 class ContactInfoSpecifics;
+class CookieSpecifics;
 class CrossUserSharingPublicKey;
 class DebugEventInfo;
 class DebugInfo;
@@ -144,6 +145,8 @@ base::Value CompareSpecificsToValue(
 
 base::Value ContactInfoSpecificsToValue(
     const sync_pb::ContactInfoSpecifics& proto);
+
+base::Value CookieSpecificsToValue(const sync_pb::CookieSpecifics& proto);
 
 base::Value DebugEventInfoToValue(const sync_pb::DebugEventInfo& proto);
 

@@ -24,6 +24,7 @@ import "components/sync/protocol/bookmark_specifics.proto";
 import "components/sync/protocol/collaboration_group_specifics.proto";
 import "components/sync/protocol/compare_specifics.proto";
 import "components/sync/protocol/contact_info_specifics.proto";
+import "components/sync/protocol/cookie_specifics.proto";
 import "components/sync/protocol/device_info_specifics.proto";
 import "components/sync/protocol/dictionary_specifics.proto";
 import "components/sync/protocol/experiments_specifics.proto";
@@ -155,6 +156,7 @@ message EntitySpecifics {
     CollaborationGroupSpecifics collaboration_group = 1259076;
     CompareSpecifics compare = 1329438;
     PlusAddressSpecifics plus_address = 1267844;
+    CookieSpecifics cookie = 1281100;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/

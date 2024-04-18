@@ -18,6 +18,7 @@
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
+#include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
@@ -417,6 +418,32 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::StringToken& proto) {
   VISIT(metadata);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::CookieSpecifics& proto) {
+  VISIT(unique_key);
+  VISIT(name);
+  VISIT(value);
+  VISIT(domain);
+  VISIT(path);
+  VISIT(creation_time_windows_epoch_micros);
+  VISIT(expiry_time_windows_epoch_micros);
+  VISIT(last_access_time_windows_epoch_micros);
+  VISIT(last_update_time_windows_epoch_micros);
+  VISIT(secure);
+  VISIT(httponly);
+  VISIT_ENUM(site_restrictions);
+  VISIT_ENUM(priority);
+  VISIT_ENUM(source_scheme);
+  VISIT(partition_key);
+  VISIT(source_port);
+  VISIT_ENUM(source_type);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::CookieSpecifics::SerializedCookiePartitionKey& proto) {
+  VISIT(top_level_site);
+  VISIT(has_cross_site_ancestor);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::CustomNudgeDelay& proto) {
   VISIT(datatype_id);
   VISIT(delay_ms);
@@ -646,6 +673,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(collaboration_group);
   VISIT(compare);
   VISIT(contact_info);
+  VISIT(cookie);
   VISIT(device_info);
   VISIT(dictionary);
   VISIT(extension);

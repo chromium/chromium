@@ -25,6 +25,7 @@
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
+#include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -348,6 +349,7 @@ IMPLEMENT_PROTO_TO_VALUE(ClientConfigParams)
 IMPLEMENT_PROTO_TO_VALUE(CollaborationGroupSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(CompareSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ContactInfoSpecifics)
+IMPLEMENT_PROTO_TO_VALUE(CookieSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(CrossUserSharingPublicKey)
 IMPLEMENT_PROTO_TO_VALUE(DebugEventInfo)
 IMPLEMENT_PROTO_TO_VALUE(DebugInfo)

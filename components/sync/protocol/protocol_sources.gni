@@ -18,6 +18,7 @@ sync_protocol_sources = [
   "collaboration_group_specifics.proto",
   "compare_specifics.proto",
   "contact_info_specifics.proto",
+  "cookie_specifics.proto",
   "data_type_progress_marker.proto",
   "deletion_origin.proto",
   "device_info_specifics.proto",

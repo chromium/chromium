@@ -1,0 +1,92 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// This proto represents a single cookie. Except for `unique_key` all
+// fields should be the same as in `net::CanonicalCookie`.
+message CookieSpecifics {
+  // To be used as a Sync client tag, corresponds to `StrictlyUniqueCookieKey`.
+  // `StrictlyUniqueCookieKey` contains selected members of
+  // `net::CanonicalCoookie` which we already save in specifics, but we save the
+  // key separately to be resilient against future changes to
+  // `StrictlyUniqueCookieKey`. By reading it from this field (instead of
+  // computing it from other data in specifics) we make sure that the client tag
+  // will be stable across different Chrome versions. It also leaves the option
+  // to check if the key saved in a given entity is aligned with the current
+  // definition of `StrictlyUniqueCookieKey`. If it is not, client can choose to
+  // ignore that entity, or implement any other special handling. The string
+  // saved here is expected to be computed by concatenating serialized values
+  // from the `StrictlyUniqueCookieKey` for the corresponding cookie.
+  optional string unique_key = 1;
+
+  optional string name = 2;
+  optional string value = 3;
+  optional string domain = 4;
+  optional string path = 5;
+
+  optional int64 creation_time_windows_epoch_micros = 6;
+  optional int64 expiry_time_windows_epoch_micros = 7;
+  optional int64 last_access_time_windows_epoch_micros = 8;
+  optional int64 last_update_time_windows_epoch_micros = 9;
+
+  optional bool secure = 10;
+  optional bool httponly = 11;
+
+  // The numbering is different compared to the `net::CookieSameSite` enum since
+  // the style guide asks to use UNSPECIFIED for the zero value enum
+  // (https://protobuf.dev/programming-guides/style/#enums).
+  enum CookieSameSite {
+    UNSPECIFIED = 0;
+    NO_RESTRICTION = 1;
+    LAX_MODE = 2;
+    STRICT_MODE = 3;
+  }
+
+  optional CookieSameSite site_restrictions = 12;
+
+  // The numbering is different compared to the `net::CookiePriority` enum since
+  // the style guide asks to use UNSPECIFIED for the zero value enum
+  // (https://protobuf.dev/programming-guides/style/#enums).
+  enum CookiePriority {
+    UNSPECIFIED_PRIORITY = 0;
+    LOW = 1;
+    MEDIUM = 2;
+    HIGH = 3;
+  }
+
+  optional CookiePriority priority = 13;
+
+  enum CookieSourceScheme {
+    UNSET = 0;
+    NON_SECURE = 1;
+    SECURE = 2;
+  };
+
+  optional CookieSourceScheme source_scheme = 14;
+
+  message SerializedCookiePartitionKey {
+    optional string top_level_site = 1;
+    optional bool has_cross_site_ancestor = 2;
+  }
+
+  optional SerializedCookiePartitionKey partition_key = 15;
+  optional int32 source_port = 16;
+
+  enum CookieSourceType {
+    UNKNOWN = 0;
+    HTTP = 1;
+    SCRIPT = 2;
+    OTHER = 3;
+  };
+
+  optional CookieSourceType source_type = 17;
+}
