@@ -25,7 +25,7 @@ GpuMemoryBufferVideoFrameMapper::GpuMemoryBufferVideoFrameMapper(
 
 scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
     scoped_refptr<const FrameResource> video_frame,
-    int permissions) const {
+    int permissions) {
   if (!video_frame) {
     LOG(ERROR) << "Video frame is nullptr";
     return nullptr;

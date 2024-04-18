@@ -111,26 +111,34 @@ std::unique_ptr<VideoFrameMapper> VaapiDmaBufVideoFrameMapper::Create(
 
   auto video_frame_mapper =
       base::WrapUnique(new VaapiDmaBufVideoFrameMapper(format));
-  if (!video_frame_mapper->vaapi_wrapper_)
-    return nullptr;
 
   return video_frame_mapper;
 }
 
 VaapiDmaBufVideoFrameMapper::VaapiDmaBufVideoFrameMapper(
     VideoPixelFormat format)
-    : VideoFrameMapper(format),
-      vaapi_wrapper_(VaapiWrapper::Create(VaapiWrapper::kVideoProcess,
-                                          VAProfileNone,
-                                          EncryptionScheme::kUnencrypted,
-                                          base::DoNothing())
-                         .value_or(nullptr)) {}
+    : VideoFrameMapper(format) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
-VaapiDmaBufVideoFrameMapper::~VaapiDmaBufVideoFrameMapper() {}
+VaapiDmaBufVideoFrameMapper::~VaapiDmaBufVideoFrameMapper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::MapFrame(
     scoped_refptr<const FrameResource> video_frame,
-    int permissions) const {
+    int permissions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!vaapi_wrapper_) {
+    vaapi_wrapper_ =
+        VaapiWrapper::Create(VaapiWrapper::kVideoProcess, VAProfileNone,
+                             EncryptionScheme::kUnencrypted, base::DoNothing())
+            .value_or(nullptr);
+    if (!vaapi_wrapper_) {
+      VLOGF(1) << "Failed to create VaapiWrapper";
+      return nullptr;
+    }
+  }
   DCHECK(vaapi_wrapper_);
   if (!video_frame) {
     LOG(ERROR) << "Video frame is nullptr";

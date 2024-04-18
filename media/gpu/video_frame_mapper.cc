@@ -9,7 +9,7 @@
 namespace media {
 scoped_refptr<VideoFrame> VideoFrameMapper::Map(
     scoped_refptr<const VideoFrame> video_frame,
-    int permissions) const {
+    int permissions) {
   return MapFrame(VideoFrameResource::CreateConst(std::move(video_frame)),
                   permissions);
 }

@@ -31,12 +31,12 @@ class MEDIA_GPU_EXPORT VideoFrameMapper {
   // if needed.
   virtual scoped_refptr<VideoFrame> MapFrame(
       scoped_refptr<const FrameResource> video_frame,
-      int permissions) const = 0;
+      int permissions) = 0;
 
   // VideoFrame version of Map(). This wraps the VideoFrame in a FrameResource
   // and calls Map(scoped_refpr<FrameResource> ...).
   scoped_refptr<VideoFrame> Map(scoped_refptr<const VideoFrame> video_frame,
-                                int permissions) const;
+                                int permissions);
 
   // Returns the allowed pixel format of video frames on Map().
   VideoPixelFormat pixel_format() const { return format_; }
