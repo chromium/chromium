@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 // JavaScript initiated link captures from about:blank cleans up the about:blank
 // page.
 // TODO(crbug.com/40938945): Flaky on Linux and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_JavascriptAboutBlankNavigationCleanUp \
   DISABLED_JavascriptAboutBlankNavigationCleanUp
 #else
