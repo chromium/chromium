@@ -23,46 +23,56 @@ class MockLargeIconService : public favicon::LargeIconService {
   gfx::ImageSkia favicon() const { return favicon_; }
 
   // LargeIconService overrides.
-  MOCK_METHOD5(GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
-               void(const GURL& page_url,
-                    bool may_page_url_be_private,
-                    bool should_trim_page_url_path,
-                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-                    favicon_base::GoogleFaviconServerCallback callback));
-  MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForPageUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& page_url,
-                   int min_source_size_in_pixel,
-                   int desired_size_in_pixel,
-                   favicon_base::LargeIconCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD5(GetLargeIconImageOrFallbackStyleForPageUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& page_url,
-                   int min_source_size_in_pixel,
-                   int desired_size_in_pixel,
-                   favicon_base::LargeIconImageCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD4(GetLargeIconRawBitmapForPageUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& page_url,
-                   int min_source_size_in_pixel,
-                   favicon_base::FaviconRawBitmapCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForIconUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& icon_url,
-                   int min_source_size_in_pixel,
-                   int desired_size_in_pixel,
-                   favicon_base::LargeIconCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD4(GetIconRawBitmapOrFallbackStyleForPageUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& page_url,
-                   int desired_size_in_pixel,
-                   favicon_base::LargeIconCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD1(TouchIconFromGoogleServer, void(const GURL& icon_url));
+  MOCK_METHOD(void,
+              GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
+              (const GURL& page_url,
+               bool may_page_url_be_private,
+               bool should_trim_page_url_path,
+               const net::NetworkTrafficAnnotationTag& traffic_annotation,
+               favicon_base::GoogleFaviconServerCallback callback),
+              (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl,
+              (const GURL& page_url,
+               int min_source_size_in_pixel,
+               int desired_size_in_pixel,
+               favicon_base::LargeIconCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetLargeIconImageOrFallbackStyleForPageUrl,
+              (const GURL& page_url,
+               int min_source_size_in_pixel,
+               int desired_size_in_pixel,
+               favicon_base::LargeIconImageCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetLargeIconRawBitmapForPageUrl,
+              (const GURL& page_url,
+               int min_source_size_in_pixel,
+               favicon_base::FaviconRawBitmapCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetLargeIconRawBitmapOrFallbackStyleForIconUrl,
+              (const GURL& icon_url,
+               int min_source_size_in_pixel,
+               int desired_size_in_pixel,
+               favicon_base::LargeIconCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetIconRawBitmapOrFallbackStyleForPageUrl,
+              (const GURL& page_url,
+               int desired_size_in_pixel,
+               favicon_base::LargeIconCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(void,
+              TouchIconFromGoogleServer,
+              (const GURL& icon_url),
+              (override));
 
   const GURL kIconUrl = GURL("https://www.example.com/icon");
 
