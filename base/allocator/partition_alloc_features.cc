@@ -430,7 +430,7 @@ BASE_FEATURE(kPartitionAllocDisableBRPInBufferPartition,
              "PartitionAllocDisableBRPInBufferPartition",
              FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
 BASE_FEATURE(kUsePoolOffsetFreelists,
              "PartitionAllocUsePoolOffsetFreelists",
              base::FEATURE_DISABLED_BY_DEFAULT);

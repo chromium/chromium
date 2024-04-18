@@ -1202,13 +1202,13 @@ TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
     uint8_t count = 0;
     auto* head = tcache->bucket_for_testing(index).freelist_head;
     while (head) {
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
       head = freelist_dispatcher->GetNextForThreadCacheTrue(
           head, tcache->bucket_for_testing(index).slot_size);
 #else
       head = freelist_dispatcher->GetNextForThreadCache<true>(
           head, tcache->bucket_for_testing(index).slot_size);
-#endif  // USE_FREELIST_POOL_OFFSETS
+#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
       count++;
     }
     return count;
@@ -1313,11 +1313,11 @@ TEST_P(PartitionAllocThreadCacheTest, TryPurgeMultipleCorrupted) {
   auto* curr = medium_bucket->active_slot_spans_head->get_freelist_head();
   const internal::PartitionFreelistDispatcher* freelist_dispatcher =
       root()->get_freelist_dispatcher();
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
   curr = freelist_dispatcher->GetNextForThreadCacheTrue(curr, kMediumSize);
 #else
   curr = freelist_dispatcher->GetNextForThreadCache<true>(curr, kMediumSize);
-#endif  // USE_FREELIST_POOL_OFFSETS
+#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
   freelist_dispatcher->CorruptNextForTesting(curr, 0x12345678);
   tcache->TryPurge();
   freelist_dispatcher->SetNext(curr, nullptr);

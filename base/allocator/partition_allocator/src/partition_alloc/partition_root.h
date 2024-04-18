@@ -896,12 +896,12 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
   const internal::PartitionFreelistDispatcher* get_freelist_dispatcher() {
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
     if (settings.use_pool_offset_freelists) {
       return internal::PartitionFreelistDispatcher::Create(
           internal::PartitionFreelistEncoding::kPoolOffsetFreeList);
     }
-#endif  // USE_FREELIST_POOL_OFFSETS
+#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
     return internal::PartitionFreelistDispatcher::Create(
         internal::PartitionFreelistEncoding::kEncodedFreeList);
   }

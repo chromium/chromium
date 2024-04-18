@@ -209,7 +209,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
 // This feature is additionally gated behind a buildflag because
 // pool offset freelists cannot be represented when PartitionAlloc uses
 // 32-bit pointers.
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
 BASE_EXPORT BASE_DECLARE_FEATURE(kUsePoolOffsetFreelists);
 #endif
 

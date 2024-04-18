@@ -576,13 +576,13 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   // does not introduce another cache miss.
   const internal::PartitionFreelistDispatcher* freelist_dispatcher =
       get_freelist_dispatcher_from_root();
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
   internal::PartitionFreelistEntry* next =
       freelist_dispatcher->GetNextForThreadCacheTrue(entry, bucket.slot_size);
 #else
   internal::PartitionFreelistEntry* next =
       freelist_dispatcher->GetNextForThreadCache<true>(entry, bucket.slot_size);
-#endif  // USE_FREELIST_POOL_OFFSETS
+#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
 
   PA_DCHECK(entry != next);
   bucket.count--;

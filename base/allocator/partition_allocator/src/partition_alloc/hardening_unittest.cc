@@ -138,7 +138,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
 #if !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) && \
     PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 TEST(HardeningTest, ConstructPoolOffsetFromStackPointerCrashing) {
@@ -223,7 +223,7 @@ TEST(HardeningTest, PoolOffsetSuccessfulCorruption) {
 #endif  // BUILDFLAG(USE_FREESLOT_BITMAP)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // USE_FREELIST_POOL_OFFSETS
+#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
 }  // namespace
 }  // namespace partition_alloc::internal
 

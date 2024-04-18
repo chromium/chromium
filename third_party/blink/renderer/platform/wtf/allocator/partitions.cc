@@ -105,12 +105,12 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   const auto memory_tagging =
       enable_memory_tagging ? partition_alloc::PartitionOptions::kEnabled
                             : partition_alloc::PartitionOptions::kDisabled;
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
   const bool pool_offset_freelists_enabled =
       base::FeatureList::IsEnabled(base::features::kUsePoolOffsetFreelists);
 #else
   const bool pool_offset_freelists_enabled = false;
-#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
   const auto use_pool_offset_freelists =
       pool_offset_freelists_enabled
           ? partition_alloc::PartitionOptions::kEnabled

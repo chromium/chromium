@@ -198,7 +198,7 @@ buildflag_header("partition_alloc_buildflags") {
     "GLUE_CORE_POOLS=$_glue_core_pools",
     "ENABLE_POINTER_COMPRESSION=$_enable_pointer_compression",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
-    "USE_FREELIST_POOL_OFFSETS=$use_freelist_dispatcher",
+    "USE_FREELIST_DISPATCHER=$use_freelist_dispatcher",
 
     "USE_STARSCAN=$use_starscan",
 

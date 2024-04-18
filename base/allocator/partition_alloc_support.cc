@@ -1121,12 +1121,12 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   const bool zapping_by_free_flags = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocZappingByFreeFlags);
 
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
   const bool use_pool_offset_freelists =
       base::FeatureList::IsEnabled(base::features::kUsePoolOffsetFreelists);
 #else
   const bool use_pool_offset_freelists = false;
-#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
 
   bool enable_memory_tagging = false;
   partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode =
