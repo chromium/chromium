@@ -149,6 +149,7 @@
 <translation id="3702352323269013324">Chromium での広告のパーソナライズの詳細</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{管理者が、このアップデートを適用するために Chromium を再起動するよう求めています}=1{管理者が、このアップデートを適用するために Chromium を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、このアップデートを適用するために Chromium を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="3713809861844741608">新しい Chromium タブでリンクを開く(&amp;T)</translation>
+<translation id="3728124580182886854">パーソナライズなどの目的で、Chromium と他の Google サービスをリンクします</translation>
 <translation id="3788675262216168505">Chromium プロファイルを管理</translation>
 <translation id="378917192836375108">Chromium では、ウェブサイト上の電話番号をクリックするだけで Skype で通話を発信できます。</translation>
 <translation id="3790262771324122253">Chromium で一部のダウンロードがブロックされる理由</translation>
@@ -231,6 +232,7 @@
 <translation id="5352361688875342522">その他の Chromium プロフィール</translation>
 <translation id="5358375970380395591">現在、管理対象アカウントでログインしており、あなたの Chromium プロフィールを管理者が制御できる状態になっています。あなたの Chromium データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。<ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">他のコード: <ph name="EXTRA_CODE" />。</translation>
+<translation id="5377622451696208284">パーソナライズするには、Chromium をウェブとアプリのアクティビティに追加します</translation>
 <translation id="5383439451358640070">Chromium で一部のファイルがブロックされる理由</translation>
 <translation id="5386450000063123300">Chromium を更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="538767207339317086">Chromium へのログインを許可する</translation>
@@ -274,6 +276,7 @@
 <translation id="608006075545470555">このブラウザに仕事用プロファイルを追加</translation>
 <translation id="6096348254544841612">Chromium をカスタマイズしてご活用ください。アップデートが利用可能です。</translation>
 <translation id="6102072151902574948">オンにすると、バックグラウンド アクティビティと視覚効果（滑らかなスクロールや動画のフレームレートなど）を制限することで、バッテリーを節約します。</translation>
+<translation id="6107893135096467929">オン • Chromium では、この拡張機能の提供元を確認できません</translation>
 <translation id="6119438414301547735">拡張機能に Chromium ツールバーへのアクセス リクエストの表示を許可する</translation>
 <translation id="6120345080069858279">このパスワードは Google アカウントに保存されるため、覚えておく必要はありません。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> は危険なファイルであるため、Chromium でブロックしました。</translation>
@@ -308,6 +311,7 @@
 <translation id="6403826409255603130">Chromium は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
 <translation id="6442900851116057561">Chromium OS を再起動してください</translation>
 <translation id="6443470774889161065">アクセスする可能性の高いページがさらに多くプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します。</translation>
+<translation id="645458117210240797">オフ • Chromium では、この拡張機能の提供元を確認できません</translation>
 <translation id="6455857529632101747">Chromium プロフィールへようこそ</translation>
 <translation id="6475912303565314141">この拡張機能では、Chromium の起動時に表示されるページも制御されます。</translation>
 <translation id="648319183876919572">セーフ ブラウジング保護強化機能では、危険なウェブサイトやダウンロードから高いセキュリティ強度で保護されます</translation>
@@ -330,6 +334,7 @@
 <translation id="6717134281241384636">バージョンが新しい Chromium のプロフィールは使用できません。
 
 一部の機能が利用できない可能性があります。別の場所のプロフィールを指定するか、新しいバージョンの Chromium をご使用ください。</translation>
+<translation id="6729124504294600478">パーソナライズなどの機能を利用するには、Chromium をウェブとアプリのアクティビティと、リンクされた Google サービスに追加します</translation>
 <translation id="6734291798041940871">Chromium は既にパソコンのすべてのユーザーに対してインストールされています。</translation>
 <translation id="673636774878526923">お使いのすべてのデバイスで Chromium の設定やデータを使用するには、ログインして同期を有効にしてください。</translation>
 <translation id="67706546131546258">このファイルは危害を及ぼす可能性があるため、スキャンすることをおすすめします。</translation>
@@ -357,9 +362,11 @@
 <translation id="718435575166326686">このサイトを利用するには、Chromium でカメラの使用を許可する必要があります</translation>
 <translation id="7196312274710523067">Chromium を起動できませんでした。もう一度お試しください。</translation>
 <translation id="7197677400338048821">Chromium でパスワードを確認できません。24 時間後にもう一度お試しください。</translation>
+<translation id="7198365860059291213">没入型セッションを開始するには、Chromium でシーン認識とハンド トラッキングの権限が必要です</translation>
 <translation id="7213407614656404070">メッセージ、ドキュメント、他のアプリのリンクをクリックしたときに、常に Chromium で開くよう設定できます</translation>
 <translation id="7223968959479464213">タスク マネージャ - Chromium</translation>
 <translation id="7246575524853130370">Chromium が推定したお客様の興味 / 関心</translation>
+<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{削除することをおすすめします}other{削除することをおすすめします}}</translation>
 <translation id="7309928523159922338">広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chromium の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。</translation>
 <translation id="731795002583552498">Chromium を更新しています</translation>
 <translation id="7318036098707714271">ユーザー設定ファイルが壊れているか無効です。

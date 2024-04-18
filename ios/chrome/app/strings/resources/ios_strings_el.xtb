@@ -1043,6 +1043,7 @@
 <translation id="6363526231572697780">Δεν υπάρχει όνομα χρήστη</translation>
 <translation id="6366190659675876144">Βασική Ασφάλεια</translation>
 <translation id="6366663624406569102">Αποσύνδεση και απενεργοποίηση συγχρονισμού</translation>
+<translation id="6368038301482806847">Επιλέξτε μια μηχανή αναζήτησης από τη λίστα.</translation>
 <translation id="6374469231428023295">Δοκιμάστε ξανά</translation>
 <translation id="6377118281273296434">Ασφάλεια ιστοτόπου</translation>
 <translation id="6383719166112032471">Άνοιγμα Τοποθεσίας…</translation>
@@ -1203,6 +1204,7 @@
 <translation id="7161230316646448869">Συγχρονίστε τους σελιδοδείκτες, το ιστορικό σας και πολλά άλλα σε όλες τις συσκευές</translation>
 <translation id="7162168282402939716">Ξεκλείδωμα Καρτελών ανώνυμης περιήγησης με <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Άνοιγμα ρυθμίσεων</translation>
+<translation id="7186568385131859684">Ελέγξτε τον τρόπο με τον οποίο το ιστορικό περιήγησης χρησιμοποιείται με τα άλλα δεδομένα σας στις υπηρεσίες Google</translation>
 <translation id="7189598951263744875">Κοινοποίηση…</translation>
 <translation id="719133302483559673">Διαχειριστείτε τα ενδιαφέροντα και τις προτιμήσεις σας.</translation>
 <translation id="7192050974311852563">Έναρξη καταγραφής</translation>
@@ -1246,6 +1248,7 @@
 <translation id="7438481509621345350">Θα βλέπετε πλέον ειδήσεις από τον ιστότοπο <ph name="CHANNEL_NAME" /> όταν ανοίγετε μια νέα καρτέλα.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον φάκελο {title}}other{Οι σελιδοδείκτες αποθηκεύτηκαν στον φάκελο {title}}}</translation>
 <translation id="7454057999980797137">Νομός/Επαρχία</translation>
+<translation id="7458706065921255639">Εξατομίκευση και σύνδεση</translation>
 <translation id="745899714366929493">Όλη την ημέρα</translation>
 <translation id="7459628154744868585">Η Βελτιωμένη προστασία είναι ενεργή</translation>
 <translation id="7465351360025415755">Λάβετε περιεχόμενο που είναι σημαντικό για εσάς</translation>

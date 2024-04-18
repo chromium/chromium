@@ -1043,6 +1043,7 @@
 <translation id="6363526231572697780">Немає імені користувача</translation>
 <translation id="6366190659675876144">Стандартний захист</translation>
 <translation id="6366663624406569102">Вийти й вимкнути синхронізацію</translation>
+<translation id="6368038301482806847">Виберіть пошукову систему зі списку.</translation>
 <translation id="6374469231428023295">Повторити спробу</translation>
 <translation id="6377118281273296434">Безпека сайту</translation>
 <translation id="6383719166112032471">Відкрити URL-адресу</translation>
@@ -1202,6 +1203,7 @@
 <translation id="7161230316646448869">Синхронізуйте свої закладки, історію тощо на всіх пристроях</translation>
 <translation id="7162168282402939716">Розблокувати анонімні вкладки, використовуючи <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Відкрити налаштування</translation>
+<translation id="7186568385131859684">Виберіть, як історія вебперегляду використовуватиметься з іншими даними в сервісах Google</translation>
 <translation id="7189598951263744875">Поділитися...</translation>
 <translation id="719133302483559673">Керуйте своїми інтересами й уподобаннями.</translation>
 <translation id="7192050974311852563">Почати запис у журналі</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7438481509621345350">Тепер, відкривши нову вкладку, ви будете бачити історії із сайту <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладку збережено в папці "{title}"}one{Закладки збережено в папці "{title}"}few{Закладки збережено в папці "{title}"}many{Закладки збережено в папці "{title}"}other{Закладки збережено в папці "{title}"}}</translation>
 <translation id="7454057999980797137">Область</translation>
+<translation id="7458706065921255639">Персоналізація і зв’язування</translation>
 <translation id="745899714366929493">Увесь день</translation>
 <translation id="7459628154744868585">Покращений захист увімкнено</translation>
 <translation id="7465351360025415755">Отримуйте новини про цікавий для вас контент</translation>

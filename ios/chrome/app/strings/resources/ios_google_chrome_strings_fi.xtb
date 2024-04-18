@@ -125,6 +125,7 @@ Huomioitavaa:
 <translation id="4633328489441962921">Chrome ei voi tarkistaa päivityksiä</translation>
 <translation id="4636900170638246267">Kirjaudu tälle sivustolle ja Chromeen.</translation>
 <translation id="4761869838909035636">Tee Chromen turvatarkistus</translation>
+<translation id="4798859546468762093">Voit käyttää personointia ja muita ominaisuuksia, kun lisäät Chromen näihin: <ph name="FEATURE_NAME_1" /> ja <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi.
 
@@ -181,6 +182,7 @@ Huomioitavaa:
 <translation id="6389317667633680932">Tutustu uusiin ominaisuuksiin, joiden avulla saat parhaan hyödyn Chromesta.</translation>
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6427126399757991875">Organisaatiosi ottaa käyttöön Chromea…</translation>
+<translation id="6481963882741794338">Linkitä Chrome ja muita Googlen palveluja esimerkiksi personointia varten</translation>
 <translation id="6484712497741564393">Kirjautuneena tilillä <ph name="EMAIL" />.
 
 Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa Chrome-dataa Google-tililläsi.</translation>

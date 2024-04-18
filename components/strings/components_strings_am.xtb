@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">ደራሲ፦</translation>
 <translation id="1247030632403369975">አሉሚንየም</translation>
 <translation id="1252209483516427155">ውጭ የሚለበስ</translation>
+<translation id="1253096324252841344">በ<ph name="FINANCIAL_ACCOUNT_TYPES" /> ይክፈሉ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />፣ <ph name="TYPE_2" /> (ሰምሯል)</translation>
 <translation id="1255086252236620440">ምግብ ማደባለቂያዎች</translation>
 <translation id="1256368399071562588">&lt;p&gt;አንድ ድር ጣቢያ ለመጎብኘት ሞክረው አልከፈት ካለ መጀመሪያ ስህተቱን በእነዚህ መላ መፈለጊያ ደረጃዎች ለመፍታት ይሞክሩ፦&lt;/p&gt;
@@ -1513,6 +1514,7 @@
 <translation id="385489333361351399">የካሜራ እና ፎቶ መሣሪያዎች</translation>
 <translation id="3858027520442213535">ቀን እና ሰዓትን አዘምን</translation>
 <translation id="3858860766373142691">ስም</translation>
+<translation id="3865339060090354361">ለ<ph name="CREDIT_CARD_NAME" /> ደንቦች እዚህ ይመልከቱ</translation>
 <translation id="3872834068356954457">ሳይንስ</translation>
 <translation id="3875783148670536197">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="3880456882942693779">ሥነ ጥበባት እና መዝናኛ</translation>
@@ -2354,6 +2356,7 @@
 <translation id="553377674408670169">የትምህርት ስራዎች</translation>
 <translation id="5536214594743852365">የ«<ph name="SECTION" />» ክፍሉን አሳይ</translation>
 <translation id="553782666181800029">ቹው 2 ፖስታ</translation>
+<translation id="5538270463355278784">ራስ-ሰር ሙሉ ገጽ ዕይታ</translation>
 <translation id="5539243836947087108">ታንኳ</translation>
 <translation id="5540224163453853">የተጠየቀውን ጽሁፍ ማግኘት አልተቻለም።</translation>
 <translation id="5540969246441091044">የፈረስ ስፖርት</translation>
@@ -2718,6 +2721,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ከዚያ በChrome ውስጥ ያወረዷቸውን ፋይሎች ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="6254436959401408446">ይህን ገፅ ለመክፈት በቂ ማህደረ ትውስታ የለም</translation>
 <translation id="625463612687472648">መፍቀድ አቁም</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{በChrome ላይ ግዢዎችን ሲፈጽሙ <ph name="FINANCIAL_ACCOUNT_TYPES" /> የሚለውን እንደ አማራጭ ይመልከቱ}one{በChrome ላይ ግዢዎችን ሲፈጽሙ <ph name="FINANCIAL_ACCOUNT_TYPES" /> የሚለውን እንደ አማራጭ ይመልከቱ}other{በChrome ላይ ግዢዎችን ሲፈጽሙ <ph name="FINANCIAL_ACCOUNT_TYPES" /> የሚሉትን እንደ አማራጭ ይመልከቱ}}</translation>
 <translation id="6259156558325130047">&amp;ዳግም ደርድርን ድገም</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> እልባቶች</translation>
 <translation id="6264376385120300461">ለማንኛውም አውርድ</translation>
@@ -3853,6 +3857,7 @@
 <translation id="8378714024927312812">በእርስዎ ድርጅት የሚተዳደር</translation>
 <translation id="8380941800586852976">አደገኛ</translation>
 <translation id="8381674639488873545">እነዚህ ክፍያዎች የአንድ ጊዜ ወይም ተደጋጋሚ፣ እና የማያስታውቁ ሊሆኑ ይችላሉ። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">ራስ-ሰር ሙሉ ገጽ ዕይታ</translation>
 <translation id="838307841291975086">ስቴሽን ዋገኖች</translation>
 <translation id="8389532092404711541">በተለምዶ <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">ብጁ እና የከፍተኛ ሥራ ተሽከርካሪዎች</translation>

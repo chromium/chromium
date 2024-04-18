@@ -24,6 +24,7 @@
 <translation id="1119447706177454957">Errore interno</translation>
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1135805404083530719">Pannello di controllo</translation>
 <translation id="1145018782460575098">È aperta la finestra per aggiornare il firmware dei dispositivi esterni. <ph name="NUM_UPDATES" /> aggiornamenti disponibili.</translation>
 <translation id="1145516343487477149">Trova articoli del Centro assistenza e risposte a domande comuni sui Chromebook</translation>
 <translation id="1154390310959620237">Puoi personalizzare solo 5 scorciatoie. Elimina una scorciatoia per aggiungerne una nuova.</translation>
@@ -32,6 +33,7 @@
 <translation id="1167755866710282443">Apri il menu per personalizzare i tasti. Trascina il menu per spostarlo.</translation>
 <translation id="1171349345463658120">laguna sabbiosa</translation>
 <translation id="1174073918202301297">Scorciatoia aggiunta</translation>
+<translation id="11743817593307477">Usa i tasti freccia per spostare il controllo sull'azione di gioco che vuoi. Usa il tasto Invio per posizionare il controllo. Usa il tasto Esc per annullare.</translation>
 <translation id="1175697296044146566">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Nella media (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">accogliente</translation>
@@ -101,6 +103,7 @@
 <translation id="1515129336378114413">home page del browser</translation>
 <translation id="1526389707933164996">Animazione del salvaschermo</translation>
 <translation id="152892567002884378">Alza il volume</translation>
+<translation id="1539864135338521185">lapislazzuli</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">colore retroilluminato</translation>
@@ -109,6 +112,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Imposta come sfondo</translation>
 <translation id="1578784163189013834">Scegli lo sfondo del salvaschermo</translation>
+<translation id="1593528591614229756">Assicurati di impostare solo gli APN forniti dal tuo operatore mobile o dall'amministratore. La selezione di un APN disattiverà gli APN personalizzati. Gli APN non validi potrebbero interrompere la connessione mobile. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Immagine di anteprima</translation>
 <translation id="1611649489706141841">avanti</translation>
 <translation id="1615335640928990664">Utilizzo dei dati da <ph name="FRIENDLY_DATE" /></translation>
@@ -161,6 +165,7 @@
 <translation id="1801418420130173017">Disabilita il tema scuro</translation>
 <translation id="1807246157184219062">Chiaro</translation>
 <translation id="1808803439260407870">Arte classica</translation>
+<translation id="1815850098929213707">Il tasto selezionato è <ph name="KEYS" />. Tocca il pulsante per modificare il controllo</translation>
 <translation id="1823120442877418684">Soggetti</translation>
 <translation id="1827738518074806965">Galleria d'arte</translation>
 <translation id="1836553715834333258">Colore sistema</translation>
@@ -215,6 +220,7 @@
 <translation id="2105810540595158374">Il dispositivo è un controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versione <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB disponibili su <ph name="TOTAL_MEMORY" /></translation>
+<translation id="2135668738111962377">Modifica <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
@@ -227,6 +233,7 @@
 <translation id="2163937499206714165">Attiva la modalità Buio</translation>
 <translation id="2180197493692062006">Si è verificato un errore. Prova a riaprire l'app.</translation>
 <translation id="2189104374785738357">Modifica dettagli APN</translation>
+<translation id="2195732836444333448">Al momento il server è occupato. Torna a breve.</translation>
 <translation id="2201758491318984023">bicicletta</translation>
 <translation id="2203222757805818543">La programmazione corrente è impostata su <ph name="SUNRISE" /> - <ph name="SUNSET" />. Per aggiornare automaticamente la programmazione della modalità Buio, <ph name="BEGIN_LINK" />attiva l'accesso alla posizione<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">sorgente termale</translation>
@@ -287,6 +294,7 @@
 <translation id="2517472476991765520">Scansiona</translation>
 <translation id="2521835766824839541">traccia precedente</translation>
 <translation id="2526590354069164005">Desktop</translation>
+<translation id="2529641961800709867">Opzioni pulsante</translation>
 <translation id="253029298928638905">Riavvio in corso…</translation>
 <translation id="2531772459602846206">ortensie</translation>
 <translation id="2533048460510040082">Contenuti Help suggeriti</translation>
@@ -297,6 +305,7 @@
 <translation id="2584547424703650812">Paesaggi brillanti</translation>
 <translation id="2584559707064218956">Vai alle Impostazioni per la configurazione</translation>
 <translation id="2586146417912237930">blu e indaco</translation>
+<translation id="2589921777872778654">Menu per modificare o eliminare</translation>
 <translation id="2597774443162333062">I file verranno inviati a Google per il debug</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate}}</translation>
 <translation id="2617397783536231890">cotone</translation>
@@ -428,6 +437,7 @@
 <translation id="3510890413042482857">Invia <ph name="BEGIN_LINK1" />dati di rilevamento del rendimento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aggiornamento ChromeOS</translation>
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
+<translation id="353214771040290298">Modifica completata</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
 <translation id="3533790840489634638">piscina</translation>
 <translation id="3547264467365135390">Formula</translation>
@@ -530,6 +540,7 @@
 <translation id="4130035430755296270">Continua a passare il mouse sopra per altre opzioni di layout</translation>
 <translation id="4130750466177569591">Accetto</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
+<translation id="4143226836069425823">Tocca un altro tasto della tastiera per sostituire</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -624,6 +635,7 @@
 <translation id="4665014895760275686">Produttore</translation>
 <translation id="467510802200863975">Le password non corrispondono</translation>
 <translation id="467715984478005772">Il sistema sospetta la presenza di un firewall</translation>
+<translation id="4683762547447150570">Tocca il pulsante per impostare lo stato attivo dell'assegnazione dei tasti</translation>
 <translation id="4691278870498629773">Operazione interrotta - Vassoio mancante</translation>
 <translation id="469379815867856270">Intensità segnale</translation>
 <translation id="4697260493945012995">Seleziona il tipo di controllo</translation>
@@ -705,6 +717,7 @@
 <translation id="5130848777448318809">pony</translation>
 <translation id="5137451382116112100">Schermo intero</translation>
 <translation id="5142961317498132443">Autenticazione</translation>
+<translation id="5144311987923128508">Il pulsante Conferma è ora disattivato</translation>
 <translation id="5144887194300568405">Copia traduzione</translation>
 <translation id="5145081769226915336">Vuoi attivare automaticamente la modalità Buio?</translation>
 <translation id="5154917547274118687">Memoria</translation>
@@ -824,6 +837,7 @@
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5876385649737594562">Attiva per selezionare le opzioni</translation>
 <translation id="588258955323874662">Schermo intero</translation>
+<translation id="5893975327266416093">Tocca un tasto della tastiera per assegnare</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5903200662178656908">Il dispositivo è una combinazione di tastiera e mouse.</translation>
@@ -896,6 +910,7 @@
 <translation id="6243280677745499710">Attualmente impostato</translation>
 <translation id="6250316632541035980">uova e pancetta</translation>
 <translation id="6255213378196499011">Impostazioni di Aiutami a scrivere</translation>
+<translation id="6265268291107409527">Il tasto selezionato è <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Freccia destra</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -957,6 +972,7 @@
 <translation id="6535178685492749208">Sei offline. Il feedback verrà inviato in un secondo momento.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6551839203326557324">mele</translation>
+<translation id="65526652485742171">Il pulsante Conferma è ora attivo</translation>
 <translation id="6557784757915238407">L'APN è di tipo <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6560196641871357166">Vivace</translation>
@@ -1031,6 +1047,16 @@
 <translation id="6975981640379148271">koala</translation>
 <translation id="6977381486153291903">Revisione firmware</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
+<translation id="698242338298293034">Scegli un tema e seleziona le parole sottolineate per personalizzare le tue immagini AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Seleziona "Dammi l'ispirazione" per avere più opzioni di immagini AI univoche e diversificate.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando crei contenuti con l'AI, ai server di Google AI viene inviata una richiesta di generazione di immagini e miglioramento del prodotto, ai sensi delle <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          L'AI generativa è un esperimento in fase di sviluppo iniziale e attualmente ha una disponibilità limitata.</translation>
 <translation id="6982462588253070448">dune di sabbia</translation>
 <translation id="7005833343836210400">Il dispositivo è offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
@@ -1051,6 +1077,7 @@
 <translation id="7103252855940681301">Il nome del dispositivo <ph name="INDEX" /> di <ph name="COUNT" /> è: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Scegli artwork esclusive di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">invio</translation>
+<translation id="7118522231018231199">Assicurati di impostare solo gli APN forniti dal tuo operatore mobile o dall'amministratore. La selezione di un APN disattiverà gli APN personalizzati. Gli APN non validi potrebbero interrompere la connessione mobile.</translation>
 <translation id="7119389851461848805">accensione</translation>
 <translation id="7129287270910503851">Il tuo utilizzo dei dati verrà reimpostato ogni mese in questo giorno</translation>
 <translation id="7130438335435247835">Nome punto di accesso (APN)</translation>
@@ -1173,6 +1200,7 @@
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="779591286616261875">Invia nuova segnalazione</translation>
 <translation id="7799817062559422778">Modalità Luce</translation>
+<translation id="7802764839223122985">Tasto mancante. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7813073042185856802">una montagna</translation>
@@ -1219,6 +1247,7 @@
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> di colore <ph name="CHARACTERS_COLOR" /> su uno sfondo <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8067126283828232460">APN connesso.</translation>
 <translation id="8067208048261192356">marrone</translation>
+<translation id="8067224607978179455">Elimina <ph name="ACTION_NAME" /></translation>
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8079860070590459552">un campo di fiori</translation>
@@ -1244,6 +1273,7 @@
 <translation id="8226628635270268143">Scegli le tue foto e i tuoi album preferiti</translation>
 <translation id="8227119283605456246">Allega file</translation>
 <translation id="8230672074305416752">impossibile eseguire il ping del gateway di rete predefinito</translation>
+<translation id="8238771987802558562">Scegli un APN</translation>
 <translation id="8246209727385807362">Operatore sconosciuto</translation>
 <translation id="8250926778281121244">ruggine</translation>
 <translation id="8257572018929862473">Apri le impostazioni di Risposte rapide</translation>
@@ -1366,6 +1396,7 @@
 <translation id="8928727111548978589">Operazione non riuscita - Carta esaurita</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
+<translation id="8933650076320258356">Il tasto selezionato per <ph name="DIRECTION" /> è <ph name="KEYS" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Indirizzo IP client</translation>
 <translation id="8944651180182756621">Colore Avvio app</translation>
 <translation id="8945308580158685341">api</translation>
@@ -1416,18 +1447,22 @@
 <translation id="9149391708638971077">Esegui test memoria</translation>
 <translation id="9159524746324788320">hamburger</translation>
 <translation id="9161276708550942948">spazio</translation>
+<translation id="9169345239923038539">La connessione non è stata ancora stabilita. Se il tuo operatore di telefonia mobile consiglia un APN personalizzato, <ph name="BEGIN_LINK" />inserisci le relative informazioni<ph name="END_LINK" />.</translation>
 <translation id="9173638680043580060">Manca meno di un minuto</translation>
 <translation id="9174334653006917325">Colore UI</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Il colore della retroilluminazione della tastiera può essere impostato in automatico su quello dello sfondo</translation>
 <translation id="9189000703457422362">Impossibile connettersi a questa rete tramite APN rilevati automaticamente. Per ulteriori informazioni, contatta il tuo operatore di telefonia mobile.</translation>
 <translation id="9193744392140377127">APN*</translation>
+<translation id="9195918315673527512">I tasti del joystick selezionati sono <ph name="KEYS" />. Tocca il pulsante per modificare il controllo</translation>
 <translation id="9204237731135241582">Impossibile contattare il gateway da app Android</translation>
 <translation id="921080052717160800">Immagine impostata come sfondo della fotocamera</translation>
 <translation id="9211490828691860325">Tutte le scrivanie</translation>
+<translation id="9218016617214286986">Mostra APN noti</translation>
 <translation id="932327136139879170">Home page</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Invia feedback</translation>
+<translation id="950520315903467048">Tasto mancante per <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="952992212772159698">Non attivo</translation>
 <translation id="95718197892796296">argilla</translation>
 <translation id="960719561871045870">Codice operatore</translation>

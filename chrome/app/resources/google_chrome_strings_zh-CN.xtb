@@ -246,6 +246,7 @@
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
 <translation id="4828579605166583682">Google Chrome 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="4842397268809523050">ChromeOS Flex 无法同步您的数据，因为您的网域不支持同步。</translation>
+<translation id="4862446263930606916">贵组织可以查看和管理您工作资料中的浏览数据（例如您的书签、历史记录和密码），但无法查看 Chrome 个人资料中的浏览数据。</translation>
 <translation id="4873692836499071887">若要接收后续 Google Chrome 更新，您需使用 macOS 11 或更高版本。该计算机目前使用的是 macOS 10.15。</translation>
 <translation id="4873783916118289636">检查 Chrome 中重要的隐私控制设置和安全控件</translation>
 <translation id="4891791193823137474">让 Google Chrome 浏览器在后台运行</translation>
@@ -322,6 +323,7 @@
 <translation id="6251759518630934363">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
 <translation id="6273793429163604305">即将就绪…</translation>
 <translation id="6277547788421725101">你的家长已为 Chrome 停用“网站、应用和扩展程序的权限”</translation>
+<translation id="627882678981830918">自定义和控制 Chrome。将 Chrome 设为默认浏览器。</translation>
 <translation id="6291089322031436445">Chrome 开发者版应用</translation>
 <translation id="6291549208091401781">已为您计算机上的所有用户安装 Google Chrome。</translation>
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
@@ -489,6 +491,7 @@
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8999117580775242387">如果 HTTPS 不可用，Chrome 会在不向您发出警告的情况下使用不安全的连接</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>
+<translation id="9024318700713112071">将 Chrome 设为默认浏览器</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系统</translation>
 <translation id="9054037008353851982">重新启动即可更新 - 您的标签页将会自动重新打开</translation>
 <translation id="9090566250983691233">了解 Chrome 为何屏蔽某些文件</translation>

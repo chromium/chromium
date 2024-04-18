@@ -24,6 +24,7 @@
 <translation id="1119447706177454957">Kesalahan internal</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1135805404083530719">Panel kontrol</translation>
 <translation id="1145018782460575098">Jendela update firmware untuk perangkat eksternal terbuka. <ph name="NUM_UPDATES" /> update tersedia.</translation>
 <translation id="1145516343487477149">Temukan artikel bantuan dan jawaban atas pertanyaan umum tentang Chromebook</translation>
 <translation id="1154390310959620237">Anda hanya dapat menyesuaikan 5 pintasan. Hapus satu pintasan untuk menambahkan pintasan baru</translation>
@@ -32,6 +33,7 @@
 <translation id="1167755866710282443">Buka menu untuk menyesuaikan tombol. Tarik menu untuk memindahkan.</translation>
 <translation id="1171349345463658120">laguna berpasir</translation>
 <translation id="1174073918202301297">Pintasan ditambahkan</translation>
+<translation id="11743817593307477">Gunakan tombol panah untuk memindahkan kontrol ini ke tindakan game yang Anda inginkan. Gunakan tombol enter untuk menempatkan kontrol. Gunakan tombol escape untuk membatalkan.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Standar (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">nyaman</translation>
@@ -101,6 +103,7 @@
 <translation id="1515129336378114413">beranda browser</translation>
 <translation id="1526389707933164996">Animasi screensaver</translation>
 <translation id="152892567002884378">Mengeraskan volume</translation>
+<translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">warna backlit</translation>
@@ -109,6 +112,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Setel sebagai wallpaper</translation>
 <translation id="1578784163189013834">Pilih latar belakang screen saver</translation>
+<translation id="1593528591614229756">Pastikan untuk memilih APN yang disediakan oleh operator seluler atau administrator Anda. Memilih APN akan menonaktifkan APN kustom apa pun. APN yang tidak valid dapat mengganggu koneksi seluler Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Pratinjau Gambar</translation>
 <translation id="1611649489706141841">maju</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
@@ -161,6 +165,7 @@
 <translation id="1801418420130173017">Nonaktifkan tema gelap</translation>
 <translation id="1807246157184219062">Terang</translation>
 <translation id="1808803439260407870">Seni klasik</translation>
+<translation id="1815850098929213707">Tombol yang dipilih adalah <ph name="KEYS" />. Ketuk tombol untuk mengedit kontrol</translation>
 <translation id="1823120442877418684">Karakter</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
 <translation id="1836553715834333258">Warna sistem</translation>
@@ -215,6 +220,7 @@
 <translation id="2105810540595158374">Perangkat adalah pengontrol game.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Tersedia <ph name="AVAILABLE_MEMORY" /> GB dari <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2135668738111962377">Edit <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Bergerak mengambang</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
@@ -227,6 +233,7 @@
 <translation id="2163937499206714165">Aktifkan mode gelap</translation>
 <translation id="2180197493692062006">Terjadi error. Coba buka aplikasi kembali.</translation>
 <translation id="2189104374785738357">Edit detail APN</translation>
+<translation id="2195732836444333448">Saat ini sudah mencapai batas kapasitas. Coba lagi nanti.</translation>
 <translation id="2201758491318984023">sepeda</translation>
 <translation id="2203222757805818543">Jadwal saat ini disetel ke <ph name="SUNRISE" /> — <ph name="SUNSET" />. Untuk memperbarui jadwal mode gelap secara otomatis, <ph name="BEGIN_LINK" />aktifkan akses lokasi<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">mata air panas</translation>
@@ -287,6 +294,7 @@
 <translation id="2517472476991765520">Pindai</translation>
 <translation id="2521835766824839541">lagu sebelumnya</translation>
 <translation id="2526590354069164005">Desktop</translation>
+<translation id="2529641961800709867">Opsi tombol</translation>
 <translation id="253029298928638905">Memulai ulang ...</translation>
 <translation id="2531772459602846206">bunga bokor</translation>
 <translation id="2533048460510040082">Konten bantuan yang disarankan</translation>
@@ -297,6 +305,7 @@
 <translation id="2584547424703650812">Glowscape</translation>
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
 <translation id="2586146417912237930">biru dan nila</translation>
+<translation id="2589921777872778654">Menu edit dan hapus</translation>
 <translation id="2597774443162333062">File akan dikirim ke Google untuk proses debug</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
 <translation id="2617397783536231890">kapas</translation>
@@ -428,6 +437,7 @@
 <translation id="3510890413042482857">Kirim <ph name="BEGIN_LINK1" />data trace performa<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update Chrome OS</translation>
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
+<translation id="353214771040290298">Selesai mengedit</translation>
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
 <translation id="3533790840489634638">kolam renang</translation>
 <translation id="3547264467365135390">Formula</translation>
@@ -530,6 +540,7 @@
 <translation id="4130035430755296270">Terus gerakkan kursor untuk melihat opsi tata letak lainnya</translation>
 <translation id="4130750466177569591">Saya setuju</translation>
 <translation id="4131410914670010031">Hitam dan putih</translation>
+<translation id="4143226836069425823">Ketuk tombol keyboard lain untuk mengganti</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Tampilan</translation>
@@ -624,6 +635,7 @@
 <translation id="4665014895760275686">Produsen</translation>
 <translation id="467510802200863975">Sandi tidak cocok</translation>
 <translation id="467715984478005772">Firewall dicurigai</translation>
+<translation id="4683762547447150570">Ketuk tombol untuk memfokuskan pada penetapan tombol</translation>
 <translation id="4691278870498629773">Dihentikan - Tidak ada baki</translation>
 <translation id="469379815867856270">Kekuatan Sinyal</translation>
 <translation id="4697260493945012995">Pilih jenis kontrol</translation>
@@ -705,6 +717,7 @@
 <translation id="5130848777448318809">kuda poni</translation>
 <translation id="5137451382116112100">Penuh</translation>
 <translation id="5142961317498132443">Autentikasi</translation>
+<translation id="5144311987923128508">Tombol konfirmasi sekarang dinonaktifkan</translation>
 <translation id="5144887194300568405">Salin terjemahan</translation>
 <translation id="5145081769226915336">Aktifkan mode gelap secara otomatis?</translation>
 <translation id="5154917547274118687">Memori</translation>
@@ -824,6 +837,7 @@
 <translation id="5860491529813859533">Aktifkan</translation>
 <translation id="5876385649737594562">Aktifkan untuk memilih opsi</translation>
 <translation id="588258955323874662">Layar Penuh</translation>
+<translation id="5893975327266416093">Ketuk tombol keyboard untuk menetapkan</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5903200662178656908">Perangkat adalah kombinasi keyboard dan mouse.</translation>
@@ -896,6 +910,7 @@
 <translation id="6243280677745499710">Yang disetel saat ini</translation>
 <translation id="6250316632541035980">daging asap dan telur</translation>
 <translation id="6255213378196499011">Setelan Bantu tulis</translation>
+<translation id="6265268291107409527">Tombol yang dipilih adalah <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Panah kanan</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -957,6 +972,7 @@
 <translation id="6535178685492749208">Anda sedang offline. Masukan akan dikirim nanti.</translation>
 <translation id="6543412779435705598">taco</translation>
 <translation id="6551839203326557324">apel</translation>
+<translation id="65526652485742171">Tombol konfirmasi sekarang diaktifkan</translation>
 <translation id="6557784757915238407">APN adalah jenis <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6560196641871357166">Warna cerah</translation>
@@ -1031,6 +1047,16 @@
 <translation id="6975981640379148271">koala</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
+<translation id="698242338298293034">Pilih tema, lalu pilih kata yang digarisbawahi untuk mempersonalisasi gambar AI Anda.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pilih "Beri saya inspirasi" untuk mendapatkan opsi gambar AI yang lebih unik dan beragam.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Saat Anda berkreasi dengan AI, perintah akan dikirim ke server AI Google untuk membuat gambar dan meningkatkan kualitas produk, yang tunduk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Kebijakan Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI generatif bersifat eksperimental, dalam pengembangan awal, dan saat ini memiliki ketersediaan terbatas.</translation>
 <translation id="6982462588253070448">bukit pasir</translation>
 <translation id="7005833343836210400">Perangkat sedang offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
@@ -1051,6 +1077,7 @@
 <translation id="7103252855940681301">Perangkat <ph name="INDEX" /> dari <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Pilih ilustrasi eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">masuk</translation>
+<translation id="7118522231018231199">Pastikan untuk memilih APN yang disediakan oleh operator seluler atau administrator Anda. Memilih APN akan menonaktifkan APN kustom apa pun. APN yang tidak valid dapat mengganggu koneksi seluler Anda.</translation>
 <translation id="7119389851461848805">daya</translation>
 <translation id="7129287270910503851">Penggunaan data Anda akan direset setiap bulan pada tanggal ini</translation>
 <translation id="7130438335435247835">Nama poin akses (APN)</translation>
@@ -1173,6 +1200,7 @@
 <translation id="7791543448312431591">Tambahkan</translation>
 <translation id="779591286616261875">Kirim laporan baru</translation>
 <translation id="7799817062559422778">Mode terang</translation>
+<translation id="7802764839223122985">Tombol tidak ada. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7813073042185856802">gunung</translation>
@@ -1219,6 +1247,7 @@
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> pada latar belakang <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8067126283828232460">APN terhubung.</translation>
 <translation id="8067208048261192356">cokelat</translation>
+<translation id="8067224607978179455">Hapus <ph name="ACTION_NAME" /></translation>
 <translation id="8075838845814659848">Sisa daya baterai</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8079860070590459552">padang bunga</translation>
@@ -1244,6 +1273,7 @@
 <translation id="8226628635270268143">Pilih foto dan album favorit</translation>
 <translation id="8227119283605456246">Lampirkan file</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
+<translation id="8238771987802558562">Pilih APN</translation>
 <translation id="8246209727385807362">Operator tidak diketahui</translation>
 <translation id="8250926778281121244">cokelat</translation>
 <translation id="8257572018929862473">Buka setelan Jawaban Instan</translation>
@@ -1366,6 +1396,7 @@
 <translation id="8928727111548978589">Gagal - Kertas habis</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Nirkabel</translation>
+<translation id="8933650076320258356">Tombol yang dipilih adalah <ph name="KEYS" /> untuk <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Alamat IP klien</translation>
 <translation id="8944651180182756621">Warna peluncur</translation>
 <translation id="8945308580158685341">lebah</translation>
@@ -1416,18 +1447,22 @@
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
 <translation id="9159524746324788320">hamburger</translation>
 <translation id="9161276708550942948">spasi</translation>
+<translation id="9169345239923038539">Anda belum terhubung. Jika operator seluler Anda merekomendasikan APN kustom, <ph name="BEGIN_LINK" />masukkan informasi APN.<ph name="END_LINK" /></translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
 <translation id="9174334653006917325">Warna UI</translation>
 <translation id="917720651393141712">Uji</translation>
 <translation id="9188992814426075118">Keyboard dapat otomatis menyesuaikan dengan wallpaper Anda</translation>
 <translation id="9189000703457422362">Tidak dapat terhubung ke jaringan ini menggunakan APN yang terdeteksi secara otomatis. Hubungi operator seluler Anda untuk mengetahui informasi selengkapnya.</translation>
 <translation id="9193744392140377127">APN*</translation>
+<translation id="9195918315673527512">Tombol joystick yang dipilih adalah <ph name="KEYS" />. Ketuk tombol untuk mengedit kontrol</translation>
 <translation id="9204237731135241582">Tidak dapat terhubung ke gateway dari aplikasi Android</translation>
 <translation id="921080052717160800">Gambar disetel sebagai latar belakang kamera</translation>
 <translation id="9211490828691860325">Semua desktop</translation>
+<translation id="9218016617214286986">Tampilkan APN yang diketahui</translation>
 <translation id="932327136139879170">Beranda</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
+<translation id="950520315903467048">Tombol untuk <ph name="DIRECTION" /> tidak ada. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="95718197892796296">tanah liat</translation>
 <translation id="960719561871045870">Kode operator</translation>

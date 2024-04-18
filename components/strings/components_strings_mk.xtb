@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Играјте ја играта „Трчање на диносаурусот“ во Chrome</translation>
 <translation id="161042844686301425">Тиркизна</translation>
 <translation id="1611101756749861742">Втора ролна</translation>
+<translation id="1611854593425834707">Затворете го списокот со уреди за емитување</translation>
 <translation id="1612199629998703524">Управувајте со теми</translation>
 <translation id="1615178538289490617">Повлечете го пристапот за <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
@@ -618,7 +619,7 @@
 <translation id="2126374524350484896">Приказ во PDF:</translation>
 <translation id="2130448033692577677">Шаблоните што ги назначивте не може да се применат бидејќи правилото DnsOverHttpsMode не е поставено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Пребарувачиве се прикажани по случаен редослед. Може да го промените стандардниот кога сакате.</translation>
+<translation id="2132825047782982803">Пребарувачиве се прикажани по случаен редослед. Може да го промените вашиот стандарден пребарувач кога сакате.</translation>
 <translation id="2137891579555018930">Се чека дозвола…</translation>
 <translation id="213826338245044447">Мобилни обележувачи</translation>
 <translation id="2141000681034340397">Изменете го внесувањето</translation>
@@ -1919,6 +1920,7 @@
 <translation id="4691093235373904540">Услуги за покриви</translation>
 <translation id="4692623383562244444">Пребарувачи</translation>
 <translation id="4698692901173737941">Боречки спортови</translation>
+<translation id="4701307090948589984">Емитувајте на…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Странична</translation>
 <translation id="4702656508969495934">„Автоматски титлови“ е видлива, користете префрлач на прозорци за да фокусирате</translation>
@@ -2168,6 +2170,8 @@
 <translation id="5161334686036120870">Предмет:</translation>
 <translation id="5161506081086828129">Фиока за складирање 9</translation>
 <translation id="5164798890604758545">Внесен е текст</translation>
+<translation id="5164928537947209380">Експерименталнава алатка со AI нема секогаш да биде во право. За да се подобри, вашите содржини се испраќаат до Google.
+    <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Внесете го CVC за <ph name="CREDIT_CARD" />. Откако ќе потврдите, деталите за картичката од вашата сметка на Google ќе се споделат со сајтов.</translation>
 <translation id="5169827969064885044">Може да го изгубите пристапот до сметката на вашата организација или да ви го украдат идентитетот. Chrome препорачува да ја смените лозинката веднаш.</translation>
 <translation id="5171045022955879922">Барај или впиши URL</translation>
@@ -4064,6 +4068,7 @@
 <translation id="8807160976559152894">Кратење по секоја страница</translation>
 <translation id="8809203544698246977">Блокираните теми се појавуваат овде</translation>
 <translation id="8811470563853401328">Дали да се зачува адресата на сметката?</translation>
+<translation id="8811725516933141693">Напишете @gemini за да разговарате со Gemini</translation>
 <translation id="8813277370772331957">Потсети ме подоцна</translation>
 <translation id="8814707942599948500">Плик C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го ажурирате Chrome од поставките за Chrome</translation>

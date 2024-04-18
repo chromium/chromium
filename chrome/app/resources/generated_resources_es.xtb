@@ -3411,6 +3411,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3569682580018832495"><ph name="ORIGIN" /> puede ver los siguientes archivos y carpetas:</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3575121482199441727">Permitir en este sitio web</translation>
+<translation id="3575224072358507281">Recoger direcciones IP y resultados de medición de redes para Measurement Lab, de acuerdo con su política de privacidad (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="3577487026101678864">Sincronización de archivos activada</translation>
 <translation id="3577745545227000795">Recogida de datos de hardware de <ph name="DEVICE_OS" /></translation>
@@ -8027,6 +8028,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7181117767881540376">&amp;Ocultar barra de marcadores</translation>
 <translation id="7181329571386134105">Para permitir que <ph name="CHILD_NAME" /> instale extensiones sin tu aprobación en el futuro, abre la aplicación Family Link en tu dispositivo y actualiza los ajustes de Google Chrome de <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Usar otra cuenta</translation>
 <translation id="7182063559013288142">Punto de acceso instantáneo</translation>
 <translation id="7182791023900310535">Mover tu contraseña</translation>
 <translation id="718427252411067142">Para impedir que otros usuarios usen tu contraseña, abre la aplicación para cambiarla</translation>
@@ -8590,6 +8592,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7617263010641145920">Activar Play Store</translation>
 <translation id="7617648809369507487">Usar notificaciones más discretas</translation>
 <translation id="7619937211696316184">El mantenimiento ha terminado</translation>
+<translation id="7620616707541471029">Selecciona una cuenta para continuar</translation>
 <translation id="7621382409404463535">El sistema no ha podido guardar la configuración del dispositivo.</translation>
 <translation id="7621480263311228380">No tienen permiso para usar la información que han guardado sobre ti</translation>
 <translation id="7621595347123595643">No podrás recuperar los datos locales si olvidas tu contraseña o PIN.</translation>

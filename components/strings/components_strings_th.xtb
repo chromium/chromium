@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">ผู้เขียน:</translation>
 <translation id="1247030632403369975">อะลูมิเนียม</translation>
 <translation id="1252209483516427155">เสื้อผ้าชั้นนอก</translation>
+<translation id="1253096324252841344">ชำระเงินด้วย <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> <ph name="TYPE_2" /> (ซิงค์แล้ว)</translation>
 <translation id="1255086252236620440">เครื่องผสมอาหาร</translation>
 <translation id="1256368399071562588">&lt;p&gt;หากคุณพยายามเข้าชมเว็บไซต์ แต่เว็บไซต์ไม่เปิดขึ้นมา ให้ลองแก้ข้อผิดพลาดด้วยขั้นตอนการแก้ปัญหาต่อไปนี้&lt;/p&gt;
@@ -1513,6 +1514,7 @@
 <translation id="385489333361351399">กล้องและอุปกรณ์ถ่ายภาพ</translation>
 <translation id="3858027520442213535">อัปเดตวันที่และเวลา</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
+<translation id="3865339060090354361">ดูข้อกำหนดเกี่ยวกับ <ph name="CREDIT_CARD_NAME" /> ที่นี่</translation>
 <translation id="3872834068356954457">วิทยาศาสตร์</translation>
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
 <translation id="3880456882942693779">ศิลปะและความบันเทิง</translation>
@@ -2110,6 +2112,7 @@
 <translation id="5040262127954254034">ความเป็นส่วนตัว</translation>
 <translation id="5043480802608081735">ลิงก์ที่คุณคัดลอก</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
+<translation id="5048293684454354469">หัวข้อโฆษณาเป็นเพียงหนึ่งในหลายอย่างที่เว็บไซต์สามารถใช้เพื่อปรับโฆษณาตามโปรไฟล์ของผู้ใช้ แม้จะไม่มีหัวข้อโฆษณา เว็บไซต์ก็ยังคงแสดงโฆษณาให้คุณเห็นได้ แต่อาจปรับเปลี่ยนตามโปรไฟล์ของคุณน้อยลง ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />การจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณา<ph name="LINK_END" /></translation>
 <translation id="5052517576853118371">หัวข้อที่ใช้งานอยู่</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{หากต้องการส่งไฟล์นี้โดยใช้การแชร์ใกล้เคียง ให้เพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}other{หากต้องการส่งไฟล์เหล่านี้โดยใช้การแชร์ใกล้เคียง ให้เพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}}</translation>
 <translation id="505757197798929356">ระบุเหตุผลในการเปิด (ต้องระบุ)</translation>
@@ -2329,6 +2332,7 @@
     <ph name="LINE_BREAK" />
     โปรดลองติดต่อผู้ดูแลระบบของคุณ</translation>
 <translation id="549333378215107354">ขนาด 3</translation>
+<translation id="5496804587179176046">บันทึกรหัสความปลอดภัย ไม่มีรหัสความปลอดภัยที่บันทึกไว้ในปัจจุบัน</translation>
 <translation id="550365051221576010">กรอกทุกช่อง</translation>
 <translation id="5508443345185481044">กล้องถ่ายรูปและกล้องวิดีโอ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2352,6 +2356,7 @@
 <translation id="553377674408670169">งานด้านการศึกษา</translation>
 <translation id="5536214594743852365">แสดงส่วน "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
+<translation id="5538270463355278784">เต็มหน้าจออัตโนมัติ</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">ไม่พบบทความที่ขอ</translation>
 <translation id="5540969246441091044">ขี่ม้า</translation>
@@ -2716,6 +2721,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการไฟล์ที่คุณดาวน์โหลดใน Chrome</translation>
 <translation id="6254436959401408446">หน่วยความจำไม่เพียงพอที่จะเปิดหน้านี้</translation>
 <translation id="625463612687472648">หยุดการอนุญาต</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{เมื่อทำการซื้อใน Chrome คุณจะเห็น <ph name="FINANCIAL_ACCOUNT_TYPES" /> เป็นตัวเลือก}other{เมื่อทำการซื้อใน Chrome คุณจะเห็น <ph name="FINANCIAL_ACCOUNT_TYPES" /> เป็นตัวเลือก}}</translation>
 <translation id="6259156558325130047">&amp;ทำซ้ำการจัดลำดับใหม่</translation>
 <translation id="6263376278284652872">บุ๊กมาร์ก <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
@@ -3851,6 +3857,7 @@
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8380941800586852976">อันตราย</translation>
 <translation id="8381674639488873545">การเรียกเก็บเงินเหล่านี้อาจเกิดขึ้นครั้งเดียวหรือเกิดขึ้นซ้ำๆ และอาจไม่แสดงอย่างชัดแจ้ง <ph name="BEGIN_LINK" />เปิดเว็บไซต์<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">เต็มหน้าจออัตโนมัติ</translation>
 <translation id="838307841291975086">รถสเตชันแวกอน</translation>
 <translation id="8389532092404711541">ปกติราคา <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">รถยนต์สั่งผลิตและสมรรถนะสูง</translation>

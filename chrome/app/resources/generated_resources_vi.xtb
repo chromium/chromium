@@ -3425,6 +3425,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3569682580018832495"><ph name="ORIGIN" /> có thể xem các tệp và thư mục sau</translation>
 <translation id="3571734092741541777">Thiết lập</translation>
 <translation id="3575121482199441727">Cho phép đối với trang web này</translation>
+<translation id="3575224072358507281">Thu thập địa chỉ IP và kết quả đo lường mạng cho Measurement Lab, theo chính sách quyền riêng tư của Measurement Lab (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="3577487026101678864">Tính năng đồng bộ hoá tệp đang bật</translation>
 <translation id="3577745545227000795">Hoạt động thu thập dữ liệu phần cứng của <ph name="DEVICE_OS" /></translation>
@@ -8045,6 +8046,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7181117767881540376">&amp;Ẩn thanh dấu trang</translation>
 <translation id="7181329571386134105">Để cho phép <ph name="CHILD_NAME" /> cài đặt tiện ích trong tương lai mà không cần bạn phê duyệt, hãy mở ứng dụng Family Link trên thiết bị của bạn, rồi cập nhật chế độ cài đặt Google Chrome của <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Sử dụng tài khoản khác</translation>
 <translation id="7182063559013288142">Điểm phát sóng tức thì</translation>
 <translation id="7182791023900310535">Di chuyển mật khẩu của bạn</translation>
 <translation id="718427252411067142">Để ngăn người khác sử dụng mật khẩu của bạn, hãy mở ứng dụng để đổi mật khẩu</translation>
@@ -8608,6 +8610,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7617263010641145920">Bật Cửa hàng Play</translation>
 <translation id="7617648809369507487">Dùng thông báo ở dạng tin nhắn</translation>
 <translation id="7619937211696316184">Đã bảo trì xong</translation>
+<translation id="7620616707541471029">Chọn một tài khoản để tiếp tục</translation>
 <translation id="7621382409404463535">Hệ thống không lưu được cấu hình thiết bị.</translation>
 <translation id="7621480263311228380">Không được phép sử dụng thông tin mà họ đã lưu về bạn</translation>
 <translation id="7621595347123595643">Bạn sẽ không thể khôi phục dữ liệu cục bộ nếu quên mật khẩu hoặc mã PIN.</translation>

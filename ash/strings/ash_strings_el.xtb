@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, εφαρμογή Play Store</translation>
 <translation id="1225748608451425081">Το Chromebook κλειδώθηκε λόγω γνωστού προβλήματος. Θα μπορέσετε να συνδεθείτε σε: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Διακοπή επιλογής</translation>
+<translation id="1230853660706736937">Αναζητήστε κείμενο μέσα σε εικόνες και δείτε προεπισκοπήσεις εικόνων</translation>
 <translation id="1235458158152011030">Γνωστά δίκτυα</translation>
 <translation id="1239161794459865856">Η λειτουργία <ph name="FEATURE_NAME" /> συνδέθηκε.</translation>
 <translation id="1240638468526743569">Μια εφαρμογή</translation>
@@ -715,11 +716,13 @@
 <translation id="3824784079442479685">Αυτό επιτρέπει την πρόσβαση στην κάμερα για την εφαρμογή <ph name="APP_NAME" /> και όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας. Ίσως χρειαστεί να ανανεώσετε την ιστοσελίδα ή να επανεκκινήσετε την εφαρμογή.</translation>
 <translation id="3826099427150913765">Αλλαγή σε κωδικό πρόσβασης</translation>
 <translation id="383058930331066723">Η λειτουργία εξοικονόμησης μπαταρίας είναι ενεργοποιημένη</translation>
+<translation id="3831226344927851293">Έξοδος από την προβολή οδηγού</translation>
 <translation id="383629559565718788">Εμφάνιση ρυθμίσεων πληκτρολογίου</translation>
 <translation id="384082539148746321">Διαγραφή προτύπου;</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> και έπειτα <ph name="KEY_ONE" /> ή <ph name="KEY_TWO" /> ή <ph name="KEY_THREE" /> ή <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Δεν υπάρχουν διαθέσιμες πληροφορίες δικτύου</translation>
+<translation id="3848526302597027234">Αποκτήστε πρόσβαση στις ακόλουθες άδειες:</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="385300504083504382">Αρχή</translation>
 <translation id="3859364108019690">Δεν είναι δυνατή η ροή εφαρμογών</translation>

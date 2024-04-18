@@ -381,6 +381,7 @@
 <translation id="3170673040743561620">将您的文件放置在扫描仪上</translation>
 <translation id="3174321110679064523">“黎明到黄昏”壁纸</translation>
 <translation id="3178532070248519384">前卫艺术</translation>
+<translation id="3182676044300231689">输入提示，例如“语气更自信”</translation>
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="319101249942218879">头像图片变了</translation>
 <translation id="3192947282887913208">音频文件</translation>
@@ -586,6 +587,7 @@
 <translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重启<ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">键盘自定义</translation>
+<translation id="439946595190720558">此背景是通过 AI 使用以下文字制作的：“<ph name="PROMPT" />”。</translation>
 <translation id="4415951057168511744">当前头像</translation>
 <translation id="4417830657741848074">您的管理员已将部分应用设为自动启动。上述部分应用可能无法关闭。</translation>
 <translation id="4422041425070339732">向下箭头</translation>
@@ -1034,6 +1036,7 @@
 <translation id="6905724422583748843">返回“<ph name="PAGE_NAME" />”</translation>
 <translation id="6910312834584889076">扫描仪的盖子没合上。请合上盖子，然后重试。</translation>
 <translation id="6911383237894364323">无法连接到媒体服务器</translation>
+<translation id="6930597342185648547">关于背景</translation>
 <translation id="6939766318048400022">咖啡馆</translation>
 <translation id="6943893908656559156">远程身份（可选）</translation>
 <translation id="6953137545147683679">金色</translation>

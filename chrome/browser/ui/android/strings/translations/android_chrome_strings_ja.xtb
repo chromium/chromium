@@ -109,6 +109,7 @@
 <translation id="1513858653616922153">パスワードを削除</translation>
 <translation id="1521774566618522728">最終同期: 今日</translation>
 <translation id="1544826120773021464">Google アカウントを管理するには、[アカウントを管理] をタップします。</translation>
+<translation id="154513667535157406">高く評価すると、この要約が気に入ったというフィードバックが送信されます</translation>
 <translation id="1549000191223877751">他のウィンドウに移動</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
 <translation id="1554532453982918912">同じように Chrome を使用する他のユーザーの利便性向上に役立てられます</translation>
@@ -310,6 +311,7 @@
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2673169232805572412">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部を Google に送信することがあります</translation>
 <translation id="2702516483241149200">新規: このテキストにスクロールするリンクを共有できます</translation>
+<translation id="2705073298859543115">要約を作成</translation>
 <translation id="2708051474374549906">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能から、リアルタイムで予防的に保護します</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" />　ブラウザで開く</translation>
 <translation id="271033894570825754">New</translation>
@@ -395,6 +397,7 @@
 <translation id="3046945242843292318">次回からこのサイトにすばやくアクセスできます</translation>
 <translation id="3055259925215945098">ブックマークを移動しました</translation>
 <translation id="3055841435094910999">Chrome の使用状況に関する情報が Google に送信されますが、ユーザーとは関連付けられません\n\nChrome がクラッシュした場合、クラッシュに関する情報として一部の個人情報が送信される場合があります\n\n同期を有効にした場合、アクセスした URL に関する情報も送信される場合があります</translation>
+<translation id="3059531648236115056">要約を追加</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個のブックマーク}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個のブックマーク}}</translation>
 <translation id="3062802207422175757">Chrome の履歴に基づくおすすめの記事を表示します</translation>
 <translation id="3066573403916685335">下に移動</translation>
@@ -688,6 +691,7 @@
 <translation id="465657074423018424">セーフ ブラウジングでは不正なウェブサイトからデバイスを保護します。オフにする場合は、パスワード入力時など、ブラウジングの際は十分に気を付けてください。</translation>
 <translation id="4662373422909645029">ニックネームに数字を含めることはできません</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> 件のブックマークを削除しました</translation>
+<translation id="4664020984660113387">要約を削除</translation>
 <translation id="4668279686271488041">広告測定データはデバイスから定期的に削除されます</translation>
 <translation id="4668347365065281350">サイトによって保存されたすべてのデータ（Cookie やローカルに保存された他のデータを含む）</translation>
 <translation id="4678082183394354975">Chrome でサイトのダークモードがオンになっています</translation>
@@ -827,6 +831,7 @@
 <translation id="5342314432463739672">権限のリクエスト</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> にアクセスしたサイトはありません</translation>
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
+<translation id="5364112109233799727">フィードバックを送信していただいたページの URL は Google に送信され、この機能の改善のため、人間が確認する場合があります</translation>
 <translation id="5375577065097716013">Google レンズで画像を検索 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">Google アカウントの Chrome データを常に使用できるようにしてください</translation>
 <translation id="539881862970320163">安全なパスワードが提案されています。キーボードは非表示です。</translation>
@@ -1052,6 +1057,7 @@
 <translation id="6473086018775716761">共有オプションのリストが画面の下半分に表示されています。</translation>
 <translation id="6475951671322991020">動画をダウンロード</translation>
 <translation id="6477928892249167417">以下のサイトは重要な可能性があります。</translation>
+<translation id="6481963882741794338">パーソナライズなどの目的で、Chrome と他の Google サービスをリンクします</translation>
 <translation id="6482749332252372425">ストレージの空き容量が不足しているため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="6495590690749880440">タブグループを開きますか？</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ファイルをダウンロードしました}other{# 件のダウンロードが完了しました}}</translation>
@@ -1159,6 +1165,7 @@
 <translation id="6910211073230771657">削除済み</translation>
 <translation id="6918398787259831832">問題が解消しない場合は、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />詳細情報をご確認ください<ph name="END_LINK" />。</translation>
 <translation id="6929224077895306814">デバイスと Google アカウントに保存されているセキュリティ コードがすべて削除されます</translation>
+<translation id="6937524809504266803">パーソナライズとリンク</translation>
 <translation id="6942665639005891494">デフォルトのダウンロード保存先は [設定] メニューでいつでも変更できます</translation>
 <translation id="694267552845942083">同期の設定をカスタマイズしています。同期を有効にしたら、画面の下部にある [確認] をタップしてください。上へ移動</translation>
 <translation id="6945221475159498467">選択</translation>
@@ -1176,6 +1183,7 @@
 <translation id="7013762323294215682">このパスキーはパスワード マネージャーに保存されます。パスワード マネージャーにアクセスできるユーザーなら誰でも、このパスキーを使用できます。</translation>
 <translation id="7020741890149022655">リーディング リストに追加<ph name="BEGIN_NEW" />新規<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ブラウザで開く</translation>
+<translation id="7025769836128625875">これは試験運用版の AI 機能で、常に適切な結果が得られるとは限りません。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> を復元しました</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7030304022046916278">セーフ ブラウジングに URL を送信して安全性を確認します</translation>
@@ -1207,6 +1215,7 @@
 <translation id="7177873915659574692">QR コードを作成できません。URL が <ph name="CHARACTER_LIMIT" /> 文字を超えています。</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7183693674623539380">タブグループ - <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理する</translation>
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7196215469483532480">プライバシー ガイドの説明が画面全体に表示されています</translation>
@@ -1497,6 +1506,7 @@
 <translation id="8512053371384421952">今後 <ph name="DOMAIN" /> から通知が届くことはありません。</translation>
 <translation id="8514477925623180633">Chrome に保存されたパスワードをエクスポートします</translation>
 <translation id="8516012719330875537">画像エディタ</translation>
+<translation id="8521833595674902532">エラーが発生しました。要約を作成できませんでした。</translation>
 <translation id="8523928698583292556">保存したパスワードを削除</translation>
 <translation id="8526855376374973824">通知権限フロー</translation>
 <translation id="8540136935098276800">正しい形式の URL を入力してください</translation>
@@ -1572,6 +1582,7 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_ONE" /> 個以上のタブが閉じられます}other{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>
+<translation id="8982113230057126145">低く評価すると、この要約が気に入らなかったというフィードバックが送信されます</translation>
 <translation id="8992769679401294069">データはパスフレーズで暗号化されます。Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください。</translation>
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>
 <translation id="8996847606757455498">別のプロバイダを選択</translation>

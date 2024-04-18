@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store এপ্‌</translation>
 <translation id="1225748608451425081">এটা জ্ঞাত সমস্যাৰ বাবে আপোনাৰ Chromebookটো লক কৰা হৈছে। আপুনি এই সময়ৰ পাছত ছাইন ইন কৰিব পাৰিব: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">বাছনি কৰা বন্ধ কৰক</translation>
+<translation id="1230853660706736937">প্ৰতিচ্ছবিৰ ভিতৰত পাঠ সন্ধান কৰক আৰু প্ৰতিচ্ছবিৰ পূৰ্বদৰ্শন চাওক</translation>
 <translation id="1235458158152011030">চিনাকী নেটৱর্ক</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />ৰ সৈতে সংযোগ কৰা হ’ল।</translation>
 <translation id="1240638468526743569">এটা এপ্‌</translation>
@@ -716,11 +717,13 @@
 <translation id="3824784079442479685">এইটোৱে <ph name="APP_NAME" /> আৰু কেমেৰাৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
 <translation id="3826099427150913765">পাছৱৰ্ডলৈ সলনি কৰক</translation>
 <translation id="383058930331066723">বেটাৰী সঞ্চয়কাৰী মোড অন কৰা আছে</translation>
+<translation id="3831226344927851293">টিউট’ৰিয়েল ভিউৰ পৰা বাহিৰ হওক</translation>
 <translation id="383629559565718788">কীব’ৰ্ডৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="384082539148746321">টেমপ্লে’ট মচিবনে?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> তাৰ পাছত <ph name="KEY_ONE" /> অথবা <ph name="KEY_TWO" /> অথবা <ph name="KEY_THREE" /> অথবা <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">৫০+৯৪/৫</translation>
 <translation id="3846575436967432996">নেটৱৰ্কৰ বিষয়ে কোনো তথ্য নাই</translation>
+<translation id="3848526302597027234">তলত দিয়া অনুমতিসমূহ এক্সেছ কৰক:</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="385300504083504382">আৰম্ভণি</translation>
 <translation id="3859364108019690">এপ্ ষ্ট্ৰিম কৰিব নোৱাৰি</translation>

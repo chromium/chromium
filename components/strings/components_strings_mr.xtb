@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">लेखक:</translation>
 <translation id="1247030632403369975">अ‍ॅल्युमिनिअम</translation>
 <translation id="1252209483516427155">बाहेर घालायचे कपडे</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> वापरून पेमेंट करा</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक केलेले)</translation>
 <translation id="1255086252236620440">फूड मिक्सर</translation>
 <translation id="1256368399071562588">&lt;p&gt;जर तुम्ही एखाद्या वेबसाइटला भेट देण्याचा प्रयत्न केला आणि ती उघडली नाही, तर सगळ्यात आधी ट्रबलशूटिंग स्टेप्सद्धारे या एररवर उपाय काढण्याचा प्रयत्न करा:&lt;/p&gt;
@@ -1513,6 +1514,7 @@
 <translation id="385489333361351399">कॅमेरा आणि फोटोची उपकरणे</translation>
 <translation id="3858027520442213535">तारीख आणि वेळ अपडेट करा</translation>
 <translation id="3858860766373142691">नाव</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> साठी अटी इथे पहा</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">मला कसे ते दाखवा</translation>
 <translation id="3880456882942693779">कला आणि मनोरंजन</translation>
@@ -2354,6 +2356,7 @@
 <translation id="553377674408670169">शैक्षणिक नोकऱ्या</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" विभाग दाखवा</translation>
 <translation id="553782666181800029">एन्व्हलप चोउ २</translation>
+<translation id="5538270463355278784">ऑटोमॅटिक फुल स्क्रीन</translation>
 <translation id="5539243836947087108">राफ्ट</translation>
 <translation id="5540224163453853">विनंती केलेला लेख शोधू शकलो नाही.</translation>
 <translation id="5540969246441091044">घोडेस्वारी स्पर्धा</translation>
@@ -2719,6 +2722,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
 <translation id="6254436959401408446">हे पेज उघडण्‍यासाठी पुरेशी मेमरी नाही</translation>
 <translation id="625463612687472648">अनुमती देणे थांबवा</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{तुम्ही Chrome वर खरेदी करता, तेव्हा <ph name="FINANCIAL_ACCOUNT_TYPES" /> पर्याय म्हणून पहा}other{तुम्ही Chrome वर खरेदी करता, तेव्हा <ph name="FINANCIAL_ACCOUNT_TYPES" /> पर्याय म्हणून पहा}}</translation>
 <translation id="6259156558325130047">&amp;पुनर्क्रमित करा पुन्हा करा</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
@@ -3854,6 +3858,7 @@
 <translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
 <translation id="8380941800586852976">धोकादायक</translation>
 <translation id="8381674639488873545">हे शुल्क एका वेळचे किंवा आवर्ती असू शकते आणि ते उघड नसणे शक्य आहे. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">ऑटोमॅटिक फुल स्क्रीन</translation>
 <translation id="838307841291975086">स्टेशन वॅगन</translation>
 <translation id="8389532092404711541">सामान्यपणे <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">कस्टम आणि परफॉर्मन्स वाहने</translation>

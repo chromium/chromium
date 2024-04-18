@@ -500,13 +500,13 @@ Ist die Richtlinie deaktiviert, wird die Seite mit dem Header „<ph name="CACHE
 <translation id="1426170570389588560">Zeitraum für die Speicherung von Metadaten zu Druckaufträgen festlegen (in Tagen)</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1427655258943162134">Adresse oder URL des Proxyservers</translation>
-<translation id="1430811977802269244">Zulassen, dass berechtigte Geräte, die keine Android-Unterstützung mehr erhalten werden, erweiterte automatische Updates verwenden.
+<translation id="1430811977802269244">Zulassen, dass berechtigte Geräte, die keine Android-Unterstützung mehr erhalten werden, verlängerte automatische Updates verwenden.
 
-Wenn die Richtlinie aktiviert ist, werden erweiterte automatische Updates für die Geräte aktiviert.
+Wenn die Richtlinie aktiviert ist, werden verlängerte automatische Updates für die Geräte aktiviert.
 
 Ist die Richtlinie deaktiviert oder nicht konfiguriert, erhalten Geräte nach dem ursprünglichen Ende der automatischen Updates keine Updates mehr.
 
-Diese Richtlinie ist nur für ältere Modelle relevant, die nicht automatisch erweiterte Updates erhalten.
+Diese Richtlinie ist nur für ältere Modelle relevant, die nicht automatisch verlängerte Updates erhalten.
 
 Weitere Informationen findest du unter
 https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
@@ -3251,7 +3251,7 @@ Jede Regel hat folgende Bestandteile:
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner als der Wert für die Inaktivitätsverzögerung sein.</translation>
 <translation id="3550875587920006460">Mit dieser Richtlinie kann ein benutzerdefinierter Zeitplan zum Prüfen auf Updates festgelegt werden. Er gilt für alle Nutzer und alle Oberflächen auf diesem Gerät. Wenn ein Zeitplan aktiviert wird, sucht das Gerät entsprechend nach Updates. Wenn geplante Prüfungen auf Updates nicht mehr durchgeführt werden sollen, muss die Richtlinie entfernt werden.</translation>
-<translation id="3550963062099410653">Erweiterte automatische Updates aktivieren/deaktivieren</translation>
+<translation id="3550963062099410653">Verlängerte automatische Updates aktivieren/deaktivieren</translation>
 <translation id="355118380775352753">Websites, die in einem alternativen Browser geöffnet werden sollen</translation>
 <translation id="3554498762428140109">Native Fenster-Okklusion aktivieren</translation>
 <translation id="3554984410014457319">Google Assistant erlauben, bei Gesprächen zuzuhören und so zu prüfen, ob die Wortgruppe für die Sprachaktivierung genannt wird</translation>
@@ -7876,7 +7876,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind die Kontoeinstellun
 <translation id="7298197471363105063">„First-Party-Sets“ überschreiben.</translation>
 <translation id="7300320787419338290">In den Einstellungen von F11/F12 wird die Tastenkombination verwendet, die die Modifikatoren „Strg“ und die Umschalttaste enthält</translation>
 <translation id="7302043767260300182">Verzögerung für die Bildschirmsperre im Netzbetrieb</translation>
-<translation id="7302500623317853506">Erweiterte automatische Updates zulassen</translation>
+<translation id="7302500623317853506">Verlängerte automatische Updates zulassen</translation>
 <translation id="7303655680460311843">Touch-Bildschirmtastatur auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="7303902834678570827">Nutzer verwalteter Gastsitzungen können keine Anzeigeeinstellungen für das ganze Gerät speichern</translation>
 <translation id="7306926210354955892">Wenn die Richtlinie konfiguriert ist, wird festgelegt, welche Aktion durchgeführt werden soll, wenn das Verzeichnis für ARC-Daten des Nutzers mit virtio-fs erstellt wurde. Wenn virtio-fs-Daten zu virtio-blk migriert werden, laufen Android-Apps auf der ARC-VM möglicherweise langsamer.
@@ -9731,7 +9731,7 @@ Ist die Richtlinie deaktiviert, sind Suchanfragen per Proxy mit erhöhter Sicher
 <translation id="8862086508140571198">Mit dieser Richtlinie kann eine Liste von DLCs (herunterladbaren Inhalten) festgelegt werden, die so schnell wie möglich heruntergeladen werden sollen. Die heruntergeladenen DLCs sind dann für alle Nutzer auf dem Gerät verfügbar.
 
 Das ist hilfreich, wenn der Administrator weiß, dass die Nutzer des Geräts wahrscheinlich eine Funktion verwenden werden, für die diese DLCs vorhanden sein müssen.</translation>
-<translation id="8864727482158496280">Erweiterte automatische Updates nicht zulassen</translation>
+<translation id="8864727482158496280">Verlängerte automatische Updates nicht zulassen</translation>
 <translation id="8864975621965365890">Unterdrückung des Hinweises auf Einstellung des Frames, der beim Rendern einer Website durch <ph name="PRODUCT_FRAME_NAME" /> erscheint</translation>
 <translation id="8865404058177794289">Standardeinstellung für Prüfung der RSA-Schlüsselverwendung verwenden</translation>
 <translation id="8866430022832109569">Berichte zum App-Inventar</translation>

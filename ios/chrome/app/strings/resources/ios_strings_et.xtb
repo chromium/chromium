@@ -847,6 +847,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5407969256130905701">Loobu muudatustest</translation>
 <translation id="5414763847370083940">Saate teavituse, kui hind mis tahes saidil langeb.</translation>
 <translation id="5416022985862681400">Viimased 7 päeva</translation>
+<translation id="5416455648658732408">Teisalda vahelehegruppi</translation>
 <translation id="5423269318075950257">Hindade jälgimine</translation>
 <translation id="543338862236136125">Muuda parooli</translation>
 <translation id="5433691172869980887">Kasutajanimi on kopeeritud</translation>
@@ -1043,6 +1044,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6363526231572697780">Kasutajanimi puudub</translation>
 <translation id="6366190659675876144">Standardne kaitse</translation>
 <translation id="6366663624406569102">Logi välja ja lülita sünkroonimine välja</translation>
+<translation id="6368038301482806847">Valige loendist otsingumootor.</translation>
 <translation id="6374469231428023295">Proovi uuesti</translation>
 <translation id="6377118281273296434">Saidi turvalisus</translation>
 <translation id="6383719166112032471">Asukoha avamine …</translation>
@@ -1202,6 +1204,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7161230316646448869">Teie järjehoidjate, ajaloo ja muude andmete sünkroonimine kõigis seadmetes</translation>
 <translation id="7162168282402939716">Ava inkognito vahelehed meetodiga <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Ava seaded</translation>
+<translation id="7186568385131859684">Hallake, kuidas kasutatakse sirvimisajalugu teie muude andmetega Google'i teenustes</translation>
 <translation id="7189598951263744875">Jaga ...</translation>
 <translation id="719133302483559673">Hallake oma huvisid ja eelistusi.</translation>
 <translation id="7192050974311852563">Alusta logimist</translation>
@@ -1245,6 +1248,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7438481509621345350">Uue vahelehe avamisel näete nüüd lugusid kanalist <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Järjehoidja salvestati kohta „{title}“}other{Järjehoidjad salvestati kohta „{title}“}}</translation>
 <translation id="7454057999980797137">Osariik/maakond</translation>
+<translation id="7458706065921255639">Isikupärastamine ja linkimine</translation>
 <translation id="745899714366929493">Kogu päev</translation>
 <translation id="7459628154744868585">Täiustatud kaitse on sisse lülitatud</translation>
 <translation id="7465351360025415755">Hankige sisu, mis on teie jaoks oluline</translation>
@@ -1332,6 +1336,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7853202427316060426">Tegevus</translation>
 <translation id="7856733331829174190">Ei saanud alla laadida</translation>
 <translation id="7859704718976024901">Sirvimisajalugu</translation>
+<translation id="7860900259978879139">Eemalda grupist</translation>
 <translation id="7866501058614003444">Selle saadetise jälgimine on edukalt tühistatud.</translation>
 <translation id="7866872729285243843">Selleks et näha lugemisloendit kõigis seadmetes, lülitage seadetes sisse „Lugemisloend“.</translation>
 <translation id="7866993391592926595">Selle kaardi peitmine lülitab paki jälgimise välja ja eemaldab kõik teie andmed</translation>
@@ -1419,9 +1424,11 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8273982424131314219">Te sisestate teabe aadressile <ph name="URL" /></translation>
 <translation id="8281781826761538115">Vaikimisi – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Jäta vahele</translation>
+<translation id="8282657446819506217">Ava vahelehegrupis</translation>
 <translation id="828291969289324795">{count,plural, =1{Vahelehe lisamine uude gruppi}other{Vahelehtede lisamine uude gruppi}}</translation>
 <translation id="8283172974887967105">Määra …</translation>
 <translation id="8286036467436129157">Logi sisse</translation>
+<translation id="8289930144142009940">Kanali <ph name="FEATURE_NAME" /> märguanded on välja lülitatud</translation>
 <translation id="8292843446079898078">Saate jälgitavate toodete hinnalanguse hoiatusi.</translation>
 <translation id="8299417921174340354">Paroolide kasutamiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="8299613349954694191">Avage inkognito vaheleht ja sirvige veebi privaatselt.</translation>
@@ -1429,6 +1436,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8313645224014086262">Faili salvestamine</translation>
 <translation id="8319076807703933069">Uus otsing</translation>
 <translation id="8328777765163860529">Sule kõik</translation>
+<translation id="8343286328361420468">Lülita kanali <ph name="FEATURE_NAME" /> märguanded välja</translation>
 <translation id="8343993175958086504">Varundage oma sisu ja kasutage seda mis tahes seadmes.</translation>
 <translation id="834783239627985533">Enim külastatavad saidid</translation>
 <translation id="8358401059263985056">Märguannete sisselülitamine</translation>

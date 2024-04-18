@@ -29,6 +29,7 @@
 <translation id="1722370509450468186">Parool salvestatakse teie kontole (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromiumi andmed kustutati</translation>
 <translation id="1791845338122684020">Avab teie Chromiumi ajaloo lehe.</translation>
+<translation id="1811860791247653035">Isikupärastatud kasutuskogemuse saamiseks ja muude funktsioonide kasutamiseks kaasake Chromium funktsioonidesse <ph name="FEATURE_NAME_1" /> ning <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromiumil on funktsioonid, mis aitavad teil hallata oma Interneti-andmeid ja seda, kui kiiresti saate veebilehti laadida.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -91,6 +92,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiu
 <translation id="3639997914391704523">Chromium saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="3688710892786762883">Chromium tuvastab teie külastatud saitidel saadetise jälgimisnumbrid ja kuvab teile saadetise värskendusi uuel vahelehel. Teie andmeid jagatakse Google'iga, et pakkuda seda funktsiooni ja parandada ostlemist kõigi jaoks.</translation>
 <translation id="372658070733623520">Chromiumi andmete kasutamiseks ja salvestamiseks oma Google’i kontole kinnitage, et see olete teie.</translation>
+<translation id="3728124580182886854">Linkige Chromium ja teised Google’i teenused isikupärastamiseks ja muudel eesmärkidel</translation>
 <translation id="3780779443901618967">Hoiatab teid ohtlike saitide eest, isegi nende eest, millest Google varem ei teadnud, analüüsides standardse kaitsega võrreldes rohkem saitidelt pärinevaid andmeid. Soovi korral saate Chromiumi hoiatused vahele jätta.</translation>
 <translation id="3784369638459513223">Avab uue Chromiumi inkognito vahelehe.</translation>
 <translation id="3805899903892079518">Chromiumil pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdepääs valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>

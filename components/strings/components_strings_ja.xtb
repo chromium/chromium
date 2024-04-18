@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">作成者:</translation>
 <translation id="1247030632403369975">アルミニウム</translation>
 <translation id="1252209483516427155">アウター</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> でのお支払い</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（同期済み）</translation>
 <translation id="1255086252236620440">フードミキサー</translation>
 <translation id="1256368399071562588">&lt;p&gt;ウェブサイトにアクセスしようとしてもサイトが開かない場合は、まず次の解決方法を行って、エラーが解消されるかご確認ください。&lt;/p&gt;
@@ -1514,6 +1515,7 @@
 <translation id="385489333361351399">カメラ、写真機材</translation>
 <translation id="3858027520442213535">日時を更新</translation>
 <translation id="3858860766373142691">名前</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> の利用規約はこちらをご確認ください</translation>
 <translation id="3872834068356954457">科学</translation>
 <translation id="3875783148670536197">手順を見る</translation>
 <translation id="3880456882942693779">アート、エンターテインメント</translation>
@@ -2355,6 +2357,7 @@
 <translation id="553377674408670169">教育系の求人情報</translation>
 <translation id="5536214594743852365">「<ph name="SECTION" />」セクションを表示します</translation>
 <translation id="553782666181800029">長形 2 号封筒</translation>
+<translation id="5538270463355278784">自動全画面表示</translation>
 <translation id="5539243836947087108">ラフト</translation>
 <translation id="5540224163453853">リクエストされた記事が見つかりませんでした。</translation>
 <translation id="5540969246441091044">馬術</translation>
@@ -2719,6 +2722,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome でダウンロードしたファイルを管理します</translation>
 <translation id="6254436959401408446">メモリが不足しているため、このページを開けません</translation>
 <translation id="625463612687472648">許可を取り消す</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome で購入する際のオプションとして <ph name="FINANCIAL_ACCOUNT_TYPES" /> が表示されます}other{Chrome で購入する際のオプションとして <ph name="FINANCIAL_ACCOUNT_TYPES" /> が表示されます}}</translation>
 <translation id="6259156558325130047">順序変更のやり直し（&amp;R）</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> のブックマーク</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
@@ -3855,6 +3859,7 @@
 <translation id="8378714024927312812">組織によって管理されています</translation>
 <translation id="8380941800586852976">危険</translation>
 <translation id="8381674639488873545">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。<ph name="BEGIN_LINK" />理解したうえで表示する<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">自動全画面表示</translation>
 <translation id="838307841291975086">ステーション ワゴン</translation>
 <translation id="8389532092404711541">一般的な価格: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">カスタムカー、高性能車</translation>

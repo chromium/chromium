@@ -1108,6 +1108,7 @@
 <translation id="1823768272150895732">字体</translation>
 <translation id="1823781806707127806">将现有浏览数据添加到受管理个人资料名下</translation>
 <translation id="18245044880483936">备份数据不会计入您孩子的云端硬盘存储空间配额。</translation>
+<translation id="1824870205483790748">将分组固定到书签栏</translation>
 <translation id="1825073796163165618">启用链接</translation>
 <translation id="1825565032302550710">端口必须介于 1024 到 65535 之间</translation>
 <translation id="182577151972096764">最近查看过的食谱</translation>
@@ -1130,6 +1131,7 @@
 <translation id="1834503245783133039">未能成功下载“<ph name="FILE_NAME" />”</translation>
 <translation id="1835261175655098052">正在升级 Linux</translation>
 <translation id="1835612721186505600">允许具有摄像头使用权限的应用和网站使用摄像头</translation>
+<translation id="1837441256780906162">Microsoft OneDrive 拒绝了请求。请稍后再试。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1839021455997460752">您的电子邮件地址</translation>
 <translation id="1839540115464516994">在“<ph name="LOCATION" />”中显示</translation>
@@ -1630,6 +1632,7 @@
 <translation id="2204387456724731099">无法翻译所选内容</translation>
 <translation id="2207116775853792104">保留此扩展程序</translation>
 <translation id="2210462644007531147">无法完成安装</translation>
+<translation id="2211043920024403606">个人资料信息</translation>
 <translation id="2211245494465528624">管理同步选项</translation>
 <translation id="2214018885812055163">共享的文件夹</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;有 1 行代码未显示出来&gt;}other{&lt;有 <ph name="NUMBER_OF_LINES" /> 行代码未显示出来&gt;}}</translation>
@@ -2850,6 +2853,11 @@
 <translation id="311394601889664316">不允许网站修改您设备上的文件或文件夹</translation>
 <translation id="3115147772012638511">正在等待存入缓存...</translation>
 <translation id="3115580024857770654">全部收起</translation>
+<translation id="3115728370128632723">为您提供更好的网络体验是指：
+      &lt;ul&gt;
+        &lt;li&gt;保障您安全地浏览网页，以及&lt;/li&gt;
+        &lt;li&gt;为蓬勃发展的生态系统提供支持，确保网络安全、开放、快速且免费&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="3115743155098198207">管理 Google 账号语言</translation>
 <translation id="3117362587799608430">基座不完全兼容</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{未能将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}other{未能将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}}</translation>
@@ -3408,6 +3416,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可查看以下文件和文件夹</translation>
 <translation id="3571734092741541777">设置</translation>
 <translation id="3575121482199441727">允许此网站显示通知</translation>
+<translation id="3575224072358507281">根据 Measurement Lab 的隐私权政策 (measurementlab.net/privacy)，收集 IP 地址和网络测量结果</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577487026101678864">已开启文件同步</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件数据收集</translation>
@@ -3673,6 +3682,7 @@
 <translation id="3760460896538743390">检查背景页(&amp;B)</translation>
 <translation id="37613671848467444">在隐身窗口中打开(&amp;I)</translation>
 <translation id="3761556954875533505">允许此网站修改文件？</translation>
+<translation id="3761733456040768239">可对“<ph name="CARD_DESCRIPTION" />”执行的更多操作，银行卡验证码 (CVC) 已保存</translation>
 <translation id="3763433740586298940">您可根据自己的需要屏蔽一些网站。Chrome 还会从列表中自动删除保留时长超过 30 天的网站。</translation>
 <translation id="3763549179847864476">“隐私保护指南”返回按钮</translation>
 <translation id="3764314093345384080">详细版本信息</translation>
@@ -5701,6 +5711,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
 <translation id="534449933710420173">未命名的文件夹</translation>
 <translation id="5345916423802287046">在您登录时启动应用</translation>
+<translation id="5347920333985823270">Chrome 支持免费网络</translation>
 <translation id="5350293332385664455">关闭 Google 助理</translation>
 <translation id="535123479159372765">从其他设备复制的文字</translation>
 <translation id="5352033265844765294">时间戳</translation>
@@ -5894,6 +5905,7 @@
 <translation id="5493792505296048976">已开启屏幕</translation>
 <translation id="5494016731375030300">最近关闭的标签页</translation>
 <translation id="5494362494988149300">完成后打开(&amp;D)</translation>
+<translation id="5494843939447324326">Chrome 为您提供选择权</translation>
 <translation id="5494920125229734069">全选</translation>
 <translation id="5495466433285976480">执行此操作后，所有本地用户、文件、数据和其他设置都将遭到删除，下次重启后您将再也看不到这些内容。所有用户均必须重新登录。</translation>
 <translation id="5495597166260341369">不关闭显示屏</translation>
@@ -5951,6 +5963,12 @@
 <translation id="5542132724887566711">个人资料</translation>
 <translation id="5542750926112347543">已拦截来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在连接到<ph name="CARRIER_NAME" /></translation>
+<translation id="5543901591855628053">广告对许多线上业务至关重要。商家依赖广告提供免费的线上内容，确保人人都能使用。Chrome 开发了各种方法，让网站在保护隐私的同时，向您展示个性化广告。如果运用得当，广告可惠及网络上的所有人，原因在于当您浏览广告时：
+      &lt;ul&gt;
+        &lt;li&gt;您可能会发现新奇或有趣的事物&lt;/li&gt;
+        &lt;li&gt;广告主可能会触及新客户&lt;/li&gt;
+        &lt;li&gt;您访问的网站会通过托管广告赚取收入&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="5543983818738093899">正在检查状态…</translation>
 <translation id="5544482392629385159">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），设备名称为“<ph name="DEVICE_NAME" />”</translation>
 <translation id="554517701842997186">渲染程序</translation>
@@ -6049,6 +6067,7 @@
 <translation id="5616571005307953937">最早</translation>
 <translation id="5616726534702877126">预留大小</translation>
 <translation id="561698261642843490">关闭 Firefox</translation>
+<translation id="5616991717083739666">将分组固定到书签栏</translation>
 <translation id="5620163320393916465">尚未保存任何密码</translation>
 <translation id="5620540760831960151">此列表受 <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> 和 <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> 影响</translation>
 <translation id="5620568081365989559">DevTools 请求获得对 <ph name="FOLDER_PATH" /> 的完整访问权限。请确保您不会泄露任何敏感信息。</translation>
@@ -6646,6 +6665,12 @@
 <translation id="6082877069782862752">按键映射</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 属于未命名群组</translation>
 <translation id="6086004606538989567">您已验证的账号无权访问此设备。</translation>
+<translation id="6086366524552602071">您可以按照自己喜欢的方式自定义 Chrome：
+      &lt;ul&gt;
+        &lt;li&gt;&lt;em&gt;&lt;/em&gt;Google 的精华应用，专为需要的用户打造。例如，您可选择 Google 搜索作为 Chrome 的默认搜索引擎，并在任何设备上使用 Google 密码管理工具获取所有密码。&lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;&lt;/em&gt;根据需要做出选择：Chrome 通过设置为您提供选择权和控制权，并提供相关信息来帮助您做出符合需求的决定。&lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;&lt;/em&gt;扩展程序：Chrome 应用商店中提供超过 10 万个扩展程序，您可以利用这些扩展程序完善 Chrome 功能。&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
 <translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
@@ -6740,6 +6765,7 @@
 <translation id="6154240335466762404">移除所有端口</translation>
 <translation id="615436196126345398">协议</translation>
 <translation id="6154739047827675957">OneDrive 设置失败</translation>
+<translation id="6154820449290823443">在此 Chromebook 上管理访问权限和屏蔽应用。</translation>
 <translation id="6155141482566063812">背景标签页正在共享您的屏幕</translation>
 <translation id="6156323911414505561">显示书签栏</translation>
 <translation id="6156863943908443225">脚本缓存</translation>
@@ -6829,6 +6855,7 @@
 <translation id="6226777517901268232">私钥文件（选填）</translation>
 <translation id="6227002569366039565">按 |<ph name="ACCELERATOR" />| 可聚焦于此气泡，然后再聚焦于它所指向的元素。</translation>
 <translation id="6227280783235722609">扩展程序</translation>
+<translation id="622902691730729894">从书签栏上取消固定分组</translation>
 <translation id="6229062790325126537">重置 ApnMigrator</translation>
 <translation id="6229849828796482487">断开 WLAN 网络连接</translation>
 <translation id="6231782223312638214">建议</translation>
@@ -7663,6 +7690,7 @@
 <translation id="686831807558000905">不登录</translation>
 <translation id="686839242150793617">已获准自动进入画中画模式</translation>
 <translation id="6868934826811377550">查看详情</translation>
+<translation id="6869093950561306644">为确保您可以安全使用此设备，贵组织可能需要查看设备操作系统、浏览器、设置以及设备上安装的软件的相关信息。</translation>
 <translation id="6871644448911473373">OCSP 响应程序：<ph name="LOCATION" /></translation>
 <translation id="6873571253135628430">更改网站权限</translation>
 <translation id="6876155724392614295">自行车</translation>
@@ -8032,6 +8060,7 @@
 <translation id="7180865173735832675">自定义</translation>
 <translation id="7181117767881540376">隐藏书签栏(&amp;H)</translation>
 <translation id="7181329571386134105">要允许<ph name="CHILD_NAME" />日后在未经您批准的情况下安装扩展程序，请在设备上打开 Family Link 应用并更新<ph name="CHILD_NAME" />的 Google Chrome 设置。</translation>
+<translation id="7182051712900867547">使用其他账号</translation>
 <translation id="7182063559013288142">即时热点</translation>
 <translation id="7182791023900310535">移动您的密码</translation>
 <translation id="718427252411067142">为防止他人使用您的密码，请打开该应用更改密码</translation>
@@ -8596,6 +8625,7 @@
 <translation id="7617263010641145920">开启 Play 商店</translation>
 <translation id="7617648809369507487">使用干扰性更低的提示方式</translation>
 <translation id="7619937211696316184">维护已完成</translation>
+<translation id="7620616707541471029">选择账号以继续</translation>
 <translation id="7621382409404463535">系统未能保存设备配置。</translation>
 <translation id="7621480263311228380">不允许使用其保存的与您相关的信息</translation>
 <translation id="7621595347123595643">如果忘记了密码或 PIN 码，您将无法恢复本地数据。</translation>
@@ -10251,6 +10281,7 @@
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">汉堡</translation>
 <translation id="8838778928843281408">管理手机</translation>
+<translation id="8838841425230629509">从书签栏上取消固定分组</translation>
 <translation id="883924185304953854">按图搜索</translation>
 <translation id="8841786407272321022">系统仅会将密码保存在此设备上。若要将新密码保存到您的 Google 账号中，请更新 Google Play 服务。</translation>
 <translation id="8841843049738266382">读取和更改已列入许可名单的用户</translation>
@@ -10259,6 +10290,7 @@
 <translation id="8846132060409673887">查看此计算机的制造商和型号</translation>
 <translation id="8846163936679269230">重置 eSIM 卡配置文件</translation>
 <translation id="8846239054091760429">单声道音频、启动、实时字幕等</translation>
+<translation id="8847459600640933659">广告收入也能让 Google 推出许多免费产品和服务，例如 Chrome、Gmail、Google 地图和 YouTube。</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8849219423513870962">取消移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>

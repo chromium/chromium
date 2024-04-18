@@ -340,6 +340,7 @@
 <translation id="160851722280695521">Гуляць у "Прабежку з дыназаўрам" у Chrome</translation>
 <translation id="161042844686301425">Блакітны</translation>
 <translation id="1611101756749861742">Другі рулон</translation>
+<translation id="1611854593425834707">Закрыць спіс прылад для трансляцыі</translation>
 <translation id="1612199629998703524">Кіраванне тэмамі</translation>
 <translation id="1615178538289490617">Адклікаць доступ да порта <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Палітыка, зададзеная адміністратарам, адключае здыманне экрана, калі на ім паказваецца прыватнае змесціва</translation>
@@ -1919,6 +1920,7 @@
 <translation id="4691093235373904540">Дахавыя работы</translation>
 <translation id="4692623383562244444">Пошукавыя сістэмы</translation>
 <translation id="4698692901173737941">Спартыўныя адзінаборствы</translation>
+<translation id="4701307090948589984">Трансліраваць на прыладу…</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Бакавы</translation>
 <translation id="4702656508969495934">Паказваюцца імгненныя субцітры. Вы можаце перайсці да іх, выкарыстаўшы пераключальнік вокнаў</translation>
@@ -2168,6 +2170,8 @@
 <translation id="5161334686036120870">Тэма:</translation>
 <translation id="5161506081086828129">Укладчык 9</translation>
 <translation id="5164798890604758545">Уводзіцца тэкст</translation>
+<translation id="5164928537947209380">Гэта эксперыментальны AI-інструмент. Ён можа памыляцца. Для яго паляпшэння ваша змесціва адпраўляецца ў Google.
+    <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Увядзіце CVC-код карткі <ph name="CREDIT_CARD" />. Пасля вашага пацвярджэння даныя карткі з Уліковага запісу Google будуць абагулены з гэтым сайтам.</translation>
 <translation id="5169827969064885044">Вы можаце страціць доступ да ўліковага запісу арганізацыі, або ў вас могуць скрасці асабістыя даныя. Chrome рэкамендуе змяніць пароль.</translation>
 <translation id="5171045022955879922">Увядзіце запыт або URL-адрас</translation>
@@ -4065,6 +4069,7 @@
 <translation id="8807160976559152894">Абрэзка пасля кожнай старонкі</translation>
 <translation id="8809203544698246977">Заблакіраваныя тэмы будуць паказвацца тут</translation>
 <translation id="8811470563853401328">Захаваць адрас ва ўліковым запісе?</translation>
+<translation id="8811725516933141693">Каб пачаць чат з Gemini, увядзіце @gemini</translation>
 <translation id="8813277370772331957">Нагадаць пазней</translation>
 <translation id="8814707942599948500">Канверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб абнавіць браўзер Chrome праз яго налады, націсніце Tab, затым Enter</translation>

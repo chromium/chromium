@@ -68,6 +68,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1218444235442067213">„<ph name="APP_NAME" />“, „Play“ parduotuvės programa</translation>
 <translation id="1225748608451425081">„Chromebook“ įrenginys užrakintas dėl nežinomos problemos. Prisijungti galėsite po: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Nebesirinkti</translation>
+<translation id="1230853660706736937">Ieškokite teksto vaizduose ir peržiūrėkite vaizdų peržiūras</translation>
 <translation id="1235458158152011030">Žinomi tinklai</translation>
 <translation id="1239161794459865856">„<ph name="FEATURE_NAME" />“ prijungta.</translation>
 <translation id="1240638468526743569">Programa</translation>
@@ -160,6 +161,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1569384531973824928">Suteikiama prieiga visoms programoms ir svetainėms, turinčioms fotoaparato ir mikrofono leidimus. Gali reikėti atnaujinti tinklalapį arba paleisti programą iš naujo.</translation>
 <translation id="1571697193564730395">Perjungti netrukdymo režimą. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Tolinti, kai įjungtas didintuvas</translation>
+<translation id="1582946770779745370">Pasiekiama žaidimų informacijos suvestinė. Paspauskite <ph name="LAUNCHER_KEY_NAME" /> + „Shift“ + „Escape“, tada bet kuriuo metu <ph name="LAUNCHER_KEY_NAME" /> + g, kad atidarytumėte</translation>
 <translation id="1586324912145647027">Eiti į 1–8 darbalaukį</translation>
 <translation id="158838227375272121">„Google Classroom“ svetainė</translation>
 <translation id="1589090746204042747">Pasiekti visą šios sesijos veiklą</translation>
@@ -715,11 +717,13 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3824784079442479685">Tai leis pasiekti fotoaparatą „<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms fotoaparato leidimą. Gali reikėti atnaujinti tinklalapį arba paleisti programą iš naujo.</translation>
 <translation id="3826099427150913765">Perjungti į slaptažodį</translation>
 <translation id="383058930331066723">Akumuliatoriaus tausojimo priemonės režimas įjungtas</translation>
+<translation id="3831226344927851293">Išeiti iš mokomosios medžiagos peržiūros</translation>
 <translation id="383629559565718788">Rodyti klaviatūros nustatymus</translation>
 <translation id="384082539148746321">Ištrinti šabloną?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> <ph name="MODIFIER_TWO" />, tada <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> arba <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94 / 5</translation>
 <translation id="3846575436967432996">Nėra tinklo informacijos</translation>
+<translation id="3848526302597027234">Prieiga prie toliau nurodytų leidimų.</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="385300504083504382">Pradžia</translation>
 <translation id="3859364108019690">Nepavyko perduoti programų srautu</translation>

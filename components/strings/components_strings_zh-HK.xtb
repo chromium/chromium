@@ -619,7 +619,7 @@
 <translation id="2126374524350484896">PDF 製作工具：</translation>
 <translation id="2130448033692577677">您並未設定 DnsOverHttpsMode 政策，因此系統無法套用您指定的範本。</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">搜尋引擎以隨機次序顯示。你可隨時變更預設搜尋引擎。</translation>
+<translation id="2132825047782982803">以下搜尋引擎隨機排序。你可隨時變更預設。</translation>
 <translation id="2137891579555018930">正在等待許可…</translation>
 <translation id="213826338245044447">流動版書籤</translation>
 <translation id="2141000681034340397">修改輸入內容</translation>
@@ -1434,7 +1434,7 @@
 <translation id="3711895659073496551">暫停</translation>
 <translation id="3712006010833051684">10 信封</translation>
 <translation id="3712624925041724820">授權已用盡</translation>
-<translation id="3713277100229669269">現在，你可以在付款前查看信用卡福利</translation>
+<translation id="3713277100229669269">宜家你可以喺俾錢之前睇到信用卡優惠</translation>
 <translation id="371420189621607696">電競</translation>
 <translation id="3714633008798122362">網絡日曆</translation>
 <translation id="3714780639079136834">開啟流動數據或 Wi-Fi</translation>
@@ -2110,6 +2110,7 @@
 <translation id="5040262127954254034">私隱權</translation>
 <translation id="5043480802608081735">您複製的連結</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
+<translation id="5048293684454354469">廣告主題只是網站在放送個人化廣告時的其中一項依據。即使你未開啟此設定，網站仍可放送廣告，但可能會放送較不相關的廣告。進一步瞭解如何<ph name="BEGIN_LINK" />管理廣告私隱權<ph name="LINK_END" />。</translation>
 <translation id="5052517576853118371">有效主題</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用「咫尺共享」傳送此檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「咫尺共享」傳送這些檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">請提供開啟的原因 (必填)</translation>
@@ -2329,6 +2330,7 @@
     <ph name="LINE_BREAK" />
     請嘗試聯絡您的系統管理員。</translation>
 <translation id="549333378215107354">粗幼：3</translation>
+<translation id="5496804587179176046">儲存安全碼，目前未儲存任何安全碼</translation>
 <translation id="550365051221576010">填寫所有資料</translation>
 <translation id="5508443345185481044">相機和攝錄機</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3529,7 +3531,7 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /><ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">自訂 Chrome 的字型大小和字體</translation>
 <translation id="7752995774971033316">未管理</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - 與 <ph name="KEYWORD_SHORT_NAME" /> 聊天</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - 與 <ph name="KEYWORD_SHORT_NAME" /> 即時通訊</translation>
 <translation id="7754587126786572336">更新開始時，您的 Chrome 分頁和應用程式將會關閉</translation>
 <translation id="7755287808199759310">您的家長可以為您解除封鎖此網站</translation>
 <translation id="7755624218968747854">主卷</translation>

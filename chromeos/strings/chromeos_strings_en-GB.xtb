@@ -24,6 +24,7 @@
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1135805404083530719">Controls panel</translation>
 <translation id="1145018782460575098">Update firmware for external devices window is open. <ph name="NUM_UPDATES" /> updates available.</translation>
 <translation id="1145516343487477149">Find help articles and answers to common Chromebook questions</translation>
 <translation id="1154390310959620237">You can only customise five shortcuts. Delete a shortcut to add a new one.</translation>
@@ -32,6 +33,7 @@
 <translation id="1167755866710282443">Open menu to customise keys. Drag menu to move.</translation>
 <translation id="1171349345463658120">sandy lagoon</translation>
 <translation id="1174073918202301297">Shortcut added</translation>
+<translation id="11743817593307477">Use arrow keys to move this control to the game action that you want. Use the enter key to place the control. Use the escape key to cancel.</translation>
 <translation id="1175697296044146566">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Average (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">cosy</translation>
@@ -101,6 +103,7 @@
 <translation id="1515129336378114413">browser home</translation>
 <translation id="1526389707933164996">Screen saver animation</translation>
 <translation id="152892567002884378">Volume up</translation>
+<translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">backlit colour</translation>
@@ -109,6 +112,7 @@
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Set as wallpaper</translation>
 <translation id="1578784163189013834">Choose screensaver background</translation>
+<translation id="1593528591614229756">Make sure that you select APNs provided by your mobile provider or administrator. Selecting an APN will disable any custom APNs. Invalid APNs may disrupt your mobile connection. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Preview image</translation>
 <translation id="1611649489706141841">forward</translation>
 <translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
@@ -161,6 +165,7 @@
 <translation id="1801418420130173017">Disable Dark theme</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="1808803439260407870">Classic art</translation>
+<translation id="1815850098929213707">Selected key is <ph name="KEYS" />. Tap on the button to edit the control</translation>
 <translation id="1823120442877418684">Characters</translation>
 <translation id="1827738518074806965">Art gallery</translation>
 <translation id="1836553715834333258">System colour</translation>
@@ -215,6 +220,7 @@
 <translation id="2105810540595158374">Device is a game controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB of <ph name="TOTAL_MEMORY" /> GB available</translation>
+<translation id="2135668738111962377">Edit <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
@@ -227,6 +233,7 @@
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
 <translation id="2189104374785738357">Edit APN details</translation>
+<translation id="2195732836444333448">At capacity right now. Come back soon.</translation>
 <translation id="2201758491318984023">bicycle</translation>
 <translation id="2203222757805818543">Current schedule is set to <ph name="SUNRISE" /> – <ph name="SUNSET" />. To automatically update the dark mode schedule, <ph name="BEGIN_LINK" />turn on location access<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">hot spring</translation>
@@ -287,6 +294,7 @@
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2521835766824839541">previous track</translation>
 <translation id="2526590354069164005">Desktop</translation>
+<translation id="2529641961800709867">Button options</translation>
 <translation id="253029298928638905">Restarting...</translation>
 <translation id="2531772459602846206">hydrangea</translation>
 <translation id="2533048460510040082">Suggested help content</translation>
@@ -297,6 +305,7 @@
 <translation id="2584547424703650812">Glowscapes</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
 <translation id="2586146417912237930">blue and indigo</translation>
+<translation id="2589921777872778654">Edit and delete menu</translation>
 <translation id="2597774443162333062">Files will be sent to Google for debugging</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scanning completed. 1 page scanned}other{Scanning completed. {NUMBER_OF_PAGES} pages scanned}}</translation>
 <translation id="2617397783536231890">cotton</translation>
@@ -428,6 +437,7 @@
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />performance trace data<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS update</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
+<translation id="353214771040290298">Finished editing</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
 <translation id="3533790840489634638">swimming pool</translation>
 <translation id="3547264467365135390">Formula</translation>
@@ -530,6 +540,7 @@
 <translation id="4130035430755296270">Keep hovering for more layout options</translation>
 <translation id="4130750466177569591">I agree</translation>
 <translation id="4131410914670010031">Black and white</translation>
+<translation id="4143226836069425823">Tap on another keyboard key to replace</translation>
 <translation id="4145784616224233563">HTTP firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -624,6 +635,7 @@
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="467510802200863975">Passwords do not match</translation>
 <translation id="467715984478005772">Firewall suspected</translation>
+<translation id="4683762547447150570">Tap on the button to focus on the key assignment</translation>
 <translation id="4691278870498629773">Stopped – tray missing</translation>
 <translation id="469379815867856270">Signal strength</translation>
 <translation id="4697260493945012995">Select your control type</translation>
@@ -705,6 +717,7 @@
 <translation id="5130848777448318809">ponies</translation>
 <translation id="5137451382116112100">Full</translation>
 <translation id="5142961317498132443">Authentication</translation>
+<translation id="5144311987923128508">Confirm button is now disabled</translation>
 <translation id="5144887194300568405">Copy translation</translation>
 <translation id="5145081769226915336">Turn on dark mode automatically?</translation>
 <translation id="5154917547274118687">Memory</translation>
@@ -824,6 +837,7 @@
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5876385649737594562">Turn on to select options</translation>
 <translation id="588258955323874662">Full screen</translation>
+<translation id="5893975327266416093">Tap on a keyboard key to assign</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5903200662178656908">Device is a keyboard and mouse combo.</translation>
@@ -896,6 +910,7 @@
 <translation id="6243280677745499710">Currently set</translation>
 <translation id="6250316632541035980">bacon and eggs</translation>
 <translation id="6255213378196499011">Help me write settings</translation>
+<translation id="6265268291107409527">Selected key is <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Right arrow</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -957,6 +972,7 @@
 <translation id="6535178685492749208">You're offline. Feedback will be sent later.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6551839203326557324">apples</translation>
+<translation id="65526652485742171">Confirm button is now enabled</translation>
 <translation id="6557784757915238407">APN is type <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6560196641871357166">Vibrant</translation>
@@ -1031,6 +1047,16 @@
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
 <translation id="6981982820502123353">Accessibility</translation>
+<translation id="698242338298293034">Choose a theme and then select the underlined words to personalise your AI images.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Select 'Inspire me' to get more unique and varied AI images options.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          When you create with AI, the prompt is sent to Google AI servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI is experimental, in early development and currently has limited availability.</translation>
 <translation id="6982462588253070448">sand dunes</translation>
 <translation id="7005833343836210400">Device is offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
@@ -1051,6 +1077,7 @@
 <translation id="7103252855940681301">Device <ph name="INDEX" /> of <ph name="COUNT" /> named <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Choose <ph name="PRODUCT_NAME" /> exclusive artwork</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7118522231018231199">Make sure that you select APNs provided by your mobile provider or administrator. Selecting an APN will disable any custom APNs. Invalid APNs may disrupt your mobile connection.</translation>
 <translation id="7119389851461848805">power</translation>
 <translation id="7129287270910503851">Your data usage will be reset each month on this day</translation>
 <translation id="7130438335435247835">Access Point Name (APN)</translation>
@@ -1173,6 +1200,7 @@
 <translation id="7791543448312431591">Add</translation>
 <translation id="779591286616261875">Send new report</translation>
 <translation id="7799817062559422778">Light mode</translation>
+<translation id="7802764839223122985">Key is missing. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7813073042185856802">mountain</translation>
@@ -1219,6 +1247,7 @@
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> on a <ph name="CHARACTERS_BACKGROUND" /> background</translation>
 <translation id="8067126283828232460">APN is connected.</translation>
 <translation id="8067208048261192356">brown</translation>
+<translation id="8067224607978179455">Delete <ph name="ACTION_NAME" /></translation>
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8079860070590459552">field of flowers</translation>
@@ -1244,6 +1273,7 @@
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
 <translation id="8227119283605456246">Attach file</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
+<translation id="8238771987802558562">Choose an APN</translation>
 <translation id="8246209727385807362">Unknown operator</translation>
 <translation id="8250926778281121244">rust</translation>
 <translation id="8257572018929862473">Open Quick Answers settings</translation>
@@ -1366,6 +1396,7 @@
 <translation id="8928727111548978589">Failed – Out of paper</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
+<translation id="8933650076320258356">Selected key is <ph name="KEYS" /> for <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Client IP address</translation>
 <translation id="8944651180182756621">Launcher colour</translation>
 <translation id="8945308580158685341">bees</translation>
@@ -1416,18 +1447,22 @@
 <translation id="9149391708638971077">Run memory test</translation>
 <translation id="9159524746324788320">hamburgers</translation>
 <translation id="9161276708550942948">space</translation>
+<translation id="9169345239923038539">You are not connected yet. If your mobile operator recommends a custom APN, <ph name="BEGIN_LINK" />enter the APN information.<ph name="END_LINK" /></translation>
 <translation id="9173638680043580060">Less than a minute remaining</translation>
 <translation id="9174334653006917325">UI colour</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Your keyboard can automatically match your wallpaper</translation>
 <translation id="9189000703457422362">Can't connect to this network using automatically detected APNs. Contact your mobile operator for more information.</translation>
 <translation id="9193744392140377127">APN*</translation>
+<translation id="9195918315673527512">Selected joystick keys are <ph name="KEYS" />. Tap on the button to edit the control</translation>
 <translation id="9204237731135241582">Can't contact the gateway from Android apps</translation>
 <translation id="921080052717160800">Image set as camera background</translation>
 <translation id="9211490828691860325">All desks</translation>
+<translation id="9218016617214286986">Show known APNs</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Send feedback</translation>
+<translation id="950520315903467048">Key is missing for <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="952992212772159698">Not activated</translation>
 <translation id="95718197892796296">clay</translation>
 <translation id="960719561871045870">Operator code</translation>

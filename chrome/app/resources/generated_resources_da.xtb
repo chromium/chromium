@@ -1123,6 +1123,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1823768272150895732">Skrifttype</translation>
 <translation id="1823781806707127806">Føj eksisterende browserdata til en administreret profil</translation>
 <translation id="18245044880483936">Backupdata tæller ikke med i dit barns kvote for Drev-lagerplads.</translation>
+<translation id="1824870205483790748">Fastgør gruppe til bogmærkelinje</translation>
 <translation id="1825073796163165618">Aktivér links</translation>
 <translation id="1825565032302550710">Porten skal være mellem 1024 og 65535</translation>
 <translation id="182577151972096764">opskrifter, du har set for nylig</translation>
@@ -1145,6 +1146,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1834503245783133039">Downloaden blev ikke fuldført: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Opgraderer Linux</translation>
 <translation id="1835612721186505600">Brug kameratilladelsen til at give apps og websites adgang</translation>
+<translation id="1837441256780906162">Microsoft OneDrive afviste anmodningen. Prøv igen senere.</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
 <translation id="1839021455997460752">Din mailadresse</translation>
 <translation id="1839540115464516994">Vis i <ph name="LOCATION" /></translation>
@@ -1647,6 +1649,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2204387456724731099">Dette valg kunne ikke oversættes</translation>
 <translation id="2207116775853792104">Behold denne udvidelse</translation>
 <translation id="2210462644007531147">Installationen kunne ikke gennemføres</translation>
+<translation id="2211043920024403606">Profiloplysninger</translation>
 <translation id="2211245494465528624">Administrer indstillinger for synkronisering</translation>
 <translation id="2214018885812055163">Delte mapper</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linje vises ikke&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> linje vise ikke&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linjer vises ikke&gt;}}</translation>
@@ -2868,6 +2871,11 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="311394601889664316">Tillad ikke, at websites redigerer filer og mapper på din enhed</translation>
 <translation id="3115147772012638511">Venter på cache...</translation>
 <translation id="3115580024857770654">Skjul alle</translation>
+<translation id="3115728370128632723">Nettet bliver mere brugervenligt for dig, fordi Chrome gør følgende:
+      &lt;ul&gt;
+        &lt;li&gt;Beskytter dig, når du browser&lt;/li&gt;
+        &lt;li&gt;Understøtter et sundt økosystem, der holder nettet sikkert, åbent, hurtigt og gratis&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="3115743155098198207">Administrer sprog på din Google-konto</translation>
 <translation id="3117362587799608430">Dockingstationen er ikke helt kompatibel</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> kunne ikke sendes til <ph name="DEVICE_NAME" />}one{Failed to send <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> kunne ikke sendes til <ph name="DEVICE_NAME" />}}</translation>
@@ -3691,6 +3699,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3760460896538743390">Undersøg &amp;baggrundsside</translation>
 <translation id="37613671848467444">Åbn i &amp;inkognitovindue</translation>
 <translation id="3761556954875533505">Skal websitet kunne redigere filer?</translation>
+<translation id="3761733456040768239">Flere handlinger for <ph name="CARD_DESCRIPTION" />, CVC-koden er gemt</translation>
 <translation id="3763433740586298940">Du kan blokere websites, du ikke er interesseret i. Chrome sletter også automatisk websites fra listen, som er mere end 30 dage gamle.</translation>
 <translation id="3763549179847864476">Knappen Tilbage i Privatlivsguide</translation>
 <translation id="3764314093345384080">Detaljerede buildoplysninger</translation>
@@ -5718,6 +5727,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (højre)</translation>
 <translation id="534449933710420173">Unavngiven mappe</translation>
 <translation id="5345916423802287046">Start app, når du logger ind</translation>
+<translation id="5347920333985823270">Chrome støtter op om et gratis internet</translation>
 <translation id="5350293332385664455">Slå Google Assistent fra</translation>
 <translation id="535123479159372765">Tekst kopieret fra en anden enhed</translation>
 <translation id="5352033265844765294">Tidsstempling</translation>
@@ -5910,6 +5920,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5493792505296048976">skærmen er tændt</translation>
 <translation id="5494016731375030300">Seneste lukkede faner</translation>
 <translation id="5494362494988149300">Åbn når &amp;færdigt</translation>
+<translation id="5494843939447324326">Chrome giver dig valgmuligheder</translation>
 <translation id="5494920125229734069">Vælg alle</translation>
 <translation id="5495466433285976480">Dette vil fjerne alle lokale brugere, filer, data og andre indstillinger, når du genstarter næste gang. Alle brugere skal logge ind igen.</translation>
 <translation id="5495597166260341369">Hold skærmen tændt</translation>
@@ -5966,6 +5977,12 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5542750926112347543">Cookies fra <ph name="DOMAIN" /> er blokeret</translation>
 <translation id="5542949973455282971">Opretter forbindelse til <ph name="CARRIER_NAME" /></translation>
+<translation id="5543901591855628053">Annoncer er vigtige for mange onlinevirksomheder. De er med til at sikre, at indhold forbliver gratis på nettet, hvilket gør, at alle kan få adgang til indholdet. Chrome udvikler metoder, der giver websites mulighed for at vise dig personligt tilpassede annoncer, samtidig med at dit privatliv beskyttes.  God annoncering er til gavn for alle på nettet, for når du ser en annonce, sker følgende:
+      &lt;ul&gt;
+        &lt;li&gt;Du finder måske noget nyt eller interessant&lt;/li&gt;
+        &lt;li&gt;Annoncøren får måske en ny kunde&lt;/li&gt;
+        &lt;li&gt;Websitet, du besøger, tjener penge ved at hoste annoncen&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="5543983818738093899">Kontrollerer status...</translation>
 <translation id="5544482392629385159">Enhed <ph name="DEVICE_INDEX" /> af <ph name="DEVICE_COUNT" />: <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Gengivelse</translation>
@@ -6064,6 +6081,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5616571005307953937">Ældste</translation>
 <translation id="5616726534702877126">Reservér størrelse</translation>
 <translation id="561698261642843490">Luk Firefox</translation>
+<translation id="5616991717083739666">Fastgør gruppe til bogmærkelinje</translation>
 <translation id="5620163320393916465">Der er ingen gemte adgangskoder</translation>
 <translation id="5620540760831960151">Denne liste påvirkes af <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
           , <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" />
@@ -6663,6 +6681,12 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6082877069782862752">Tastaturtilknytning</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – del af en unavngiven gruppe</translation>
 <translation id="6086004606538989567">Den konto, du har verificeret, har ikke adgangstilladelse til denne enhed.</translation>
+<translation id="6086366524552602071">Du kan tilpasse Chrome, som du vil:
+      &lt;ul&gt;
+        &lt;li&gt;&lt;em&gt;Det bedste fra Google&lt;/em&gt; til dem, der vil have det. Du kan f.eks. vælge Google Søgning som Chromes standardsøgemaskine og bruge Google Adgangskodeadministrator til at få adgang til alle dine adgangskoder på en hvilken som helst enhed. &lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;Et meningsfuldt valg:&lt;/em&gt; Med Chrome får du valgmuligheder og kontrol, da indstillinger og oplysninger kan hjælpe dig med at træffe meningsfulde beslutninger.&lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;Udvidelser:&lt;/em&gt; Du kan udvide Chromes funktioner med mere end 100.000 udvidelser fra Chrome Webshop.&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Installeret af din administrator</translation>
 <translation id="6087746524533454243">Leder du efter siden Om for browseren? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-smiley</translation>
@@ -6757,6 +6781,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6154240335466762404">Fjern alle porte</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6154739047827675957">Konfigurationen af OneDrive mislykkedes</translation>
+<translation id="6154820449290823443">Administrer adgang, og bloker apps på denne Chromebook.</translation>
 <translation id="6155141482566063812">En fane i baggrunden deler din skærm</translation>
 <translation id="6156323911414505561">Vis bogmærkelinjen</translation>
 <translation id="6156863943908443225">Scriptcache</translation>
@@ -6846,6 +6871,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6226777517901268232">Privat nøglefil (valgfrit)</translation>
 <translation id="6227002569366039565">Tryk på |<ph name="ACCELERATOR" />| for at fokusere på denne boble, og tryk igen for at fokusere på det element, den peger på.</translation>
 <translation id="6227280783235722609">udvidelse</translation>
+<translation id="622902691730729894">Frigør gruppe fra bogmærkelinje</translation>
 <translation id="6229062790325126537">Nulstil ApnMigrator</translation>
 <translation id="6229849828796482487">Afbryd forbindelsen til Wi-Fi-netværket</translation>
 <translation id="6231782223312638214">Foreslået</translation>
@@ -7679,6 +7705,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="686831807558000905">Log ikke ind</translation>
 <translation id="686839242150793617">Har tilladelse til automatisk at åbne integreret billede</translation>
 <translation id="6868934826811377550">Se oplysninger</translation>
+<translation id="6869093950561306644">Da din organisation skal sikre, at denne enhed kan bruges sikkert, skal organisationen muligvis se oplysninger om dens operativsystem, browser og indstillinger, og hvilken software der er installeret på enheden.</translation>
 <translation id="6871644448911473373">OCSP-responder: <ph name="LOCATION" /></translation>
 <translation id="6873571253135628430">Rediger websitetilladelser</translation>
 <translation id="6876155724392614295">Cykel</translation>
@@ -10264,6 +10291,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8838601485495657486">Uigennemsigtig</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Administrer telefoner</translation>
+<translation id="8838841425230629509">Frigør gruppe fra bogmærkelinje</translation>
 <translation id="883924185304953854">Søg med billeder</translation>
 <translation id="8841786407272321022">Adgangskoden er kun gemt på denne enhed. Opdater Google Play-tjenester for at gemme nye adgangskoder på din Google-konto.</translation>
 <translation id="8841843049738266382">Se og rediger brugere på tilladelseslisten</translation>
@@ -10272,6 +10300,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8846132060409673887">Læs computerens producent og model</translation>
 <translation id="8846163936679269230">Nulstil eSIM-profiler</translation>
 <translation id="8846239054091760429">Monolyd, opstart, Livetekstning m.m.</translation>
+<translation id="8847459600640933659">Annonceindtægter understøttes også i Googles mange gratis produkter og tjenester, f.eks. Chrome, Gmail, Maps og YouTube.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skjult</translation>
 <translation id="8849219423513870962">Annuller fjernelse af eSIM-profilen ved navn <ph name="PROFILE_NAME" /></translation>

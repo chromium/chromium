@@ -109,6 +109,7 @@
 <translation id="1513858653616922153">비밀번호 삭제</translation>
 <translation id="1521774566618522728">오늘 사용</translation>
 <translation id="1544826120773021464">Google 계정을 관리하려면 '계정 관리' 버튼을 탭하세요.</translation>
+<translation id="154513667535157406">좋아요를 누르면 이 요약이 마음에 든다는 의견이 제출됩니다</translation>
 <translation id="1549000191223877751">다른 창으로 이동</translation>
 <translation id="1553358976309200471">Chrome 업데이트</translation>
 <translation id="1554532453982918912">더 나은 사용자 환경을 위한 Chrome 개선에 동참할 수 있습니다.</translation>
@@ -309,6 +310,7 @@
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2673169232805572412">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 Google에 보낼 수 있습니다.</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
+<translation id="2705073298859543115">요약 만들기</translation>
 <translation id="2708051474374549906">Google로 전송되는 인터넷 사용 기록을 토대로 위험한 사이트, 다운로드 항목, 확장 프로그램에 대한 실시간 선제적 보호 조치를 적용합니다.</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> 브라우저에서 열기</translation>
 <translation id="271033894570825754">New</translation>
@@ -394,6 +396,7 @@
 <translation id="3046945242843292318">다음번에 이 사이트로 빠르게 이동합니다.</translation>
 <translation id="3055259925215945098">북마크 이동됨</translation>
 <translation id="3055841435094910999">Chrome 사용에 관한 정보가 Google로 전송되지만 사용자와 연결되지 않습니다.\n\nChrome이 다운된 경우 관련 정보에 일부 개인 정보가 포함될 수 있습니다.\n\n동기화를 사용 설정하면 측정항목에 방문한 URL에 관한 정보도 포함될 수 있습니다.</translation>
+<translation id="3059531648236115056">요약 추가</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
 <translation id="3066573403916685335">아래로 이동</translation>
@@ -687,6 +690,7 @@
 <translation id="465657074423018424">세이프 브라우징은 사기성 웹사이트로부터 사용자를 보호합니다. 이 기능을 사용 중지하는 경우 인터넷을 탐색할 때, 특히 비밀번호를 입력할 때 주의하시기 바랍니다.</translation>
 <translation id="4662373422909645029">닉네임에 숫자를 포함할 수 없음</translation>
 <translation id="4663756553811254707">북마크 <ph name="NUMBER_OF_BOOKMARKS" />개 삭제됨</translation>
+<translation id="4664020984660113387">요약 삭제</translation>
 <translation id="4668279686271488041">광고 측정 데이터가 기기에서 정기적으로 삭제됩니다.</translation>
 <translation id="4668347365065281350">쿠키 및 기타 로컬에 저장된 데이터 등 사이트에 저장된 모든 데이터</translation>
 <translation id="4678082183394354975">Chrome에서 사이트의 어두운 테마가 사용 설정되었습니다.</translation>
@@ -826,6 +830,7 @@
 <translation id="5342314432463739672">권한 요청</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> 동안의 사이트 없음</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
+<translation id="5364112109233799727">의견을 제공하시는 페이지의 URL은 Google에서 전송되며 기능 개선을 위해 담당자가 검토할 수 있습니다.</translation>
 <translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">Google 계정의 Chrome 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="539881862970320163">안전한 비밀번호가 제안되었습니다. 키보드가 숨겨졌습니다.</translation>
@@ -1051,7 +1056,9 @@
 <translation id="6473086018775716761">공유 옵션 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6475951671322991020">동영상 다운로드</translation>
 <translation id="6477928892249167417">다음 사이트는 중요할 수도 있습니다.</translation>
+<translation id="6481963882741794338">맞춤설정 및 기타 목적으로 Chrome과 다른 Google 서비스를 연결합니다</translation>
 <translation id="6482749332252372425">저장공간이 부족하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
+<translation id="6495590690749880440">탭 그룹을 여시겠습니까?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{파일 1개 다운로드 완료}other{다운로드 #개 완료}}</translation>
 <translation id="6508722015517270189">Chrome 다시 시작하기</translation>
 <translation id="6518133107902771759">확인</translation>
@@ -1157,6 +1164,7 @@
 <translation id="6910211073230771657">삭제됨</translation>
 <translation id="6918398787259831832">이 문제가 계속 발생하면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 <ph name="BEGIN_LINK" />자세히 알아보세요<ph name="END_LINK" />.</translation>
 <translation id="6929224077895306814">기기 및 Google 계정에 저장된 모든 보안 코드가 삭제됩니다.</translation>
+<translation id="6937524809504266803">맞춤설정 및 연결</translation>
 <translation id="6942665639005891494">언제든지 설정 메뉴 옵션으로 기본 다운로드 위치 변경 가능</translation>
 <translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
 <translation id="6945221475159498467">선택</translation>
@@ -1174,6 +1182,7 @@
 <translation id="7013762323294215682">이 패스키는 비밀번호 관리자에 저장됩니다. 패스키에 액세스할 수 있는 사용자는 모두 이 패스키를 사용할 수 있습니다.</translation>
 <translation id="7020741890149022655">읽기 목록에 추가 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">브라우저에서 열기</translation>
+<translation id="7025769836128625875">이는 실험용 AI 기능이므로 정확하지 않을 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> 복원됨</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7030304022046916278">세이프 브라우징 서비스에 URL을 전송하여 확인하도록 합니다.</translation>
@@ -1205,6 +1214,7 @@
 <translation id="7177873915659574692">QR 코드를 만들 수 없습니다. URL이 <ph name="CHARACTER_LIMIT" />자(영문 기준)를 초과합니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7183693674623539380">탭 그룹 - <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식 제어하기</translation>
 <translation id="7187993566681480880">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>
 <translation id="7196215469483532480">개인 정보 보호 가이드 설명이 전체 높이로 열림</translation>
@@ -1494,6 +1504,7 @@
 <translation id="8512053371384421952">더 이상 <ph name="DOMAIN" />에서 알림을 받지 않습니다.</translation>
 <translation id="8514477925623180633">Chrome으로 저장한 비밀번호 내보내기</translation>
 <translation id="8516012719330875537">이미지 편집기</translation>
+<translation id="8521833595674902532">문제가 발생했습니다. 요약을 완료할 수 없습니다.</translation>
 <translation id="8523928698583292556">저장된 암호 삭제</translation>
 <translation id="8526855376374973824">알림 권한 흐름</translation>
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
@@ -1569,6 +1580,7 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8972098258593396643">기본 폴더에 다운로드하시겠습니까?</translation>
+<translation id="8982113230057126145">싫어요를 누르면 이 요약이 마음에 들지 않는다는 의견이 제출됩니다</translation>
 <translation id="8992769679401294069">데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chrome 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>
 <translation id="8993760627012879038">시크릿 모드로 새 탭 열기</translation>
 <translation id="8996847606757455498">다른 제공업체 선택</translation>

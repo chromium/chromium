@@ -125,6 +125,7 @@ Svarīga informācija
 <translation id="4633328489441962921">Pārlūkā Chrome nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="4636900170638246267">Pierakstieties šajā vietnē un pārlūkā Chrome.</translation>
 <translation id="4761869838909035636">Veikt Chrome drošības pārbaudi</translation>
+<translation id="4798859546468762093">Lai varētu izmantot personalizēšanu un citas funkcijas, iekļaujiet pārlūku Chrome iestatījumos <ph name="FEATURE_NAME_1" /> un <ph name="FEATURE_NAME_2" />.</translation>
 <translation id="4819268619367838612">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju dati no pārlūka Chrome. <ph name="BEGIN_LINK" />Pārvaldīt<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Daži jūsu Chrome dati vēl nav saglabāti jūsu Google kontā.
 
@@ -181,6 +182,7 @@ Svarīga informācija
 <translation id="6389317667633680932">Izpētiet jaunās funkcijas, kas palīdz pilnvērtīgi izmantot pārlūku Chrome.</translation>
 <translation id="6412673304250309937">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošu vietņu sarakstu, kas glabājas pārlūkprogrammā Chrome. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var nosūtīt attiecīgo URL un lapas satura fragmentus uz funkciju Droša pārlūkošana.</translation>
 <translation id="6427126399757991875">Notiek Chrome iestatīšana jūsu organizācijā...</translation>
+<translation id="6481963882741794338">Saistiet pārlūku Chrome un citus Google pakalpojumus personalizēšanai un citiem mērķiem</translation>
 <translation id="6484712497741564393">Jūs esat pierakstījies kā <ph name="EMAIL" />.
 
 Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai izmantotu un saglabātu Chrome datus savā Google kontā.</translation>

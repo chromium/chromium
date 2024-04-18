@@ -218,9 +218,11 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4293420128516039005">Sign in to sync and personalise Chrome across your devices</translation>
 <translation id="430327780270213103">Allow extension to show access requests in the Chrome toolbar</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
+<translation id="4329315893554541805">To get personalisation and other features, include Chrome in Web &amp; App Activity and linked Google services</translation>
 <translation id="4334294535648607276">Download complete.</translation>
 <translation id="4335235004908507846">Chrome can help keep you safe from data breaches, bad extensions and more</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> has been added to Chrome</translation>
+<translation id="4348548358339558429">To get personalisation, include Chrome in Web &amp; App Activity</translation>
 <translation id="436060642166082913">Chrome blocked this download because the file can harm your personal and social network accounts</translation>
 <translation id="4384570495110188418">Chrome can't check your passwords because you're not signed in</translation>
 <translation id="4389991535395284064">When browsing in Incognito mode, Chrome will warn you before loading a site using an insecure connection</translation>
@@ -337,7 +339,9 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Your organisation closes Chrome automatically when it isn't used for one minute. Browsing data is deleted. This could include history, autofill and downloads.}other{Your organisation closes Chrome automatically when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill and downloads.}}</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
+<translation id="6481963882741794338">Link Chrome and other Google services for personalisation and other purposes</translation>
 <translation id="648319183876919572">Enhanced Safe Browsing does more to protect you against dangerous websites and downloads</translation>
+<translation id="6489302989675808168">On • Chrome can't verify where this extension comes from</translation>
 <translation id="6493527311031785448">Google Chrome is trying to <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome was automatically closed</translation>
 <translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
@@ -362,6 +366,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6933858244219479645">ChromeOS system</translation>
 <translation id="6938166777909186039">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
 <translation id="6943584222992551122">This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
+<translation id="6944202724043006419">Chrome needs scene understanding and hand-tracking permission to start an immersive session</translation>
 <translation id="6967962315388095737">Inbound rule for Google Chrome Beta to allow mDNS traffic.</translation>
 <translation id="6989339256997917931">Google Chrome has been updated, but you haven't used it for at least 30 days.</translation>
 <translation id="7011190694940573312">Installation failed because this version of the operating system is not supported.</translation>
@@ -396,6 +401,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7477130805345743099">Chrome will warn you before loading any site using an insecure connection</translation>
 <translation id="7481213027396403996">Get Chrome's strongest security</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7572537927358445944">Off • Chrome can't verify where this extension comes from</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Welcome to Chrome</translation>
@@ -484,6 +490,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8823341990149967727">Chrome is Out of Date</translation>
 <translation id="8825634023950448068">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. And if Chrome gets it wrong or you don't want to see certain ads, you can remove an interest.</translation>
 <translation id="8834965163890861871">Google Chrome is trying to edit passwords. Type your Windows password to allow this.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it}other{Chrome recommends that you remove them}}</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>

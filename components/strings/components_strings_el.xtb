@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Συντάκτης:</translation>
 <translation id="1247030632403369975">Αλουμίνιο</translation>
 <translation id="1252209483516427155">Πανωφόρια</translation>
+<translation id="1253096324252841344">Πληρωμή με <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (συγχρονισμένο)</translation>
 <translation id="1255086252236620440">Μίξερ τροφίμων</translation>
 <translation id="1256368399071562588">&lt;p&gt;Αν προσπαθείτε να επισκεφτείτε έναν ιστότοπο και ο ιστότοπος δεν ανοίγει, δοκιμάστε πρώτα να διορθώσετε το σφάλμα, ακολουθώντας τα παρακάτω βήματα αντιμετώπισης προβλημάτων:&lt;/p&gt;
@@ -1514,6 +1515,7 @@
 <translation id="385489333361351399">Εξοπλισμός Κάμερας και φωτογραφίας</translation>
 <translation id="3858027520442213535">Ενημέρωση ημερομηνίας και ώρας</translation>
 <translation id="3858860766373142691">Όνομα</translation>
+<translation id="3865339060090354361">Δείτε τους όρους για την πιστωτική κάρτα <ph name="CREDIT_CARD_NAME" /> εδώ</translation>
 <translation id="3872834068356954457">Επιστήμες</translation>
 <translation id="3875783148670536197">Οδηγίες</translation>
 <translation id="3880456882942693779">Τέχνες και ψυχαγωγία</translation>
@@ -2354,6 +2356,7 @@
 <translation id="553377674408670169">Θέσεις εργασίας στην εκπαίδευση</translation>
 <translation id="5536214594743852365">Εμφάνιση της ενότητας "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Φάκελος Chou 2</translation>
+<translation id="5538270463355278784">αυτόματη πλήρης οθόνη</translation>
 <translation id="5539243836947087108">Βάση</translation>
 <translation id="5540224163453853">Δεν ήταν δυνατή η εύρεση του άρθρου που ζητήσατε.</translation>
 <translation id="5540969246441091044">Ιππασία</translation>
@@ -2718,6 +2721,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε αρχεία που έχετε κατεβάσει στο Chrome.</translation>
 <translation id="6254436959401408446">Δεν υπάρχει αρκετή μνήμη για το άνοιγμα αυτής της σελίδας</translation>
 <translation id="625463612687472648">Να μην επιτρέπεται πλέον</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Όταν κάνετε αγορές στο Chrome, εμφανίζεται η επιλογή <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Όταν κάνετε αγορές στο Chrome, εμφανίζονται οι επιλογές <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Επανάληψη αναδιάταξης</translation>
 <translation id="6263376278284652872">Σελιδοδείκτες <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Να γίνει η λήψη ούτως ή άλλως</translation>
@@ -3853,6 +3857,7 @@
 <translation id="8378714024927312812">Διαχειριζόμενο από τον οργανισμό σας</translation>
 <translation id="8380941800586852976">Επικίνδυνο</translation>
 <translation id="8381674639488873545">Αυτές οι χρεώσεις μπορεί να είναι εφάπαξ ή επαναλαμβανόμενες και ίσως να μην είναι εμφανείς.<ph name="BEGIN_LINK" />Εμφάνιση ούτως ή άλλως<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Αυτόματη πλήρης οθόνη</translation>
 <translation id="838307841291975086">Αυτοκίνητα τύπου station wagon</translation>
 <translation id="8389532092404711541">Συνήθως <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Προσαρμοσμένα οχήματα και οχήματα επιδόσεων</translation>

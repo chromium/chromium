@@ -340,6 +340,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="160851722280695521">Spila Dino Run-leikinn í Chrome</translation>
 <translation id="161042844686301425">Blár (cyan)</translation>
 <translation id="1611101756749861742">Önnur rúlla</translation>
+<translation id="1611854593425834707">Loka tækjalista fyrir vörpun</translation>
 <translation id="1612199629998703524">Stjórna umfjöllunarefnum</translation>
 <translation id="1615178538289490617">Afturkalla aðgang fyrir <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Slökkt er á skjáupptöku þegar trúnaðarefni er sýnilegt vegna reglu kerfisstjóra</translation>
@@ -1919,6 +1920,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4691093235373904540">Þakviðgerðir og þakefni</translation>
 <translation id="4692623383562244444">Leitarvélar</translation>
 <translation id="4698692901173737941">Bardagaíþróttir</translation>
+<translation id="4701307090948589984">Varpa í...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Hlið</translation>
 <translation id="4702656508969495934">Skjátextar í rauntíma sýnilegir, notaðu gluggaval til að stilla fókus</translation>
@@ -2168,6 +2170,8 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5161334686036120870">Efni:</translation>
 <translation id="5161506081086828129">Staflari 9</translation>
 <translation id="5164798890604758545">Texti er sleginn inn</translation>
+<translation id="5164928537947209380">Þetta gervigreindarverkfæri er á tilraunastigi og getur því gert mistök. Efnið þitt er sent til Google til að hjálpa til við að bæta það.
+    <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Sláðu inn CVC-númerið fyrir <ph name="CREDIT_CARD" />. Greiðslukortaupplýsingum af reikningnum þínum á Google verður deilt með þessu vefsvæði eftir að þú hefur staðfest.</translation>
 <translation id="5169827969064885044">Þú gætir misst aðgang að fyrirtækisreikningnum eða orðið fyrir auðkennisstuldi. Chrome mælir með því að þú skiptir um aðgangsorð núna.</translation>
 <translation id="5171045022955879922">Leitaðu eða sláðu inn vefslóð</translation>
@@ -4064,6 +4068,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8807160976559152894">Klippa eftir hverja síðu</translation>
 <translation id="8809203544698246977">Umfjöllunarefni á bannlista birtast hér</translation>
 <translation id="8811470563853401328">Vista heimilisfang á reikningi?</translation>
+<translation id="8811725516933141693">Sláðu inn @gemini til að spjalla við Gemini</translation>
 <translation id="8813277370772331957">Minna mig á seinna</translation>
 <translation id="8814707942599948500">Umslag: C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að uppfæra Chrome úr stillingum Chrome</translation>

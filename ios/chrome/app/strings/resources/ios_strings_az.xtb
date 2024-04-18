@@ -847,6 +847,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5407969256130905701">Dəyişiklikləri ləğv edin</translation>
 <translation id="5414763847370083940">Hər hansı saytda qiymət düşərsə, bildiriş alacaqsınız.</translation>
 <translation id="5416022985862681400">Son 7 Gün</translation>
+<translation id="5416455648658732408">Tab qrupuna köçürün</translation>
 <translation id="5423269318075950257">Qiyməti izləyin</translation>
 <translation id="543338862236136125">Parolu redaktə edin</translation>
 <translation id="5433691172869980887">İstifadəçi adı kopyalandı</translation>
@@ -1335,6 +1336,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7853202427316060426">Fəalliyyət</translation>
 <translation id="7856733331829174190">Yüklənmədi</translation>
 <translation id="7859704718976024901">Brauzer Tarixçəsi</translation>
+<translation id="7860900259978879139">Qrupdan çıxarın</translation>
 <translation id="7866501058614003444">Bu paket izlənmədi.</translation>
 <translation id="7866872729285243843">Bütün cihazlarda oxu siyahısını əldə etmək üçün ayarlarda "Oxu Siyahısı"nı aktiv edin.</translation>
 <translation id="7866993391592926595">Bu kartı gizlədəndə bağlama izləməsi deaktiv ediləcək və data silinəcək</translation>
@@ -1422,9 +1424,11 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8273982424131314219">Məlumatlar <ph name="URL" /> saytına daxil ediləcək</translation>
 <translation id="8281781826761538115">Defolt - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Keçin</translation>
+<translation id="8282657446819506217">Tab qrupunda açın</translation>
 <translation id="828291969289324795">{count,plural, =1{Yeni qrupa tab əlavə edin}other{Yeni qrupa tablar əlavə edin}}</translation>
 <translation id="8283172974887967105">Ayarlayın:</translation>
 <translation id="8286036467436129157">Giriş</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> bildirişləri deaktiv edildi</translation>
 <translation id="8292843446079898078">İzlədiyiniz məhsullar ilə bağlı qiymət endirimi xəbərdarlıqları alın.</translation>
 <translation id="8299417921174340354">Parollardan istifadə etmək üçün əvvəlcə cihazınızda parol ayarlamalısınız.</translation>
 <translation id="8299613349954694191">Vebə məxfi olaraq axtarış etmək üçün Anonim tab açın.</translation>
@@ -1432,6 +1436,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8313645224014086262">Faylı yadda saxlayın</translation>
 <translation id="8319076807703933069">Yeni Axtarış</translation>
 <translation id="8328777765163860529">Hamısını Bağlayın</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" /> bildirişlərini deaktiv edin</translation>
 <translation id="8343993175958086504">Elementləri yedəkləyin və istənilən cihazda istifadə edin.</translation>
 <translation id="834783239627985533">Çox daxil olunan saytlar</translation>
 <translation id="8358401059263985056">Bildirişləri aktiv edin</translation>

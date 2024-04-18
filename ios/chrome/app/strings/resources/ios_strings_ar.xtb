@@ -848,6 +848,7 @@
 <translation id="5407969256130905701">تجاهل التغييرات</translation>
 <translation id="5414763847370083940">ستتلقَّى تنبيهًا في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="5416022985862681400">آخر 7 أيام</translation>
+<translation id="5416455648658732408">النقل إلى مجموعة علامات التبويب</translation>
 <translation id="5423269318075950257">تتبُّع السعر</translation>
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
 <translation id="5433691172869980887">تم نسخ اسم المستخدم</translation>
@@ -1333,6 +1334,7 @@
 <translation id="7853202427316060426">النشاط</translation>
 <translation id="7856733331829174190">تعذّر التنزيل.</translation>
 <translation id="7859704718976024901">سجلّ التصفّح</translation>
+<translation id="7860900259978879139">إزالة من المجموعة</translation>
 <translation id="7866501058614003444">تم إيقاف تتبُّع هذه الحزمة بنجاح.</translation>
 <translation id="7866872729285243843">يجب تفعيل ميزة "قائمة القراءة" من خلال الإعدادات لعرض هذه القائمة على جميع أجهزتك.</translation>
 <translation id="7866993391592926595">إخفاء هذه البطاقة سيؤدي إلى إيقاف تتبُّع الطرود وإزالة جميع بياناتك</translation>
@@ -1420,9 +1422,11 @@
 <translation id="8273982424131314219">سيتم ملء المعلومات في <ph name="URL" />.</translation>
 <translation id="8281781826761538115">التلقائي - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">التخطّي</translation>
+<translation id="8282657446819506217">فتح في مجموعة علامات التبويب</translation>
 <translation id="828291969289324795">{count,plural, =1{إضافة علامة التبويب إلى مجموعة جديدة}zero{إضافة علامات التبويب إلى مجموعة جديدة}two{إضافة علامتَي التبويب إلى مجموعة جديدة}few{إضافة علامات التبويب إلى مجموعة جديدة}many{إضافة علامات التبويب إلى مجموعة جديدة}other{إضافة علامات التبويب إلى مجموعة جديدة}}</translation>
 <translation id="8283172974887967105">ضبط…</translation>
 <translation id="8286036467436129157">تسجيل الدخول</translation>
+<translation id="8289930144142009940">تم إيقاف إشعارات "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8292843446079898078">تلقّي تنبيهات بشأن انخفاض أسعار المنتجات التي تتتبّعها</translation>
 <translation id="8299417921174340354">لاستخدام كلمات المرور، عليك أولاً إعداد رمز مرور على جهازك.</translation>
 <translation id="8299613349954694191">يمكنك فتح علامة تبويب في وضع التصفُّح المتخفي لتصفُّح المواقع الإلكترونية بخصوصية تامّة.</translation>
@@ -1430,6 +1434,7 @@
 <translation id="8313645224014086262">حفظ الملف</translation>
 <translation id="8319076807703933069">بحث جديد</translation>
 <translation id="8328777765163860529">إغلاق الكل</translation>
+<translation id="8343286328361420468">إيقاف إشعارات "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
 <translation id="834783239627985533">المواقع الإلكترونية الأكثر زيارة</translation>
 <translation id="8358401059263985056">تفعيل الإشعارات</translation>

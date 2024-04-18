@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Aluminiu</translation>
 <translation id="1252209483516427155">Îmbrăcăminte pentru exterior</translation>
+<translation id="1253096324252841344">Plătește cu <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizate)</translation>
 <translation id="1255086252236620440">Mixere de bucătărie</translation>
 <translation id="1256368399071562588">&lt;p&gt;Dacă încerci să vizitezi un site, iar acesta nu se deschide, mai întâi încearcă să remediezi eroarea urmând acești pași:&lt;/p&gt;
@@ -1514,6 +1515,7 @@
 <translation id="385489333361351399">Echipamente foto și video</translation>
 <translation id="3858027520442213535">Actualizează data și ora</translation>
 <translation id="3858860766373142691">Nume</translation>
+<translation id="3865339060090354361">Consultă aici condițiile pentru <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Știință</translation>
 <translation id="3875783148670536197">Arată-mi cum</translation>
 <translation id="3880456882942693779">Artă și divertisment</translation>
@@ -2111,6 +2113,7 @@
 <translation id="5040262127954254034">Confidențialitate</translation>
 <translation id="5043480802608081735">Linkul copiat de tine</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
+<translation id="5048293684454354469">Subiectele anunțurilor reprezintă doar unul dintre numeroasele tipuri de date pe care un site le poate folosi pentru a personaliza anunțurile. Chiar și fără subiectele anunțurilor, site-urile pot afișa în continuare anunțuri, dar ele pot fi mai puțin personalizate. Află mai multe despre <ph name="BEGIN_LINK" />gestionarea confidențialității anunțurilor<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Subiecte active</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pentru a trimite fișierul prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}few{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}other{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}}</translation>
 <translation id="505757197798929356">Specifică motivul deschiderii (obligatoriu)</translation>
@@ -2330,6 +2333,7 @@
     <ph name="LINE_BREAK" />
     Contactează administratorul sistemului.</translation>
 <translation id="549333378215107354">Mărimea 3</translation>
+<translation id="5496804587179176046">Salvează coduri de securitate. Momentan, nu este salvat niciun cod de securitate</translation>
 <translation id="550365051221576010">Completează tot</translation>
 <translation id="5508443345185481044">Camere foto și video</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2353,6 +2357,7 @@
 <translation id="553377674408670169">Locuri de muncă în educație</translation>
 <translation id="5536214594743852365">Afișează secțiunea „<ph name="SECTION" />”</translation>
 <translation id="553782666181800029">Plic Chou 2</translation>
+<translation id="5538270463355278784">ecran complet automat</translation>
 <translation id="5539243836947087108">Fundație</translation>
 <translation id="5540224163453853">Articolul solicitat nu poate fi găsit.</translation>
 <translation id="5540969246441091044">Echitație</translation>
@@ -2717,6 +2722,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona fișierele pe care le-ai descărcat în Chrome</translation>
 <translation id="6254436959401408446">Nu există suficientă memorie pentru a deschide pagina</translation>
 <translation id="625463612687472648">Anulează permisiunea</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Când faci achiziții în Chrome, vezi <ph name="FINANCIAL_ACCOUNT_TYPES" /> ca opțiune}few{Când faci achiziții în Chrome, vezi <ph name="FINANCIAL_ACCOUNT_TYPES" /> ca opțiuni}other{Când faci achiziții în Chrome, vezi <ph name="FINANCIAL_ACCOUNT_TYPES" /> ca opțiuni}}</translation>
 <translation id="6259156558325130047">&amp;Repetați reordonarea</translation>
 <translation id="6263376278284652872">Marcaje <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
@@ -3852,6 +3858,7 @@ Detalii suplimentare:
 <translation id="8378714024927312812">Gestionat de organizația ta</translation>
 <translation id="8380941800586852976">Periculos</translation>
 <translation id="8381674639488873545">Aceste costuri pot fi unice sau recurente și ascunse. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Ecran complet automat</translation>
 <translation id="838307841291975086">Automobile break</translation>
 <translation id="8389532092404711541">De obicei, <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Vehicule personalizate și de performanță</translation>

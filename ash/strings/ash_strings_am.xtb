@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />፣ የPlay መደብር መተግበሪያ</translation>
 <translation id="1225748608451425081">የእርስዎ Chromebook በአንድ የታወቀ ችግር ምክንያት ተቆልፏል። ከሚከተለው ያህል ጊዜ በኋላ ወደ መለያ መግባት ይችላሉ፦ <ph name="TIME_LEFT" />።</translation>
 <translation id="1229194443904279055">መምረጥ ያቁሙ</translation>
+<translation id="1230853660706736937">በምስሎች ውስጥ ጽሑፍ ይፈልጉ እና የምስል ቅድመ-እይታዎችን ይመልከቱ</translation>
 <translation id="1235458158152011030">የታወቁ አውታረ መረቦች</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ተገናኝቷል።</translation>
 <translation id="1240638468526743569">መተግበሪያ</translation>
@@ -716,11 +717,13 @@
 <translation id="3824784079442479685">ይህ ለ<ph name="APP_NAME" /> እና የካሜራ ፈቃድ ላላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የካሜራ መዳረሻ ይፈቅዳል። ድረ-ገጹን ማደስ ወይም መተግበሪያውን እንደገና ማስጀመር ሊኖርብዎት ይችላል።</translation>
 <translation id="3826099427150913765">ወደ የይለፍ ቃል ቀይር</translation>
 <translation id="383058930331066723">የባትሪ ኃይል ቆጣቢ ሁነታ በርቷል</translation>
+<translation id="3831226344927851293">ከአጋዥ ሥልጠና ዕይታ ውጣ</translation>
 <translation id="383629559565718788">የቁልፍ ሰሌዳ ቅንብሮችን አሳይ</translation>
 <translation id="384082539148746321">ቅንብር ደንቡን ይሰረዝ?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> በመቀጠል <ph name="KEY_ONE" /> ወይም <ph name="KEY_TWO" /> ወይም <ph name="KEY_THREE" /> ወይም <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">ምንም የአውታረ መረብ መረጃ አይገኝም</translation>
+<translation id="3848526302597027234">የሚከተሉትን ፈቃዶች ይድረሱባቸው፦</translation>
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="385300504083504382">መጀመሪያ</translation>
 <translation id="3859364108019690">መተግበሪያዎችን በዥረት ለመልቀቅ አልተቻለም</translation>

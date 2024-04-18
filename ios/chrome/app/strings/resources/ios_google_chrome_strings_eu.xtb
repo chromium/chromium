@@ -125,6 +125,7 @@ Kontuan hartu beharrekoak:
 <translation id="4633328489441962921">Chrome-k ezin ditu bilatu eguneratzeak</translation>
 <translation id="4636900170638246267">Hasi saioa webgune honetan eta Chrome-n.</translation>
 <translation id="4761869838909035636">Egin Chrome-ren segurtasun-egiaztapena</translation>
+<translation id="4798859546468762093">Pertsonalizazioa eta beste eginbide batzuk eskuratzeko, sartu Chrome hauen barruan: <ph name="FEATURE_NAME_1" /> eta <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Aplikazioa hobetzeko, erabilera-datuak eta hutsegite-txostenak bidaltzen dizkio Chrome-k Google-ri. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Chrome-ko datu batzuk ez dira gorde Google-ko kontuan oraindik.
 
@@ -181,6 +182,7 @@ Kontuan hartu beharrekoak:
 <translation id="6389317667633680932">Arakatu Chrome-ri etekinik handiena ateratzen laguntzen dizuten eginbide berriak.</translation>
 <translation id="6412673304250309937">URLak Chrome-n gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="6427126399757991875">Zure erakundea Chrome konfiguratzen ari da…</translation>
+<translation id="6481963882741794338">Lotu Chrome eta Google-ren beste zerbitzuak pertsonalizaziorako eta bestelako helburuetarako</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> gisa hasi duzu saioa.
 
 Datuak pasaesaldiarekin enkriptatuta daude. Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatz ezazu.</translation>

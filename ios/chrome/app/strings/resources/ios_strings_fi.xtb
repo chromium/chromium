@@ -1043,6 +1043,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6363526231572697780">Ei käyttäjänimeä</translation>
 <translation id="6366190659675876144">Perustason suojaus</translation>
 <translation id="6366663624406569102">Kirjaudu ulos ja laita synkronointi pois päältä</translation>
+<translation id="6368038301482806847">Valitse hakukone listalta.</translation>
 <translation id="6374469231428023295">Yritä uudelleen</translation>
 <translation id="6377118281273296434">Sivuston tietoturva</translation>
 <translation id="6383719166112032471">Avaa sijainti…</translation>
@@ -1202,6 +1203,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7161230316646448869">Synkronoi kirjanmerkkisi, historiasi ja paljon muuta kaikilla laitteilla</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> avaa incognito-välilehtien lukituksen</translation>
 <translation id="7173114856073700355">Avaa asetukset</translation>
+<translation id="7186568385131859684">Valitse, miten selaushistoriaa käytetään muun datan kanssa Googlen palveluissa</translation>
 <translation id="7189598951263744875">Jaa...</translation>
 <translation id="719133302483559673">Ylläpidä kiinnostuksen kohteita ja valintoja.</translation>
 <translation id="7192050974311852563">Aloita kirjaus</translation>
@@ -1245,6 +1247,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7438481509621345350">Näet nyt tarinoita täältä avatessasi uuden välilehden: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Kirjanmerkin tallennuspaikka on "{title}"}other{Kirjanmerkkien tallennuspaikka on "{title}"}}</translation>
 <translation id="7454057999980797137">Alue/maa</translation>
+<translation id="7458706065921255639">Personointi ja linkittäminen</translation>
 <translation id="745899714366929493">Koko päivä</translation>
 <translation id="7459628154744868585">Parannettu suojaus on päällä</translation>
 <translation id="7465351360025415755">Saat sinulle tärkeää sisältöä</translation>

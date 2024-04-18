@@ -68,6 +68,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Kauppa ‑sovellus</translation>
 <translation id="1225748608451425081">Chromebook on lukittu tunnetun ongelman takia. Voit kirjautua sisään, kun on kulunut <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Lopeta valitseminen</translation>
+<translation id="1230853660706736937">Hae tekstiä kuvista ja katso kuvien esikatseluja</translation>
 <translation id="1235458158152011030">Tunnetut verkot</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> on yhdistetty.</translation>
 <translation id="1240638468526743569">Sovellus</translation>
@@ -715,11 +716,13 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3824784079442479685"><ph name="APP_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on kameralupa, saavat pääsyn kameraan. Sinun on ehkä päivitettävä verkkosivu tai käynnistettävä sovellus uudelleen.</translation>
 <translation id="3826099427150913765">Vaihda salasanan käyttöön</translation>
 <translation id="383058930331066723">Virransäästötila on päällä</translation>
+<translation id="3831226344927851293">Poistu ohjenäkymästä</translation>
 <translation id="383629559565718788">Näytä näppäimistöasetukset</translation>
 <translation id="384082539148746321">Poistetaanko malli?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, sitten <ph name="KEY_ONE" /> tai <ph name="KEY_TWO" /> tai <ph name="KEY_THREE" /> tai <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Verkon tietoja ei saatavilla</translation>
+<translation id="3848526302597027234">Käyttää seuraavia lupia:</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="385300504083504382">Alku</translation>
 <translation id="3859364108019690">Sovelluksia ei voi striimata</translation>

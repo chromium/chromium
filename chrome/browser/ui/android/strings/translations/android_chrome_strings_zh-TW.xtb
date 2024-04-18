@@ -1050,6 +1050,7 @@
 <translation id="6475951671322991020">下載影片</translation>
 <translation id="6477928892249167417">這些網站似乎對你很重要：</translation>
 <translation id="6482749332252372425">儲存空間不足，因此無法下載 <ph name="FILE_NAME" />。</translation>
+<translation id="6495590690749880440">要開啟分頁群組嗎？</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{已下載檔案}other{已完成 # 項下載作業}}</translation>
 <translation id="6508722015517270189">重新啟動 Chrome</translation>
 <translation id="6518133107902771759">驗證</translation>

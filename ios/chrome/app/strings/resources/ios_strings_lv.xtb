@@ -1043,6 +1043,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6363526231572697780">Nav lietotājvārda</translation>
 <translation id="6366190659675876144">Standarta aizsardzība</translation>
 <translation id="6366663624406569102">Izrakstīties un izslēgt sinhronizēšanu</translation>
+<translation id="6368038301482806847">Sarakstā izvēlieties meklētājprogrammu.</translation>
 <translation id="6374469231428023295">Mēģināt vēlreiz</translation>
 <translation id="6377118281273296434">Vietnes drošība</translation>
 <translation id="6383719166112032471">Atvērt atrašanās vietu…</translation>
@@ -1202,6 +1203,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7161230316646448869">Sinhronizējiet grāmatzīmes, vēsturi un citu informāciju visās savās ierīcēs</translation>
 <translation id="7162168282402939716">Atbloķēt inkognito cilnes, izmantojot šo autentifikācijas veidu: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Atvērt iestatījumus</translation>
+<translation id="7186568385131859684">Varat kontrolēt, kā Google pakalpojumos tiek izmantota pārlūkošanas vēsture un citi jūsu dati</translation>
 <translation id="7189598951263744875">Kopīgot...</translation>
 <translation id="719133302483559673">Pārvaldiet savas intereses un preferences.</translation>
 <translation id="7192050974311852563">Sākt reģistrēšanu</translation>
@@ -1245,6 +1247,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7438481509621345350">Tagad, atverot jaunu cilni, būs redzami raksti no kanāla “<ph name="CHANNEL_NAME" />”.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Grāmatzīme tika saglabāta šeit: “{title}”}zero{Grāmatzīmes tika saglabātas šeit: “{title}”}one{Grāmatzīmes tika saglabātas šeit: “{title}”}other{Grāmatzīmes tika saglabātas šeit: “{title}”}}</translation>
 <translation id="7454057999980797137">Štats/valsts</translation>
+<translation id="7458706065921255639">Personalizācija un saistīšana</translation>
 <translation id="745899714366929493">Visu dienu</translation>
 <translation id="7459628154744868585">Uzlabota aizsardzība ir ieslēgta</translation>
 <translation id="7465351360025415755">Saņemiet paziņojumus par jums svarīgu saturu</translation>

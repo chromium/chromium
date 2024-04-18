@@ -215,9 +215,11 @@
 <translation id="4293420128516039005">Login untuk menyinkronkan dan mempersonalisasi Chrome di perangkat Anda</translation>
 <translation id="430327780270213103">Izinkan ekstensi menampilkan permintaan akses di toolbar Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
+<translation id="4329315893554541805">Untuk mendapatkan personalisasi dan fitur lainnya, sertakan Chrome dalam Aktivitas Web &amp; Aplikasi serta layanan Google tertaut</translation>
 <translation id="4334294535648607276">Download selesai.</translation>
 <translation id="4335235004908507846">Chrome dapat membantu Anda agar tetap aman dari pelanggaran data, ekstensi berbahaya, dan lainnya</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> telah ditambahkan ke Chrome</translation>
+<translation id="4348548358339558429">Untuk mendapatkan personalisasi, sertakan Chrome dalam Aktivitas Web &amp; Aplikasi</translation>
 <translation id="436060642166082913">Chrome memblokir download ini karena file tersebut dapat membahayakan akun pribadi dan jejaring sosial Anda</translation>
 <translation id="4384570495110188418">Chrome tidak dapat memeriksa sandi karena Anda tidak login</translation>
 <translation id="4389991535395284064">Jika menjelajah dalam mode Samaran, Chrome akan memperingatkan Anda sebelum memuat situs menggunakan koneksi yang tidak aman</translation>
@@ -330,7 +332,9 @@
 <translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasi akan otomatis menutup Chrome jika tidak digunakan selama 1 menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}other{Organisasi akan otomatis menutup Chrome jika tidak digunakan selama # menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}}</translation>
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
+<translation id="6481963882741794338">Tautkan Chrome dan layanan Google lainnya untuk personalisasi dan tujuan lainnya</translation>
 <translation id="648319183876919572">Safe Browsing yang Disempurnakan melakukan lebih banyak hal untuk melindungi Anda dari situs dan download berbahaya</translation>
+<translation id="6489302989675808168">Aktif • Chrome tidak dapat memverifikasi asal ekstensi ini</translation>
 <translation id="6493527311031785448">Google Chrome sedang mencoba <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome otomatis ditutup</translation>
 <translation id="6506909944137591434">Chrome memerlukan izin kamera untuk membuat peta 3D area sekitar Anda</translation>
@@ -355,6 +359,7 @@
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu Windows 10 atau yang lebih baru. Komputer ini menggunakan Windows 8.1.</translation>
 <translation id="6943584222992551122">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
+<translation id="6944202724043006419">Chrome memerlukan izin pelacakan tangan dan pemahaman adegan untuk memulai sesi imersif</translation>
 <translation id="6967962315388095737">Inbound rule untuk Google Chrome Beta guna mengizinkan traffic mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome telah diperbarui, tetapi Anda belum menggunakannya selama setidaknya 30 hari.</translation>
 <translation id="7011190694940573312">Penginstalan gagal karena versi sistem operasi ini tidak didukung.</translation>
@@ -389,6 +394,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="7477130805345743099">Chrome akan memperingatkan Anda sebelum memuat situs apa pun menggunakan koneksi yang tidak aman</translation>
 <translation id="7481213027396403996">Dapatkan keamanan terkuat Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7572537927358445944">Nonaktif • Chrome tidak dapat memverifikasi asal ekstensi ini</translation>
 <translation id="7583399374488819119">Penginstal <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Selamat Datang di Chrome</translation>
@@ -477,6 +483,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8823341990149967727">Chrome Terlalu Lawas</translation>
 <translation id="8825634023950448068">Untuk melindungi privasi Anda, kami otomatis menghapus minat Anda yang tersimpan lebih dari 4 minggu. Saat Anda terus menjelajah, minat dapat kembali muncul di daftar. Dan jika Chrome keliru atau Anda tidak ingin melihat iklan tertentu, Anda dapat menghapus minat.</translation>
 <translation id="8834965163890861871">Google Chrome mencoba mengedit sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome merekomendasikan agar Anda menghapusnya}other{Chrome merekomendasikan agar Anda menghapusnya}}</translation>
 <translation id="8862326446509486874">Anda tidak memiliki hak yang diperlukan untuk penginstalan tingkat sistem. Coba jalankan lagi penginstal dengan login sebagai Administrator.</translation>
 <translation id="8914504000324227558">Luncurkan Ulang Chrome</translation>
 <translation id="8922193594870374009">Untuk mengirimkan nomor dari <ph name="ORIGIN" /> ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>

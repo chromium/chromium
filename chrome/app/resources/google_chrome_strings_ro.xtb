@@ -214,9 +214,11 @@
 <translation id="4293420128516039005">Conectează-te pentru a sincroniza și a personaliza Chrome pe toate dispozitivele</translation>
 <translation id="430327780270213103">Permite extensiei să afișeze solicitări de acces în bara de instrumente Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
+<translation id="4329315893554541805">Pentru a beneficia de personalizare și alte funcții, include Chrome în Activitatea de pe web și din aplicații și în serviciile Google conectate</translation>
 <translation id="4334294535648607276">Descărcarea a fost finalizată.</translation>
 <translation id="4335235004908507846">Chrome te protejează împotriva încălcării securității datelor, a extensiilor necorespunzătoare și nu numai</translation>
 <translation id="4343195214584226067">Extensia <ph name="EXTENSION_NAME" /> a fost adăugată la Chrome</translation>
+<translation id="4348548358339558429">Pentru personalizare, include Chrome în Activitatea de pe web și din aplicații</translation>
 <translation id="436060642166082913">Chrome a blocat descărcarea deoarece fișierul poate dăuna conturilor tale personale și din rețelele sociale</translation>
 <translation id="4384570495110188418">Chrome nu îți poate verifica parolele, deoarece nu te-ai conectat</translation>
 <translation id="4389991535395284064">Atunci când navighezi în modul incognito, Chrome te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
@@ -244,6 +246,7 @@
 <translation id="4793679854893018356">Află cum te protejează Chrome</translation>
 <translation id="4828579605166583682">Google Chrome încearcă să înlocuiască parolele existente. Introdu parola Windows pentru a permite acest lucru.</translation>
 <translation id="4842397268809523050">ChromeOS Flex nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
+<translation id="4862446263930606916">Organizația ta poate să vadă și să gestioneze datele de navigare din profilul tău de serviciu, cum ar fi marcajele, istoricul și parolele. Nu poate vedea datele de navigare din profilurile Chrome personale.</translation>
 <translation id="4873692836499071887">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de macOS 11 sau o versiune ulterioară. Acest computer folosește macOS 10.15.</translation>
 <translation id="4873783916118289636">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chrome</translation>
 <translation id="4891791193823137474">Permite ca Google Chrome să ruleze în fundal</translation>
@@ -329,7 +332,9 @@
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizația ta închide automat Chrome dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Organizația ta închide automat Chrome dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Organizația ta închide automat Chrome dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
+<translation id="6481963882741794338">Conectează Chrome și alte servicii Google pentru personalizare și alte scopuri</translation>
 <translation id="648319183876919572">Navigarea sigură îmbunătățită face mai multe pentru a te proteja împotriva site-urilor și a descărcărilor periculoase</translation>
+<translation id="6489302989675808168">Activată • Chrome nu poate verifica de unde provine această extensie</translation>
 <translation id="6493527311031785448">Google Chrome încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome s-a închis automat</translation>
 <translation id="6506909944137591434">Chrome are nevoie de acces la cameră pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
@@ -354,6 +359,7 @@
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 8.1.</translation>
 <translation id="6943584222992551122">Datele de navigare ale acestei persoane vor fi șterse de pe dispozitiv. Pentru a recupera datele, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
+<translation id="6944202724043006419">Chrome are nevoie de permisiune pentru înțelegerea scenei și pentru urmărirea mâinilor spre a începe o sesiune captivantă</translation>
 <translation id="6967962315388095737">Regula de intrare pentru Google Chrome Beta pentru a permite traficul mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome a fost actualizat, dar nu l-ai folosit cel puțin 30 de zile.</translation>
 <translation id="7011190694940573312">Nu s-a instalat deoarece această versiune a sistemului de operare nu este acceptată.</translation>
@@ -388,6 +394,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7477130805345743099">Chrome te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
 <translation id="7481213027396403996">Beneficiază de cel mai înalt nivel de securitate de la Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7572537927358445944">Dezactivată • Chrome nu poate verifica de unde provine această extensie</translation>
 <translation id="7583399374488819119">Program de instalare <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Sistemul de operare Google Chrome Flex</translation>
 <translation id="7626032353295482388">Bun venit la Chrome</translation>
@@ -476,6 +483,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8823341990149967727">Chrome nu este actualizat</translation>
 <translation id="8825634023950448068">Pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Iar dacă Chrome alege opțiunea greșită sau nu vrei să vezi anumite anunțuri, poți să elimini o categorie de interese.</translation>
 <translation id="8834965163890861871">Google Chrome încearcă să modifice parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome recomandă să o elimini}few{Chrome recomandă să le elimini}other{Chrome recomandă să le elimini}}</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
 <translation id="8914504000324227558">Relansați Chrome</translation>
 <translation id="8922193594870374009">Pentru a trimite un număr de pe <ph name="ORIGIN" /> pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
@@ -483,6 +491,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8989968390305463310">Istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge automat categoriile de interese în permanență, în fiecare lună. Categoriile de interese se pot actualiza dacă nu le elimini.</translation>
 <translation id="8999117580775242387">Când HTTPS nu este disponibil, Chrome va folosi o conexiune nesecurizată fără să te avertizeze</translation>
 <translation id="8999208279178790196">{0,plural, =0{Este disponibilă o actualizare Chrome}=1{Este disponibilă o actualizare Chrome}few{O actualizare Chrome este disponibilă de # zile}other{O actualizare Chrome este disponibilă de # de zile}}</translation>
+<translation id="9024318700713112071">Setează Chrome ca prestabilit</translation>
 <translation id="9053892488859122171">ChromeOS Flex</translation>
 <translation id="9054037008353851982">Relansează pentru a actualiza. Filele se vor redeschide.</translation>
 <translation id="9090566250983691233">Află de ce Chrome blochează unele fișiere</translation>

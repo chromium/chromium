@@ -49,6 +49,7 @@
 <translation id="3996880007329611795">ទទួល​ការជូន​ដំណឹង</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{បានបង្កើត <ph name="NUM_DAYS_ONE" /> ថ្ងៃមុន}other{បានបង្កើត <ph name="NUM_DAYS_MANY" /> ថ្ងៃមុន}}</translation>
 <translation id="4133493477912226187">ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{បិទក្រុម <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}other{បិទ​ក្រុម <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}}</translation>
 <translation id="4159784952369912983">ស្វាយ</translation>
 <translation id="4212246570487010370">ការអានបន្ត</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង។}other{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង។}}</translation>
@@ -72,6 +73,7 @@
 <translation id="5490235265819901748">បានពង្រីក​ក្រុមផ្ទាំង</translation>
 <translation id="5494920125229734069">ជ្រើសរើសទាំងអស់</translation>
 <translation id="5545379293264651575">បិទ​ដោយមិន​ពិនិត្យមើល</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}other{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}}</translation>
 <translation id="5556417849629758491">មើលព័ត៌មានអំពីហាង ជម្រើសមាននៅជិតផ្នែកខាងលើអេក្រង់</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{តំណ <ph name="TABS_COUNT_ONE" /> ពី Chrome}other{តំណ <ph name="TABS_COUNT_MANY" /> ពី Chrome}}</translation>
 <translation id="575494663145460764">ទទួលបានការជូនដំណឹងអំពីការធ្លាក់ថ្លៃឬ?</translation>
@@ -113,6 +115,7 @@
 <translation id="7942349550061667556">ក្រហម</translation>
 <translation id="7966321538264951561">ច្រានចោល​ការណែនាំ​។</translation>
 <translation id="8029301326595421733">បានបើក​ព័ត៌មានអំពី​ហាងនេះ​ពេញអេក្រង់</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}other{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}}</translation>
 <translation id="8205266828577616993">រំកិល​ផ្ទាំង​ឡើងលើ</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="8398929769197326728">ថតថ្មី - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -125,6 +128,7 @@
 <translation id="9090098097337832354">បានបិទ​ព័ត៌មាន​អំពីហាងនេះ</translation>
 <translation id="9150694013019234766">ប្ដូររវាងផ្ទាំង​នៅក្នុងក្រុម​ផ្ទាំងរបស់​អ្នកនៅជិតផ្នែកខាង​ក្រោមបំផុតរបស់​អេក្រង់</translation>
 <translation id="9169594135889675189">បញ្ចូលផ្ទាំង​ថ្មីទៅក្រុម</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ពង្រីក​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}other{ពង្រីក​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}}</translation>
 <translation id="955558140275419384">ពិនិត្យមើល​ផ្ទាំងទាំងអស់​ដែលបាន​ទុកក្នុង​បណ្ណសារ ដើម្បី​រៀបចំឱ្យមានរបៀបរៀបរយ​ដោយចូល​មុខងារ​កែនេះ។</translation>
 <translation id="959682366969460160">រៀបចំឱ្យមានសណ្តាប់ធ្នាប់</translation>
 <translation id="992256792861109788">ផ្កា​ឈូក</translation>

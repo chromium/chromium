@@ -340,6 +340,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="160851722280695521">Juega al juego del dinosaurio de Chrome</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611101756749861742">Segundo rollo</translation>
+<translation id="1611854593425834707">Cerrar la lista de dispositivos para enviar contenido</translation>
 <translation id="1612199629998703524">Gestionar temas</translation>
 <translation id="1615178538289490617">Revocar acceso a <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">La política del administrador inhabilita la captura de pantalla cuando se muestra contenido confidencial</translation>
@@ -1919,6 +1920,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4691093235373904540">Tejados</translation>
 <translation id="4692623383562244444">Buscadores</translation>
 <translation id="4698692901173737941">Deportes de contacto</translation>
+<translation id="4701307090948589984">Enviar a...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Cara</translation>
 <translation id="4702656508969495934">Subtítulos automáticos visibles; utiliza el botón de cambio de ventana para enfocarlos</translation>
@@ -2168,6 +2170,8 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5161334686036120870">Asunto:</translation>
 <translation id="5161506081086828129">Apilador 9</translation>
 <translation id="5164798890604758545">Se ha introducido texto</translation>
+<translation id="5164928537947209380">Esta herramienta de IA experimental no siempre lo hará bien. Para mejorarla, tu contenido se envía a Google.
+    <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Introduce el CVC de <ph name="CREDIT_CARD" />. Una vez que confirmes esta acción, la información de la tarjeta de tu cuenta de Google se compartirá con este sitio web.</translation>
 <translation id="5169827969064885044">Podrías perder el acceso a la cuenta de tu organización o tener problemas de suplantación de identidad. Chrome te recomienda que cambies tu contraseña ahora.</translation>
 <translation id="5171045022955879922">Busca o escribe una URL</translation>
@@ -4064,6 +4068,7 @@ Más información:
 <translation id="8807160976559152894">Recortar después de cada página</translation>
 <translation id="8809203544698246977">Los temas bloqueados aparecen aquí</translation>
 <translation id="8811470563853401328">¿Guardar dirección en la cuenta?</translation>
+<translation id="8811725516933141693">Escribe @gemini para chatear con Gemini</translation>
 <translation id="8813277370772331957">Recordar más tarde</translation>
 <translation id="8814707942599948500">Sobre C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para actualizar Chrome desde la configuración de Chrome</translation>

@@ -2109,6 +2109,7 @@
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="5043480802608081735">你複製的連結</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
+<translation id="5048293684454354469">廣告主題只是網站在放送個人化廣告時的其中一項依據。即使沒有廣告主題，網站仍可放送廣告，但廣告內容可能較不貼近你的需求。進一步瞭解如何<ph name="BEGIN_LINK" />管理廣告隱私權<ph name="LINK_END" />。</translation>
 <translation id="5052517576853118371">有效主題</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用鄰近分享功能傳送這個檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用鄰近分享功能傳送這些檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">請提供要開啟的原因 (必填)</translation>
@@ -2328,6 +2329,7 @@
     <ph name="LINE_BREAK" />
     請與您的系統管理員聯絡。</translation>
 <translation id="549333378215107354">粗細：3</translation>
+<translation id="5496804587179176046">儲存安全碼，目前未儲存任何安全碼</translation>
 <translation id="550365051221576010">填入所有欄位</translation>
 <translation id="5508443345185481044">相機與攝錄影機</translation>
 <translation id="5509762909502811065">B0</translation>

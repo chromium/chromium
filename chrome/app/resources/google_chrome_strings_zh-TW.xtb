@@ -245,6 +245,7 @@
 <translation id="4793679854893018356">瞭解 Chrome 如何保護資料安全</translation>
 <translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="4842397268809523050">你的網域無法使用同步功能，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
+<translation id="4862446263930606916">貴機構可以查看及管理工作資料夾中的瀏覽資料 (例如書籤、歷史記錄和密碼)，但無法查看個人 Chrome 設定檔中的瀏覽資料。</translation>
 <translation id="4873692836499071887">如果之後要更新 Google Chrome，請使用 macOS 11 以上版本。這部電腦目前的版本為 macOS 10.15。</translation>
 <translation id="4873783916118289636">查看 Chrome 中最重要的隱私權和安全性控制項</translation>
 <translation id="4891791193823137474">讓 Google Chrome 在背景執行</translation>
@@ -486,6 +487,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8989968390305463310">你的瀏覽記錄會影響你所看到的廣告，以及系統推測的下列興趣喜好。為保護個人隱私，Chrome 每個月都會自動刪除你的興趣喜好。系統會重新整理這項資訊，除非你自行予以移除。</translation>
 <translation id="8999117580775242387">如果無法使用 HTTPS，Chrome 將使用不安全的連線，且不會發出警告</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發布 # 天}}</translation>
+<translation id="9024318700713112071">將 Chrome 設為預設瀏覽器</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系統</translation>
 <translation id="9054037008353851982">重新啟動即可更新 - 你的分頁將會重新開啟</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖某些檔案的原因</translation>

@@ -219,9 +219,11 @@
 <translation id="4293420128516039005">로그인하여 모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
 <translation id="430327780270213103">확장 프로그램이 Chrome 툴바에 액세스 요청을 표시하도록 허용</translation>
 <translation id="4328355335528187361">Chrome 개발자(mDNS-In)</translation>
+<translation id="4329315893554541805">맞춤설정 및 기타 기능을 사용하려면 웹 및 앱 활동과 연결된 Google 서비스에 Chrome을 포함하세요</translation>
 <translation id="4334294535648607276">다운로드가 완료되었습니다.</translation>
 <translation id="4335235004908507846">Chrome이 정보 유출, 유해한 확장 프로그램 등으로부터 사용자를 보호해 줍니다.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />이(가) Chrome에 추가됨</translation>
+<translation id="4348548358339558429">맞춤설정을 사용하려면 웹 및 앱 활동에 Chrome을 포함하세요</translation>
 <translation id="436060642166082913">파일이 개인 및 소셜 네트워크 계정에 피해를 줄 수 있기 때문에 Chrome에서 이 다운로드를 차단했습니다</translation>
 <translation id="4384570495110188418">로그인되어 있지 않으므로 Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="4389991535395284064">시크릿 모드로 탐색할 때 Chrome에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
@@ -249,6 +251,7 @@
 <translation id="4793679854893018356">Chrome이 사용자를 안전하게 보호하는 방법 알아보기</translation>
 <translation id="4828579605166583682">Chrome에서 기존 비밀번호를 교체하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="4842397268809523050">도메인에 대한 동기화가 허용되지 않아 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
+<translation id="4862446263930606916">조직에서 북마크, 방문 기록, 비밀번호와 같은 직장 프로필의 인터넷 사용 기록을 보고 관리할 수 있습니다. 개인 Chrome 프로필의 인터넷 사용 기록은 확인할 수 없습니다.</translation>
 <translation id="4873692836499071887">향후 Chrome 업데이트를 받으려면 macOS 11 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.15를 사용 중입니다.</translation>
 <translation id="4873783916118289636">Chrome의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="4891791193823137474">백그라운드에서 Chrome을 실행</translation>
@@ -338,7 +341,9 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chrome을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
 <translation id="6418662306461808273">기존 Chrome 프로필로 전환하시겠습니까?</translation>
+<translation id="6481963882741794338">맞춤설정 및 기타 목적으로 Chrome과 다른 Google 서비스를 연결합니다</translation>
 <translation id="648319183876919572">향상된 세이프 브라우징은 위험한 웹사이트와 다운로드로부터 사용자를 보호합니다.</translation>
+<translation id="6489302989675808168">사용 중 • Chrome에서 이 확장 프로그램의 출처를 확인할 수 없습니다.</translation>
 <translation id="6493527311031785448">Chrome에서 <ph name="AUTHENTICATION_PURPOSE" />을(를) 시도하는 중입니다.</translation>
 <translation id="6497147134301593682">Chrome이 자동으로 종료되었습니다</translation>
 <translation id="6506909944137591434">Chrome에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
@@ -363,6 +368,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6933858244219479645">ChromeOS 시스템</translation>
 <translation id="6938166777909186039">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 8.1을 사용 중입니다.</translation>
 <translation id="6943584222992551122">선택한 사용자의 인터넷 사용 기록이 이 기기에서 삭제됩니다. 데이터를 복원하려면 <ph name="USER_EMAIL" />(으)로 Chrome에 로그인하세요.</translation>
+<translation id="6944202724043006419">몰입형 세션을 시작하려면 Chrome에 장면 이해 및 손 추적 권한이 필요합니다.</translation>
 <translation id="6967962315388095737">Chrome 베타에서 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="6989339256997917931">Chrome이 업데이트되었지만, 최소 30일 동안 사용하지 않았습니다.</translation>
 <translation id="7011190694940573312">이 운영체제 버전은 지원되지 않으므로 설치에 실패했습니다.</translation>
@@ -397,6 +403,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7477130805345743099">Chrome에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="7481213027396403996">Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="7535429826459677826">Chrome 개발자</translation>
+<translation id="7572537927358445944">사용 안함 • Chrome에서 이 확장 프로그램의 출처를 확인할 수 없습니다.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 설치 프로그램</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome에 오신 것을 환영합니다</translation>
@@ -485,6 +492,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8823341990149967727">Chrome이 이전 버전임</translation>
 <translation id="8825634023950448068">개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 관심분야를 잘못 예측했거나 특정 광고를 보고 싶지 않다면 직접 관심분야를 삭제하세요.</translation>
 <translation id="8834965163890861871">Chrome에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome에서는 삭제하는 것이 좋습니다.}other{Chrome에서는 삭제하는 것이 좋습니다.}}</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
@@ -492,6 +500,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8999117580775242387">HTTPS를 사용할 수 없는 경우 Chrome에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
+<translation id="9024318700713112071">Chrome을 기본 브라우저로 설정</translation>
 <translation id="9053892488859122171">ChromeOS Flex 시스템</translation>
 <translation id="9054037008353851982">다시 실행하여 업데이트 - 탭이 다시 열립니다</translation>
 <translation id="9090566250983691233">Chrome에서 일부 파일을 차단하는 이유 알아보기</translation>

@@ -215,9 +215,11 @@
 <translation id="4293420128516039005">Kirjaudu sisään, niin voit synkronoida Chromen ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
 <translation id="430327780270213103">Salli laajennuksen näyttää pääsyoikeuspyyntöjä Chrome-työkalupalkissa</translation>
 <translation id="4328355335528187361">Google Chromen kehittäjäversio (saapuva mDNS)</translation>
+<translation id="4329315893554541805">Voit käyttää personointia ja muita ominaisuuksia, kun lisäät Chromen verkko- ja sovellustoimintaan ja linkitettyihin Googlen palveluihin</translation>
 <translation id="4334294535648607276">Lataus on valmis.</translation>
 <translation id="4335235004908507846">Chrome voi auttaa suojaamaan sinua tietosuojaloukkauksilta, haitallisilta laajennuksilta ja muilta</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> on lisätty Chromeen</translation>
+<translation id="4348548358339558429">Voit käyttää personointia, kun lisäät Chromen verkko- ja sovellustoimintaan</translation>
 <translation id="436060642166082913">Chrome on estänyt tämän latauksen, koska tiedosto voi vahingoittaa some‐ ja henkilökohtaisia tilejäsi</translation>
 <translation id="4384570495110188418">Chrome ei voi tarkistaa salasanojasi, koska et ole kirjautuneena sisään</translation>
 <translation id="4389991535395284064">Kun selaat incognito-tilassa, Chrome varoittaa sinua ennen kuin sivusto ladataan suojaamattomalla yhteydellä</translation>
@@ -330,7 +332,9 @@
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
 <translation id="6418662306461808273">Vaihdetaanko nykyiseen Chrome-profiiliin?</translation>
+<translation id="6481963882741794338">Linkitä Chrome ja muita Googlen palveluja esimerkiksi personointia varten</translation>
 <translation id="648319183876919572">Parannettu selaussuoja suojaa sinua entistä paremmin vaarallisilta sivustoilta ja latauksilta</translation>
+<translation id="6489302989675808168">Päällä • Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin</translation>
 <translation id="6493527311031785448">Google Chrome yrittää seuraavaa: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome on suljettu automaattisesti</translation>
 <translation id="6506909944137591434">Chrome tarvitsee kameran luvan, jotta se voi luoda 3D-kartan ympäristöstäsi</translation>
@@ -355,6 +359,7 @@
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.1.</translation>
 <translation id="6943584222992551122">Käyttäjän selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
+<translation id="6944202724043006419">Chrome tarvitsee luvan ympäristön ymmärrykseen ja käden seurantaan immersiivisen istunnon aloittamiseksi</translation>
 <translation id="6967962315388095737">Google Chromen betaversion saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="6989339256997917931">Google Chrome on päivitetty, mutta et ole käyttänyt sitä ainakaan 30 päivään.</translation>
 <translation id="7011190694940573312">Asennus epäonnistui, koska tätä käyttöjärjestelmän versiota ei tueta.</translation>
@@ -389,6 +394,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7477130805345743099">Chrome varoittaa sinua ennen kuin lataat sivustoja suojaamattomalla yhteydellä</translation>
 <translation id="7481213027396403996">Ota Chromen tehokkain suojaus käyttöön</translation>
 <translation id="7535429826459677826">Google Chromen kehittäjäversio</translation>
+<translation id="7572537927358445944">Pois päältä • Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin</translation>
 <translation id="7583399374488819119">Asennusohjelma: <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Tervetuloa Chromeen</translation>
@@ -477,6 +483,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8823341990149967727">Chrome on vanhentunut</translation>
 <translation id="8825634023950448068">Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Jos Chromen arvio menee pieleen tai jos et halua nähdä tiettyjä mainoksia, voit poistaa tietyn kiinnostuksen kohteen.</translation>
 <translation id="8834965163890861871">Google Chrome yrittää muuttaa salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome suosittelee poistamaan sen}other{Chrome suosittelee poistamaan ne}}</translation>
 <translation id="8862326446509486874">Sinulla ei ole käyttöoikeuksia järjestelmätason asennukseen. Kokeile asennusohjelman suorittamista uudelleen järjestelmänvalvojana.</translation>
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
 <translation id="8922193594870374009">Jos haluat lähettää numeron osoitteesta <ph name="ORIGIN" /> Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>

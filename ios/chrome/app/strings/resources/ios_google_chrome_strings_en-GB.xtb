@@ -125,6 +125,7 @@ Things to consider:
 <translation id="4633328489441962921">Chrome can't check for updates</translation>
 <translation id="4636900170638246267">Sign in to this site and Chrome.</translation>
 <translation id="4761869838909035636">Run Chrome Safety Check</translation>
+<translation id="4798859546468762093">To get personalisation and other features, include Chrome in <ph name="FEATURE_NAME_1" /> and <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">To help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Some of your Chrome data hasn't been saved in your Google Account yet.
 
@@ -181,6 +182,7 @@ Things to consider:
 <translation id="6389317667633680932">Explore new features that help you get the most out of Chrome.</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6427126399757991875">Your organisation is setting up Chrome…</translation>
+<translation id="6481963882741794338">Link Chrome and other Google services for personalisation and other purposes</translation>
 <translation id="6484712497741564393">Signed in as <ph name="EMAIL" />.
 
 Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>

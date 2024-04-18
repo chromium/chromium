@@ -177,6 +177,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{根據機構規定，Chromium 會在閒置 1 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}other{根據機構規定，Chromium 會在閒置 # 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}}</translation>
 <translation id="4118474109249235144">Chromium 無痕模式</translation>
 <translation id="4148957013307229264">安裝中…</translation>
+<translation id="4149336151887611710">機構可查看和管理工作設定檔中的瀏覽資料 (例如書籤、記錄和密碼)，但無法查看個人 Chromium 設定檔中的瀏覽資料。</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 網絡登入 - Chromium</translation>
 <translation id="421369550622382712">為您的 Chromium 探索各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="4216212958613226427">使用此語言顯示 Chromium 使用者介面</translation>
@@ -398,6 +399,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7867198900892795913">由於 Chromium 無法更新至最新版本，因此您無法使用最新功能和安全性修正。</translation>
 <translation id="7872446069773932638">正在下載… 剩餘 <ph name="SECONDS" /> 秒</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。您亦可移除不希望 Chromium 列在興趣清單中的項目。</translation>
+<translation id="7888981273428720788">將 Chromium 設定為預設瀏覽器</translation>
 <translation id="7937630085815544518">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>
 <translation id="7975919845073681630">這是以並行形式安裝的第二個 Chromium，因此無法設定為您的預設瀏覽器。</translation>
 <translation id="7997934263947464652">來源不明的擴充程式、應用程式和主題可能會損害您的裝置。Chromium 建議您只透過「<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />」安裝這些項目</translation>

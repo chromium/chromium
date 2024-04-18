@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1247030632403369975">Алюміній</translation>
 <translation id="1252209483516427155">Верхній одяг</translation>
+<translation id="1253096324252841344">Оплата за допомогою <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронізовано)</translation>
 <translation id="1255086252236620440">Кухонні міксери</translation>
 <translation id="1256368399071562588">&lt;p&gt;Якщо веб-сайт не відкривається:&lt;/p&gt;
@@ -1514,6 +1515,7 @@
 <translation id="385489333361351399">Обладнання для фото- й відеокамер</translation>
 <translation id="3858027520442213535">Оновити дату й час</translation>
 <translation id="3858860766373142691">Назва</translation>
+<translation id="3865339060090354361">Переглянути умови використання для <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Докладніше</translation>
 <translation id="3880456882942693779">Мистецтво й розваги</translation>
@@ -2353,6 +2355,7 @@
 <translation id="553377674408670169">Вакансії в галузі освіти</translation>
 <translation id="5536214594743852365">Показати розділ "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Конверт Chou 2</translation>
+<translation id="5538270463355278784">автоматично відкривати на весь екран</translation>
 <translation id="5539243836947087108">Весь аркуш</translation>
 <translation id="5540224163453853">Не вдалося знайти потрібну статтю.</translation>
 <translation id="5540969246441091044">Кінний спорт</translation>
@@ -2717,6 +2720,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати завантаженими файлами в Chrome</translation>
 <translation id="6254436959401408446">Недостатньо пам’яті, щоб відкрити цю сторінку</translation>
 <translation id="625463612687472648">Відкликати дозвіл</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Роблячи покупки в Chrome, ви бачитимете опцію <ph name="FINANCIAL_ACCOUNT_TYPES" />}one{Роблячи покупки в Chrome, ви бачитимете ці опції: <ph name="FINANCIAL_ACCOUNT_TYPES" />}few{Роблячи покупки в Chrome, ви бачитимете ці опції: <ph name="FINANCIAL_ACCOUNT_TYPES" />}many{Роблячи покупки в Chrome, ви бачитимете ці опції: <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Роблячи покупки в Chrome, ви бачитимете ці опції: <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Повторити перевпорядкування</translation>
 <translation id="6263376278284652872">Закладки <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
@@ -3852,6 +3856,7 @@
 <translation id="8378714024927312812">Профілем керує ваша організація</translation>
 <translation id="8380941800586852976">Небезпечна</translation>
 <translation id="8381674639488873545">Такі стягнення можуть бути одноразовими чи регулярними й неочевидними. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Автоматично відкривати на весь екран</translation>
 <translation id="838307841291975086">Універсали</translation>
 <translation id="8389532092404711541">Зазвичай <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Спеціалізовані й високопотужні транспортні засоби</translation>

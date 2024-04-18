@@ -2,24 +2,24 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1533488253335887280">從主畫面就能存取密碼，方便又安全。</translation>
-<translation id="1590550141045148182">視需要開啟或關閉分頁。</translation>
-<translation id="2036020471903443693">即可將分頁固定在畫面底部。</translation>
+<translation id="1590550141045148182">按需要開啟或關閉分頁。</translation>
+<translation id="2036020471903443693">你將會看到分頁固定至畫面底部。</translation>
 <translation id="2984477737332162971">前往開啟的分頁。</translation>
-<translation id="3595188309555410362">分頁閒置一段時間後，系統會將這類分頁移到「閒置分頁」部分。</translation>
-<translation id="3941788408634637840">輕觸閒置分頁 (如果有的話)。</translation>
-<translation id="3942215673032261195">你可以固定常用網站，方便之後存取。</translation>
-<translation id="4196935312151003338">從選單中選取「固定分頁」。</translation>
+<translation id="3595188309555410362">分頁閒置一段時間後，系統會將這類分頁移至「閒置分頁」部分。</translation>
+<translation id="3941788408634637840">輕按閒置分頁 (如有)。</translation>
+<translation id="3942215673032261195">你可固定常用網站，以便之後存取。</translation>
+<translation id="4196935312151003338">從選單中選取 [固定分頁]。</translation>
 <translation id="4497631794981705027">按住主畫面。</translation>
-<translation id="463279609093232564">輕觸畫面左上方的「+」圖示。</translation>
-<translation id="5604467549230434026">在「搜尋小工具」方塊中輸入「Chrome」。</translation>
+<translation id="463279609093232564">輕按畫面左上方的「+」圖示。</translation>
+<translation id="5604467549230434026">在「搜尋小工具」框中輸入「Chrome」。</translation>
 <translation id="5639067007765618198">「Google 密碼管理工具」小工具</translation>
 <translation id="5922999516621365983">將分頁拖曳至此處以固定分頁。</translation>
 <translation id="5979837087407522202">搜尋密碼</translation>
 <translation id="6109989197058801417">按住要固定的分頁。</translation>
-<translation id="639614003069108254">選取「密碼管理工具」，然後輕觸「加入小工具」。</translation>
+<translation id="639614003069108254">選取「密碼管理工具」，然後輕按 [新增小工具]。</translation>
 <translation id="6905308710260460250">固定分頁</translation>
-<translation id="720206380500582061">如要管理閒置分頁設定，請前往「設定」&gt;「分頁」。</translation>
+<translation id="720206380500582061">如要管理「閒置分頁」設定，請前往「設定」&gt;「分頁」。</translation>
 <translation id="8077675488769462025">閒置分頁</translation>
-<translation id="8602952180069641300">向上捲動至分頁頂端。</translation>
-<translation id="979990360845983227">14 天以上未使用</translation>
+<translation id="8602952180069641300">向上捲動至分頁頂部。</translation>
+<translation id="979990360845983227">已有 14 天或以上未使用</translation>
 </translationbundle>

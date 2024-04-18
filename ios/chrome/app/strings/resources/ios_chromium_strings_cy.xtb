@@ -29,6 +29,7 @@
 <translation id="1722370509450468186">Bydd eich cyfrinair yn cael ei gadw yn eich Cyfrif (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Cliriwyd data Chromium</translation>
 <translation id="1791845338122684020">Yn Agor Eich Tudalen Hanes Chromium.</translation>
+<translation id="1811860791247653035">I gael personoleiddio a nodweddion eraill, cynhwyswch Chromium yn <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Gwnaeth Chromium ddilysu bod <ph name="ISSUER" /> wedi cyhoeddi tystysgrif y wefan hon.</translation>
 <translation id="1843424232666537147">Mae gan Chromium nodweddion sy'n eich helpu i reoli'ch data rhyngrwyd a pha mor gyflym rydych yn gallu llwytho tudalennau gwe.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -91,6 +92,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 <translation id="3639997914391704523">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google.</translation>
 <translation id="3688710892786762883">Bydd Chromium yn canfod rhifau olrhain pecyn ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar y dudalen Tab Newydd. Bydd eich data yn cael eu rhannu gyda Google i ddarparu'r nodwedd hon ac i wella Siopa i bawb.</translation>
 <translation id="372658070733623520">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
+<translation id="3728124580182886854">Cysylltwch Chromium a gwasanaethau Google eraill at ddibenion personoleiddio a dibenion eraill</translation>
 <translation id="3780779443901618967">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chromium.</translation>
 <translation id="3784369638459513223">Yn Agor Tab Anhysbys Chromium Newydd.</translation>
 <translation id="3805899903892079518">Nid oes gan Chromium fynediad at eich lluniau na'ch fideos. Galluogi mynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>

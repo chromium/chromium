@@ -151,6 +151,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3702352323269013324">Learn more about ad personalisation in Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Your administrator asks that you relaunch Chromium to apply this update}=1{Your administrator asks that you relaunch Chromium to apply this update. Your Incognito window won't reopen.}other{Your administrator asks that you relaunch Chromium to apply this update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3713809861844741608">Open link in new Chromium &amp;tab</translation>
+<translation id="3728124580182886854">Link Chromium and other Google services for personalisation and other purposes</translation>
 <translation id="3788675262216168505">Manage Chromium profiles</translation>
 <translation id="378917192836375108">Chromium lets you click a phone number on the web and call it with Skype!</translation>
 <translation id="3790262771324122253">Learn why Chromium blocks some downloads</translation>
@@ -232,6 +233,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5352361688875342522">Other Chromium profiles</translation>
 <translation id="5358375970380395591">You are signing in with a managed account and giving its administrator control over your Chromium profile. Your Chromium data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5377622451696208284">To get personalisation, include Chromium in Web &amp; App Activity</translation>
 <translation id="5383439451358640070">Learn why Chromium blocks some files</translation>
 <translation id="5386450000063123300">Updating Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Allow Chromium sign-in</translation>
@@ -275,6 +277,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="608006075545470555">Add work profile to this browser</translation>
 <translation id="6096348254544841612">Customise and control Chromium. Update is available.</translation>
 <translation id="6102072151902574948">When on, Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.</translation>
+<translation id="6107893135096467929">On • Chromium can't verify where this extension comes from</translation>
 <translation id="6119438414301547735">Allow extension to show access requests in the Chromium toolbar</translation>
 <translation id="6120345080069858279">Chromium will save this password in your Google Account. You won’t have to remember it.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is dangerous, so Chromium has blocked it.</translation>
@@ -309,6 +312,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6403826409255603130">Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.</translation>
 <translation id="6442900851116057561">Restart Chromium OS</translation>
 <translation id="6443470774889161065">Chrome preloads even more pages that you're likely to visit, so that they load more quickly when you visit them.</translation>
+<translation id="645458117210240797">Off • Chromium can't verify where this extension comes from</translation>
 <translation id="6455857529632101747">Welcome to Chromium profiles</translation>
 <translation id="6475912303565314141">It also controls what page is shown when you start Chromium.</translation>
 <translation id="648319183876919572">Enhanced Safe Browsing does more to protect you against dangerous websites and downloads</translation>
@@ -331,6 +335,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6717134281241384636">Your profile can not be used because it is from a newer version of Chromium.
 
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chromium.</translation>
+<translation id="6729124504294600478">To get personalisation and other features, include Chromium in Web &amp; App Activity and linked Google services</translation>
 <translation id="6734291798041940871">Chromium is already installed for all users on your computer.</translation>
 <translation id="673636774878526923">To access your Chromium stuff across all your devices, sign in, then turn on sync.</translation>
 <translation id="67706546131546258">Chromium recommends scanning this file because it may be dangerous.</translation>
@@ -358,9 +363,11 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="718435575166326686">Chromium needs camera permission for this site</translation>
 <translation id="7196312274710523067">Couldn't launch Chromium. Try again.</translation>
 <translation id="7197677400338048821">Chromium can't check your passwords. Try again after 24 hours.</translation>
+<translation id="7198365860059291213">Chromium needs scene understanding and hand-tracking permission to start an immersive session</translation>
 <translation id="7213407614656404070">Use Chromium any time that you click links in messages, documents and other apps</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">Your interests as estimated by Chromium</translation>
+<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium recommends that you remove it}other{Chromium recommends that you remove them}}</translation>
 <translation id="7309928523159922338">Ad measurement allows sites that you visit to request information from Chromium that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
 <translation id="731795002583552498">Updating Chromium</translation>
 <translation id="7318036098707714271">Your preferences file is corrupt or invalid.
