@@ -809,12 +809,16 @@ class TabStripModel : public TabGroupController {
   // Helper function for MoveAndSetGroup. Removes the tab at |index| from the
   // group that contains it, if any. Also deletes that group, if it now contains
   // no tabs. Returns that group.
-  std::optional<tab_groups::TabGroupId> UngroupTab(int index);
+  std::optional<tab_groups::TabGroupId> UngroupTab(
+      int index,
+      const std::optional<tab_groups::TabGroupId> old_group);
 
   // Helper function for MoveAndSetGroup. Adds the tab at |index| to |group|,
   // updates the group model, and notifies the observers if the group at that
   // index would change.
-  void GroupTab(int index, const tab_groups::TabGroupId& group);
+  void GroupTab(int index,
+                const tab_groups::TabGroupId& group,
+                const std::optional<tab_groups::TabGroupId> old_group);
 
   // Disconnects any saved tab groups whose tabs are a subset of `indices`.
   void DisconnectSavedTabGroups(const std::vector<int>& indices) const;
