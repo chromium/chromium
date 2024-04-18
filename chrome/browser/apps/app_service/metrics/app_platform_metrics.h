@@ -71,8 +71,6 @@ extern const char kReportingUsageTimeDurationKey[];
 
 std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name);
 
-const std::set<apps::AppTypeName>& GetAppTypeNameSet();
-
 ApplicationInstallTime ConvertInstallTimeToProtoApplicationInstallTime(
     InstallTime install_time);
 

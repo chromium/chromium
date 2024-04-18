@@ -68,6 +68,9 @@ constexpr auto kAppTypeNameMap =
         {apps::kExtensionHistogramName, apps::AppTypeName::kExtension},
         {apps::kStandaloneBrowserExtensionHistogramName,
          apps::AppTypeName::kStandaloneBrowserExtension},
+        {apps::kStandaloneBrowserWebAppHistogramName,
+         apps::AppTypeName::kStandaloneBrowserWebApp},
+        {apps::kBruschettaHistogramName, apps::AppTypeName::kBruschetta},
     });
 
 constexpr char kInstallReasonUnknownHistogram[] = "Unknown";
