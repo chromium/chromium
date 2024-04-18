@@ -10,7 +10,7 @@ for more details on the presubmit API built into depot_tools.
 def CheckChange(input_api, output_api):
   """Checks that changes to client_variations.proto are mirrored."""
   has_proto_update = False
-  has_parser_update = False
+  has_devtools_update = False
   cwd = input_api.PresubmitLocalPath()
   for path in input_api.AbsoluteLocalPaths():
     if not path.startswith(cwd):
@@ -18,14 +18,14 @@ def CheckChange(input_api, output_api):
     name = input_api.os_path.relpath(path, cwd)
     if name == 'client_variations.proto':
       has_proto_update = True
-    elif name == 'devtools/client_variations_parser.js':
-      has_parser_update = True
+    elif name == 'devtools/client_variations.js':
+      has_devtools_update = True
 
   results = []
-  if has_proto_update and not has_parser_update:
+  if has_proto_update and not has_devtools_update:
     results.append(output_api.PresubmitPromptWarning(
         'client_variations.proto was changed. Does the JS parser at '
-        'devtools/client_variations_parser.js need to be updated as well?'))
+        'devtools/client_variations.js need to be updated as well?'))
   return results
 
 

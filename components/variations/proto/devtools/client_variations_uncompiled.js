@@ -4,9 +4,14 @@
 
 const ClientVariations = goog.require('proto.variations.ClientVariations');
 
-const VARIATION_IDS_COMMENT = 'Active client experiment variation IDs.';
+const VARIATION_IDS_COMMENT =
+      'Active Google-visible variation IDs on this client. These are ' +
+      'reported for analysis, but do not directly affect any server-side ' +
+      'behavior.';
 const TRIGGER_VARIATION_IDS_COMMENT =
-    'Active client experiment variation IDs that trigger server-side behavior.';
+      'Active Google-visible variation IDs on this client that trigger ' +
+      'server-side behavior. These are reported for analysis *and* directly ' +
+      'affect server-side behavior.';
 
 /**
  * Parses a serialized ClientVariations proto into a human-readable format.
