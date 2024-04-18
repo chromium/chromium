@@ -10,6 +10,13 @@ group("ink") {
   visibility = [ "//pdf/*" ]
 
   public_deps = [ ":interface" ]
+
+  if (enable_pdf_ink2_stubs) {
+    deps = [ "//pdf/ink/stub" ]
+  } else {
+    # TODO(thestig): Add wrapper code.
+    deps = [ "//pdf/ink/wrapper" ]
+  }
 }
 
 source_set("interface") {
