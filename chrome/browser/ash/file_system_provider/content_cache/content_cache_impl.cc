@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
 
+#include "base/barrier_callback.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
@@ -50,6 +56,48 @@ FileErrorOrBytesRead ReadBytesBlocking(const base::FilePath& path,
           << "', file.GetLength = '" << file.GetLength() << "', offset = '"
           << offset << "', length = '" << length << "'}";
   return bytes_read;
+}
+
+std::map<int, CacheFileContext> GetIdFromCachedFiles(
+    const base::FilePath& cache_directory) {
+  std::map<int, CacheFileContext> contexts;
+  if (cache_directory.empty()) {
+    return contexts;
+  }
+
+  base::FileEnumerator enumerator(cache_directory, /*recursive=*/false,
+                                  base::FileEnumerator::FILES);
+  while (!enumerator.Next().empty()) {
+    base::FileEnumerator::FileInfo info = enumerator.GetInfo();
+    base::FilePath path = info.GetName();
+    if (base::StartsWith(path.BaseName().value(), "context.db")) {
+      // The context database has multiple variants starting with context.db,
+      // let's exclude those for now.
+      continue;
+    }
+    int64_t id = -1;
+    if (!base::StringToInt64(path.BaseName().value(), &id)) {
+      LOG(ERROR) << "Couldn't extract ID from path";
+      // TODO(b/335548274): Should we remove these files from disk, or ignore
+      // them.
+      continue;
+    }
+    contexts.try_emplace(id, info.GetSize(), id);
+  }
+
+  return contexts;
+}
+
+bool RemoveAllFilesOnDiskById(
+    std::set<base::FilePath> paths_on_disk_to_remove) {
+  bool success = true;
+  for (const base::FilePath& path : paths_on_disk_to_remove) {
+    if (!base::DeleteFile(path)) {
+      LOG(ERROR) << "Couldn't remove file on disk";
+      success = false;
+    }
+  }
+  return success;
 }
 
 }  // namespace
@@ -283,6 +331,99 @@ void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
 
 const base::FilePath ContentCacheImpl::GetPathOnDiskFromContext(int64_t id) {
   return root_dir_.Append(base::NumberToString(id));
+}
+
+void ContentCacheImpl::LoadFromDisk(base::OnceClosure callback) {
+  // Identify all the files from the `root_dir_`.
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&GetIdFromCachedFiles, root_dir_),
+      base::BindOnce(&ContentCacheImpl::GotFilesFromDisk,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContentCacheImpl::GotFilesFromDisk(
+    base::OnceClosure callback,
+    std::map<int, CacheFileContext> contexts) {
+  // Get all the items from the database.
+  context_db_.AsyncCall(&ContextDatabase::GetAllItems)
+      .Then(base::BindOnce(&ContentCacheImpl::GotItemsFromContextDatabase,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                           std::move(contexts)));
+}
+
+void ContentCacheImpl::GotItemsFromContextDatabase(
+    base::OnceClosure callback,
+    std::map<int, CacheFileContext> contexts_on_disk,
+    ContextDatabase::IdToItemMap items_in_db) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Identify files on disk that have no entry in the database.
+  std::set<base::FilePath> paths_on_disk_to_remove;
+  std::list<PathContextPair> cached_files;
+  for (auto& [id, ctx] : contexts_on_disk) {
+    ContextDatabase::IdToItemMap::const_iterator item_it = items_in_db.find(id);
+    if (item_it == items_in_db.end()) {
+      paths_on_disk_to_remove.emplace(
+          root_dir_.Append(base::NumberToString(ctx.id)));
+    } else {
+      ctx.accessed_time = item_it->second.accessed_time;
+      ctx.version_tag = item_it->second.version_tag;
+      cached_files.emplace_back(item_it->second.fsp_path, std::move(ctx));
+    }
+  }
+
+  // Identify SQL entries that have no file on disk.
+  std::vector<int64_t> ids_in_db_to_remove;
+  for (const auto& [id, item] : items_in_db) {
+    if (!contexts_on_disk.contains(id)) {
+      ids_in_db_to_remove.emplace_back(id);
+    }
+  }
+
+  cached_files.sort([](const PathContextPair& lhs, const PathContextPair& rhs) {
+    // The files should be in least-recently used order, the underlying data
+    // structure maintains them in order on access but not on initialization so
+    // we have to ensure order now. This means the most-recently used is the
+    // 0-th item, where eviction will take place on the last element.
+    return lhs.second.accessed_time > rhs.second.accessed_time;
+  });
+
+  VLOG(1) << "Initializing content cache with " << cached_files.size()
+          << " items";
+  lru_cache_.Init(std::move(cached_files));
+
+  const auto barrier_callback = base::BarrierCallback<bool>(
+      2, base::BindOnce(&ContentCacheImpl::OnStaleItemsPruned,
+                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  VLOG_IF(1, !ids_in_db_to_remove.empty())
+      << "Attempting to remove " << ids_in_db_to_remove.size()
+      << " item(s) from the database";
+  context_db_.AsyncCall(&ContextDatabase::RemoveItemsByIds)
+      .WithArgs(ids_in_db_to_remove)
+      .Then(barrier_callback);
+
+  VLOG_IF(1, !paths_on_disk_to_remove.empty())
+      << "Attempting to remove " << paths_on_disk_to_remove.size()
+      << " path(s) from the disk";
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&RemoveAllFilesOnDiskById, paths_on_disk_to_remove),
+      barrier_callback);
+}
+
+void ContentCacheImpl::OnStaleItemsPruned(base::OnceClosure callback,
+                                          std::vector<bool> prune_success) {
+  DCHECK_EQ(prune_success.size(), 2u);
+  bool db_success = prune_success.at(0);
+  bool fs_success = prune_success.at(1);
+
+  LOG_IF(ERROR, !db_success) << "Couldn't remove all stale items from db";
+  LOG_IF(ERROR, !fs_success) << "Couldn't remove all stale items from disk";
+
+  // Failing to remove files from db/disk doesn't stop the cache being
+  // successfully setup.
+  std::move(callback).Run();
 }
 
 }  // namespace ash::file_system_provider

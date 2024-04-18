@@ -74,6 +74,11 @@ class CacheManagerImpl : public CacheManager {
       scoped_refptr<base::SequencedTaskRunner> db_task_runner,
       OptionalContextDatabase optional_context_db);
 
+  void OnProviderFilesLoadedFromDisk(
+      std::unique_ptr<ContentCache> content_cache,
+      const base::FilePath& base64_encoded_provider_folder_name,
+      FileErrorOrContentCacheCallback callback);
+
   // When the initialization has finished, invoke the callback and notify the
   // observers.
   void OnProviderInitializationComplete(

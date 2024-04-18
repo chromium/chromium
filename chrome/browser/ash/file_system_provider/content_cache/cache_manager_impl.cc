@@ -187,12 +187,23 @@ void CacheManagerImpl::OnProviderContextDatabaseSetup(
   // sequenced access via the `ContentCache` instance.
   BoundContextDatabase context_db(db_task_runner,
                                   std::move(optional_context_db.value()));
-  initialized_providers_.emplace(base64_encoded_provider_folder_name);
-  OnProviderInitializationComplete(
-      base64_encoded_provider_folder_name, std::move(callback),
-      ContentCacheImpl::Create(cache_directory_path, std::move(context_db)));
+  std::unique_ptr<ContentCache> content_cache =
+      ContentCacheImpl::Create(cache_directory_path, std::move(context_db));
+  content_cache->LoadFromDisk(
+      base::BindOnce(&CacheManagerImpl::OnProviderFilesLoadedFromDisk,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(content_cache),
+                     base64_encoded_provider_folder_name, std::move(callback)));
 }
 
+void CacheManagerImpl::OnProviderFilesLoadedFromDisk(
+    std::unique_ptr<ContentCache> content_cache,
+    const base::FilePath& base64_encoded_provider_folder_name,
+    FileErrorOrContentCacheCallback callback) {
+  initialized_providers_.emplace(base64_encoded_provider_folder_name);
+  OnProviderInitializationComplete(base64_encoded_provider_folder_name,
+                                   std::move(callback),
+                                   std::move(content_cache));
+}
 void CacheManagerImpl::OnUninitializeForProvider(
     const base::FilePath& base64_encoded_provider_folder_name,
     base::File::Error result) {

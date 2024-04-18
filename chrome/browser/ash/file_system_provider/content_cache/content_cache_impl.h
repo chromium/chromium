@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_CACHE_IMPL_H_
 
 #include "base/files/file_error_or.h"
+#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -54,6 +55,8 @@ class ContentCacheImpl : public ContentCache {
                        int length,
                        FileErrorCallback callback) override;
 
+  void LoadFromDisk(base::OnceClosure callback) override;
+
  private:
   void OnBytesRead(
       const base::FilePath& file_path,
@@ -75,6 +78,25 @@ class ContentCacheImpl : public ContentCache {
                       FileErrorCallback callback,
                       base::File::Error result);
 
+  // Invoked in the flow of `LoadFromDisk` once all the files have been
+  // discovered in the FSP content cache mount directory. The results are keyed
+  // by the id (i.e. the file name on disk) with a corresponding
+  // `CacheFileContext` containing the total bytes on disk populated.
+  void GotFilesFromDisk(base::OnceClosure callback,
+                        std::map<int, CacheFileContext> contexts);
+
+  // Invoked in the flow of `LoadFromDisk` once all the items from the database
+  // have been retrieved.
+  void GotItemsFromContextDatabase(base::OnceClosure callback,
+                                   std::map<int, CacheFileContext> contexts,
+                                   ContextDatabase::IdToItemMap items);
+
+  // Invoked in the flow of `LoadFromDisk` once all the orphaned files (from
+  // disk OR in the DB) have been removed. The `success` vector contains 2 bools
+  // indicating the success of the db removal and disk removal (respectively).
+  void OnStaleItemsPruned(base::OnceClosure callback,
+                          std::vector<bool> prune_success);
+
   // Generates the absolute path on disk from the supplied `item_id`.
   const base::FilePath GetPathOnDiskFromContext(int64_t item_id);
 
@@ -88,6 +110,10 @@ class ContentCacheImpl : public ContentCache {
   size_t max_cache_size_;
 
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(
+      FileSystemProviderContentCacheImplTest,
+      FilesOnDiskAndInDbAreInitializedInTheDatabaseAccessedTimeOrder);
 };
 
 }  // namespace ash::file_system_provider

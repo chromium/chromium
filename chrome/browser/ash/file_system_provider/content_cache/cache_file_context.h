@@ -20,7 +20,13 @@ inline constexpr int kUnknownId = -1;
 // around evicting files from the cache (e.g. until N bytes have been evicted)
 // and guard against multiple writers to a single file.
 struct CacheFileContext {
+  // Used to create the context initially when the file hasn't fully been cached
+  // to disk.
   explicit CacheFileContext(const std::string& version_tag);
+
+  // Used to repopulate the context on session startup with the file information
+  // that is already cached on disk.
+  CacheFileContext(int64_t bytes_on_disk, int64_t id);
 
   CacheFileContext(CacheFileContext&&);
   CacheFileContext& operator=(CacheFileContext&&);

@@ -6,10 +6,16 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
+#include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 #include "chrome/browser/ash/file_system_provider/opened_cloud_file.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -21,9 +27,13 @@ namespace ash::file_system_provider {
 namespace {
 
 using base::test::TestFuture;
+using testing::ElementsAre;
+using testing::Key;
 
 // The default chunk size that is requested via the `FileStreamReader`.
 constexpr int kDefaultChunkSize = 512;
+
+}  // namespace
 
 class FileSystemProviderContentCacheImplTest : public testing::Test {
  protected:
@@ -36,17 +46,17 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
     // Initialize a `ContextDatabase` in memory on a blocking task runner.
     std::unique_ptr<ContextDatabase> context_db =
         std::make_unique<ContextDatabase>(base::FilePath());
-    BoundContextDatabase db(
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-        std::move(context_db));
+    context_db_ = context_db->GetWeakPtr();
+    db_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    BoundContextDatabase db(db_task_runner_, std::move(context_db));
     TestFuture<bool> future;
     db.AsyncCall(&ContextDatabase::Initialize).Then(future.GetCallback());
     EXPECT_TRUE(future.Get());
 
-    content_cache_ =
-        ContentCacheImpl::Create(temp_dir_.GetPath(), std::move(db));
+    content_cache_ = std::make_unique<ContentCacheImpl>(
+        temp_dir_.GetPath(), std::move(db), /*max_cache_size=*/500);
   }
 
   void TearDown() override { content_cache_.reset(); }
@@ -76,7 +86,46 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
     EXPECT_EQ(future.Get(), base::File::FILE_OK);
   }
 
-  std::unique_ptr<ContentCache> content_cache_;
+  int64_t AddItemToDb(const base::FilePath& fsp_path,
+                      const std::string& version_tag,
+                      base::Time accessed_time) {
+    int64_t inserted_id = -1;
+    TestFuture<bool> db_add_item_future;
+    db_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          return context_db_->AddItem(fsp_path, version_tag, accessed_time,
+                                      &inserted_id);
+        }),
+        db_add_item_future.GetCallback());
+    EXPECT_TRUE(db_add_item_future.Get());
+    EXPECT_GE(inserted_id, 1);
+    return inserted_id;
+  }
+
+  ContextDatabase::Item GetItemById(int64_t item_id) {
+    ContextDatabase::Item item;
+    TestFuture<bool> db_get_item_future;
+    db_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          return context_db_->GetItemById(item_id, item);
+        }),
+        db_get_item_future.GetCallback());
+    EXPECT_TRUE(db_get_item_future.Get());
+    return item;
+  }
+
+  void AddItemToDbAndDisk(const base::FilePath& fsp_path,
+                          const std::string& version_tag,
+                          base::Time time) {
+    int64_t inserted_id = AddItemToDb(fsp_path, version_tag, time);
+    EXPECT_TRUE(base::WriteFile(
+        temp_dir_.GetPath().Append(base::NumberToString(inserted_id)),
+        base::RandBytesAsString(kDefaultChunkSize)));
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+  base::WeakPtr<ContextDatabase> context_db_;
+  std::unique_ptr<ContentCacheImpl> content_cache_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 };
@@ -239,5 +288,97 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   EXPECT_EQ(future.Get<0>(), kDefaultChunkSize);
 }
 
-}  // namespace
+TEST_F(FileSystemProviderContentCacheImplTest,
+       FilesOnDiskAndInDbAreSuccessfullyAddedToCache) {
+  const base::FilePath fsp_path("/test.txt");
+  const std::string version_tag("versionA");
+  AddItemToDbAndDisk(fsp_path, version_tag, base::Time::Now());
+
+  TestFuture<void> future;
+  content_cache_->LoadFromDisk(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       version_tag);
+  scoped_refptr<net::IOBufferWithSize> buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
+  TestFuture<int, bool, base::File::Error> read_bytes_future;
+  EXPECT_TRUE(content_cache_->StartReadBytes(
+      file, buffer.get(), /*offset=*/0, kDefaultChunkSize,
+      read_bytes_future.GetRepeatingCallback()));
+  EXPECT_EQ(read_bytes_future.Get<0>(), kDefaultChunkSize);
+  EXPECT_EQ(read_bytes_future.Get<2>(), base::File::FILE_OK);
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
+       FilesOnDiskAndInDbAreInitializedInTheDatabaseAccessedTimeOrder) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(content_cache_->sequence_checker_);
+
+  // This is the oldest accessed item on disk, we should order this last in the
+  // LRU cache.
+  base::Time older_time;
+  EXPECT_TRUE(base::Time::FromString("17 Apr 2024 10:00 GMT", &older_time));
+  AddItemToDbAndDisk(base::FilePath("/a.txt"), "versionA", older_time);
+
+  // This is the most recently used item on disk, this should be ordered first.
+  base::Time newer_time;
+  EXPECT_TRUE(base::Time::FromString("17 Apr 2024 11:00 GMT", &newer_time));
+  AddItemToDbAndDisk(base::FilePath("/b.txt"), "versionA", newer_time);
+
+  TestFuture<void> future;
+  content_cache_->LoadFromDisk(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // TODO(b/328679426): Once eviction logic has been created, we can assert on
+  // this. For now let's inspect the underlying `lru_cache_` instead.
+  EXPECT_THAT(content_cache_->lru_cache_,
+              ElementsAre(Key(base::FilePath("/b.txt")),
+                          Key(base::FilePath("/a.txt"))));
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
+       FilesOnDiskWithNoSqlEntryAreRemoved) {
+  // Only write the file to disk, don't write it into the database.
+  base::FilePath path_on_disk =
+      temp_dir_.GetPath().Append(base::NumberToString(1));
+  base::WriteFile(path_on_disk, base::RandBytesAsString(kDefaultChunkSize));
+
+  // Files that aren't integer file names are ignored.
+  // TODO(b/335548274): Should we remove these files from disk, or ignore them.
+  base::WriteFile(temp_dir_.GetPath().Append("unknown"),
+                  base::RandBytesAsString(kDefaultChunkSize));
+
+  TestFuture<void> future;
+  content_cache_->LoadFromDisk(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_FALSE(base::PathExists(path_on_disk));
+
+  OpenedCloudFile file(base::FilePath("/test.txt"),
+                       OpenFileMode::OPEN_FILE_MODE_READ,
+                       /*version_tag=*/"versionA");
+  EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
+                                              /*offset=*/0, kDefaultChunkSize,
+                                              base::DoNothing()));
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
+       FilesNotOnDiskButOnlyOnSqlAreRemoved) {
+  const base::FilePath fsp_path("/test.txt");
+  const std::string version_tag("versionA");
+  int64_t inserted_id = AddItemToDb(fsp_path, version_tag, base::Time::Now());
+
+  TestFuture<void> future;
+  content_cache_->LoadFromDisk(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       version_tag);
+  EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
+                                              /*offset=*/0, kDefaultChunkSize,
+                                              base::DoNothing()));
+
+  ContextDatabase::Item item = GetItemById(inserted_id);
+  EXPECT_FALSE(item.item_exists);
+}
+
 }  // namespace ash::file_system_provider

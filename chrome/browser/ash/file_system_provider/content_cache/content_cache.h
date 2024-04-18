@@ -54,6 +54,11 @@ class ContentCache {
                                int64_t offset,
                                int length,
                                FileErrorCallback callback) = 0;
+
+  // Load files from the content cache directory and the SQLite database. In the
+  // event files have been orphaned (i.e. they are on disk with no DB entry or
+  // vice versa) then prune them appropriately.
+  virtual void LoadFromDisk(base::OnceClosure callback) = 0;
 };
 
 }  // namespace ash::file_system_provider

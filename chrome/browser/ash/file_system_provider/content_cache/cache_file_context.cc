@@ -9,6 +9,9 @@ namespace ash::file_system_provider {
 CacheFileContext::CacheFileContext(const std::string& version_tag)
     : version_tag(version_tag) {}
 
+CacheFileContext::CacheFileContext(int64_t bytes_on_disk, int64_t id)
+    : bytes_on_disk(bytes_on_disk), id(id) {}
+
 CacheFileContext::CacheFileContext(CacheFileContext&&) = default;
 CacheFileContext& CacheFileContext::operator=(CacheFileContext&&) = default;
 
