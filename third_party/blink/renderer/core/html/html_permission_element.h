@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -30,7 +31,8 @@ namespace blink {
 class CORE_EXPORT HTMLPermissionElement final
     : public HTMLElement,
       public mojom::blink::PermissionObserver,
-      public mojom::blink::EmbeddedPermissionControlClient {
+      public mojom::blink::EmbeddedPermissionControlClient,
+      public LocalFrameView::LifecycleNotificationObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -80,6 +82,14 @@ class CORE_EXPORT HTMLPermissionElement final
                            NotAllowedInFencedFrame);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
                            EnableClickingAfterDelay);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+                           InvalidatePEPCAfterMove);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+                           InvalidatePEPCAfterResize);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+                           InvalidatePEPCAfterMoveContainer);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
+                           InvalidatePEPCAfterTransformContainer);
 
   enum class DisableReason {
     // This element is temporarily disabled for a short period
@@ -176,6 +186,9 @@ class CORE_EXPORT HTMLPermissionElement final
   void OnIntersectionChanged(
       const HeapVector<Member<IntersectionObserverEntry>>& entries);
 
+  // LocalFrameView::LifecycleNotificationObserver
+  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   bool IsStyleValid();
@@ -237,6 +250,10 @@ class CORE_EXPORT HTMLPermissionElement final
   // Set to true only if this element is fully visible on the viewport (observed
   // by IntersectionObserver).
   bool is_fully_visible_ = true;
+
+  // The intersection rectangle between the layout box of this element and the
+  // viewport.
+  gfx::Rect intersection_rect_;
 
   // The permission descriptors that correspond to a request made from this
   // permission element. Only computed once, when the `type` attribute is set.

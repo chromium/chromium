@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
 
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -992,6 +994,141 @@ TEST_F(HTMLPemissionElementIntersectionTest, ContainerDivClipPath) {
   // Set up a mask that covers a bit of the container.
   TestContainerStyleAffectsVisibility(CSSPropertyID::kClipPath,
                                       "circle(40%)");
+}
+
+class HTMLPemissionElementLayoutChangeTest
+    : public HTMLPemissionElementSimTest {
+ public:
+  static constexpr int kViewportWidth = 800;
+  static constexpr int kViewportHeight = 600;
+
+ protected:
+  HTMLPemissionElementLayoutChangeTest() = default;
+
+  void SetUp() override {
+    HTMLPemissionElementSimTest::SetUp();
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(false);
+    WebView().MainFrameWidget()->Resize(
+        gfx::Size(kViewportWidth, kViewportHeight));
+  }
+
+  void TearDown() override {
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(true);
+    HTMLPemissionElementSimTest::TearDown();
+  }
+
+  HTMLPermissionElement* CheckAndQueryPermissionElement(AtomicString element) {
+    auto* permission_element =
+        To<HTMLPermissionElement>(GetDocument().QuerySelector(element));
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(permission_element->IsFullyVisibleForTesting(), true);
+    ClickingEnabledChecker checker(permission_element);
+    checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                           /*expected_enabled*/ true);
+    return permission_element;
+  }
+};
+
+TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterMove) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+  <body>
+    <permission
+      style='position: relative; top: 1px; left: 1px;'
+      id='camera'
+      type='camera'>
+  </body>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element =
+      CheckAndQueryPermissionElement(AtomicString("permission"));
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("position: relative; top: 100px; left: 100px"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  ClickingEnabledChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+}
+
+TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterResize) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+  <body>
+    <permission
+      style=' height: 3em; width: 40px;' id='camera' type='camera'>
+  </body>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element =
+      CheckAndQueryPermissionElement(AtomicString("permission"));
+  permission_element->setAttribute(html_names::kStyleAttr,
+                                   AtomicString(" height: 1em; width: 30px;"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  ClickingEnabledChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+}
+
+TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterMoveContainer) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest iframe_resource("https://example.com/foo.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+  <body>
+      <iframe src='https://example.com/foo.html'
+        allow="camera *">
+      </iframe>
+  </body>
+  )HTML");
+  iframe_resource.Finish();
+
+  Compositor().BeginFrame();
+  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  auto* permission_element = CreatePermissionElement(
+      *child_frame->GetFrame()->GetDocument(), "camera");
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  ClickingEnabledChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+  auto* iframe = To<HTMLIFrameElement>(
+      GetDocument().QuerySelector(AtomicString("iframe")));
+  iframe->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("position: relative; top: 100px; left: 100px"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+}
+
+TEST_F(HTMLPemissionElementLayoutChangeTest,
+       InvalidatePEPCAfterTransformContainer) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id='container'>
+      <permission id='camera' type='camera'>
+    </div>
+    )HTML");
+  Compositor().BeginFrame();
+  auto* permission_element =
+      CheckAndQueryPermissionElement(AtomicString("permission"));
+  auto* div =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  div->SetInlineStyleProperty(CSSPropertyID::kTransform, "translateX(10px)");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  ClickingEnabledChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
 }
 
 }  // namespace blink

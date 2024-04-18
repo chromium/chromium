@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -44,6 +46,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -323,11 +326,16 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
       client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
   GetPermissionService()->RegisterPageEmbeddedPermissionControl(
       mojo::Clone(permission_descriptors_), std::move(client));
+  CHECK(GetDocument().View());
+  GetDocument().View()->RegisterForLifecycleNotifications(this);
 }
 
 void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
   Element::DetachLayoutTree(performing_reattach);
   embedded_permission_control_receiver_.reset();
+  if (auto* view = GetDocument().View()) {
+    view->UnregisterFromLifecycleNotifications(this);
+  }
 }
 
 // static
@@ -802,4 +810,31 @@ Length HTMLPermissionElement::AdjustedBoundedLength(
       std::move(expr), Length::ValueRange::kNonNegative));
 }
 
+void HTMLPermissionElement::DidFinishLifecycleUpdate(
+    const LocalFrameView& local_frame_view) {
+  // This code monitors the stability of the HTMLPermissionElement and
+  // temporarily disables the element if it detects an unstable state.
+  // "Unstable state" in this context occurs when the intersection rectangle
+  // between the viewport and the element's layout box changes, indicating that
+  // the element has been moved or resized.
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
+    return;
+  }
+
+  gfx::Rect viewport_in_root_frame = ToEnclosingRect(
+      local_frame_view.GetFrame().GetPage()->GetVisualViewport().VisibleRect());
+  PhysicalRect rect = To<LayoutBox>(layout_object)->PhysicalBorderBoxRect();
+  // `MapToVisualRectInAncestorSpace` with a null `ancestor` argument will
+  // mutate `rect` to visible rect in the root frame's coordinate space.
+  layout_object->MapToVisualRectInAncestorSpace(/*ancestor*/ nullptr, rect);
+  gfx::Rect intersection_rect =
+      IntersectRects(viewport_in_root_frame, ToEnclosingRect(rect));
+
+  if (intersection_rect_ != intersection_rect) {
+    intersection_rect_ = intersection_rect;
+    DisableClickingTemporarily(DisableReason::kRecentlyAttachedToDOM,
+                               kDefaultDisableTimeout);
+  }
+}
 }  // namespace blink
