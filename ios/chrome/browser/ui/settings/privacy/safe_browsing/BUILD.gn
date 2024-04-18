@@ -64,3 +64,9 @@ source_set("safe_browsing_constants") {
     "safe_browsing_constants.mm",
   ]
 }
+
+source_set("safe_browsing_promo_delegate") {
+  sources = [ "enhanced_safe_browsing_inline_promo_delegate.h" ]
+
+  frameworks = [ "Foundation.framework" ]
+}
