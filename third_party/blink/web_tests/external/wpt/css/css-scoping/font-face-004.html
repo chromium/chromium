@@ -14,7 +14,7 @@
 </style>
 <div id="host"><span id="in-document">1234567890</span></div>
 <script>
-promise_test(async () => {
+promise_test(async function() {
   host.attachShadow({ mode: "open" }).innerHTML = `
     <style>
       ::slotted(#in-document) {
@@ -26,7 +26,6 @@ promise_test(async () => {
   `;
 
   await document.fonts.ready;
-
   assert_equals(document.getElementById('in-document').offsetWidth, 160);
   assert_not_equals(host.shadowRoot.getElementById('in-shadow').offsetWidth, 160);
 }, "@font-face from document applies to a slotted element");
