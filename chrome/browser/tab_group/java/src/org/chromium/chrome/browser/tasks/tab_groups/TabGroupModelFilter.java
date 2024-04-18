@@ -382,22 +382,6 @@ public class TabGroupModelFilter extends TabModelFilter {
             if (didCreateNewGroup && isTabInTabGroup(tab)) {
                 didCreateNewGroup = false;
             }
-        }
-
-        // This specific observer emission must happen before the below code which moves the
-        // tabs on grouping. The reason this must happen before is because moving a tab will
-        // update the tab group's favicon color in TabListMediator and cause it to generate a
-        // tab group color. This may indicate an improper state where tab groups that already
-        // have a color are not considered new groups, and the color should be set during the
-        // TabGroupCreationManager#showDialog flow anyways.
-        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            if (didCreateNewGroup) {
-                observer.didCreateNewGroup(destinationTab, this);
-            }
-        }
-
-        for (int i = 0; i < tabs.size(); i++) {
-            Tab tab = tabs.get(i);
 
             // When merging tabs are in the same group, only make one willMergeTabToGroup call.
             if (!isSameGroup || i == tabs.size() - 1) {
@@ -444,6 +428,10 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            if (didCreateNewGroup) {
+                observer.didCreateNewGroup(destinationTab, this);
+            }
+
             // If this is a new tab group creation, do not trigger a snackbar.
             boolean skipSnackbarForCreation =
                     didCreateNewGroup && ChromeFeatureList.sTabGroupParityAndroid.isEnabled();

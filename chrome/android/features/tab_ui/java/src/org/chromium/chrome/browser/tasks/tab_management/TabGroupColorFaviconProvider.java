@@ -22,6 +22,7 @@ public class TabGroupColorFaviconProvider {
     static final int TAB_GROUP_FAVICON_COLOR_LEVEL = 1;
     static final int FAVICON_BACKGROUND_DEFAULT_ALPHA = 255;
     static final int FAVICON_BACKGROUND_SELECTED_ALPHA = 0;
+    private static final int INVALID_COLOR_ID = -1;
     private final Context mContext;
 
     public TabGroupColorFaviconProvider(Context context) {
@@ -74,20 +75,29 @@ public class TabGroupColorFaviconProvider {
         return new TabFaviconFetcher() {
             @Override
             public void fetch(Callback<TabFavicon> faviconCallback) {
-                final @ColorInt int color =
-                        ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                mContext, colorId, isIncognito);
+                if (colorId != INVALID_COLOR_ID) {
+                    final @ColorInt int color =
+                            ColorPickerUtils.getTabGroupColorPickerItemColor(
+                                    mContext, colorId, isIncognito);
 
-                LayerDrawable tabGroupColorIcon =
-                        (LayerDrawable)
-                                ResourcesCompat.getDrawable(
-                                        mContext.getResources(),
-                                        org.chromium.chrome.tab_ui.R.drawable.tab_group_color_icon,
-                                        mContext.getTheme());
-                ((GradientDrawable) tabGroupColorIcon.getDrawable(TAB_GROUP_FAVICON_COLOR_LEVEL))
-                        .setColor(color);
+                    LayerDrawable tabGroupColorIcon =
+                            (LayerDrawable)
+                                    ResourcesCompat.getDrawable(
+                                            mContext.getResources(),
+                                            org.chromium.chrome.tab_ui.R.drawable
+                                                    .tab_group_color_icon,
+                                            mContext.getTheme());
+                    ((GradientDrawable)
+                                    tabGroupColorIcon.getDrawable(TAB_GROUP_FAVICON_COLOR_LEVEL))
+                            .setColor(color);
 
-                faviconCallback.onResult(new TabGroupColorFavicon(tabGroupColorIcon, colorId));
+                    faviconCallback.onResult(new TabGroupColorFavicon(tabGroupColorIcon, colorId));
+                } else {
+                    // If the color is invalid, don't set a drawable.
+                    faviconCallback.onResult(
+                            new TabGroupColorFavicon(
+                                    null, org.chromium.components.tab_groups.TabGroupColorId.GREY));
+                }
             }
         };
     }
