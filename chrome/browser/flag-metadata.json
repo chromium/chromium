@@ -2353,7 +2353,7 @@
       "fhorschig@chromium.org",
       "//components/autofill/android/OWNERS"
     ],
-    "expiry_milestone": 126
+    "expiry_milestone": 129
   },
   {
     "name": "enable-background-blur",
@@ -8600,7 +8600,7 @@
   {
     "name": "web-authentication-android-credential-management",
     "owners": ["kenrb@chromium.org", "agl@chromium.org"],
-    "expiry_milestone": 124
+    "expiry_milestone": 129
   },
   {
     "name": "web-authentication-permit-enterprise-attestation",
