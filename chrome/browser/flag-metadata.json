@@ -807,7 +807,7 @@
   {
     "name": "autofill-enable-virtual-cards",
     "owners": [ "siyua@chromium.org", "chbannon@google.com", "slobodan@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 128
   },
   {
       "name": "autofill-enable-xhr-submission-detection-ios",
