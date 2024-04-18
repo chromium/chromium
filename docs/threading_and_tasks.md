@@ -956,7 +956,7 @@ Sample workaround when inner task processing is needed:
 ```
 
 Please be SURE your task is reentrant (nestable) and all global variables
-are stable and accessible before before using
+are stable and accessible before using
 CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop.
 
 ## APIs for general use
