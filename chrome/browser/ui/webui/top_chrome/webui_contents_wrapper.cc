@@ -213,6 +213,13 @@ void WebUIContentsWrapper::DraggableRegionsChanged(
   }
 }
 
+void WebUIContentsWrapper::SetContentsBounds(content::WebContents* source,
+                                             const gfx::Rect& bounds) {
+  if (host_) {
+    host_->SetContentsBounds(source, bounds);
+  }
+}
+
 void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {
   if (webui_resizes_host_) {
     EnableAutoResizeForWebContents(web_contents_.get());

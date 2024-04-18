@@ -85,6 +85,14 @@ void MakoRewriteView::ResizeDueToAutoResize(content::WebContents* source,
   GetWidget()->SetBounds(widget_bounds);
 }
 
+void MakoRewriteView::SetContentsBounds(content::WebContents* source,
+                                        const gfx::Rect& bounds) {
+  if (views::WebView* web_view_ptr = web_view()) {
+    web_view_ptr->SetPreferredSize(bounds.size());
+  }
+  GetWidget()->SetBounds(bounds);
+}
+
 void MakoRewriteView::ShowUI() {
   WebUIBubbleDialogView::ShowUI();
   // TODO(b/321585877): Remove feature flag for dragging support.

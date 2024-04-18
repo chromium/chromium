@@ -65,6 +65,8 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
     virtual void DraggableRegionsChanged(
         const std::vector<blink::mojom::DraggableRegionPtr>& regions,
         content::WebContents* contents) {}
+    virtual void SetContentsBounds(content::WebContents* source,
+                                   const gfx::Rect& bounds) {}
   };
 
   WebUIContentsWrapper(const GURL& webui_url,
@@ -105,6 +107,8 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override;
+  void SetContentsBounds(content::WebContents* source,
+                         const gfx::Rect& bounds) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;

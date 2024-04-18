@@ -34,6 +34,8 @@ class MakoRewriteView : public WebUIBubbleDialogView,
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override;
+  void SetContentsBounds(content::WebContents* source,
+                         const gfx::Rect& new_size) override;
 
   // MakoBubbleEventHandler::Delegate
   const std::optional<SkRegion> GetDraggableRegion() override;
