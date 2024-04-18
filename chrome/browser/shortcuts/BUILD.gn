@@ -13,6 +13,8 @@ source_set("shortcuts") {
     "document_icon_fetcher.h",
     "fetch_icons_from_document_task.cc",
     "fetch_icons_from_document_task.h",
+    "platform_util_mac.h",
+    "platform_util_mac.mm",
   ]
 
   deps = [
@@ -45,5 +47,19 @@ source_set("browser_tests") {
     "//testing/gtest:gtest",
     "//ui/gfx:test_support",
     "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "platform_util_mac_unittest.mm" ]
+
+  deps = [
+    ":shortcuts",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }

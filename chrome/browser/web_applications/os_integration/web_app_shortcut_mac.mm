@@ -52,6 +52,7 @@
 #include "cc/paint/paint_flags.h"
 #import "chrome/browser/mac/dock.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/shortcuts/platform_util_mac.h"
 #include "chrome/browser/web_applications/os_integration/icns_encoder.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -720,7 +721,7 @@ NSImageRep* ImageRepForGFXImage(const gfx::Image& image) {
 
 using ResourceIDToImage = std::map<int, NSImageRep*>;
 
-// Generates a map of NSImageReps used by SetWorkspaceIconOnFILEThread and
+// Generates a map of NSImageReps used by SetWorkspaceIconOnWorkerThread and
 // passes it to |io_task|. Since ui::ResourceBundle can only be used on UI
 // thread, this function also needs to run on UI thread, and the gfx::Images
 // need to be converted to NSImageReps on the UI thread due to non-thread-safety
@@ -734,18 +735,15 @@ void GetImageResourcesOnUIThread(
       std::make_unique<ResourceIDToImage>();
 
   // These resource ID should match to the ones used by
-  // SetWorkspaceIconOnFILEThread below.
+  // SetWorkspaceIconOnWorkerThread below.
   for (int id : {IDR_APPS_FOLDER_16, IDR_APPS_FOLDER_32,
                  IDR_APPS_FOLDER_OVERLAY_128, IDR_APPS_FOLDER_OVERLAY_512}) {
     gfx::Image image = resource_bundle.GetNativeImageNamed(id);
     (*result)[id] = ImageRepForGFXImage(image);
   }
 
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(std::move(io_task), std::move(result)));
+  internals::GetShortcutIOTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(io_task), std::move(result)));
 }
 
 void SetWorkspaceIconOnWorkerThread(const base::FilePath& apps_directory,
@@ -778,10 +776,8 @@ void SetWorkspaceIconOnWorkerThread(const base::FilePath& apps_directory,
     if (with_overlay)
       [folder_icon_image addRepresentation:with_overlay];
   }
-  [NSWorkspace.sharedWorkspace
-      setIcon:folder_icon_image
-      forFile:base::apple::FilePathToNSString(apps_directory)
-      options:0];
+  shortcuts::SetIconForFile(folder_icon_image, apps_directory,
+                            base::DoNothing());
 }
 
 // Adds a localized strings file for the Chrome Apps directory using the current
@@ -1593,8 +1589,8 @@ bool WebAppShortcutCreator::UpdateShortcuts(
       LOG(ERROR) << "Couldn't find an Applications directory to copy app to.";
       return false;
     }
-    // Only set folder icons and a localized name once. This avoids concurrent
-    // calls to -[NSWorkspace setIcon:..], which is not reentrant.
+    // Only set folder icons and a localized name once, as nothing should be
+    // changing the folder icon and name.
     if (!g_have_localized_app_dir_name) {
       g_have_localized_app_dir_name =
           UpdateAppShortcutsSubdirLocalizedName(applications_dir);
