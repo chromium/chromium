@@ -293,6 +293,10 @@ class ReadAnythingAppModel {
   // next sentence is equivalent to text.substr(0, <returned_index>).
   int GetNextSentence(const std::u16string& text);
 
+  // Returns the index of the next word of the given text, such that the
+  // next word is equivalent to text.substr(0, <returned_index>).
+  int GetNextWord(const std::u16string& text);
+
   // Given a text index for the current granularity, return the AXNodeID for
   // that part of the text.
   // For example, if a current granularity segment has text:
@@ -442,6 +446,11 @@ class ReadAnythingAppModel {
   bool ArePositionsEqual(
       const ui::AXNodePosition::AXPositionInstance& position,
       const ui::AXNodePosition::AXPositionInstance& other) const;
+
+  // Returns the index of the next granularity of the given text, such that the
+  // next granularity is equivalent to text.substr(0, <returned_index>).
+  int GetNextGranularity(const std::u16string& text,
+                         ax::mojom::TextBoundary boundary);
 
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>

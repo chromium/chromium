@@ -1167,13 +1167,21 @@ std::string ReadAnythingAppModel::GetHeadingHtmlTagForPDF(
 }
 
 int ReadAnythingAppModel::GetNextSentence(const std::u16string& text) {
-  // TODO(crbug.com/40927693): Investigate providing correct line breaks
+  return GetNextGranularity(text, ax::mojom::TextBoundary::kSentenceStart);
+}
+
+int ReadAnythingAppModel::GetNextWord(const std::u16string& text) {
+  return GetNextGranularity(text, ax::mojom::TextBoundary::kWordStart);
+}
+
+int ReadAnythingAppModel::GetNextGranularity(const std::u16string& text,
+                                             ax::mojom::TextBoundary boundary) {
+  // TODO(crbug.com/40927698): Investigate providing correct line breaks
   // or alternatively making adjustments to ax_text_utils to return boundaries
   // that minimize choppiness.
   std::vector<int> offsets;
-  return ui::FindAccessibleTextBoundary(text, offsets,
-                                        ax::mojom::TextBoundary::kSentenceStart,
-                                        0, ax::mojom::MoveDirection::kForward,
+  return ui::FindAccessibleTextBoundary(text, offsets, boundary, 0,
+                                        ax::mojom::MoveDirection::kForward,
                                         ax::mojom::TextAffinity::kDefaultValue);
 }
 

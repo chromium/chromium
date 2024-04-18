@@ -244,6 +244,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     return model_->GetNextSentence(text);
   }
 
+  size_t GetNextWord(const std::u16string& text) {
+    return model_->GetNextWord(text);
+  }
+
   ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index) {
     ui::AXNodeID id = model_->GetNodeIdForCurrentSegmentIndex(index);
     return id;
@@ -1558,6 +1562,25 @@ TEST_F(ReadAnythingAppModelTest,
   size_t index = GetNextSentence(sentence);
   EXPECT_EQ(index, sentence.length());
   EXPECT_EQ(sentence.substr(0, index), sentence);
+}
+
+TEST_F(ReadAnythingAppModelTest, GetNextWord_ReturnsCorrectIndex) {
+  const std::u16string first_word = u"onomatopoeia ";
+  const std::u16string second_word = u"party";
+
+  const std::u16string segment = first_word + second_word;
+  size_t index = GetNextWord(segment);
+  EXPECT_EQ(index, first_word.length());
+  EXPECT_EQ(segment.substr(0, index), first_word);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetNextWord_OnlyOneWord_ReturnsCorrectIndex) {
+  const std::u16string word = u"Happiness";
+
+  size_t index = GetNextWord(word);
+  EXPECT_EQ(index, word.length());
+  EXPECT_EQ(word.substr(0, index), word);
 }
 
 TEST_F(ReadAnythingAppModelTest, GetNextValidPosition) {
