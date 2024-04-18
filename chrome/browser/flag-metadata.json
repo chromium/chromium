@@ -6790,6 +6790,13 @@
     "expiry_milestone": 130
   },
   {
+    "name": "print-preview-cros-primary",
+    "owners": [
+      "//ash/webui/print_preview_cros/OWNERS"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "print-preview-setup-assistance",
     "owners": [
       "//ash/webui/print_management/OWNERS",

@@ -4388,6 +4388,9 @@ extern const char kOneGroupPerRendererDescription[];
 extern const char kPlatformKeysAesEncryptionName[];
 extern const char kPlatformKeysAesEncryptionDescription[];
 
+extern const char kPrintPreviewCrosPrimaryName[];
+extern const char kPrintPreviewCrosPrimaryDescription[];
+
 extern const char kPrintPreviewSetupAssistanceName[];
 extern const char kPrintPreviewSetupAssistanceDescription[];
 

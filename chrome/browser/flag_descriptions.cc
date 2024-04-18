@@ -7574,6 +7574,11 @@ const char kPlatformKeysAesEncryptionDescription[] =
     "chrome.platformKeys APIs. For instance, the new operations include sign, "
     "encrypt, and decrypt.";
 
+const char kPrintPreviewCrosPrimaryName[] =
+    "Enables the ChromeOS print preview to be the primary print preview.";
+const char kPrintPreviewCrosPrimaryDescription[] =
+    "Allows the ChromeOS print preview to be opened instead of the browser "
+    " print preview.";
 const char kPrintPreviewSetupAssistanceName[] =
     "Enable improved printer status and error messaging in Print Preview.";
 const char kPrintPreviewSetupAssistanceDescription[] =
