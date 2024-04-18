@@ -62,6 +62,7 @@ const char kValueRequestDeviceAttributeUpdate[] = "device_attribute_update";
 const char kValueRequestGcmIdUpdate[] = "gcm_id_update";
 const char kValueRequestCheckAndroidManagement[] = "check_android_management";
 const char kValueRequestCertBasedRegister[] = "certificate_based_register";
+const char kValueRequestTokenBasedRegister[] = "token_based_register";
 const char kValueRequestActiveDirectoryEnrollPlayUser[] =
     "active_directory_enroll_play_user";
 const char kValueRequestActiveDirectoryPlayActivity[] =

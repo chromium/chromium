@@ -61,6 +61,9 @@ const char* JobTypeToRequestType(
         TYPE_CERT_BASED_REGISTRATION:
       return dm_protocol::kValueRequestCertBasedRegister;
     case DeviceManagementService::JobConfiguration::
+        TYPE_TOKEN_BASED_DEVICE_REGISTRATION:
+      return dm_protocol::kValueRequestTokenBasedRegister;
+    case DeviceManagementService::JobConfiguration::
         TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER:
       return dm_protocol::kValueRequestActiveDirectoryEnrollPlayUser;
     case DeviceManagementService::JobConfiguration::

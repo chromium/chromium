@@ -263,13 +263,24 @@ class POLICY_EXPORT CloudPolicyClient {
   // To emphasize, this method is used to register browser (e.g. for
   // machine-level policies).
   // Device registration with enrollment token should be performed using
-  // RegisterWithCertificate method, and this request will timeout after 30
+  // RegisterWithEnrollmentToken method, and this request will timeout after 30
   // seconds if the enrollment is not mandatory.
   virtual void RegisterBrowserWithEnrollmentToken(
       const std::string& token,
       const std::string& client_id,
       const ClientDataDelegate& client_data_delegate,
       bool is_mandatory);
+
+  // Attempts to enroll with the device management service using an enrollment
+  // token. Results in a registration change or error notification.
+  //
+  // This method is used to register a ChromeOS device (currently only used for
+  // ChromeOS Flex Auto Enrollment). Browser registration should be performed
+  // using RegisterWithToken.
+  virtual void RegisterDeviceWithEnrollmentToken(
+      const RegistrationParameters& parameters,
+      const std::string& client_id,
+      DMAuth enrollment_token_auth);
 
   // Attempts to register the profile with the device management service using a
   // OIDC response from a third party IdP's authentication. Results in a
@@ -647,6 +658,9 @@ class POLICY_EXPORT CloudPolicyClient {
   // Callback for registration requests.
   void OnRegisterCompleted(DMServerJobResult result);
 
+  // Callback for token-based device registration requests.
+  void OnTokenBasedRegisterDeviceCompleted(DMServerJobResult result);
+
   // Callback for policy fetch requests. `start_time` is the timestamp of the
   // request creation, used for recording fetching time as a histogram.
   void OnPolicyFetchCompleted(base::Time start_time, DMServerJobResult result);
@@ -828,6 +842,12 @@ class POLICY_EXPORT CloudPolicyClient {
   // Sets `unique_request_job_` with a new job created with `config`.
   void CreateUniqueRequestJob(
       std::unique_ptr<RegistrationJobConfiguration> config);
+
+  // Shared logic for reading fields out of DeviceRegisterResponse and
+  // notifying observers of the response status.
+  void ProcessDeviceRegisterResponse(
+      const enterprise_management::DeviceRegisterResponse& response,
+      DeviceManagementStatus dm_status);
 
 #if BUILDFLAG(IS_WIN)
   // Callback to get browser device identifier.

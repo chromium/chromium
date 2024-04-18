@@ -223,6 +223,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_BROWSER_UPLOAD_PUBLIC_KEY = 30,
       TYPE_CHROME_PROFILE_REPORT = 31,
       TYPE_OIDC_REGISTRATION = 32,
+      TYPE_TOKEN_BASED_DEVICE_REGISTRATION = 33,
     };
 
     // The set of HTTP query parameters of the request.

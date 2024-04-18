@@ -59,6 +59,7 @@ extern const char kValueRequestDeviceAttributeUpdate[];
 extern const char kValueRequestGcmIdUpdate[];
 extern const char kValueRequestCheckAndroidManagement[];
 extern const char kValueRequestCertBasedRegister[];
+extern const char kValueRequestTokenBasedRegister[];
 extern const char kValueRequestActiveDirectoryEnrollPlayUser[];
 extern const char kValueRequestActiveDirectoryPlayActivity[];
 extern const char kValueRequestAppInstallReport[];
