@@ -4999,6 +4999,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "instant-hotspot-on-nearby",
+    "owners": [ "joeantonetti@google.com", "chromeos-cross-device-eng@google.com" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "instant-hotspot-rebrand",
     "owners": [ "rudranshd@chromium.org", "joeantonetti@chromium.org", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 140

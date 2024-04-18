@@ -2135,6 +2135,12 @@ const char kInstantHotspotRebrandName[] = "Instant Hotspot Improvements";
 const char kInstantHotspotRebrandDescription[] =
     "Enables Instant Hotspot rebrand/feature improvements.";
 
+const char kInstantHotspotOnNearbyName[] = "Instant Hotspot on Nearby";
+
+const char kInstantHotspotOnNearbyDescription[] =
+    "Switches Instant Hotspot to use Nearby Presence for device discovery, as "
+    "well as Nearby Connections for device communication.";
+
 const char kIpProtectionProxyOptOutName[] = "Disable IP Protection Proxy";
 const char kIpProtectionProxyOptOutDescription[] =
     "When disabled, prevents use of the IP Protection proxy. This is intended "

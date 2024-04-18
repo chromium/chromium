@@ -1673,7 +1673,12 @@ BASE_FEATURE(kImprovedLoginErrorHandling,
              "ImprovedLoginErrorHandling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Instant Hotspot rebrand/feature improvements. crbug/290075504.
+// Enables Instant Hotspot on Nearby. b/303121363.
+BASE_FEATURE(kInstantHotspotOnNearby,
+             "InstantHotspotOnNearby",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Instant Hotspot rebrand/feature improvements. b/290075504.
 BASE_FEATURE(kInstantHotspotRebrand,
              "InstantHotspotRebrand",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2099,9 +2104,7 @@ BASE_FEATURE(kOobeLazyLoading,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables OOBE ai intro feature.
-BASE_FEATURE(kOobeAiIntro,
-             "OobeAiIntro",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOobeAiIntro, "OobeAiIntro", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeatureManagementOobeAiIntro,
              "FeatureManagementOobeAiIntro",
@@ -2113,9 +2116,7 @@ BASE_FEATURE(kFeatureManagementOobeSimon,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables OOBE tuna feature.
-BASE_FEATURE(kOobeTuna,
-             "OobeTuna",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOobeTuna, "OobeTuna", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeatureManagementOobeTuna,
              "FeatureManagementOobeTuna",
@@ -3972,7 +3973,6 @@ bool IsOAuthIppEnabled() {
 bool IsNewLockScreenReauthLayoutEnabled() {
   return base::FeatureList::IsEnabled(kNewLockScreenReauthLayout);
 }
-
 
 bool IsSysUiDownloadsIntegrationV2Enabled() {
   return base::FeatureList::IsEnabled(kSysUiDownloadsIntegrationV2);

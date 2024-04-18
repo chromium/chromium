@@ -16330,6 +16330,7 @@ from previous Chrome versions.
       label="AutofillEnablePrefetchingRiskDataForRetrieval:disabled"/>
   <int value="-2135013329" label="StylusRichGestures:disabled"/>
   <int value="-2134886830" label="ChromeWideEchoCancellation:disabled"/>
+  <int value="-2134700188" label="InstantHotspotOnNearby:disabled"/>
   <int value="-2134653602" label="WebAppSyncGeneratedIconUpdateFix:enabled"/>
   <int value="-2134609104" label="SystemEmojiPickerVariantGrouping:enabled"/>
   <int value="-2134333982" label="ShowArcFilesApp:enabled"/>
@@ -21681,6 +21682,7 @@ from previous Chrome versions.
   <int value="229476202" label="CryptAuthV2Enrollment:enabled"/>
   <int value="229877058" label="ShelfScrollable:disabled"/>
   <int value="231949727" label="ClipboardHistoryReorder:enabled"/>
+  <int value="232006131" label="InstantHotspotOnNearby:enabled"/>
   <int value="232859680" label="VCSegmentationModel:disabled"/>
   <int value="233202090" label="AssistantConsentModal:disabled"/>
   <int value="233721248" label="DownloadRename:disabled"/>
