@@ -46,18 +46,23 @@ class API_AVAILABLE(macos(14.0)) GraphImpl final : public WebNNGraphImpl {
   struct CoreMLFeatureInfo {
     CoreMLFeatureInfo(MLMultiArrayDataType data_type,
                       NSMutableArray* shape,
-                      NSMutableArray* stride)
-        : data_type(data_type), shape(shape), stride(stride) {}
+                      NSMutableArray* stride,
+                      std::string_view coreml_name)
+        : data_type(data_type),
+          shape(shape),
+          stride(stride),
+          coreml_name(coreml_name) {}
 
     MLMultiArrayDataType data_type;
     NSMutableArray* __strong shape;
     NSMutableArray* __strong stride;
+    std::string coreml_name;
   };
   static MLFeatureValue* CreateFeatureValue(
       GraphImpl::CoreMLFeatureInfo* feature_info,
       mojo_base::BigBuffer data);
   static std::optional<CoreMLFeatureInfo> GetCoreMLFeatureInfo(
-      const GraphBuilder::OperandInfo& operand_info);
+      const GraphBuilder::InputOperandInfo& operand_info);
   using CoreMLFeatureInfoMap = base::flat_map<std::string, CoreMLFeatureInfo>;
   GraphImpl(
       ComputeResourceInfo compute_resource_info,

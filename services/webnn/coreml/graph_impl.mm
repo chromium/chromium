@@ -106,7 +106,8 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
   for (auto const& [name, size] :
        compute_resource_info.input_name_to_byte_length_map) {
     std::optional<GraphImpl::CoreMLFeatureInfo> coreml_feature_info =
-        GetCoreMLFeatureInfo(build_graph_result->FindInputOperandInfo(name));
+        GetCoreMLFeatureInfo(
+            build_graph_result->FindModelInputOperandInfo(name));
     if (!coreml_feature_info.has_value()) {
       originating_sequence->PostTask(
           FROM_HERE,
@@ -235,7 +236,7 @@ MLFeatureValue* GraphImpl::CreateFeatureValue(
 
 // static
 std::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
-    const GraphBuilder::OperandInfo& operand_info) {
+    const GraphBuilder::InputOperandInfo& operand_info) {
   enum MLMultiArrayDataType data_type;
   switch (operand_info.data_type) {
     case webnn::mojom::Operand_DataType::kFloat32:
@@ -276,7 +277,8 @@ std::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
     current_stride = current_stride / dimension;
     [stride addObject:@(current_stride)];
   }
-  return GraphImpl::CoreMLFeatureInfo(data_type, shape, stride);
+  return GraphImpl::CoreMLFeatureInfo(data_type, shape, stride,
+                                      operand_info.coreml_name);
 }
 
 GraphImpl::GraphImpl(
@@ -307,7 +309,7 @@ void GraphImpl::ComputeImpl(
     auto feature_info = input_feature_info_->find(key);
     CHECK(feature_info != input_feature_info_->end());
     NSString* feature_name =
-        base::SysUTF8ToNSString(GetCoreMLNameFromInput(key));
+        base::SysUTF8ToNSString(feature_info->second.coreml_name);
     [feature_names addObject:feature_name];
 
     MLFeatureValue* feature_value =

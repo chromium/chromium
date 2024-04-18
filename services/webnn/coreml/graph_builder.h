@@ -41,8 +41,7 @@ concept IsSupportedTensorType = IsAnyOf<T,
 
 inline constexpr char kPlaceholderInputName[] = "placeholder";
 
-// Get name identifiers used in CoreML model files for input/output operands.
-std::string GetCoreMLNameFromInput(std::string_view input_name);
+// Get name identifiers used in CoreML model files for output operands.
 std::string GetCoreMLNameFromOutput(std::string_view output_name);
 
 // Reads the WebNN graph from the mojom::GraphInfo to
@@ -71,9 +70,31 @@ class GraphBuilder {
 
     // Identifier for this operand in coreml model file.
     std::string coreml_name;
+    // Due to the limitations of CoreML not supporting 0D input at model
+    // entry point, model 0D inputs are splitted into two nodes, with the
+    // external facing node that's casted to 1D array and internal node that
+    // preserves the 0D shape.
+    std::string external_coreml_name;
     std::vector<uint32_t> dimensions;
     mojom::Operand::DataType data_type;
     CoreML::Specification::MILSpec::DataType mil_data_type;
+  };
+
+  // Used by `GraphImpl` to get model input's information. The model inputs
+  // dimensions are always non scalar.
+  struct InputOperandInfo {
+    InputOperandInfo();
+    InputOperandInfo(std::string name,
+                     std::vector<uint32_t> dimensions,
+                     mojom::Operand::DataType data_type);
+    InputOperandInfo(InputOperandInfo&);
+    InputOperandInfo(InputOperandInfo&&);
+    ~InputOperandInfo();
+
+    // Identifier for this operand in coreml model file.
+    std::string coreml_name;
+    std::vector<uint32_t> dimensions;
+    mojom::Operand::DataType data_type;
   };
 
   struct Result {
@@ -84,7 +105,7 @@ class GraphBuilder {
 
     // This method must be called with an `input_name` which corresponds to some
     // input, or else it will crash.
-    const OperandInfo& FindInputOperandInfo(
+    InputOperandInfo FindModelInputOperandInfo(
         const std::string& input_name) const;
     const base::FilePath& GetModelFilePath();
 
@@ -126,7 +147,8 @@ class GraphBuilder {
   // Add input in Model.description and in Program's main function inputs.
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddInput(
       uint64_t input_id,
-      CoreML::Specification::MILSpec::Function& main_function);
+      CoreML::Specification::MILSpec::Function& main_function,
+      CoreML::Specification::MILSpec::Block& block);
   void AddPlaceholderInput(
       CoreML::Specification::MILSpec::Function& main_function,
       CoreML::Specification::MILSpec::Block& block);
@@ -186,6 +208,14 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForResample2d(
       const mojom::Resample2d& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReshape(
+      uint64_t input_operand_id,
+      std::string_view output_name,
+      base::span<const uint32_t> output_dimensions,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReshape(
+      const mojom::Reshape& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
       const mojom::Transpose& operation,
       CoreML::Specification::MILSpec::Block& block);
@@ -234,6 +264,9 @@ class GraphBuilder {
       std::string_view name,
       CoreML::Specification::MILSpec::DataType mil_data_type,
       base::span<const uint32_t> dimensions,
+      CoreML::Specification::MILSpec::NamedValueType& named_value_type);
+  void PopulateNamedValueTypeForInput(
+      uint64_t operand_id,
       CoreML::Specification::MILSpec::NamedValueType& named_value_type);
   // Update the `id_to_op_input_info_map_` to be used by ops later.
   void UpdateCoreMLInputInfoMap(uint64_t operand_id);
