@@ -56,11 +56,11 @@ TpcdMetadataRuleSource Parser::ToRuleSource(const std::string& source) {
 // static
 bool Parser::IsDtrpEligible(const TpcdMetadataRuleSource& rule_source) {
   switch (rule_source) {
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST:
     case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_1P_DT:
     case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_3P_DT:
       return true;
     case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
-    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST:
     case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD:
     case content_settings::mojom::TpcdMetadataRuleSource::
         SOURCE_CRITICAL_SECTOR:
@@ -198,7 +198,7 @@ Metadata GenerateLargeTestMetadata() {
     }
     helpers::AddEntryToMetadata(metadata,
                                 base::StrCat({"http://", hostname, ".test"}),
-                                "*", Parser::kSourceTest);
+                                "*", Parser::kSourceTest, /*dtrp=*/0);
   }
   CHECK(Parser::IsValidMetadata(metadata, base::NullCallback()));
   return metadata;

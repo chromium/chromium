@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_TPCD_METADATA_MANAGER_H_
 #define COMPONENTS_TPCD_METADATA_MANAGER_H_
 
+#include <memory>
+
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/tpcd/metadata/common/manager_base.h"
 #include "components/tpcd/metadata/parser.h"
@@ -20,6 +23,11 @@
 // fresh copy to the grants.
 using GrantsSyncCallback =
     base::RepeatingCallback<void(const ContentSettingsForOneType&)>;
+
+using PatternSourcePredicate = base::RepeatingCallback<bool(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern)>;
+
 namespace tpcd::metadata {
 
 // TODO(b/333529481): Implement an observer pattern for the Manager class
@@ -60,16 +68,45 @@ class Manager : public common::ManagerBase, public Parser::Observer {
     SetGrants(grants);
   }
 
- protected:
-  // Generates a random number between (`Parser::kMinDtrp`, `Parser::kMaxDtrp`].
-  virtual uint32_t GenerateRand() const;
+  // ResetCohorts only resets cohorts from any MetadataEntry matched by
+  // `pattern_predicate`. But If `pattern_predicate` is null, this method resets
+  // all the persisted cohorts.
+  void ResetCohorts(PatternSourcePredicate pattern_predicate);
 
-  std::string GenerateKeyHash(const MetadataEntry& metadata_entry) const;
+  class RandGenerator {
+   public:
+    RandGenerator() = default;
+    virtual ~RandGenerator() {}
+
+    RandGenerator(const RandGenerator&) = delete;
+    RandGenerator& operator=(const RandGenerator&) = delete;
+
+    virtual uint32_t Generate() const;
+  };
+
+  // SetRandGeneratorForTesting can be used at testing to set a deterministic
+  // random number generator.
+  void SetRandGeneratorForTesting(RandGenerator* generator) {
+    rand_generator_.reset(generator);
+  }
+
+  // TODO(b/333529481): This shouldn't be needed for unittest relying i on the
+  // "forever" instance `this` after restructuring.
+  void SetPrefServiceForTesting(PrefService* local_state) {
+    local_state_ = local_state;
+  }
 
  private:
   friend base::NoDestructor<Manager>;
 
   void SetGrants(const ContentSettingsForOneType& grants);
+
+  // BuildGrantsWithPredicate builds TPCD Metadata grants based off of possibly
+  // persisted cohorts. The `predicate` function will determine whether to
+  // convey any persisted cohort for a given MetadataEntry into the final grant
+  // or to reset it.
+  ContentSettingsForOneType BuildGrantsWithPredicate(
+      base::FunctionRef<bool(const MetadataEntry&)> predicate);
 
   // Parser::Observer:
   void OnMetadataReady() override;
@@ -81,11 +118,16 @@ class Manager : public common::ManagerBase, public Parser::Observer {
   // `IsHostIndexedMetadataGrantsEnabled()` returns true, otherwise, it holds a
   // `ContentSettingsForOneType`.
   common::Grants grants_ GUARDED_BY(grants_lock_);
+  std::unique_ptr<RandGenerator> rand_generator_;
 
   // TODO(b/333529481): Get rid of this dangling pointer during re-architecture
   // of the code
   raw_ptr<PrefService, DisableDanglingPtrDetection> local_state_;
 };
+
+namespace helpers {
+std::string GenerateKeyHash(const MetadataEntry& metadata_entry);
+}
 
 }  // namespace tpcd::metadata
 

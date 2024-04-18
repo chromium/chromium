@@ -7066,6 +7066,7 @@ test("unit_tests") {
     "//components/tab_groups",
     "//components/tpcd/metadata",
     "//components/tpcd/metadata:metadata_proto",
+    "//components/tpcd/metadata:prefs",
     "//components/tpcd/metadata:test_support",
     "//components/tracing:background_tracing_utils",
     "//components/tracing:startup_tracing",
