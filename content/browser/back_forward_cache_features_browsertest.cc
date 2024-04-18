@@ -2205,7 +2205,7 @@ class BackForwardCacheBrowserTestWithJavaScriptDetails
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(
-        blink::features::kRegisterJSSourceLocationBlockingBFCache, "", "true");
+        blink::features::kRegisterJSSourceLocationBlockingBFCache, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };
@@ -2471,6 +2471,66 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
   EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
               testing::UnorderedElementsAre(MatchesBlockingDetails(
                   MatchesSourceLocation(url_a, "", 18, 15))));
+}
+
+// Test that details for sticky feature are captured.
+// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_StickyFeaturesWithDetails DISABLED_StickyFeaturesWithDetails
+#else
+#define MAYBE_StickyFeaturesWithDetails StickyFeaturesWithDetails
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
+                       MAYBE_StickyFeaturesWithDetails) {
+  net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
+                                   net::GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(ws_server.Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a_no_store(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to `url_a_no_store`.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a_no_store));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // Call this to access tree result later.
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
+
+  // Open a WebSocket.
+  const char script[] = R"(
+      new Promise(resolve => {
+        const socket = new WebSocket($1);
+        socket.addEventListener('open', () => resolve());
+      });)";
+  ASSERT_TRUE(
+      ExecJs(rfh_a.get(),
+             JsReplace(script, ws_server.GetURL("echo-with-no-extension"))));
+
+  // 3) Navigate away to `url_b`.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 4) Go back to `url_a`.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebSocket,
+       blink::scheduler::WebSchedulerTrackedFeature::
+           kMainResourceHasCacheControlNoStore,
+       blink::scheduler::WebSchedulerTrackedFeature::kWebSocketSticky},
+      {}, {}, {}, FROM_HERE);
+  auto& map = GetTreeResult()->GetBlockingDetailsMap();
+  EXPECT_EQ(static_cast<int>(map.size()), 3);
+  EXPECT_TRUE(
+      map.contains(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket));
+  EXPECT_TRUE(map.contains(
+      blink::scheduler::WebSchedulerTrackedFeature::kWebSocketSticky));
+  EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
+              testing::UnorderedElementsAre(MatchesBlockingDetails(
+                  MatchesSourceLocation(GURL::EmptyGURL(), "", 3, 24))));
+  EXPECT_THAT(
+      map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocketSticky),
+      testing::UnorderedElementsAre(MatchesBlockingDetails(
+          MatchesSourceLocation(GURL::EmptyGURL(), "", 3, 24))));
 }
 
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.

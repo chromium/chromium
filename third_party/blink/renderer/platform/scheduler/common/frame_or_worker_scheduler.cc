@@ -109,12 +109,11 @@ void FrameOrWorkerScheduler::RegisterStickyFeature(
     SchedulingPolicy::Feature feature,
     SchedulingPolicy policy) {
   DCHECK(scheduler::IsFeatureSticky(feature));
-  if (IsRegisterJSSourceLocationBlockingBFCache()) {
+  if (IsRegisterJSSourceLocationBlockingBFCache() &&
+      v8::Isolate::TryGetCurrent()) {
     // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
     // is running.
-    if (v8::Isolate::TryGetCurrent()) {
-      OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());
-    }
+    OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());
   } else {
     OnStartedUsingStickyFeature(feature, policy, nullptr);
   }
