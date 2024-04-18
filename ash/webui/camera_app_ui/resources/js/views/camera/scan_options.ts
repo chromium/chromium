@@ -183,6 +183,7 @@ export class ScanOptions implements CameraUI {
 
     if (state.get(Mode.SCAN) && scanType === ScanType.DOCUMENT) {
       await this.documentCornerOverlay.start();
+      state.set(state.State.ENABLE_SCAN_DOCUMENT, true);
     } else {
       this.documentCornerOverlay.stop();
     }

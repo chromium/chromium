@@ -22,6 +22,7 @@ export enum State {
   ENABLE_GIF_RECORDING = 'enable-gif-recording',
   ENABLE_PTZ = 'enable-ptz',
   ENABLE_SCAN_BARCODE = 'enable-scan-barcode',
+  ENABLE_SCAN_DOCUMENT = 'enable-scan-document',
   FPS_30 = 'fps-30',
   FPS_60 = 'fps-60',
   GRID = 'grid',

@@ -79,7 +79,7 @@ class MemoryMeasurementHelper {
       if (state.get(Mode.SCAN)) {
         if (state.get(state.State.ENABLE_SCAN_BARCODE)) {
           this.measureWithSessionBehavior(SessionBehavior.SCAN_BARCODE);
-        } else {
+        } else if (state.get(state.State.ENABLE_SCAN_DOCUMENT)) {
           this.measureWithSessionBehavior(SessionBehavior.SCAN_DOCUMENT);
         }
       }
@@ -87,6 +87,7 @@ class MemoryMeasurementHelper {
 
     state.addEnabledStateObserver(Mode.SCAN, observeScanBehavior);
     state.addObserver(state.State.ENABLE_SCAN_BARCODE, observeScanBehavior);
+    state.addObserver(state.State.ENABLE_SCAN_DOCUMENT, observeScanBehavior);
 
     state.addEnabledStateObserver(state.State.RECORDING, () => {
       if (state.get(state.State.RECORD_TYPE_NORMAL)) {
