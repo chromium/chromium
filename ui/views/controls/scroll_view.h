@@ -226,7 +226,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
       ScrollViewCallback callback);
 
   // View overrides:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize() const final;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
   int GetHeightForWidth(int width) const override;
   void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;

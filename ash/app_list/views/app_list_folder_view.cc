@@ -626,8 +626,9 @@ class ScrollViewWithMaxHeight : public views::ScrollView {
   ~ScrollViewWithMaxHeight() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size size = views::ScrollView::CalculatePreferredSize();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size size = views::ScrollView::CalculatePreferredSize(available_size);
     const int tile_height =
         folder_view_->items_grid_view()->GetTotalTileSize(/*page=*/0).height();
     // Show a maximum of 4 full rows, plus a little bit of the next row to make

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -619,7 +620,13 @@ base::CallbackListSubscription ScrollView::AddContentsScrollEndedCallback(
 }
 
 gfx::Size ScrollView::CalculatePreferredSize() const {
-  gfx::Size size = contents_ ? contents_->GetPreferredSize({}) : gfx::Size();
+  NOTREACHED_NORETURN();
+}
+
+gfx::Size ScrollView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size =
+      contents_ ? contents_->GetPreferredSize(available_size) : gfx::Size();
   if (is_bounded()) {
     size.SetToMax(gfx::Size(size.width(), min_height_));
     size.SetToMin(gfx::Size(size.width(), max_height_));

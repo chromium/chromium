@@ -119,7 +119,8 @@ class PaginationTestScrollView : public views::ScrollView,
   ~PaginationTestScrollView() override = default;
 
   // views::ScrollView:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kPageWidth, kPageHeight);
   }
 

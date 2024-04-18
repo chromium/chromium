@@ -41,7 +41,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
   void OnOverflowIndicatorVisibilityChanged(bool is_visible);
 
   // AnimatedContainerView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   int GetHeightForWidth(int width) const override;
   gfx::Size GetMinimumSize() const override;
   void Layout(PassKey) override;
