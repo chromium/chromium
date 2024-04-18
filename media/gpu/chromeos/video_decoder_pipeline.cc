@@ -630,6 +630,11 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   estimated_num_buffers_for_renderer_ =
       EstimateRequiredRendererPipelineBuffers(low_delay);
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+  decryption_needs_vp9_superframe_splitting_ =
+      config.codec() == VideoCodec::kVP9;
+#endif
+
 #if BUILDFLAG(USE_VAAPI)
   if (ignore_resolution_changes_to_smaller_for_testing_) {
     static_cast<VaapiVideoDecoder*>(decoder_.get())
@@ -687,7 +692,7 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
     } else {
       // We need to enable transcryption for protected content.
       buffer_transcryptor_ = std::make_unique<DecoderBufferTranscryptor>(
-          cdm_context, *decoder_,
+          cdm_context, *decoder_, decryption_needs_vp9_superframe_splitting_,
           base::BindRepeating(&VideoDecoderPipeline::OnBufferTranscrypted,
                               decoder_weak_this_),
           base::BindRepeating(&VideoDecoderPipeline::OnDecoderWaiting,

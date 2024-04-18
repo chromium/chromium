@@ -483,6 +483,11 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // See VP9Decoder for information on this.
   bool ignore_resolution_changes_to_smaller_for_testing_ = false;
 
+  // If we will need to tell the DecoderBufferTranscryptor to do VP9 superframe
+  // splitting.
+  bool decryption_needs_vp9_superframe_splitting_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_) = false;
+
   base::WeakPtr<VideoDecoderPipeline> decoder_weak_this_;
   // The weak pointer of this, bound to |decoder_task_runner_|.
   base::WeakPtrFactory<VideoDecoderPipeline> decoder_weak_this_factory_{this};

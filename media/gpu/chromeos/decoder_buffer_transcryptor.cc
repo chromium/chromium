@@ -8,6 +8,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
+#include "media/filters/vp9_parser.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 
 namespace media {
@@ -24,11 +25,13 @@ DecoderBufferTranscryptor::TranscryptTask::TranscryptTask(TranscryptTask&&) =
 DecoderBufferTranscryptor::DecoderBufferTranscryptor(
     CdmContext* cdm_context,
     VideoDecoderMixin& decoder,
+    bool needs_vp9_superframe_splitting,
     OnBufferTranscryptedCB transcrypt_callback,
     WaitingCB waiting_callback)
     : decoder_(decoder),
       transcrypt_callback_(std::move(transcrypt_callback)),
-      waiting_callback_(std::move(waiting_callback)) {
+      waiting_callback_(std::move(waiting_callback)),
+      needs_vp9_superframe_splitting_(needs_vp9_superframe_splitting) {
   weak_this_ = weak_this_factory_.GetWeakPtr();
 
   DCHECK(cdm_context);
@@ -56,7 +59,7 @@ void DecoderBufferTranscryptor::EnqueueBuffer(
     scoped_refptr<DecoderBuffer> buffer,
     VideoDecoder::DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  transcrypt_task_queue_.emplace(std::move(buffer), std::move(decode_cb));
+  transcrypt_task_queue_.emplace_back(std::move(buffer), std::move(decode_cb));
   DecryptPendingBuffer();
 }
 
@@ -69,7 +72,7 @@ void DecoderBufferTranscryptor::Reset(DecoderStatus status) {
 
   while (!transcrypt_task_queue_.empty()) {
     std::move(transcrypt_task_queue_.front().decode_done_cb).Run(status);
-    transcrypt_task_queue_.pop();
+    transcrypt_task_queue_.pop_front();
   }
 }
 
@@ -93,17 +96,85 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
     if (transcrypt_task_queue_.empty())
       return;
     current_transcrypt_task_ = std::move(transcrypt_task_queue_.front());
-    transcrypt_task_queue_.pop();
+    transcrypt_task_queue_.pop_front();
   }
 
-  if (current_transcrypt_task_->buffer->end_of_stream()) {
+  DecoderBuffer* curr_buffer = current_transcrypt_task_->buffer.get();
+  if (curr_buffer->end_of_stream()) {
     OnBufferTranscrypted(Decryptor::kSuccess, current_transcrypt_task_->buffer);
     return;
   }
 
+  // Check if we need to split VP9 superframes.
+  if (needs_vp9_superframe_splitting_ &&
+      Vp9Parser::IsSuperframe(curr_buffer->data(),
+                              base::checked_cast<off_t>(curr_buffer->size()),
+                              curr_buffer->decrypt_config())) {
+    base::circular_deque<Vp9Parser::FrameInfo> frames =
+        Vp9Parser::ExtractFrames(curr_buffer->data(),
+                                 base::checked_cast<off_t>(curr_buffer->size()),
+                                 curr_buffer->decrypt_config());
+    if (frames.empty()) {
+      LOG(ERROR) << "Failure in Vp9 superframe splitting";
+      OnBufferTranscrypted(Decryptor::kError, nullptr);
+      return;
+    }
+
+    // Save the original DecoderBuffer for the rest of our operations that has
+    // the whole superframe to keep its data valid until we are done and also to
+    // use for metadata reference.
+    scoped_refptr<DecoderBuffer> superframe =
+        std::move(current_transcrypt_task_->buffer);
+
+    // Put the first frame in place of the |current_transcrypt_task_|'s buffer,
+    // then add the rest to the queue.
+    current_transcrypt_task_->buffer = DecoderBuffer::CopyFrom(
+        frames.front().ptr, base::checked_cast<size_t>(frames.front().size));
+    curr_buffer = current_transcrypt_task_->buffer.get();
+
+    // We only copy this limited set of fields to match what we do in the
+    // corresponding Decryptor implementation in:
+    // chromeos::ContentDecryptionModuleAdapter::OnDecrypt
+    current_transcrypt_task_->buffer->set_timestamp(superframe->timestamp());
+    current_transcrypt_task_->buffer->set_duration(superframe->duration());
+    current_transcrypt_task_->buffer->set_is_key_frame(
+        superframe->is_key_frame());
+    current_transcrypt_task_->buffer->set_side_data(superframe->side_data());
+    if (frames.front().decrypt_config) {
+      current_transcrypt_task_->buffer->set_decrypt_config(
+          std::move(frames.front().decrypt_config));
+    }
+    frames.pop_front();
+
+    // The last one in the queue should have the decode done callback and the
+    // rest should be DoNothing.
+    VideoDecoder::DecodeCB next_decode_done_cb;
+    if (!frames.empty()) {
+      next_decode_done_cb = std::move(current_transcrypt_task_->decode_done_cb);
+      current_transcrypt_task_->decode_done_cb = base::DoNothing();
+    }
+    while (!frames.empty()) {
+      // The |frames| are in decode order, so we take from the back of |frames|
+      // and append to the front of |transcrypt_task_queue_|.
+      scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(
+          frames.back().ptr, base::checked_cast<size_t>(frames.back().size));
+      buffer->set_timestamp(superframe->timestamp());
+      buffer->set_duration(superframe->duration());
+      buffer->set_is_key_frame(superframe->is_key_frame());
+      buffer->set_side_data(superframe->side_data());
+      if (frames.back().decrypt_config) {
+        buffer->set_decrypt_config(std::move(frames.back().decrypt_config));
+      }
+      frames.pop_back();
+      transcrypt_task_queue_.emplace_front(std::move(buffer),
+                                           std::move(next_decode_done_cb));
+      next_decode_done_cb = base::DoNothing();
+    }
+  }
+
   // If we've already attached a secure buffer, don't do it again.
-  if (!current_transcrypt_task_->buffer->has_side_data() ||
-      !current_transcrypt_task_->buffer->side_data()->secure_handle) {
+  if (!curr_buffer->has_side_data() ||
+      !curr_buffer->side_data()->secure_handle) {
     auto status =
         decoder_->AttachSecureBuffer(current_transcrypt_task_->buffer);
     if (status == CroStatus::Codes::kSecureBufferPoolEmpty) {
@@ -116,14 +187,14 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
       return;
     }
 
-    if (current_transcrypt_task_->buffer->has_side_data() &&
-        current_transcrypt_task_->buffer->side_data()->secure_handle) {
+    if (curr_buffer->has_side_data() &&
+        curr_buffer->side_data()->secure_handle) {
       // Wrap the callback so we can release the secure buffer when decoding is
       // done.
-      current_transcrypt_task_->decode_done_cb = base::BindOnce(
-          &DecoderBufferTranscryptor::OnSecureBufferRelease, weak_this_,
-          current_transcrypt_task_->buffer->side_data()->secure_handle,
-          std::move(current_transcrypt_task_->decode_done_cb));
+      current_transcrypt_task_->decode_done_cb =
+          base::BindOnce(&DecoderBufferTranscryptor::OnSecureBufferRelease,
+                         weak_this_, curr_buffer->side_data()->secure_handle,
+                         std::move(current_transcrypt_task_->decode_done_cb));
     }
   }
   transcrypt_pending_ = true;
