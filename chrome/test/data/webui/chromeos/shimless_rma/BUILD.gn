@@ -38,7 +38,7 @@ build_webui_tests("build_webui_tests") {
     "reimaging_provisioning_page_test.js",
     "repair_component_chip_test.js",
     "shimless_3p_diag_test.js",
-    "shimless_rma_app_test.js",
+    "shimless_rma_app_test.ts",
     "wrapup_finalize_page_test.js",
     "wrapup_repair_complete_page_test.js",
     "wrapup_restock_page_test.ts",

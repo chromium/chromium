@@ -144,6 +144,10 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, DeviceInformationPage) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, ShimlessRmaAppPage) {
+  RunTest("chromeos/shimless_rma/shimless_rma_app_test.js", "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash

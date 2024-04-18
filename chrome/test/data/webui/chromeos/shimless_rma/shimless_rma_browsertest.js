@@ -36,7 +36,6 @@ const tests = [
   ['ReimagingProvisioningPageTest', 'reimaging_provisioning_page_test.js'],
   ['RepairComponentChipTest', 'repair_component_chip_test.js'],
   ['Shimless3pDiagTest', 'shimless_3p_diag_test.js'],
-  ['ShimlessRMAAppTest', 'shimless_rma_app_test.js'],
   ['WrapupFinalizePageTest', 'wrapup_finalize_page_test.js'],
   ['WrapupRepairCompletePageTest', 'wrapup_repair_complete_page_test.js'],
   [
