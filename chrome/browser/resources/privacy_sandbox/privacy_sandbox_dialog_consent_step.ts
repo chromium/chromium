@@ -10,7 +10,6 @@ import './strings.m.js';
 import './shared_style.css.js';
 import './privacy_sandbox_dialog_learn_more.js';
 
-import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
@@ -18,7 +17,7 @@ import {getTemplate} from './privacy_sandbox_dialog_consent_step.html.js';
 import {PrivacySandboxDialogMixin} from './privacy_sandbox_dialog_mixin.js';
 
 const PrivacySandboxDialogConsentStepElementBase =
-    CrScrollableMixin(PrivacySandboxDialogMixin(PolymerElement));
+    PrivacySandboxDialogMixin(PolymerElement);
 
 export class PrivacySandboxDialogConsentStepElement extends
     PrivacySandboxDialogConsentStepElementBase {

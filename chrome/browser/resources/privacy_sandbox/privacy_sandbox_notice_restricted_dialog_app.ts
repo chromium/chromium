@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shared_style.css.js';
 
-import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
@@ -16,8 +15,8 @@ import {PrivacySandboxDialogMixin} from './privacy_sandbox_dialog_mixin.js';
 import {PrivacySandboxDialogResizeMixin} from './privacy_sandbox_dialog_resize_mixin.js';
 import {getTemplate} from './privacy_sandbox_notice_restricted_dialog_app.html.js';
 
-const PrivacySandboxNoticeRestrictedDialogAppElementBase = CrScrollableMixin(
-    PrivacySandboxDialogMixin(PrivacySandboxDialogResizeMixin(PolymerElement)));
+const PrivacySandboxNoticeRestrictedDialogAppElementBase =
+    PrivacySandboxDialogMixin(PrivacySandboxDialogResizeMixin(PolymerElement));
 
 export class PrivacySandboxNoticeRestrictedDialogAppElement extends
     PrivacySandboxNoticeRestrictedDialogAppElementBase {

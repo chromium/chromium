@@ -10,7 +10,6 @@ import './shared_style.css.js';
 import './privacy_sandbox_dialog_consent_step.js';
 import './privacy_sandbox_dialog_notice_step.js';
 
-import type {CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,8 +31,7 @@ export interface PrivacySandboxCombinedDialogAppElement {
   };
 }
 
-type PrivacySandboxStepElement =
-    CrScrollableMixinInterface&PrivacySandboxDialogMixinInterface;
+type PrivacySandboxStepElement = PrivacySandboxDialogMixinInterface;
 
 const PrivacySandboxCombinedDialogAppElementBase =
     PrivacySandboxDialogResizeMixin(PolymerElement);

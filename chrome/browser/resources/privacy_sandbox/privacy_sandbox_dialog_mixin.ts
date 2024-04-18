@@ -114,6 +114,16 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
           }
         }
 
+        updateScrollableContents() {
+          requestAnimationFrame(() => {
+            const scrollable =
+                this.shadowRoot!.querySelector<HTMLElement>('[scrollable]')!;
+            scrollable.classList.toggle(
+                'can-scroll',
+                scrollable.clientHeight < scrollable.scrollHeight);
+          });
+        }
+
         // Checks if #lastTextElement is in the viewport of the [scrollable]
         // element. |wasScrolledToBottom| represents if the content was fully
         // shown at least once.
@@ -213,4 +223,5 @@ export interface PrivacySandboxDialogMixinInterface {
   maybeShowMoreButton(): Promise<void>;
   whenWasScrolledToBottomForTest(): Promise<void>;
   promptActionOccurred(action: PrivacySandboxPromptAction): void;
+  updateScrollableContents(): void;
 }
