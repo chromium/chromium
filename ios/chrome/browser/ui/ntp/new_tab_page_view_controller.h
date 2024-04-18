@@ -85,6 +85,9 @@
 // Layout guide for NTP modules.
 @property(nonatomic, readonly) UILayoutGuide* moduleLayoutGuide;
 
+// `YES` if the NTP is currently visible.
+@property(nonatomic, assign) BOOL NTPVisible;
+
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

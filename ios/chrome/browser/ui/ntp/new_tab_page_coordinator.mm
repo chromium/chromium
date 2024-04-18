@@ -455,19 +455,11 @@
 }
 
 - (void)locationBarWillResignFirstResponder {
-  // Do not trigger defocus animation if the user is already navigating away
-  // from the NTP.
-  if (self.visible) {
-    [self.NTPViewController omniboxWillResignFirstResponder];
-  }
+  [self.NTPViewController omniboxWillResignFirstResponder];
 }
 
 - (void)locationBarDidResignFirstResponder {
-  // Do not trigger defocus animation if the user is already navigating away
-  // from the NTP.
-  if (self.visible) {
-    [self.NTPViewController omniboxDidResignFirstResponder];
-  }
+  [self.NTPViewController omniboxDidResignFirstResponder];
 }
 
 - (void)constrainFeedHeaderManagementButtonNamedGuide {
@@ -1568,6 +1560,7 @@
   CHECK(self.webState);
 
   self.visible = visible;
+  self.NTPViewController.NTPVisible = visible;
 
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     if (visible) {

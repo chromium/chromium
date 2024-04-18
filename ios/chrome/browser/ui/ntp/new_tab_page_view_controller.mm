@@ -789,8 +789,12 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     return;
   }
 
-  self.headerViewController.view.alpha = 1;
-  [self shiftTilesDownForOmniboxDefocus];
+  // Do not trigger defocus animation if the user is already navigating away
+  // from the NTP.
+  if (self.NTPVisible) {
+    self.headerViewController.view.alpha = 1;
+    [self shiftTilesDownForOmniboxDefocus];
+  }
 }
 
 #pragma mark - UIScrollViewDelegate
