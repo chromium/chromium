@@ -409,8 +409,7 @@ class TestPrintPreviewHandlerForContentAnalysis
                            base::Value::Dict settings,
                            scoped_refptr<base::RefCountedMemory> data,
                            const std::string& callback_id) override {
-    ASSERT_EQ(base::StringPiece(data->front_as<const char>(), data->size()),
-              kTestData);
+    ASSERT_EQ(base::as_string_view(*data), kTestData);
     print_called_after_scan_ = true;
     PrintPreviewHandler::FinishHandleDoPrint(user_action, std::move(settings),
                                              data, callback_id);

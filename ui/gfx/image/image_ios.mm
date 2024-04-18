@@ -109,8 +109,8 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromUIImage(
 
   scoped_refptr<base::RefCountedBytes> png_bytes(
       new base::RefCountedBytes());
-  png_bytes->data().resize(data.length);
-  [data getBytes:&png_bytes->data().at(0) length:data.length];
+  png_bytes->as_vector().resize(data.length);
+  [data getBytes:&png_bytes->as_vector().at(0) length:data.length];
   return png_bytes;
 }
 

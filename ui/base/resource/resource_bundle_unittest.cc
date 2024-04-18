@@ -432,20 +432,17 @@ TEST_F(ResourceBundleImageTest, LoadDataResourceBytes) {
   // Test normal uncompressed data.
   scoped_refptr<base::RefCountedMemory> resource =
       resource_bundle->LoadDataResourceBytes(4);
-  EXPECT_EQ("this is id 4",
-            std::string(resource->front_as<char>(), resource->size()));
+  EXPECT_EQ("this is id 4", base::as_string_view(*resource));
 
   // Test the brotli data.
   scoped_refptr<base::RefCountedMemory> brotli_resource =
       resource_bundle->LoadDataResourceBytes(6);
-  EXPECT_EQ("this is id 6", std::string(brotli_resource->front_as<char>(),
-                                        brotli_resource->size()));
+  EXPECT_EQ("this is id 6", base::as_string_view(*brotli_resource));
 
   // Test the gzipped data.
   scoped_refptr<base::RefCountedMemory> gzip_resource =
       resource_bundle->LoadDataResourceBytes(8);
-  EXPECT_EQ("this is id 8", std::string(gzip_resource->front_as<char>(),
-                                        gzip_resource->size()));
+  EXPECT_EQ("this is id 8", base::as_string_view(*gzip_resource));
 }
 
 // Verify that we don't crash when trying to load a resource that is not found.

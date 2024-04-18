@@ -12,7 +12,7 @@ namespace mojo {
 mojo_base::BigBuffer StructTraits<mojo_base::mojom::RefCountedMemoryDataView,
                                   scoped_refptr<base::RefCountedMemory>>::
     data(const scoped_refptr<base::RefCountedMemory>& in) {
-  return mojo_base::BigBuffer(base::make_span(in->front(), in->size()));
+  return mojo_base::BigBuffer(base::span(*in));
 }
 
 // static

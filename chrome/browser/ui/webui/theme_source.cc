@@ -73,7 +73,7 @@ void ProcessImageOnUiThread(const gfx::ImageSkia& image,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const gfx::ImageSkiaRep& rep = image.GetRepresentation(scale);
   gfx::PNGCodec::EncodeBGRASkBitmap(
-      rep.GetBitmap(), false /* discard transparency */, &data->data());
+      rep.GetBitmap(), false /* discard transparency */, &data->as_vector());
 }
 
 }  // namespace

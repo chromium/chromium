@@ -47,7 +47,7 @@ namespace {
 scoped_refptr<base::RefCountedBytes> EncodeImage(const gfx::ImageSkia& image) {
   auto output = base::MakeRefCounted<base::RefCountedBytes>();
   SkBitmap bitmap = *(image.bitmap());
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/90, &(output)->data());
+  gfx::JPEGCodec::Encode(bitmap, /*quality=*/90, &(output)->as_vector());
   return output;
 }
 

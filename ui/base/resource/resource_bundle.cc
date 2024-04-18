@@ -687,7 +687,7 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
 
   if (HasGzipHeader(data) || HasBrotliHeader(data)) {
     base::RefCountedString* bytes_string = new base::RefCountedString();
-    DecompressIfNeeded(data, &(bytes_string->data()));
+    DecompressIfNeeded(data, &bytes_string->as_string());
     return bytes_string;
   }
 
@@ -1102,14 +1102,15 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
   if (!memory.get())
     return false;
 
-  if (DecodePNG(memory->front(), memory->size(), bitmap, fell_back_to_1x))
+  if (DecodePNG(memory->data(), memory->size(), bitmap, fell_back_to_1x)) {
     return true;
+  }
 
 #if !BUILDFLAG(IS_IOS)
   // iOS does not compile or use the JPEG codec.  On other platforms,
   // 99% of our assets are PNGs, however fallback to JPEG.
   std::unique_ptr<SkBitmap> jpeg_bitmap(
-      gfx::JPEGCodec::Decode(memory->front(), memory->size()));
+      gfx::JPEGCodec::Decode(memory->data(), memory->size()));
   if (jpeg_bitmap.get()) {
     bitmap->swap(*jpeg_bitmap.get());
     *fell_back_to_1x = false;

@@ -19,10 +19,10 @@ namespace x11 {
 
 Event::Event() = default;
 
-Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
+Event::Event(scoped_refptr<UnsizedRefCountedMemory> event_bytes,
              Connection* connection) {
-  auto* xcb_event = reinterpret_cast<xcb_generic_event_t*>(
-      const_cast<uint8_t*>(event_bytes->data()));
+  auto* xcb_event =
+      reinterpret_cast<xcb_generic_event_t*>(event_bytes->bytes());
   uint8_t response_type = xcb_event->response_type & ~kSendEventMask;
   if (xcb_event->response_type & kSendEventMask) {
     send_event_ = true;
@@ -38,7 +38,7 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
     const size_t extended_length = ge->length * 4;
     memmove(&ge->full_sequence, &ge[1], extended_length);
   }
-  connection->GetEventTypeAndOp(event_bytes->data(), &type_id_, &opcode_);
+  connection->GetEventTypeAndOp(event_bytes->bytes(), &type_id_, &opcode_);
   if (type_id_) {
     raw_event_ = event_bytes;
   }

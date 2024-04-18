@@ -81,7 +81,7 @@ uint64_t WebBundleChunkedBuffer::Chunk::size() const {
 }
 
 const uint8_t* WebBundleChunkedBuffer::Chunk::data() const {
-  return bytes_->data().data();
+  return bytes_->data();
 }
 
 WebBundleChunkedBuffer::WebBundleChunkedBuffer() = default;

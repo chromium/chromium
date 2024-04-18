@@ -43,7 +43,7 @@ void HandleTestFileRequestCallback(
       &contents));
 
   base::RefCountedString* ref_contents = new base::RefCountedString();
-  ref_contents->data() = contents;
+  ref_contents->as_string() = contents;
   std::move(callback).Run(ref_contents);
 }
 

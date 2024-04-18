@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -23,56 +24,76 @@ class ReadOnlySharedMemoryRegion;
 // A generic interface to memory. This object is reference counted because most
 // of its subclasses own the data they carry, and this interface needs to
 // support heterogeneous containers of these different types of memory.
+//
+// The RefCountedMemory class provides a const view of the data it holds, as it
+// does not require all subclassing implementations to hold mutable data. If a
+// mutable view is required, the code must maintain awareness of the subclass
+// type, and can access it through there, such as:
+// - RefCountedBytes provides `as_vector()` to give mutable access to its data.
+// - RefCountedString provides `as_string()` to give mutable access to its data.
 class BASE_EXPORT RefCountedMemory
     : public RefCountedThreadSafe<RefCountedMemory> {
  public:
-  // Retrieves a pointer to the beginning of the data we point to. If the data
-  // is empty, this will return NULL.
-  virtual const unsigned char* front() const = 0;
-
-  // Size of the memory pointed to.
-  virtual size_t size() const = 0;
-
-  // Returns true if |other| is byte for byte equal.
+  // Returns true if `other` is byte for byte equal.
   bool Equals(const scoped_refptr<RefCountedMemory>& other) const;
 
-  // Handy method to simplify calling front() with a reinterpret_cast.
-  template<typename T> const T* front_as() const {
-    return reinterpret_cast<const T*>(front());
+  // Allow explicit conversion to `base::span<const uint8_t>`. Use a span to
+  // access the data in a safe way, rather than calling `data()` explicitly.
+  //
+  // Example:
+  // ```
+  // auto data = base::MakeRefCounted<base::RefCountedBytes>(
+  //     std::vector<uint8_t>{1, 2, 3});
+  // base::span<const uint8_t> v = base::span(data);
+  // v[2] = uint8_t{4};
+  // ```
+  const uint8_t* data() const LIFETIME_BOUND { return AsSpan().data(); }
+  size_t size() const { return AsSpan().size(); }
+
+  using iterator = base::span<const uint8_t>::iterator;
+  iterator begin() const LIFETIME_BOUND { return AsSpan().begin(); }
+  iterator end() const LIFETIME_BOUND { return AsSpan().end(); }
+
+  // TODO(danakj): Remove all callers and remove this.
+  const uint8_t* front() const LIFETIME_BOUND { return AsSpan().data(); }
+
+  // The data/size members (or begin/end) give conversion to span already, but
+  // we provide this operator as an optimization to combine two virtual method
+  // calls into one.
+  explicit operator base::span<const uint8_t>() const LIFETIME_BOUND {
+    return AsSpan();
   }
-
-  const unsigned char* data() const { return front(); }
-
-  const unsigned char* begin() const { return data(); }
-  const unsigned char* end() const { return data() + size(); }
 
  protected:
   friend class RefCountedThreadSafe<RefCountedMemory>;
   RefCountedMemory();
   virtual ~RefCountedMemory();
+
+  virtual base::span<const uint8_t> AsSpan() const LIFETIME_BOUND = 0;
 };
 
-// An implementation of RefCountedMemory, where the ref counting does not
-// matter.
+// An implementation of RefCountedMemory, for pointing to memory with a static
+// lifetime. Since the memory exists for the life of the program, the class can
+// not and does not need to take ownership of it.
 class BASE_EXPORT RefCountedStaticMemory : public RefCountedMemory {
  public:
-  RefCountedStaticMemory() : data_(nullptr), length_(0) {}
+  RefCountedStaticMemory();
+  explicit RefCountedStaticMemory(base::span<const uint8_t> bytes);
+
+  // TODO(crbug.com/40284755): Remove this overload, use the span ctor instead.
   RefCountedStaticMemory(const void* data, size_t length)
-      : data_(static_cast<const unsigned char*>(length ? data : nullptr)),
-        length_(length) {}
+      : UNSAFE_BUFFERS(bytes_(static_cast<const uint8_t*>(data), length)) {}
 
   RefCountedStaticMemory(const RefCountedStaticMemory&) = delete;
   RefCountedStaticMemory& operator=(const RefCountedStaticMemory&) = delete;
 
-  // RefCountedMemory:
-  const unsigned char* front() const override;
-  size_t size() const override;
-
  private:
   ~RefCountedStaticMemory() override;
 
-  const unsigned char* data_;
-  size_t length_;
+  // RefCountedMemory:
+  base::span<const uint8_t> AsSpan() const LIFETIME_BOUND override;
+
+  base::span<const uint8_t> bytes_;
 };
 
 // An implementation of RefCountedMemory, where the data is stored in a STL
@@ -82,11 +103,13 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
   RefCountedBytes();
 
   // Constructs a RefCountedBytes object by copying from |initializer|.
-  explicit RefCountedBytes(const std::vector<unsigned char>& initializer);
-  explicit RefCountedBytes(base::span<const unsigned char> initializer);
+  explicit RefCountedBytes(std::vector<uint8_t> initializer);
+  explicit RefCountedBytes(base::span<const uint8_t> initializer);
 
   // Constructs a RefCountedBytes object by copying |size| bytes from |p|.
-  RefCountedBytes(const unsigned char* p, size_t size);
+  //
+  // TODO(crbug.com/40284755): Remove this overload, use the span ctor instead.
+  RefCountedBytes(const uint8_t* p, size_t size);
 
   // Constructs a RefCountedBytes object by zero-initializing a new vector of
   // |size| bytes.
@@ -98,28 +121,22 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
   // Constructs a RefCountedBytes object by performing a swap. (To non
   // destructively build a RefCountedBytes, use the constructor that takes a
   // vector.)
+  //
+  // TODO(danakj): This can be removed, as callers can now move() the vector to
+  // the ctor instead.
   static scoped_refptr<RefCountedBytes> TakeVector(
-      std::vector<unsigned char>* to_destroy);
+      std::vector<uint8_t>* to_destroy);
 
-  // RefCountedMemory:
-  const unsigned char* front() const override;
-  size_t size() const override;
-
-  const std::vector<unsigned char>& data() const { return data_; }
-  std::vector<unsigned char>& data() { return data_; }
-
-  // Non-const versions of front() and front_as() that are simply shorthand for
-  // data().data().
-  unsigned char* front() { return data_.data(); }
-  template <typename T>
-  T* front_as() {
-    return reinterpret_cast<T*>(front());
-  }
+  const std::vector<uint8_t>& as_vector() const { return bytes_; }
+  std::vector<uint8_t>& as_vector() { return bytes_; }
 
  private:
   ~RefCountedBytes() override;
 
-  std::vector<unsigned char> data_;
+  // RefCountedMemory:
+  base::span<const uint8_t> AsSpan() const LIFETIME_BOUND override;
+
+  std::vector<uint8_t> bytes_;
 };
 
 // An implementation of RefCountedMemory, where the bytes are stored in a STL
@@ -132,17 +149,16 @@ class BASE_EXPORT RefCountedString : public RefCountedMemory {
   RefCountedString(const RefCountedString&) = delete;
   RefCountedString& operator=(const RefCountedString&) = delete;
 
-  // RefCountedMemory:
-  const unsigned char* front() const override;
-  size_t size() const override;
-
-  const std::string& data() const { return data_; }
-  std::string& data() { return data_; }
+  const std::string& as_string() const { return string_; }
+  std::string& as_string() { return string_; }
 
  private:
   ~RefCountedString() override;
 
-  std::string data_;
+  // RefCountedMemory:
+  base::span<const uint8_t> AsSpan() const LIFETIME_BOUND override;
+
+  std::string string_;
 };
 
 // An implementation of RefCountedMemory, where the bytes are stored in a
@@ -155,15 +171,16 @@ class BASE_EXPORT RefCountedString16 : public base::RefCountedMemory {
   RefCountedString16(const RefCountedString16&) = delete;
   RefCountedString16& operator=(const RefCountedString16&) = delete;
 
-  // RefCountedMemory:
-  const unsigned char* front() const override;
-  size_t size() const override;
-
- protected:
-  ~RefCountedString16() override;
+  const std::u16string& as_string() const { return string_; }
+  std::u16string& as_string() { return string_; }
 
  private:
-  std::u16string data_;
+  ~RefCountedString16() override;
+
+  // RefCountedMemory:
+  base::span<const uint8_t> AsSpan() const LIFETIME_BOUND override;
+
+  std::u16string string_;
 };
 
 // An implementation of RefCountedMemory, where the bytes are stored in
@@ -178,20 +195,18 @@ class BASE_EXPORT RefCountedSharedMemoryMapping : public RefCountedMemory {
   RefCountedSharedMemoryMapping& operator=(
       const RefCountedSharedMemoryMapping&) = delete;
 
-  // Convenience method to map all of |region| and take ownership of the
-  // mapping. Returns an empty scoped_refptr if the map operation fails.
+  // Convenience method to map all of `region` and take ownership of the
+  // mapping. Returns a null `scoped_refptr` if the map operation fails.
   static scoped_refptr<RefCountedSharedMemoryMapping> CreateFromWholeRegion(
       const ReadOnlySharedMemoryRegion& region);
-
-  // RefCountedMemory:
-  const unsigned char* front() const override;
-  size_t size() const override;
 
  private:
   ~RefCountedSharedMemoryMapping() override;
 
+  // RefCountedMemory:
+  base::span<const uint8_t> AsSpan() const LIFETIME_BOUND override;
+
   const ReadOnlySharedMemoryMapping mapping_;
-  const size_t size_;
 };
 
 }  // namespace base

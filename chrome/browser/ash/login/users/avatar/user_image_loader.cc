@@ -297,7 +297,7 @@ void OnAnimationDecoded(
               auto encoded = base::MakeRefCounted<base::RefCountedBytes>();
               if (!gfx::PNGCodec::EncodeBGRASkBitmap(
                       bitmap, /*discard_transparency=*/false,
-                      &encoded->data())) {
+                      &encoded->as_vector())) {
                 return std::make_unique<user_manager::UserImage>();
               }
 

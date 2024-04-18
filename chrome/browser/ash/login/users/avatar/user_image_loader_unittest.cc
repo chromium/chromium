@@ -60,8 +60,9 @@ TEST_F(UserImageLoaderTest, StartWithFilePathAnimated) {
       task_environment_.GetMainThreadTaskRunner(), image_path,
       base::BindLambdaForTesting(
           [&](std::unique_ptr<user_manager::UserImage> user_image) {
-            auto data = user_image->image_bytes()->data();
-            EXPECT_EQ(original_contents, std::string(data.begin(), data.end()));
+            EXPECT_EQ(
+                original_contents,
+                std::string(base::as_string_view(*user_image->image_bytes())));
             EXPECT_EQ(user_manager::UserImage::FORMAT_WEBP,
                       user_image->image_format());
             EXPECT_EQ(16, user_image->image().width());

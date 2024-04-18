@@ -208,7 +208,7 @@ void XServerClipboard::OnSelectionNotify(
         large_selection_property_ = x11::Atom::None;
         if (reply->type != x11::Atom::None) {
           HandleSelectionNotify(event, reply->type, reply->format,
-                                reply->value_len, reply->value->data());
+                                reply->value_len, reply->value->bytes());
           return;
         }
       }

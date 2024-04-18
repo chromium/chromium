@@ -33,10 +33,10 @@
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
+#include "ui/gfx/x/xproto_types.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -557,7 +557,7 @@ class COMPONENT_EXPORT(X11) Xkb {
     }
 
     std::string string{};
-    scoped_refptr<base::RefCountedMemory> alignment_pad{};
+    scoped_refptr<UnsizedRefCountedMemory> alignment_pad{};
   };
 
   struct KTMapEntry {

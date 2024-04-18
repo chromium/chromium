@@ -922,10 +922,7 @@ std::string ExtensionInfoGenerator::GetDefaultIconUrl(const std::string& name) {
 
 std::string ExtensionInfoGenerator::GetIconUrlFromImage(
     const gfx::Image& image) {
-  scoped_refptr<base::RefCountedMemory> data;
-  data = image.As1xPNGBytes();
-  std::string base_64 = base::Base64Encode(
-      std::string_view(data->front_as<char>(), data->size()));
+  std::string base_64 = base::Base64Encode(*image.As1xPNGBytes());
   const char kDataUrlPrefix[] = "data:image/png;base64,";
   return GURL(kDataUrlPrefix + base_64).spec();
 }

@@ -372,7 +372,7 @@ TEST_F(HidConnectionImplTest, WriteZeroLengthFeatureReport) {
                                     write_future.GetCallback());
   EXPECT_TRUE(write_future.Get());
   ASSERT_TRUE(feature_buffer);
-  EXPECT_THAT(feature_buffer->data(), ElementsAre(kTestReportId));
+  EXPECT_THAT(feature_buffer->as_vector(), ElementsAre(kTestReportId));
 }
 
 }  // namespace device

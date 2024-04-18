@@ -189,8 +189,9 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
     auto it = offered_data_.find(mime_type);
     if (it == offered_data_.end() && mime_type == ui::kMimeTypeTextUtf8)
       it = offered_data_.find(ui::kMimeTypeText);
-    if (it != offered_data_.end())
-      contents->assign(it->second->data().begin(), it->second->data().end());
+    if (it != offered_data_.end()) {
+      *contents = base::as_string_view(*it->second);
+    }
   }
 
   // The device manager used to access data device and create data sources.

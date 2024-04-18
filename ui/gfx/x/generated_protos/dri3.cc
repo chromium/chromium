@@ -546,9 +546,7 @@ std::unique_ptr<Dri3::GetSupportedModifiersReply> detail::ReadReply<
   uint32_t num_window_modifiers{};
   uint32_t num_screen_modifiers{};
   auto& window_modifiers = (*reply).window_modifiers;
-  size_t window_modifiers_len = window_modifiers.size();
   auto& screen_modifiers = (*reply).screen_modifiers;
-  size_t screen_modifiers_len = screen_modifiers.size();
 
   // response_type
   uint8_t response_type;
@@ -769,11 +767,8 @@ std::unique_ptr<Dri3::BuffersFromPixmapReply> detail::ReadReply<
   auto& depth = (*reply).depth;
   auto& bpp = (*reply).bpp;
   auto& strides = (*reply).strides;
-  size_t strides_len = strides.size();
   auto& offsets = (*reply).offsets;
-  size_t offsets_len = offsets.size();
   auto& buffers = (*reply).buffers;
-  size_t buffers_len = buffers.size();
 
   // response_type
   uint8_t response_type;

@@ -94,7 +94,8 @@ bool EncodeImage(const SkBitmap& image,
                  int compression_quality,
                  scoped_refptr<base::RefCountedBytes>* output) {
   *output = base::MakeRefCounted<base::RefCountedBytes>();
-  return gfx::JPEGCodec::Encode(image, compression_quality, &(*output)->data());
+  return gfx::JPEGCodec::Encode(image, compression_quality,
+                                &(*output)->as_vector());
 }
 
 lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image) {

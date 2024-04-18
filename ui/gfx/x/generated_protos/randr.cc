@@ -799,9 +799,7 @@ std::unique_ptr<RandR::GetScreenInfoReply> detail::ReadReply<
   auto& rate = (*reply).rate;
   auto& nInfo = (*reply).nInfo;
   auto& sizes = (*reply).sizes;
-  size_t sizes_len = sizes.size();
   auto& rates = (*reply).rates;
-  size_t rates_len = rates.size();
 
   // response_type
   uint8_t response_type;
@@ -879,7 +877,6 @@ std::unique_ptr<RandR::GetScreenInfoReply> detail::ReadReply<
     {
       uint16_t nRates{};
       auto& rates = rates_elem.rates;
-      size_t rates_len = rates.size();
 
       // nRates
       Read(&nRates, &buf);
@@ -1085,11 +1082,8 @@ std::unique_ptr<RandR::GetScreenResourcesReply> detail::ReadReply<
   uint16_t num_modes{};
   uint16_t names_len{};
   auto& crtcs = (*reply).crtcs;
-  size_t crtcs_len = crtcs.size();
   auto& outputs = (*reply).outputs;
-  size_t outputs_len = outputs.size();
   auto& modes = (*reply).modes;
-  size_t modes_len = modes.size();
   auto& names = (*reply).names;
 
   // response_type
@@ -1278,11 +1272,8 @@ std::unique_ptr<RandR::GetOutputInfoReply> detail::ReadReply<
   uint16_t num_clones{};
   uint16_t name_len{};
   auto& crtcs = (*reply).crtcs;
-  size_t crtcs_len = crtcs.size();
   auto& modes = (*reply).modes;
-  size_t modes_len = modes.size();
   auto& clones = (*reply).clones;
-  size_t clones_len = clones.size();
   auto& name = (*reply).name;
 
   // response_type
@@ -1418,7 +1409,6 @@ std::unique_ptr<RandR::ListOutputPropertiesReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t num_atoms{};
   auto& atoms = (*reply).atoms;
-  size_t atoms_len = atoms.size();
 
   // response_type
   uint8_t response_type;
@@ -1506,7 +1496,6 @@ std::unique_ptr<RandR::QueryOutputPropertyReply> detail::ReadReply<
   auto& range = (*reply).range;
   auto& immutable = (*reply).immutable;
   auto& validValues = (*reply).validValues;
-  size_t validValues_len = validValues.size();
 
   // response_type
   uint8_t response_type;
@@ -1663,7 +1652,7 @@ Future<void> RandR::ChangeOutputProperty(
   buf.Write(&num_units);
 
   // data
-  buf.AppendBuffer(data, ((num_units) * (format)) / (8));
+  buf.AppendSizedBuffer(data);
 
   Align(&buf, 4);
 
@@ -1805,7 +1794,6 @@ std::unique_ptr<RandR::GetOutputPropertyReply> detail::ReadReply<
   auto& bytes_after = (*reply).bytes_after;
   auto& num_items = (*reply).num_items;
   auto& data = (*reply).data;
-  size_t data_len = data.size();
 
   // response_type
   uint8_t response_type;
@@ -2151,9 +2139,7 @@ std::unique_ptr<RandR::GetCrtcInfoReply> detail::ReadReply<
   uint16_t num_outputs{};
   uint16_t num_possible_outputs{};
   auto& outputs = (*reply).outputs;
-  size_t outputs_len = outputs.size();
   auto& possible = (*reply).possible;
-  size_t possible_len = possible.size();
 
   // response_type
   uint8_t response_type;
@@ -2459,11 +2445,8 @@ std::unique_ptr<RandR::GetCrtcGammaReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t size{};
   auto& red = (*reply).red;
-  size_t red_len = red.size();
   auto& green = (*reply).green;
-  size_t green_len = green.size();
   auto& blue = (*reply).blue;
-  size_t blue_len = blue.size();
 
   // response_type
   uint8_t response_type;
@@ -2634,11 +2617,8 @@ std::unique_ptr<RandR::GetScreenResourcesCurrentReply> detail::ReadReply<
   uint16_t num_modes{};
   uint16_t names_len{};
   auto& crtcs = (*reply).crtcs;
-  size_t crtcs_len = crtcs.size();
   auto& outputs = (*reply).outputs;
-  size_t outputs_len = outputs.size();
   auto& modes = (*reply).modes;
-  size_t modes_len = modes.size();
   auto& names = (*reply).names;
 
   // response_type
@@ -2923,13 +2903,9 @@ std::unique_ptr<RandR::GetCrtcTransformReply> detail::ReadReply<
   uint16_t current_len{};
   uint16_t current_nparams{};
   auto& pending_filter_name = (*reply).pending_filter_name;
-  size_t pending_filter_name_len = pending_filter_name.size();
   auto& pending_params = (*reply).pending_params;
-  size_t pending_params_len = pending_params.size();
   auto& current_filter_name = (*reply).current_filter_name;
-  size_t current_filter_name_len = current_filter_name.size();
   auto& current_params = (*reply).current_params;
-  size_t current_params_len = current_params.size();
 
   // response_type
   uint8_t response_type;
@@ -3494,7 +3470,6 @@ std::unique_ptr<RandR::GetProvidersReply> detail::ReadReply<
   auto& timestamp = (*reply).timestamp;
   uint16_t num_providers{};
   auto& providers = (*reply).providers;
-  size_t providers_len = providers.size();
 
   // response_type
   uint8_t response_type;
@@ -3589,13 +3564,9 @@ std::unique_ptr<RandR::GetProviderInfoReply> detail::ReadReply<
   uint16_t num_associated_providers{};
   uint16_t name_len{};
   auto& crtcs = (*reply).crtcs;
-  size_t crtcs_len = crtcs.size();
   auto& outputs = (*reply).outputs;
-  size_t outputs_len = outputs.size();
   auto& associated_providers = (*reply).associated_providers;
-  size_t associated_providers_len = associated_providers.size();
   auto& associated_capability = (*reply).associated_capability;
-  size_t associated_capability_len = associated_capability.size();
   auto& name = (*reply).name;
 
   // response_type
@@ -3812,7 +3783,6 @@ std::unique_ptr<RandR::ListProviderPropertiesReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t num_atoms{};
   auto& atoms = (*reply).atoms;
-  size_t atoms_len = atoms.size();
 
   // response_type
   uint8_t response_type;
@@ -3900,7 +3870,6 @@ std::unique_ptr<RandR::QueryProviderPropertyReply> detail::ReadReply<
   auto& range = (*reply).range;
   auto& immutable = (*reply).immutable;
   auto& valid_values = (*reply).valid_values;
-  size_t valid_values_len = valid_values.size();
 
   // response_type
   uint8_t response_type;
@@ -4056,7 +4025,7 @@ Future<void> RandR::ChangeProviderProperty(
   buf.Write(&num_items);
 
   // data
-  buf.AppendBuffer(data, (num_items) * ((format) / (8)));
+  buf.AppendSizedBuffer(data);
 
   Align(&buf, 4);
 
@@ -4198,7 +4167,6 @@ std::unique_ptr<RandR::GetProviderPropertyReply> detail::ReadReply<
   auto& bytes_after = (*reply).bytes_after;
   auto& num_items = (*reply).num_items;
   auto& data = (*reply).data;
-  size_t data_len = data ? data->size() : 0;
 
   // response_type
   uint8_t response_type;
@@ -4286,7 +4254,6 @@ std::unique_ptr<RandR::GetMonitorsReply> detail::ReadReply<
   uint32_t nMonitors{};
   auto& nOutputs = (*reply).nOutputs;
   auto& monitors = (*reply).monitors;
-  size_t monitors_len = monitors.size();
 
   // response_type
   uint8_t response_type;
@@ -4330,7 +4297,6 @@ std::unique_ptr<RandR::GetMonitorsReply> detail::ReadReply<
       auto& width_in_millimeters = monitors_elem.width_in_millimeters;
       auto& height_in_millimeters = monitors_elem.height_in_millimeters;
       auto& outputs = monitors_elem.outputs;
-      size_t outputs_len = outputs.size();
 
       // name
       Read(&name, &buf);
@@ -4414,7 +4380,6 @@ Future<void> RandR::SetMonitor(const RandR::SetMonitorRequest& request) {
     auto& width_in_millimeters = monitorinfo.width_in_millimeters;
     auto& height_in_millimeters = monitorinfo.height_in_millimeters;
     auto& outputs = monitorinfo.outputs;
-    size_t outputs_len = outputs.size();
 
     // name
     buf.Write(&name);

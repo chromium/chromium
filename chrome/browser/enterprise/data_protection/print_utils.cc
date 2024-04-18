@@ -130,7 +130,7 @@ void PrintIfAllowedByPolicy(
     std::move(on_verdict).Run(/*allowed=*/true);
     return;
   }
-  std::memcpy(region.mapping.memory(), print_data->front(), print_data->size());
+  std::memcpy(region.mapping.memory(), print_data->data(), print_data->size());
   scanning_data.page = std::move(region.region);
 
   auto on_scan_result = base::BindOnce(

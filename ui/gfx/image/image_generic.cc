@@ -74,7 +74,7 @@ class PNGImageSource : public ImageSkiaSource {
     scoped_refptr<base::RefCountedMemory> raw_data = png_rep.raw_data;
     CHECK(raw_data.get());
     SkBitmap bitmap;
-    if (!PNGCodec::Decode(raw_data->front(), raw_data->size(), &bitmap)) {
+    if (!PNGCodec::Decode(raw_data->data(), raw_data->size(), &bitmap)) {
       LOG(ERROR) << "Unable to decode PNG for " << png_rep.scale << ".";
       return ImageSkiaRep();
     }
@@ -118,7 +118,7 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
   scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
   if (image_skia_rep.scale() != 1.0f ||
       !PNGCodec::EncodeBGRASkBitmap(image_skia_rep.GetBitmap(), false,
-                                    &png_bytes->data())) {
+                                    &png_bytes->as_vector())) {
     return nullptr;
   }
   return png_bytes;

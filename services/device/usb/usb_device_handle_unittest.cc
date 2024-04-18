@@ -164,7 +164,7 @@ TEST_F(UsbDeviceHandleTest, InterruptTransfer) {
       base::MakeRefCounted<base::RefCountedBytes>(in_buffer->size());
   TestCompletionCallback out_completion;
   for (size_t i = 0; i < out_buffer->size(); ++i) {
-    out_buffer->data()[i] = i;
+    out_buffer->as_vector()[i] = i;
   }
 
   handle->GenericTransfer(UsbTransferDirection::OUTBOUND, 0x01, out_buffer,
@@ -230,7 +230,7 @@ TEST_F(UsbDeviceHandleTest, BulkTransfer) {
       base::MakeRefCounted<base::RefCountedBytes>(in_buffer->size());
   TestCompletionCallback out_completion;
   for (size_t i = 0; i < out_buffer->size(); ++i) {
-    out_buffer->data()[i] = i;
+    out_buffer->as_vector()[i] = i;
   }
 
   handle->GenericTransfer(UsbTransferDirection::OUTBOUND, 0x02, out_buffer,

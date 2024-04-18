@@ -366,7 +366,7 @@ TEST_P(WaylandClipboardTest, ReadFromClipboard) {
   base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
   EXPECT_CALL(callback, Run(_)).WillOnce([&text](PlatformClipboard::Data data) {
     ASSERT_TRUE(data);
-    text = std::string(data->front_as<const char>(), data->size());
+    text = std::string(base::as_string_view(*data));
   });
 
   clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeTextUtf8,
@@ -391,7 +391,7 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtf) {
   base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
   EXPECT_CALL(callback, Run(_)).WillOnce([&text](PlatformClipboard::Data data) {
     ASSERT_TRUE(data);
-    text = std::string(data->front_as<const char>(), data->size());
+    text = std::string(base::as_string_view(*data));
   });
 
   clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeTextUtf8,
@@ -466,7 +466,7 @@ TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
   base::MockCallback<PlatformClipboard::RequestDataClosure> got_text;
   EXPECT_CALL(got_text, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
     ASSERT_NE(nullptr, data);
-    text = std::string(data->front_as<const char>(), data->size());
+    text = std::string(base::as_string_view(*data));
   });
   clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeTextUtf8,
                                    got_text.Get());
@@ -543,7 +543,7 @@ TEST_P(CopyPasteOnlyClipboardTest, DISABLED_OverlappingReadRequests) {
   std::string html;
   base::MockCallback<PlatformClipboard::RequestDataClosure> got_html;
   EXPECT_CALL(got_html, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
-    html = std::string(data->front_as<const char>(), data->size());
+    html = std::string(base::as_string_view(*data));
   });
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -555,7 +555,7 @@ TEST_P(CopyPasteOnlyClipboardTest, DISABLED_OverlappingReadRequests) {
   std::string text;
   base::MockCallback<PlatformClipboard::RequestDataClosure> got_text;
   EXPECT_CALL(got_text, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
-    text = std::string(data->front_as<const char>(), data->size());
+    text = std::string(base::as_string_view(*data));
   });
   clipboard_->RequestClipboardData(ClipboardBuffer::kCopyPaste, kMimeTypeText,
                                    got_text.Get());

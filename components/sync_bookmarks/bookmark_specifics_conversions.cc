@@ -110,9 +110,8 @@ void SetBookmarkFaviconFromSpecifics(
                                              bookmark_node->GetTitle());
 
   const std::string& icon_bytes_str = specifics.favicon();
-  scoped_refptr<base::RefCountedString> icon_bytes(
-      new base::RefCountedString());
-  icon_bytes->data().assign(icon_bytes_str);
+  auto icon_bytes = base::MakeRefCounted<base::RefCountedString>();
+  icon_bytes->as_string().assign(icon_bytes_str);
 
   GURL icon_url(specifics.icon_url());
 
@@ -325,7 +324,7 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
   }
 
   if (favicon_bytes.get() && favicon_bytes->size() != 0) {
-    bm_specifics->set_favicon(favicon_bytes->front(), favicon_bytes->size());
+    bm_specifics->set_favicon(favicon_bytes->data(), favicon_bytes->size());
     // Avoid sync-ing favicon URLs that are unreasonably large, as determined by
     // |kMaxFaviconUrlSize|. Most notably, URLs prefixed with the data: scheme
     // to embed the content of the image itself in the URL may be arbitrarily

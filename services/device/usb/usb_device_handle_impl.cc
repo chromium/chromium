@@ -273,10 +273,11 @@ UsbDeviceHandleImpl::Transfer::CreateControlTransfer(
     return nullptr;
   }
 
-  libusb_fill_control_setup(buffer->front(), type, request, value, index,
-                            length);
+  libusb_fill_control_setup(buffer->as_vector().data(), type, request, value,
+                            index, length);
   libusb_fill_control_transfer(transfer->platform_transfer_,
-                               device_handle->handle(), buffer->front(),
+                               device_handle->handle(),
+                               buffer->as_vector().data(),
                                &UsbDeviceHandleImpl::Transfer::PlatformCallback,
                                transfer.get(), timeout);
 
@@ -303,10 +304,11 @@ UsbDeviceHandleImpl::Transfer::CreateBulkTransfer(
     return nullptr;
   }
 
-  libusb_fill_bulk_transfer(
-      transfer->platform_transfer_, device_handle->handle(), endpoint,
-      buffer->front(), length, &UsbDeviceHandleImpl::Transfer::PlatformCallback,
-      transfer.get(), timeout);
+  libusb_fill_bulk_transfer(transfer->platform_transfer_,
+                            device_handle->handle(), endpoint,
+                            buffer->as_vector().data(), length,
+                            &UsbDeviceHandleImpl::Transfer::PlatformCallback,
+                            transfer.get(), timeout);
 
   return transfer;
 }
@@ -333,8 +335,9 @@ UsbDeviceHandleImpl::Transfer::CreateInterruptTransfer(
 
   libusb_fill_interrupt_transfer(
       transfer->platform_transfer_, device_handle->handle(), endpoint,
-      buffer->front(), length, &UsbDeviceHandleImpl::Transfer::PlatformCallback,
-      transfer.get(), timeout);
+      buffer->as_vector().data(), length,
+      &UsbDeviceHandleImpl::Transfer::PlatformCallback, transfer.get(),
+      timeout);
 
   return transfer;
 }
@@ -363,7 +366,7 @@ UsbDeviceHandleImpl::Transfer::CreateIsochronousTransfer(
 
   libusb_fill_iso_transfer(
       transfer->platform_transfer_, device_handle->handle(), endpoint,
-      buffer->front(), static_cast<int>(length), num_packets,
+      buffer->as_vector().data(), static_cast<int>(length), num_packets,
       &Transfer::PlatformCallback, transfer.get(), timeout);
 
   for (size_t i = 0; i < packet_lengths.size(); ++i)
@@ -445,8 +448,9 @@ void UsbDeviceHandleImpl::Transfer::ProcessCompletion() {
         if (length_ >= (LIBUSB_CONTROL_SETUP_SIZE + actual_length)) {
           auto resized_buffer =
               base::MakeRefCounted<base::RefCountedBytes>(actual_length);
-          memcpy(resized_buffer->front(),
-                 buffer_->front() + LIBUSB_CONTROL_SETUP_SIZE, actual_length);
+          base::span(resized_buffer->as_vector())
+              .copy_from(base::span(*buffer_).subspan(LIBUSB_CONTROL_SETUP_SIZE,
+                                                      actual_length));
           buffer_ = resized_buffer;
         }
       }
@@ -701,8 +705,9 @@ void UsbDeviceHandleImpl::ControlTransfer(
   const size_t resized_length = LIBUSB_CONTROL_SETUP_SIZE + buffer->size();
   auto resized_buffer =
       base::MakeRefCounted<base::RefCountedBytes>(resized_length);
-  memcpy(resized_buffer->front() + LIBUSB_CONTROL_SETUP_SIZE, buffer->front(),
-         buffer->size());
+  base::span(resized_buffer->as_vector())
+      .subspan(LIBUSB_CONTROL_SETUP_SIZE)
+      .copy_from(base::span(*buffer));
 
   std::unique_ptr<Transfer> transfer = Transfer::CreateControlTransfer(
       this, CreateRequestType(direction, request_type, recipient), request,

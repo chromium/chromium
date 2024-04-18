@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(X11) Event {
 
   // |event_bytes| is modified and will not be valid after this call.
   // A copy is necessary if the original data is still needed.
-  Event(scoped_refptr<base::RefCountedMemory> event_bytes,
+  Event(scoped_refptr<UnsizedRefCountedMemory> event_bytes,
         Connection* connection);
 
   Event(const Event&) = delete;
@@ -110,7 +110,7 @@ class COMPONENT_EXPORT(X11) Event {
   uint32_t sequence_ = 0;
 
   // The unparsed event, or nullptr if it's already parsed.
-  scoped_refptr<base::RefCountedMemory> raw_event_;
+  scoped_refptr<UnsizedRefCountedMemory> raw_event_;
 
   // The type-erased parsed event, or nullptr if it hasn't been parsed yet.
   std::unique_ptr<void, Deleter> event_ = {nullptr, nullptr};

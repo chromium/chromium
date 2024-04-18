@@ -297,9 +297,8 @@ void ChromeOsFeedbackDelegate::SendReport(
   }
 
   scoped_refptr<base::RefCountedMemory> png_data = GetScreenshotData();
-  if (report->include_screenshot && png_data && png_data.get()) {
-    feedback_data->set_image(
-        std::string(png_data->front_as<char>(), png_data->size()));
+  if (report->include_screenshot && png_data) {
+    feedback_data->set_image(std::string(base::as_string_view(*png_data)));
   }
 
   // Append consent value to report. For cross platform implementations see:

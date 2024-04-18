@@ -1014,9 +1014,9 @@ void ProfileAttributesStorage::SaveAvatarImageAtPath(
     base::OnceClosure callback) {
   cached_avatar_images_[key] = image;
 
-  std::unique_ptr<ImageData> data(new ImageData);
   scoped_refptr<base::RefCountedMemory> png_data = image.As1xPNGBytes();
-  data->assign(png_data->front(), png_data->front() + png_data->size());
+  auto data = std::make_unique<ImageData>(png_data->size());
+  base::span(*data).copy_from(*png_data);
 
   // Remove the file from the list of downloads in progress. Note that this list
   // only contains the high resolution avatars, and not the Gaia profile images.

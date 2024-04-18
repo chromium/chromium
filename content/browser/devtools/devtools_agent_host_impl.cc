@@ -382,8 +382,7 @@ std::string DevToolsAgentHostImpl::CreateIOStreamFromData(
     scoped_refptr<base::RefCountedMemory> data) {
   scoped_refptr<DevToolsStreamFile> stream =
       DevToolsStreamFile::Create(GetIOContext(), true /* binary */);
-  std::string text(reinterpret_cast<const char*>(data->front()), data->size());
-  stream->Append(std::make_unique<std::string>(text));
+  stream->Append(std::make_unique<std::string>(base::as_string_view(*data)));
   return stream->handle();
 }
 

@@ -29,8 +29,7 @@ gfx::Size ImagePNGRep::Size() const {
   // using the gfx::PNGCodec API, is to decode the whole thing.
   CHECK(raw_data.get());
   SkBitmap bitmap;
-  if (!gfx::PNGCodec::Decode(raw_data->front(), raw_data->size(),
-                             &bitmap)) {
+  if (!gfx::PNGCodec::Decode(raw_data->data(), raw_data->size(), &bitmap)) {
     LOG(ERROR) << "Unable to decode PNG.";
     return gfx::Size(0, 0);
   }

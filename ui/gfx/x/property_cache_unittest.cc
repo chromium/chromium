@@ -135,7 +135,7 @@ TEST_F(PropertyCacheTest, GetAs) {
   EXPECT_EQ(response->bytes_after, 0u);
   EXPECT_EQ(response->format, 32);
   EXPECT_EQ(response->type, Atom::CARDINAL);
-  EXPECT_EQ(*response->value->front_as<uint32_t>(), 1234u);
+  EXPECT_EQ(*response->value->cast_to<uint32_t>(), 1234u);
   EXPECT_EQ(response->value_len, 1u);
 
   // GetAs() should do the same thing as Get().

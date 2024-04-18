@@ -372,7 +372,7 @@ class JsonStringOutputWriter
                          TraceLog::OutputCallback flush_callback)
       : flush_task_runner_(flush_task_runner),
         flush_callback_(std::move(flush_callback)) {
-    buffer_->data().reserve(kBufferReserveCapacity);
+    buffer_->as_string().reserve(kBufferReserveCapacity);
   }
 
   ~JsonStringOutputWriter() override { Flush(/*has_more=*/false); }
@@ -383,22 +383,22 @@ class JsonStringOutputWriter
       DCHECK_EQ(string, kJsonPrefix);
       did_strip_prefix_ = true;
       return perfetto::trace_processor::util::OkStatus();
-    } else if (buffer_->data().empty() &&
+    } else if (buffer_->as_string().empty() &&
                !strncmp(string.c_str(), kJsonJoiner, strlen(kJsonJoiner))) {
       // We only remove the leading joiner comma for the first chunk in a buffer
       // since the consumer is expected to insert commas between the buffers we
       // provide.
-      buffer_->data() += string.substr(strlen(kJsonJoiner));
+      buffer_->as_string() += string.substr(strlen(kJsonJoiner));
     } else if (!strncmp(string.c_str(), kJsonSuffix, strlen(kJsonSuffix))) {
       return perfetto::trace_processor::util::OkStatus();
     } else {
-      buffer_->data() += string;
+      buffer_->as_string() += string;
     }
-    if (buffer_->data().size() > kBufferLimitInBytes) {
+    if (buffer_->as_string().size() > kBufferLimitInBytes) {
       Flush(/*has_more=*/true);
       // Reset the buffer_ after moving it above.
       buffer_ = new RefCountedString();
-      buffer_->data().reserve(kBufferReserveCapacity);
+      buffer_->as_string().reserve(kBufferReserveCapacity);
     }
     return perfetto::trace_processor::util::OkStatus();
   }
@@ -1384,7 +1384,7 @@ void TraceLog::OnTraceData(const char* data, size_t size, bool has_more) {
   if (proto_output_callback_) {
     scoped_refptr<RefCountedString> chunk = new RefCountedString();
     if (size)
-      chunk->data().assign(data, size);
+      chunk->as_string().assign(data, size);
     proto_output_callback_.Run(std::move(chunk), has_more);
     if (!has_more) {
       proto_output_callback_.Reset();
@@ -1424,18 +1424,18 @@ void TraceLog::ConvertTraceEventsToTraceFormat(
   // to let the caller know the completion of flush.
   scoped_refptr<RefCountedString> json_events_str_ptr = new RefCountedString();
   const size_t kReserveCapacity = kTraceEventBufferSizeInBytes * 5 / 4;
-  json_events_str_ptr->data().reserve(kReserveCapacity);
+  json_events_str_ptr->as_string().reserve(kReserveCapacity);
   while (const TraceBufferChunk* chunk = logged_events->NextChunk()) {
     for (size_t j = 0; j < chunk->size(); ++j) {
       size_t size = json_events_str_ptr->size();
       if (size > kTraceEventBufferSizeInBytes) {
         flush_output_callback.Run(json_events_str_ptr, true);
         json_events_str_ptr = new RefCountedString();
-        json_events_str_ptr->data().reserve(kReserveCapacity);
+        json_events_str_ptr->as_string().reserve(kReserveCapacity);
       } else if (size) {
-        json_events_str_ptr->data().append(",\n");
+        json_events_str_ptr->as_string().append(",\n");
       }
-      chunk->GetEventAt(j)->AppendAsJSON(&(json_events_str_ptr->data()),
+      chunk->GetEventAt(j)->AppendAsJSON(&(json_events_str_ptr->as_string()),
                                          argument_filter_predicate);
     }
   }

@@ -110,7 +110,7 @@ void OnReadConfigDescriptor(UsbDeviceDescriptor* desc,
                             scoped_refptr<base::RefCountedBytes> buffer,
                             size_t length) {
   if (status == UsbTransferStatus::COMPLETED) {
-    if (!desc->Parse(base::make_span(buffer->front(), length))) {
+    if (!desc->Parse(base::span(*buffer).first(length))) {
       LOG(ERROR) << "Failed to parse configuration descriptor.";
     }
   } else {
@@ -128,7 +128,7 @@ void OnReadConfigDescriptorHeader(scoped_refptr<UsbDeviceHandle> device_handle,
                                   size_t length) {
   if (status == UsbTransferStatus::COMPLETED &&
       length == kConfigurationDescriptorLength) {
-    const uint8_t* data = header->front();
+    auto data = base::span<const uint8_t>(*header);
     uint16_t total_length = data[2] | data[3] << 8;
     auto buffer = base::MakeRefCounted<base::RefCountedBytes>(total_length);
     device_handle->ControlTransfer(
@@ -157,7 +157,7 @@ void OnReadDeviceDescriptor(
   }
 
   std::unique_ptr<UsbDeviceDescriptor> desc(new UsbDeviceDescriptor());
-  if (!desc->Parse(base::make_span(buffer->front(), length))) {
+  if (!desc->Parse(base::span(*buffer).first(length))) {
     LOG(ERROR) << "Device descriptor parsing error.";
     std::move(callback).Run(nullptr);
     return;
@@ -199,15 +199,16 @@ void OnReadStringDescriptor(
     UsbTransferStatus status,
     scoped_refptr<base::RefCountedBytes> buffer,
     size_t length) {
-  std::u16string string;
-  if (status == UsbTransferStatus::COMPLETED &&
-      ParseUsbStringDescriptor(
-          std::vector<uint8_t>(buffer->front(), buffer->front() + length),
-          &string)) {
-    std::move(callback).Run(string);
-  } else {
-    std::move(callback).Run(std::u16string());
+  if (status == UsbTransferStatus::COMPLETED) {
+    auto to_read = base::span(*buffer).first(length);
+    std::u16string string;
+    if (ParseUsbStringDescriptor(
+            std::vector<uint8_t>(to_read.begin(), to_read.end()), &string)) {
+      std::move(callback).Run(std::move(string));
+      return;
+    }
   }
+  std::move(callback).Run(std::u16string());
 }
 
 void ReadStringDescriptor(

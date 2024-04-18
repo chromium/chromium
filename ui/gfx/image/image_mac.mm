@@ -90,10 +90,10 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
       [[NSBitmapImageRep alloc] initWithCGImage:cg_image];
   NSData* ns_data = [ns_bitmap representationUsingType:NSBitmapImageFileTypePNG
                                             properties:@{}];
-  const unsigned char* bytes = static_cast<const unsigned char*>(ns_data.bytes);
+  auto* bytes = static_cast<const uint8_t*>(ns_data.bytes);
   scoped_refptr<base::RefCountedBytes> refcounted_bytes(
       new base::RefCountedBytes());
-  refcounted_bytes->data().assign(bytes, bytes + ns_data.length);
+  refcounted_bytes->as_vector().assign(bytes, bytes + ns_data.length);
   return refcounted_bytes;
 }
 

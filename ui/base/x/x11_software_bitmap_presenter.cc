@@ -75,7 +75,7 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
   constexpr auto kAllPlanes =
       std::numeric_limits<decltype(x11::GetImageRequest::plane_mask)>::max();
 
-  scoped_refptr<base::RefCountedMemory> bg;
+  scoped_refptr<x11::UnsizedRefCountedMemory> bg;
   auto req = connection->GetImage({x11::ImageFormat::ZPixmap, widget, x_i16,
                                    y_i16, w_u16, h_u16, kAllPlanes});
   if (auto reply = req.Sync()) {
@@ -103,8 +103,8 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
 
   SkBitmap bg_bitmap;
   SkImageInfo image_info = SkImageInfo::Make(
-      width, height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
-  if (!bg_bitmap.installPixels(image_info, const_cast<uint8_t*>(bg->data()),
+      w_u16, h_u16, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+  if (!bg_bitmap.installPixels(image_info, bg->bytes(),
                                image_info.minRowBytes())) {
     return false;
   }
@@ -119,8 +119,9 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
   }
   canvas.drawImage(fg_bitmap.asImage(), 0, 0);
 
-  connection->PutImage({x11::ImageFormat::ZPixmap, widget, gc, w_u16, h_u16,
-                        x_i16, y_i16, 0, d_u8, bg});
+  connection->PutImage(
+      {x11::ImageFormat::ZPixmap, widget, gc, w_u16, h_u16, x_i16, y_i16, 0,
+       d_u8, x11::SizedRefCountedMemory::From(bg, size_t{w_u16} * h_u16)});
 
   return true;
 }

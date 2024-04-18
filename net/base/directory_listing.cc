@@ -24,8 +24,9 @@ std::string GetDirectoryListingHeader(const std::u16string& title) {
   DLOG_IF(WARNING, !header) << "Missing resource: directory listing header";
 
   std::string result;
-  if (header)
-    result.assign(header->front_as<char>(), header->size());
+  if (header) {
+    result = base::as_string_view(*header);
+  }
 
   result.append("<script>start(");
   base::EscapeJSONString(title, true, &result);

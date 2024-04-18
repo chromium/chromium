@@ -583,7 +583,7 @@ void ClipboardProvider::ConstructImageMatchCallback(
   match.search_terms_args =
       std::make_unique<TemplateURLRef::SearchTermsArgs>(u"");
   match.search_terms_args->image_thumbnail_content.assign(
-      image_bytes->front_as<char>(), image_bytes->size());
+      base::as_string_view(*image_bytes));
   TemplateURLRef::PostContent post_content;
   GURL result(default_url->image_url_ref().ReplaceSearchTerms(
       *match.search_terms_args.get(), url_service->search_terms_data(),

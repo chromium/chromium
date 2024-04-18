@@ -23,8 +23,7 @@ void Binary::AppendSerialized(std::vector<uint8_t>* out) const {
 }
 
 std::string Binary::toBase64() const {
-  return base::Base64Encode(base::StringPiece(
-      reinterpret_cast<const char*>(bytes_->front()), bytes_->size()));
+  return base::Base64Encode(base::as_string_view(*bytes_));
 }
 
 // static
@@ -41,7 +40,7 @@ Binary Binary::fromRefCounted(scoped_refptr<base::RefCountedMemory> memory) {
 
 // static
 Binary Binary::fromVector(std::vector<uint8_t> data) {
-  return Binary(base::RefCountedBytes::TakeVector(&data));
+  return Binary(base::MakeRefCounted<base::RefCountedBytes>(std::move(data)));
 }
 
 // static

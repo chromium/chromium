@@ -219,7 +219,7 @@ Image Image::CreateFrom1xPNGBytes(const unsigned char* input,
     return Image();
 
   scoped_refptr<base::RefCountedBytes> raw_data(new base::RefCountedBytes());
-  raw_data->data().assign(input, input + input_size);
+  raw_data->as_vector().assign(input, input + input_size);
 
   return CreateFrom1xPNGBytes(raw_data);
 }

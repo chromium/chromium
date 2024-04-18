@@ -44,10 +44,8 @@ std::string FormatTemplate(int resource_id,
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   scoped_refptr<base::RefCountedMemory> bytes =
       bundle.LoadDataResourceBytes(resource_id);
-  base::StringPiece string_piece(reinterpret_cast<const char*>(bytes->front()),
-                                 bytes->size());
   return ui::ReplaceTemplateExpressions(
-      string_piece, replacements,
+      base::as_string_view(*bytes), replacements,
       /* skip_unexpected_placeholder_check= */ true);
 }
 

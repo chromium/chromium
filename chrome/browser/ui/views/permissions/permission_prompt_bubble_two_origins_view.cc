@@ -219,7 +219,7 @@ void PermissionPromptBubbleTwoOriginsView::OnEmbeddingOriginFaviconLoaded(
 
   if (favicon_result.is_valid()) {
     favicon_right_->SetImage(ui::ImageModel::FromImage(
-        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->front(),
+        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->data(),
                                          favicon_result.bitmap_data->size())));
   }
   MaybeShow();
@@ -233,7 +233,7 @@ void PermissionPromptBubbleTwoOriginsView::OnRequestingOriginFaviconLoaded(
 
   if (favicon_result.is_valid()) {
     favicon_left_->SetImage(ui::ImageModel::FromImage(
-        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->front(),
+        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->data(),
                                          favicon_result.bitmap_data->size())));
   }
   MaybeShow();
