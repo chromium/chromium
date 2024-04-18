@@ -172,7 +172,7 @@ function getLocalTile(
     return {type: TileType.LOADING, id: kLocalCollectionId};
   }
 
-  if (!localImages || localImages.length === 0) {
+  if (!isNonEmptyArray(localImages)) {
     // TODO(b/282050032): After Jelly is launched, remove the preview image.
     return {
       count: getCountText(0),
@@ -669,10 +669,18 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
       localImages: Array<FilePath|DefaultImageSymbol>|null,
       localImagesLoading: boolean,
       localImageData: Record<FilePath['path']|DefaultImageSymbol, Url>) {
-    const tile = getLocalTile(localImages, localImagesLoading, localImageData);
+    const newLocalTile =
+        getLocalTile(localImages, localImagesLoading, localImageData);
     const index = this.tiles_.findIndex(tile => tile.id === kLocalCollectionId);
     assert(index >= 0, 'could not find local tile');
-    this.set(`tiles_.${index}`, tile);
+    const currentLocalTile = this.get(`tiles_.${index}`);
+    if (this.isLoadingTile_(currentLocalTile) ||
+        !isNonEmptyArray(localImages) || this.isLocalTile_(newLocalTile)) {
+      // Displays loading tile only when no preview images have been fetched. If
+      // the local tile has already had some preview images, do not display
+      // loading again to avoid flickering.
+      this.set(`tiles_.${index}`, newLocalTile);
+    }
   }
 
   /** Navigate to the correct route based on user selection. */
