@@ -682,6 +682,10 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 // exists in the tab grid, the option `Open in group` will become a submenu,
 // tapping it will result in listing all the existing tab groups.
 - (void)testContextMenuOpenInGroup {
+  // TODO(crbug.com/335584000): Test fails in some iPads.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad.");
+  }
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey
