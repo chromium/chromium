@@ -295,6 +295,28 @@ h2.first {
   flex: auto;
 }
 
+/* A settings-box with the actionable-row attribute can be interacted with on
+ * click. Do not use this attribute for settings that are not interactable by
+ * clicking on the row. */
+.settings-box[actionable-row] {
+  cursor: pointer;
+}
+
+.settings-box[actionable-row]:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.settings-box[actionable-row]:active {
+  background-color: var(--cr-active-background-color);
+}
+
+/* Do not show hover or active states for cr-icon-buttons that are
+ * embedded within the row to avoid showing multiple layers of
+ * backgrounds. */
+.settings-box[actionable-row] cr-icon-button {
+  --cr-icon-button-hover-background-color: transparent;
+  --cr-icon-button-active-background-color: transparent;
+}
 /* For grouping elements with common flex options. */
 .settings-row {
   align-items: center;
