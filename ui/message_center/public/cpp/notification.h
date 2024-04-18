@@ -223,10 +223,6 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // Flag if the notification is pinned. If true, the notification is pinned
   // and the user can't remove it.
   bool pinned = false;
-
-  // Presents a shortcut that will dismiss the notification when performed.
-  // Only used in in ash pinned notifications. See `PinnedNotificationView`.
-  std::u16string shortcut_text;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Vibration pattern to play when displaying the notification. There must be
@@ -524,14 +520,6 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 #if BUILDFLAG(IS_CHROMEOS)
   void set_pinned(bool pinned) { optional_fields_.pinned = pinned; }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  const std::u16string shortcut_text() const {
-#if BUILDFLAG(IS_CHROMEOS)
-    return optional_fields_.shortcut_text;
-#else
-    return std::u16string();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  }
 
   // Gets a text for spoken feedback.
   const std::u16string& accessible_name() const {

@@ -37,16 +37,6 @@ views::Label* GetSubtitleLabel(views::View* notification_view) {
       VIEW_ID_PINNED_NOTIFICATION_SUBTITLE_LABEL));
 }
 
-views::Label* GetShortcutLabel(views::View* notification_view) {
-  return views::AsViewClass<views::Label>(notification_view->GetViewByID(
-      VIEW_ID_PINNED_NOTIFICATION_SHORTCUT_LABEL));
-}
-
-views::Label* GetShortcutDividerLabel(views::View* notification_view) {
-  return views::AsViewClass<views::Label>(notification_view->GetViewByID(
-      VIEW_ID_PINNED_NOTIFICATION_SHORTCUT_DIVIDER_LABEL));
-}
-
 PillButton* GetPillButton(views::View* notification_view) {
   return views::AsViewClass<PillButton>(
       notification_view->GetViewByID(VIEW_ID_PINNED_NOTIFICATION_PILL_BUTTON));
@@ -101,8 +91,6 @@ TEST_F(PinnedNotificationViewTest, Default) {
   EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
   ASSERT_TRUE(GetSubtitleLabel(pinned_notification_view));
   EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetShortcutLabel(pinned_notification_view));
-  EXPECT_FALSE(GetShortcutDividerLabel(pinned_notification_view));
   EXPECT_FALSE(GetPillButton(pinned_notification_view));
   EXPECT_FALSE(GetPrimaryIconButton(pinned_notification_view));
   EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
@@ -131,39 +119,6 @@ TEST_F(PinnedNotificationViewTest, Subtitle) {
   EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
   ASSERT_TRUE(GetSubtitleLabel(pinned_notification_view));
   EXPECT_TRUE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetShortcutLabel(pinned_notification_view));
-  EXPECT_FALSE(GetShortcutDividerLabel(pinned_notification_view));
-  EXPECT_FALSE(GetPillButton(pinned_notification_view));
-  EXPECT_FALSE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
-}
-
-// Tests that the mandatory fields and a shortcut text label are created.
-TEST_F(PinnedNotificationViewTest, ShortcutText) {
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-
-  message_center::RichNotificationData data;
-  data.shortcut_text = sample_text;
-
-  auto notification =
-      ash::SystemNotificationBuilder()
-          .SetId("id")
-          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
-          .SetSmallImage(*sample_icon)
-          .SetTitle(sample_text)
-          .SetOptionalFields(data)
-          .Build(
-              /*keep_timestamp=*/false);
-
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
-
-  // Test that appropriate notification elements were created.
-  EXPECT_TRUE(GetIcon(pinned_notification_view));
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_TRUE(GetShortcutLabel(pinned_notification_view));
-  EXPECT_FALSE(GetShortcutDividerLabel(pinned_notification_view));
   EXPECT_FALSE(GetPillButton(pinned_notification_view));
   EXPECT_FALSE(GetPrimaryIconButton(pinned_notification_view));
   EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
@@ -193,41 +148,6 @@ TEST_F(PinnedNotificationViewTest, PillButton) {
   EXPECT_TRUE(GetIcon(pinned_notification_view));
   EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
   EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetShortcutLabel(pinned_notification_view));
-  EXPECT_FALSE(GetShortcutDividerLabel(pinned_notification_view));
-  EXPECT_TRUE(GetPillButton(pinned_notification_view));
-  EXPECT_FALSE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
-}
-
-// Tests that the mandatory fields and a shortcut text + a pill button are
-// created. A shortcut divider should also be created.
-TEST_F(PinnedNotificationViewTest, ShortcutTextAndPillButton) {
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-
-  message_center::RichNotificationData data;
-  data.shortcut_text = sample_text;
-  data.buttons.emplace_back(message_center::ButtonInfo(/*title=*/sample_text));
-
-  auto notification =
-      ash::SystemNotificationBuilder()
-          .SetId("id")
-          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
-          .SetSmallImage(*sample_icon)
-          .SetTitle(sample_text)
-          .SetOptionalFields(data)
-          .Build(
-              /*keep_timestamp=*/false);
-
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
-
-  // Test that appropriate notification elements were created.
-  EXPECT_TRUE(GetIcon(pinned_notification_view));
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_TRUE(GetShortcutLabel(pinned_notification_view));
-  EXPECT_TRUE(GetShortcutDividerLabel(pinned_notification_view));
   EXPECT_TRUE(GetPillButton(pinned_notification_view));
   EXPECT_FALSE(GetPrimaryIconButton(pinned_notification_view));
   EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
@@ -258,8 +178,6 @@ TEST_F(PinnedNotificationViewTest, OneIconButton) {
   EXPECT_TRUE(GetIcon(pinned_notification_view));
   EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
   EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetShortcutLabel(pinned_notification_view));
-  EXPECT_FALSE(GetShortcutDividerLabel(pinned_notification_view));
   EXPECT_FALSE(GetPillButton(pinned_notification_view));
   EXPECT_TRUE(GetPrimaryIconButton(pinned_notification_view));
   EXPECT_FALSE(GetSecondaryIconButton(pinned_notification_view));
@@ -292,44 +210,6 @@ TEST_F(PinnedNotificationViewTest, TwoIconButtons) {
   EXPECT_TRUE(GetIcon(pinned_notification_view));
   EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
   EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetShortcutLabel(pinned_notification_view));
-  EXPECT_FALSE(GetShortcutDividerLabel(pinned_notification_view));
-  EXPECT_FALSE(GetPillButton(pinned_notification_view));
-  EXPECT_TRUE(GetPrimaryIconButton(pinned_notification_view));
-  EXPECT_TRUE(GetSecondaryIconButton(pinned_notification_view));
-}
-
-// Tests that the mandatory fields and a shortcut text + two icon buttons are
-// created. A shortcut divider should also be created.
-TEST_F(PinnedNotificationViewTest, ShortcutTextAndIconButtons) {
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-
-  message_center::RichNotificationData data;
-  data.shortcut_text = sample_text;
-  data.buttons.emplace_back(message_center::ButtonInfo(
-      /*vector_icon=*/sample_icon, /*accessible_name=*/sample_text));
-  data.buttons.emplace_back(message_center::ButtonInfo(
-      /*vector_icon=*/sample_icon, /*accessible_name=*/sample_text));
-
-  auto notification =
-      ash::SystemNotificationBuilder()
-          .SetId("id")
-          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
-          .SetSmallImage(*sample_icon)
-          .SetTitle(sample_text)
-          .SetOptionalFields(data)
-          .Build(
-              /*keep_timestamp=*/false);
-
-  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
-      std::make_unique<PinnedNotificationView>(notification));
-
-  // Test that appropriate notification elements were created.
-  EXPECT_TRUE(GetIcon(pinned_notification_view));
-  EXPECT_TRUE(GetTitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_FALSE(GetSubtitleLabel(pinned_notification_view)->GetVisible());
-  EXPECT_TRUE(GetShortcutLabel(pinned_notification_view));
-  EXPECT_TRUE(GetShortcutDividerLabel(pinned_notification_view));
   EXPECT_FALSE(GetPillButton(pinned_notification_view));
   EXPECT_TRUE(GetPrimaryIconButton(pinned_notification_view));
   EXPECT_TRUE(GetSecondaryIconButton(pinned_notification_view));

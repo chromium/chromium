@@ -18,8 +18,8 @@ namespace ash {
 
 // Ash Pinned Notification View to be used when the `Ongoing Processes` flag is
 // enabled (go/ongoing-processes-spec). This view must have a title and an icon,
-// and optionally supports a subtitle, a shortcut hint, and a pill button or up
-// to two icon buttons.
+// and optionally supports a subtitle, and a pill button or up to two icon
+// buttons.
 class ASH_EXPORT PinnedNotificationView : public message_center::MessageView {
   METADATA_HEADER(PinnedNotificationView, message_center::MessageView)
 
