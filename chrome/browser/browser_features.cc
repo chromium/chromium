@@ -136,7 +136,7 @@ const base::FeatureParam<std::string>
 // Whether an infobar is shown when the process is shared.
 BASE_FEATURE(kDevToolsSharedProcessInfobar,
              "DevToolsSharedProcessInfobar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Let DevTools front-end talk to the target of type "tab" rather than
 // "frame" when inspecting a WebContents.
