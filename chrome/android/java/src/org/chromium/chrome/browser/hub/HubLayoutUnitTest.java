@@ -59,6 +59,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -143,6 +144,7 @@ public class HubLayoutUnitTest {
     private HubContainerView mHubContainerView;
 
     private SyncOneshotSupplierImpl<HubLayoutAnimator> mHubLayoutAnimatorSupplier;
+    private Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private ObservableSupplierImpl<Pane> mPaneSupplier = new ObservableSupplierImpl<>();
 
     @Before
@@ -278,6 +280,7 @@ public class HubLayoutUnitTest {
                 new HubLayoutDependencyHolder(
                         hubManagerSupplier, rootViewSupplier, mScrimController, mOnAlphaChange);
 
+        mTabModelSelectorSupplier = () -> mTabModelSelector;
         mHubLayout =
                 spy(
                         new HubLayout(
@@ -285,7 +288,8 @@ public class HubLayoutUnitTest {
                                 mUpdateHost,
                                 mRenderHost,
                                 mLayoutStateProvider,
-                                dependencyHolder));
+                                dependencyHolder,
+                                mTabModelSelectorSupplier));
         mHubLayout.setTabModelSelector(mTabModelSelector);
         mHubLayout.setTabContentManager(mTabContentManager);
         mHubLayout.onFinishNativeInitialization();

@@ -88,6 +88,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     // Lazy Tab Switcher Init
     private final Supplier<StartSurface> mStartSurfaceSupplier;
     private final Supplier<TabSwitcher> mTabSwitcherSupplier;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ScrimCoordinator mScrimCoordinator;
     private final Callable<ViewGroup> mCreateTabSwitcherOrStartSurfaceCallable;
 
@@ -110,6 +111,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      *     StartSurfaceHomeLayout if it has value.
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher. Used
      *     to create TabSwitcherLayout if it has value.
+     * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
@@ -125,6 +127,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             ViewGroup contentContainer,
             Supplier<StartSurface> startSurfaceSupplier,
             Supplier<TabSwitcher> tabSwitcherSupplier,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
@@ -141,6 +144,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         mStartSurfaceSupplier = startSurfaceSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mScrimCoordinator = scrimCoordinator;
         mCreateTabSwitcherOrStartSurfaceCallable = delayedTabSwitcherOrStartSurfaceCallable;
         mHubLayoutDependencyHolder = hubLayoutDependencyHolder;
@@ -262,7 +266,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         /* updateHost= */ this,
                         renderHost,
                         /* layoutStateProvider= */ this,
-                        hubLayoutDependencyHolder);
+                        hubLayoutDependencyHolder,
+                        mTabModelSelectorSupplier);
         if (mTabContentManagerSupplier.hasValue()) {
             mHubLayout.setTabContentManager(mTabContentManagerSupplier.get());
         }

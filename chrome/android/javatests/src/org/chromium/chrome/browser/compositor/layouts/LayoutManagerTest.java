@@ -112,6 +112,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     private TabModelSelector mTabModelSelector;
     private Supplier<StartSurface> mStartSurfaceSupplier;
     private OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier;
+    private Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private LayoutManagerChrome mManager;
     private LayoutManagerChromePhone mManagerPhone;
 
@@ -233,6 +234,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         container,
                         mStartSurfaceSupplier,
                         mTabSwitcherSupplier,
+                        mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
                         tabContentManagerSupplier,
                         () -> mTopUiThemeColorProvider,
@@ -673,6 +675,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 });
 
         mStartSurfaceSupplier = () -> mStartSurface;
+        mTabModelSelectorSupplier = () -> mTabModelSelector;
     }
 
     @After

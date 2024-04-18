@@ -44,6 +44,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
      *     Start surface refactor is enabled. Used to create overviewLayout if it has value,
      *     otherwise will use the accessibility overview layout.
+     * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
@@ -57,6 +58,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ViewGroup contentContainer,
             Supplier<StartSurface> startSurfaceSupplier,
             Supplier<TabSwitcher> tabSwitcherSupplier,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
@@ -67,6 +69,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                 contentContainer,
                 startSurfaceSupplier,
                 tabSwitcherSupplier,
+                tabModelSelectorSupplier,
                 browserControlsStateProvider,
                 tabContentManagerSupplier,
                 topUiThemeColorProvider,

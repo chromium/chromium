@@ -106,6 +106,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
 
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabModelFilter);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getCount()).thenReturn(1);

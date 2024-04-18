@@ -30,6 +30,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -104,13 +106,15 @@ public class HubLayout extends Layout implements HubLayoutController {
      * @param layoutStateProvider The {@link LayoutStateProvider} for the {@link LayoutManager}.
      * @param dependencyHolder The {@link HubLayoutDependencyHolder} that holds dependencies for
      *     HubLayout.
+     * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      */
     public HubLayout(
             @NonNull Context context,
             @NonNull LayoutUpdateHost updateHost,
             @NonNull LayoutRenderHost renderHost,
             @NonNull LayoutStateProvider layoutStateProvider,
-            @NonNull HubLayoutDependencyHolder dependencyHolder) {
+            @NonNull HubLayoutDependencyHolder dependencyHolder,
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {
         super(context, updateHost, renderHost);
         mPreviousLayoutTypeSupplier.set(layoutStateProvider.getActiveLayoutType());
 
@@ -130,6 +134,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         mPaneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocused);
         mScrimController = dependencyHolder.getScrimController();
         mOnToolbarAlphaChange = dependencyHolder.getOnToolbarAlphaChange();
+        mTabModelSelector = tabModelSelectorSupplier.get();
     }
 
     @Override

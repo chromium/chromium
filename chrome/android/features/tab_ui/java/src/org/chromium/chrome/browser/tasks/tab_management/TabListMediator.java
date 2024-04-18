@@ -845,6 +845,7 @@ class TabListMediator {
         mActionsOnAllRelatedTabs = actionOnRelatedTabs;
         mUiType = uiType;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
+        mProfile = regularTabModelSupplier.get().getProfile();
 
         mTabModelObserver =
                 new TabModelObserver() {

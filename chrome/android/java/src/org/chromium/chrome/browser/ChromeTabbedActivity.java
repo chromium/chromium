@@ -809,6 +809,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mContentContainer,
                             mStartSurfaceSupplier,
                             mTabSwitcherSupplier,
+                            getTabModelSelectorSupplier(),
                             getBrowserControlsManager(),
                             getTabContentManagerSupplier(),
                             mRootUiCoordinator::getTopUiThemeColorProvider,
@@ -843,6 +844,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mContentContainer,
                             mStartSurfaceSupplier,
                             mTabSwitcherSupplier,
+                            getTabModelSelectorSupplier(),
                             getBrowserControlsManager(),
                             getTabContentManagerSupplier(),
                             mRootUiCoordinator::getTopUiThemeColorProvider,
@@ -1782,8 +1784,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
             }
 
-            // TODO(b/332766879): Call maybeShowTabSwitcher() here to handle data sharing intent on
-            // new Chrome instances.
+            maybeShowTabSwitcher(intent);
         } finally {
             TraceEvent.end("ChromeTabbedActivity.initializeState");
         }
@@ -4017,7 +4018,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         boolean shouldShowTabSwitcher =
                 IntentUtils.safeGetBooleanExtra(
                                 intent, DataSharingNotificationManager.DATA_SHARING_EXTRA, false)
-                        && IntentHandler.wasIntentSenderChrome(intent);
+                        && IntentHandler.wasIntentSenderChrome(intent)
+                        && !mTabModelSelector.isIncognitoSelected();
         if (shouldShowTabSwitcher) {
             // TODO(haileywang): Close the tab grid dialog when showing tab switcher from this path.
             TabModelUtils.runOnTabStateInitialized(
