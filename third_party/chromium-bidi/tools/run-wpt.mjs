@@ -17,11 +17,16 @@
  * limitations under the License.
  */
 
-import {execSync, spawnSync} from 'child_process';
+import {spawnSync} from 'child_process';
 import {mkdirSync, existsSync} from 'fs';
 import {join, resolve} from 'path';
 
 import {packageDirectorySync} from 'pkg-dir';
+
+import {
+  installAndGetChromeDriverPath,
+  installAndGetChromePath,
+} from './path-getter/path-getter.mjs';
 
 // Changing the current work directory to the package directory.
 process.chdir(packageDirectorySync());
@@ -60,13 +65,19 @@ if (
 
 let BROWSER_BIN = process.env.BROWSER_BIN;
 if (!BROWSER_BIN) {
-  BROWSER_BIN = execSync(`node ${join('tools', 'install-browser.mjs')}`)
-    .toString()
-    .trim();
+  BROWSER_BIN = installAndGetChromePath();
 }
 
 // Whether to use Chromedriver with mapper.
 const CHROMEDRIVER = process.env.CHROMEDRIVER || 'false';
+
+let CHROMEDRIVER_BIN = process.env.CHROMEDRIVER_BIN;
+if (!CHROMEDRIVER_BIN) {
+  CHROMEDRIVER_BIN =
+    CHROMEDRIVER === 'true'
+      ? installAndGetChromeDriverPath()
+      : join('tools', 'run-bidi-server.mjs');
+}
 
 // Whether to start the server in headless or headful mode.
 const HEADLESS = process.env.HEADLESS || 'true';
@@ -123,6 +134,8 @@ if (RUN_TESTS === 'true') {
   const wptRunArgs = [
     '--binary',
     BROWSER_BIN,
+    '--webdriver-binary',
+    CHROMEDRIVER_BIN,
     '--log-wptreport',
     WPT_REPORT,
     '--manifest',
@@ -184,15 +197,13 @@ if (RUN_TESTS === 'true') {
 
     log('Using chromedriver with mapper...');
     wptRunArgs.push(
-      '--install-webdriver',
       `--webdriver-arg=--bidi-mapper-path=${join(
         'lib',
         'iife',
         'mapperTab.js'
       )}`,
       `--webdriver-arg=--log-path=${chromeDriverLogs}`,
-      `--webdriver-arg=--log-level=${VERBOSE === 'true' ? 'ALL' : 'INFO'}`,
-      '--yes'
+      `--webdriver-arg=--log-level=${VERBOSE === 'true' ? 'ALL' : 'INFO'}`
     );
   } else {
     log('Using pure mapper...');
