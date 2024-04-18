@@ -57,6 +57,7 @@ class PriceInsightsModelTest : public PlatformTest {
         commerce::ShoppingServiceFactory::GetForBrowserState(
             test_chrome_browser_state_.get()));
     shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
+    shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(std::nullopt);
     fetch_configuration_callback_count = 0;
   }
 
@@ -95,6 +96,7 @@ TEST_F(PriceInsightsModelTest, TestFetchConfigurationNoProductInfo) {
   base::RunLoop run_loop;
 
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
 
   price_insights_model_->FetchConfigurationForWebState(
       web_state_.get(),
@@ -137,9 +139,48 @@ TEST_F(PriceInsightsModelTest, TestFetchProductInfo) {
       static_cast<PriceInsightsItemConfiguration*>(
           returned_configuration_.get());
 
+  EXPECT_EQ(false, config->price_insights_info.has_value());
   EXPECT_EQ(true, config->product_info.has_value());
   commerce::ProductInfo info2 = config->product_info.value();
   EXPECT_EQ(kTestTitle, info2.title);
+
+  EXPECT_EQ(0, GetPriceInsightsCallbacksCount());
+  EXPECT_EQ(0, GetPriceInsightsExecutionsCount());
+}
+
+// Test that GetPriceInsightsInfoForUrl return data when the configuration is
+// fetched.
+TEST_F(PriceInsightsModelTest, TestFetchPriceInsightsInfo) {
+  base::RunLoop run_loop;
+
+  std::optional<commerce::PriceInsightsInfo> info;
+  info.emplace();
+  info->product_cluster_id = 123u;
+  info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
+  info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(std::move(info));
+
+  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
+
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_.get(),
+      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  EXPECT_EQ(1, GetPriceInsightsCallbacksCount());
+  EXPECT_EQ(1, GetPriceInsightsExecutionsCount());
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  EXPECT_EQ(false, config->product_info.has_value());
+  EXPECT_EQ(true, config->price_insights_info.has_value());
+  commerce::PriceInsightsInfo info2 = config->price_insights_info.value();
+  EXPECT_EQ(123u, info2.product_cluster_id);
 
   EXPECT_EQ(0, GetPriceInsightsCallbacksCount());
   EXPECT_EQ(0, GetPriceInsightsExecutionsCount());
@@ -150,12 +191,22 @@ TEST_F(PriceInsightsModelTest, TestFetchProductInfo) {
 TEST_F(PriceInsightsModelTest, TestMultipleRequestForTheSameURL) {
   base::RunLoop run_loop;
 
-  std::optional<commerce::ProductInfo> info;
-  info.emplace();
-  info->title = kTestTitle;
-  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+  std::optional<commerce::ProductInfo> product_info;
+  product_info.emplace();
+  product_info->title = kTestTitle;
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      std::move(product_info));
+
+  std::optional<commerce::PriceInsightsInfo> price_insights_info;
+  price_insights_info.emplace();
+  price_insights_info->product_cluster_id = 123u;
+  price_insights_info->catalog_history_prices.emplace_back("2021-01-01",
+                                                           3330000);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      std::move(price_insights_info));
 
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
 
   price_insights_model_->FetchConfigurationForWebState(
       web_state_.get(),
@@ -186,6 +237,7 @@ TEST_F(PriceInsightsModelTest, TestMultipleRequestForTheSameURL) {
           returned_configuration_.get());
 
   EXPECT_EQ(true, config->product_info.has_value());
+  EXPECT_EQ(true, config->price_insights_info.has_value());
 
   EXPECT_EQ(0, GetPriceInsightsCallbacksCount());
   EXPECT_EQ(0, GetPriceInsightsExecutionsCount());
@@ -196,12 +248,22 @@ TEST_F(PriceInsightsModelTest, TestMultipleRequestForTheSameURL) {
 TEST_F(PriceInsightsModelTest, TestMultipleRequestForDifferentURL) {
   base::RunLoop run_loop;
 
-  std::optional<commerce::ProductInfo> info;
-  info.emplace();
-  info->title = kTestTitle;
-  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+  std::optional<commerce::ProductInfo> product_info;
+  product_info.emplace();
+  product_info->title = kTestTitle;
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      std::move(product_info));
+
+  std::optional<commerce::PriceInsightsInfo> price_insights_info;
+  price_insights_info.emplace();
+  price_insights_info->product_cluster_id = 123u;
+  price_insights_info->catalog_history_prices.emplace_back("2021-01-01",
+                                                           3330000);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      std::move(price_insights_info));
 
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(2);
+  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(2);
 
   price_insights_model_->FetchConfigurationForWebState(
       web_state_.get(),
@@ -233,6 +295,7 @@ TEST_F(PriceInsightsModelTest, TestMultipleRequestForDifferentURL) {
           returned_configuration_.get());
 
   EXPECT_EQ(true, config->product_info.has_value());
+  EXPECT_EQ(true, config->price_insights_info.has_value());
 
   EXPECT_EQ(0, GetPriceInsightsCallbacksCount());
   EXPECT_EQ(0, GetPriceInsightsExecutionsCount());

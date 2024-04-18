@@ -54,6 +54,8 @@ struct PriceInsightsExecution {
   std::unique_ptr<PriceInsightsItemConfiguration> config;
   // Indicates if product info has been processed.
   bool is_product_info_processed = false;
+  // Indicates if price insights info has been processed.
+  bool is_price_insights_info_processed = false;
   // Indicates if the configuration is valid.
   bool is_valid_config = false;
 };
@@ -77,8 +79,12 @@ class PriceInsightsModel : public ContextualPanelModel, public KeyedService {
 
   // Callback function called when product info URL is received.
   void OnProductInfoUrlReceived(
-      const GURL& product_url,
-      const std::optional<const commerce::ProductInfo>& product_info);
+      const GURL& url,
+      const std::optional<const commerce::ProductInfo>& info);
+  // Callback function called when price insights info URL is received.
+  void OnPriceInsightsInfoUrlReceived(
+      const GURL& url,
+      const std::optional<commerce::PriceInsightsInfo>& info);
   // Runs callbacks associated with a given URL.
   void RunCallbacks(const GURL& product_url);
   // Pointer to the shopping service.

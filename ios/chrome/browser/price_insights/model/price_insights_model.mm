@@ -42,23 +42,43 @@ void PriceInsightsModel::FetchConfigurationForWebState(
   shopping_service_->GetProductInfoForUrl(
       product_url, base::BindOnce(&PriceInsightsModel::OnProductInfoUrlReceived,
                                   weak_ptr_factory_.GetWeakPtr()));
+  shopping_service_->GetPriceInsightsInfoForUrl(
+      product_url,
+      base::BindOnce(&PriceInsightsModel::OnPriceInsightsInfoUrlReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PriceInsightsModel::OnProductInfoUrlReceived(
-    const GURL& product_url,
-    const std::optional<const commerce::ProductInfo>& product_info) {
-  if (product_info.has_value()) {
-    price_insights_executions_[product_url]->config->product_info =
-        product_info.value();
-    price_insights_executions_[product_url]->is_valid_config = true;
+    const GURL& url,
+    const std::optional<const commerce::ProductInfo>& info) {
+  if (info.has_value()) {
+    price_insights_executions_[url]->config->product_info = info.value();
+    price_insights_executions_[url]->is_valid_config = true;
   }
 
-  price_insights_executions_[product_url]->is_product_info_processed = true;
-  RunCallbacks(product_url);
+  price_insights_executions_[url]->is_product_info_processed = true;
+  RunCallbacks(url);
+}
+
+void PriceInsightsModel::OnPriceInsightsInfoUrlReceived(
+    const GURL& url,
+    const std::optional<commerce::PriceInsightsInfo>& info) {
+  if (info.has_value()) {
+    price_insights_executions_[url]->config->price_insights_info = info.value();
+    price_insights_executions_[url]->is_valid_config = true;
+  }
+
+  price_insights_executions_[url]->is_price_insights_info_processed = true;
+  RunCallbacks(url);
 }
 
 void PriceInsightsModel::RunCallbacks(const GURL& product_url) {
   if (!price_insights_executions_[product_url]->is_product_info_processed) {
+    return;
+  }
+
+  if (!price_insights_executions_[product_url]
+           ->is_price_insights_info_processed) {
     return;
   }
 
