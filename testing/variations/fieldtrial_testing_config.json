@@ -379,24 +379,6 @@
             ]
         }
     ],
-    "AndroidHub": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "floating_action_button": "false"
-                    },
-                    "enable_features": [
-                        "AndroidHub"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidLowLatencyCanvas": [
         {
             "platforms": [
