@@ -268,6 +268,8 @@ MessageSection::MessageSection(
                   // Reload button.
                   views::Builder<views::MdTextButton>()
                       .SetCallback(base::BindRepeating(reload_callback_))
+                      .SetBgColorIdOverride(
+                          kColorExtensionsMenuHighlightedBackground)
                       .SetProperty(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
