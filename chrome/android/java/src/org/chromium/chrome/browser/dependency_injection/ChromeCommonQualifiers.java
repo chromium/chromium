@@ -9,8 +9,6 @@ package org.chromium.chrome.browser.dependency_injection;
  * when it is ambiguous.
  */
 public interface ChromeCommonQualifiers {
-    String LAST_USED_REGULAR_PROFILE = "LAST_USED_REGULAR_PROFILE";
-
     String ACTIVITY_CONTEXT = "ACTIVITY_CONTEXT";
     String APP_CONTEXT = "APP_CONTEXT";
 
