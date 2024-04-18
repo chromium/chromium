@@ -195,43 +195,36 @@ std::string BrowserLiveTabContext::GetWorkspace() const {
 }
 
 sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
+    const sessions::tab_restore::Tab& tab,
     int tab_index,
-    int selected_navigation,
-    const std::string& extension_app_id,
-    std::optional<tab_groups::TabGroupId> group,
-    const tab_groups::TabGroupVisualData& group_visual_data,
-    bool select,
-    bool pin,
-    const sessions::tab_restore::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data,
-    const SessionID* tab_id) {
+    bool select) {
   SessionStorageNamespace* storage_namespace =
-      tab_platform_data
+      tab.platform_data
           ? static_cast<const sessions::ContentPlatformSpecificTabData*>(
-                tab_platform_data)
+                tab.platform_data.get())
                 ->session_storage_namespace()
           : nullptr;
 
   TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
-  const bool first_tab_in_group = group_model && group.has_value() &&
-                                  !group_model->ContainsTabGroup(group.value());
+  const bool first_tab_in_group =
+      group_model && tab.group.has_value() &&
+      !group_model->ContainsTabGroup(tab.group.value());
+
   WebContents* web_contents = nullptr;
 
-    web_contents = chrome::AddRestoredTab(
-        browser_, navigations, tab_index, selected_navigation, extension_app_id,
-        group, select, pin, base::TimeTicks(), storage_namespace,
-        user_agent_override, extra_data, false /* from_session_restore */);
-
+  web_contents = chrome::AddRestoredTab(
+      browser_, tab.navigations, tab_index, tab.normalized_navigation_index(),
+      tab.extension_app_id, tab.group, select, tab.pinned, base::TimeTicks(),
+      storage_namespace, tab.user_agent_override, tab.extra_data,
+      false /* from_session_restore */);
 
   // Only update the metadata if the group doesn't already exist since the
   // existing group has the latest metadata, which may have changed from the
   // time the tab was closed.
   if (first_tab_in_group) {
     const tab_groups::TabGroupVisualData new_data(
-        group_visual_data.title(), group_visual_data.color(), false);
-    group_model->GetTabGroup(group.value())->SetVisualData(new_data);
+        tab.group_visual_data->title(), tab.group_visual_data->color(), false);
+    group_model->GetTabGroup(tab.group.value())->SetVisualData(new_data);
   }
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -247,8 +240,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     DCHECK(!web_contents->IsLoading());
   }
   std::vector<TabLoader::RestoredTab> restored_tabs;
-  restored_tabs.emplace_back(web_contents, is_active, !extension_app_id.empty(),
-                             pin, group);
+  restored_tabs.emplace_back(web_contents, is_active,
+                             !tab.extension_app_id.empty(), tab.pinned,
+                             tab.group);
   TabLoader::RestoreTabs(restored_tabs, base::TimeTicks::Now());
 #else   // BUILDFLAG(ENABLE_SESSION_SERVICE)
   // Load the tab manually if there is no TabLoader.
@@ -259,13 +253,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 }
 
 sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    std::optional<tab_groups::TabGroupId> group,
-    int selected_navigation,
-    const std::string& extension_app_id,
-    const sessions::tab_restore::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data) {
+    const sessions::tab_restore::Tab& tab) {
+  const sessions::tab_restore::PlatformSpecificTabData* tab_platform_data =
+      tab.platform_data.get();
   SessionStorageNamespace* storage_namespace =
       tab_platform_data
           ? static_cast<const sessions::ContentPlatformSpecificTabData*>(
@@ -274,9 +264,9 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
           : nullptr;
 
   WebContents* web_contents = chrome::ReplaceRestoredTab(
-      browser_, navigations, selected_navigation, extension_app_id,
-      storage_namespace, user_agent_override, extra_data,
-      false /* from_session_restore */);
+      browser_, tab.navigations, tab.normalized_navigation_index(),
+      tab.extension_app_id, storage_namespace, tab.user_agent_override,
+      tab.extra_data, false /* from_session_restore */);
   return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
 

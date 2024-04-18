@@ -30,7 +30,6 @@ class Rect;
 namespace sessions {
 
 class LiveTab;
-class SerializedNavigationEntry;
 
 // An interface representing the context in which LiveTab instances exist in the
 // embedder. As a concrete example, desktop Chrome has an implementation that
@@ -68,36 +67,19 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual ui::WindowShowState GetRestoredState() const = 0;
   virtual std::string GetWorkspace() const = 0;
 
-  // Note: |tab_platform_data| may be null (e.g., if restoring from last session
+  // Note: |tab.platform_data| may be null (e.g., if restoring from last session
   // as this data is not persisted, or if the platform does not provide
   // platform-specific data).
-  // |tab_id| is the tab's unique SessionID. Only present if a historical tab
+  // |tab.id| is the tab's unique SessionID. Only present if a historical tab
   // has been created by TabRestoreService.
-  virtual LiveTab* AddRestoredTab(
-      const std::vector<SerializedNavigationEntry>& navigations,
-      int tab_index,
-      int selected_navigation,
-      const std::string& extension_app_id,
-      std::optional<tab_groups::TabGroupId> group,
-      const tab_groups::TabGroupVisualData& group_visual_data,
-      bool select,
-      bool pin,
-      const tab_restore::PlatformSpecificTabData* tab_platform_data,
-      const sessions::SerializedUserAgentOverride& user_agent_override,
-      const std::map<std::string, std::string>& extra_data,
-      const SessionID* tab_id) = 0;
+  virtual LiveTab* AddRestoredTab(const tab_restore::Tab& tab,
+                                  int tab_index,
+                                  bool select) = 0;
 
-  // Note: |tab_platform_data| may be null (e.g., if restoring from last session
+  // Note: |tab.platform_data| may be null (e.g., if restoring from last session
   // as this data is not persisted, or if the platform does not provide
   // platform-specific data).
-  virtual LiveTab* ReplaceRestoredTab(
-      const std::vector<SerializedNavigationEntry>& navigations,
-      std::optional<tab_groups::TabGroupId> group,
-      int selected_navigation,
-      const std::string& extension_app_id,
-      const tab_restore::PlatformSpecificTabData* tab_platform_data,
-      const sessions::SerializedUserAgentOverride& user_agent_override,
-      const std::map<std::string, std::string>& extra_data) = 0;
+  virtual LiveTab* ReplaceRestoredTab(const tab_restore::Tab& tab) = 0;
   virtual void CloseTab() = 0;
 
  protected:

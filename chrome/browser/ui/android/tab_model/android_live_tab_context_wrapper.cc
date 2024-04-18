@@ -9,6 +9,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/sessions/content/content_live_tab.h"
+#include "components/sessions/core/tab_restore_types.h"
 
 AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     TabModel* tab_model,
@@ -90,28 +91,17 @@ void AndroidLiveTabContextRestoreWrapper::SetVisualDataForGroup(
 }
 
 sessions::LiveTab* AndroidLiveTabContextRestoreWrapper::AddRestoredTab(
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
+    const sessions::tab_restore::Tab& tab,
     int tab_index,
-    int selected_navigation,
-    const std::string& extension_app_id,
-    std::optional<tab_groups::TabGroupId> group,
-    const tab_groups::TabGroupVisualData& group_visual_data,
-    bool select,
-    bool pin,
-    const sessions::tab_restore::PlatformSpecificTabData* storage_namespace,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data,
-    const SessionID* tab_id) {
-  auto* live_tab = AndroidLiveTabContext::AddRestoredTab(
-      navigations, tab_index, selected_navigation, extension_app_id, group,
-      group_visual_data, select, pin, storage_namespace, user_agent_override,
-      extra_data, tab_id);
-  if (group) {
-    TabAndroid* tab = TabAndroid::FromWebContents(
+    bool select) {
+  auto* live_tab =
+      AndroidLiveTabContext::AddRestoredTab(tab, tab_index, select);
+  if (tab.group) {
+    TabAndroid* restored_tab = TabAndroid::FromWebContents(
         static_cast<sessions::ContentLiveTab*>(live_tab)->web_contents());
-    DCHECK(tab);
-    tab_groups_[*group].visual_data = group_visual_data;
-    tab_groups_[*group].tab_ids.push_back(tab->GetAndroidId());
+    DCHECK(restored_tab);
+    tab_groups_[*tab.group].visual_data = *tab.group_visual_data;
+    tab_groups_[*tab.group].tab_ids.push_back(restored_tab->GetAndroidId());
   }
   return live_tab;
 }

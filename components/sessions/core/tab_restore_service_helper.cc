@@ -518,7 +518,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
             new_group_ids;
 
         for (size_t tab_i = 0; tab_i < window.tabs.size(); ++tab_i) {
-          const Tab& tab = *window.tabs[tab_i];
+          Tab& tab = *window.tabs[tab_i];
 
           // Relabel group IDs to prevent duplicating groups, e.g. if the same
           // window is restored twice or a tab of the same ID is restored
@@ -538,15 +538,13 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
             }
 
             new_group = it->second;
+            tab.group = new_group;
           }
 
           LiveTab* restored_tab = context->AddRestoredTab(
-              tab.navigations, context->GetTabCount(),
-              tab.current_navigation_index, tab.extension_app_id, new_group,
-              tab.group_visual_data.value_or(tab_groups::TabGroupVisualData()),
-              static_cast<int>(tab_i) == window.selected_tab_index, tab.pinned,
-              tab.platform_data.get(), tab.user_agent_override, tab.extra_data,
-              nullptr);
+              tab, /*tab_index=*/context->GetTabCount(),
+              /*select=*/static_cast<int>(tab_i) == window.selected_tab_index);
+
           if (restored_tab) {
             client_->OnTabRestored(
                 tab.navigations.at(tab.current_navigation_index).virtual_url());
@@ -886,23 +884,19 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     LiveTab** live_tab) {
   LiveTab* restored_tab;
   if (disposition == WindowOpenDisposition::CURRENT_TAB && context) {
-    restored_tab = context->ReplaceRestoredTab(
-        tab.navigations, std::nullopt, tab.current_navigation_index,
-        tab.extension_app_id, tab.platform_data.get(), tab.user_agent_override,
-        tab.extra_data);
+    restored_tab = context->ReplaceRestoredTab(tab);
   } else {
     // We only respect the tab's original browser if there's no disposition.
-    if (disposition == WindowOpenDisposition::UNKNOWN) {
-      if (tab.browser_id) {
-        context = client_->FindLiveTabContextWithID(
-            SessionID::FromSerializedValue(tab.browser_id));
-      }
+    if (disposition == WindowOpenDisposition::UNKNOWN && tab.browser_id) {
+      context = client_->FindLiveTabContextWithID(
+          SessionID::FromSerializedValue(tab.browser_id));
     }
 
     // Restore a grouped tab into its original group, even if the group has
     // since been moved to a different context. If the original group doesn't
     // exist any more, fall back to using the tab's original browser.
     if (tab.group.has_value()) {
+      // TODO: This needs to look at the saved id.
       LiveTabContext* group_context =
           client_->FindLiveTabContextWithGroup(tab.group.value());
       if (group_context) {
@@ -935,12 +929,8 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     }
 
     restored_tab = context->AddRestoredTab(
-        tab.navigations, tab_index, tab.current_navigation_index,
-        tab.extension_app_id, tab.group,
-        tab.group_visual_data.value_or(tab_groups::TabGroupVisualData()),
-        disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB, tab.pinned,
-        tab.platform_data.get(), tab.user_agent_override, tab.extra_data,
-        &tab.id);
+        tab, tab_index,
+        /*select=*/disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB);
   }
 
   client_->OnTabRestored(

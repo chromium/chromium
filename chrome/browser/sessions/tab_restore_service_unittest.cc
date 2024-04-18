@@ -117,34 +117,14 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_CONST_METHOD0(GetRestoredBounds, const gfx::Rect());
   MOCK_CONST_METHOD0(GetRestoredState, ui::WindowShowState());
   MOCK_CONST_METHOD0(GetWorkspace, std::string());
-
   MOCK_METHOD(sessions::LiveTab*,
               AddRestoredTab,
-              ((const std::vector<SerializedNavigationEntry>&),
-               int,
-               int,
-               (const std::string&),
-               std::optional<tab_groups::TabGroupId>,
-               (const tab_groups::TabGroupVisualData&),
-               bool,
-               bool,
-               const sessions::tab_restore::PlatformSpecificTabData*,
-               (const sessions::SerializedUserAgentOverride&),
-               (const std::map<std::string, std::string>&),
-               (const SessionID*)),
+              ((const sessions::tab_restore::Tab&), int, bool),
               (override));
-
   MOCK_METHOD(sessions::LiveTab*,
               ReplaceRestoredTab,
-              ((const std::vector<SerializedNavigationEntry>&),
-               std::optional<tab_groups::TabGroupId>,
-               int,
-               (const std::string&),
-               (const sessions::tab_restore::PlatformSpecificTabData*),
-               (const sessions::SerializedUserAgentOverride&),
-               (const std::map<std::string, std::string>&)),
+              ((const sessions::tab_restore::Tab&)),
               (override));
-
   MOCK_METHOD0(CloseTab, void());
 };
 

@@ -16,6 +16,7 @@
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/session_types.h"
+#include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/browser_context.h"
@@ -136,24 +137,15 @@ std::string AndroidLiveTabContext::GetWorkspace() const {
 }
 
 sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
+    const sessions::tab_restore::Tab& tab,
     int tab_index,
-    int selected_navigation,
-    const std::string& extension_app_id,
-    std::optional<tab_groups::TabGroupId> group,
-    const tab_groups::TabGroupVisualData& group_visual_data,
-    bool select,
-    bool pin,
-    const sessions::tab_restore::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data,
-    const SessionID* tab_id) {
+    bool select) {
   Profile* profile = tab_model_->GetProfile();
 
   // Prepare navigation history.
   std::vector<std::unique_ptr<content::NavigationEntry>> nav_entries =
       sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
-          navigations, profile);
+          tab.navigations, profile);
 
   // Restore web contents with navigation history. This is used for background
   // restore so start without a renderer.
@@ -164,8 +156,9 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(params);
   content::WebContents* raw_web_contents = web_contents.get();
-  web_contents->GetController().Restore(
-      selected_navigation, content::RestoreType::kRestored, &nav_entries);
+  web_contents->GetController().Restore(tab.normalized_navigation_index(),
+                                        content::RestoreType::kRestored,
+                                        &nav_entries);
 
   // Create new tab. Ownership is passed into java, which in turn creates a new
   // TabAndroid instance to own the WebContents.
@@ -178,17 +171,11 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
 }
 
 sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    std::optional<tab_groups::TabGroupId> group,
-    int selected_navigation,
-    const std::string& extension_app_id,
-    const sessions::tab_restore::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data) {
+    const sessions::tab_restore::Tab& tab) {
   // Prepare navigation history.
   sessions::SessionTab session_tab;
-  session_tab.current_navigation_index = selected_navigation;
-  session_tab.navigations = navigations;
+  session_tab.current_navigation_index = tab.normalized_navigation_index();
+  session_tab.navigations = tab.navigations;
 
   // This is called only on replacement of the current tab.
   content::WebContents* web_contents = tab_model_->GetActiveWebContents();
