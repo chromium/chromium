@@ -607,18 +607,18 @@ promise_test(async () => {
   const iframe_box = iframe29.getBoundingClientRect();
 
   await actions
-      .pointerMove(iframe_box.width / 2, iframe_box.height / 2, {origin: iframe29})
-      .pointerDown({button: actions.ButtonType.LEFT})
       .pointerMove(1,1,{origin: b29})
+      .pointerDown({button: actions.ButtonType.LEFT})
+      .pointerMove(iframe_box.width / 2, iframe_box.height / 2, {origin: iframe29})
       .pointerUp({button: actions.ButtonType.LEFT})
       .send();
   assert_true(p29.matches(':popover-open'), 'popover should be open after pointerUp in iframe.');
 
   actions = new test_driver.Actions();
   await actions
-      .pointerMove(1,1,{origin: b29})
-      .pointerDown({button: actions.ButtonType.LEFT})
       .pointerMove(iframe_box.width / 2, iframe_box.height / 2, {origin: iframe29})
+      .pointerDown({button: actions.ButtonType.LEFT})
+      .pointerMove(1,1,{origin: b29})
       .pointerUp({button: actions.ButtonType.LEFT})
       .send();
   assert_true(p29.matches(':popover-open'), 'popover should be open after pointerUp on main frame button.');

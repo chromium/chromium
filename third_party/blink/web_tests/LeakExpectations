@@ -46,8 +46,6 @@ crbug.com/1385278 [ Linux ] external/wpt/resource-timing/iframe-failed-commit.ht
 # Sheriff 2023-04-04
 crbug.com/1430360 [ Linux ] external/wpt/custom-elements/form-associated/label-delegatesFocus.html [ Failure Pass ]
 
-crbug.com/325981758 external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure ]
-
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
