@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -21,13 +22,14 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     private final AllPasswordsBottomSheetCoordinator mAllPasswordsBottomSheetCoordinator;
 
     private AllPasswordsBottomSheetBridge(
-            long nativeView, WindowAndroid windowAndroid, String origin) {
+            long nativeView, Profile profile, WindowAndroid windowAndroid, String origin) {
         mNativeView = nativeView;
         assert (mNativeView != 0);
         assert (windowAndroid.getActivity().get() != null);
         mAllPasswordsBottomSheetCoordinator = new AllPasswordsBottomSheetCoordinator();
         mAllPasswordsBottomSheetCoordinator.initialize(
                 windowAndroid.getActivity().get(),
+                profile,
                 BottomSheetControllerProvider.from(windowAndroid),
                 this,
                 origin);
@@ -35,8 +37,11 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
 
     @CalledByNative
     private static AllPasswordsBottomSheetBridge create(
-            long nativeView, WindowAndroid windowAndroid, @JniType("std::string") String origin) {
-        return new AllPasswordsBottomSheetBridge(nativeView, windowAndroid, origin);
+            long nativeView,
+            Profile profile,
+            WindowAndroid windowAndroid,
+            @JniType("std::string") String origin) {
+        return new AllPasswordsBottomSheetBridge(nativeView, profile, windowAndroid, origin);
     }
 
     @CalledByNative

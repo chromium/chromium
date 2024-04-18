@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.DISMISS_HANDLER;
-import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
 import org.junit.Before;
@@ -60,6 +59,7 @@ public class AllPasswordsBottomSheetControllerTest {
 
     private AllPasswordsBottomSheetMediator mMediator;
     private PropertyModel mModel;
+    private ListModel<ListItem> mListModel;
     private PropertyModel mModalDialogModel;
 
     @Before
@@ -70,7 +70,8 @@ public class AllPasswordsBottomSheetControllerTest {
         mModel =
                 AllPasswordsBottomSheetProperties.createDefaultModel(
                         EXAMPLE_ORIGIN, mMediator::onDismissed, mMediator::onQueryTextChange);
-        mMediator.initialize(mMockDelegate, mModel);
+        mListModel = new ListModel<>();
+        mMediator.initialize(mMockDelegate, mModel, mListModel);
 
         when(mUrlUtilitiesJniMock.getDomainAndRegistry(anyString(), anyBoolean()))
                 .then(inv -> getDomainAndRegistry(inv.getArgument(0)));
@@ -78,7 +79,7 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Test
     public void testCreatesValidDefaultModel() {
-        assertNotNull(mModel.get(SHEET_ITEMS));
+        assertNotNull(mListModel);
         assertNotNull(mModel.get(DISMISS_HANDLER));
         assertThat(mModel.get(VISIBLE), is(false));
     }
@@ -87,7 +88,7 @@ public class AllPasswordsBottomSheetControllerTest {
     public void testShowCredentialSetsCredentialListModel() {
         mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
 
-        ListModel<ListItem> itemList = mModel.get(SHEET_ITEMS);
+        ListModel<ListItem> itemList = mListModel;
         assertThat(itemList.size(), is(3));
 
         assertThat(itemList.get(0).type, is(ItemType.CREDENTIAL));
@@ -119,21 +120,21 @@ public class AllPasswordsBottomSheetControllerTest {
     public void testSearchFilterByUsername() {
         mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
         mMediator.onQueryTextChange("Bob");
-        assertThat(mModel.get(SHEET_ITEMS).size(), is(1));
+        assertThat(mListModel.size(), is(1));
     }
 
     @Test
     public void testSearchFilterByURL() {
         mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
         mMediator.onQueryTextChange("subdomain");
-        assertThat(mModel.get(SHEET_ITEMS).size(), is(1));
+        assertThat(mListModel.size(), is(1));
     }
 
     @Test
     public void testCredentialSortedByOrigin() {
         mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
 
-        ListModel<ListItem> itemList = mModel.get(SHEET_ITEMS);
+        ListModel<ListItem> itemList = mListModel;
 
         assertThat(itemList.get(0).model.get(CREDENTIAL), is(ANA));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(BOB));

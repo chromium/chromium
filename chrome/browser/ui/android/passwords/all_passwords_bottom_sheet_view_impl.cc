@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/features/keyboard_accessory/internal/jni/AllPasswordsBottomSheetBridge_jni.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -100,6 +101,8 @@ AllPasswordsBottomSheetViewImpl::GetOrCreateJavaObject() {
   }
   return java_object_internal_ = Java_AllPasswordsBottomSheetBridge_create(
              AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+             ProfileAndroid::FromProfile(controller_->GetProfile())
+                 ->GetJavaObject(),
              controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
              controller_->GetFrameUrl().spec());
 }

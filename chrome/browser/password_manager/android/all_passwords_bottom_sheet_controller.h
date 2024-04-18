@@ -84,6 +84,9 @@ class AllPasswordsBottomSheetController
                             const std::u16string password,
                             RequestsToFillPassword requests_to_fill_password);
 
+  // The Profile associated with the displayed web contents.
+  Profile* GetProfile();
+
   // The web page view containing the focused field.
   gfx::NativeView GetNativeView();
 

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
-import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -23,13 +22,18 @@ import java.util.Locale;
 class AllPasswordsBottomSheetMediator {
     private AllPasswordsBottomSheetCoordinator.Delegate mDelegate;
     private PropertyModel mModel;
+    private ListModel<ListItem> mListModel;
     private Credential[] mCredentials;
     private boolean mIsPasswordField;
 
-    void initialize(AllPasswordsBottomSheetCoordinator.Delegate delegate, PropertyModel model) {
+    void initialize(
+            AllPasswordsBottomSheetCoordinator.Delegate delegate,
+            PropertyModel model,
+            ListModel<ListItem> listModel) {
         assert delegate != null;
         mDelegate = delegate;
         mModel = model;
+        mListModel = listModel;
     }
 
     void showCredentials(Credential[] credentials, boolean isPasswordField) {
@@ -39,15 +43,14 @@ class AllPasswordsBottomSheetMediator {
         mCredentials = credentials;
         mIsPasswordField = isPasswordField;
 
-        ListModel<ListItem> sheetItems = mModel.get(SHEET_ITEMS);
-        sheetItems.clear();
+        mListModel.clear();
 
         for (Credential credential : mCredentials) {
             if (credential.getPassword().isEmpty() && isPasswordField) continue;
             final PropertyModel model =
                     AllPasswordsBottomSheetProperties.CredentialProperties.createCredentialModel(
                             credential, this::onCredentialSelected, mIsPasswordField);
-            sheetItems.add(
+            mListModel.add(
                     new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL, model));
         }
         mModel.set(VISIBLE, true);
@@ -56,11 +59,11 @@ class AllPasswordsBottomSheetMediator {
     /**
      * Filters the credentials list based on the passed text and adds the resulting credentials to
      * the model.
+     *
      * @param newText the text used to filter the credentials.
      */
     void onQueryTextChange(String newText) {
-        ListModel<ListItem> sheetItems = mModel.get(SHEET_ITEMS);
-        sheetItems.clear();
+        mListModel.clear();
 
         for (Credential credential : mCredentials) {
             if ((credential.getPassword().isEmpty() && mIsPasswordField)
@@ -70,7 +73,7 @@ class AllPasswordsBottomSheetMediator {
             final PropertyModel model =
                     AllPasswordsBottomSheetProperties.CredentialProperties.createCredentialModel(
                             credential, this::onCredentialSelected, mIsPasswordField);
-            sheetItems.add(
+            mListModel.add(
                     new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL, model));
         }
     }

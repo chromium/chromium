@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
@@ -28,14 +30,19 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordinator {
     private final PasswordAccessorySheetMediator mMediator;
     private final Context mContext;
+    private final Profile mProfile;
 
     /**
      * Creates the passwords tab.
+     *
      * @param context The {@link Context} containing resources like icons and layouts for this tab.
+     * @param profile The {@link Profile} associated with the passwords.
      * @param scrollListener An optional listener that will be bound to the inflated recycler view.
      */
     public PasswordAccessorySheetCoordinator(
-            Context context, @Nullable RecyclerView.OnScrollListener scrollListener) {
+            Context context,
+            Profile profile,
+            @Nullable RecyclerView.OnScrollListener scrollListener) {
         super(
                 context.getString(R.string.password_list_title),
                 IconProvider.getIcon(context, R.drawable.ic_vpn_key_grey),
@@ -44,6 +51,7 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
                 AccessoryTabType.PASSWORDS,
                 scrollListener);
         mContext = context;
+        mProfile = profile;
         mMediator =
                 new PasswordAccessorySheetMediator(
                         mModel,
@@ -56,7 +64,11 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     @Override
     public void onTabCreated(ViewGroup view) {
         super.onTabCreated(view);
-        PasswordAccessorySheetViewBinder.initializeView((RecyclerView) view, mModel.get(ITEMS));
+        PasswordAccessorySheetViewBinder.UiConfiguration uiConfiguration =
+                new PasswordAccessorySheetViewBinder.UiConfiguration();
+        uiConfiguration.faviconHelper = FaviconHelper.create(view.getContext(), mProfile);
+        PasswordAccessorySheetViewBinder.initializeView(
+                (RecyclerView) view, createAdapter(uiConfiguration, mModel.get(ITEMS)));
     }
 
     @Override
@@ -75,16 +87,22 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
      * Creates an adapter to an {@link PasswordAccessorySheetViewBinder} that is wired up to the
      * model change processor which listens to the {@link AccessorySheetTabItemsModel}.
      *
+     * @param uiConfiguration Additional generic UI configuration.
      * @param model the {@link AccessorySheetTabItemsModel} the adapter gets its data from.
      * @return Returns an {@link PasswordAccessorySheetViewBinder} wired to a MCP.
      */
     static RecyclerViewAdapter<AccessorySheetTabViewBinder.ElementViewHolder, Void> createAdapter(
+            PasswordAccessorySheetViewBinder.UiConfiguration uiConfiguration,
             ListModel<AccessorySheetDataPiece> model) {
+        assert uiConfiguration != null;
         return new RecyclerViewAdapter<>(
                 new SimpleRecyclerViewMcp<>(
                         model,
                         AccessorySheetDataPiece::getType,
                         AccessorySheetTabViewBinder.ElementViewHolder::bind),
-                PasswordAccessorySheetViewBinder::create);
+                (parent, viewType) -> {
+                    return PasswordAccessorySheetViewBinder.create(
+                            parent, viewType, uiConfiguration);
+                });
     }
 }

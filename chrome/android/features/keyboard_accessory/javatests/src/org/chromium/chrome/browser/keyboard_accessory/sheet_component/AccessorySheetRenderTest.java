@@ -127,7 +127,7 @@ public class AccessorySheetRenderTest {
 
     private static class TestFaviconHelper extends FaviconHelper {
         public TestFaviconHelper(Context context) {
-            super(context);
+            super(context, null);
         }
 
         @Override
@@ -139,7 +139,7 @@ public class AccessorySheetRenderTest {
     @Before
     public void setUp() throws InterruptedException {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        FaviconHelper.setCreationStrategy(TestFaviconHelper::new);
+        FaviconHelper.setCreationStrategy((context, profile) -> new TestFaviconHelper(context));
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
@@ -206,7 +206,7 @@ public class AccessorySheetRenderTest {
                 TestThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new PasswordAccessorySheetCoordinator(
-                                        mActivityTestRule.getActivity(), null));
+                                        mActivityTestRule.getActivity(), mProfile, null));
         showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "Passwords");

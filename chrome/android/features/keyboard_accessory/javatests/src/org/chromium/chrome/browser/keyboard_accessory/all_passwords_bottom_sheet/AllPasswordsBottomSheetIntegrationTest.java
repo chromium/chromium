@@ -76,6 +76,7 @@ public class AllPasswordsBottomSheetIntegrationTest {
                     mCoordinator = new AllPasswordsBottomSheetCoordinator();
                     mCoordinator.initialize(
                             mActivityTestRule.getActivity(),
+                            mActivityTestRule.getProfile(false),
                             mBottomSheetController,
                             mDelegate,
                             EXAMPLE_URL);

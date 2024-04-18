@@ -25,16 +25,25 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.ListModel;
 
 /**
- * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>}
- * to the {@link RecyclerView} used as view of a tab for the accessory sheet component.
+ * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>} to the
+ * {@link RecyclerView} used as view of a tab for the accessory sheet component.
  */
 class PasswordAccessorySheetViewBinder {
-    static ElementViewHolder create(ViewGroup parent, @AccessorySheetDataPiece.Type int viewType) {
+    /** Generic UI Configurations that help to transform specific model data. */
+    static class UiConfiguration {
+        /** Supports loading favicons for accessory data. */
+        public FaviconHelper faviconHelper;
+    }
+
+    static ElementViewHolder create(
+            ViewGroup parent,
+            @AccessorySheetDataPiece.Type int viewType,
+            UiConfiguration uiConfiguration) {
         switch (viewType) {
             case AccessorySheetDataPiece.Type.PASSKEY_SECTION:
                 return new PasskeyChipViewHolder(parent);
             case AccessorySheetDataPiece.Type.PASSWORD_INFO:
-                return new PasswordInfoViewHolder(parent);
+                return new PasswordInfoViewHolder(parent, uiConfiguration.faviconHelper);
             case AccessorySheetDataPiece.Type.TITLE:
                 return new AccessorySheetTabViewBinder.TitleViewHolder(
                         parent, R.layout.keyboard_accessory_sheet_tab_title);
@@ -66,10 +75,12 @@ class PasswordAccessorySheetViewBinder {
     /** Holds a TextView that represents a list entry. */
     static class PasswordInfoViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.UserInfo, PasswordAccessoryInfoView> {
+        private final FaviconHelper mFaviconHelper;
         String mFaviconRequestOrigin;
 
-        PasswordInfoViewHolder(ViewGroup parent) {
+        PasswordInfoViewHolder(ViewGroup parent, FaviconHelper faviconHelper) {
             super(parent, R.layout.keyboard_accessory_sheet_tab_password_info);
+            mFaviconHelper = faviconHelper;
         }
 
         @Override
@@ -83,9 +94,8 @@ class PasswordAccessorySheetViewBinder {
 
             // Set the default icon, then try to get a better one.
             mFaviconRequestOrigin = info.getOrigin(); // Save the origin for returning callback.
-            FaviconHelper faviconHelper = FaviconHelper.create(view.getContext());
-            view.setIconForBitmap(faviconHelper.getDefaultIcon(info.getOrigin()));
-            faviconHelper.fetchFavicon(info.getOrigin(), d -> setIcon(view, info.getOrigin(), d));
+            view.setIconForBitmap(mFaviconHelper.getDefaultIcon(info.getOrigin()));
+            mFaviconHelper.fetchFavicon(info.getOrigin(), d -> setIcon(view, info.getOrigin(), d));
         }
 
         private void setIcon(
@@ -113,8 +123,8 @@ class PasswordAccessorySheetViewBinder {
         }
     }
 
-    static void initializeView(RecyclerView view, AccessorySheetTabItemsModel model) {
-        view.setAdapter(PasswordAccessorySheetCoordinator.createAdapter(model));
+    static void initializeView(RecyclerView view, RecyclerView.Adapter adapter) {
+        view.setAdapter(adapter);
         view.addItemDecoration(new DynamicInfoViewBottomSpacer(PasswordAccessoryInfoView.class));
     }
 }

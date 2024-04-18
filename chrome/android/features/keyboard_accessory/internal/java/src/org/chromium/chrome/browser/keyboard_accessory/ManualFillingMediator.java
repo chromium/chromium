@@ -892,7 +892,7 @@ class ManualFillingMediator
                         mActivity, mAccessorySheet.getScrollListener());
             case AccessoryTabType.PASSWORDS:
                 return new PasswordAccessorySheetCoordinator(
-                        mActivity, mAccessorySheet.getScrollListener());
+                        mActivity, profile, mAccessorySheet.getScrollListener());
             case AccessoryTabType.OBSOLETE_TOUCH_TO_FILL:
             case AccessoryTabType.ALL: // Intentional fallthrough.
             case AccessoryTabType.COUNT: // Intentional fallthrough.

@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_botto
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ON_QUERY_TEXT_CHANGE;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ORIGIN;
-import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
 import android.content.res.Resources;
@@ -34,8 +33,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.RecyclerViewAdapter;
-import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 import org.chromium.url.GURL;
 
 /**
@@ -43,8 +40,15 @@ import org.chromium.url.GURL;
  * PropertyModel} to the suitable method in {@link AllPasswordsBottomSheetView}.
  */
 class AllPasswordsBottomSheetViewBinder {
+    /** Generic UI Configurations that help to transform specific model data. */
+    static class UiConfiguration {
+        /** Supports loading favicons for accessory data. */
+        public FaviconHelper faviconHelper;
+    }
+
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param view The {@link AllPasswordsBottomSheetView} to update.
      * @param propertyKey The {@link PropertyKey} which changed.
@@ -61,14 +65,6 @@ class AllPasswordsBottomSheetViewBinder {
                             view.getContentView().getResources(), model.get(ORIGIN)));
         } else if (propertyKey == ON_QUERY_TEXT_CHANGE) {
             view.setSearchQueryChangeHandler(model.get(ON_QUERY_TEXT_CHANGE));
-        } else if (propertyKey == SHEET_ITEMS) {
-            view.setSheetItemListAdapter(
-                    new RecyclerViewAdapter<>(
-                            new SimpleRecyclerViewMcp<>(
-                                    model.get(SHEET_ITEMS),
-                                    AllPasswordsBottomSheetProperties::getItemType,
-                                    AllPasswordsBottomSheetViewBinder::connectPropertyModel),
-                            AllPasswordsBottomSheetViewBinder::createViewHolder));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -76,43 +72,50 @@ class AllPasswordsBottomSheetViewBinder {
 
     /**
      * This method creates a model change processor for each recycler view item when it is created.
+     *
      * @param holder A {@link AllPasswordsBottomSheetViewHolder} holding the view and view binder
-     *         for the MCP.
+     *     for the MCP.
      * @param item A {@link MVCListAdapter.ListItem} holding the {@link PropertyModel} for the MCP.
      */
-    private static void connectPropertyModel(
+    static void connectPropertyModel(
             AllPasswordsBottomSheetViewHolder holder, MVCListAdapter.ListItem item) {
         holder.setupModelChangeProcessor(item.model);
     }
 
     /**
      * Factory used to create a new View inside the ListView inside the AllPasswordsBottomSheetView.
+     *
      * @param parent The parent {@link ViewGroup} of the new item.
      * @param itemType The type of View to create.
+     * @param uiConfiguration Supports additional generic UI Configuration.
      */
-    private static AllPasswordsBottomSheetViewHolder createViewHolder(
-            ViewGroup parent, @ItemType int itemType) {
+    static AllPasswordsBottomSheetViewHolder createViewHolder(
+            ViewGroup parent, @ItemType int itemType, UiConfiguration uiConfiguration) {
         switch (itemType) {
             case ItemType.CREDENTIAL:
                 return new AllPasswordsBottomSheetViewHolder(
                         parent,
                         R.layout.keyboard_accessory_sheet_tab_password_info,
-                        AllPasswordsBottomSheetViewBinder::bindCredentialView);
+                        (model, view, propertyKey) ->
+                                bindCredentialView(
+                                        model, view, propertyKey, uiConfiguration.faviconHelper));
         }
         assert false : "Cannot create view for ItemType: " + itemType;
         return null;
     }
 
     /**
-     * Called whenever a credential is bound to this view holder. Please note that this method
-     * might be called on the same list entry repeatedly, so make sure to always set a default
-     * for unused fields.
+     * Called whenever a credential is bound to this view holder. Please note that this method might
+     * be called on the same list entry repeatedly, so make sure to always set a default for unused
+     * fields.
+     *
      * @param model The model containing the data for the view
      * @param view The view to be bound
      * @param propertyKey The key of the property to be bound
+     * @param faviconHelper Supports fetching favicons for the view.
      */
     private static void bindCredentialView(
-            PropertyModel model, View view, PropertyKey propertyKey) {
+            PropertyModel model, View view, PropertyKey propertyKey, FaviconHelper faviconHelper) {
         Credential credential = model.get(CREDENTIAL);
         ChipView usernameChip = view.findViewById(R.id.suggestion_text);
         ChipView passwordChip = view.findViewById(R.id.password_text);
@@ -153,7 +156,6 @@ class AllPasswordsBottomSheetViewBinder {
                                     : credential.getPassword());
 
             // Set the default icon, then try to get a better one.
-            FaviconHelper faviconHelper = FaviconHelper.create(view.getContext());
             ImageView iconView = view.findViewById(R.id.favicon);
             setIconForBitmap(
                     iconView,

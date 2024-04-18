@@ -119,6 +119,10 @@ void AllPasswordsBottomSheetController::OnGetPasswordStoreResults(
   on_password_forms_received_barrier_callback_.Run(std::move(results));
 }
 
+Profile* AllPasswordsBottomSheetController::GetProfile() {
+  return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+}
+
 gfx::NativeView AllPasswordsBottomSheetController::GetNativeView() {
   return web_contents_->GetNativeView();
 }

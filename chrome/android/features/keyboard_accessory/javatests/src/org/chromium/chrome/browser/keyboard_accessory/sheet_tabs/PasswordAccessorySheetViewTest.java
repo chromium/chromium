@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -96,8 +97,20 @@ public class PasswordAccessorySheetViewTest {
                                                 mView.set((RecyclerView) view);
                                                 AccessorySheetTabViewBinder.initializeView(
                                                         mView.get(), null);
-                                                PasswordAccessorySheetViewBinder
-                                                        .initializeView(mView.get(), mModel);
+                                                PasswordAccessorySheetViewBinder.UiConfiguration
+                                                        uiConfiguration =
+                                                                new PasswordAccessorySheetViewBinder
+                                                                        .UiConfiguration();
+                                                uiConfiguration.faviconHelper =
+                                                        FaviconHelper.create(
+                                                                view.getContext(),
+                                                                mActivityTestRule.getProfile(
+                                                                        false));
+                                                PasswordAccessorySheetViewBinder.initializeView(
+                                                        mView.get(),
+                                                        PasswordAccessorySheetCoordinator
+                                                                .createAdapter(
+                                                                        uiConfiguration, mModel));
                                             }
 
                                             @Override

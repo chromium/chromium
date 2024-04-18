@@ -40,6 +40,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.modelutil.ListObservable;
 
@@ -70,6 +72,7 @@ public class PasswordAccessorySheetControllerTest {
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock private AccessorySheetTabView mMockView;
     @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
+    @Mock private Profile mProfile;
 
     private PasswordAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabItemsModel mSheetDataPieces;
@@ -77,8 +80,11 @@ public class PasswordAccessorySheetControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        when(mMockView.getContext()).thenReturn(ContextUtils.getApplicationContext());
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
-        mCoordinator = new PasswordAccessorySheetCoordinator(RuntimeEnvironment.application, null);
+        mCoordinator =
+                new PasswordAccessorySheetCoordinator(
+                        RuntimeEnvironment.application, mProfile, null);
         assertNotNull(mCoordinator);
         mSheetDataPieces = mCoordinator.getSheetDataPiecesForTesting();
     }
