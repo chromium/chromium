@@ -128,8 +128,9 @@ MATCHER_P(IsRequestRestart, method_name, "") {
   return true;
 }
 
-// Matcher that verifies a |SetAmbientLightSensorEnabled| dbus::MethodCall.
-MATCHER_P2(IsSetAmbientLightSensorEnabled, method_name, sensor_enabled, "") {
+// Matcher that verifies a |SetAmbientLightSensorEnabled| and
+// |SetKeyboardAmbientLightSensorEnabled| dbus::MethodCall.
+MATCHER_P2(IsAmbientLightSensorEnabled, method_name, sensor_enabled, "") {
   if (arg->GetMember() != method_name) {
     *result_listener << "has member " << arg->GetMember();
     return false;
@@ -879,18 +880,38 @@ TEST_F(PowerManagerClientTest, BatterySaverModeStateChanged) {
 // name.
 TEST_F(PowerManagerClientTest, SetAmbientLightSensorEnabled) {
   bool expected_sensor_enabled = false;
-  EXPECT_CALL(*proxy_.get(), DoCallMethod(IsSetAmbientLightSensorEnabled(
+  EXPECT_CALL(*proxy_.get(), DoCallMethod(IsAmbientLightSensorEnabled(
                                               "SetAmbientLightSensorEnabled",
                                               expected_sensor_enabled),
                                           _, _));
   client_->SetAmbientLightSensorEnabled(expected_sensor_enabled);
 
   bool expected_sensor_enabled2 = true;
-  EXPECT_CALL(*proxy_.get(), DoCallMethod(IsSetAmbientLightSensorEnabled(
+  EXPECT_CALL(*proxy_.get(), DoCallMethod(IsAmbientLightSensorEnabled(
                                               "SetAmbientLightSensorEnabled",
                                               expected_sensor_enabled2),
                                           _, _));
   client_->SetAmbientLightSensorEnabled(expected_sensor_enabled2);
+}
+
+// Tests that |SetKeyboardAmbientLightSensorEnabled| calls the DBus method with
+// the same name.
+TEST_F(PowerManagerClientTest, SetKeyboardAmbientLightSensorEnabled) {
+  bool expected_sensor_enabled = false;
+  EXPECT_CALL(*proxy_.get(),
+              DoCallMethod(IsAmbientLightSensorEnabled(
+                               "SetKeyboardAmbientLightSensorEnabled",
+                               expected_sensor_enabled),
+                           _, _));
+  client_->SetKeyboardAmbientLightSensorEnabled(expected_sensor_enabled);
+
+  bool expected_sensor_enabled2 = true;
+  EXPECT_CALL(*proxy_.get(),
+              DoCallMethod(IsAmbientLightSensorEnabled(
+                               "SetKeyboardAmbientLightSensorEnabled",
+                               expected_sensor_enabled2),
+                           _, _));
+  client_->SetKeyboardAmbientLightSensorEnabled(expected_sensor_enabled2);
 }
 
 // Tests that |HasAmbientLightSensor| calls the DBus method with the same name.

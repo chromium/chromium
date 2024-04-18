@@ -560,6 +560,17 @@ class PowerManagerClientImpl : public PowerManagerClient {
                                      base::DoNothing());
   }
 
+  void SetKeyboardAmbientLightSensorEnabled(bool enabled) override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kSetKeyboardAmbientLightSensorEnabledMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(enabled);
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
+  }
+
   void GetBatterySaverModeState(
       DBusMethodCallback<power_manager::BatterySaverModeState> callback)
       override {

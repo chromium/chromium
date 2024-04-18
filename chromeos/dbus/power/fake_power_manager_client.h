@@ -76,6 +76,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   double keyboard_brightness_percent() const {
     return keyboard_brightness_percent_.value();
   }
+  double keyboard_ambient_light_sensor_enabled() const {
+    return keyboard_ambient_light_sensor_enabled_;
+  }
   bool is_ambient_light_sensor_enabled() const {
     return is_ambient_light_sensor_enabled_;
   }
@@ -131,6 +134,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetKeyboardBrightness(
       const power_manager::SetBacklightBrightnessRequest& request) override;
   void ToggleKeyboardBacklight() override;
+  void SetKeyboardAmbientLightSensorEnabled(bool enabled) override;
   const std::optional<power_manager::PowerSupplyProperties>& GetLastStatus()
       override;
   void RequestStatusUpdate() override;
@@ -320,6 +324,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
 
   // True if the device has an ambient light sensor.
   bool has_ambient_light_sensor_ = true;
+
+  // Last value set by SetKeyboardAmbientLightSensorEnabled.
+  bool keyboard_ambient_light_sensor_enabled_ = true;
 
   // Last projecting state set in SetIsProjecting().
   bool is_projecting_ = false;

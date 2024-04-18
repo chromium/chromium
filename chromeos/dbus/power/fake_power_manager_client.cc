@@ -215,6 +215,11 @@ void FakePowerManagerClient::SetKeyboardBrightness(
 
 void FakePowerManagerClient::ToggleKeyboardBacklight() {}
 
+void FakePowerManagerClient::SetKeyboardAmbientLightSensorEnabled(
+    bool enabled) {
+  keyboard_ambient_light_sensor_enabled_ = enabled;
+}
+
 const std::optional<power_manager::PowerSupplyProperties>&
 FakePowerManagerClient::GetLastStatus() {
   return props_;

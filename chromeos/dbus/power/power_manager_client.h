@@ -276,6 +276,10 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // Toggle the keyboard backlight on or off.
   virtual void ToggleKeyboardBacklight() = 0;
 
+  // Sets whether the ambient light sensor should be used in keyboard brightness
+  // calculations.
+  virtual void SetKeyboardAmbientLightSensorEnabled(bool enabled) = 0;
+
   // Returns the last power status that was received from D-Bus, if any.
   virtual const std::optional<power_manager::PowerSupplyProperties>&
   GetLastStatus() = 0;
