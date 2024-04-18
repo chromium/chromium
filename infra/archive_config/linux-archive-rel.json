@@ -104,6 +104,7 @@
                 "gen/ui/gfx/geometry/mojom/geometry.mojom.m.js",
                 "gen/device/gamepad/public/mojom/gamepad.mojom.m.js",
                 "gen/device/vr/public/mojom/vr_service.mojom.m.js",
+                "gen/device/vr/public/mojom/xr_session.mojom.m.js",
                 "gen/url/mojom/url.mojom.m.js",
                 "gen/third_party/blink/public/mojom/usb/web_usb_service.mojom.m.js",
                 "gen/device/bluetooth/public/mojom/uuid.mojom.m.js",
