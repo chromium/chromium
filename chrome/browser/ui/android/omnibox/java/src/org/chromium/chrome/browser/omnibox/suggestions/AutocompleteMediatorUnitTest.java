@@ -23,6 +23,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.util.SparseArray;
 import android.view.View;
@@ -41,6 +43,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -49,6 +53,7 @@ import org.robolectric.shadows.ShadowPausedSystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -72,6 +77,8 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -140,7 +147,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private @Mock WindowAndroid mWindowAndroid;
     private @Mock OmniboxSuggestionsDropdownEmbedder mEmbedder;
-
+    private @Mock InsetObserver mInsetObserver;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
 
     private PropertyModel mListModel;
@@ -149,6 +156,7 @@ public class AutocompleteMediatorUnitTest {
     private AutocompleteResult mAutocompleteResult;
     private ModelList mSuggestionModels;
     private ObservableSupplierImpl<TabWindowManager> mTabWindowManagerSupplier;
+    private Activity mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
     // TemplateUrlServiceFactory shadow that can return <null> TemplateUrlService.
     @Implements(TemplateUrlServiceFactory.class)
@@ -201,10 +209,11 @@ public class AutocompleteMediatorUnitTest {
         mListModel.set(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels);
 
         mTabWindowManagerSupplier = new ObservableSupplierImpl<>();
+        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
 
         mMediator =
                 new AutocompleteMediator(
-                        ContextUtils.getApplicationContext(),
+                        mActivity,
                         mAutocompleteDelegate,
                         mTextStateProvider,
                         mListModel,
@@ -422,6 +431,39 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionDropdownHeightChanged(heightOfOAllSuggestions);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
+    public void updateSuggestionsList_triggersAnimation() {
+        mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
+        mMediator.onNativeInitialized();
+
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.0f, MathUtils.EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
+    public void updateSuggestionsList_doesNotTriggerAnimationWhenSystemAnimationNotRun() {
+        mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
+        mMediator.onNativeInitialized();
+
+        mActivity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_QWERTY;
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 1.0f, MathUtils.EPSILON);
+
+        mActivity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_NOKEYS;
+        mListModel.set(SuggestionListProperties.VISIBLE, false);
+        Shadows.shadowOf(mActivity).setInMultiWindowMode(true);
+
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 1.0f, MathUtils.EPSILON);
     }
 
     @Test

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -20,7 +21,9 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
@@ -852,11 +855,20 @@ class AutocompleteMediator
                 && !mListPropertyModel.get(SuggestionListProperties.VISIBLE)) {
             mDelegate.setKeyboardVisibility(true, false);
             updateOmniboxSuggestionsVisibility(true);
-            mAnimationDriver.onShowAnimationAboutToStart();
+            if (isKeyboardShowAnimationAboutToStart()) {
+                mAnimationDriver.onShowAnimationAboutToStart();
+            }
         }
 
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);
         measureSuggestionRequestToUiModelTime(isFinal);
+    }
+
+    private boolean isKeyboardShowAnimationAboutToStart() {
+        return mContext.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_NOKEYS
+                // IME animation dispatch is broken in multi-window pre API level 34.
+                && !ApiCompatibilityUtils.isInMultiWindowMode(
+                        ContextUtils.activityFromContext(mContext));
     }
 
     /**
