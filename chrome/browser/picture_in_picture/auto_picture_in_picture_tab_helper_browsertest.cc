@@ -775,8 +775,16 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
 }
 
+// TODO(crbug.com/335565116): Re-enable this test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_OverlaySettingViewIsShownForVideoPip \
+  DISABLED_OverlaySettingViewIsShownForVideoPip
+#else
+#define MAYBE_OverlaySettingViewIsShownForVideoPip \
+  OverlaySettingViewIsShownForVideoPip
+#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       OverlaySettingViewIsShownForVideoPip) {
+                       MAYBE_OverlaySettingViewIsShownForVideoPip) {
   LoadAutoVideoPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
