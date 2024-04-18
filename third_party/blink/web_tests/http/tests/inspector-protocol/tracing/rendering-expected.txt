@@ -24,7 +24,6 @@ Got an Animation event
 Object: {
 	args: {
 		data: {
-			displayName: string
 			id: string
 			name: string
 			nodeId: number
