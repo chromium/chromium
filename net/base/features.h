@@ -340,9 +340,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebsocketsOverHttp3);
 // Whether to do IPv4 to IPv6 address translation for IPv4 literals.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseNAT64ForIPv4Literal);
 
-// Whether to block newly added forbidden headers (https://crbug.com/1362331).
-NET_EXPORT BASE_DECLARE_FEATURE(kBlockNewForbiddenHeaders);
-
 #if BUILDFLAG(IS_WIN)
 // Whether to probe for SHA-256 on some legacy platform keys, before assuming
 // the key requires SHA-1. See SSLPlatformKeyWin for details.
