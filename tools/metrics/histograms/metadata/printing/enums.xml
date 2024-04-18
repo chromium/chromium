@@ -26,16 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="IppVersion">
-  <int value="0" label="Error">Failed to parse version</int>
-  <int value="1" label="Unknown">Version value not recognized</int>
-  <int value="2" label="IPP 1.0">IPP 1.0</int>
-  <int value="3" label="IPP 1.1">IPP 1.1</int>
-  <int value="4" label="IPP 2.0">IPP 2.0</int>
-  <int value="5" label="IPP 2.1">IPP 2.1</int>
-  <int value="6" label="IPP 2.2">IPP 2.2</int>
-</enum>
-
 <enum name="PrintAttemptOutcome">
   <int value="0" label="Cancelled print button disabled"/>
   <int value="1" label="Cancelled no printers available"/>

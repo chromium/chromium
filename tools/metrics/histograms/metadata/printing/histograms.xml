@@ -132,18 +132,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.CUPS.HighestIppVersion" enum="IppVersion"
-    expires_after="2022-04-17">
-  <owner>skau@chromium.org</owner>
-  <owner>pawliczek@chromium.org</owner>
-  <summary>
-    Records the highest IPP version reported by a printer when we query the
-    printer for attributes. Useful to understand the population of printers
-    currently used. Recorded during printer setup for IPP printers. Recorded
-    only on ChromeOS.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
     expires_after="2024-10-13">
   <owner>bmgordon@chromium.org</owner>

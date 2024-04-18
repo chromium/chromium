@@ -31,51 +31,6 @@ struct QueryResult {
   printing::PrinterStatus printer_status;
 };
 
-// Enums for Printing.CUPS.HighestIppVersion.  Do not delete entries.  Keep
-// synced with enums.xml.  Represents IPP versions 1.0, 1.1, 2.0, 2.1, and 2.2.
-// Error is used if the version was unparsable.  OutOfRange is used for values
-// that are not currently mapped.
-enum class IppVersion {
-  kError,
-  kUnknown,
-  k10,
-  k11,
-  k20,
-  k21,
-  k22,
-  kMaxValue = k22
-};
-
-using MajorMinor = std::pair<uint32_t, uint32_t>;
-using VersionEntry = std::pair<MajorMinor, IppVersion>;
-
-IppVersion ToIppVersion(const base::Version& version) {
-  constexpr std::array<VersionEntry, 5> kVersions = {
-      VersionEntry(MajorMinor((uint32_t)1, (uint32_t)0), IppVersion::k10),
-      VersionEntry(MajorMinor((uint32_t)1, (uint32_t)1), IppVersion::k11),
-      VersionEntry(MajorMinor((uint32_t)2, (uint32_t)0), IppVersion::k20),
-      VersionEntry(MajorMinor((uint32_t)2, (uint32_t)1), IppVersion::k21),
-      VersionEntry(MajorMinor((uint32_t)2, (uint32_t)2), IppVersion::k22)};
-
-  if (!version.IsValid()) {
-    return IppVersion::kError;
-  }
-
-  const auto& components = version.components();
-  if (components.size() != 2) {
-    return IppVersion::kError;
-  }
-
-  const auto target = MajorMinor(components[0], components[1]);
-  const auto iter = base::ranges::find(kVersions, target, &VersionEntry::first);
-
-  if (iter == kVersions.end()) {
-    return IppVersion::kUnknown;
-  }
-
-  return iter->second;
-}
-
 // Returns true if any of the |ipp_versions| are greater than or equal to 2.0.
 bool AllowedIpp(const std::vector<base::Version>& ipp_versions) {
   return base::ranges::any_of(ipp_versions, [](const base::Version& version) {
@@ -133,13 +88,6 @@ void OnPrinterQueried(ash::PrinterInfoCallback callback,
                             chromeos::PrinterAuthenticationInfo{});
     return;
   }
-
-  DCHECK(!printer_info.ipp_versions.empty())
-      << "Properly queried PrinterInfo always has at least one version";
-  base::UmaHistogramEnumeration(
-      "Printing.CUPS.HighestIppVersion",
-      ToIppVersion(*std::max_element(printer_info.ipp_versions.begin(),
-                                     printer_info.ipp_versions.end())));
 
   std::move(callback).Run(result, printer_status, printer_info.make_and_model,
                           printer_info.document_formats,
