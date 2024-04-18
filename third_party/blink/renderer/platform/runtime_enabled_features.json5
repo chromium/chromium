@@ -3021,10 +3021,11 @@
       status: "experimental",
     },
     // This feature is deprecated and we are evangelizing affected sites.
-    // See https://crbug.com/346236 for current status.
+    // A deprecation trial is underway, starting in M125.
+    // See https://crbug.com/40352864 for current status
     {
       name: "PrefixedVideoFullscreen",
-      status: "stable",
+      status: "test",
       origin_trial_feature_name: "DeprecatePrefixedVideoFullscreen",
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
