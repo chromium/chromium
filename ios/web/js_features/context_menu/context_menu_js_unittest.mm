@@ -37,10 +37,6 @@ const char kRequestId[] = "UNIQUE_IDENTIFIER";
 // The base url for loaded web pages.
 const char kTestUrl[] = "https://chromium.test/";
 
-// A point in the web view's coordinate space on the link returned by
-// `GetHtmlForLink()`.
-const CGPoint kPointOnLink = {5.0, 2.0};
-
 // A point in the web view's coordinate space on the image returned by
 // `GetHtmlForImage()`.
 const CGPoint kPointOnImage = {50.0, 10.0};
@@ -104,14 +100,22 @@ NSString* GetHtmlForPage(NSString* head, NSString* body) {
           head ? head : @"", body];
 }
 
-// Returns HTML for a link to `href`, display `text`, and inline `style`.
-NSString* GetHtmlForLink(const char* href,
+// Returns HTML for a link to `href`, with `text`, `id` and inline `style`.
+NSString* GetHtmlForLink(const char* id,
+                         const char* href,
                          const char* text,
                          const char* style) {
   std::string style_attribute =
       style ? base::StringPrintf("style=\"%s\" ", style) : "";
-  return [NSString stringWithFormat:@"<a %shref=\"%s\">%s</a>",
+  return [NSString stringWithFormat:@"<a id=\"%s\" %shref=\"%s\">%s</a>", id,
                                     style_attribute.c_str(), href, text];
+}
+
+// Returns HTML for a link to `href`, display `text`, and inline `style`.
+NSString* GetHtmlForLink(const char* href,
+                         const char* text,
+                         const char* style) {
+  return GetHtmlForLink("link", href, text, style);
 }
 
 // Returns HTML for an SVG shape which links to `href`.
@@ -296,11 +300,11 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
   // Executes __gCrWeb.findElementAtPoint script with the given `point` in the
   // web view viewport's coordinate space.
   id ExecuteFindElementFromPointJavaScript(CGPoint point) {
-    CGSize size = GetWebViewContentSize();
+    CGFloat scale = web_view().scrollView.zoomScale;
     NSString* script = [NSString
         stringWithFormat:@"__gCrWeb.contextMenu.findElementAtPoint('%"
-                         @"s', %g, %g, %g, %g)",
-                         kRequestId, point.x, point.y, size.width, size.height];
+                         @"s', %g, %g)",
+                         kRequestId, point.x / scale, point.y / scale];
 
     return web::test::ExecuteJavaScript(web_view(), script);
   }
@@ -317,7 +321,9 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
             elementId];
 
     NSDictionary* body = web::test::ExecuteJavaScript(web_view(), script);
-    return CGPointMake([body[@"x"] floatValue], [body[@"y"] floatValue]);
+    return CGPointMake(
+        [body[@"x"] floatValue] * web_view().scrollView.zoomScale,
+        [body[@"y"] floatValue] * web_view().scrollView.zoomScale);
   }
 
   // Handles script message responses sent from `web_view()`.
@@ -819,7 +825,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, UnsupportedReferrerPolicy) {
 
   ASSERT_TRUE(LoadHtml(html));
 
-  base::Value::Dict result = FindElementAtPoint(kPointOnImage);
+  base::Value::Dict result = FindElementAtPoint(FindPointFromElement(@"image"));
   auto* policy = result.FindString(kContextMenuElementReferrerPolicy);
   ASSERT_TRUE(policy);
   EXPECT_STREQ("never", policy->c_str());
@@ -916,7 +922,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithoutCalloutProperty) {
                             .Set(kContextMenuElementHyperlink, link)
                             .Set(kContextMenuElementTagName, "a");
 
-  CheckElementResult(kPointOnLink, expected_value);
+  CheckElementResult(@"link", expected_value);
 }
 
 // Tests that a callout information about a link is displayed when
@@ -937,7 +943,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutDefault) {
                             .Set(kContextMenuElementHyperlink, link)
                             .Set(kContextMenuElementTagName, "a");
 
-  CheckElementResult(kPointOnLink, expected_value);
+  CheckElementResult(@"link", expected_value);
 }
 
 // Tests that no callout information about a link is displayed when
@@ -959,7 +965,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutNone) {
   ignored_keys.push_back(kContextMenuElementTextOffset);
   ignored_keys.push_back(kContextMenuElementSurroundingTextOffset);
 
-  CheckElementResult(kPointOnLink, expected_value, ignored_keys);
+  CheckElementResult(@"link", expected_value, ignored_keys);
 }
 
 // Tests that -webkit-touch-callout property can be inherited from ancester
@@ -980,7 +986,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutFromAncester) {
   ignored_keys.push_back(kContextMenuElementTextOffset);
   ignored_keys.push_back(kContextMenuElementSurroundingTextOffset);
 
-  CheckElementResult(kPointOnLink, expected_value, ignored_keys);
+  CheckElementResult(@"link", expected_value, ignored_keys);
 }
 
 // Tests that setting -webkit-touch-callout property can override the value
@@ -1002,7 +1008,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutOverride) {
                             .Set(kContextMenuElementHyperlink, link)
                             .Set(kContextMenuElementTagName, "a");
 
-  CheckElementResult(kPointOnLink, expected_value);
+  CheckElementResult(@"link", expected_value);
 }
 
 }  // namespace web
