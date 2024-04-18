@@ -7097,11 +7097,6 @@ const char kShimlessRMAComplianceCheckName[] =
 const char kShimlessRMAComplianceCheckDescription[] =
     "Enable device compliance check in the Shimless RMA flow";
 
-const char kShimlessRMASkuDescriptionName[] =
-    "Enable SKU description in Shimless RMA";
-const char kShimlessRMASkuDescriptionDescription[] =
-    "Enable device SKU description in the Shimless RMA flow";
-
 const char kSchedulerConfigurationName[] = "Scheduler Configuration";
 const char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";

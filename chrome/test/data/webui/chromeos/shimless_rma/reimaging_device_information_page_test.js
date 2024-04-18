@@ -134,6 +134,9 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertEquals(2, regionSelectComponent.selectedIndex);
     assertEquals(3, customLabelSelectComponent.selectedIndex);
     assertEquals(1, skuSelectComponent.selectedIndex);
+    assertEquals(
+        `${fakeDeviceSkus[1]}: ${fakeDeviceSkuDescriptions[1]}`,
+        skuSelectComponent.value);
     assertTrue(resetSerialNumberComponent.disabled);
     assertTrue(resetRegionComponent.disabled);
     assertTrue(resetCustomLabelComponent.disabled);
@@ -758,30 +761,6 @@ suite('reimagingDeviceInformationPageTest', function() {
             complianceStatusString.textContent.trim(),
             component.i18n('confirmDeviceInfoDeviceCompliant'));
       });
-
-  test('SkuDescriptionEnabled', async () => {
-    loadTimeData.overrideValues({skuDescriptionEnabled: true});
-
-    initializeReimagingDeviceInformationPage();
-    await initializeComponent();
-    await waitAfterNextRender(component);
-
-    const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
-    assertEquals(
-        `${fakeDeviceSkus[1]}: ${fakeDeviceSkuDescriptions[1]}`,
-        skuSelectComponent.value);
-  });
-
-  test('SkuDescriptionDisabled', async () => {
-    loadTimeData.overrideValues({skuDescriptionEnabled: false});
-
-    initializeReimagingDeviceInformationPage();
-    await initializeComponent();
-    await waitAfterNextRender(component);
-
-    const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
-    assertEquals(`${fakeDeviceSkus[1]}`, skuSelectComponent.value);
-  });
 
   // TODO(gavindodd): Add tests for the selection lists when they are
   // reimplemented and bound.

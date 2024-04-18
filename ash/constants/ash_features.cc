@@ -2646,11 +2646,6 @@ BASE_FEATURE(kShimlessRMAComplianceCheck,
              "ShimlessRMAComplianceCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables SKU description in the Shimless RMA flow.
-BASE_FEATURE(kShimlessRMASkuDescription,
-             "ShimlessRMASkuDescription",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables 3p diagnostics in the Shimless RMA flow.
 BASE_FEATURE(kShimlessRMA3pDiagnostics,
              "ShimlessRMA3pDiagnostics",
@@ -4382,10 +4377,6 @@ bool IsShimlessRMAOsUpdateEnabled() {
 
 bool IsShimlessRMAComplianceCheckEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAComplianceCheck);
-}
-
-bool IsShimlessRMASkuDescriptionEnabled() {
-  return base::FeatureList::IsEnabled(kShimlessRMASkuDescription);
 }
 
 bool IsShimlessRMA3pDiagnosticsEnabled() {
