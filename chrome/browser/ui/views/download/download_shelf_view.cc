@@ -271,7 +271,7 @@ void DownloadShelfView::RemoveDownloadView(View* view) {
 void DownloadShelfView::ConfigureButtonForTheme(views::MdTextButton* button) {
   const auto* const cp = GetColorProvider();
   DCHECK(cp);
-  button->SetBgColorOverride(cp->GetColor(kColorDownloadShelfButtonBackground));
+  button->SetBgColorIdOverride(kColorDownloadShelfButtonBackground);
   button->SetEnabledTextColors(cp->GetColor(kColorDownloadShelfButtonText));
 }
 

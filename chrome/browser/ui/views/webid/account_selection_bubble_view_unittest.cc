@@ -592,7 +592,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   views::MdTextButton* button =
       static_cast<views::MdTextButton*>(chooser_children[1]);
   ASSERT_TRUE(button);
-  EXPECT_EQ(*(button->GetBgColorOverride()), bg_color);
+  EXPECT_EQ(*(button->GetBgColorOverrideDeprecated()), bg_color);
 }
 
 TEST_F(AccountSelectionBubbleViewTest,
@@ -639,7 +639,7 @@ TEST_F(AccountSelectionBubbleViewTest,
       static_cast<views::MdTextButton*>(chooser_children[1]);
   ASSERT_TRUE(button);
   // The button color is not customized by the IDP.
-  EXPECT_FALSE(button->GetBgColorOverride());
+  EXPECT_FALSE(button->GetBgColorOverrideDeprecated());
 }
 
 TEST_F(AccountSelectionBubbleViewTest, Verifying) {

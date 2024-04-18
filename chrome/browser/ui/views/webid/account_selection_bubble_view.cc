@@ -93,12 +93,12 @@ class ContinueButton : public views::MdTextButton {
     if (color_utils::GetContrastRatio(dialog_background_color,
                                       *brand_background_color_) <
         color_utils::kMinimumVisibleContrastRatio) {
-      SetBgColorOverride(std::nullopt);
+      SetBgColorOverrideDeprecated(std::nullopt);
       SetEnabledTextColors(std::nullopt);
       return;
     }
 
-    SetBgColorOverride(*brand_background_color_);
+    SetBgColorOverrideDeprecated(*brand_background_color_);
     SkColor text_color;
     if (brand_text_color_) {
       // IdpNetworkRequestManager ensures that `brand_text_color_` is only set

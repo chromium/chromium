@@ -92,8 +92,7 @@ void LogoutButtonTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
 void LogoutButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
-  button_->SetBgColorOverride(
-      color_provider->GetColor(cros_tokens::kColorAlert));
+  button_->SetBgColorIdOverride(cros_tokens::kColorAlert);
   button_->SetEnabledTextColors(
       color_provider->GetColor(cros_tokens::kColorPrimaryInverted));
 }

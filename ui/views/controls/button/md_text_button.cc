@@ -105,7 +105,22 @@ ui::ButtonStyle MdTextButton::GetStyle() const {
   return style_;
 }
 
-void MdTextButton::SetBgColorOverride(const std::optional<SkColor>& color) {
+void MdTextButton::SetBgColorIdOverride(
+    const std::optional<ui::ColorId> color_id) {
+  CHECK(!bg_color_override_.has_value());
+
+  if (color_id == bg_color_id_override_) {
+    return;
+  }
+  bg_color_id_override_ = color_id;
+  UpdateColors();
+  OnPropertyChanged(&bg_color_id_override_, kPropertyEffectsNone);
+}
+
+void MdTextButton::SetBgColorOverrideDeprecated(
+    const std::optional<SkColor>& color) {
+  CHECK(!bg_color_id_override_.has_value());
+
   if (color == bg_color_override_)
     return;
   bg_color_override_ = color;
@@ -113,8 +128,12 @@ void MdTextButton::SetBgColorOverride(const std::optional<SkColor>& color) {
   OnPropertyChanged(&bg_color_override_, kPropertyEffectsNone);
 }
 
-std::optional<SkColor> MdTextButton::GetBgColorOverride() const {
+std::optional<SkColor> MdTextButton::GetBgColorOverrideDeprecated() const {
   return bg_color_override_;
+}
+
+std::optional<ui::ColorId> MdTextButton::GetBgColorIdOverride() const {
+  return bg_color_id_override_;
 }
 
 void MdTextButton::SetCornerRadius(std::optional<float> radius) {
@@ -267,7 +286,9 @@ void MdTextButton::UpdateBackgroundColor() {
   const ui::ColorProvider* color_provider = GetColorProvider();
   SkColor bg_color = color_provider->GetColor(ui::kColorButtonBackground);
 
-  if (bg_color_override_) {
+  if (bg_color_id_override_) {
+    bg_color = color_provider->GetColor(bg_color_id_override_.value());
+  } else if (bg_color_override_) {
     bg_color = *bg_color_override_;
   } else if (style_ == ui::ButtonStyle::kProminent) {
     bg_color = color_provider->GetColor(
@@ -364,7 +385,8 @@ void MdTextButtonActionViewInterface::ActionItemChangedImpl(
 
 BEGIN_METADATA(MdTextButton)
 ADD_PROPERTY_METADATA(std::optional<float>, CornerRadius)
-ADD_PROPERTY_METADATA(std::optional<SkColor>, BgColorOverride)
+ADD_PROPERTY_METADATA(std::optional<SkColor>, BgColorOverrideDeprecated)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, BgColorIdOverride)
 ADD_PROPERTY_METADATA(std::optional<gfx::Insets>, CustomPadding)
 ADD_PROPERTY_METADATA(ui::ButtonStyle, Style)
 END_METADATA

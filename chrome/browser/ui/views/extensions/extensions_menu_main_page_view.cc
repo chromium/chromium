@@ -25,6 +25,7 @@
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -418,12 +419,18 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
                                      views::MaximumFlexSizeRule::kUnbounded)),
                 views::Builder<views::MdTextButton>()
                     .SetCallback(base::BindRepeating(dismiss_callback_, id))
+                    .SetStyle(ui::ButtonStyle::kText)
+                    .SetBgColorIdOverride(
+                        kColorExtensionsMenuHighlightedBackground)
                     .SetText(l10n_util::GetStringUTF16(
                         IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT))
                     .SetTooltipText(l10n_util::GetStringUTF16(
                         IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TOOLTIP)),
                 views::Builder<views::MdTextButton>()
                     .SetCallback(base::BindRepeating(allow_callback_, id))
+                    .SetStyle(ui::ButtonStyle::kText)
+                    .SetBgColorIdOverride(
+                        kColorExtensionsMenuHighlightedBackground)
                     .SetText(l10n_util::GetStringUTF16(
                         IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT))
                     .SetTooltipText(l10n_util::GetStringUTF16(
