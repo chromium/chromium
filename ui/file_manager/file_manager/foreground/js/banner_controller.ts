@@ -11,7 +11,7 @@ import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
 import {getTeamDriveName, isFakeEntry} from '../../common/js/entry_utils.js';
 import type {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
-import {isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
+import {isGoogleOneOfferFilesBannerEligibleAndEnabled, isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
 import type {RootType} from '../../common/js/volume_manager_types.js';
@@ -30,6 +30,7 @@ import {TAG_NAME as DriveOutOfIndividualSpaceBanner} from './ui/banners/drive_ou
 import {TAG_NAME as DriveOutOfOrganizationSpaceBanner} from './ui/banners/drive_out_of_organization_space_banner.js';
 import {TAG_NAME as DriveOutOfSharedDriveSpaceBanner} from './ui/banners/drive_out_of_shared_drive_space_banner.js';
 import {TAG_NAME as DriveWelcomeBannerTagName} from './ui/banners/drive_welcome_banner.js';
+import {TAG_NAME as FilesMigratingToCloudBannerTagName} from './ui/banners/files_migrating_to_cloud_banner.js';
 import {TAG_NAME as GoogleOneOfferBannerTagName} from './ui/banners/google_one_offer_banner.js';
 import {TAG_NAME as HoldingSpaceWelcomeBannerTagName} from './ui/banners/holding_space_welcome_banner.js';
 import {TAG_NAME as InvalidUsbFileSystemBannerTagName} from './ui/banners/invalid_usb_filesystem_banner.js';
@@ -252,6 +253,18 @@ export class BannerController extends EventTarget {
    */
   private bulkPinningEnabled_ = false;
 
+  /**
+   * Whether local user files are currently allowed.
+   */
+  private localUserFilesAllowed_ = true;
+
+  /**
+   * Default downloads location, usually My Files, or {Google Drive, OneDrive}
+   * if SkyVault is enabled.
+   */
+  private defaultLocation_: chrome.fileManagerPrivate.DefaultLocation =
+      chrome.fileManagerPrivate.DefaultLocation.MY_FILES;
+
   constructor(
       private directoryModel_: DirectoryModel,
       private volumeManager_: VolumeManager, private crostini_: Crostini,
@@ -277,9 +290,13 @@ export class BannerController extends EventTarget {
   private onPreferencesChanged_() {
     chrome.fileManagerPrivate.getPreferences(pref => {
       if (this.bulkPinningAvailable_ !== pref.driveFsBulkPinningAvailable ||
-          this.bulkPinningEnabled_ !== pref.driveFsBulkPinningEnabled) {
+          this.bulkPinningEnabled_ !== pref.driveFsBulkPinningEnabled ||
+          this.localUserFilesAllowed_ !== pref.localUserFilesAllowed ||
+          this.defaultLocation_ !== pref.defaultLocation) {
         this.bulkPinningAvailable_ = pref.driveFsBulkPinningAvailable;
         this.bulkPinningEnabled_ = pref.driveFsBulkPinningEnabled;
+        this.localUserFilesAllowed_ = pref.localUserFilesAllowed;
+        this.defaultLocation_ = pref.defaultLocation;
         this.reconcile();
       }
     });
@@ -311,6 +328,7 @@ export class BannerController extends EventTarget {
       // Banners are initialized in their priority order. The order of the array
       // denotes the priority of the banner, 0th index is highest priority.
       this.setWarningBannersInOrder([
+        FilesMigratingToCloudBannerTagName,
         LocalDiskLowSpaceBannerTagName,
         DriveOutOfOrganizationSpaceBanner,
         DriveOutOfSharedDriveSpaceBanner,
@@ -420,6 +438,11 @@ export class BannerController extends EventTarget {
             (this.volumeManager_.hasDisabledVolumes() ||
              this.hasDlpDisabledFiles_),
         context: () => ({type: this.dialogType_}),
+      });
+
+      this.registerCustomBannerFilter(FilesMigratingToCloudBannerTagName, {
+        shouldShow: () => isSkyvaultV2Enabled() && !this.localUserFilesAllowed_,
+        context: () => ({defaultLocation: this.defaultLocation_}),
       });
     }
 

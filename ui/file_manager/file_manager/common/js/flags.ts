@@ -87,3 +87,10 @@ export function isPluginVmEnabled() {
 export function isMaterializedViewsEnabled() {
   return isFlagEnabled('MATERIALIZED_VIEWS');
 }
+
+/**
+ * Returns true if SkyVaultV2 flag is enabled.
+ */
+export function isSkyvaultV2Enabled() {
+  return isFlagEnabled('SKYVAULT_V2_ENABLED');
+}

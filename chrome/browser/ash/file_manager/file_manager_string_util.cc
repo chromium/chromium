@@ -1391,6 +1391,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
     dict->Set("DLP_ENABLED", false);
   }
 
+  dict->Set("SKYVAULT_V2_ENABLED",
+            base::FeatureList::IsEnabled(features::kSkyVaultV2));
+
   base::Value::List vms;
   auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
   if (share_path) {
