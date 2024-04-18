@@ -23,7 +23,7 @@ inline jclass org_jni_1zero_SampleUniqueAnnotations_clazz(JNIEnv* env) {
 // Forward declare used conversion functions to avoid a compiler warning that
 // triggers if a conversion specialization exists within the including .cc file.
 namespace jni_zero {
-template<> std::string FromJniType<std::string, jstring>(JNIEnv*, const JavaRef<jstring>&);
+template<> std::string FromJniType<std::string>(JNIEnv*, const JavaRef<jobject>&);
 }  // namespace jni_zero
 // Java to native functions
 // Forward declaration. To be implemented by the including .cc file.
@@ -34,8 +34,8 @@ JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniq
     jclass jcaller,
     jint x,
     jint y) {
-  auto ret = JNI_SampleUniqueAnnotations_Bar(env, x, y);
-  return ret;
+  auto _ret = JNI_SampleUniqueAnnotations_Bar(env, x, y);
+  return _ret;
 }
 
 JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1foo(
@@ -43,21 +43,21 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniq
     jclass jcaller,
     jlong nativePtr,
     jstring arg) {
-  FooAndroid::BarDelegate* native = reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr);
-  CHECK_NATIVE_PTR(env, jcaller, native, "Foo")
-  std::string arg_converted = jni_zero::FromJniType<std::string, jstring>(
+  FooAndroid::BarDelegate* _native = reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr);
+  CHECK_NATIVE_PTR(env, jcaller, _native, "Foo")
+  std::string arg_converted = jni_zero::FromJniType<std::string>(
       env,
-      jni_zero::JavaParamRef<jstring>(env, arg));
-  native->Foo(env, arg_converted);
+      jni_zero::JavaParamRef<jobject>(env, arg));
+  _native->Foo(env, arg_converted);
 }
 
 JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeCallWithQualifiedObject(
     JNIEnv* env,
     jobject jcaller,
     jlong nativePtr) {
-  Foo::Bar* native = reinterpret_cast<Foo::Bar*>(nativePtr);
-  CHECK_NATIVE_PTR(env, jcaller, native, "CallWithQualifiedObject")
-  native->CallWithQualifiedObject(
+  Foo::Bar* _native = reinterpret_cast<Foo::Bar*>(nativePtr);
+  CHECK_NATIVE_PTR(env, jcaller, _native, "CallWithQualifiedObject")
+  _native->CallWithQualifiedObject(
       env,
       jni_zero::JavaParamRef<jobject>(env, jcaller));
 }

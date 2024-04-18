@@ -18,8 +18,8 @@ JNI_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySa
     JNIEnv* env,
     jclass jcaller,
     jint a) {
-  auto ret = JNI_TinySample_Bar(env, a);
-  return ret;
+  auto _ret = JNI_TinySample_Bar(env, a);
+  return _ret;
 }
 
 // Forward declaration. To be implemented by the including .cc file.

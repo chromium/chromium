@@ -43,16 +43,21 @@ def _param_type_cpp(java_type):
   return f'const jni_zero::JavaRef<{ret}>&'
 
 
-def _param_expression_cpp(param):
-  if converted_type := param.java_type.converted_type():
-    name = f'{param.name}_converted'
-  else:
-    name = param.name
-  if param.java_type.is_primitive():
-    if param.java_type.primitive_name == 'int' and not converted_type:
-      return f'as_jint({name})'
-    return name
-  return f'{name}.obj()'
+def _prep_param(sb, param):
+  """Returns the snippet to use for the parameter."""
+  orig_name = param.cpp_name()
+  java_type = param.java_type
+
+  if converted_type := java_type.converted_type():
+    converted_name = f'converted_{param.name}'
+    convert_type.to_jni_assignment(sb, converted_name, orig_name, java_type)
+    orig_name = converted_name
+
+  if java_type.is_primitive():
+    if java_type.primitive_name == 'int' and not converted_type:
+      return f'as_jint({orig_name})'
+    return orig_name
+  return f'{orig_name}.obj()'
 
 
 def _jni_function_name(called_by_native):
@@ -86,7 +91,8 @@ def _single_method(sb, cbn):
     plist.append('JNIEnv* env')
     if not reciever_arg_is_class:
       plist.append('const jni_zero::JavaRef<jobject>& obj')
-    plist.extend(f'{_param_type_cpp(p.java_type)} {p.name}' for p in cbn.params)
+    plist.extend(f'{_param_type_cpp(p.java_type)} {p.cpp_name()}'
+                 for p in cbn.params)
 
   with sb.block():
     sb('static std::atomic<jmethodID> cached_method_id(nullptr);\n')
@@ -110,37 +116,34 @@ def _single_method(sb, cbn):
           '&cached_method_id'
       ])
 
-    for param in cbn.params:
-      if converted_type := param.java_type.converted_type():
-        convert_type.to_jni_assignment(sb, f'{param.name}_converted',
-                                       param.name, param.java_type)
+    param_rvalues = [_prep_param(sb, p) for p in cbn.params]
 
     if not is_void:
-      return_rvalue = 'ret'
-      sb(f'auto ret = ')
+      return_rvalue = '_ret'
+      sb(f'auto _ret = ')
 
     with sb.statement():
       sb(f'env->{_jni_function_name(cbn)}')
-      with sb.param_list() as plist:
-        plist += [receiver_arg, 'call_context.method_id()']
-        plist.extend(_param_expression_cpp(p) for p in cbn.params)
+      sb.param_list([receiver_arg, 'call_context.method_id()'] + param_rvalues)
 
     if not is_void:
-      if not return_type.is_primitive():
-        jobject_type = return_type.to_cpp()
-        if jobject_type != 'jobject':
-          return_rvalue = 'ret2'
-          sb(f'{jobject_type} ret2 = static_cast<{jobject_type}>(ret);\n')
+      if return_type.is_primitive() or return_type.converted_type():
+        with sb.statement():
+          sb('return ')
+          if return_type.converted_type():
+            convert_type.from_jni_expression(sb, return_rvalue, return_type)
+          else:
+            sb(return_rvalue)
+        return
+
+      jobject_type = return_type.to_cpp()
+      if jobject_type != 'jobject':
+        return_rvalue = '_ret2'
+        sb(f'{jobject_type} _ret2 = static_cast<{jobject_type}>(_ret);\n')
 
       with sb.statement():
-        sb('return ')
-        if return_type.converted_type():
-          convert_type.from_jni_expression(sb, return_rvalue, return_type)
-        elif not return_type.is_primitive():
-          sb(f'jni_zero::ScopedJavaLocalRef<{jobject_type}>(env, '
-             f'{return_rvalue})')
-        else:
-          sb(return_rvalue)
+        sb(f'return jni_zero::ScopedJavaLocalRef<{jobject_type}>(env, '
+           f'{return_rvalue})')
 
 
 def methods(called_by_natives):

@@ -11,15 +11,13 @@ def conversion_declarations(java_to_cpp_types, cpp_to_java_types):
   declarations = set()
   for java_type in java_to_cpp_types:
     T = java_type.converted_type()
-    J = java_type.to_cpp()
     declarations.add(f'template<> {T} '
-                     f'FromJniType<{T}, {J}>(JNIEnv*, const JavaRef<{J}>&);')
+                     f'FromJniType<{T}>(JNIEnv*, const JavaRef<jobject>&);')
 
   for java_type in cpp_to_java_types:
     T = java_type.converted_type()
-    J = java_type.to_cpp()
-    declarations.add(f'template<> jni_zero::ScopedJavaLocalRef<{J}> '
-                     f'ToJniType<{T}, {J}>(JNIEnv*, {T} const&);')
+    declarations.add(f'template<> jni_zero::ScopedJavaLocalRef<jobject> '
+                     f'ToJniType<{T}>(JNIEnv*, {T} const&);')
 
   if not declarations:
     return ''
@@ -35,16 +33,21 @@ namespace jni_zero {{
 
 
 def to_jni_expression(sb, rvalue, java_type, clazz_param=None):
-  """Returns a conversion call expression from specified @JniType to default jni type."""
+  """Writes a ToJniType() expression to |sb|.
+
+  Args:
+    rvalue: Snippet to use as input to ToJniType().
+    java_type: Type containing the @JniType annotation.
+    clazz_param: Snippet to use as the third parameter for array conversions.
+  """
+  T = java_type.converted_type()
+  assert T
   if java_type.is_primitive():
-    if java_type.primitive_name == 'int' and not java_type.converted_type():
-      rvalue = f'as_jint({rvalue})'
     sb(f'static_cast<{java_type.to_cpp()}>({rvalue})')
     return
 
-  T = java_type.converted_type()
   if not java_type.is_array():
-    sb(f'jni_zero::ToJniType<{T}, {java_type.to_cpp()}>')
+    sb(f'jni_zero::ToJniType<{T}>')
     sb.param_list(['env', rvalue])
     return
 
@@ -53,65 +56,53 @@ def to_jni_expression(sb, rvalue, java_type, clazz_param=None):
     raise Exception(
         '@JniType() for multi-dimensional arrays are not yet supported. '
         'Found ' + T)
-  if element_type.is_primitive():
-    sb(f'jni_zero::ConvertArray<{T}>::ToJniType')
-    sb.param_list(['env', rvalue])
-    return
-
-  if clazz_param:
-    clazz_expr = clazz_param.name
-  else:
-    clazz_expr = header_common.class_accessor_expression(
-        element_type.java_class)
-  J = element_type.to_cpp()
-  sb(f'jni_zero::ConvertArray<{T}>::ToJniType<{J}>')
-  sb.param_list(['env', rvalue, clazz_expr])
+  sb(f'jni_zero::ConvertArray<{T}>::ToJniType')
+  with sb.param_list() as plist:
+    plist += ['env', rvalue]
+    if not element_type.is_primitive():
+      if clazz_param:
+        plist += [clazz_param.name]
+      else:
+        plist += [
+            header_common.class_accessor_expression(element_type.java_class)
+        ]
 
 
 def to_jni_assignment(sb, dest_var_name, src_var_name, java_type):
-  """Returns a conversion statement from specified @JniType to default jni type."""
+  """Writes a ToJniType() assignment to |sb|."""
   with sb.statement():
     if java_type.is_primitive():
       var_type = java_type.to_cpp()
     else:
-      var_type = f'jni_zero::ScopedJavaLocalRef<{java_type.to_cpp()}>'
+      var_type = f'jni_zero::ScopedJavaLocalRef<jobject>'
     sb(f'{var_type} {dest_var_name} = ')
     to_jni_expression(sb, src_var_name, java_type)
 
 
 def from_jni_expression(sb, rvalue, java_type):
-  """Returns a conversion call expression from default jni type to specified @JniType."""
+  """Writes a FromJniType() expression to |sb|.
+
+  Args:
+    rvalue: Snippet to use as input to FromJniType().
+    java_type: Type containing the @JniType annotation.
+  """
   T = java_type.converted_type()
-  J = java_type.to_cpp()
+  assert T
   if java_type.is_primitive():
     sb(f'static_cast<{T}>({rvalue})')
     return
 
-  if not java_type.is_primitive():
-    rvalue = header_common.java_param_ref_expression(J, rvalue)
+  jtype = java_type.to_cpp() if java_type.is_array() else 'jobject'
+  rvalue = f'jni_zero::JavaParamRef<{jtype}>(env, {rvalue})'
 
   if not java_type.is_array():
-    sb(f'jni_zero::FromJniType<{T}, {J}>')
+    sb(f'jni_zero::FromJniType<{T}>')
     sb.param_list(['env', rvalue])
     return
 
-  element_type = java_type.to_array_element_type()
-  if element_type.is_array():
+  if java_type.array_dimensions > 1:
     raise Exception(
         '@JniType() for multi-dimensional arrays are not yet supported. '
         'Found ' + T)
-  if element_type.is_primitive():
-    sb(f'jni_zero::ConvertArray<{T}>::FromJniType')
-    sb.param_list(['env', rvalue])
-    return
-
-  J = java_type.to_array_element_type().to_cpp()
-  sb(f'jni_zero::ConvertArray<{T}>::FromJniType<{J}>')
+  sb(f'jni_zero::ConvertArray<{T}>::FromJniType')
   sb.param_list(['env', rvalue])
-
-
-def from_jni_assignment(sb, dst_var_name, src_var_name, java_type):
-  """Returns a conversion statement from default jni type to specified @JniType."""
-  with sb.statement():
-    sb(f'{java_type.converted_type()} {dst_var_name} = ')
-    from_jni_expression(sb, src_var_name, java_type)

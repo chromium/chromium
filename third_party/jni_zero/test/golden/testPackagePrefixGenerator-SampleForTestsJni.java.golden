@@ -40,13 +40,13 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
-  public Class getClass(Class arg0) {
-    return (Class) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getClass(arg0);
+  public Class getClass(Class env) {
+    return (Class) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getClass(env);
   }
 
   @Override
-  public double getDoubleFunction(SampleForTests caller) {
-    return (double) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getDoubleFunction(caller);
+  public double getDoubleFunction(SampleForTests ret) {
+    return (double) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getDoubleFunction(ret);
   }
 
   @Override
@@ -60,8 +60,8 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
-  public Object getNonPODDatatype(SampleForTests caller) {
-    return (Object) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getNonPODDatatype(caller);
+  public Object getNonPODDatatype(SampleForTests jcaller) {
+    return (Object) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getNonPODDatatype(jcaller);
   }
 
   @Override
@@ -99,8 +99,8 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
-  public void setNonPODDatatype(SampleForTests caller, Rect rect) {
-    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_setNonPODDatatype(caller, rect);
+  public void setNonPODDatatype(SampleForTests obj, Rect rect) {
+    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_setNonPODDatatype(obj, rect);
   }
 
   public static SampleForTests.Natives get() {

@@ -18,8 +18,8 @@ JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
     JNIEnv* env,
     jclass jcaller,
     jint a) {
-  auto ret = JNI_SampleModule_Bar(env, a);
-  return ret;
+  auto _ret = JNI_SampleModule_Bar(env, a);
+  return _ret;
 }
 
 // Forward declaration. To be implemented by the including .cc file.

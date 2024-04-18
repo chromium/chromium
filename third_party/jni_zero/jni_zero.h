@@ -709,11 +709,11 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jclass> GetClass(
 // Primary templates for non-Array conversion fuctions. Embedding application
 // can specialize these functions for their own custom types in order to use
 // custom types in @JniType.
-template <typename T, typename J = jobject>
-T FromJniType(JNIEnv*, const JavaRef<J>&);
+template <typename T>
+T FromJniType(JNIEnv*, const JavaRef<jobject>&);
 
-template <typename T, typename J = jobject>
-ScopedJavaLocalRef<J> ToJniType(JNIEnv*, const T&);
+template <typename T>
+ScopedJavaLocalRef<jobject> ToJniType(JNIEnv*, const T&);
 
 // Primary template for Array conversion.
 // This is in a struct so that we are able to write a default implementation for
@@ -736,17 +736,11 @@ template <typename T>
 concept has_insert = requires(T t, T::value_type v) { t.insert(v); };
 
 template <typename T>
-concept is_range = requires(T t) {
+concept is_container = requires(T t) {
   T::value_type;
   { t.begin() } -> std::same_as<typename T::const_iterator>;
   { t.end() } -> std::same_as<typename T::const_iterator>;
   { t.size() } -> std::same_as<size_t>;
-};
-
-template <typename T>
-concept is_container = requires(T t) {
-  is_range<T>;
-  requires has_push_back<T> || has_insert<T>;
 };
 }  // namespace internal
 
@@ -758,41 +752,29 @@ template <typename ContainerType>
   }
 struct ConvertArray<ContainerType> {
  private:
-  using ElementType = ContainerType::value_type;
+  using ElementType = std::remove_const_t<typename ContainerType::value_type>;
 
-  template <typename JniType = jobject>
-  static ElementType ElementFromJniType(JNIEnv* env,
-                                        const JavaRef<JniType>& j_element) {
-    if constexpr (std::same_as<ElementType, ScopedJavaLocalRef<JniType>>) {
-      return j_element;
-    } else {
-      return jni_zero::FromJniType<ElementType, JniType>(env, j_element);
-    }
-  }
-
-  template <typename JniType = jobject>
-  static ScopedJavaLocalRef<JniType> ElementToJniType(
+  static ScopedJavaLocalRef<jobject> ElementToJniType(
       JNIEnv* env,
       const ElementType& element) {
-    if constexpr (std::same_as<ElementType, ScopedJavaLocalRef<JniType>>) {
-      return element;
-    } else if constexpr (std::is_pointer_v<ElementType> &&
-                         !std::is_fundamental_v<
-                             std::remove_pointer_t<ElementType>>) {
+    if constexpr (std::is_pointer_v<ElementType> &&
+                  !std::is_fundamental_v<std::remove_pointer_t<ElementType>>) {
       // Dereference object pointers to enable using vector<ContainerType*>
       // in order to avoid copying objects for the sake of JNI.
       return jni_zero::ToJniType<
-          std::remove_const_t<std::remove_pointer_t<ElementType>>, JniType>(
-          env, *element);
+          std::remove_const_t<std::remove_pointer_t<ElementType>>>(env,
+                                                                   *element);
     } else {
-      return jni_zero::ToJniType<ElementType, JniType>(env, element);
+      return jni_zero::ToJniType<ElementType>(env, element);
     }
   }
 
  public:
-  template <typename JniType = jobject>
   static ContainerType FromJniType(JNIEnv* env,
                                    const JavaRef<jobjectArray>& j_array) {
+    constexpr bool has_push_back = internal::has_push_back<ContainerType>;
+    constexpr bool has_insert = internal::has_insert<ContainerType>;
+    static_assert(has_push_back || has_insert, "Template type not supported.");
     jsize array_jsize = env->GetArrayLength(j_array.obj());
 
     ContainerType ret;
@@ -801,20 +783,27 @@ struct ConvertArray<ContainerType> {
       ret.reserve(array_size);
     }
     for (jsize i = 0; i < array_jsize; ++i) {
-      ElementType element = ElementFromJniType<JniType>(
-          env, jni_zero::ScopedJavaLocalRef<JniType>::Adopt(
-                   env, static_cast<JniType>(
-                            env->GetObjectArrayElement(j_array.obj(), i))));
-      if constexpr (internal::has_push_back<ContainerType>) {
-        ret.push_back(std::move(element));
+      jobject j_element = env->GetObjectArrayElement(j_array.obj(), i);
+      // Do not call FromJniType for jobject->jobject.
+      if constexpr (std::is_base_of_v<JavaRef<jobject>, ElementType>) {
+        if constexpr (has_push_back) {
+          ret.emplace_back(env, j_element);
+        } else if constexpr (has_insert) {
+          ret.emplace(env, j_element);
+        }
       } else {
-        ret.insert(std::move(element));
+        auto element =
+            jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, j_element);
+        if constexpr (has_push_back) {
+          ret.push_back(jni_zero::FromJniType<ElementType>(env, element));
+        } else if constexpr (has_insert) {
+          ret.insert(jni_zero::FromJniType<ElementType>(env, element));
+        }
       }
     }
     return ret;
   }
 
-  template <typename JniType = jobject>
   static ScopedJavaLocalRef<jobjectArray>
   ToJniType(JNIEnv* env, const ContainerType& collection, jclass clazz) {
     size_t array_size = collection.size();
@@ -825,11 +814,10 @@ struct ConvertArray<ContainerType> {
     jsize i = 0;
     for (auto& value : collection) {
       // Do not call ToJniType for jobject->jobject.
-      if constexpr (std::same_as<ElementType, ScopedJavaLocalRef<JniType>>) {
+      if constexpr (std::is_base_of_v<JavaRef<jobject>, ElementType>) {
         env->SetObjectArrayElement(j_array, i, value.obj());
       } else {
-        ScopedJavaLocalRef<jobject> element =
-            ElementToJniType<JniType>(env, value);
+        ScopedJavaLocalRef<jobject> element = ElementToJniType(env, value);
         env->SetObjectArrayElement(j_array, i, element.obj());
       }
       ++i;

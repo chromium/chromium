@@ -18,7 +18,7 @@ using jni_zero::AttachCurrentThread;
 namespace jni_zero {
 
 template <>
-COMPONENTS_PREFS_EXPORT PrefService* FromJniType<PrefService*, jobject>(
+COMPONENTS_PREFS_EXPORT PrefService* FromJniType<PrefService*>(
     JNIEnv* env,
     const JavaRef<jobject>& obj) {
   return PrefServiceAndroid::FromPrefServiceAndroid(obj);

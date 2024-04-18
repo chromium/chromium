@@ -26,8 +26,7 @@ const char kProfileAndroidKey[] = "profile_android";
 namespace jni_zero {
 
 template <>
-Profile* FromJniType<Profile*, jobject>(JNIEnv* env,
-                                        const JavaRef<jobject>& j_profile) {
+Profile* FromJniType<Profile*>(JNIEnv* env, const JavaRef<jobject>& j_profile) {
   return ProfileAndroid::FromProfileAndroid(j_profile);
 }
 

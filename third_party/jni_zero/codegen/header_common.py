@@ -73,7 +73,3 @@ def header_preamble(script_name,
 #endif  // {header_guard}
 """
   return preamble, epilogue
-
-
-def java_param_ref_expression(c_type, name):
-  return f'jni_zero::JavaParamRef<{c_type}>(env, {name})'

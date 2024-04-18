@@ -265,6 +265,11 @@ class JavaParam:
     """Converts to types used over JNI boundary."""
     return JavaParam(self.java_type.to_proxy(), self.name)
 
+  def cpp_name(self):
+    if self.name in ('env', 'jcaller'):
+      return f'_{self.name}'
+    return self.name
+
 
 class JavaParamList(tuple):
   """Represents a parameter list."""

@@ -39,8 +39,8 @@ enum Java_JavapClass_constant_fields {
       "<init>",
       "()V",
       &cached_method_id);
-  auto ret = env->NewObject(clazz, call_context.method_id());
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
+  auto _ret = env->NewObject(clazz, call_context.method_id());
+  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
 }
 
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolean(
@@ -56,8 +56,8 @@ enum Java_JavapClass_constant_fields {
       "<init>",
       "(Z)V",
       &cached_method_id);
-  auto ret = env->NewObject(clazz, call_context.method_id(), p0);
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
+  auto _ret = env->NewObject(clazz, call_context.method_id(), p0);
+  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
 }
 
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__int(
@@ -73,8 +73,8 @@ enum Java_JavapClass_constant_fields {
       "<init>",
       "(I)V",
       &cached_method_id);
-  auto ret = env->NewObject(clazz, call_context.method_id(), as_jint(p0));
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
+  auto _ret = env->NewObject(clazz, call_context.method_id(), as_jint(p0));
+  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
 }
 
 [[maybe_unused]] static jint Java_JavapClass_intMethod(
@@ -91,8 +91,11 @@ enum Java_JavapClass_constant_fields {
       "intMethod",
       "(Ljava/lang/String;)I",
       &cached_method_id);
-  auto ret = env->CallIntMethod(obj.obj(), call_context.method_id(), p0.obj());
-  return ret;
+  auto _ret = env->CallIntMethod(
+      obj.obj(),
+      call_context.method_id(),
+      p0.obj());
+  return _ret;
 }
 
 [[maybe_unused]] static void Java_JavapClass_needsMangling__String(
@@ -158,13 +161,13 @@ enum Java_JavapClass_constant_fields {
       "objTest",
       "(Ljava/lang/Object;[Ljava/lang/Runnable;)Ljava/lang/Class;",
       &cached_method_id);
-  auto ret = env->CallObjectMethod(
+  auto _ret = env->CallObjectMethod(
       obj.obj(),
       call_context.method_id(),
       p0.obj(),
       p1.obj());
-  jclass ret2 = static_cast<jclass>(ret);
-  return jni_zero::ScopedJavaLocalRef<jclass>(env, ret2);
+  jclass _ret2 = static_cast<jclass>(_ret);
+  return jni_zero::ScopedJavaLocalRef<jclass>(env, _ret2);
 }
 
 [[maybe_unused]] static jint Java_JavapClass_staticIntMethod(
@@ -181,12 +184,12 @@ enum Java_JavapClass_constant_fields {
       "staticIntMethod",
       "(Ljava/lang/String;Lorg/jni_zero/JavapClass;)I",
       &cached_method_id);
-  auto ret = env->CallStaticIntMethod(
+  auto _ret = env->CallStaticIntMethod(
       clazz,
       call_context.method_id(),
       p0.obj(),
       p1.obj());
-  return ret;
+  return _ret;
 }
 
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobjectArray> Java_JavapClass_staticIntMethod(
@@ -202,12 +205,12 @@ enum Java_JavapClass_constant_fields {
       "staticIntMethod",
       "(Ljava/lang/String;)[[I",
       &cached_method_id);
-  auto ret = env->CallStaticObjectMethod(
+  auto _ret = env->CallStaticObjectMethod(
       clazz,
       call_context.method_id(),
       p0.obj());
-  jobjectArray ret2 = static_cast<jobjectArray>(ret);
-  return jni_zero::ScopedJavaLocalRef<jobjectArray>(env, ret2);
+  jobjectArray _ret2 = static_cast<jobjectArray>(_ret);
+  return jni_zero::ScopedJavaLocalRef<jobjectArray>(env, _ret2);
 }
 
 

@@ -18,15 +18,15 @@ public class GEN_JNI {
       // Hashed name: Java_J_N_MntihwyL
     public static native void org_jni_1zero_SampleForTests_destroy(long nativeCPPClass, Object caller, byte[] bytes);
       // Hashed name: Java_J_N_Ma__O3z2
-    public static native Class org_jni_1zero_SampleForTests_getClass(Class arg0);
+    public static native Class org_jni_1zero_SampleForTests_getClass(Class env);
       // Hashed name: Java_J_N_MMoPH9HE
-    public static native double org_jni_1zero_SampleForTests_getDoubleFunction(Object caller);
+    public static native double org_jni_1zero_SampleForTests_getDoubleFunction(Object ret);
       // Hashed name: Java_J_N_MvEgj8y2
     public static native float org_jni_1zero_SampleForTests_getFloatFunction();
       // Hashed name: Java_J_N_Mz4j2yc1
     public static native Object org_jni_1zero_SampleForTests_getMap(Object arg0);
       // Hashed name: Java_J_N_MyJgrTgs
-    public static native Object org_jni_1zero_SampleForTests_getNonPODDatatype(Object caller);
+    public static native Object org_jni_1zero_SampleForTests_getNonPODDatatype(Object jcaller);
       // Hashed name: Java_J_N_MOUT8MuQ
     public static native Throwable org_jni_1zero_SampleForTests_getThrowable(Throwable arg0);
       // Hashed name: Java_J_N_M$OcvYzW
@@ -40,5 +40,5 @@ public class GEN_JNI {
       // Hashed name: Java_J_N_MUnVgmnP
     public static native String org_jni_1zero_SampleForTests_returnAString(long nativeCPPClass, Object caller);
       // Hashed name: Java_J_N_MtJ0n$3y
-    public static native void org_jni_1zero_SampleForTests_setNonPODDatatype(Object caller, Object rect);
+    public static native void org_jni_1zero_SampleForTests_setNonPODDatatype(Object obj, Object rect);
 }

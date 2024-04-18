@@ -37,23 +37,8 @@ def _impl_forward_declaration(sb, native, params):
       plist.append('JNIEnv* env')
       if not native.static:
         plist.append('const jni_zero::JavaParamRef<jobject>& jcaller')
-      plist.extend(f'{_param_type_cpp(p.java_type)} {p.name}' for p in params)
-
-
-def _impl_call_params(sb, native, params):
-  with sb.param_list() as plist:
-    plist.append('env')
-    if not native.static:
-      plist.append(header_common.java_param_ref_expression(
-          'jobject', 'jcaller'))
-    for p in params:
-      if p.java_type.converted_type():
-        plist.append(f'{p.name}_converted')
-      elif p.java_type.is_primitive():
-        plist.append(p.name)
-      else:
-        c_type = p.java_type.to_cpp()
-        plist.append(header_common.java_param_ref_expression(c_type, p.name))
+      plist.extend(f'{_param_type_cpp(p.java_type)} {p.cpp_name()}'
+                   for p in params)
 
 
 def proxy_declaration(sb, jni_obj, native):
@@ -64,18 +49,41 @@ def proxy_declaration(sb, jni_obj, native):
     plist.append('JNIEnv* env')
     jtype = 'jclass' if native.static else 'jobject'
     plist.append(f'{jtype} jcaller')
-    plist.extend(f'{p.java_type.to_cpp()} {p.name}'
+    plist.extend(f'{p.java_type.to_cpp()} {p.cpp_name()}'
                  for p in native.proxy_params)
+
+
+def _prep_param(sb, param, proxy_type):
+  """Returns the snippet to use for the parameter."""
+  orig_name = param.cpp_name()
+  java_type = param.java_type
+
+  if java_type.converted_type():
+    ret = f'{param.name}_converted'
+    with sb.statement():
+      sb(f'{java_type.converted_type()} {ret} = ')
+      if java_type.is_array():
+        orig_name = f'static_cast<{java_type.to_cpp()}>({orig_name})'
+      convert_type.from_jni_expression(sb, orig_name, java_type)
+    return ret
+
+  if java_type.is_primitive():
+    return orig_name
+
+  if java_type.to_cpp() != proxy_type.to_cpp():
+    # E.g. jobject -> jstring
+    orig_name = f'static_cast<{java_type.to_cpp()}>({orig_name})'
+  return f'jni_zero::JavaParamRef<{java_type.to_cpp()}>(env, {orig_name})'
 
 
 def _single_method(sb, jni_obj, native):
   cpp_class = native.first_param_cpp_type
   if cpp_class:
-    params = native.proxy_params[1:]
+    proxy_params = native.proxy_params[1:]
+    params = native.params[1:]
   else:
-    params = native.proxy_params
-  if native.needs_implicit_array_element_class_param:
-    params = params[:-1]
+    proxy_params = native.proxy_params
+    params = native.params
 
   # Only non-class methods need to be forward-declared.
   if not cpp_class:
@@ -83,46 +91,64 @@ def _single_method(sb, jni_obj, native):
     sb('\n')
 
   proxy_declaration(sb, jni_obj, native)
+  proxy_return_type = native.proxy_return_type
+  return_type = native.return_type
   with sb.block():
     if cpp_class:
+      first_param_name = native.params[0].cpp_name()
       sb(f"""\
-{cpp_class}* native = reinterpret_cast<{cpp_class}*>({native.params[0].name});
-CHECK_NATIVE_PTR(env, jcaller, native, "{native.cpp_name}\"""")
-      if default_value := native.return_type.to_cpp_default_value():
+{cpp_class}* _native = reinterpret_cast<{cpp_class}*>({first_param_name});
+CHECK_NATIVE_PTR(env, jcaller, _native, "{native.cpp_name}\"""")
+      if default_value := proxy_return_type.to_cpp_default_value():
         sb(f', {default_value}')
       sb(')\n')
 
-    for p in params:
-      if p.java_type.converted_type():
-        convert_type.from_jni_assignment(sb, f'{p.name}_converted', p.name,
-                                         p.java_type)
+    param_rvalues = [
+        _prep_param(sb, param, proxy_param.java_type)
+        for param, proxy_param in zip(params, proxy_params)
+    ]
 
     with sb.statement():
-      if not native.return_type.is_void():
-        sb('auto ret = ')
+      if not return_type.is_void():
+        sb('auto _ret = ')
       if cpp_class:
-        sb(f'native->{native.cpp_name}')
+        sb(f'_native->{native.cpp_name}')
       else:
         sb(f'{native.cpp_impl_name}')
-      _impl_call_params(sb, native, params)
+      with sb.param_list() as plist:
+        plist.append('env')
+        if not native.static:
+          plist.append('jni_zero::JavaParamRef<jobject>(env, jcaller)')
+        plist.extend(param_rvalues)
 
-    if not native.return_type.is_void():
+    if return_type.is_void():
+      return
+
+    if not return_type.converted_type():
       with sb.statement():
-        sb('return ')
-        if native.return_type.converted_type():
-          if native.needs_implicit_array_element_class_param:
-            clazz_param = native.proxy_params[-1]
-          else:
-            clazz_param = None
-          convert_type.to_jni_expression(sb,
-                                         'ret',
-                                         native.return_type,
-                                         clazz_param=clazz_param)
-        else:
-          sb('ret')
-
-        if not native.return_type.is_primitive():
+        sb('return _ret')
+        if not return_type.is_primitive():
           sb('.Release()')
+      return
+
+    with sb.statement():
+      sb('jobject converted_ret = ')
+      if native.needs_implicit_array_element_class_param:
+        clazz_param = proxy_params[-1]
+      else:
+        clazz_param = None
+      convert_type.to_jni_expression(sb,
+                                     '_ret',
+                                     return_type,
+                                     clazz_param=clazz_param)
+      sb('.Release()')
+
+    with sb.statement():
+      sb('return ')
+      if proxy_return_type.to_cpp() != 'jobject':
+        sb(f'static_cast<{proxy_return_type.to_cpp()}>(converted_ret)')
+      else:
+        sb('converted_ret')
 
 
 def methods(jni_obj):

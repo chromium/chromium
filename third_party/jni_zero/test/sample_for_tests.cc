@@ -26,29 +26,28 @@ tests::CPPClass FromJniType<tests::CPPClass>(JNIEnv* env,
 }
 template <>
 std::string FromJniType<std::string>(JNIEnv* env,
-                                     const JavaRef<jstring>& input) {
+                                     const JavaRef<jobject>& input) {
   return {};
 }
 template <>
-ScopedJavaLocalRef<jstring> ToJniType<std::string>(JNIEnv* env,
+ScopedJavaLocalRef<jobject> ToJniType<std::string>(JNIEnv* env,
                                                    const std::string& input) {
   return {};
 }
 template <>
 std::u16string FromJniType<std::u16string>(JNIEnv* env,
-                                           const JavaRef<jstring>& input) {
+                                           const JavaRef<jobject>& input) {
   return {};
 }
 template <>
-ScopedJavaLocalRef<jstring> ToJniType<std::u16string>(
+ScopedJavaLocalRef<jobject> ToJniType<std::u16string>(
     JNIEnv* env,
     const std::u16string& input) {
   return {};
 }
 template <>
-ScopedJavaLocalRef<jstring> ToJniType<const char*>(
-    JNIEnv* env,
-    const char * const& input) {
+ScopedJavaLocalRef<jobject> ToJniType<const char*>(JNIEnv* env,
+                                                   const char* const& input) {
   return {};
 }
 template <>
@@ -61,7 +60,7 @@ tests::CPPClass* FromJniType<tests::CPPClass*>(JNIEnv* env, const JavaRef<jobjec
 template <>
 std::optional<std::string> FromJniType<std::optional<std::string>>(
     JNIEnv* env,
-    const JavaRef<jstring>& j_string) {
+    const JavaRef<jobject>& j_string) {
   if (!j_string) {
     return std::nullopt;
   }
@@ -71,7 +70,7 @@ std::optional<std::string> FromJniType<std::optional<std::string>>(
 template <>
 std::optional<std::u16string> FromJniType<std::optional<std::u16string>>(
     JNIEnv* env,
-    const JavaRef<jstring>& j_string) {
+    const JavaRef<jobject>& j_string) {
   if (!j_string) {
     return std::nullopt;
   }
