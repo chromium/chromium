@@ -25,8 +25,6 @@ namespace safe_browsing {
 // multipart protocol. This class is neither movable nor copyable.
 class MultipartUploadRequest : public ConnectorUploadRequest {
  public:
-  using Callback = ConnectorUploadRequest::Callback;
-
   // Creates a MultipartUploadRequest, which will upload `data` to the given
   // `base_url` with `metadata` attached.
   MultipartUploadRequest(

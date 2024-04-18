@@ -364,8 +364,12 @@ MultipartUploadRequest::CreateFileRequest(
         traffic_annotation, std::move(callback));
   }
 
+  // Note that multipart uploads only handle data that is less than
+  // `kMaxUploadSizeBytes` and not encrypted.  Therefore `Result::SUCCESS` is
+  // passed as the `get_data_result` argument.
   return factory_->CreateFileRequest(url_loader_factory, base_url, metadata,
-                                     path, file_size, traffic_annotation,
+                                     BinaryUploadService::Result::SUCCESS, path,
+                                     file_size, traffic_annotation,
                                      std::move(callback));
 }
 
@@ -385,6 +389,7 @@ MultipartUploadRequest::CreatePageRequest(
   }
 
   return factory_->CreatePageRequest(url_loader_factory, base_url, metadata,
+                                     BinaryUploadService::Result::SUCCESS,
                                      std::move(page_region), traffic_annotation,
                                      std::move(callback));
 }

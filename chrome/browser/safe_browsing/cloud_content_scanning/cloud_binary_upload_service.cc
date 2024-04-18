@@ -198,6 +198,13 @@ bool CanUseAccessToken(const BinaryUploadService::Request& request,
   return request.per_profile_request();
 }
 
+bool IgnoreErrorResultForResumableUpload(BinaryUploadService::Request* request,
+                                         BinaryUploadService::Result result) {
+  return IsResumableUpload(*request) &&
+         (result == BinaryUploadService::Result::FILE_TOO_LARGE ||
+          result == BinaryUploadService::Result::FILE_ENCRYPTED);
+}
+
 }  // namespace
 
 // static
@@ -500,9 +507,16 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
   }
 
   if (result != Result::SUCCESS) {
-    FinishRequest(request, result,
-                  enterprise_connectors::ContentAnalysisResponse());
-    return;
+    if (!IgnoreErrorResultForResumableUpload(request, result)) {
+      FinishRequest(request, result,
+                    enterprise_connectors::ContentAnalysisResponse());
+      return;
+    }
+
+    // If the error is not unrecoverable, chrome can attempt to sent the
+    // file contents to the content analysis service.  Let the service know that
+    // a metadata-only analysis is required.
+    request->set_require_metadata_verdict(true);
   }
 
   if (!request->IsAuthRequest() && data.size == 0) {
@@ -534,8 +548,9 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
     upload_request =
         IsResumableUpload(*request)
             ? ResumableUploadRequest::CreateFileRequest(
-                  url_loader_factory_, std::move(url), metadata, data.path,
-                  data.size, std::move(traffic_annotation), std::move(callback))
+                  url_loader_factory_, std::move(url), metadata, result,
+                  data.path, data.size, std::move(traffic_annotation),
+                  std::move(callback))
             : MultipartUploadRequest::CreateFileRequest(
                   url_loader_factory_, std::move(url), metadata, data.path,
                   data.size, std::move(traffic_annotation),
@@ -545,7 +560,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
     upload_request =
         IsResumableUpload(*request)
             ? ResumableUploadRequest::CreatePageRequest(
-                  url_loader_factory_, std::move(url), metadata,
+                  url_loader_factory_, std::move(url), metadata, result,
                   std::move(data.page), std::move(traffic_annotation),
                   std::move(callback))
             : MultipartUploadRequest::CreatePageRequest(

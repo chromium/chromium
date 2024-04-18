@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -120,6 +121,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
+      BinaryUploadService::Result get_data_result,
       const base::FilePath& path,
       uint64_t file_size,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -132,6 +134,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
+      BinaryUploadService::Result get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override {
@@ -318,13 +321,26 @@ TEST_P(CloudBinaryUploadServiceTest, FailsForLargeFile) {
   BinaryUploadService::Result scanning_result;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
 
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
+  ASSERT_TRUE(base::WriteFile(file_path, "test"));
+
+  ExpectNetworkResponse(/*should_succeed=*/false,
+                        enterprise_connectors::ContentAnalysisResponse());
   ExpectInstanceID("valid id");
+
   std::unique_ptr<MockRequest> request = MakeRequest(
       &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+  request->set_analysis_connector(
+      enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
   ON_CALL(*request, GetRequestData(_))
-      .WillByDefault(
-          Invoke([](BinaryUploadService::Request::DataCallback callback) {
+      .WillByDefault(Invoke(
+          [file_path](BinaryUploadService::Request::DataCallback callback) {
             BinaryUploadService::Request::Data data;
+            data.path = file_path;
+            data.size = 4;  // Must not be zero.
             std::move(callback).Run(BinaryUploadService::Result::FILE_TOO_LARGE,
                                     std::move(data));
           }));
@@ -332,7 +348,9 @@ TEST_P(CloudBinaryUploadServiceTest, FailsForLargeFile) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::FILE_TOO_LARGE);
+  EXPECT_EQ(scanning_result, is_resumable_upload_enabled()
+                                 ? BinaryUploadService::Result::UPLOAD_FAILURE
+                                 : BinaryUploadService::Result::FILE_TOO_LARGE);
 }
 
 TEST_P(CloudBinaryUploadServiceTest, FailsWhenMissingInstanceID) {

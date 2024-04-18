@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -30,15 +31,18 @@ namespace safe_browsing {
 // resumable protocol. This class is neither movable nor copyable.
 class ResumableUploadRequest : public ConnectorUploadRequest {
  public:
-  using Callback = ConnectorUploadRequest::Callback;
-
   // Creates a ResumableUploadRequest, which will upload the `metadata` of the
   // file corresponding to the provided `path` to the given `base_url`, and then
   // the file content to the `path` if necessary.
+  //
+  // `get_data_result` is the result when getting basic information about the
+  // file or page.  It lets the ResumableUploadRequest know if the data is
+  // considered too large or is encrypted.
   ResumableUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
+      BinaryUploadService::Result get_data_result,
       const base::FilePath& path,
       uint64_t file_size,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -51,6 +55,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
+      BinaryUploadService::Result get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
@@ -66,6 +71,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
+      BinaryUploadService::Result get_data_result,
       const base::FilePath& file,
       uint64_t file_size,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -75,6 +81,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
+      BinaryUploadService::Result get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ResumableUploadRequest::Callback callback);
@@ -130,6 +137,10 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
 
   // Helper used by metrics logging code.
   std::string GetRequestType();
+
+  // The result returned by BinaryUploadService::Request::GetRequestData() when
+  // retrieving the data.
+  BinaryUploadService::Result get_data_result_;
 
   // Retrieved from metadata response to be used in upload content to the
   // server.

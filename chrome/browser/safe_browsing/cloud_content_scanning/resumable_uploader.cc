@@ -59,6 +59,7 @@ ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
+    BinaryUploadService::Result get_data_result,
     const base::FilePath& path,
     uint64_t file_size,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -69,7 +70,8 @@ ResumableUploadRequest::ResumableUploadRequest(
                              path,
                              file_size,
                              traffic_annotation,
-                             std::move(callback)) {
+                             std::move(callback)),
+      get_data_result_(get_data_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -77,6 +79,7 @@ ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
+    BinaryUploadService::Result get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
@@ -85,7 +88,8 @@ ResumableUploadRequest::ResumableUploadRequest(
                              metadata,
                              std::move(page_region),
                              traffic_annotation,
-                             std::move(callback)) {
+                             std::move(callback)),
+      get_data_result_(get_data_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -139,19 +143,20 @@ ResumableUploadRequest::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
+    BinaryUploadService::Result get_data_result,
     const base::FilePath& path,
     uint64_t file_size,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ResumableUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<ResumableUploadRequest>(
-        url_loader_factory, base_url, metadata, path, file_size,
-        traffic_annotation, std::move(callback));
+        url_loader_factory, base_url, metadata, get_data_result, path,
+        file_size, traffic_annotation, std::move(callback));
   }
 
   return factory_->CreateFileRequest(url_loader_factory, base_url, metadata,
-                                     path, file_size, traffic_annotation,
-                                     std::move(callback));
+                                     get_data_result, path, file_size,
+                                     traffic_annotation, std::move(callback));
 }
 
 // static
@@ -160,18 +165,19 @@ ResumableUploadRequest::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
+    BinaryUploadService::Result get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ResumableUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<ResumableUploadRequest>(
-        url_loader_factory, base_url, metadata, std::move(page_region),
-        traffic_annotation, std::move(callback));
+        url_loader_factory, base_url, metadata, get_data_result,
+        std::move(page_region), traffic_annotation, std::move(callback));
   }
 
   return factory_->CreatePageRequest(url_loader_factory, base_url, metadata,
-                                     std::move(page_region), traffic_annotation,
-                                     std::move(callback));
+                                     get_data_result, std::move(page_region),
+                                     traffic_annotation, std::move(callback));
 }
 
 void ResumableUploadRequest::SendMetadataRequest() {
@@ -210,9 +216,19 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     return;
   }
 
+  // If there is an error or if the metadata check has already determined a
+  // verdict, CanUploadContent() returns false.
   response_code = url_loader_->ResponseInfo()->headers->response_code();
   if (!CanUploadContent(url_loader_->ResponseInfo()->headers)) {
     Finish(url_loader_->NetError(), response_code, std::move(response_body));
+    return;
+  }
+
+  // If chrome is being told to upload the content but the content is too large
+  // or is encrypted, fail now.
+  if (get_data_result_ == BinaryUploadService::Result::FILE_TOO_LARGE ||
+      get_data_result_ == BinaryUploadService::Result::FILE_ENCRYPTED) {
+    Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::move(response_body));
     return;
   }
 

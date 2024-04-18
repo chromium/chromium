@@ -87,6 +87,7 @@ class FakeUploaderFactory : public ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
+      BinaryUploadService::Result get_data_result,
       const base::FilePath& file_path,
       uint64_t file_size,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -95,6 +96,7 @@ class FakeUploaderFactory : public ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
+      BinaryUploadService::Result get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override;
@@ -117,6 +119,7 @@ std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
+    BinaryUploadService::Result get_data_result,
     const base::FilePath& file_path,
     uint64_t file_size,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -133,6 +136,7 @@ std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
+    BinaryUploadService::Result get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ConnectorUploadRequest::Callback callback) {
