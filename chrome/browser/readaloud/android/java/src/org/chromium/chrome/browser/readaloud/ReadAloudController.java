@@ -745,6 +745,11 @@ public class ReadAloudController
             ReadAloudMetrics.recordPlaybackWithoutReadabilityCheck(
                     entrypoint, Entrypoint.NUM_ENTRIES);
         }
+        // Should rarely ever happen since the profile has to be established for a readability check
+        // to show the entrypoint.
+        if (mProfileSupplier.get() == null) {
+            return;
+        }
         extractDateModified(tab)
                 .then(
                         timestamp -> {
@@ -1350,7 +1355,8 @@ public class ReadAloudController
             resetCurrentPlayback();
             mOnUserLeaveHint = false;
         } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
-                && mStateToRestoreOnBringingToForeground != null) {
+                && mStateToRestoreOnBringingToForeground != null
+                && mProfileSupplier.get() != null) {
             mStateToRestoreOnBringingToForeground.restore();
             mStateToRestoreOnBringingToForeground = null;
             mOnUserLeaveHint = false;
