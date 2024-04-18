@@ -32,16 +32,11 @@ constexpr int kMaxVideoFrames = 4;
 //   - Most PC audio hardware is limited to 192 kHz, some specialized DAC
 //     devices will use 768 kHz though.
 //
-// Some high end audio interfaces have a large channel count (e.g. the RME
-// Fireface UFX 3 has 94 input and 94 output channels). A kMaxChannels of 128
-// should be enough cover the high-end interfaces currently available on the
-// market.
-//
 // kMaxSampleRate should be updated with
 // blink::audio_utilities::MaxAudioBufferSampleRate()
 constexpr int kMaxSampleRate = 768000;
 constexpr int kMinSampleRate = 3000;
-constexpr int kMaxChannels = 128;
+constexpr int kMaxChannels = 32;
 constexpr int kMaxBytesPerSample = 4;
 constexpr int kMaxBitsPerSample = kMaxBytesPerSample * 8;
 constexpr int kMaxSamplesPerPacket = kMaxSampleRate;
