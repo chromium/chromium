@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/types/expected.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -33,7 +34,7 @@ class RTCEncodedAudioFrameDelegate
   uint32_t RtpTimestamp() const;
   DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);
-  bool SetRtpTimestamp(uint32_t timestamp, String& error_message);
+  base::expected<void, String> SetRtpTimestamp(uint32_t timestamp);
   std::optional<uint32_t> Ssrc() const;
   std::optional<uint8_t> PayloadType() const;
   std::optional<std::string> MimeType() const;

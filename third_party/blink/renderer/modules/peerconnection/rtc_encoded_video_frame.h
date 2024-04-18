@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/types/expected.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -51,8 +52,8 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   uint32_t timestamp() const;
   DOMArrayBuffer* data() const;
   RTCEncodedVideoFrameMetadata* getMetadata() const;
-  bool SetMetadata(const RTCEncodedVideoFrameMetadata* metadata,
-                   String& error_message);
+  base::expected<void, String> SetMetadata(
+      const RTCEncodedVideoFrameMetadata* metadata);
   void setMetadata(RTCEncodedVideoFrameMetadata* metadata,
                    ExceptionState& exception_state);
   void setData(DOMArrayBuffer*);

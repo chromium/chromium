@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/types/expected.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -47,8 +48,8 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
   std::optional<uint16_t> sequenceNumber() const;
   DOMArrayBuffer* data() const;
   RTCEncodedAudioFrameMetadata* getMetadata() const;
-  bool SetMetadata(const RTCEncodedAudioFrameMetadata* metadata,
-                   String& error_message);
+  base::expected<void, String> SetMetadata(
+      const RTCEncodedAudioFrameMetadata* metadata);
   void setMetadata(RTCEncodedAudioFrameMetadata* metadata,
                    ExceptionState& exception_state);
   void setData(DOMArrayBuffer*);
