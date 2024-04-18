@@ -233,25 +233,22 @@ bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
   // If the app is already installed with the relevant install reason, we do not
   // need to reinstall it. This avoids extra work in the case where we are
   // retrying the flow after an install error for a different app.
-
-  // TODO(crbug.com/329144520) Implement already installed check for android.
-  if (app.GetPlatform() == PackageType::kArc) {
-    return true;
-  }
-
   InstallReason expected_reason =
       app.IsDefaultApp() ? InstallReason::kDefault : InstallReason::kOem;
   AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile_);
   bool installed = false;
 
-  proxy->AppRegistryCache().ForOneApp(
-      app.GetWebAppId(), [&installed, expected_reason](const AppUpdate& app) {
+  proxy->AppRegistryCache().ForEachApp(
+      [&installed, expected_reason, app](const apps::AppUpdate& update) {
         // It's possible that if APS requests the same app to be installed for
         // multiple reasons, this check could incorrectly return false, as App
         // Service only reports the highest priority install reason. This is
         // acceptable since the check is just an optimization.
-        installed = apps_util::IsInstalled(app.Readiness()) &&
-                    app.InstallReason() == expected_reason;
+        if (update.InstallerPackageId() == app.GetPackageId() &&
+            apps_util::IsInstalled(update.Readiness()) &&
+            update.InstallReason() == expected_reason) {
+          installed = true;
+        }
       });
 
   return !installed;

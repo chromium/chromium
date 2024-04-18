@@ -209,15 +209,6 @@ TEST_F(PreloadAppDefinitionTest, GetWebAppManifestId) {
             "https://example.com/path/of/manifest_id");
 }
 
-TEST_F(PreloadAppDefinitionTest, GetWebAppId) {
-  proto::AppPreloadListResponse_App app;
-  app.set_package_id("web:https://example.com/path/of/manifest_id");
-
-  PreloadAppDefinition app_def(app);
-
-  ASSERT_EQ(app_def.GetWebAppId(), "pckfllnaogmpbmijcjpenfdglaikbiea");
-}
-
 TEST_F(PreloadAppDefinitionTest, ToAppInstallData) {
   proto::AppPreloadListResponse_App app;
   app.set_name("Example App");

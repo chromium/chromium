@@ -4,9 +4,9 @@
 
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "url/gurl.h"
 
@@ -22,6 +22,10 @@ PreloadAppDefinition::PreloadAppDefinition(const PreloadAppDefinition&) =
 PreloadAppDefinition& PreloadAppDefinition::operator=(
     const PreloadAppDefinition&) = default;
 PreloadAppDefinition::~PreloadAppDefinition() = default;
+
+std::optional<PackageId> PreloadAppDefinition::GetPackageId() const {
+  return package_id_;
+}
 
 std::string PreloadAppDefinition::GetName() const {
   return app_proto_.name();
@@ -80,11 +84,6 @@ GURL PreloadAppDefinition::GetWebAppManifestId() const {
   return GURL(package_id_->identifier());
 }
 
-std::string PreloadAppDefinition::GetWebAppId() const {
-  DCHECK_EQ(GetPlatform(), PackageType::kWeb);
-  return web_app::GenerateAppIdFromManifestId(GetWebAppManifestId());
-}
-
 AppInstallData PreloadAppDefinition::ToAppInstallData() const {
   AppInstallData result(package_id_.value());
   result.name = GetName();
@@ -103,6 +102,9 @@ AppInstallData PreloadAppDefinition::ToAppInstallData() const {
 
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
   os << std::boolalpha;
+  os << "- Package ID: "
+     << (app.GetPackageId() ? app.GetPackageId()->ToString() : std::string())
+     << std::endl;
   os << "- Name: " << app.GetName() << std::endl;
   os << "- Platform: " << EnumToString(app.GetPlatform()) << std::endl;
   os << "- OEM: " << app.IsOemApp() << std::endl;

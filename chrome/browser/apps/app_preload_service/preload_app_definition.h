@@ -26,6 +26,7 @@ class PreloadAppDefinition {
   PreloadAppDefinition& operator=(const PreloadAppDefinition&);
   ~PreloadAppDefinition();
 
+  std::optional<PackageId> GetPackageId() const;
   std::string GetName() const;
   PackageType GetPlatform() const;
   bool IsDefaultApp() const;
@@ -53,8 +54,6 @@ class PreloadAppDefinition {
   // identifier of the app. Does not attempt to validate the GURL. Must only be
   // called if `GetPlatform()` returns `AppType::kWeb`.
   GURL GetWebAppManifestId() const;
-
-  std::string GetWebAppId() const;
 
   AppInstallData ToAppInstallData() const;
 
