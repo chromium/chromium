@@ -5,14 +5,16 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
-import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 
 suite('LanguageMenuElement', () => {
   let languageMenu: LanguageMenuElement;
   let availableVoices: SpeechSynthesisVoice[];
+  let enabledLanguagesInPref: string[];
 
 
   const setAvailableVoices = () => {
@@ -20,6 +22,14 @@ suite('LanguageMenuElement', () => {
     // property
     // @ts-ignore
     languageMenu.availableVoices = availableVoices;
+    flush();
+  };
+
+  const setEnabledLanguages = () => {
+    // Bypass Typescript compiler to allow us to set a private readonly
+    // property
+    // @ts-ignore
+    languageMenu.enabledLanguagesInPref = enabledLanguagesInPref;
     flush();
   };
 
@@ -115,7 +125,6 @@ suite('LanguageMenuElement', () => {
     });
   });
 
-  // TODO(b/332638963): add a test to group languages with multiple locales
   suite('with multiple languages', () => {
     setup(() => {
       availableVoices = [
@@ -124,6 +133,8 @@ suite('LanguageMenuElement', () => {
         {name: 'test voice 2', lang: 'en-UK'} as SpeechSynthesisVoice,
       ];
       setAvailableVoices();
+      enabledLanguagesInPref = ['Italian'];
+      setEnabledLanguages();
       languageMenu.showDialog();
     });
 
@@ -166,6 +177,66 @@ suite('LanguageMenuElement', () => {
         assertEquals(getLanguageSearchField().value, '');
       });
 
+      test('it does not groups languages with different name', () => {
+        availableVoices = [
+          {name: 'test voice 0', lang: 'en-US'} as SpeechSynthesisVoice,
+          {name: 'test voice 3', lang: 'en'} as SpeechSynthesisVoice,
+        ];
+        setAvailableVoices();
+        // Bypass Typescript compiler to allow us to set a private readonly
+        // property
+        // @ts-ignore
+        languageMenu.localeToDisplayName = {
+          'en-US': 'English (United States)',
+          'en': 'English',
+        };
+        flush();
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(getLanguageLineItems().length, 2);
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[0]!, 'English (United States)');
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[1]!, 'English');
+      });
+
+      test('it groups languages with same name', () => {
+        availableVoices = [
+          {name: 'test voice 0', lang: 'en-unknown'} as SpeechSynthesisVoice,
+          {name: 'test voice 3', lang: 'en'} as SpeechSynthesisVoice,
+        ];
+        setAvailableVoices();
+        // Bypass Typescript compiler to allow us to set a private readonly
+        // property
+        // @ts-ignore
+        languageMenu.localeToDisplayName = {
+          'en-unknown': 'English',
+          'en': 'English',
+        };
+        flush();
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(getLanguageLineItems().length, 1);
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[0]!, 'English');
+      });
+
+      test('it toggles switch on for initially enabled line', async () => {
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(getLanguageLineItems().length, 3);
+        assertLanguageLineWithToggleChecked(getLanguageLineItems()[0]!, false);
+        assertLanguageLineWithToggleChecked(getLanguageLineItems()[1]!, true);
+        assertLanguageLineWithToggleChecked(getLanguageLineItems()[2]!, false);
+      });
+
+      test('it toggles switch when language pref changes', async () => {
+        enabledLanguagesInPref = ['Italian', 'English (United States)'];
+        setEnabledLanguages();
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(getLanguageLineItems().length, 3);
+        assertLanguageLineWithToggleChecked(getLanguageLineItems()[0]!, true);
+        assertLanguageLineWithToggleChecked(getLanguageLineItems()[1]!, true);
+        assertLanguageLineWithToggleChecked(getLanguageLineItems()[2]!, false);
+      });
+
       suite('with search input', () => {
         test('it displays no language without a match', async () => {
           getLanguageSearchField().value = 'test';
@@ -194,7 +265,6 @@ suite('LanguageMenuElement', () => {
         {name: 'test voice 3', lang: 'en-UK'} as SpeechSynthesisVoice,
         {name: 'test voice 4', lang: 'it-IT'} as SpeechSynthesisVoice,
         {name: 'test voice 5', lang: 'zh-CN'} as SpeechSynthesisVoice,
-
       ];
       setAvailableVoices();
       languageMenu.showDialog();
@@ -266,7 +336,22 @@ function isPositionedOnPage(element: HTMLElement) {
 
 function assertLanguageLineWithTextAndSwitch(
     element: HTMLElement, expectedText: string) {
-  assertEquals(element.textContent!.trim(), expectedText);
-  assertEquals(element.children.length, 2);
-  assertEquals(element.children[1]!.tagName, 'CR-TOGGLE');
+  assertEquals(expectedText, element.textContent!.trim());
+  assertEquals(2, element.children.length);
+  assertEquals('CR-TOGGLE', element.children[1]!.tagName);
+}
+
+async function assertLanguageLineWithToggleChecked(
+    element: HTMLElement, expectedChecked: boolean) {
+  const toggle: CrToggleElement = (element.querySelector('cr-toggle'))!;
+  await toggle.updateComplete;
+  if (expectedChecked) {
+    assertTrue(toggle.checked);
+    assertTrue(toggle.hasAttribute('checked'));
+    assertEquals('true', toggle.getAttribute('aria-pressed'));
+  } else {
+    assertFalse(toggle.checked);
+    assertEquals(null, toggle.getAttribute('checked'));
+    assertEquals('false', toggle.getAttribute('aria-pressed'));
+  }
 }

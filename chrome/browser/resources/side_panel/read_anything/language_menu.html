@@ -7,7 +7,7 @@
       height: 60%;
     }
 
-    iron-icon {
+    cr-icon {
       --icon-size: 24px;
       height: var(--icon-size);
       width: var(--icon-size);
@@ -84,8 +84,8 @@
       type="search"
       placeholder="$i18n{readingModeLanguageMenuSearchLabel}"
       value="{{languageSearchValue_}}">
-        <iron-icon slot="inline-prefix" alt="" icon="cr:search">
-        </iron-icon>
+        <cr-icon slot="inline-prefix" alt="" icon="cr:search">
+        </cr-icon>
         <cr-icon-button iron-icon="cr:clear"
           hidden$="[[!languageSearchValue_]]" slot="inline-suffix"
           on-click="onClearSearchClick_"
@@ -100,10 +100,11 @@
          languageSearchValue_)]]">
         <div class="language-line dropdown-line">
           <span class="language-name">
-            [[item]]
+            [[item.language]]
           </span>
-          <!-- TODO(b/332638963): filter voice menu with language pref-->
-          <cr-toggle></cr-toggle>
+          <cr-toggle
+            checked="[[item.checked]]"
+            on-change="onToggleChange_"></cr-toggle>
         </div>
     </template>
   </div>

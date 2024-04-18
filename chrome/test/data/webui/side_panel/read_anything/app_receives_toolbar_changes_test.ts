@@ -8,6 +8,7 @@ import {BrowserProxy} from '//resources/cr_components/color_change_listener/brow
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
 import {defaultFontName} from 'chrome-untrusted://read-anything-side-panel.top-chrome/common.js';
+import {LANGUAGE_TOGGLE_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
 import {FONT_EVENT, FONT_SIZE_EVENT, HIGHLIGHT_TOGGLE_EVENT, LETTER_SPACING_EVENT, LINE_SPACING_EVENT, NEXT_GRANULARITY_EVENT, PLAY_PAUSE_EVENT, PREVIOUS_GRANULARITY_EVENT, RATE_EVENT, THEME_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -209,6 +210,39 @@ suite('AppReceivesToolbarChanges', () => {
       const font2 = 'Times New Roman';
       emitFont(font2);
       assertFontsEqual(containerFont(), defaultFontName);
+    });
+  });
+
+  suite('on language toggle', () => {
+    function emitLanguageToggle(lang: string): void {
+      emitEvent(app, LANGUAGE_TOGGLE_EVENT, {detail: {language: lang}});
+    }
+
+    test('enabled languages are added', () => {
+      const firstLanguage = 'English';
+      emitLanguageToggle(firstLanguage);
+      // Bypass Typescript compiler to allow us to read a private property
+      // @ts-ignore
+      assertTrue(app.enabledLanguagesInPref.includes(firstLanguage));
+
+      const secondLanguage = 'French';
+      emitLanguageToggle(secondLanguage);
+      // Bypass Typescript compiler to allow us to read a private property
+      // @ts-ignore
+      assertTrue(app.enabledLanguagesInPref.includes(secondLanguage));
+    });
+
+    test('disabled languages are removed', () => {
+      const firstLanguage = 'English';
+      emitLanguageToggle(firstLanguage);
+      // Bypass Typescript compiler to allow us to read a private property
+      // @ts-ignore
+      assertTrue(app.enabledLanguagesInPref.includes(firstLanguage));
+
+      emitLanguageToggle(firstLanguage);
+      // Bypass Typescript compiler to allow us to read a private property
+      // @ts-ignore
+      assertFalse(app.enabledLanguagesInPref.includes(firstLanguage));
     });
   });
 

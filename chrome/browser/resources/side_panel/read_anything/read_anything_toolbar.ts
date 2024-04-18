@@ -128,6 +128,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       hasContent: Boolean,
       selectedVoice: Object,
       availableVoices: Array,
+      enabledLanguagesInPref: Array,
       localeToDisplayName: Object,
       previewVoicePlaying: Object,
       areFontsLoaded_: Boolean,

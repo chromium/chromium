@@ -267,6 +267,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   synth = window.speechSynthesis;
 
   private selectedVoice: SpeechSynthesisVoice|undefined;
+  private enabledLanguagesInPref: string[] = [];
 
   private availableVoices: SpeechSynthesisVoice[];
   // If a preview is playing, this is set to the voice the preview is playing.
@@ -1334,6 +1335,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.resetSpeechPostSettingChange_();
   }
 
+  private onVoiceLanguageToggle_(event: CustomEvent<{language: string}>) {
+    event.preventDefault();
+    event.stopPropagation();
+    const toggledLanguage = event.detail.language;
+    const currentlyEnabled =
+        this.enabledLanguagesInPref.includes(toggledLanguage);
+    this.enabledLanguagesInPref = currentlyEnabled ?
+        this.enabledLanguagesInPref.filter(lang => lang !== toggledLanguage) :
+        [...this.enabledLanguagesInPref, toggledLanguage];
+  }
+
   private resetSpeechPostSettingChange_() {
     // Don't call stopSpeech() if initAxPositionWithNode hasn't been called
     if (!this.speechPlayingState.speechStarted) {
@@ -1422,6 +1434,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (this.isReadAloudEnabled_) {
       this.updateSpeechRate_(chrome.readingMode.speechRate);
       this.selectPreferredVoice_();
+      this.restoreEnabledLanguagesFromPref_();
     }
     this.updateLineSpacing_(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing_(chrome.readingMode.letterSpacing);
@@ -1453,6 +1466,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // TODO(crbug.com/1474951): investigate using parent/child relationshiop
     // instead of element by id.
     this.$.toolbar.restoreSettingsFromPrefs(colorSuffix);
+  }
+
+  private restoreEnabledLanguagesFromPref_() {
+    // TODO(b/332638963): restore saved preferences, for now empty initially
+    this.enabledLanguagesInPref = [];
   }
 
   private selectPreferredVoice_() {
