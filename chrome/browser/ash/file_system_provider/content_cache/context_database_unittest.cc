@@ -7,10 +7,18 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::file_system_provider {
 namespace {
+
+using testing::_;
+using testing::AllOf;
+using testing::Field;
+using testing::IsEmpty;
+using testing::Pair;
+using testing::UnorderedElementsAre;
 
 class FileSystemProviderContextDatabaseTest : public testing::Test {
  protected:
@@ -117,6 +125,53 @@ TEST_F(FileSystemProviderContextDatabaseTest, UpdateAccessedTime) {
   EXPECT_TRUE(item.item_exists);
   EXPECT_EQ(item.accessed_time.InMillisecondsSinceUnixEpoch(),
             new_accessed_time.InMillisecondsSinceUnixEpoch());
+}
+
+TEST_F(FileSystemProviderContextDatabaseTest, GetAllItems) {
+  std::unique_ptr<ContextDatabase> db =
+      std::make_unique<ContextDatabase>(base::FilePath());
+  EXPECT_TRUE(db->Initialize());
+
+  // Insert 2 items into the database.
+  int64_t first_item_id = -1;
+  int64_t second_item_id = -1;
+  EXPECT_TRUE(db->AddItem(base::FilePath("/a.txt"), "versionA",
+                          base::Time::Now(), &first_item_id));
+  EXPECT_TRUE(db->AddItem(base::FilePath("/b.txt"), "versionB",
+                          base::Time::Now(), &second_item_id));
+
+  // Ensure the items exist.
+  using Item = ContextDatabase::Item;
+  EXPECT_THAT(db->GetAllItems(),
+              UnorderedElementsAre(
+                  Pair(first_item_id,
+                       AllOf(Field(&Item::item_exists, true),
+                             Field(&Item::fsp_path, base::FilePath("/a.txt")),
+                             Field(&Item::version_tag, "versionA"))),
+                  Pair(second_item_id,
+                       AllOf(Field(&Item::item_exists, true),
+                             Field(&Item::fsp_path, base::FilePath("/b.txt")),
+                             Field(&Item::version_tag, "versionB")))));
+}
+
+TEST_F(FileSystemProviderContextDatabaseTest, RemoveItemsByIds) {
+  std::unique_ptr<ContextDatabase> db =
+      std::make_unique<ContextDatabase>(base::FilePath());
+  EXPECT_TRUE(db->Initialize());
+
+  // Insert 2 items into the database.
+  int64_t first_item_id = -1;
+  int64_t second_item_id = -1;
+  EXPECT_TRUE(db->AddItem(base::FilePath("/a.txt"), "versionA",
+                          base::Time::Now(), &first_item_id));
+  EXPECT_TRUE(db->AddItem(base::FilePath("/b.txt"), "versionA",
+                          base::Time::Now(), &second_item_id));
+
+  // Remove both items.
+  EXPECT_TRUE(db->RemoveItemsByIds({first_item_id, second_item_id}));
+
+  // Ensure the items don't exist.
+  EXPECT_THAT(db->GetAllItems(), IsEmpty());
 }
 
 }  // namespace

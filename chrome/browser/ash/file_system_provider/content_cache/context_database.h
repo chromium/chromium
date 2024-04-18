@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTEXT_DATABASE_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTEXT_DATABASE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "sql/database.h"
@@ -40,9 +41,32 @@ class ContextDatabase {
   // field of `item_exists` that will be set to `false` if the item requested is
   // not available.
   struct Item {
+    // Allows for constructing a blank `Item` to pass by ref into the
+    // `GetItemById` in order to have everything populated.
+    Item();
+
+    Item(int64_t id,
+         const std::string& fsp_path,
+         const std::string& version_tag,
+         base::Time accessed_time);
+
+    // The `id` that is stored in the database.
+    int64_t id;
+
+    // The path in the FSP filesystem that references this file. Is represented
+    // as an absolute path, e.g. `/a.txt`.
     base::FilePath fsp_path;
-    base::Time accessed_time;
+
+    // The version tag that this file is identified by, useful to invalidate if
+    // the underlying version changes but not the path nor size.
     std::string version_tag;
+
+    // The last time the file was accessed, this is persisted as the users
+    // cryptohome is mounted with `MS_NOATIME` meaning the files atime is not
+    // updated after creation.
+    base::Time accessed_time;
+
+    // If the item doesn't exist, this is set to false.
     bool item_exists = true;
   };
 
@@ -54,6 +78,17 @@ class ContextDatabase {
 
   // Update the accessed time for the supplied `item_id`.
   bool UpdateAccessedTime(int64_t item_id, base::Time new_accessed_time);
+
+  // Retrieve all the items currently stored in the database. Returns a map
+  // keyed by the item id.
+  using IdToItemMap = std::map<int64_t, Item>;
+  IdToItemMap GetAllItems();
+
+  // Remove all the items in the database with the associated ids.
+  bool RemoveItemsByIds(std::vector<int64_t> item_ids);
+
+  // Used in testing to interact with the database bypassing the `ContentCache`.
+  base::WeakPtr<ContextDatabase> GetWeakPtr();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -67,6 +102,7 @@ class ContextDatabase {
   const base::FilePath db_path_;
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtrFactory<ContextDatabase> weak_ptr_factory_{this};
 };
 
 using OptionalContextDatabase = std::optional<std::unique_ptr<ContextDatabase>>;
