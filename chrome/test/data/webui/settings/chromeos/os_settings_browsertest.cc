@@ -451,6 +451,23 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampInternetTestPasspointEnabled::DescribeParams);
 
+class OSSettingsRevampNearbyShareTestSharingEnabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampNearbyShareTestSharingEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kNearbySharing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampNearbyShareTestSharingEnabled,
+    testing::Bool(),
+    OSSettingsRevampNearbyShareTestSharingEnabled::DescribeParams);
+
 /* End Test Classes */
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppLanguageSelectionDialog) {
@@ -922,107 +939,93 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
   RunSettingsTest("main_page_container/route_navigation_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, MultidevicePage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, MultidevicePage) {
   RunSettingsTest("multidevice_page/multidevice_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
-                       MultidevicePageRevamp) {
-  RunSettingsTest("multidevice_page/multidevice_page_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        MultidevicePageMultideviceFeatureItem) {
   RunSettingsTest("multidevice_page/multidevice_feature_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        MultidevicePageMultideviceFeatureToggle) {
   RunSettingsTest("multidevice_page/multidevice_feature_toggle_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(
+    OSSettingsRevampMochaTest,
     MultidevicePageMultideviceNotificationAccessSetupDialog) {
   RunSettingsTest(
       "multidevice_page/multidevice_notification_access_setup_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        MultidevicePageMultidevicePermissionsSetupDialog) {
   RunSettingsTest(
       "multidevice_page/multidevice_permissions_setup_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        MultidevicePageMultideviceSmartlockItem) {
   RunSettingsTest("multidevice_page/multidevice_smartlock_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, MultidevicePageMultideviceSubPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       MultidevicePageMultideviceSubPage) {
   RunSettingsTest("multidevice_page/multidevice_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        MultiDevicePageMultideviceCombinedSetupItem) {
   RunSettingsTest("multidevice_page/multidevice_combined_setup_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        MultidevicePageMultideviceTaskContinuationDisabledLink) {
   RunSettingsTest(
       "multidevice_page/multidevice_task_continuation_disabled_link_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        MultidevicePageMultideviceTaskContinuationItem) {
   RunSettingsTest(
       "multidevice_page/multidevice_task_continuation_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        MultidevicePageMultideviceWifiSyncDisabledLink) {
   RunSettingsTest(
       "multidevice_page/multidevice_wifi_sync_disabled_link_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        MultidevicePageMultideviceWifiSyncItem) {
   RunSettingsTest("multidevice_page/multidevice_wifi_sync_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        NearbySharePageNearbyShareConfirmPage) {
   RunSettingsTest("nearby_share_page/nearby_share_confirm_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        NearbySharePageNearbyShareHighVisibilityPage) {
   RunSettingsTest(
       "nearby_share_page/nearby_share_high_visibility_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        NearbySharePageNearbyShareReceiveDialog) {
   RunSettingsTest("nearby_share_page/nearby_share_receive_dialog_test.js");
 }
 
-class OSSettingsNearbyShareTestSharingEnabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsNearbyShareTestSharingEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(::features::kNearbySharing);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsNearbyShareTestSharingEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampNearbyShareTestSharingEnabled,
                        NearbySharePageNearbyShareSubpage) {
   RunSettingsTest("nearby_share_page/nearby_share_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OncMojoTest) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OncMojoTest) {
   RunSettingsTest("onc_mojo_test.js");
 }
 
