@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/task_traits.h"
+#include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
@@ -100,6 +102,16 @@ struct GraphChangeUpdateOrigin {
   std::optional<url::Origin> previous_origin;
 };
 
+struct GraphChangeUpdateProcessPriority {
+  GraphChangeUpdateProcessPriority(
+      const performance_manager::ProcessNode* process_node,
+      base::TaskPriority previous_priority)
+      : process_node(process_node), previous_priority(previous_priority) {}
+
+  raw_ptr<const performance_manager::ProcessNode> process_node;
+  base::TaskPriority previous_priority;
+};
+
 using GraphChange = absl::variant<NoGraphChange,
                                   GraphChangeAddFrame,
                                   GraphChangeRemoveFrame,
@@ -109,7 +121,8 @@ using GraphChange = absl::variant<NoGraphChange,
                                   GraphChangeRemoveClientFrameFromWorker,
                                   GraphChangeAddClientWorkerToWorker,
                                   GraphChangeRemoveClientWorkerFromWorker,
-                                  GraphChangeUpdateOrigin>;
+                                  GraphChangeUpdateOrigin,
+                                  GraphChangeUpdateProcessPriority>;
 
 }  // namespace resource_attribution
 

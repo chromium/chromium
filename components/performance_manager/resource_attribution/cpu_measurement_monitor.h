@@ -99,6 +99,8 @@ class CPUMeasurementMonitor
   // ProcessNode::Observer:
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
+  void OnPriorityChanged(const ProcessNode* process_node,
+                         base::TaskPriority previous_value) override;
 
   // WorkerNode::Observer:
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
@@ -152,8 +154,7 @@ class CPUMeasurementMonitor
     // measurement is added to `measurement_deltas`.
     void MeasureAndDistributeCPUUsage(
         const ProcessNode* process_node,
-        const NodeSplitSet& extra_nodes,
-        const NodeSplitSet& nodes_to_skip,
+        GraphChange graph_change,
         std::map<ResourceContext, CPUTimeResult>& measurement_deltas);
 
    private:

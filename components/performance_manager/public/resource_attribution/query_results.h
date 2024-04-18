@@ -75,6 +75,12 @@ struct CPUTimeResult {
   // ProcessMetrics::GetPlatformIndependentCPUUsage().
   base::TimeDelta cumulative_cpu;
 
+  // Total time the context spent on CPU in a background process between
+  // `start_time` and `metadata.measurement_time`. Time spent on CPU in a
+  // foreground process doesn't affect this, even if the context itself was
+  // backgrounded.
+  base::TimeDelta cumulative_background_cpu;
+
   friend constexpr auto operator<=>(const CPUTimeResult&,
                                     const CPUTimeResult&) = default;
   friend constexpr bool operator==(const CPUTimeResult&,

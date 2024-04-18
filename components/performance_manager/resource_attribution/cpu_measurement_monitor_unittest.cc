@@ -174,6 +174,7 @@ class ResourceAttrCPUMonitorTest
   auto CPUDeltaMatchesWithMeasurementTime(
       const ResourceContext& context,
       base::TimeDelta expected_delta,
+      base::TimeDelta expected_background_delta,
       base::TimeTicks expected_measurement_time,
       MeasurementAlgorithm expected_algorithm =
           MeasurementAlgorithm::kDirectMeasurement) const {
@@ -200,14 +201,26 @@ class ResourceAttrCPUMonitorTest
 
   // As CPUDeltaMatchesWithMeasurementTime, but assumes the mock clock hasn't
   // advanced since the measurement (so the measurement time is "now").
+  auto CPUDeltaWithBackgroundMatches(
+      const ResourceContext& context,
+      base::TimeDelta expected_delta,
+      base::TimeDelta expected_background_delta,
+      MeasurementAlgorithm expected_algorithm =
+          MeasurementAlgorithm::kDirectMeasurement) const {
+    return CPUDeltaMatchesWithMeasurementTime(
+        context, expected_delta, expected_background_delta,
+        /*expected_measurement_time=*/base::TimeTicks::Now(),
+        expected_algorithm);
+  }
+
+  // As CPUDeltaWithBackgroundMatches, but expects no background CPU time.
   auto CPUDeltaMatches(const ResourceContext& context,
                        base::TimeDelta expected_delta,
                        MeasurementAlgorithm expected_algorithm =
                            MeasurementAlgorithm::kDirectMeasurement) const {
-    return CPUDeltaMatchesWithMeasurementTime(
+    return CPUDeltaWithBackgroundMatches(
         context, expected_delta,
-        /*expected_measurement_time=*/base::TimeTicks::Now(),
-        expected_algorithm);
+        /* expected_background_delta=*/base::TimeDelta(), expected_algorithm);
   }
 
   // GMock matcher expecting that a given QueryResults object contains a
@@ -424,18 +437,24 @@ TEST_F(ResourceAttrCPUMonitorTest, ExitTiming) {
   // time they were alive and 0% for the rest of the measurement interval.
   UpdateAndGetCPUMeasurements();
 
-  EXPECT_THAT(current_measurements_[renderer4->GetResourceContext()],
-              CPUDeltaMatchesWithMeasurementTime(
-                  renderer4->GetResourceContext(), base::TimeDelta(),
-                  previous_update_time));
-  EXPECT_THAT(current_measurements_[renderer5->GetResourceContext()],
-              CPUDeltaMatchesWithMeasurementTime(
-                  renderer5->GetResourceContext(), base::TimeDelta(),
-                  previous_update_time));
-  EXPECT_THAT(current_measurements_[renderer6->GetResourceContext()],
-              CPUDeltaMatchesWithMeasurementTime(
-                  renderer6->GetResourceContext(), base::TimeDelta(),
-                  previous_update_time));
+  EXPECT_THAT(
+      current_measurements_[renderer4->GetResourceContext()],
+      CPUDeltaMatchesWithMeasurementTime(
+          renderer4->GetResourceContext(), /*expected_delta=*/base::TimeDelta(),
+          /*expected_background_delta=*/base::TimeDelta(),
+          previous_update_time));
+  EXPECT_THAT(
+      current_measurements_[renderer5->GetResourceContext()],
+      CPUDeltaMatchesWithMeasurementTime(
+          renderer5->GetResourceContext(), /*expected_delta=*/base::TimeDelta(),
+          /*expected_background_delta=*/base::TimeDelta(),
+          previous_update_time));
+  EXPECT_THAT(
+      current_measurements_[renderer6->GetResourceContext()],
+      CPUDeltaMatchesWithMeasurementTime(
+          renderer6->GetResourceContext(), /*expected_delta=*/base::TimeDelta(),
+          /*expected_background_delta=*/base::TimeDelta(),
+          previous_update_time));
 
   EXPECT_THAT(current_measurements_[renderer7->GetResourceContext()],
               CPUDeltaMatches(renderer7->GetResourceContext(),
@@ -1126,12 +1145,14 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
                       MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_frame1_context],
               CPUDeltaMatchesWithMeasurementTime(
-                  new_frame1_context, base::TimeDelta(), node_removed_time1,
-                  MeasurementAlgorithm::kSplit));
+                  new_frame1_context, /*expected_delta=*/base::TimeDelta(),
+                  /*expected_background_delta=*/base::TimeDelta(),
+                  node_removed_time1, MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_frame2_context],
               CPUDeltaMatchesWithMeasurementTime(
-                  new_frame2_context, process_5way_split, node_removed_time2,
-                  MeasurementAlgorithm::kSplit));
+                  new_frame2_context, /*expected_delta=*/process_5way_split,
+                  /*expected_background_delta=*/base::TimeDelta(),
+                  node_removed_time2, MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_frame3_context],
               AllOf(CPUDeltaMatches(new_frame3_context,
                                     process_5way_split + process_4way_split,
@@ -1148,12 +1169,15 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
                       MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_worker1_context],
               CPUDeltaMatchesWithMeasurementTime(
-                  new_worker1_context, base::TimeDelta(), node_removed_time1,
-                  MeasurementAlgorithm::kSplit));
-  EXPECT_THAT(current_measurements_[new_worker2_context],
-              CPUDeltaMatchesWithMeasurementTime(
-                  new_worker2_context, other_process_4way_split,
-                  node_removed_time2, MeasurementAlgorithm::kSplit));
+                  new_worker1_context, /*expected_delta=*/base::TimeDelta(),
+                  /*expected_background_delta=*/base::TimeDelta(),
+                  node_removed_time1, MeasurementAlgorithm::kSplit));
+  EXPECT_THAT(
+      current_measurements_[new_worker2_context],
+      CPUDeltaMatchesWithMeasurementTime(
+          new_worker2_context, /*expected_delta=*/other_process_4way_split,
+          /*expected_background_delta=*/base::TimeDelta(), node_removed_time2,
+          MeasurementAlgorithm::kSplit));
   EXPECT_THAT(
       current_measurements_[new_worker3_context],
       AllOf(CPUDeltaMatches(new_worker3_context,
@@ -1408,7 +1432,9 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   // client list of `new_worker2` changes.
   EXPECT_THAT(current_measurements_[origin2_in_page_context],
               CPUDeltaMatchesWithMeasurementTime(
-                  origin2_in_page_context, expected_origin2_in_page_delta2,
+                  origin2_in_page_context,
+                  /*expected_delta=*/expected_origin2_in_page_delta2,
+                  /*expected_background_delta=*/base::TimeDelta(),
                   client_changed_time, MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
               CPUDeltaMatches(origin1_in_other_page_context,
@@ -1669,11 +1695,118 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
                               MeasurementAlgorithm::kSum));
   // `origin2_in_other_page_context` isn't measured again after `other_frame`
   // navigates away.
-  EXPECT_THAT(
-      current_measurements_[origin2_in_other_page_context],
-      CPUDeltaMatchesWithMeasurementTime(
-          origin2_in_other_page_context, expected_origin2_in_other_page_delta,
-          navigation_time, MeasurementAlgorithm::kSum));
+  EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
+              CPUDeltaMatchesWithMeasurementTime(
+                  origin2_in_other_page_context,
+                  /*expected_delta=*/expected_origin2_in_other_page_delta,
+                  /*expected_background_delta=*/base::TimeDelta(),
+                  navigation_time, MeasurementAlgorithm::kSum));
+}
+
+// Tests that `cumulative_background_cpu` is correctly maintained, including
+// when process priority changes during a measurement interval.
+TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
+  performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
+      mock_graph(graph());
+
+  mock_graph.process->set_priority(base::TaskPriority::USER_BLOCKING);
+  mock_graph.other_process->set_priority(base::TaskPriority::USER_BLOCKING);
+
+  SetProcessCPUUsage(mock_graph.process.get(), 0.6);
+  SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
+
+  StartMonitoring();
+
+  const ProcessContext& process_context =
+      mock_graph.process->GetResourceContext();
+  const ProcessContext& other_process_context =
+      mock_graph.other_process->GetResourceContext();
+  const FrameContext& frame_context = mock_graph.frame->GetResourceContext();
+  const FrameContext& child_frame_context =
+      mock_graph.child_frame->GetResourceContext();
+
+  // Set process' priority to `BEST_EFFORT` at 1/3 of the measurement interval.
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
+  mock_graph.process->set_priority(base::TaskPriority::BEST_EFFORT);
+
+  // Set process' priority to `USER_VISIBLE` at 2/3 of the measurement interval.
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
+  mock_graph.process->set_priority(base::TaskPriority::USER_VISIBLE);
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
+  UpdateAndGetCPUMeasurements();
+
+  {
+    constexpr base::TimeDelta process_delta = kTimeBetweenMeasurements * 0.6;
+    constexpr base::TimeDelta process_background_delta =
+        process_delta * 0.6 / 3;
+    constexpr base::TimeDelta other_process_delta =
+        kTimeBetweenMeasurements * 0.5;
+    constexpr base::TimeDelta other_process_background_delta =
+        base::TimeDelta();
+
+    // Verify that process background CPU time is correctly measured.
+    EXPECT_THAT(current_measurements_[process_context],
+                CPUDeltaWithBackgroundMatches(process_context, process_delta,
+                                              process_background_delta));
+    EXPECT_THAT(current_measurements_[other_process_context],
+                CPUDeltaWithBackgroundMatches(other_process_context,
+                                              other_process_delta,
+                                              other_process_background_delta));
+
+    // Verify that process background CPU time is correctly split.
+    //
+    // * `process` splits its 60% CPU usage evenly between `frame`,
+    //   `other_frame` and `worker`.
+    // * `other_process` splits its 50% CPU usage evenly between `child_frame`
+    //   and `other_worker`.
+    // See the chart in MockMultiplePagesAndWorkersWithMultipleProcessesGraph.
+    constexpr base::TimeDelta process_delta_split = process_delta / 3;
+    constexpr base::TimeDelta process_background_delta_split =
+        process_background_delta / 3;
+    constexpr base::TimeDelta other_process_delta_split =
+        other_process_delta / 2;
+    constexpr base::TimeDelta other_process_background_delta_split =
+        other_process_background_delta / 2;
+
+    EXPECT_THAT(
+        current_measurements_[frame_context],
+        CPUDeltaWithBackgroundMatches(frame_context, process_delta_split,
+                                      process_background_delta_split,
+                                      MeasurementAlgorithm::kSplit));
+    EXPECT_THAT(current_measurements_[child_frame_context],
+                CPUDeltaWithBackgroundMatches(
+                    child_frame_context, other_process_delta_split,
+                    other_process_background_delta_split,
+                    MeasurementAlgorithm::kSplit));
+  }
+
+  // Set other process' priority to `BEST_EFFORT` for a full measurement
+  // interval.
+  mock_graph.other_process->set_priority(base::TaskPriority::BEST_EFFORT);
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  UpdateAndGetCPUMeasurements();
+
+  {
+    // Verify that process background CPU time is correctly measured.
+    constexpr base::TimeDelta process_delta = kTimeBetweenMeasurements * 0.6;
+    constexpr base::TimeDelta process_background_delta = base::TimeDelta();
+    constexpr base::TimeDelta other_process_delta =
+        kTimeBetweenMeasurements * 0.5;
+    constexpr base::TimeDelta other_process_background_delta =
+        other_process_delta;
+
+    EXPECT_THAT(current_measurements_[process_context],
+                CPUDeltaWithBackgroundMatches(process_context, process_delta,
+                                              process_background_delta));
+    EXPECT_THAT(current_measurements_[other_process_context],
+                CPUDeltaWithBackgroundMatches(other_process_context,
+                                              other_process_delta,
+                                              other_process_background_delta));
+
+    // Don't verify that process background CPU time is correctly split, as that
+    // would be redundant.
+  }
 }
 
 // Tests that errors returned from ProcessMetrics are correctly ignored.
@@ -1720,10 +1853,12 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
   UpdateAndGetCPUMeasurements();
 
   // After an error the previous measurement should be returned unchanged.
-  EXPECT_THAT(current_measurements_[renderer1->GetResourceContext()],
-              CPUDeltaMatchesWithMeasurementTime(
-                  renderer1->GetResourceContext(), base::TimeDelta(),
-                  previous_measurement_time));
+  EXPECT_THAT(
+      current_measurements_[renderer1->GetResourceContext()],
+      CPUDeltaMatchesWithMeasurementTime(
+          renderer1->GetResourceContext(), /*expected_delta=*/base::TimeDelta(),
+          /*expected_background_delta=*/base::TimeDelta(),
+          previous_measurement_time));
   EXPECT_FALSE(
       base::Contains(current_measurements_, renderer2->GetResourceContext()));
   EXPECT_FALSE(

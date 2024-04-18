@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
+#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
@@ -295,6 +296,13 @@ void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
   cpu_measurement_map_.erase(process_node);
 }
 
+void CPUMeasurementMonitor::OnPriorityChanged(
+    const ProcessNode* process_node,
+    base::TaskPriority previous_value) {
+  UpdateCPUMeasurements(process_node, GraphChangeUpdateProcessPriority(
+                                          process_node, previous_value));
+}
+
 void CPUMeasurementMonitor::OnWorkerNodeAdded(const WorkerNode* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take a measurement of the process CPU usage *before* this node was added.
@@ -415,7 +423,7 @@ void CPUMeasurementMonitor::UpdateAllCPUMeasurements() {
   // frames and workers.
   std::map<ResourceContext, CPUTimeResult> measurement_deltas;
   for (auto& [node, cpu_measurement] : cpu_measurement_map_) {
-    cpu_measurement.MeasureAndDistributeCPUUsage(node, {}, {},
+    cpu_measurement.MeasureAndDistributeCPUUsage(node, NoGraphChange(),
                                                  measurement_deltas);
   }
   ApplyMeasurementDeltas(measurement_deltas);
@@ -436,36 +444,6 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
     return;
   }
 
-  // Don't distribute measurements to nodes that are being added to the graph.
-  // The current measurement covers the time before the node was added.
-  NodeSplitSet nodes_to_skip;
-
-  // Include nodes that are being removed from the graph. They may not be
-  // reachable through visitors at this point, but the current measurement
-  // covers the time before they were removed.
-  // TODO(https://crbug.com/1481676): Make the graph state consistent in
-  // OnBefore*NodeRemoved so `extra_nodes` isn't needed.
-  NodeSplitSet extra_nodes;
-
-  absl::visit(base::Overloaded{
-                  [&nodes_to_skip](GraphChangeAddFrame change) {
-                    nodes_to_skip.insert(change.frame_node.get());
-                  },
-                  [&nodes_to_skip](GraphChangeAddWorker change) {
-                    nodes_to_skip.insert(change.worker_node.get());
-                  },
-                  [&extra_nodes](GraphChangeRemoveFrame change) {
-                    extra_nodes.insert(change.frame_node.get());
-                  },
-                  [&extra_nodes](GraphChangeRemoveWorker change) {
-                    extra_nodes.insert(change.worker_node.get());
-                  },
-                  [](auto change) {
-                    // Do nothing.
-                  },
-              },
-              graph_change);
-
   // Update CPU metrics, attributing the cumulative CPU of the process to its
   // frames and workers.
   std::map<ResourceContext, CPUTimeResult> measurement_deltas;
@@ -475,7 +453,7 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
     // PID so aren't being monitored.
     return;
   }
-  it->second.MeasureAndDistributeCPUUsage(it->first, extra_nodes, nodes_to_skip,
+  it->second.MeasureAndDistributeCPUUsage(it->first, graph_change,
                                           measurement_deltas);
   ApplyMeasurementDeltas(measurement_deltas, graph_change);
 }
@@ -540,6 +518,7 @@ void CPUMeasurementMonitor::ApplySequentialDelta(const ResourceContext& context,
   CHECK_LE(result.metadata.measurement_time, delta.start_time);
   result.metadata.measurement_time = delta.metadata.measurement_time;
   result.cumulative_cpu += delta.cumulative_cpu;
+  result.cumulative_background_cpu += delta.cumulative_background_cpu;
 
   // Adding a valid delta to a valid result should produce a valid result.
   ValidateCPUTimeResult(result);
@@ -566,6 +545,7 @@ void CPUMeasurementMonitor::ApplyOverlappingDelta(
                                               delta.metadata.measurement_time);
   result.start_time = std::min(result.start_time, delta.start_time);
   result.cumulative_cpu += delta.cumulative_cpu;
+  result.cumulative_background_cpu += delta.cumulative_background_cpu;
 
   // Adding a valid delta to a valid result should produce a valid result.
   ValidateCPUTimeResult(result);
@@ -606,6 +586,9 @@ base::Value::Dict CPUMeasurementMonitor::DescribeContextData(
              performance_manager::TimeDeltaToValue(measurement_interval));
     dict.Set("cumulative_cpu",
              performance_manager::TimeDeltaToValue(result.cumulative_cpu));
+    dict.Set("cumulative_background_cpu",
+             performance_manager::TimeDeltaToValue(
+                 result.cumulative_background_cpu));
   }
   return dict;
 }
@@ -631,8 +614,7 @@ CPUMeasurementMonitor::CPUMeasurement::operator=(
 
 void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     const ProcessNode* process_node,
-    const NodeSplitSet& extra_nodes,
-    const NodeSplitSet& nodes_to_skip,
+    GraphChange graph_change,
     std::map<ResourceContext, CPUTimeResult>& measurement_deltas) {
   // TODO(crbug.com/325330345): Handle final CPU usage of a process.
   //
@@ -763,11 +745,23 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   most_recent_measurement_ = current_cpu_usage;
   last_measurement_time_ = measurement_interval_end;
 
+  // Determine the process priority during the measurement interval. If the
+  // process' priority just changed, used the previous priority. Otherwise, use
+  // the current priority.
+  base::TaskPriority process_priority;
+  GraphChangeUpdateProcessPriority* priority_change =
+      absl::get_if<GraphChangeUpdateProcessPriority>(&graph_change);
+  if (priority_change && priority_change->process_node == process_node) {
+    process_priority = priority_change->previous_priority;
+  } else {
+    process_priority = process_node->GetPriority();
+  }
+
   auto record_cpu_deltas = [&measurement_deltas, &measurement_interval_start,
-                            &measurement_interval_end](
-                               const ResourceContext& context,
-                               base::TimeDelta cpu_delta,
-                               MeasurementAlgorithm algorithm) {
+                            &measurement_interval_end,
+                            &process_priority](const ResourceContext& context,
+                                               base::TimeDelta cpu_delta,
+                                               MeasurementAlgorithm algorithm) {
     // Each ProcessNode should be updated by one call to
     // MeasureAndDistributeCPUUsage(), and each FrameNode and WorkerNode is in a
     // single process, so none of these contexts should be in the map yet. Each
@@ -781,9 +775,44 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
             .metadata = ResultMetadata(measurement_interval_end, algorithm),
             .start_time = measurement_interval_start,
             .cumulative_cpu = cpu_delta,
-        });
+            // `cumulative_background_cpu` accumulates CPU consumed while the
+            // process' priority is `BEST_EFFORT`.
+            .cumulative_background_cpu =
+                (process_priority == base::TaskPriority::BEST_EFFORT)
+                    ? cpu_delta
+                    : base::TimeDelta()});
     CHECK(inserted);
   };
+
+  // Don't distribute measurements to nodes that are being added to the graph.
+  // The current measurement covers the time before the node was added.
+  NodeSplitSet nodes_to_skip;
+
+  // Include nodes that are being removed from the graph. They may not be
+  // reachable through visitors at this point, but the current measurement
+  // covers the time before they were removed.
+  // TODO(crbug.com/40930981): Make the graph state consistent in
+  // OnBefore*NodeRemoved so `extra_nodes` isn't needed.
+  NodeSplitSet extra_nodes;
+
+  absl::visit(base::Overloaded{
+                  [&nodes_to_skip](GraphChangeAddFrame change) {
+                    nodes_to_skip.insert(change.frame_node.get());
+                  },
+                  [&nodes_to_skip](GraphChangeAddWorker change) {
+                    nodes_to_skip.insert(change.worker_node.get());
+                  },
+                  [&extra_nodes](GraphChangeRemoveFrame change) {
+                    extra_nodes.insert(change.frame_node.get());
+                  },
+                  [&extra_nodes](GraphChangeRemoveWorker change) {
+                    extra_nodes.insert(change.worker_node.get());
+                  },
+                  [](auto change) {
+                    // Do nothing.
+                  },
+              },
+              graph_change);
 
   record_cpu_deltas(process_node->GetResourceContext(), cumulative_cpu_delta,
                     MeasurementAlgorithm::kDirectMeasurement);
