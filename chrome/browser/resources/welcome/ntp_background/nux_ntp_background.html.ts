@@ -38,7 +38,7 @@ export function getHtml(this: NuxNtpBackgroundElement) {
     <step-indicator .model="${this.indicatorModel}"></step-indicator>
     <cr-button class="action-button" @click="${this.onNextClicked_}">
       $i18n{next}
-      <iron-icon icon="cr:chevron-right"></iron-icon>
+      <cr-icon icon="cr:chevron-right"></cr-icon>
     </cr-button>
   </div>
 </div>

@@ -50,7 +50,7 @@ h2 {
 }
 
 <if expr="is_win">
-iron-icon[icon='cr:open-in-new'] {
+cr-icon[icon='cr:open-in-new'] {
   height: 20px;
   width: 20px;
 }

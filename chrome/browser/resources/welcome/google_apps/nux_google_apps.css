@@ -98,7 +98,7 @@ h1 {
   width: 3rem;
 }
 
-.option iron-icon {
+.option cr-icon {
   --iron-icon-fill-color: var(--cr-card-background-color);
   background: var(--navi-check-icon-color);
   border-radius: 50%;
@@ -111,18 +111,18 @@ h1 {
   width: .75rem;
 }
 
-:host-context([dir=rtl]) .option iron-icon {
+:host-context([dir=rtl]) .option cr-icon {
   left: .375rem;
   right: unset;
 }
 
-.option.keyboard-focused:focus iron-icon[icon='cr:check'],
-.option:hover iron-icon[icon='cr:check'],
-.option[active] iron-icon[icon='cr:check'] {
+.option.keyboard-focused:focus cr-icon[icon='cr:check'],
+.option:hover cr-icon[icon='cr:check'],
+.option[active] cr-icon[icon='cr:check'] {
   display: block;
 }
 
-.option[active] iron-icon[icon='cr:check'] {
+.option[active] cr-icon[icon='cr:check'] {
   background: var(--cr-checked-color);
 }
 

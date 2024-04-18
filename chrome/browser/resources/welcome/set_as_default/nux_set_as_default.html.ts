@@ -19,9 +19,9 @@ export function getHtml(this: NuxSetAsDefaultElement) {
     <cr-button class="action-button" @click="${this.onSetDefaultClick_}">
       $i18n{setDefaultConfirm}
 <if expr="is_win">
-      <iron-icon icon="cr:open-in-new" slot="suffix-icon"
+      <cr-icon icon="cr:open-in-new" slot="suffix-icon"
           ?hidden="${!this.isWin10_}">
-      </iron-icon>
+      </cr-icon>
 </if>
     </cr-button>
   </div>
