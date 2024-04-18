@@ -102,6 +102,16 @@ java_strings_grd("permissions_strings_grd") {
           [ "values-{{source_name_part}}/permissions_android_strings.xml" ])
 }
 
+android_library("content_settings_enums_java") {
+  srcjar_deps = [ ":permission_uma_util_enums_javagen" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
+java_cpp_enum("permission_uma_util_enums_javagen") {
+  visibility = [ ":*" ]
+  sources = [ "../permission_uma_util.h" ]
+}
+
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
@@ -124,6 +134,7 @@ android_library("java") {
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
   deps = [
+    ":content_settings_enums_java",
     ":core_java",
     ":java_resources",
     "//base:base_java",
@@ -141,7 +152,6 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
-
   resources_package = "org.chromium.components.permissions"
 }
 

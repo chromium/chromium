@@ -1902,6 +1902,7 @@ if (current_toolchain == default_toolchain) {
       "//components/payments/content/android:payments_java_test_support",
       "//components/payments/content/android:service_java",
       "//components/payments/mojom:mojom_java",
+      "//components/permissions/android:content_settings_enums_java",
       "//components/permissions/android:core_java",
       "//components/permissions/android:java",
       "//components/policy/android:policy_java",

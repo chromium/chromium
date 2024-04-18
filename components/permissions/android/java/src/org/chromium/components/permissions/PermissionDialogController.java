@@ -184,9 +184,9 @@ public class PermissionDialogController
         if (mDialogDelegate == null) {
             mState = State.NOT_SHOWING;
         } else {
-            mDialogDelegate.onDismiss();
             // The user accepted the site-level prompt but denied the app-level prompt.
             // No content setting should be set.
+            mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_OS_DENIED);
             destroyDelegate(ContentSettingValues.DEFAULT);
         }
         scheduleDisplay();
@@ -205,7 +205,7 @@ public class PermissionDialogController
         if (context == null) {
             // TODO(timloh): This probably doesn't work, as this happens synchronously when creating
             // the PermissionPromptAndroid, so the PermissionRequestManager won't be ready yet.
-            mDialogDelegate.onDismiss();
+            mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_NO_CONTEXT);
             destroyDelegate(ContentSettingValues.DEFAULT);
             return;
         }
@@ -381,7 +381,15 @@ public class PermissionDialogController
                 destroyDelegate(ContentSettingValues.BLOCK);
             } else {
                 assert mState == State.PROMPT_OPEN;
-                mDialogDelegate.onDismiss();
+
+                @DismissalType int type = DismissalType.UNSPECIFIED;
+                if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK) {
+                    type = DismissalType.NAVIGATE_BACK;
+                } else if (dismissalCause == DialogDismissalCause.TOUCH_OUTSIDE) {
+                    type = DismissalType.TOUCH_OUTSIDE;
+                }
+                mDialogDelegate.onDismiss(type);
+
                 destroyDelegate(ContentSettingValues.DEFAULT);
             }
             scheduleDisplay();

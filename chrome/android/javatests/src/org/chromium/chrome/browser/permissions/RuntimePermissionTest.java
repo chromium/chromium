@@ -20,6 +20,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.offline_items_collection.ContentId;
+import org.chromium.components.permissions.DismissalType;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -48,6 +50,9 @@ public class RuntimePermissionTest {
             "/chrome/test/data/geolocation/geolocation_on_load.html";
     private static final String MEDIA_TEST = "/content/test/data/media/getusermedia.html";
     private static final String DOWNLOAD_TEST = "/chrome/test/data/android/download/get.html";
+
+    private static final String DISMISS_TYPE_HISTOGRAM =
+            "Permissions.Prompt.Geolocation.ModalDialog.Dismissed.Method";
 
     private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
 
@@ -162,6 +167,14 @@ public class RuntimePermissionTest {
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.DENY);
+
+        // Verify prompt dismissal due to OS deny will be logged in UMA
+        var histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                DISMISS_TYPE_HISTOGRAM, DismissalType.AUTODISMISS_OS_DENIED)
+                        .build();
+
         RuntimePermissionTestUtils.runTest(
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
@@ -172,6 +185,9 @@ public class RuntimePermissionTest {
                 /* waitForUpdater= */ true,
                 /* javascriptToExecute= */ null,
                 R.string.infobar_missing_location_permission_text);
+
+        histogramExpectation.assertExpected(
+                "Should record permission prompt dismissal due to OS deny in UMA");
     }
 
     @Test

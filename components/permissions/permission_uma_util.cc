@@ -723,6 +723,26 @@ void PermissionUmaUtil::RecordActivityIndicator(
       state);
 }
 
+void PermissionUmaUtil::RecordDismissalType(
+    const std::vector<ContentSettingsType>& content_settings_types,
+    PermissionPromptDisposition ui_disposition,
+    DismissalType dismissalType) {
+  RequestTypeForUma type = GetUmaValueForRequestType(
+      ContentSettingsTypeToRequestType(content_settings_types[0]));
+
+  if (content_settings_types.size() > 1) {
+    type = RequestTypeForUma::MULTIPLE;
+  }
+
+  std::string permission_type = GetPermissionRequestString(type);
+  std::string permission_disposition =
+      GetPromptDispositionString(ui_disposition);
+  base::UmaHistogramEnumeration("Permissions.Prompt." + permission_type + "." +
+                                    permission_disposition +
+                                    ".Dismissed.Method",
+                                dismissalType);
+}
+
 void PermissionUmaUtil::RecordPermissionRequestedFromFrame(
     ContentSettingsType content_settings_type,
     content::RenderFrameHost* rfh) {

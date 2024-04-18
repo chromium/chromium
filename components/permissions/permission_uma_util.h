@@ -533,6 +533,32 @@ enum class PermissionChangeInfo {
   kMaxValue = kInfobarNotShownNoPageReloadPermissionNotUsed
 };
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.permissions
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: DismissalType
+enum class DismissalType {
+  // Fallback if a more specific dismissal type is not available..
+  kUnspecified = 0,
+
+  // The user dismissed by touching the back button.
+  kNavigateBack = 1,  //
+
+  // The user dismissed by touching outside the scrim
+  kTouchOutside = 2,
+
+  // It's possible for the context to be null if a prompt is
+  // dequeued after the user backgrounds the browser and cleanup has already
+  // happened. In that case, the prompt gets quietly dismissed.
+  kAutodismissNoContext = 3,
+
+  // The user accepted the site-level prompt but denied the
+  // app-level prompt (= OS prompt), in which case the permission request gets
+  // quietly dismissed.
+  kAutodismissOsDenied = 4,
+
+  // Always keep this at the end.
+  kMaxValue = kAutodismissOsDenied,
+};
+
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
@@ -565,6 +591,11 @@ class PermissionUmaUtil {
                                       bool blocked,
                                       bool blocked_system_level,
                                       bool clicked);
+
+  static void RecordDismissalType(
+      const std::vector<ContentSettingsType>& content_settings_types,
+      PermissionPromptDisposition ui_disposition,
+      DismissalType dismissalType);
 
   static void RecordPermissionRequestedFromFrame(
       ContentSettingsType content_settings_type,

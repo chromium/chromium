@@ -6,10 +6,12 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
 #include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/strings/grit/components_strings.h"
@@ -189,8 +191,19 @@ void PermissionDialogDelegate::Cancel(JNIEnv* env,
 }
 
 void PermissionDialogDelegate::Dismissed(JNIEnv* env,
-                                         const JavaParamRef<jobject>& obj) {
+                                         const JavaParamRef<jobject>& obj,
+                                         int dismissalType) {
   CHECK(permission_prompt_);
+  std::vector<ContentSettingsType> content_settings_types;
+  for (size_t i = 0; i < permission_prompt_->PermissionCount(); ++i) {
+    content_settings_types.push_back(
+        permission_prompt_->GetContentSettingType(i));
+  }
+
+  PermissionUmaUtil::RecordDismissalType(
+      content_settings_types, permission_prompt_->GetPromptDisposition(),
+      static_cast<DismissalType>(dismissalType));
+
   permission_prompt_->Closing();
 }
 

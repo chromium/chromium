@@ -72,7 +72,9 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   void Accept(JNIEnv* env, const JavaParamRef<jobject>& obj);
   void AcceptThisTime(JNIEnv* env, const JavaParamRef<jobject>& obj);
   void Cancel(JNIEnv* env, const JavaParamRef<jobject>& obj);
-  void Dismissed(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void Dismissed(JNIEnv* env,
+                 const JavaParamRef<jobject>& obj,
+                 int dismissalType);
 
   // Frees this object. Called from Java once the permission dialog has been
   // responded to.

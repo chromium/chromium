@@ -964,6 +964,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Permissions.Prompt.{PermissionType}.{Disposition}.Dismissed.Method"
+    enum="PermissionPromptDismissMethod" expires_after="2024-12-31">
+  <owner>fjacky@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Tracks how the user dismissed the {PermissionType} permission prompt with
+    disposition of type {Disposition}. Recorded when a permission prompt has
+    been resolved. Currently only implemented and reported for Clank.
+  </summary>
+  <token key="Disposition" variants="PromptDisposition"/>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+</histogram>
+
+<histogram
     name="Permissions.Prompt.{PermissionType}.{Disposition}.Ignored.DidShowBubble"
     enum="Boolean" expires_after="2024-10-31">
   <owner>elklm@chromium.org</owner>
