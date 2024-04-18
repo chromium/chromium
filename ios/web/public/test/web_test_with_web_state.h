@@ -27,10 +27,11 @@ class WebTestWithWebState : public WebTest {
 
  protected:
   explicit WebTestWithWebState(
-      WebTaskEnvironment::Options = WebTaskEnvironment::Options::DEFAULT);
-  WebTestWithWebState(
-      std::unique_ptr<web::WebClient> web_client,
-      WebTaskEnvironment::Options = WebTaskEnvironment::Options::DEFAULT);
+      WebTaskEnvironment::MainThreadType main_thread_type =
+          WebTaskEnvironment::MainThreadType::DEFAULT);
+  WebTestWithWebState(std::unique_ptr<web::WebClient> web_client,
+                      WebTaskEnvironment::MainThreadType main_thread_type =
+                          WebTaskEnvironment::MainThreadType::DEFAULT);
   ~WebTestWithWebState() override;
 
   // WebTest overrides.

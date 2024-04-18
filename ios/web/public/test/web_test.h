@@ -23,10 +23,11 @@ class WebTestRenderProcessCrashObserver;
 // mimics a web embedder.
 class WebTest : public PlatformTest {
  protected:
-  explicit WebTest(WebTaskEnvironment::Options options =
-                       WebTaskEnvironment::Options::DEFAULT);
+  explicit WebTest(WebTaskEnvironment::MainThreadType main_thread_type =
+                       WebTaskEnvironment::MainThreadType::DEFAULT);
   WebTest(std::unique_ptr<web::WebClient> web_client,
-          WebTaskEnvironment::Options = WebTaskEnvironment::Options::DEFAULT);
+          WebTaskEnvironment::MainThreadType main_thread_type =
+              WebTaskEnvironment::MainThreadType::DEFAULT);
   ~WebTest() override;
 
   void SetUp() override;

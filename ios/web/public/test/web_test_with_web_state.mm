@@ -30,13 +30,14 @@ using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace web {
 
-WebTestWithWebState::WebTestWithWebState(WebTaskEnvironment::Options options)
-    : WebTest(options) {}
+WebTestWithWebState::WebTestWithWebState(
+    WebTaskEnvironment::MainThreadType main_thread_type)
+    : WebTest(main_thread_type) {}
 
 WebTestWithWebState::WebTestWithWebState(
     std::unique_ptr<web::WebClient> web_client,
-    WebTaskEnvironment::Options options)
-    : WebTest(std::move(web_client), options) {}
+    WebTaskEnvironment::MainThreadType main_thread_type)
+    : WebTest(std::move(web_client), main_thread_type) {}
 
 WebTestWithWebState::~WebTestWithWebState() {}
 
