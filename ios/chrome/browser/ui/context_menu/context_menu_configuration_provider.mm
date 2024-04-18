@@ -178,6 +178,10 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   __weak __typeof(self) weakSelf = self;
 
   if (isLink) {
+    // Array for the actions/menus used to open a link.
+    NSMutableArray<UIMenuElement*>* linkOpeningElements =
+        [[NSMutableArray alloc] init];
+
     _URLToLoad = linkURL;
     base::RecordAction(
         base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
@@ -197,7 +201,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
         UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
             ->Load(loadParams);
       }];
-      [menuElements addObject:openNewTab];
+      [linkOpeningElements addObject:openNewTab];
 
       if (IsTabGroupInGridEnabled()) {
         std::set<const TabGroup*> groups =
@@ -225,7 +229,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
         UIMenuElement* openLinkInGroupMenu =
             [actionFactory menuToOpenLinkInGroupWithGroups:groups
                                                      block:actionResult];
-        [menuElements addObject:openLinkInGroupMenu];
+        [linkOpeningElements addObject:openLinkInGroupMenu];
       }
 
       if (!isOffTheRecord) {
@@ -234,7 +238,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
         openIncognitoTab =
             [actionFactory actionToOpenInNewIncognitoTabWithURL:linkURL
                                                      completion:nil];
-        [menuElements addObject:openIncognitoTab];
+        [linkOpeningElements addObject:openIncognitoTab];
       }
 
       if (base::ios::IsMultipleScenesSupported()) {
@@ -245,8 +249,16 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
         UIAction* openNewWindow = [actionFactory
             actionToOpenInNewWindowWithActivity:newWindowActivity];
 
-        [menuElements addObject:openNewWindow];
+        [linkOpeningElements addObject:openNewWindow];
       }
+
+      UIMenu* linkOpeningMenu = [UIMenu menuWithTitle:@""
+                                                image:nil
+                                           identifier:nil
+                                              options:UIMenuOptionsDisplayInline
+                                             children:linkOpeningElements];
+
+      [menuElements addObject:linkOpeningMenu];
 
       if (linkURL.SchemeIsHTTPOrHTTPS()) {
         NSString* innerText = params.text;
@@ -343,7 +355,53 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
     UIAction* openImageInNewTab =
         [actionFactory actionOpenImageInNewTabWithUrlLoadParams:loadParams
                                                      completion:nil];
-    [menuElements addObject:openImageInNewTab];
+
+    // Check if the URL was a valid link to avoid having the `Open in Tab Group`
+    // option twice.
+    if (IsTabGroupInGridEnabled() && !isLink) {
+      // Array for the actions/menus used to open an image in a new tab.
+      NSMutableArray<UIMenuElement*>* imageOpeningElements =
+          [[NSMutableArray alloc] init];
+
+      [imageOpeningElements addObject:openImageInNewTab];
+
+      std::set<const TabGroup*> groups =
+          GetAllGroupsForBrowserState(self.browser->GetBrowserState());
+      auto actionResult = ^(const TabGroup* group) {
+        UrlLoadParams groupLoadParams = UrlLoadParams::InNewTab(imageURL);
+        groupLoadParams.SetInBackground(YES);
+        groupLoadParams.in_incognito = isOffTheRecord;
+        groupLoadParams.append_to = OpenPosition::kCurrentTab;
+        groupLoadParams.web_params.referrer = referrer;
+        groupLoadParams.origin_point = [params.view convertPoint:params.location
+                                                          toView:nil];
+        groupLoadParams.load_in_group = true;
+        if (group) {
+          groupLoadParams.tab_group = group->GetWeakPtr();
+        }
+        ContextMenuConfigurationProvider* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
+            ->Load(groupLoadParams);
+      };
+
+      UIMenuElement* openLinkInGroupMenu =
+          [actionFactory menuToOpenLinkInGroupWithGroups:groups
+                                                   block:actionResult];
+      [imageOpeningElements addObject:openLinkInGroupMenu];
+      UIMenu* imageOpeningMenu =
+          [UIMenu menuWithTitle:@""
+                          image:nil
+                     identifier:nil
+                        options:UIMenuOptionsDisplayInline
+                       children:imageOpeningElements];
+
+      [menuElements addObject:imageOpeningMenu];
+    } else {
+      [menuElements addObject:openImageInNewTab];
+    }
 
     // Search the image using Lens if Lens is enabled and available. Otherwise
     // fall back to a standard search by image experience.
