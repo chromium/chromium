@@ -452,7 +452,10 @@ void MenuListSelectType::ManuallyAssignSlots() {
     }
   }
 
+  CHECK(option_slot_);
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    CHECK(button_slot_);
+    CHECK(datalist_slot_);
     button_slot_->Assign(buttons);
     datalist_slot_->Assign(first_datalist);
     if (default_datalist_->popoverOpen()) {
@@ -1576,6 +1579,7 @@ void ListBoxSelectType::ManuallyAssignSlots() {
       option_nodes.push_back(child);
     }
   }
+  CHECK(option_slot_);
   option_slot_->Assign(option_nodes);
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
     select_->GetShadowRoot()->SetDelegatesFocus(false);
