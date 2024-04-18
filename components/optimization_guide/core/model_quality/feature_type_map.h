@@ -7,6 +7,7 @@
 
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/default.pb.h"
+#include "components/optimization_guide/proto/features/history_query.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -68,6 +69,20 @@ class WallpaperSearchFeatureTypeMap {
   }
 
   static std::string_view ToString() { return "WallpaperSearch"; }
+};
+
+class HistoryQueryFeatureTypeMap {
+ public:
+  using LoggingData = proto::HistoryQueryLoggingData;
+  using Request = proto::HistoryQueryRequest;
+  using Response = proto::HistoryQueryResponse;
+  using Quality = proto::HistoryQueryQuality;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_history_query();
+  }
+
+  static std::string_view ToString() { return "HistoryQuery"; }
 };
 
 }  // namespace optimization_guide

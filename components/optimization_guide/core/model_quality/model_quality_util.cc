@@ -16,6 +16,9 @@ std::optional<UserVisibleFeatureKey> GetModelExecutionFeature(
   switch (feature) {
     case proto::LogAiDataRequest::FeatureCase::kCompose:
       return UserVisibleFeatureKey::kCompose;
+    case proto::LogAiDataRequest::FeatureCase::kHistoryQuery: // Not implemented yet.
+      // TODO(b/335659433): Add a UserVisibleFeatureKey for HistoryQuery.
+      return std::nullopt;
     case proto::LogAiDataRequest::FeatureCase::kTabOrganization:
       return UserVisibleFeatureKey::kTabOrganization;
     case proto::LogAiDataRequest::FeatureCase::kWallpaperSearch:
