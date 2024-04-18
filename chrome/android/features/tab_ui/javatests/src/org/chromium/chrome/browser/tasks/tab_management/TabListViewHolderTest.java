@@ -102,7 +102,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
-import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -831,40 +830,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         mStripModel.set(TabProperties.IS_SELECTED, false);
         button.performClick();
         Assert.assertFalse(mCloseClicked.get());
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testSetCreateGroupListener() {
-        ButtonCompat actionButton = mTabGridView.findViewById(R.id.create_group_button);
-        // By default, the create group button is invisible.
-        Assert.assertEquals(View.GONE, actionButton.getVisibility());
-
-        // When setup with actual listener, the button should be visible.
-        mGridModel.set(TabProperties.CREATE_GROUP_LISTENER, mMockCreateGroupButtonListener);
-        Assert.assertEquals(View.VISIBLE, actionButton.getVisibility());
-        Assert.assertFalse(mCreateGroupButtonClicked.get());
-        actionButton.performClick();
-        Assert.assertTrue(mCreateGroupButtonClicked.get());
-        mCreateGroupButtonClicked.set(false);
-        int firstCreateGroupId = mCreateGroupTabId.get();
-        Assert.assertEquals(TAB1_ID, firstCreateGroupId);
-
-        mGridModel.set(TabProperties.TAB_ID, TAB2_ID);
-        actionButton.performClick();
-        Assert.assertTrue(mCreateGroupButtonClicked.get());
-        mCreateGroupButtonClicked.set(false);
-        int secondCreateGroupId = mCreateGroupTabId.get();
-        // When TAB_ID in PropertyModel is updated, binder should create group with updated tab ID.
-        Assert.assertEquals(TAB2_ID, secondCreateGroupId);
-        Assert.assertNotEquals(firstCreateGroupId, secondCreateGroupId);
-
-        mGridModel.set(TabProperties.CREATE_GROUP_LISTENER, null);
-        actionButton.performClick();
-        Assert.assertFalse(mCreateGroupButtonClicked.get());
-        // When CREATE_GROUP_LISTENER is set to null, the button should be invisible.
-        Assert.assertEquals(View.GONE, actionButton.getVisibility());
     }
 
     @Test

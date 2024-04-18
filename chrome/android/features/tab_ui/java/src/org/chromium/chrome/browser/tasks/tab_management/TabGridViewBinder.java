@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -158,22 +157,6 @@ class TabGridViewBinder {
                             model.get(TabProperties.TAB_SELECTED_LISTENER).run(tabId);
                         });
             }
-        } else if (TabProperties.CREATE_GROUP_LISTENER == propertyKey) {
-            TabListMediator.TabActionListener listener =
-                    model.get(TabProperties.CREATE_GROUP_LISTENER);
-            ButtonCompat createGroupButton =
-                    (ButtonCompat) view.fastFindViewById(R.id.create_group_button);
-            if (listener == null) {
-                createGroupButton.setVisibility(View.GONE);
-                createGroupButton.setOnClickListener(null);
-                return;
-            }
-            createGroupButton.setVisibility(View.VISIBLE);
-            createGroupButton.setOnClickListener(
-                    v -> {
-                        int tabId = model.get(TabProperties.TAB_ID);
-                        listener.run(tabId);
-                    });
         } else if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
         } else if (TabProperties.IPH_PROVIDER == propertyKey) {

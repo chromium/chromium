@@ -72,17 +72,6 @@ found in the LICENSE file.
                 android:layout_height="56dp"
                 android:layout_marginStart="4dp"
                 android:visibility="gone"/>
-            <org.chromium.ui.widget.ButtonCompat
-                android:id="@+id/create_group_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="8dp"
-                android:elevation="4dp"
-                android:text="@string/tabswitcher_create_group"
-                android:visibility="gone"
-                style="@style/FilledButton"/>
         </RelativeLayout>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/action_button"

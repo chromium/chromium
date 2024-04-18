@@ -84,9 +84,6 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<ColorStateList> CHECKED_DRAWABLE_STATE_LIST =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
-            CREATE_GROUP_LISTENER = new WritableObjectPropertyKey<>();
-
     public static final PropertyModel.WritableIntPropertyKey CARD_ANIMATION_STATUS =
             new PropertyModel.WritableIntPropertyKey();
 
@@ -151,7 +148,6 @@ public class TabProperties {
                 IPH_PROVIDER,
                 TITLE,
                 CHECKED_DRAWABLE_STATE_LIST,
-                CREATE_GROUP_LISTENER,
                 CARD_ALPHA,
                 CARD_ANIMATION_STATUS,
                 SELECTABLE_TAB_CLICKED_LISTENER,
