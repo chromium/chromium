@@ -74,9 +74,6 @@ import xml_utils
 
 BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
-OWNER_PLACEHOLDER = (
-    'Please list the metric\'s owners. Add more owner tags as needed.')
-
 MAX_HISTOGRAM_SUFFIX_DEPENDENCY_DEPTH = 5
 
 DEFAULT_BASE_HISTOGRAM_OBSOLETE_REASON = (
@@ -229,10 +226,8 @@ def _ExtractOwners(node):
   Returns:
     A tuple of owner-related info, e.g. (['alice@chromium.org'], True)
 
-    The first element is a list of the owners' email addresses, excluding the
-    owner placeholder string. The second element is a boolean indicating
-    whether the node has an owner. A histogram whose owner is the owner
-    placeholder string has an owner.
+    The first element is a list of the owners' email addresses. The second
+    element is a boolean indicating whether the node has an owner.
   """
   email_pattern = re.compile(BASIC_EMAIL_REGEXP)
   owners = []
@@ -241,12 +236,9 @@ def _ExtractOwners(node):
   for owner_node in xml_utils.IterElementsWithTag(node, 'owner', 1):
     child = owner_node.firstChild
     owner_text = (child and child.nodeValue) or ''
-    is_email = email_pattern.match(owner_text)
-
-    if owner_text and (is_email or OWNER_PLACEHOLDER in owner_text):
+    if email_pattern.match(owner_text):
       has_owner = True
-      if is_email:
-        owners.append(owner_text)
+      owners.append(owner_text)
 
   return owners, has_owner
 

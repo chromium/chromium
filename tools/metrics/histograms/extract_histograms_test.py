@@ -585,33 +585,12 @@ class ExtractHistogramsTest(unittest.TestCase):
         histogram_with_invalid_owner, {})
     self.assertTrue(have_errors)
 
-  def testNewHistogramWithOwnerPlaceHolder(self):
-    histogram_with_owner_placeholder = xml.dom.minidom.parseString("""
-<histogram-configuration>
-<histograms>
- <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
-  <owner> Please list the metric's owners. Add more owner tags as needed.
-  </owner>
-  <summary>
-    <!-- Comments are fine -->
-    This is a summary
-    <!-- Comments are fine -->
-  </summary>
- </histogram>
-</histograms>
-</histogram-configuration>
-""")
-    _, have_errors = extract_histograms._ExtractHistogramsFromXmlTree(
-        histogram_with_owner_placeholder, {})
-    self.assertFalse(have_errors)
-
   def testHistogramWithEscapeCharacters(self):
     histogram_with_owner_placeholder = xml.dom.minidom.parseString("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
-  <owner> Please list the metric's owners. Add more owner tags as needed.
-  </owner>
+  <owner>histogram_owner@google.com</owner>
   <summary>This is a summary with &amp; and &quot; and &apos;</summary>
  </histogram>
 </histograms>

@@ -13,7 +13,6 @@ import os
 import sys
 from xml.etree import ElementTree as ET
 
-import extract_histograms
 import histogram_paths
 import merge_xml
 
@@ -43,8 +42,6 @@ def PrintOwners(root):
         obsolete = True
         continue
       if node.tag != 'owner':
-        continue
-      if node.text == extract_histograms.OWNER_PLACEHOLDER:
         continue
       owners.append(node.text)
 
