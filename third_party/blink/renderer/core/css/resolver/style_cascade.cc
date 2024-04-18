@@ -1011,7 +1011,7 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
       return &auto_base_select_pair->First();
     }
   }
-  if (const auto* v = DynamicTo<CSSMathFunctionValue>(value)) {
+  if (const auto* v = DynamicTo<CSSMathFunctionValue>(result)) {
     return ResolveMathFunction(property, *v, priority);
   }
 
