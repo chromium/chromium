@@ -63,6 +63,9 @@ class MEDIA_EXPORT MediaClient {
   GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) = 0;
 
   // Returns custom allocator if embedder has provided one, else nullptr.
+  // When an allocator is provided, the MSE pipeline will use the provided
+  // allocator during StreamParserBuffer creation. The SRC playback pipeline
+  // does not currently use the allocator, but could be updated to do so.
   virtual ExternalMemoryAllocator* GetMediaAllocator() = 0;
 };
 
