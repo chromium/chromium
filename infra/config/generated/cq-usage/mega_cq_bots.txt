@@ -57,6 +57,7 @@ chromium/try/dawn-try-win10-x64-nvidia-asan
 chromium/try/dawn-try-win10-x86-rel
 chromium/try/dawn-win10-x64-deps-rel
 chromium/try/dawn-win10-x86-deps-rel
+chromium/try/dawn-win11-arm64-deps-rel
 chromium/try/fuchsia-arm64-cast-receiver-rel
 chromium/try/fuchsia-fyi-arm64-dbg
 chromium/try/fuchsia-fyi-x64-asan
@@ -152,6 +153,7 @@ chromium/try/win-clobber-rel
 chromium/try/win-dawn-rel
 chromium/try/win-official
 chromium/try/win-rel
+chromium/try/win11-arm64-dawn-rel
 chromium/try/win11-rel
 chromium/try/win32-clobber-rel
 chromium/try/win32-official

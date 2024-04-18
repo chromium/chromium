@@ -63,6 +63,8 @@ ci/Dawn Win10 x86 Experimental Release (Intel)
 ci/Dawn Win10 x86 Experimental Release (NVIDIA)
 ci/Dawn Win10 x86 Release (Intel)
 ci/Dawn Win10 x86 Release (NVIDIA)
+ci/Dawn Win11 arm64 Builder
+ci/Dawn Win11 arm64 DEPS Builder
 ci/GPU FYI Android arm Builder
 ci/GPU FYI Android arm64 Builder
 ci/GPU FYI Lacros x64 Builder
@@ -166,6 +168,7 @@ try/dawn-try-win10-x64-nvidia-asan
 try/dawn-try-win10-x86-rel
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
+try/dawn-win11-arm64-deps-rel
 try/gpu-fyi-try-android-m-nexus-5x-64
 try/gpu-fyi-try-android-moto-g-power-5g-64
 try/gpu-fyi-try-android-nvidia-shield-tv
@@ -223,3 +226,4 @@ try/linux-dawn-rel
 try/mac-arm64-dawn-rel
 try/mac-dawn-rel
 try/win-dawn-rel
+try/win11-arm64-dawn-rel

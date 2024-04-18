@@ -1248,6 +1248,81 @@ ci.gpu.windows_builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
+ci.gpu.windows_builder(
+    name = "Dawn Win11 arm64 Builder",
+    description_html = "Compiles ToT binaries for Windows/ARM64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "gpu_tests",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|Builder",
+        short_name = "arm64",
+    ),
+)
+
+ci.gpu.windows_builder(
+    name = "Dawn Win11 arm64 DEPS Builder",
+    description_html = "Compiles DEPSed binaries for Windows/ARM64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "gpu_tests",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Windows|Builder",
+        short_name = "arm64",
+    ),
+)
+
 # Note that the Win testers are all thin Linux VMs, triggering jobs on the
 # physical Win hardware in the Swarming pool, which is why they run on linux
 ci.thin_tester(

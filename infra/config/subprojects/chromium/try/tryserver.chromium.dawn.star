@@ -249,6 +249,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "dawn-win11-arm64-deps-rel",
+    description_html = "Compiles and tests DEPSed binaries for Windows/ARM64",
+    mirrors = [
+        "ci/Dawn Win11 arm64 DEPS Builder",
+    ],
+    gn_args = "ci/Dawn Win11 arm64 DEPS Builder",
+    os = os.WINDOWS_ANY,
+    main_list_view = "try",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+    # TODO(crbug.com/335426675): Add the same regular expressions as the non-ARM
+    # trybots once we know the builder is green.
+)
+
+try_.builder(
     name = "android-dawn-arm-rel",
     mirrors = [
         "ci/Dawn Android arm Builder",
@@ -530,6 +546,19 @@ try_.builder(
         "ci/Dawn Win10 x64 Release (NVIDIA)",
     ],
     gn_args = "ci/Dawn Win10 x64 Builder",
+    os = os.WINDOWS_ANY,
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
+    name = "win11-arm64-dawn-rel",
+    description_html = "Compiles and tests ToT binaries for Windows/ARM64",
+    mirrors = [
+        "ci/Dawn Win11 arm64 Builder",
+    ],
+    gn_args = "ci/Dawn Win11 arm64 Builder",
     os = os.WINDOWS_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],

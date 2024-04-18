@@ -50,3 +50,5 @@ ci/Dawn Win10 x86 Experimental Release (Intel)
 ci/Dawn Win10 x86 Experimental Release (NVIDIA)
 ci/Dawn Win10 x86 Release (Intel)
 ci/Dawn Win10 x86 Release (NVIDIA)
+ci/Dawn Win11 arm64 Builder
+ci/Dawn Win11 arm64 DEPS Builder
