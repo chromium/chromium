@@ -24,7 +24,7 @@ export function getHtml(this: CrProfileAvatarSelectorElement) {
             .style="background-image: ${getImage(item.url)}"
             aria-checked="${this.isAvatarSelected_(item)}">
         </cr-button>
-        <iron-icon icon="cr:check" class="checkmark"></iron-icon>
+        <cr-icon icon="cr:check" class="checkmark"></cr-icon>
       </div>
       <paper-tooltip for="${this.getAvatarId_(index)}" offset="0"
           fit-to-visible-bounds>

@@ -8,9 +8,9 @@ import type {CrTooltipIconElement} from './cr_tooltip_icon.js';
 
 export function getHtml(this: CrTooltipIconElement) {
   return html`
-<iron-icon id="indicator" tabindex="0" aria-label="${this.iconAriaLabel}"
+<cr-icon id="indicator" tabindex="0" aria-label="${this.iconAriaLabel}"
     aria-describedby="tooltip" icon="${this.iconClass}" role="img">
-</iron-icon>
+</cr-icon>
 <paper-tooltip id="tooltip"
     for="indicator" position="${this.tooltipPosition}"
     fit-to-visible-bounds part="tooltip">

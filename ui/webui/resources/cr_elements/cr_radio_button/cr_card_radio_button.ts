@@ -10,6 +10,7 @@
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
+import '../cr_icon/cr_icon.js';
 
 import {getCss} from './cr_card_radio_button.css.js';
 import {getHtml} from './cr_card_radio_button.html.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../cr_icon_button/cr_icon_button.js';
-import '../icons.html.js';
+import '../icons_lit.html.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './cr_toolbar_search_field.js';
 

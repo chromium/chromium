@@ -8,9 +8,9 @@ import type {CrLinkRowElement} from './cr_link_row.js';
 
 export function getHtml(this: CrLinkRowElement) {
   return html`
-<iron-icon id="startIcon" .icon="${this.startIcon}" ?hidden="${!this.startIcon}"
+<cr-icon id="startIcon" .icon="${this.startIcon}" ?hidden="${!this.startIcon}"
     aria-hidden="true">
-</iron-icon>
+</cr-icon>
 <div id="labelWrapper" ?hidden="${this.shouldHideLabelWrapper_()}">
   <div id="label" aria-hidden="${!this.ariaShowLabel}">
     ${this.label}

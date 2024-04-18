@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../icons.html.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../icons_lit.html.js';
+import '../cr_icon/cr_icon.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';

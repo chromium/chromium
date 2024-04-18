@@ -14,7 +14,7 @@
  */
 
 import '../cr_icon_button/cr_icon_button.js';
-import '../icons.html.js';
+import '../icons_lit.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';

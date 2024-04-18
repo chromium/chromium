@@ -9,6 +9,8 @@
 
 import '../cr_button/cr_button.js';
 import '../cr_grid/cr_grid.js';
+import '../cr_icon/cr_icon.js';
+import '../icons_lit.html.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {assert} from '//resources/js/assert.js';

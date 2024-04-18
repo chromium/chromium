@@ -10,7 +10,7 @@
 
 import '../cr_icon_button/cr_icon_button.js';
 import '../cr_input/cr_input.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../cr_icon/cr_icon.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 

@@ -16,7 +16,7 @@ export function getHtml(this: CrCardRadioButtonElement) {
     tabindex="${this.getButtonTabIndex()}"
     aria-labelledby="slotted-content"
     @keydown="${this.onInputKeydown}">
-  <iron-icon id="checkMark" icon="cr:check-circle"></iron-icon>
+  <cr-icon id="checkMark" icon="cr:check-circle"></cr-icon>
   <span id="slottedContent">
     <slot></slot>
   </span>
