@@ -192,6 +192,9 @@ class CORE_EXPORT DedicatedWorker final
   mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
       pending_dedicated_worker_host_;
 
+  // The timestamp taken when Start() is called.
+  base::TimeTicks start_time_;
+
   // Whether the worker is frozen due to a call from this context.
   bool requested_frozen_ = false;
 };

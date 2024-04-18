@@ -1958,6 +1958,18 @@ chromium-metrics-reviews@google.com.
   <token key="ServiceWorkerSchedulerOp" variants="ServiceWorkerSchedulerOp"/>
 </histogram>
 
+<histogram name="Worker.TopLevelScript.LoadStartedTime" units="ms"
+    expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time in ms from when a dedicated worker starts until the script load
+    started. This includes PlzDedicatedWorker to offload starting to fetch a
+    script in the browser process. However, fetching contents are excluded from
+    this time.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

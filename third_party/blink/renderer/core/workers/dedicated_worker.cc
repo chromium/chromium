@@ -198,6 +198,7 @@ void DedicatedWorker::postMessage(ScriptState* script_state,
 void DedicatedWorker::Start() {
   TRACE_EVENT("blink.worker", "DedicatedWorker::Start");
   DCHECK(GetExecutionContext()->IsContextThread());
+  start_time_ = base::TimeTicks::Now();
 
   // This needs to be done after the UpdateStateIfNeeded is called as
   // calling into the debugger can cause a breakpoint.
@@ -436,6 +437,8 @@ void DedicatedWorker::ContinueStart(
     RejectCoepUnsafeNone reject_coep_unsafe_none,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host) {
+  UMA_HISTOGRAM_TIMES("Worker.TopLevelScript.LoadStartedTime",
+                      base::TimeTicks::Now() - start_time_);
   context_proxy_->StartWorkerGlobalScope(
       CreateGlobalScopeCreationParams(
           script_url, referrer_policy,
