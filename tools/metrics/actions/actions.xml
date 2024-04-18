@@ -35264,6 +35264,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Impression_FromNTPContentSuggestions"
     not_user_triggered="true">
+  <obsolete>Removed in M126</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded when showing sign in card in the snippets new tab page.
@@ -36006,6 +36007,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromNTPContentSuggestions">
+  <obsolete>Removed in M126</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point

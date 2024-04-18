@@ -114,8 +114,6 @@ public class SyncPromoController {
     private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE = 30;
     private static final String SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS =
             "SyncAndroidNTPPromoMaxImpressions";
-    private static final Set<Integer> ACCESS_POINTS_FOR_NEW_SIGNIN_FLOW =
-            Set.of(SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.RECENT_TABS);
     private static final Set<Integer> HISTORY_SYNC_DEDICATED_ACCESS_POINTS =
             Set.of(SigninAccessPoint.RECENT_TABS);
     @VisibleForTesting static final String GMAIL_DOMAIN = "gmail.com";
@@ -172,8 +170,7 @@ public class SyncPromoController {
         if (currentTime - lastShownTime >= resetAfterMs) {
             ChromeSharedPreferences.getInstance()
                     .writeInt(
-                            getPromoShowCountPreferenceName(
-                                    SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
+                            getPromoShowCountPreferenceName(SigninAccessPoint.NTP_FEED_TOP_PROMO),
                             0);
             ChromeSharedPreferences.getInstance()
                     .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
@@ -224,7 +221,7 @@ public class SyncPromoController {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                         SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS);
-            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO:
                 // This preference may get reset while the other ones are never reset unless device
                 // data is wiped.
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
@@ -284,8 +281,8 @@ public class SyncPromoController {
                             return SigninUtils.getContinueAsButtonText(context, profileData);
                         };
                 break;
-            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
-                mImpressionUserActionName = "Signin_Impression_FromNTPContentSuggestions";
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO:
+                mImpressionUserActionName = "Signin_Impression_FromNTPFeedTopPromo";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
                 mTitleStringId = R.string.sync_promo_title_ntp_content_suggestions;
@@ -368,7 +365,7 @@ public class SyncPromoController {
         switch (mAccessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return canShowBookmarkPromo();
-            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO:
                 return canShowNTPPromo();
             case SigninAccessPoint.RECENT_TABS:
                 return canShowRecentTabsPromo();
@@ -385,7 +382,7 @@ public class SyncPromoController {
                 ChromeSharedPreferences.getInstance()
                         .readInt(
                                 getPromoShowCountPreferenceName(
-                                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                                        SigninAccessPoint.NTP_FEED_TOP_PROMO));
         if (promoShowCount >= getNTPMaxImpressions()) {
             return false;
         }
@@ -557,7 +554,7 @@ public class SyncPromoController {
 
     /** Increases promo show count by one. */
     public void increasePromoShowCount() {
-        if (mAccessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
+        if (mAccessPoint == SigninAccessPoint.NTP_FEED_TOP_PROMO) {
             final long currentTime = System.currentTimeMillis();
             final long lastShownTime =
                     ChromeSharedPreferences.getInstance()
@@ -745,7 +742,7 @@ public class SyncPromoController {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS;
                 break;
-            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO:
                 accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.NTP;
                 break;
             case SigninAccessPoint.RECENT_TABS:

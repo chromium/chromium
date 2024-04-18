@@ -101,18 +101,18 @@ public final class FeedActionDelegateImplTest {
     public void testShowSyncConsentActivity_shownWhenFlagEnabled() {
         FeatureList.setTestFeatures(
                 ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, true));
-        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
+        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_TOP_PROMO);
         verify(mMockSyncConsentActivityLauncher)
-                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
     }
 
     @Test
     public void testShowSyncConsentActivity_dontShowWhenFlagDisabled() {
         FeatureList.setTestFeatures(
                 ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, false));
-        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
+        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_TOP_PROMO);
         verify(mMockSyncConsentActivityLauncher, never())
-                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
     }
 
     @Test

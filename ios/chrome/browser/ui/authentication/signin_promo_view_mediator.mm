@@ -79,7 +79,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
     case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
@@ -168,7 +167,6 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
     case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
@@ -261,7 +259,6 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
     case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
@@ -354,7 +351,6 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
     case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
@@ -434,7 +430,6 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
     case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
@@ -514,7 +509,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
     case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:

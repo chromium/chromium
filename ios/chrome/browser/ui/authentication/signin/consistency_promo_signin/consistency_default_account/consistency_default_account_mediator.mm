@@ -103,7 +103,6 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:

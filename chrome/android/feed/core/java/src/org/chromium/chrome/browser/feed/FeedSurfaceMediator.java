@@ -817,7 +817,7 @@ public class FeedSurfaceMediator
                 new SyncPromoController(
                         mProfile,
                         bottomSheetStrings,
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
                         SyncConsentActivityLauncherImpl.get(),
                         SigninAndHistoryOptInActivityLauncherImpl.get());
         if (!SignInPromo.shouldCreatePromo() || !promoController.canShowSyncPromo()) {

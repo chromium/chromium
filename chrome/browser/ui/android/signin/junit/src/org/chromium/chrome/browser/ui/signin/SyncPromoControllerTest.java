@@ -114,7 +114,7 @@ public class SyncPromoControllerTest {
                 .thenReturn(mIdentityManager);
         mSharedPreferencesManager.writeInt(
                 SyncPromoController.getPromoShowCountPreferenceName(
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO),
                 0);
         mSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, 0L);
@@ -126,7 +126,7 @@ public class SyncPromoControllerTest {
                 new SyncPromoController(
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
                         mSyncConsentActivityLauncher,
                         mSigninAndHistoryOptInActivityLauncher);
     }
@@ -182,7 +182,7 @@ public class SyncPromoControllerTest {
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
         mSharedPreferencesManager.writeInt(
                 SyncPromoController.getPromoShowCountPreferenceName(
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS - 1);
 
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
@@ -194,7 +194,7 @@ public class SyncPromoControllerTest {
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
         mSharedPreferencesManager.writeInt(
                 SyncPromoController.getPromoShowCountPreferenceName(
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
 
         Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
@@ -260,7 +260,7 @@ public class SyncPromoControllerTest {
                 ChromeSharedPreferences.getInstance()
                         .readInt(
                                 SyncPromoController.getPromoShowCountPreferenceName(
-                                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
+                                        SigninAccessPoint.NTP_FEED_TOP_PROMO)));
     }
 
     @Test
@@ -287,7 +287,7 @@ public class SyncPromoControllerTest {
                 ChromeSharedPreferences.getInstance()
                         .readInt(
                                 SyncPromoController.getPromoShowCountPreferenceName(
-                                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
+                                        SigninAccessPoint.NTP_FEED_TOP_PROMO)));
     }
 
     @Test
@@ -314,7 +314,7 @@ public class SyncPromoControllerTest {
                 ChromeSharedPreferences.getInstance()
                         .readInt(
                                 SyncPromoController.getPromoShowCountPreferenceName(
-                                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
+                                        SigninAccessPoint.NTP_FEED_TOP_PROMO)));
     }
 
     @Test
@@ -538,7 +538,7 @@ public class SyncPromoControllerTest {
 
         Assert.assertFalse(
                 SyncPromoController.shouldLaunchBookmarksSigninFlow(
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
                         mIdentityManager,
                         mSigninManager,
                         List.of(mAccountManagerTestRule.addAccount("test@gmail.com")),
@@ -639,7 +639,7 @@ public class SyncPromoControllerTest {
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         SyncPromoController.getPromoShowCountPreferenceName(
-                                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
+                                SigninAccessPoint.NTP_FEED_TOP_PROMO),
                         MAX_SIGN_IN_PROMO_IMPRESSIONS);
         ChromeSharedPreferences.getInstance()
                 .writeLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, firstShownTime);

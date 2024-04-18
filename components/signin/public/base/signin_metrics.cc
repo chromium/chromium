@@ -343,10 +343,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAutofillDropdown"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Signin_FromNTPContentSuggestions"));
-      break;
     case AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromReSigninInfobar"));
@@ -538,10 +534,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromAutofillDropdown"));
-      break;
-    case AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
-      base::RecordAction(base::UserMetricsAction(
-          "Signin_Impression_FromNTPContentSuggestions"));
       break;
     case AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
       base::RecordAction(

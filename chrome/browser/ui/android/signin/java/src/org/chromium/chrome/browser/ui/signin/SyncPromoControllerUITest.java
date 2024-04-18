@@ -564,7 +564,7 @@ public class SyncPromoControllerUITest {
                         });
         View view =
                 setUpSyncPromoView(
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
                         profileDataCache,
                         R.layout.sync_promo_view_content_suggestions);
         mRenderTestRule.render(
@@ -583,7 +583,7 @@ public class SyncPromoControllerUITest {
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view =
                 setUpSyncPromoView(
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
                         profileDataCache,
                         R.layout.sync_promo_view_content_suggestions);
         mRenderTestRule.render(
@@ -602,7 +602,7 @@ public class SyncPromoControllerUITest {
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view =
                 setUpSyncPromoView(
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
                         profileDataCache,
                         R.layout.sync_promo_view_content_suggestions);
         mRenderTestRule.render(
