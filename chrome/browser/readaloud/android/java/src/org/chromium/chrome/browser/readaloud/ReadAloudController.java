@@ -84,7 +84,7 @@ public class ReadAloudController
     private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObserverList<Runnable> mReadabilityUpdateObserverList = new ObserverList<>();
-    private static final int MAX_URL_ENTRIES = 2000;
+    private static final int MAX_URL_ENTRIES = 300;
     private final LruCache<Integer, Boolean> mReadabilityMap = new LruCache<>(MAX_URL_ENTRIES);
     // the key is the url hash, the value is time it was added to the map
     private final LruCache<Integer, Long> mReadabilityRequestTimeMap =
