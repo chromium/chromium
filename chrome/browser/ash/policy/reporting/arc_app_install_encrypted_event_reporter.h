@@ -1,8 +1,8 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_ARC_APP_INSTALL_EVENT_ENCRYPTED_REPORTER_H_
-#define CHROME_BROWSER_ASH_POLICY_REPORTING_ARC_APP_INSTALL_EVENT_ENCRYPTED_REPORTER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_ARC_APP_INSTALL_ENCRYPTED_EVENT_REPORTER_H_
+#define CHROME_BROWSER_ASH_POLICY_REPORTING_ARC_APP_INSTALL_ENCRYPTED_EVENT_REPORTER_H_
 
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_logger.h"
 #include "components/reporting/client/report_queue.h"
@@ -16,21 +16,21 @@ namespace policy {
 // - AppInstallReportLogEvent::INSTALLATION_STARTED
 // - AppInstallReportLogEvent::INSTALLATION_FAILED
 // - AppInstallReportLogEvent::SERVER_REQUEST
-class ArcAppInstallEventEncryptedReporter
+class ArcAppInstallEncryptedEventReporter
     : public ArcAppInstallEventLogger::Delegate {
  public:
-  explicit ArcAppInstallEventEncryptedReporter(
+  explicit ArcAppInstallEncryptedEventReporter(
       std::unique_ptr<reporting::ReportQueue, base::OnTaskRunnerDeleter>
           report_queue,
       Profile* profile);
 
-  ArcAppInstallEventEncryptedReporter(
-      const ArcAppInstallEventEncryptedReporter&) = delete;
+  ArcAppInstallEncryptedEventReporter(
+      const ArcAppInstallEncryptedEventReporter&) = delete;
 
-  ArcAppInstallEventEncryptedReporter operator=(
-      const ArcAppInstallEventEncryptedReporter&) = delete;
+  ArcAppInstallEncryptedEventReporter operator=(
+      const ArcAppInstallEncryptedEventReporter&) = delete;
 
-  ~ArcAppInstallEventEncryptedReporter() override;
+  ~ArcAppInstallEncryptedEventReporter() override;
 
   // ArcAppInstallEventLogger::Delegate
   void Add(
@@ -49,4 +49,4 @@ class ArcAppInstallEventEncryptedReporter
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_ARC_APP_INSTALL_EVENT_ENCRYPTED_REPORTER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_ARC_APP_INSTALL_ENCRYPTED_EVENT_REPORTER_H_

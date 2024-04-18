@@ -90,7 +90,7 @@ void AppInstallEventLogManagerWrapper::CreateEncryptedReporter() {
               {.event_type = ::reporting::EventType::kUser,
                .destination = ::reporting::Destination::ARC_INSTALL})
               .SetSourceInfo(std::move(source_info)));
-  encrypted_reporter_ = std::make_unique<ArcAppInstallEventEncryptedReporter>(
+  encrypted_reporter_ = std::make_unique<ArcAppInstallEncryptedEventReporter>(
       std::move(report_queue), profile_);
 }
 

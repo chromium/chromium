@@ -9,7 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/policy/reporting/arc_app_install_event_encrypted_reporter.h"
+#include "chrome/browser/ash/policy/reporting/arc_app_install_encrypted_event_reporter.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_logger.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/app_install_events.pb.h"
@@ -92,7 +92,7 @@ class AppInstallEventLogManagerWrapper {
   // Handles collection, storage and upload of app push-install event logs.
   std::unique_ptr<ArcAppInstallEventLogManager> log_manager_;
 
-  std::unique_ptr<ArcAppInstallEventEncryptedReporter> encrypted_reporter_;
+  std::unique_ptr<ArcAppInstallEncryptedEventReporter> encrypted_reporter_;
 
   // Pref change observer.
   PrefChangeRegistrar pref_change_registrar_;

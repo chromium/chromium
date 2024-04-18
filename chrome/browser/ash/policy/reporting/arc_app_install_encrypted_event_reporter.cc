@@ -2,7 +2,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/ash/policy/reporting/arc_app_install_event_encrypted_reporter.h"
+#include "chrome/browser/ash/policy/reporting/arc_app_install_encrypted_event_reporter.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -19,7 +19,7 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-ArcAppInstallEventEncryptedReporter::ArcAppInstallEventEncryptedReporter(
+ArcAppInstallEncryptedEventReporter::ArcAppInstallEncryptedEventReporter(
     std::unique_ptr<reporting::ReportQueue, base::OnTaskRunnerDeleter>
         report_queue,
     Profile* profile)
@@ -28,12 +28,12 @@ ArcAppInstallEventEncryptedReporter::ArcAppInstallEventEncryptedReporter(
   CHECK(report_queue_);
 }
 
-ArcAppInstallEventEncryptedReporter::~ArcAppInstallEventEncryptedReporter() {
+ArcAppInstallEncryptedEventReporter::~ArcAppInstallEncryptedEventReporter() {
   logger_.reset();
 }
 
 // ArcAppInstallEventLogger::Delegate:
-void ArcAppInstallEventEncryptedReporter::Add(
+void ArcAppInstallEncryptedEventReporter::Add(
     const std::set<std::string>& packages,
     const em::AppInstallReportLogEvent& event) {
   // Only report pending installations, successful installations, or failures.
@@ -73,7 +73,7 @@ void ArcAppInstallEventEncryptedReporter::Add(
   }
 }
 
-void ArcAppInstallEventEncryptedReporter::GetAndroidId(
+void ArcAppInstallEncryptedEventReporter::GetAndroidId(
     ArcAppInstallEventLogger::Delegate::AndroidIdCallback callback) const {
   arc::GetAndroidId(std::move(callback));
 }

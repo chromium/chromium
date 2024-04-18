@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/reporting/arc_app_install_event_encrypted_reporter.h"
+#include "chrome/browser/ash/policy/reporting/arc_app_install_encrypted_event_reporter.h"
 
 #include <memory>
 
@@ -101,7 +101,7 @@ TEST_F(AppInstallEventEncryptedReporterTest, Default) {
   EXPECT_CALL(*report_queue.get(), AddRecord).Times(3);
 
   auto reporter =
-      ArcAppInstallEventEncryptedReporter(std::move(report_queue), &profile_);
+      ArcAppInstallEncryptedEventReporter(std::move(report_queue), &profile_);
 
   reporter.Add(packages, std::move(event_success));
   reporter.Add(packages, std::move(event_started));
