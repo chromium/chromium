@@ -346,9 +346,8 @@ source_set("fuzztest") {
     deps += [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
   }
   public_deps = [ ":fuzztest_internal" ]
-  public_configs = [ ":fuzztest_internal_config" ]
   configs -= fuzztest_remove_configs
-  configs += fuzztest_add_configs
+  configs += fuzztest_add_configs + [ ":fuzztest_internal_config" ]
   testonly = true
 }
 
