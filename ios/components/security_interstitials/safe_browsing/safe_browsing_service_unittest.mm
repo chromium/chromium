@@ -160,9 +160,7 @@ class TestUrlCheckerClient {
 
 class SafeBrowsingServiceTest : public PlatformTest {
  public:
-  SafeBrowsingServiceTest()
-      : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP),
-        browser_state_(new web::FakeBrowserState()) {
+  SafeBrowsingServiceTest() : browser_state_(new web::FakeBrowserState()) {
     store_factory_ = new safe_browsing::TestV4StoreFactory();
     safe_browsing::V4Database::RegisterStoreFactoryForTest(
         base::WrapUnique(store_factory_.get()));
@@ -255,7 +253,8 @@ class SafeBrowsingServiceTest : public PlatformTest {
                                                                      is_unsafe);
   }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   std::unique_ptr<web::FakeBrowserState> browser_state_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;

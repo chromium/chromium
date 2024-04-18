@@ -57,8 +57,7 @@ class SearchEngineTabHelperTest : public PlatformTest {
 
  protected:
   SearchEngineTabHelperTest()
-      : web_client_(std::make_unique<ChromeWebClient>()),
-        task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP) {}
+      : web_client_(std::make_unique<ChromeWebClient>()) {}
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -105,7 +104,8 @@ class SearchEngineTabHelperTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
   web::ScopedTestingWebClient web_client_;
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;

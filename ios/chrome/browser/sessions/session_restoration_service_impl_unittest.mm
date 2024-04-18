@@ -322,7 +322,6 @@ class SessionRestorationServiceImplTest : public PlatformTest {
     // Configure a WebTaskEnvironment with mocked time to be able to
     // fast-forward time and skip the delay before saving the data.
     web_task_environment_ = std::make_unique<web::WebTaskEnvironment>(
-        web::WebTaskEnvironment::Options::DEFAULT,
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
     // Create a test ChromeBrowserState and an object to track the files

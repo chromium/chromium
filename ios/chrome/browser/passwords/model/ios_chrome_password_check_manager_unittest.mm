@@ -155,7 +155,6 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_env_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ChromeBrowserState> browser_state_;
   raw_ptr<MockBulkLeakCheckService> bulk_leak_check_service_;

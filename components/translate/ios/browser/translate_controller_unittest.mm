@@ -28,8 +28,7 @@ class TranslateControllerTest : public PlatformTest,
                                 public TranslateController::Observer {
  protected:
   TranslateControllerTest()
-      : task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP),
-        fake_web_state_(std::make_unique<web::FakeWebState>()),
+      : fake_web_state_(std::make_unique<web::FakeWebState>()),
         fake_browser_state_(std::make_unique<web::FakeBrowserState>()),
         fake_main_frame_(web::FakeWebFrame::Create(/*frame_id=*/"",
                                                    /*is_main_frame=*/true,
@@ -75,7 +74,8 @@ class TranslateControllerTest : public PlatformTest,
     return TranslateController::FromWebState(fake_web_state_.get());
   }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   std::unique_ptr<web::FakeWebFrame> fake_main_frame_;

@@ -272,9 +272,7 @@ void AddLinkToText(NSMutableArray* menu) {
 class BrowserEditMenuHandlerTest : public PlatformTest {
  public:
   BrowserEditMenuHandlerTest()
-      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        web_client_(std::make_unique<ChromeWebClient>()),
+      : web_client_(std::make_unique<ChromeWebClient>()),
         web_state_list_(&web_state_list_delegate_) {
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
@@ -321,7 +319,8 @@ class BrowserEditMenuHandlerTest : public PlatformTest {
   }
 
  protected:
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeWebStateListDelegate web_state_list_delegate_;

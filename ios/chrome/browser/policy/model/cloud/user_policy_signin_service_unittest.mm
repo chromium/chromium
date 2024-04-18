@@ -275,7 +275,6 @@ class UserPolicySigninServiceTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_local_state_;
   raw_ptr<PrefService> pref_service_;

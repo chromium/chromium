@@ -142,9 +142,7 @@ NSString* kPageHTMLTemplate =
 class PartialTranslateMediatorTest : public PlatformTest {
  public:
   PartialTranslateMediatorTest()
-      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        web_client_(std::make_unique<ChromeWebClient>()),
+      : web_client_(std::make_unique<ChromeWebClient>()),
         web_state_list_(&web_state_list_delegate_) {
     feature_list_.InitAndEnableFeature(kIOSEditMenuPartialTranslate);
     browser_state_ = TestChromeBrowserState::Builder().Build();
@@ -208,7 +206,8 @@ class PartialTranslateMediatorTest : public PlatformTest {
   }
 
  protected:
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

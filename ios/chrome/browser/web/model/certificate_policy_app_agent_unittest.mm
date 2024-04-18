@@ -45,8 +45,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
  protected:
   CertificatePolicyAppStateAgentTest()
-      : task_environment_(web::WebTaskEnvironment::Options::REAL_IO_THREAD),
-        cert_(net::ImportCertFromFile(net::GetTestCertsDirectory(),
+      : cert_(net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                       "ok_cert.pem")),
         status_(net::CERT_STATUS_REVOKED) {
     // Mock for AppState dependencies.
@@ -225,7 +224,8 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
   }
 
  private:
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
   AppState* app_state_;
   CertificatePolicyAppAgent* app_agent_;
   raw_ptr<ChromeBrowserState> chrome_browser_state_;

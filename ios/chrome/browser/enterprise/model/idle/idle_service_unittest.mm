@@ -120,7 +120,6 @@ class IdleTimeoutServiceTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockObserver mock_observer_;
   raw_ptr<MockActionRunner> action_runner_;

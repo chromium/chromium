@@ -20,8 +20,7 @@ namespace {
 
 class LensTabHelperTest : public PlatformTest {
  public:
-  LensTabHelperTest()
-      : task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP) {
+  LensTabHelperTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
     web::WebState::CreateParams params(browser_state_.get());
@@ -45,7 +44,8 @@ class LensTabHelperTest : public PlatformTest {
  protected:
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
   raw_ptr<LensTabHelper> helper_ = nullptr;
   id handler_;
   id dispatcher_;

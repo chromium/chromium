@@ -37,8 +37,7 @@ NSString* const kWrongURL = @"https://example.com";
 class PasswordTabHelperTest : public PlatformTest {
  public:
   PasswordTabHelperTest()
-      : web_client_(std::make_unique<web::FakeWebClient>()),
-        task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP) {
+      : web_client_(std::make_unique<web::FakeWebClient>()) {
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
     web::WebState::CreateParams params(browser_state_.get());
@@ -65,7 +64,8 @@ class PasswordTabHelperTest : public PlatformTest {
 
  protected:
   web::ScopedTestingWebClient web_client_;
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   raw_ptr<PasswordTabHelper> helper_ = nullptr;

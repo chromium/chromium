@@ -58,10 +58,10 @@ web::SessionCertificate CreateTestSessionCertificate(
 // Test fixture to test SessionCertificatePolicyCacheImpl class.
 class SessionCertificatePolicyCacheImplTest : public PlatformTest {
  protected:
-  SessionCertificatePolicyCacheImplTest()
-      : task_environment_(web::WebTaskEnvironment::Options::REAL_IO_THREAD) {}
+  SessionCertificatePolicyCacheImplTest() = default;
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
   web::FakeBrowserState browser_state_;
 };
 

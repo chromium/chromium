@@ -189,7 +189,7 @@ class SceneControllerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::IO_MAINLOOP,
+      web::WebTaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState local_state_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

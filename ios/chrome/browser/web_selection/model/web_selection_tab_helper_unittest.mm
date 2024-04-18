@@ -65,9 +65,7 @@ class TestWebSelectionJavaScriptFeatureObserver
 class WebSelectionTabHelperTest : public PlatformTest {
  public:
   WebSelectionTabHelperTest()
-      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        web_client_(std::make_unique<ChromeWebClient>()) {
+      : web_client_(std::make_unique<ChromeWebClient>()) {
     feature_list_.InitAndEnableFeature(kIOSEditMenuPartialTranslate);
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
@@ -94,7 +92,8 @@ class WebSelectionTabHelperTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
  protected:
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

@@ -201,7 +201,6 @@ class LinkToTextMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   FakeWebStateListDelegate web_state_list_delegate_;

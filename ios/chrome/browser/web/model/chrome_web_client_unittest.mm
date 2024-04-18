@@ -77,8 +77,7 @@ NSError* CreateTestError() {
 
 class ChromeWebClientTest : public PlatformTest {
  public:
-  ChromeWebClientTest()
-      : environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP) {
+  ChromeWebClientTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
   }
 
@@ -90,7 +89,8 @@ class ChromeWebClientTest : public PlatformTest {
   ChromeBrowserState* browser_state() { return browser_state_.get(); }
 
  protected:
-  web::WebTaskEnvironment environment_;
+  web::WebTaskEnvironment environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 

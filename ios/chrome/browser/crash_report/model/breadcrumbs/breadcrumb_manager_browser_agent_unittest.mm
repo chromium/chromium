@@ -65,7 +65,6 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
   ~BreadcrumbManagerBrowserAgentTest() override { browser_.reset(); }
 
   web::WebTaskEnvironment task_env_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;

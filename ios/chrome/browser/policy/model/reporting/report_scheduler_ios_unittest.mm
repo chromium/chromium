@@ -76,9 +76,7 @@ class MockReportUploader : public ReportUploader {
 
 class ReportSchedulerIOSTest : public PlatformTest {
  public:
-  ReportSchedulerIOSTest()
-      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ReportSchedulerIOSTest() = default;
   ReportSchedulerIOSTest(const ReportSchedulerIOSTest&) = delete;
   ReportSchedulerIOSTest& operator=(const ReportSchedulerIOSTest&) = delete;
   ~ReportSchedulerIOSTest() override = default;
@@ -157,7 +155,8 @@ class ReportSchedulerIOSTest : public PlatformTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState local_state_;
 
   ReportingDelegateFactoryIOS report_delegate_factory_;

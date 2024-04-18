@@ -68,8 +68,7 @@ void SetSyncStateTransportActive(const CoreAccountInfo& account,
 class AccountsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
-  AccountsTableViewControllerTest()
-      : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP) {
+  AccountsTableViewControllerTest() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -145,7 +144,8 @@ class AccountsTableViewControllerTest
   }
 
  private:
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;

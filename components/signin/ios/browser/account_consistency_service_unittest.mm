@@ -161,9 +161,7 @@ class FakeWebState : public web::FakeWebState {
 
 class AccountConsistencyServiceTest : public PlatformTest {
  public:
-  AccountConsistencyServiceTest()
-      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  AccountConsistencyServiceTest() = default;
 
  protected:
   void SetUp() override {
@@ -324,7 +322,8 @@ class AccountConsistencyServiceTest : public PlatformTest {
   }
 
   // Properties available for tests.
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::FakeBrowserState browser_state_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   FakeWebState web_state_;

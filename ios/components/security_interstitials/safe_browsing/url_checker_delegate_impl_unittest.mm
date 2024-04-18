@@ -99,7 +99,7 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::IO_MAINLOOP};
+      web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<web::FakeBrowserState> browser_state_;
   FakeSafeBrowsingClient client_;
   scoped_refptr<safe_browsing::UrlCheckerDelegate> delegate_;

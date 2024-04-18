@@ -152,7 +152,6 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
  private:
   // Needed for test browser state.
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

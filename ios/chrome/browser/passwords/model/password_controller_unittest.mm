@@ -1225,8 +1225,7 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
 class PasswordControllerTestSimple : public PlatformTest {
  public:
   PasswordControllerTestSimple()
-      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT),
-        web_client_(std::make_unique<web::FakeWebClient>()),
+      : web_client_(std::make_unique<web::FakeWebClient>()),
         browser_state_(std::make_unique<web::FakeBrowserState>()) {
     web_state_.SetBrowserState(browser_state_.get());
   }
