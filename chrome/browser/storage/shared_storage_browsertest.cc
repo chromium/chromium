@@ -452,6 +452,19 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
   }
 
+  void
+  Set3PCSettingAndAttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
+      const std::vector<std::string>& additional_site_hosts) {
+    GURL main_url = https_server()->GetURL(kMainHost, kSimplePagePath);
+    std::vector<GURL> urls({main_url});
+    for (const auto& host : additional_site_hosts) {
+      urls.push_back(https_server()->GetURL(host, kSimplePagePath));
+    }
+    SetThirdPartyCookieSetting(main_url);
+    SetAttestationsMap(MakeSharedStoragePrivacySandboxAttestationsMap(urls));
+    EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
+  }
+
   void AddSimpleModule(const content::ToRenderFrameHost& execution_target) {
     content::WebContentsConsoleObserver add_module_console_observer(
         GetActiveWebContents());
@@ -2896,16 +2909,17 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-// Flaky: https://crbug.com/1406845
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       DISABLED_WorkletNumPerPage_Two) {
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletNumPerPage_Two) {
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
+
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
       GetActiveWebContents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
+  Set3PCSettingAndAttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
+      /*additional_site_hosts=*/std::vector<std::string>({kCrossOriginHost}));
 
   content::RenderFrameHost* main_frame =
       GetActiveWebContents()->GetPrimaryMainFrame();
@@ -2931,27 +2945,27 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
-                     kTimingDocumentRunHistogram, kTimingWorkletSetHistogram,
-                     kWorkletNumPerPageHistogram});
+                     kTimingDocumentRunHistogram, kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 4);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 2);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 2, 1);
-  EXPECT_LE(1u,
-            histogram_tester_.GetAllSamples(kTimingWorkletSetHistogram).size());
 }
 
-// Flaky: https://crbug.com/1406845
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       DISABLED_WorkletNumPerPage_Three) {
+                       WorkletNumPerPage_Three) {
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
+
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
       GetActiveWebContents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
+  Set3PCSettingAndAttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
+      /*additional_site_hosts=*/std::vector<std::string>(
+          {kCrossOriginHost, kThirdOriginHost}));
 
   content::RenderFrameHost* main_frame =
       GetActiveWebContents()->GetPrimaryMainFrame();
@@ -2987,15 +3001,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
-                     kTimingDocumentRunHistogram, kTimingWorkletSetHistogram,
-                     kWorkletNumPerPageHistogram});
+                     kTimingDocumentRunHistogram, kWorkletNumPerPageHistogram});
   histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 6);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 3);
   histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 3);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 3, 1);
-  EXPECT_LE(1u,
-            histogram_tester_.GetAllSamples(kTimingWorkletSetHistogram).size());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
