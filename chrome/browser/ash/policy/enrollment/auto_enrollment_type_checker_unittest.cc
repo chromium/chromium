@@ -706,7 +706,9 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
   }
 
   bool IsOfficialGoogleOS() {
-    return device_os_ != DeviceOs::Nonchrome && google_branded_;
+    return google_branded_ && (device_os_ == DeviceOs::Chrome ||
+                               device_os_ == DeviceOs::FlexWithoutFRE ||
+                               device_os_ == DeviceOs::FlexWithFRE);
   }
 
   const DeviceOs device_os_ = std::get<0>(GetParam());
