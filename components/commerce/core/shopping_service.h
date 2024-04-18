@@ -402,7 +402,7 @@ class ShoppingService : public KeyedService,
   // Gets a list of URLs from web wrappers that were recently viewed by the
   // user (ordered by most recent first). This generally aligns with recently
   // viewed tabs.
-  virtual std::vector<UrlInfo> GetRecentlyViewedWebWrapperUrls();
+  virtual const std::vector<UrlInfo> GetUrlInfosForRecentlyViewedWebWrappers();
 
   // Starts tracking a list of parcels from a given page.
   void StartTrackingParcels(

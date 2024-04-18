@@ -865,7 +865,8 @@ const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {
   return urls;
 }
 
-std::vector<UrlInfo> ShoppingService::GetRecentlyViewedWebWrapperUrls() {
+const std::vector<UrlInfo>
+ShoppingService::GetUrlInfosForRecentlyViewedWebWrappers() {
   std::vector<UrlInfo> info_list;
   for (auto info : recently_visited_tabs_) {
     info_list.push_back(info);

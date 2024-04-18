@@ -539,14 +539,39 @@ TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForOpenTabs) {
   url_info.url = GURL("https://example1.com/");
   std::vector<commerce::UrlInfo> url_info_list;
   url_info_list.push_back(url_info);
-  shopping_service_->SetResponseForGetUrlInfosForActiveWebWrappers(
-      url_info_list);
+
+  ON_CALL(*shopping_service_, GetUrlInfosForActiveWebWrappers)
+      .WillByDefault(testing::Return(url_info_list));
 
   handler_->GetUrlInfosForOpenTabs(base::BindOnce(
       [](base::RunLoop* run_loop,
          std::vector<shopping_service::mojom::UrlInfoPtr> url_infos) {
-        ASSERT_EQ(u"example_title", url_infos[0]->title);
+        ASSERT_EQ("example_title", url_infos[0]->title);
         ASSERT_EQ("https://example1.com/", url_infos[0]->url.spec());
+        run_loop->Quit();
+      },
+      &run_loop));
+
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForRecentlyViewedTabs) {
+  base::RunLoop run_loop;
+
+  commerce::UrlInfo url_info;
+  url_info.title = u"title";
+  url_info.url = GURL("https://example.com/");
+  std::vector<commerce::UrlInfo> url_info_list;
+  url_info_list.push_back(url_info);
+
+  ON_CALL(*shopping_service_, GetUrlInfosForRecentlyViewedWebWrappers)
+      .WillByDefault(testing::Return(url_info_list));
+
+  handler_->GetUrlInfosForRecentlyViewedTabs(base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::vector<shopping_service::mojom::UrlInfoPtr> url_infos) {
+        ASSERT_EQ("title", url_infos[0]->title);
+        ASSERT_EQ("https://example.com/", url_infos[0]->url.spec());
         run_loop->Quit();
       },
       &run_loop));

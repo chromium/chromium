@@ -440,18 +440,19 @@ TEST_P(ShoppingServiceTest, TestRecentUrls_NoDuplicates) {
   std::string url2 = "http://example.com/bar";
   MockWebWrapper web2(GURL(url2), false);
 
-  ASSERT_EQ(0u, shopping_service_->GetRecentlyViewedWebWrapperUrls().size());
+  ASSERT_EQ(
+      0u, shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers().size());
 
   OnWebWrapperSwitched(&web1);
 
   std::vector<UrlInfo> urls =
-      shopping_service_->GetRecentlyViewedWebWrapperUrls();
+      shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers();
   ASSERT_EQ(1u, urls.size());
   ASSERT_EQ(urls[0].url, GURL(url1));
 
   OnWebWrapperSwitched(&web2);
 
-  urls = shopping_service_->GetRecentlyViewedWebWrapperUrls();
+  urls = shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers();
   ASSERT_EQ(2u, urls.size());
   ASSERT_EQ(urls[0].url, GURL(url2));
   ASSERT_EQ(urls[1].url, GURL(url1));
@@ -460,7 +461,7 @@ TEST_P(ShoppingServiceTest, TestRecentUrls_NoDuplicates) {
   // There should still only be one instance.
   OnWebWrapperSwitched(&web1);
 
-  urls = shopping_service_->GetRecentlyViewedWebWrapperUrls();
+  urls = shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers();
   ASSERT_EQ(2u, urls.size());
   ASSERT_EQ(urls[0].url, GURL(url1));
   ASSERT_EQ(urls[1].url, GURL(url2));
@@ -479,7 +480,8 @@ TEST_P(ShoppingServiceTest, TestRecentUrls_MaxCount) {
   std::string url2 = "http://example.com/bar";
   MockWebWrapper web2(GURL(url2), false);
 
-  ASSERT_EQ(10u, shopping_service_->GetRecentlyViewedWebWrapperUrls().size());
+  ASSERT_EQ(
+      10u, shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers().size());
 }
 
 TEST_P(ShoppingServiceTest, TestRecentUrls_CacheEntriesRetained) {

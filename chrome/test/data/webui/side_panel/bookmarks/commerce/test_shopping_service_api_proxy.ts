@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import type {BookmarkProductInfo, PageRemote, PriceInsightsInfo, ProductInfo, ProductSpecifications, UrlInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {BookmarkProductInfo, PageRemote, PriceInsightsInfo, ProductInfo, ProductSpecifications} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {PageCallbackRouter, PriceInsightsInfo_PriceBucket} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -13,7 +13,6 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
   callbackRouter: PageCallbackRouter;
   callbackRouterRemote: PageRemote;
   private products_: BookmarkProductInfo[] = [];
-  private urlInfos_: UrlInfo[] = [];
   private product_: ProductInfo = {
     title: '',
     clusterTitle: '',
@@ -51,6 +50,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'getProductInfoForCurrentUrl',
       'getPriceInsightsInfoForCurrentUrl',
       'getUrlInfosForOpenTabs',
+      'getUrlInfosForRecentlyViewedTabs',
       'showInsightsSidePanelUi',
       'openUrlInNewTab',
       'showFeedback',
@@ -118,7 +118,12 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
 
   getUrlInfosForOpenTabs() {
     this.methodCalled('getUrlInfosForOpenTabs');
-    return Promise.resolve({urlInfos: this.urlInfos_});
+    return Promise.resolve({urlInfos: []});
+  }
+
+  getUrlInfosForRecentlyViewedTabs() {
+    this.methodCalled('getUrlInfosForRecentlyVisitedTabs');
+    return Promise.resolve({urlInfos: []});
   }
 
   showInsightsSidePanelUi() {

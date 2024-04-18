@@ -16,7 +16,6 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './product_selector.html.js';
@@ -69,7 +68,7 @@ export class ProductSelectorElement extends PolymerElement {
   private async onShowMenu() {
     const {urlInfos} = await this.shoppingApi_.getUrlInfosForOpenTabs();
     this.openTabs = urlInfos.map(({title, url}) => ({
-                                   title: mojoString16ToString(title),
+                                   title: title,
                                    url: url.url,
                                    imageUrl: url.url,
                                  }));

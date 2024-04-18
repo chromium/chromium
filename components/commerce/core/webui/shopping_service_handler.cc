@@ -90,7 +90,7 @@ std::vector<shopping_service::mojom::UrlInfoPtr> UrlInfoToMojo(
   for (const UrlInfo& url_info : url_infos) {
     auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
     url_info_ptr->url = url_info.url;
-    url_info_ptr->title = url_info.title;
+    url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
     url_info_ptr_list.push_back(std::move(url_info_ptr));
   }
   return url_info_ptr_list;
@@ -623,8 +623,24 @@ void ShoppingServiceHandler::GetProductSpecificationsForUrls(
 
 void ShoppingServiceHandler::GetUrlInfosForOpenTabs(
     GetUrlInfosForOpenTabsCallback callback) {
+  if (!shopping_service_) {
+    std::move(callback).Run({});
+    return;
+  }
+
   std::move(callback).Run(
       UrlInfoToMojo(shopping_service_->GetUrlInfosForActiveWebWrappers()));
+}
+
+void ShoppingServiceHandler::GetUrlInfosForRecentlyViewedTabs(
+    GetUrlInfosForRecentlyViewedTabsCallback callback) {
+  if (!shopping_service_) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::move(callback).Run(UrlInfoToMojo(
+      shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers()));
 }
 
 void ShoppingServiceHandler::OnFetchPriceInsightsInfoForCurrentUrl(

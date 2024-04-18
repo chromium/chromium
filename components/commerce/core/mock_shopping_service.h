@@ -46,6 +46,10 @@ class MockShoppingService : public commerce::ShoppingService {
               GetUrlInfosForActiveWebWrappers,
               (),
               (override));
+  MOCK_METHOD(const std::vector<commerce::UrlInfo>,
+              GetUrlInfosForRecentlyViewedWebWrappers,
+              (),
+              (override));
   MOCK_METHOD(void,
               GetUpdatedProductInfoForBookmarks,
               (const std::vector<int64_t>& bookmark_ids,

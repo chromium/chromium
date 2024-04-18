@@ -6,7 +6,7 @@ import 'chrome://compare/product_selector.js';
 
 import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -30,7 +30,7 @@ suite('ProductSelectorTest', () => {
   test('OpenTabsShown', async () => {
     const titleString = 'title';
     const openTabs = [{
-      title: stringToMojoString16(titleString),
+      title: titleString,
       url: stringToMojoUrl('http://example.com'),
     }];
     const selector = await createSelector();

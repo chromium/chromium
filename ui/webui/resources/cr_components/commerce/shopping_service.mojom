@@ -114,7 +114,7 @@ struct ProductSpecifications {
 
 struct UrlInfo {
   // Title of the page represented by the URL.
-  mojo_base.mojom.String16 title;
+  string title;
 
   // Url.
   url.mojom.Url url;
@@ -160,6 +160,10 @@ interface ShoppingServiceHandler {
 
   // Returns a list of URL infos for each tab open in the user's tabs.
   GetUrlInfosForOpenTabs() => (array<UrlInfo> url_infos);
+
+  // Returns a list of URL infos for recently viewed tabs. Each of these does
+  // not necessarily represent an open tab.
+  GetUrlInfosForRecentlyViewedTabs() => (array<UrlInfo> url_infos);
 
   // Notify the backend that the UI is ready to be shown.
   ShowInsightsSidePanelUI();
