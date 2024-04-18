@@ -99,6 +99,7 @@ std::pair<float, size_t> UrlEmbeddings::BestScoreWith(
 ////////////////////////////////////////////////////////////////////////////////
 
 std::vector<ScoredUrl> VectorDatabase::FindNearest(
+    std::optional<base::Time> time_range_start,
     size_t count,
     const Embedding& query,
     base::RepeatingCallback<bool()> is_search_halted) {
@@ -106,7 +107,8 @@ std::vector<ScoredUrl> VectorDatabase::FindNearest(
     return {};
   }
 
-  std::unique_ptr<EmbeddingsIterator> iterator = MakeEmbeddingsIterator();
+  std::unique_ptr<EmbeddingsIterator> iterator =
+      MakeEmbeddingsIterator(time_range_start);
   if (!iterator) {
     return {};
   }
@@ -183,13 +185,27 @@ bool VectorDatabaseInMemory::AddUrlEmbeddings(
 }
 
 std::unique_ptr<VectorDatabase::EmbeddingsIterator>
-VectorDatabaseInMemory::MakeEmbeddingsIterator() {
+VectorDatabaseInMemory::MakeEmbeddingsIterator(
+    std::optional<base::Time> time_range_start) {
   struct SimpleEmbeddingsIterator : public EmbeddingsIterator {
-    explicit SimpleEmbeddingsIterator(const std::vector<UrlEmbeddings>& source)
-        : iterator_(source.cbegin()), end_(source.cend()) {}
+    explicit SimpleEmbeddingsIterator(
+        const std::vector<UrlEmbeddings>& source,
+        std::optional<base::Time> time_range_start)
+        : iterator_(source.cbegin()),
+          end_(source.cend()),
+          time_range_start_(time_range_start) {}
     ~SimpleEmbeddingsIterator() override = default;
 
     const UrlEmbeddings* Next() override {
+      if (time_range_start_.has_value()) {
+        while (iterator_ != end_) {
+          if (iterator_->visit_time >= time_range_start_.value()) {
+            break;
+          }
+          iterator_++;
+        }
+      }
+
       if (iterator_ == end_) {
         return nullptr;
       }
@@ -198,13 +214,14 @@ VectorDatabaseInMemory::MakeEmbeddingsIterator() {
 
     std::vector<UrlEmbeddings>::const_iterator iterator_;
     std::vector<UrlEmbeddings>::const_iterator end_;
+    const std::optional<base::Time> time_range_start_;
   };
 
   if (data_.empty()) {
     return nullptr;
   }
 
-  return std::make_unique<SimpleEmbeddingsIterator>(data_);
+  return std::make_unique<SimpleEmbeddingsIterator>(data_, time_range_start);
 }
 
 }  // namespace history_embeddings

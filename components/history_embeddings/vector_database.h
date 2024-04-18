@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_EMBEDDINGS_VECTOR_DATABASE_H_
 #define COMPONENTS_HISTORY_EMBEDDINGS_VECTOR_DATABASE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
@@ -124,11 +125,13 @@ class VectorDatabase {
 
   // Create an iterator that steps through database items.
   // Null may be returned if there are none.
-  virtual std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() = 0;
+  virtual std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator(
+      std::optional<base::Time> time_range_start) = 0;
 
   // Searches the database for embeddings near given `query` and returns
   // information about where they were found and how nearly the query matched.
   std::vector<ScoredUrl> FindNearest(
+      std::optional<base::Time> time_range_start,
       size_t count,
       const Embedding& query,
       base::RepeatingCallback<bool()> is_search_halted);
@@ -149,7 +152,8 @@ class VectorDatabaseInMemory : public VectorDatabase {
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
   bool AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) override;
-  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() override;
+  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator(
+      std::optional<base::Time> time_range_start) override;
 
  private:
   std::vector<UrlEmbeddings> data_;

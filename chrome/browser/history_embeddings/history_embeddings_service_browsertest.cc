@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
 
   // Search for the passage.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search("A B C D e f g", 1, search_future.GetCallback());
+  service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
   EXPECT_EQ(result.size(), 1u);
   EXPECT_EQ(result[0].scored_url.passage, "A B C D");
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Search for the passage.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search("A B C D e f g", 1, search_future.GetCallback());
+  service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
   EXPECT_TRUE(result.empty());
 
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
 
   // Search for the passage.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search("A B C D e f g", 1, search_future.GetCallback());
+  service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
   EXPECT_TRUE(result.empty());
 

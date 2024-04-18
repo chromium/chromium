@@ -58,7 +58,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     service->storage_.PostTaskWithThisObject(base::BindLambdaForTesting(
         [&](HistoryEmbeddingsService::Storage* storage) {
           std::unique_ptr<SqlDatabase::EmbeddingsIterator> iterator =
-              storage->sql_database.MakeEmbeddingsIterator();
+              storage->sql_database.MakeEmbeddingsIterator({});
           if (!iterator) {
             return;
           }

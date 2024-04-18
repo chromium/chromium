@@ -62,7 +62,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, SearchCanBeHaltedEarly) {
   // An ordinary search with full results:
   {
     std::vector<ScoredUrl> scored_urls = database.FindNearest(
-        3, query, base::BindRepeating([]() { return false; }));
+        {}, 3, query, base::BindRepeating([]() { return false; }));
     CHECK_EQ(scored_urls.size(), 3u);
   }
 
@@ -71,7 +71,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, SearchCanBeHaltedEarly) {
     std::atomic<size_t> counter(0u);
     base::WeakPtrFactory<std::atomic<size_t>> weak_factory(&counter);
     std::vector<ScoredUrl> scored_urls =
-        database.FindNearest(3, query,
+        database.FindNearest({}, 3, query,
                              base::BindRepeating(
                                  [](auto weak_counter) {
                                    (*weak_counter)++;
@@ -79,6 +79,57 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, SearchCanBeHaltedEarly) {
                                  },
                                  weak_factory.GetWeakPtr()));
     CHECK_EQ(scored_urls.size(), 2u);
+  }
+}
+
+TEST(HistoryEmbeddingsVectorDatabaseTest, TimeRangeNarrowsSearchResult) {
+  const base::Time now = base::Time::Now();
+  VectorDatabaseInMemory database;
+  for (size_t i = 0; i < 3; i++) {
+    UrlEmbeddings url_embeddings(i + 1, i + 1, now + base::Minutes(i));
+    for (size_t j = 0; j < 3; j++) {
+      url_embeddings.embeddings.push_back(RandomEmbedding());
+    }
+    database.AddUrlEmbeddings(std::move(url_embeddings));
+  }
+  Embedding query = RandomEmbedding();
+
+  // An ordinary search with full results:
+  {
+    std::vector<ScoredUrl> scored_urls = database.FindNearest(
+        {}, 3, query, base::BindRepeating([]() { return false; }));
+    CHECK_EQ(scored_urls.size(), 3u);
+  }
+
+  // Narrowed searches with time range.
+  {
+    std::vector<ScoredUrl> scored_urls = database.FindNearest(
+        now, 3, query, base::BindRepeating([]() { return false; }));
+    CHECK_EQ(scored_urls.size(), 3u);
+  }
+  {
+    std::vector<ScoredUrl> scored_urls =
+        database.FindNearest(now + base::Seconds(30), 3, query,
+                             base::BindRepeating([]() { return false; }));
+    CHECK_EQ(scored_urls.size(), 2u);
+  }
+  {
+    std::vector<ScoredUrl> scored_urls =
+        database.FindNearest(now + base::Seconds(90), 3, query,
+                             base::BindRepeating([]() { return false; }));
+    CHECK_EQ(scored_urls.size(), 1u);
+  }
+  {
+    std::vector<ScoredUrl> scored_urls =
+        database.FindNearest(now + base::Minutes(2), 3, query,
+                             base::BindRepeating([]() { return false; }));
+    CHECK_EQ(scored_urls.size(), 1u);
+  }
+  {
+    std::vector<ScoredUrl> scored_urls =
+        database.FindNearest(now + base::Seconds(121), 3, query,
+                             base::BindRepeating([]() { return false; }));
+    CHECK_EQ(scored_urls.size(), 0u);
   }
 }
 
@@ -103,7 +154,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, DISABLED_ManyVectorsAreFastEnough) {
   std::atomic<size_t> id(0u);
   base::WeakPtrFactory<std::atomic<size_t>> weak_factory(&id);
   database.FindNearest(
-      3, query,
+      {}, 3, query,
       base::BindRepeating(
           [](auto weak_id) { return !weak_id || *weak_id != 0u; },
           weak_factory.GetWeakPtr()));

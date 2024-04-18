@@ -66,7 +66,7 @@ void HistoryEmbeddingsHandler::Search(
       HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
   // The service is never null. Even tests build and use a service.
   CHECK(service);
-  service->Search(query->query,
+  service->Search(query->query, query->time_range_start,
                   history_embeddings::kSearchResultItemCount.Get(),
                   base::BindOnce(&OnSearchCompleted, std::move(callback)));
 }

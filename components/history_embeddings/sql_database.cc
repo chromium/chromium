@@ -252,9 +252,13 @@ bool SqlDatabase::AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) {
 
 constexpr char kSqlSelectEmbeddings[] =
     "SELECT url_id, visit_id, visit_time, embeddings_blob FROM embeddings";
+constexpr char kSqlSelectEmbeddingsWithinTimeRange[] =
+    "SELECT url_id, visit_id, visit_time, embeddings_blob FROM embeddings "
+    "WHERE visit_time >= ?";
 
 std::unique_ptr<VectorDatabase::EmbeddingsIterator>
-SqlDatabase::MakeEmbeddingsIterator() {
+SqlDatabase::MakeEmbeddingsIterator(
+    std::optional<base::Time> time_range_start) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit()) {
@@ -262,14 +266,24 @@ SqlDatabase::MakeEmbeddingsIterator() {
   }
 
   DCHECK(db_.IsSQLValid(kSqlSelectEmbeddings));
+  DCHECK(db_.IsSQLValid(kSqlSelectEmbeddingsWithinTimeRange));
 
   struct RowEmbeddingsIterator : public EmbeddingsIterator {
-    explicit RowEmbeddingsIterator(base::WeakPtr<SqlDatabase> sql_database)
+    explicit RowEmbeddingsIterator(base::WeakPtr<SqlDatabase> sql_database,
+                                   std::optional<base::Time> time_range_start)
         : sql_database(sql_database) {
       CHECK(!sql_database->iteration_statement_);
-      sql_database->iteration_statement_ =
-          std::make_unique<sql::Statement>(sql_database->db_.GetCachedStatement(
-              SQL_FROM_HERE, kSqlSelectEmbeddings));
+      if (time_range_start.has_value()) {
+        sql_database->iteration_statement_ = std::make_unique<sql::Statement>(
+            sql_database->db_.GetCachedStatement(
+                SQL_FROM_HERE, kSqlSelectEmbeddingsWithinTimeRange));
+        sql_database->iteration_statement_->BindTime(0,
+                                                     time_range_start.value());
+      } else {
+        sql_database->iteration_statement_ = std::make_unique<sql::Statement>(
+            sql_database->db_.GetCachedStatement(SQL_FROM_HERE,
+                                                 kSqlSelectEmbeddings));
+      }
     }
     ~RowEmbeddingsIterator() override {
       if (sql_database) {
@@ -308,8 +322,8 @@ SqlDatabase::MakeEmbeddingsIterator() {
     UrlEmbeddings data;
   };
 
-  return std::make_unique<RowEmbeddingsIterator>(
-      weak_ptr_factory_.GetWeakPtr());
+  return std::make_unique<RowEmbeddingsIterator>(weak_ptr_factory_.GetWeakPtr(),
+                                                 time_range_start);
 }
 
 bool SqlDatabase::DeleteDataForUrlId(history::URLID url_id) {

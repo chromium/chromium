@@ -149,17 +149,20 @@ void HistoryEmbeddingsService::RetrievePassages(
           nullptr));
 }
 
-void HistoryEmbeddingsService::Search(std::string query,
-                                      size_t count,
-                                      SearchResultCallback callback) {
+void HistoryEmbeddingsService::Search(
+    std::string query,
+    std::optional<base::Time> time_range_start,
+    size_t count,
+    SearchResultCallback callback) {
   embedder_->ComputePassagesEmbeddings(
       {std::move(query)},
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
-                     weak_ptr_factory_.GetWeakPtr(), count,
+                     weak_ptr_factory_.GetWeakPtr(), time_range_start, count,
                      std::move(callback)));
 }
 
 void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
+    std::optional<base::Time> time_range_start,
     size_t count,
     SearchResultCallback callback,
     std::vector<std::string> query_passages,
@@ -178,7 +181,7 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
   query_id_++;
   storage_.AsyncCall(&Storage::Search)
       .WithArgs(query_id_weak_ptr_factory_.GetWeakPtr(), query_id_.load(),
-                std::move(query_embeddings.front()), count)
+                std::move(query_embeddings.front()), time_range_start, count)
       .Then(base::BindOnce(&HistoryEmbeddingsService::OnSearchCompleted,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(callback)));
@@ -221,9 +224,10 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
     base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
     size_t query_id,
     Embedding query_embedding,
+    std::optional<base::Time> time_range_start,
     size_t count) {
   std::vector<ScoredUrl> scored_urls = sql_database.FindNearest(
-      count, std::move(query_embedding),
+      time_range_start, count, std::move(query_embedding),
       base::BindRepeating(
           [](base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
              size_t query_id) {

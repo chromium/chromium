@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
@@ -47,7 +48,8 @@ class SqlDatabase : public VectorDatabase {
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
   bool AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) override;
-  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() override;
+  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator(
+      std::optional<base::Time> time_range_start) override;
 
   // These three methods are used to keep the on-disk persistence in sync with
   // History deletions, either from user action or time-based expiration.
