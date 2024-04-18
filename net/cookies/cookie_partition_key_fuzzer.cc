@@ -20,9 +20,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   GURL url(url_str);
   if (!url.is_valid())
     return 0;
+  CookiePartitionKey::AncestorChainBit ancestor_chain_bit =
+      data_provider.ConsumeBool()
+          ? CookiePartitionKey::AncestorChainBit::kCrossSite
+          : CookiePartitionKey::AncestorChainBit::kSameSite;
 
-  std::optional<CookiePartitionKey> partition_key =
-      std::make_optional(CookiePartitionKey::FromURLForTesting(url));
+  std::optional<CookiePartitionKey> partition_key = std::make_optional(
+      CookiePartitionKey::FromURLForTesting(url, ancestor_chain_bit));
 
   bool is_opaque = url::Origin::Create(url).opaque();
   CHECK_NE(is_opaque, CookiePartitionKey::Serialize(partition_key).has_value());
@@ -32,8 +36,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                           .has_value());
 
   if (!is_opaque) {
-    CHECK(std::make_optional(CookiePartitionKey::FromURLForTesting(url)) ==
-          partition_key);
+    CHECK(std::make_optional(CookiePartitionKey::FromURLForTesting(
+              url, ancestor_chain_bit)) == partition_key);
   }
 
   return 0;
