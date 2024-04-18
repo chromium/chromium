@@ -40,13 +40,17 @@ constexpr CGFloat kLogoTitleMargin = 16.;
 constexpr CGFloat kTitleSubtitleMargin = 8.;
 // Margin between the subtitle and search engine stack view.
 constexpr CGFloat kSubtitleSearchEngineStackMargin = 20.;
-// Margin above and below the inline "Set as Default" button.
-constexpr CGFloat kInlineButtonMargin = 16.;
-// Margin above the floating "Set as Default" button.
-constexpr CGFloat kFloatingButtonTopMargin = 16.;
+// Margin above "Set as Default" button.
+// This margin needs to be used for inline and floating buttons, to make sure
+// both containers have the same size. Having the same size is required to have
+// a smooth transition from inline to floating SetAsDefault button.
+constexpr CGFloat kSetAsDefaultButtonTopMargin = 16.;
 // Margin below the floating "Set as Default" button on tablets. On phones there
 // is no margin.
-constexpr CGFloat kFloatingButtonBottomMarginTablets = 16.;
+// This margin needs to be used for inline and floating buttons, to make sure
+// both containers have the same size. Having the same size is required to have
+// a smooth transition from inline to floating SetAsDefault button.
+constexpr CGFloat kSetAsDefaultButtonBottomMarginTablets = 16.;
 // Margin below the pill button on tablets. On phones there is no margin.
 constexpr CGFloat kMorePillButtonBottomMarginTablets = 34.;
 // Corner radius for the "More" pill button.
@@ -182,6 +186,9 @@ UIButton* CreateMorePillButton() {
   // Container to display the "Set as Default" button in the scroll view.
   // Related to `_inlineSetAsDefaultButton`. This container is used in
   // the animation to transition to `_floatingSetAsDefaultButtonContainer`.
+  // This container needs to have the same size than
+  // `_floatingSetAsDefaultButtonContainer`, to have a smooth transition to the
+  // floating SetAsDefault button.
   UIView* _inlineSetAsDefaultButtonContainer;
   // Button to confirm the default search engine selection. This button is
   // visually identical to `_floatingSetAsDefaultButton` but it is part of
@@ -189,6 +196,9 @@ UIButton* CreateMorePillButton() {
   UIButton* _inlineSetAsDefaultButton;
   // Container to display the "Set as Default" button on top of the scroll view.
   // Related to `_floatingSetAsDefaultButton`.
+  // This container needs to have the same size than
+  // `_inlineSetAsDefaultButtonContainer`, to have a smooth transition from the
+  // inline SetAsDefault button.
   UIView* _floatingSetAsDefaultButtonContainer;
   // Horizontal separator at the top of `_floatingSetAsDefaultButtonContainer`.
   // It should be visible only when `_floatingSetAsDefaultButtonContainer` is
@@ -237,6 +247,8 @@ UIButton* CreateMorePillButton() {
   _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   _scrollView.accessibilityIdentifier = kSearchEngineChoiceScrollViewIdentifier;
   _scrollView.delegate = self;
+  _scrollView.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentAlways;
   [_scrollView addSubview:scrollContentView];
 
   // Add logo image.
@@ -368,6 +380,10 @@ UIButton* CreateMorePillButton() {
   // allowing the scroll view to take the full screen width.
   UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
 
+  const BOOL tabletFactor =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  const CGFloat setAsDefaultButtonBottomMargin =
+      tabletFactor ? kSetAsDefaultButtonBottomMarginTablets : 0.;
   [NSLayoutConstraint activateConstraints:@[
     // Scroll view constraints. It needs to be the full size of the view,
     // so the content is visible in the safe area too.
@@ -382,7 +398,8 @@ UIButton* CreateMorePillButton() {
     [scrollContentView.bottomAnchor
         constraintEqualToAnchor:_scrollView.contentLayoutGuide.bottomAnchor],
     [scrollContentView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor],
+        constraintGreaterThanOrEqualToAnchor:_scrollView.safeAreaLayoutGuide
+                                                 .heightAnchor],
     [scrollContentView.centerXAnchor
         constraintEqualToAnchor:_scrollView.centerXAnchor],
     [scrollContentView.widthAnchor
@@ -435,10 +452,10 @@ UIButton* CreateMorePillButton() {
     // _inlineSetAsDefaultButton constraints.
     [_inlineSetAsDefaultButton.topAnchor
         constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer.topAnchor
-                       constant:kInlineButtonMargin],
+                       constant:kSetAsDefaultButtonTopMargin],
     [_inlineSetAsDefaultButton.bottomAnchor
         constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer.bottomAnchor
-                       constant:-kInlineButtonMargin],
+                       constant:-setAsDefaultButtonBottomMargin],
     [_inlineSetAsDefaultButton.widthAnchor
         constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
     [_inlineSetAsDefaultButton.centerXAnchor
@@ -447,8 +464,7 @@ UIButton* CreateMorePillButton() {
     // More pill button constraints.
     [_morePillButton.bottomAnchor
         constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-(ui::GetDeviceFormFactor() ==
-                                          ui::DEVICE_FORM_FACTOR_TABLET
+                       constant:-(tabletFactor
                                       ? kMorePillButtonBottomMarginTablets
                                       : 0.)],
     [_morePillButton.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
@@ -478,14 +494,11 @@ UIButton* CreateMorePillButton() {
     // _floatingSetAsDefaultButton constraints.
     [_floatingSetAsDefaultButton.topAnchor
         constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer.topAnchor
-                       constant:kFloatingButtonTopMargin],
+                       constant:kSetAsDefaultButtonTopMargin],
     [_floatingSetAsDefaultButton.bottomAnchor
         constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer
                                     .safeAreaLayoutGuide.bottomAnchor
-                       constant:-(ui::GetDeviceFormFactor() ==
-                                          ui::DEVICE_FORM_FACTOR_TABLET
-                                      ? kFloatingButtonBottomMarginTablets
-                                      : 0.)],
+                       constant:-setAsDefaultButtonBottomMargin],
     [_floatingSetAsDefaultButton.widthAnchor
         constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
     [_floatingSetAsDefaultButton.centerXAnchor
