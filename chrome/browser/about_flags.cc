@@ -8537,13 +8537,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxInternalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxInternalsDevUI)},
 
-    {"privacy-sandbox-proactive-topics-blocking",
-     flag_descriptions::kPrivacySandboxProactiveTopicsBlockingName,
-     flag_descriptions::kPrivacySandboxProactiveTopicsBlockingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking)},
-
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kAnimatedImageResume)},

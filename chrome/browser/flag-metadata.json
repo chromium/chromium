@@ -6872,14 +6872,6 @@
     "expiry_milestone": 134
   },
   {
-    "name": "privacy-sandbox-proactive-topics-blocking",
-    "owners": [
-      "kartoffel-core-eng@google.com",
-      "koilos@google.com"
-    ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "private-network-access-ignore-navigation-errors",
     "owners": [ "phao@chromium.org", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 130

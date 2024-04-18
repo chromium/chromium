@@ -2923,11 +2923,6 @@ const char kPrivacySandboxInternalsName[] = "Privacy Sandbox Internals Page";
 const char kPrivacySandboxInternalsDescription[] =
     "Enables the chrome://privacy-sandbox-internals debugging page.";
 
-const char kPrivacySandboxProactiveTopicsBlockingName[] =
-    "Privacy Sandbox Proactive Topics Blocking";
-const char kPrivacySandboxProactiveTopicsBlockingDescription[] =
-    "Enables Privacy Sandbox Proactive Topics Blocking";
-
 const char kProtectedAudiencesConsentedDebugTokenName[] =
     "Protected Audiences Consented Debug Token";
 const char kProtectedAudiencesConsentedDebugTokenDescription[] =
