@@ -629,7 +629,6 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledAllowlistMatch) {
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
-  base::HistogramTester histograms;
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
@@ -671,7 +670,6 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
 
 TEST_F(SafeBrowsingUrlCheckerTest,
        CheckUrl_UrlRealTimeEnabledSafeBrowsingDisabled_NonMainframe) {
-  base::HistogramTester histograms;
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/false,
@@ -701,7 +699,6 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
 TEST_F(SafeBrowsingUrlCheckerTest,
        CheckUrl_UrlRealTimeEnabledSafeUrl_EmptyUrlLookupServiceMetricSuffix) {
-  base::HistogramTester histograms;
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
@@ -739,7 +736,6 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
 TEST_F(SafeBrowsingUrlCheckerTest,
        CheckUrl_UrlRealTimeEnabledSafeUrlFromCache) {
-  base::HistogramTester histograms;
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
@@ -780,7 +776,6 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
 TEST_F(SafeBrowsingUrlCheckerTest,
        CheckUrl_UrlRealTimeEnabledSafeUrlFromCacheFalsePositive) {
-  base::HistogramTester histograms;
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
