@@ -25,6 +25,7 @@ build_webui("build") {
 
     icons_html_files = [
       "icons.html",
+      "icons_lit.html",
       "mwb_shared_icons.html",
     ]
 

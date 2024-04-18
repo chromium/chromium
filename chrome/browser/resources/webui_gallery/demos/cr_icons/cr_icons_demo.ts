@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_icon/cr_iconset.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/icons_lit.html.js';
 import '../demo.css.js';
 
+import type {CrIconsetElement} from '//resources/cr_elements/cr_icon/cr_iconset.js';
 import {assert} from '//resources/js/assert.js';
-import type {IronIconsetSvgElement} from '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_icons_demo.html.js';
@@ -28,7 +29,7 @@ class CrIconsDemoElement extends PolymerElement {
       crIcons_: Array,
       iconColor_: String,
       iconSize_: String,
-      ironIcons_: Array,
+      icons_: Array,
     };
   }
 
@@ -43,22 +44,29 @@ class CrIconsDemoElement extends PolymerElement {
   ];
   private iconColor_: string = '#000000';
   private iconSize_: string = '24';
-  private ironIcons_: string[] = [];
+  private icons_: string[] = [];
 
   override ready() {
     super.ready();
 
+    function getIconNames(iconset: CrIconsetElement) {
+      return Array.from(iconset.querySelectorAll('g[id]'))
+          .map((el: Element) => {
+            return `${iconset.name}:${el.id}`;
+          });
+    }
+
     // Iconsets are appended to the document's head element when they are
     // imported.
-    const crIconsSet = document.head.querySelector<IronIconsetSvgElement>(
-        'iron-iconset-svg[name=cr]');
+    const crIconsSet = document.head.querySelector<CrIconsetElement>(
+        'cr-iconset[name=cr]');
     assert(crIconsSet);
-    this.push('ironIcons_', ...crIconsSet.getIconNames());
+    this.push('icons_', ...getIconNames(crIconsSet));
 
-    const cr20IconsSet = document.head.querySelector<IronIconsetSvgElement>(
-        'iron-iconset-svg[name=cr20]');
+    const cr20IconsSet = document.head.querySelector<CrIconsetElement>(
+        'cr-iconset[name=cr20]');
     assert(cr20IconsSet);
-    this.push('ironIcons_', ...cr20IconsSet.getIconNames());
+    this.push('icons_', ...getIconNames(cr20IconsSet));
   }
 
   private onIconColorInput_(e: Event) {

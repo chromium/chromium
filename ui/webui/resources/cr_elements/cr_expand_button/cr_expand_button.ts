@@ -8,7 +8,7 @@
  * between an opened (expanded) and closed state.
  */
 import '../cr_icon_button/cr_icon_button.js';
-import '../icons.html.js';
+import '../icons_lit.html.js';
 
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
