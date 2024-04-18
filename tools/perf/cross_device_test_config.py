@@ -128,10 +128,10 @@ TARGET_DEVICES = {
         'speedometer': {
             'http://browserbench.org/Speedometer/': 20,
         },
-        'speedometer2': {
+        'speedometer2-nominorms': {
             'Speedometer2': 20,
         },
-        'speedometer2-nominorms': {
+        'speedometer2': {
             'Speedometer2': 20,
         },
         'speedometer2-predictable': {
