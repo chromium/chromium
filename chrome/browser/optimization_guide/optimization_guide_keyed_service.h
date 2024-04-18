@@ -180,7 +180,7 @@ class OptimizationGuideKeyedService
   }
 
   optimization_guide::ChromeModelQualityLogsUploaderService*
-  GetChromeModelQualityLogsUploaderServiceForTesting() {
+  GetChromeModelQualityLogsUploaderService() {
     return model_quality_logs_uploader_service_.get();
   }
 
