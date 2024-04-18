@@ -19,6 +19,9 @@
 // Notify the model controller when the OTP input value changes.
 - (void)onOtpInputChanges:(NSString*)inputValue;
 
+// Invoked when the new code request link is tapped by the user.
+- (void)didTapNewCodeLink;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_OTP_INPUT_DIALOG_MUTATOR_H_

@@ -5,8 +5,13 @@
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_view_controller.h"
 
 #import "base/check.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/task_runner.h"
+#import "base/time/time.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -21,16 +26,25 @@ namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierContent = kSectionIdentifierEnumZero,
   SectionIdentifierError,
+  SectionIdentifierNewCodeLink,
 };
 
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemTypeTextField = kItemTypeEnumZero,
 };
 
+// Dummy URL used as target of the link in the new code link.
+constexpr char kDummyLinkTarget[] = "about:blank";
+
+// The cooldown time for the "Get new code" link after it is clicked.
+constexpr base::TimeDelta kNewCodeLinkCooldownTime = base::Seconds(5);
+
 }  // namespace
 
-@interface OtpInputDialogViewController () <UITableViewDelegate,
-                                            UITextFieldDelegate> {
+@interface OtpInputDialogViewController () <
+    TableViewLinkHeaderFooterItemDelegate,
+    UITableViewDelegate,
+    UITextFieldDelegate> {
 }
 
 @end
@@ -41,10 +55,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   BOOL _contentSet;
   NSString* _inputValue;
   NSString* _errorTitle;
+  BOOL _shouldEnableNewCodeLink;
 }
 
 - (instancetype)init {
-  return [super initWithStyle:UITableViewStyleInsetGrouped];
+  if (self = [super initWithStyle:UITableViewStyleInsetGrouped]) {
+    _shouldEnableNewCodeLink = YES;
+  }
+  return self;
 }
 
 #pragma mark - ChromeTableViewController
@@ -69,6 +87,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [_dataSource sectionIdentifierForIndex:section].integerValue);
   switch (sectionIdentifier) {
     case SectionIdentifierContent:
+    case SectionIdentifierNewCodeLink:
       return UITableViewAutomaticDimension;
     case SectionIdentifierError:
       return ChromeTableViewHeightForHeaderInSection(sectionIdentifier);
@@ -98,7 +117,23 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [errorMessage setForceIndents:YES];
       return errorMessage;
     }
+    case SectionIdentifierNewCodeLink: {
+      return [self createNewCodeLink];
+    }
   }
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  [_mutator didTapNewCodeLink];
+  [self setEnableNewCodeLink:NO];
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf setEnableNewCodeLink:YES];
+      }),
+      kNewCodeLinkCooldownTime);
 }
 
 #pragma mark - PaymentsSuggestionBottomSheetConsumer
@@ -139,6 +174,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   RegisterTableViewHeaderFooter<CardUnmaskHeaderView>(self.tableView);
   RegisterTableViewCell<TableViewTextEditCell>(self.tableView);
   RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
+  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
   __weak __typeof(self) weakSelf = self;
   _dataSource = [[UITableViewDiffableDataSource alloc]
       initWithTableView:self.tableView
@@ -157,6 +193,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [snapshot appendItemsWithIdentifiers:@[ @(ItemTypeTextField) ]
              intoSectionWithIdentifier:@(SectionIdentifierContent)];
   [snapshot appendSectionsWithIdentifiers:@[ @(SectionIdentifierError) ]];
+  [snapshot appendSectionsWithIdentifiers:@[ @(SectionIdentifierNewCodeLink) ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
@@ -228,6 +265,33 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // Enable the confirm button only after a valid OTP has been entered.
   confirmButton.enabled = NO;
   return confirmButton;
+}
+
+// Create a link and when tapped it will request a new OTP code from the server.
+// Upon clicking the link will be disabled for a short period of time.
+- (TableViewLinkHeaderFooterView*)createNewCodeLink {
+  TableViewLinkHeaderFooterView* newCodeLink =
+      DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
+          self.tableView);
+  // Using a dummy target for the link in the footer.
+  // The link target is ignored and taps on it are handled by `didTapLinkURL`.
+  newCodeLink.urls = @[ [[CrURL alloc] initWithGURL:GURL(kDummyLinkTarget)] ];
+  newCodeLink.delegate = self;
+  [newCodeLink
+            setText:l10n_util::GetNSString(
+                        IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_FOOTER_LINK)
+          withColor:[UIColor colorNamed:(kTextSecondaryColor)]
+      textAlignment:NSTextAlignmentCenter];
+  [newCodeLink setLinkEnabled:_shouldEnableNewCodeLink];
+
+  return newCodeLink;
+}
+
+- (void)setEnableNewCodeLink:(BOOL)enabled {
+  _shouldEnableNewCodeLink = enabled;
+  NSDiffableDataSourceSnapshot* snapshot = [_dataSource snapshot];
+  [snapshot reloadSectionsWithIdentifiers:@[ @(SectionIdentifierNewCodeLink) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 @end

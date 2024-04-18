@@ -55,12 +55,20 @@
 @property(nonatomic, strong) NSArray<CrURL*>* urls;
 
 // Sets the `text` displayed by this cell. If the `text` contains a link, the
-// link is appropriately colored. The text is coolored with `color`.
+// link is appropriately colored. The text is coolored with `color`. If specific
+// `textAlignment` is provided, apply that as well, otherwise it is
+// NSTextAlignmentNatural.
 - (void)setText:(NSString*)text withColor:(UIColor*)color;
+- (void)setText:(NSString*)text
+        withColor:(UIColor*)color
+    textAlignment:(NSTextAlignment)textAlignment;
 
 // If forceIndents is YES, activates the constraint to align the header/footer
 // with section items.
 - (void)setForceIndents:(BOOL)forceIndents;
+
+// Updates the status of the link based on whether the link should be `enabled`.
+- (void)setLinkEnabled:(BOOL)enabled;
 
 @end
 

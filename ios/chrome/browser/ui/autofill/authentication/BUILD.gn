@@ -37,12 +37,13 @@ source_set("otp_input_dialog_ui") {
   ]
   deps = [
     "//components/strings:components_strings_grit",
-    "//ios/chrome/browser/shared/ui/list_model:list_model",
-    "//ios/chrome/browser/shared/ui/table_view:table_view",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/ui/autofill/cells:cells",
-    "//ios/chrome/common/ui/colors:colors",
-    "//ui/base:base",
+    "//ios/chrome/browser/ui/autofill/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

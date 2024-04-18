@@ -40,4 +40,10 @@
   }
 }
 
+- (void)didTapNewCodeLink {
+  if (_target) {
+    _target->DidTapNewCodeLink();
+  }
+}
+
 @end

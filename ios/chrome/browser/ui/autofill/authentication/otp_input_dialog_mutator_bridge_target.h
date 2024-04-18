@@ -14,6 +14,7 @@ class OtpInputDialogMutatorBridgeTarget {
   virtual void DidTapConfirmButton(const std::u16string& input_value) = 0;
   virtual void DidTapCancelButton() = 0;
   virtual void OnOtpInputChanges(const std::u16string& input_value) = 0;
+  virtual void DidTapNewCodeLink() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_OTP_INPUT_DIALOG_MUTATOR_BRIDGE_TARGET_H_
