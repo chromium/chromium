@@ -85,6 +85,7 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    browser()->tab_strip_model()->GetActiveWebContents()->Focus();
     ASSERT_NE(nullptr, AXMediaAppHandlerFactory::GetInstance());
     mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> pageRemote;
     mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPage>
