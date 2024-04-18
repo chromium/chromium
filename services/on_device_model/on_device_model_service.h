@@ -31,6 +31,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   // These are defined separately in pre_sandbox_init.cc for explicit security
   // review coverage.
   [[nodiscard]] static bool PreSandboxInit();
+
+  // Must be called in the service's process after the run loop finished.
+  [[nodiscard]] static bool Shutdown();
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   static void AddSandboxLinuxOptions(
       sandbox::policy::SandboxLinux::Options& options);

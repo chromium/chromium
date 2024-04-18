@@ -9,4 +9,8 @@ specific_include_rules = {
   "platform_model_loader_chromeos\.*": [
     "+chromeos/ash/components/dbus",
   ],
+  "pre_sandbox_init\.cc": [
+    "+chromeos/ash/components/dbus",
+    "+chromeos/dbus/init",
+  ],
 }
