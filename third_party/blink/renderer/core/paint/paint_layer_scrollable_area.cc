@@ -3216,16 +3216,20 @@ Node* PaintLayerScrollableArea::GetSnapEventTargetAlongAxis(
   if (!ids) {
     return nullptr;
   }
+  Node* node = nullptr;
   if ((axis == kBlock && horiz) || (axis == kInline && !horiz)) {
     if (ids->y) {
-      return DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(ids->y));
+      node = DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(ids->y));
     }
   } else if ((axis == kInline && horiz) || (axis == kBlock && !horiz)) {
     if (ids->x) {
-      return DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(ids->x));
+      node = DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(ids->x));
     }
   }
-  return nullptr;
+  if (node && node->IsPseudoElement()) {
+    node = node->parentElement();
+  }
+  return node;
 }
 
 void PaintLayerScrollableArea::SetSnapchangedTargetIds(
