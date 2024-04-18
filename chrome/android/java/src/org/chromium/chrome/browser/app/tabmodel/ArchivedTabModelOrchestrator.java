@@ -43,7 +43,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private static ProfileKeyedMap<ArchivedTabModelOrchestrator> sProfileMap;
 
     // TODO(crbug.com/333572160): Rely on PKM destroy infra when it's working.
-    private final ApplicationStatus.ApplicationStateListener mApplicationStateListener =
+    private static final ApplicationStatus.ApplicationStateListener sApplicationStateListener =
             new ApplicationStateListener() {
                 @Override
                 public void onApplicationStateChange(@ApplicationState int newState) {
@@ -53,8 +53,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         // will still work.
                         sProfileMap.destroy();
                         sProfileMap = null;
-
-                        ApplicationStatus.unregisterApplicationStateListener(this);
                     }
                 }
             };
@@ -68,11 +66,14 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     private WindowAndroid mWindow;
     private TabArchiver mTabArchiver;
+    private TabArchiveSettings mTabArchiveSettings;
     private TabCreator mArchivedTabCreator;
     private boolean mNativeLibraryReadyCalled;
     private boolean mLoadStateCalled;
     private boolean mRestoreTabsCalled;
     private boolean mDestroyCalled;
+    private boolean mBeginDeclutterCalled;
+    private boolean mRescueTabsCalled;
 
     /**
      * Returns the ArchivedTabModelOrchestrator that corresponds to the given profile. Must be
@@ -87,12 +88,18 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             sProfileMap =
                     ProfileKeyedMap.createMapOfDestroyables(
                             ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
+            ApplicationStatus.registerApplicationStateListener(sApplicationStateListener);
         }
         return sProfileMap.getForProfile(profile, ArchivedTabModelOrchestrator::new);
     }
 
+    /** Destroys the singleton profile keyed map for testing. */
+    public static void destroyProfileKeyedMapForTesting() {
+        sProfileMap.destroy();
+        sProfileMap = null;
+    }
+
     private ArchivedTabModelOrchestrator(Profile profile) {
-        assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
         mProfile = profile;
         mArchivedTabCreatorManager =
                 new TabCreatorManager() {
@@ -102,7 +109,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         return mArchivedTabCreator;
                     }
                 };
-        ApplicationStatus.registerApplicationStateListener(mApplicationStateListener);
         mAsyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
     }
 
@@ -152,6 +158,31 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         markTabModelsInitialized();
     }
 
+    /** Begins the process of decluttering tabs if it hasn't been started already. */
+    public void maybeBeginDeclutter() {
+        if (mBeginDeclutterCalled) return;
+
+        assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
+        assert mTabArchiver != null;
+        mTabArchiver.beginDeclutter();
+
+        mBeginDeclutterCalled = true;
+    }
+
+    /**
+     * Begins the process of rescuing archived tabs if it hasn't been started already. Rescuing tabs
+     * will move them from the archived tab model into the normal tab model of the context this is
+     * called from.
+     */
+    public void maybeRescueArchivedTabs(TabCreator regularTabCreator) {
+        if (mRescueTabsCalled) return;
+
+        assert ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled();
+        mTabArchiver.rescueArchivedTabs(regularTabCreator);
+
+        mRescueTabsCalled = true;
+    }
+
     @Override
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
         if (mNativeLibraryReadyCalled) return;
@@ -159,13 +190,14 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
         super.onNativeLibraryReady(tabContentManager);
 
+        mTabArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
         mTabArchiver =
                 new TabArchiver(
                         mTabModelSelector.getModel(false),
                         mArchivedTabCreator,
                         mAsyncTabParamsManager,
                         TabWindowManagerSingleton.getInstance(),
-                        new TabArchiveSettings(ChromeSharedPreferences.getInstance()),
+                        mTabArchiveSettings,
                         System::currentTimeMillis);
     }
 
@@ -199,5 +231,15 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     /** Returns the {@link TabArchiver}. */
     public TabArchiver getTabArchiver() {
         return mTabArchiver;
+    }
+
+    // Testing-specific methods
+
+    public void resetBeginDeclutterForTesting() {
+        mBeginDeclutterCalled = false;
+    }
+
+    public void resetArchiveSettingsForTesting() {
+        mTabArchiveSettings.resetSettingsForTesting();
     }
 }

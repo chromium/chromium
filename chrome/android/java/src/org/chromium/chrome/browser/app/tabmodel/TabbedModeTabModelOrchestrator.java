@@ -38,6 +38,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     //  ChromeTabbedActivity.
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private TabCreatorManager mTabCreatorManager;
 
     /**
      * Constructor.
@@ -68,6 +69,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             MismatchedIndicesHandler mismatchedIndicesHandler,
             int selectorIndex) {
         mProfileProviderSupplier = profileProviderSupplier;
+        mTabCreatorManager = tabCreatorManager;
         boolean mergeTabsOnStartup = shouldMergeTabs(activity);
         if (mergeTabsOnStartup) {
             MultiInstanceManager.mergedOnStartup();
@@ -157,7 +159,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
         super.onNativeLibraryReady(tabContentManager);
 
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
+        if (ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()) {
             // The profile will be available because native is initialized.
             assert mProfileProviderSupplier.hasValue();
 
@@ -165,6 +167,14 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             mArchivedTabModelOrchestrator = ArchivedTabModelOrchestrator.getForProfile(profile);
             mArchivedTabModelOrchestrator.maybeCreateTabModels();
             mArchivedTabModelOrchestrator.onNativeLibraryReady(tabContentManager);
+            // If the feature flag is enabled, then start the declutter process. Otherwise, rescue
+            // tabs that may have been archived previously.
+            if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
+                mArchivedTabModelOrchestrator.maybeBeginDeclutter();
+            } else {
+                mArchivedTabModelOrchestrator.maybeRescueArchivedTabs(
+                        mTabCreatorManager.getTabCreator(/* incognito= */ false));
+            }
         }
     }
 
@@ -173,7 +183,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             boolean ignoreIncognitoFiles, Callback<String> onStandardActiveIndexRead) {
         super.loadState(ignoreIncognitoFiles, onStandardActiveIndexRead);
 
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
+        if (ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()) {
             assert mArchivedTabModelOrchestrator != null;
             mArchivedTabModelOrchestrator.loadState(
                     /* ignoreIncognitoFiles= */ true, /* onStandardActiveIndexRead= */ null);
@@ -184,7 +194,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     public void restoreTabs(boolean setActiveTab) {
         super.restoreTabs(setActiveTab);
 
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
+        if (ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()) {
             assert mArchivedTabModelOrchestrator != null;
             mArchivedTabModelOrchestrator.restoreTabs(/* setActiveTab= */ false);
         }
@@ -194,7 +204,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     public void saveState() {
         super.saveState();
 
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
+        if (ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()) {
             assert mArchivedTabModelOrchestrator != null;
             mArchivedTabModelOrchestrator.saveState();
         }

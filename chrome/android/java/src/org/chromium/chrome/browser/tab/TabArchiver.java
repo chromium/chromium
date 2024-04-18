@@ -53,12 +53,14 @@ public class TabArchiver implements TabWindowManager.Observer {
         mTabWindowManager = tabWindowManager;
         mTabArchiveSettings = tabArchiveSettings;
         mClock = clock;
+    }
 
-        // First step - look for regular tabs which can be archived.
-
-        // After the class is fully initialized, observe the tab models of all running CTAs. This
-        // will scan all current/future tabs for inactivity and archive those eligible.
-        mTabWindowManager.addObserver(this);
+    /**
+     * Begin the archiving process by (1) iterating through all current TabModelSelectors, and
+     * archiving all eligible tabs. Then (2) observing TabWindowManager for new TabModelSelectors,
+     * and archiving all eligible tabs.
+     */
+    public void beginDeclutter() {
         // Catch ourselves up since it's possible that selectors were added prior to observation.
         for (int i = 0; i < mTabWindowManager.getMaxSimultaneousSelectors(); i++) {
             TabModelSelector selector = mTabWindowManager.getTabModelSelectorById(i);
@@ -66,8 +68,24 @@ public class TabArchiver implements TabWindowManager.Observer {
             onTabModelSelectorAdded(selector);
         }
 
-        // Second step - look for archived tabs which are eligible for deletion.
-        // TODO(crbug.com/331413918): Implement this.
+        // After the class is fully initialized, observe the tab models of all running CTAs. This
+        // will scan all current/future tabs for inactivity and archive those eligible.
+        mTabWindowManager.addObserver(this);
+    }
+
+    public void deleteEligibleArchivedTabs() {
+        // TODO(crbug.com/331413918): Implement auto-deletion of tabs.
+    }
+
+    /**
+     * Rescue archived tabs, moving them back to the regular TabModel. This is done when the feature
+     * is disabled, but there are still archived tabs.
+     */
+    public void rescueArchivedTabs(TabCreator regularTabCreator) {
+        while (mArchivedTabModel.getCount() > 0) {
+            Tab tab = mArchivedTabModel.getTabAt(0);
+            unarchiveAndRestoreTab(regularTabCreator, tab);
+        }
     }
 
     /**

@@ -127,6 +127,7 @@ public class TabPersistentStoreIntegrationTest {
         OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
         profileProviderSupplier.set(mProfileProvider);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         mOrchestrator = new TabbedModeTabModelOrchestrator(/* tabMergingEnabled= */ true);
@@ -155,6 +156,7 @@ public class TabPersistentStoreIntegrationTest {
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
 
         TabStateExtractor.resetTabStatesForTesting();
+        ArchivedTabModelOrchestrator.destroyProfileKeyedMapForTesting();
     }
 
     @Test

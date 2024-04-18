@@ -160,6 +160,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidImprovedBookmarks,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidTabDeclutter,
+    &kAndroidTabDeclutterRescueKillswitch,
     &kAndroidTabGroupStableIds,
     &kAndroidToolbarScrollAblation,
     &kAnimatedImageDragShadow,
@@ -437,6 +438,10 @@ BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
 BASE_FEATURE(kAndroidTabDeclutter,
              "AndroidTabDeclutter",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidTabDeclutterRescueKillswitch,
+             "AndroidTabDeclutterRescueKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabGroupStableIds,
              "AndroidTabGroupStableIds",
