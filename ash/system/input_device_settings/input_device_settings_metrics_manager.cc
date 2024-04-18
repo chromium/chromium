@@ -52,7 +52,6 @@ enum class PointerSensitivity {
 
 // Do not change ordering of this list as the ordering is used to compute
 // modifier hash in `RecordModifierRemappingHash()`.
-// TODO(b/329330990): Update modifier names map.
 static constexpr struct {
   const char* key_name;
   ui::mojom::ModifierKey modifier_key;
@@ -93,7 +92,6 @@ constexpr int kNumModifiers = std::size(kModifierNames);
 // Verify that the number of modifiers we are trying to hash together into a
 // 32-bit int will fit without any overflow or UB.
 // Modifier hash is limited to 32 bits as metrics can only handle 32 bit ints.
-// TODO(b/329330990): Update modifier hash.
 static_assert((sizeof(int32_t) * 8) >= (kModifierHashWidth * kNumModifiers));
 static_assert(static_cast<int>(ui::mojom::ModifierKey::kMaxValue) <=
               kMaxModifierValue);
@@ -245,15 +243,7 @@ bool ShouldRecordFkeyMetrics(const mojom::Keyboard& keyboard) {
   return ::features::AreF11AndF12ShortcutsEnabled() &&
          Shell::Get()->keyboard_capability()->IsChromeOSKeyboard(keyboard.id) &&
          (keyboard.settings->f11.has_value() &&
-          keyboard.settings->f12.has_value()) &&
-         !base::Contains(keyboard.modifier_keys,
-                         ui::mojom::ModifierKey::kFunction);
-}
-
-bool ShouldRecordSixPackKeyMetrics(const mojom::Keyboard& keyboard) {
-  return features::IsAltClickAndSixPackCustomizationEnabled() &&
-         !base::Contains(keyboard.modifier_keys,
-                         ui::mojom::ModifierKey::kFunction);
+          keyboard.settings->f12.has_value());
 }
 
 void RecordButtonMetrics(const mojom::Button& button,
@@ -456,6 +446,11 @@ InputDeviceSettingsMetricsManager::~InputDeviceSettingsMetricsManager() =
 
 void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
     const mojom::Keyboard& keyboard) {
+  // TODO(dpad, b/329330990): Fix to work with flag enabled.
+  if (features::IsModifierSplitEnabled()) {
+    return;
+  }
+
   // Only record the metrics once for each keyboard.
   const auto account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();
@@ -482,11 +477,6 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
 
   // Record metrics for modifier remappings.
   for (const auto modifier_key : keyboard.modifier_keys) {
-    // TODO(b/329330990): Remove after updating modifier names map.
-    if (features::IsModifierSplitEnabled()) {
-      break;
-    }
-
     const auto modifier_name = GetModifierKeyName(modifier_key);
     CHECK(modifier_name.has_value());
     const auto key_remapped_to =
@@ -500,7 +490,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
   // Record remapping metrics when keyboard is initialized.
   RecordModifierRemappingHash(keyboard);
   RecordKeyboardNumberOfKeysRemapped(keyboard);
-  if (ShouldRecordSixPackKeyMetrics(keyboard)) {
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
     RecordSixPackKeyInfo(keyboard, ui::VKEY_DELETE, /*is_initial_value=*/true);
     RecordSixPackKeyInfo(keyboard, ui::VKEY_INSERT, /*is_initial_value=*/true);
     RecordSixPackKeyInfo(keyboard, ui::VKEY_HOME, /*is_initial_value=*/true);
@@ -520,6 +510,11 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
 void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
     const mojom::Keyboard& keyboard,
     const mojom::KeyboardSettings& old_settings) {
+  // TODO(dpad, b/329330990): Fix to work with flag enabled.
+  if (features::IsModifierSplitEnabled()) {
+    return;
+  }
+
   const std::string keyboard_metrics_prefix =
       GetKeyboardMetricsPrefix(keyboard);
 
@@ -539,11 +534,6 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
 
   // Record metrics for modifier remappings.
   for (const auto modifier_key : keyboard.modifier_keys) {
-    // TODO(b/329330990): Remove after updating modifier names map.
-    if (features::IsModifierSplitEnabled()) {
-      break;
-    }
-
     const auto modifier_name = GetModifierKeyName(modifier_key);
     CHECK(modifier_name.has_value());
     const auto key_remapped_to_before =
@@ -560,7 +550,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
     }
   }
 
-  if (ShouldRecordSixPackKeyMetrics(keyboard)) {
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
     CHECK(keyboard.settings->six_pack_key_remappings);
     if (keyboard.settings->six_pack_key_remappings->del !=
         old_settings.six_pack_key_remappings->del) {
