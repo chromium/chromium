@@ -82,6 +82,9 @@ std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
     case policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
     case policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED:
     case policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
+    case policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED:
+    case policy::EnrollmentConfig::
+        MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
       return kEnrollmentModeUIForced;
     case policy::EnrollmentConfig::MODE_RECOVERY:
       return kEnrollmentModeUIRecovery;
@@ -145,7 +148,7 @@ bool ShouldSpecifyLicenseType(const policy::EnrollmentConfig& config) {
   // Retrieve the License already used for enrollment from DMServer
   // for AutoEnrollment from message DeviceStateRetrievalResponse.
   if (features::IsAutoEnrollmentKioskInOobeEnabled() &&
-      config.is_mode_attestation()) {
+      config.is_automatic_enrollment()) {
     return true;
   }
 
@@ -801,9 +804,9 @@ void EnrollmentScreenHandler::ShowErrorMessage(const std::string& message,
 }
 
 void EnrollmentScreenHandler::DoShow() {
-  if (config_.is_mode_attestation()) {
-    // Don't need sign-in partition for attestation enrollment.
-    DoShowWithData(ScreenDataForAttestationEnrollment());
+  if (config_.is_automatic_enrollment()) {
+    // Don't need sign-in partition for automatic enrollment.
+    DoShowWithData(ScreenDataForAutomaticEnrollment());
     return;
   }
 
@@ -838,9 +841,9 @@ void EnrollmentScreenHandler::DoShowWithData(base::Value::Dict screen_data) {
   }
 }
 
-base::Value::Dict
-EnrollmentScreenHandler::ScreenDataForAttestationEnrollment() {
-  // Attestation-based enrollment doesn't require additional screen data.
+base::Value::Dict EnrollmentScreenHandler::ScreenDataForAutomaticEnrollment() {
+  // Automatic enrollment (attestation or token-based) doesn't require
+  // additional screen data.
   return ScreenDataCommon();
 }
 
@@ -872,7 +875,10 @@ base::Value::Dict EnrollmentScreenHandler::ScreenDataCommon() {
 
   screen_data.Set("enrollment_mode", EnrollmentModeToUIMode(config_.mode));
   screen_data.Set("is_enrollment_enforced", config_.is_forced());
-  screen_data.Set("attestationBased", config_.is_mode_attestation());
+  // TODOb(b/329271128): Change the "attestationBased" name on the WebUI side to
+  // isAutomaticEnrollment now that this UI flow also encompasses token-based
+  // auto-enrollment.
+  screen_data.Set("attestationBased", config_.is_automatic_enrollment());
   screen_data.Set("flow", GetFlowString(flow_type_));
 
   if (ShouldSpecifyLicenseType(config_)) {

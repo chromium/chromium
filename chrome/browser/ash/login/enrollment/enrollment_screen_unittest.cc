@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
+#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -198,6 +199,33 @@ class EnrollmentScreenBaseTest : public testing::Test {
     EXPECT_CALL(mock_view_, ShowEnrollmentStatus(status));
   }
 
+  void ExpectTokenBasedEnrollmentAndReportSuccess() {
+    EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingEnrollmentToken())
+        .WillOnce([this]() {
+          ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
+          enrollment_screen_->ShowEnrollmentStatusOnSuccess();
+        });
+  }
+
+  void ExpectTokenBasedEnrollmentAndReportFailure() {
+    ExpectTokenBasedEnrollmentAndReportFailure(
+        policy::EnrollmentStatus::EnrollmentStatus::ForRegistrationError(
+            policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  }
+
+  void ExpectTokenBasedEnrollmentAndReportFailure(
+      policy::EnrollmentStatus status) {
+    EXPECT_NE(status.enrollment_code(),
+              policy::EnrollmentStatus::Code::kSuccess)
+        << "Cannot not expect failure with a success code";
+
+    EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingEnrollmentToken())
+        .WillOnce([this, status]() {
+          ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
+          enrollment_screen_->OnEnrollmentError(status);
+        });
+  }
+
   void ExpectErrorScreen() {
     ExpectErrorScreen(policy::EnrollmentStatus::ForRegistrationError(
         policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
@@ -221,6 +249,18 @@ class EnrollmentScreenBaseTest : public testing::Test {
         SetEnrollmentConfig(testing::AllOf(
             testing::Field(&policy::EnrollmentConfig::mode, mode),
             testing::Field(&policy::EnrollmentConfig::auth_mechanism, auth))));
+  }
+
+  void ExpectEnrollmentConfig(policy::EnrollmentConfig::Mode mode,
+                              policy::EnrollmentConfig::AuthMechanism auth,
+                              std::string enrollment_token) {
+    EXPECT_CALL(
+        mock_view_,
+        SetEnrollmentConfig(testing::AllOf(
+            testing::Field(&policy::EnrollmentConfig::mode, mode),
+            testing::Field(&policy::EnrollmentConfig::auth_mechanism, auth),
+            testing::Field(&policy::EnrollmentConfig::enrollment_token,
+                           enrollment_token))));
   }
 
   void ExpectShowView() { EXPECT_CALL(mock_view_, Show()); }
@@ -619,5 +659,169 @@ INSTANTIATE_TEST_SUITE_P(
         policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
         policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
         policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED));
+
+class EnrollmentScreenFlexAutoEnrollmentTest : public EnrollmentScreenBaseTest {
+ protected:
+  EnrollmentScreenFlexAutoEnrollmentTest() {}
+
+  policy::EnrollmentConfig GetEnrollmentConfig() {
+    policy::EnrollmentConfig config;
+    config.mode =
+        policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
+    config.auth_mechanism =
+        policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
+    // The token isn't used directly by EnrollmentScreen, but let's set it here
+    // for realism.
+    config.enrollment_token = policy::test::kFlexEnrollmentToken;
+    return config;
+  }
+
+  policy::EnrollmentConfig GetEnrollmentConfigForManualFallback() {
+    policy::EnrollmentConfig config;
+    config.mode =
+        policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
+    config.auth_mechanism =
+        policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
+    config.enrollment_token = policy::test::kFlexEnrollmentToken;
+    return config;
+  }
+};
+
+TEST_F(EnrollmentScreenFlexAutoEnrollmentTest, ShouldFinishEnrollmentScreen) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
+                         config.enrollment_token);
+
+  ExpectTokenBasedEnrollmentAndReportSuccess();
+  ExpectSuccessScreen();
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
+       ShouldRetryEnrollmentOnUserAction) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  {
+    testing::InSequence s;
+    // First view is shown for token-based enrollment failure.
+    ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
+                           config.enrollment_token);
+    ExpectShowView();
+    ExpectTokenBasedEnrollmentAndReportFailure();
+    ExpectErrorScreen();
+
+    // Second view is shown after user retry.
+    ExpectShowView();
+    ExpectTokenBasedEnrollmentAndReportSuccess();
+    ExpectSuccessScreen();
+  }
+
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_FALSE(last_screen_result().has_value());
+
+  UserRetry();
+
+  EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
+       ShouldNotAutomaticallyRetryEnrollment) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+  ExpectTokenBasedEnrollmentAndReportFailure();
+  ExpectErrorScreen();
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen(/*suppress_jitter=*/true);
+
+  FastForwardTime(base::Days(1));
+
+  EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
+  EXPECT_FALSE(last_screen_result().has_value());
+}
+
+// Unlike with attestation, DEVICE_NOT_FOUND doesn't really make sense for
+// enrollment, so we shouldn't automatically fall back to manual if we get
+// this status (although we don't expect to). We should perhaps automatically
+// fall back if the server encounters an invalid or not present token, but that
+// status hasn't yet been enumerated.
+//
+// TODO(b/329271128): Change this test once the proper DeviceManagementStatus
+// for TOKEN_NOT_FOUND is added and handled in the server response.
+TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
+       ShouldNotAutomaticallyFallbackToManualEnrollment) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+  {
+    testing::InSequence s;
+    // First view is shown for attestation-based failure.
+    ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
+                           config.enrollment_token);
+    ExpectShowView();
+    ExpectTokenBasedEnrollmentAndReportFailure(
+        policy::EnrollmentStatus::ForRegistrationError(
+            policy::DeviceManagementStatus::
+                DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+
+    // Verify that we land at the error screen instead of the GAIA sign-in
+    // screen.
+    ExpectErrorScreen(policy::EnrollmentStatus::ForRegistrationError(
+        policy::DeviceManagementStatus::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+  }
+
+  ExpectClearAuth();
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_FALSE(last_screen_result().has_value());
+}
+
+TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
+       ShouldFallbackToManualEnrollmentOnUserAction) {
+  const policy::EnrollmentConfig initial_config = GetEnrollmentConfig();
+  const policy::EnrollmentConfig fallback_config =
+      GetEnrollmentConfigForManualFallback();
+  {
+    testing::InSequence s;
+    // First view is shown for token-based failure.
+    ExpectEnrollmentConfig(initial_config.mode, initial_config.auth_mechanism,
+                           initial_config.enrollment_token);
+    ExpectShowView();
+    ExpectTokenBasedEnrollmentAndReportFailure();
+    ExpectErrorScreen();
+
+    // Second view is shown for manual fallback. This should be triggered after
+    // user decides to fallback.
+    ExpectEnrollmentConfig(fallback_config.mode, fallback_config.auth_mechanism,
+                           fallback_config.enrollment_token);
+    ExpectShowViewWithLogin();
+    ExpectManualEnrollmentAndReportEnrolled();
+    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+    ExpectSuccessScreen();
+  }
+
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(initial_config);
+  ShowEnrollmentScreen();
+
+  EXPECT_FALSE(last_screen_result().has_value());
+
+  UserCancel();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
 
 }  // namespace ash

@@ -117,6 +117,12 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
     case EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
       return em::DeviceRegisterRequest::
           FLAVOR_ENROLLMENT_ATTESTATION_ROLLBACK_MANUAL_FALLBACK;
+    case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED:
+      return em::DeviceRegisterRequest::
+          FLAVOR_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
+    case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
+      return em::DeviceRegisterRequest::
+          FLAVOR_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
   }
 
   NOTREACHED() << "Bad enrollment mode: " << mode;
@@ -448,6 +454,10 @@ void EnrollmentHandler::StartRegistration() {
   SetStep(STEP_REGISTRATION);
   if (enrollment_config_.is_mode_attestation()) {
     StartAttestationBasedEnrollmentFlow();
+  } else if (enrollment_config_.mode ==
+             EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED) {
+    client_->RegisterDeviceWithEnrollmentToken(*register_params_, client_id_,
+                                               dm_auth_.Clone());
   } else {
     client_->Register(*register_params_, client_id_, dm_auth_.oauth_token());
   }

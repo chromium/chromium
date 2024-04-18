@@ -128,8 +128,8 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   // Shows the screen with the given data dictionary.
   void DoShowWithData(base::Value::Dict screen_data);
 
-  // Screen data to be passed to web ui for attestation enrollment.
-  base::Value::Dict ScreenDataForAttestationEnrollment();
+  // Screen data to be passed to web ui for automatic enrollment.
+  base::Value::Dict ScreenDataForAutomaticEnrollment();
 
   // Screen data to be passed to web ui for gaia oauth-based enrollment.
   base::Value::Dict ScreenDataForOAuthEnrollment();

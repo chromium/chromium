@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
+#include "chrome/browser/ash/policy/enrollment/flex_enrollment_token_provider.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -195,6 +196,10 @@ void EnrollmentScreen::SetEnrollmentConfig(
                        ? AUTH_OAUTH
                        : AUTH_ATTESTATION;
       break;
+    case EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED:
+      current_auth_ = AUTH_ENROLLMENT_TOKEN;
+      next_auth_ = AUTH_OAUTH;
+      break;
     default:
       NOTREACHED();
       break;
@@ -204,8 +209,7 @@ void EnrollmentScreen::SetEnrollmentConfig(
 
 void EnrollmentScreen::SetConfig() {
   config_ = enrollment_config_;
-  if (current_auth_ == AUTH_OAUTH &&
-      config_.is_mode_attestation_with_manual_fallback()) {
+  if (current_auth_ == AUTH_OAUTH && config_.is_mode_with_manual_fallback()) {
     config_.mode =
         policy::EnrollmentConfig::GetManualFallbackMode(config_.mode);
   } else if (current_auth_ == AUTH_ATTESTATION &&
@@ -224,7 +228,8 @@ void EnrollmentScreen::SetConfig() {
 }
 
 bool EnrollmentScreen::AdvanceToNextAuth() {
-  if (current_auth_ != next_auth_ && current_auth_ == AUTH_ATTESTATION) {
+  if (current_auth_ != next_auth_ && (current_auth_ == AUTH_ATTESTATION ||
+                                      current_auth_ == AUTH_ENROLLMENT_TOKEN)) {
     LOG(WARNING) << "User stopped using auth: " << current_auth_
                  << ", current auth: " << next_auth_ << ".";
     current_auth_ = next_auth_;
@@ -370,6 +375,9 @@ void EnrollmentScreen::ShowImpl() {
     case AUTH_ATTESTATION:
       AuthenticateUsingAttestation();
       break;
+    case AUTH_ENROLLMENT_TOKEN:
+      AuthenticateUsingEnrollmentToken();
+      break;
     default:
       NOTREACHED();
       break;
@@ -479,6 +487,7 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
   // in the logs.
   LOG(WARNING) << "Authenticating using attestation.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
+  // TODO(b/333594657): Remove this flag check.
   if (features::IsAutoEnrollmentKioskInOobeEnabled()) {
     license_type_to_use_ = config_.license_type;
   }
@@ -488,6 +497,24 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
   }
   CreateEnrollmentLauncher();
   enrollment_launcher_->EnrollUsingAttestation();
+}
+
+void EnrollmentScreen::AuthenticateUsingEnrollmentToken() {
+  LOG(WARNING) << "Authenticating using enrollment token.";
+  elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
+  // TODO(b/333594657): Remove this flag check.
+  // Although license type is copied over blindly here, later in
+  // enrollment_handler it's only propagated if the type is terminal (i.e.
+  // kiosk), as unset license type is treated as enterprise.
+  if (features::IsAutoEnrollmentKioskInOobeEnabled()) {
+    license_type_to_use_ = config_.license_type;
+  }
+
+  if (view_) {
+    view_->Show();
+  }
+  CreateEnrollmentLauncher();
+  enrollment_launcher_->EnrollUsingEnrollmentToken();
 }
 
 void EnrollmentScreen::OnLoginDone(const std::string& user,
@@ -605,6 +632,8 @@ void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
   }
 }
 
+// TODO(b/329271128): Handle errors specific to token-based registration once
+// they are defined and returned from the server.
 void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
   LOG(ERROR) << "Enrollment error: " << status.enrollment_code();
   RecordEnrollmentErrorMetrics();

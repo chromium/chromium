@@ -57,6 +57,7 @@ class MockEnrollmentLauncher {
   MOCK_METHOD1(EnrollUsingAuthCode, void(const std::string& auth_code));
   MOCK_METHOD1(EnrollUsingToken, void(const std::string& token));
   MOCK_METHOD0(EnrollUsingAttestation, void());
+  MOCK_METHOD0(EnrollUsingEnrollmentToken, void());
   MOCK_METHOD0(RestoreAfterRollback, void());
   MOCK_METHOD0(GetDeviceAttributeUpdatePermission, void());
   MOCK_METHOD2(UpdateDeviceAttributes,
@@ -108,6 +109,7 @@ class FakeEnrollmentLauncher : public EnrollmentLauncher {
   void EnrollUsingAuthCode(const std::string& auth_code) override;
   void EnrollUsingToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
+  void EnrollUsingEnrollmentToken() override;
   void ClearAuth(base::OnceClosure callback) override;
   void GetDeviceAttributeUpdatePermission() override;
   void UpdateDeviceAttributes(const std::string& asset_id,

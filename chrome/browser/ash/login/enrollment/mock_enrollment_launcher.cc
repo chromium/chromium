@@ -78,6 +78,10 @@ void FakeEnrollmentLauncher::EnrollUsingAttestation() {
   mock_->EnrollUsingAttestation();
 }
 
+void FakeEnrollmentLauncher::EnrollUsingEnrollmentToken() {
+  mock_->EnrollUsingEnrollmentToken();
+}
+
 void FakeEnrollmentLauncher::ClearAuth(base::OnceClosure callback) {
   mock_->ClearAuth(std::move(callback));
 }

@@ -98,12 +98,21 @@ class EnrollmentLauncher {
   // This flow is used when enrollment is controlled by the paired device.
   // EnrollUsingToken can be called only once during this object's lifetime, and
   // only if none of the EnrollUsing* was called before.
+  //
+  // TODO(b/331285209): Rename this method to EnrollUsingOAuthToken, to
+  // distinguish from EnrollUsingEnrollmentToken.
   virtual void EnrollUsingToken(const std::string& token) = 0;
 
   // Starts enterprise enrollment using PCA attestation.
   // EnrollUsingAttestation can be called only once during the object's
   // lifetime, and only if none of the EnrollUsing* was called before.
   virtual void EnrollUsingAttestation() = 0;
+
+  // Starts enterprise enrollment using the enrollment token passed via
+  // `EnrollmentConfig`.
+  // EnrollUsingEnrollmentToken can be called only once during this object's
+  // lifetime, and only if none of the EnrollUsing* was called before.
+  virtual void EnrollUsingEnrollmentToken() = 0;
 
   // Starts device attribute update process. First tries to get
   // permission to update device attributes for current user

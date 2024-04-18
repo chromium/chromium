@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/test/gtest_util.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
+#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -49,21 +52,47 @@ class EnrollmentConfigTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   ash::StubInstallAttributes install_attributes_;
   ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
+  base::test::ScopedCommandLine command_line_;
+  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_};
 };
 
-// TODO(b/329271128): Remove this test once token enrollment is supported.
-TEST_F(EnrollmentConfigTest,
-       TokenEnrollmentModeYieldsEnrollmentConfigModeNone) {
+TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenFailsDCheck) {
+  flex_test_helper_.SetUpFlexDevice();
+  auto state_dict = base::Value::Dict().Set(
+      kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
+  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+
+  EXPECT_CHECK_DEATH(EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration()));
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(
+    EnrollmentConfigTest,
+    TokenEnrollmentModeWithTokenPresentYieldsEnrollmentConfigModeTokenEnrollment) {
+  flex_test_helper_.SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
   auto state_dict = base::Value::Dict().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
 
   EnrollmentConfig config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
 
-  EXPECT_EQ(config.mode, EnrollmentConfig::MODE_NONE);
-  EXPECT_FALSE(config.should_enroll());
+  EXPECT_EQ(config.mode,
+            EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED);
+  EXPECT_EQ(config.enrollment_token, test::kFlexEnrollmentToken);
+  EXPECT_TRUE(config.should_enroll());
+  EXPECT_TRUE(config.is_forced());
+  EXPECT_TRUE(config.is_mode_with_manual_fallback());
+  EXPECT_TRUE(config.is_automatic_enrollment());
+  EXPECT_FALSE(config.is_mode_oauth());
+  EXPECT_EQ(EnrollmentConfig::GetManualFallbackMode(config.mode),
+            EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
 }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class EnrollmentConfigZeroTouchTest
     : public EnrollmentConfigTest,
@@ -86,7 +115,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
 
   // Default configuration is empty.
   EnrollmentConfig config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -97,7 +127,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   statistics_provider_.SetMachineFlag(ash::system::kOemIsEnterpriseManagedKey,
                                       true);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_ADVERTISED, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -109,7 +140,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
       ash::system::kOemIsEnterpriseManagedKey);
   local_state_.SetBoolean(prefs::kDeviceEnrollmentAutoStart, true);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_ADVERTISED, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -121,7 +153,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
           .Set(kDeviceStateManagementDomain, "example.com");
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_SERVER_ADVERTISED, config.mode);
   EXPECT_EQ("example.com", config.management_domain);
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -132,7 +165,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   statistics_provider_.SetMachineFlag(
       ash::system::kOemCanExitEnterpriseEnrollmentKey, false);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_FORCED, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -144,7 +178,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
       ash::system::kOemIsEnterpriseManagedKey);
   local_state_.SetBoolean(prefs::kDeviceEnrollmentCanExit, false);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_FORCED, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -153,7 +188,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   state_dict.Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_SERVER_FORCED, config.mode);
   EXPECT_EQ("example.com", config.management_domain);
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -166,7 +202,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   // attributes. This is only enforced after detecting enrollment loss.
   local_state_.SetBoolean(ash::prefs::kOobeComplete, true);
   EnrollmentConfig config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
@@ -176,7 +213,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   statistics_provider_.SetMachineFlag(ash::system::kOemIsEnterpriseManagedKey,
                                       true);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
@@ -185,7 +223,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   // install attributes.
   install_attributes_.SetCloudManaged("example.com", "fake-id");
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   EXPECT_EQ("example.com", config.management_domain);
   EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
@@ -193,7 +232,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   // If enrollment recovery is on, this is signaled in |config.mode|.
   local_state_.SetBoolean(prefs::kEnrollmentRecoveryRequired, true);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_);
+      &local_state_, install_attributes_, &statistics_provider_,
+      flex_test_helper_.oobe_configuration());
   EXPECT_EQ(EnrollmentConfig::MODE_RECOVERY, config.mode);
   EXPECT_EQ("example.com", config.management_domain);
   EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);

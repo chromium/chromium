@@ -13,9 +13,11 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/enrollment/flex_enrollment_token_provider.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
@@ -95,6 +97,8 @@ std::string_view ToStringView(policy::EnrollmentConfig::Mode mode) {
     CASE(MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK);
     CASE(MODE_ATTESTATION_ROLLBACK_FORCED);
     CASE(MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK);
+    CASE(MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED);
+    CASE(MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
   }
 
   NOTREACHED_NORETURN();
@@ -110,6 +114,7 @@ std::string_view ToStringView(policy::EnrollmentConfig::AuthMechanism auth) {
     CASE(AUTH_MECHANISM_INTERACTIVE);
     CASE(AUTH_MECHANISM_ATTESTATION);
     CASE(AUTH_MECHANISM_ATTESTATION_PREFERRED);
+    CASE(AUTH_MECHANISM_TOKEN_PREFERRED);
   }
 
   NOTREACHED_NORETURN();
@@ -128,14 +133,16 @@ EnrollmentConfig::~EnrollmentConfig() = default;
 EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig() {
   return GetPrescribedEnrollmentConfig(
       g_browser_process->local_state(), *ash::InstallAttributes::Get(),
-      ash::system::StatisticsProvider::GetInstance());
+      ash::system::StatisticsProvider::GetInstance(),
+      ash::OobeConfiguration::Get());
 }
 
 // static
 EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
     PrefService* local_state,
     const ash::InstallAttributes& install_attributes,
-    ash::system::StatisticsProvider* statistics_provider) {
+    ash::system::StatisticsProvider* statistics_provider,
+    ash::OobeConfiguration* oobe_configuration) {
   DCHECK(statistics_provider);
 
   EnrollmentConfig config;
@@ -276,6 +283,16 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
     config.auth_mechanism =
         EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
     config.management_domain = device_state_management_domain;
+  } else if (device_state_mode == kDeviceStateInitialModeTokenEnrollment) {
+    std::optional<std::string> flex_enrollment_token =
+        GetFlexEnrollmentToken(oobe_configuration);
+    // TODO(b/329271128): Consider failing gracefully instead of CHECKing,
+    // either ignore and emit an UMA, or fall back to manual enrollment
+    // immediately.
+    CHECK(flex_enrollment_token.has_value());
+    config.mode = EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
+    config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
+    config.enrollment_token = std::move(flex_enrollment_token.value());
   } else if (pref_enrollment_auto_start_present && pref_enrollment_auto_start &&
              pref_enrollment_can_exit_present && !pref_enrollment_can_exit) {
     config.mode = EnrollmentConfig::MODE_LOCAL_FORCED;
@@ -308,6 +325,8 @@ EnrollmentConfig::Mode EnrollmentConfig::GetManualFallbackMode(
       return EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK;
     case EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED:
       return EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK;
+    case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED:
+      return EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
     case EnrollmentConfig::MODE_NONE:
     case EnrollmentConfig::MODE_MANUAL:
     case EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
@@ -324,6 +343,7 @@ EnrollmentConfig::Mode EnrollmentConfig::GetManualFallbackMode(
     case EnrollmentConfig::MODE_INITIAL_SERVER_FORCED:
     case EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
     case EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
+    case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
       NOTREACHED();
   }
   return EnrollmentConfig::MODE_NONE;

@@ -160,6 +160,7 @@ class EnrollmentScreen
   enum Auth {
     AUTH_ATTESTATION,
     AUTH_OAUTH,
+    AUTH_ENROLLMENT_TOKEN,
   };
 
   // Updates view GAIA flow type which is used to modify visual appearance
@@ -195,6 +196,8 @@ class EnrollmentScreen
 
   // Do attestation based enrollment.
   void AuthenticateUsingAttestation();
+
+  void AuthenticateUsingEnrollmentToken();
 
   // Shows the interactive screen. Resets auth then shows the signin screen.
   void ShowInteractiveScreen();
@@ -262,6 +265,8 @@ class EnrollmentScreen
   ErrorScreensHistogramHelper histogram_helper_;
 
   // 'Current' and 'Next' authentication mechanisms to be used.
+  // TODO(b/332529631): Consider moving these values and the corresponding enum
+  // to EnrollmentConfig.
   Auth current_auth_ = AUTH_OAUTH;
   Auth next_auth_ = AUTH_OAUTH;
 

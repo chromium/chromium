@@ -2209,6 +2209,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.EnrollmentTokenBased"
+    enum="EnterpriseEnrollmentType" expires_after="2025-04-01">
+  <owner>jacksontadie@google.com</owner>
+  <owner>drcrash@google.com</owner>
+  <owner>cros-onboarding-team@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Events related to token-based enrollment on ChromeOS devices. As of writing
+    only Flex devices use token-based enrollment, to perform Flex Auto
+    Enrollment.
+
+    Events are recorded in response to a successful or failed enrollment.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentTokenBasedManualFallback"
+    enum="EnterpriseEnrollmentType" expires_after="2025-04-01">
+  <owner>jacksontadie@google.com</owner>
+  <owner>drcrash@google.com</owner>
+  <owner>cros-onboarding-team@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Events related to manual fallback from token-based enrollment on ChromeOS
+    devices. As of writing only Flex devices use token-based enrollment, to
+    perform Flex Auto Enrollment.
+
+    Events are recorded in response to a successful or failed enrollment.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.IdleTimeoutPolicies.ActionTime.{ActionType}"
     units="ms" expires_after="2025-01-01">
   <owner>esalma@google.com</owner>

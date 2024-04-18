@@ -120,6 +120,7 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
   void EnrollUsingAuthCode(const std::string& auth_code) override;
   void EnrollUsingToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
+  void EnrollUsingEnrollmentToken() override;
   void ClearAuth(base::OnceClosure callback) override;
   void GetDeviceAttributeUpdatePermission() override;
   void UpdateDeviceAttributes(const std::string& asset_id,
@@ -237,6 +238,14 @@ void EnrollmentLauncherImpl::EnrollUsingAttestation() {
   CHECK(enrollment_config_.is_mode_attestation());
   // The tokens are not used in attestation mode.
   DoEnroll(policy::DMAuth::NoAuth());
+}
+
+void EnrollmentLauncherImpl::EnrollUsingEnrollmentToken() {
+  CHECK(enrollment_config_.mode ==
+        policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED);
+  CHECK(!enrollment_config_.enrollment_token.empty());
+  DoEnroll(
+      policy::DMAuth::FromEnrollmentToken(enrollment_config_.enrollment_token));
 }
 
 void EnrollmentLauncherImpl::ClearAuth(base::OnceClosure callback) {
