@@ -735,6 +735,70 @@ TEST_F(GameDashboardCaptureModeTest, GameCaptureModeRecordInstantlyTest) {
   EXPECT_EQ(camera_preview_widget->GetNativeWindow()->parent(), game_window());
 }
 
+TEST_F(GameDashboardCaptureModeTest, UserTurnsOffCamera) {
+  AddDefaultCamera();
+
+  // By default, the first available camera should be auto selected.
+  auto* controller = StartGameCaptureModeSession();
+  auto* camera_controller = controller->camera_controller();
+  ASSERT_TRUE(camera_controller->camera_preview_widget());
+  const CameraId camera_id(kDefaultCameraModelId, 1);
+  EXPECT_EQ(camera_id, camera_controller->selected_camera());
+
+  // Now, open the settings menu, and select the "camera off" option.
+  LeftClickOn(GetSettingsButton());
+  CaptureModeSettingsTestApi test_api;
+  CaptureModeMenuGroup* camera_menu_group = test_api.GetCameraMenuGroup();
+  ASSERT_TRUE(camera_menu_group);
+  EXPECT_TRUE(camera_menu_group->GetVisible());
+  auto* off_option = test_api.GetCameraOption(kCameraOff);
+  EXPECT_TRUE(off_option);
+  LeftClickOn(off_option);
+
+  // No camera should be selected, and the preview widget should be closed.
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  // Close the session and start a new one. No camera should be auto selected.
+  controller->Stop();
+  StartGameCaptureModeSession();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+  controller->Stop();
+
+  // Start a new default session and select a camera, then end the session.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  camera_controller->SetSelectedCamera(camera_id);
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  controller->Stop();
+
+  // When we start a new Game Dashboard session next, the camera selected from
+  // the previous default session will remain selected.
+  StartGameCaptureModeSession();
+  EXPECT_EQ(camera_id, camera_controller->selected_camera());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  controller->Stop();
+}
+
+TEST_F(GameDashboardCaptureModeTest, StartWithNoCamera) {
+  // Initially there's no camera connected, so the Game Dashboard auto camera
+  // selection won't work.
+  auto* controller = StartGameCaptureModeSession();
+  auto* camera_controller = controller->camera_controller();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  // Now stop the current session, connect a camera, and start a new Game
+  // Dashboard session. This new session should be able to auto-select the
+  // camera.
+  controller->Stop();
+  AddDefaultCamera();
+  StartGameCaptureModeSession();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  const CameraId camera_id(kDefaultCameraModelId, 1);
+  EXPECT_EQ(camera_id, camera_controller->selected_camera());
+}
+
 TEST_F(GameDashboardCaptureModeTest, NoDimmingOfGameDashboardWidgets) {
   auto* controller = CaptureModeController::Get();
   controller->StartRecordingInstantlyForGameDashboard(game_window());
