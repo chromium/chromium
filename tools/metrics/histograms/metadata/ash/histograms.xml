@@ -7164,6 +7164,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Shelf.DefaultApps.Pinned" enum="DefaultAppName"
+    expires_after="2025-02-22">
+  <owner>dmblack@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records the default apps that are pinned to the shelf. This metric is
+    recorded with every UMA log upload.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"
     expires_after="2025-02-22">
   <owner>anasalazar@google.com</owner>

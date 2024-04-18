@@ -213,78 +213,84 @@ void RecordWelcomeTourInteraction(apps::DefaultAppName default_app_name,
 
 namespace apps {
 
-void RecordAppLaunch(const std::string& app_id,
-                     apps::LaunchSource launch_source) {
-  if (const std::optional<apps::DefaultAppName> app_name =
+std::optional<apps::DefaultAppName> AppIdToName(const std::string& app_id) {
+  if (const std::optional<DefaultAppName> app_name =
           PreinstalledWebAppIdToName(app_id)) {
-    RecordDefaultAppLaunch(app_name.value(), launch_source);
-    return;
+    return app_name;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (const std::optional<apps::DefaultAppName> app_name =
+  if (const std::optional<DefaultAppName> app_name =
           SystemWebAppIdToName(app_id)) {
-    RecordDefaultAppLaunch(app_name.value(), launch_source);
-
-    if (ash::features::IsWelcomeTourEnabled()) {
-      RecordWelcomeTourInteraction(app_name.value(), launch_source);
-    }
-
-    return;
+    return app_name;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (app_id == extension_misc::kCalculatorAppId) {
-    // Launches of the legacy calculator chrome app.
-    RecordDefaultAppLaunch(DefaultAppName::kCalculatorChromeApp, launch_source);
+    // The legacy calculator chrome app.
+    return DefaultAppName::kCalculatorChromeApp;
   } else if (app_id == extension_misc::kTextEditorAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kText, launch_source);
+    return DefaultAppName::kText;
   } else if (app_id == app_constants::kChromeAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kChrome, launch_source);
+    return DefaultAppName::kChrome;
   } else if (app_id == extension_misc::kGoogleDocsAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kDocs, launch_source);
+    return DefaultAppName::kDocs;
   } else if (app_id == extension_misc::kGoogleDriveAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kDrive, launch_source);
+    return DefaultAppName::kDrive;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == arc::kGoogleDuoAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kDuo, launch_source);
+    return DefaultAppName::kDuo;
   } else if (app_id == extension_misc::kFilesManagerAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kFiles, launch_source);
+    return DefaultAppName::kFiles;
   } else if (app_id == extension_misc::kGmailAppId ||
              app_id == arc::kGmailAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kGmail, launch_source);
+    return DefaultAppName::kGmail;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == extension_misc::kGoogleKeepAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kKeep, launch_source);
+    return DefaultAppName::kKeep;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == extension_misc::kGooglePhotosAppId ||
              app_id == arc::kGooglePhotosAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kPhotos, launch_source);
+    return DefaultAppName::kPhotos;
   } else if (app_id == arc::kPlayBooksAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kPlayBooks, launch_source);
+    return DefaultAppName::kPlayBooks;
   } else if (app_id == arc::kPlayGamesAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kPlayGames, launch_source);
+    return DefaultAppName::kPlayGames;
   } else if (app_id == arc::kPlayMoviesAppId ||
              app_id == extension_misc::kGooglePlayMoviesAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kPlayMovies, launch_source);
+    return DefaultAppName::kPlayMovies;
   } else if (app_id == arc::kPlayMusicAppId ||
              app_id == extension_misc::kGooglePlayMusicAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kPlayMusic, launch_source);
+    return DefaultAppName::kPlayMusic;
   } else if (app_id == arc::kPlayStoreAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kPlayStore, launch_source);
+    return DefaultAppName::kPlayStore;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == extension_misc::kGoogleSheetsAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kSheets, launch_source);
+    return DefaultAppName::kSheets;
   } else if (app_id == extension_misc::kGoogleSlidesAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kSlides, launch_source);
+    return DefaultAppName::kSlides;
   } else if (app_id == extensions::kWebStoreAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kWebStore, launch_source);
+    return DefaultAppName::kWebStore;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == extension_misc::kYoutubeAppId ||
              app_id == arc::kYoutubeAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kYouTube, launch_source);
+    return DefaultAppName::kYouTube;
   } else if (app_id == arc::kGoogleTVAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kGoogleTv, launch_source);
+    return DefaultAppName::kGoogleTv;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+  return std::nullopt;
+}
+
+void RecordAppLaunch(const std::string& app_id,
+                     apps::LaunchSource launch_source) {
+  if (const std::optional<DefaultAppName> app_name = AppIdToName(app_id)) {
+    RecordDefaultAppLaunch(app_name.value(), launch_source);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (ash::features::IsWelcomeTourEnabled()) {
+      RecordWelcomeTourInteraction(app_name.value(), launch_source);
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 }
