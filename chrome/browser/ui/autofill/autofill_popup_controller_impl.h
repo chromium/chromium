@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/browser/render_widget_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -109,6 +110,9 @@ class AutofillPopupControllerImpl
   void HideSubPopup() override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
   void PerformButtonActionForSuggestion(int index) override;
+  const std::vector<SuggestionFilterMatch>& GetSuggestionFilterMatches()
+      const override;
+  void SetFilter(std::optional<SuggestionFilter> filter) override;
   base::WeakPtr<AutofillPopupController> GetWeakPtr() override;
 
  protected:
@@ -160,6 +164,13 @@ class AutofillPopupControllerImpl
   // Returns `true` if this popup has no parent, and `false` for sub-popups.
   bool IsRootPopup() const;
 
+  // TODO(b/325246516): Rename non-const and remove const method once the public
+  // `GetSuggestions()` becomes returning a reference.
+  std::vector<Suggestion>& GetSuggestionsRef();
+  const std::vector<Suggestion>& GetSuggestionsRef() const;
+
+  void UpdateFilteredSuggestions(bool notify_suggestions_changed);
+
   base::WeakPtr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
   base::WeakPtr<AutofillPopupView> view_;
@@ -195,8 +206,12 @@ class AutofillPopupControllerImpl
   // the user interacts with native UI.
   bool is_view_pinned_ = false;
 
-  // The current Autofill query values.
-  std::vector<Suggestion> suggestions_;
+  // If `filter_` set, it contains suggestions from `non_filtered_suggestions_`
+  // that matches the filter.  Otherwise, the list is empty
+  std::vector<Suggestion> filtered_suggestions_;
+
+  // Original list of suggestions provided via `SetSuggestions()`.
+  std::vector<Suggestion> non_filtered_suggestions_;
 
   // The trigger source of the `suggestions_`.
   AutofillSuggestionTriggerSource trigger_source_ =
@@ -225,6 +240,16 @@ class AutofillPopupControllerImpl
 
   // This is a helper which detects events that should hide the popup.
   std::optional<AutofillPopupHideHelper> popup_hide_helper_;
+
+  // The filter narrows down the list of suggestions from
+  // `non_filtered_suggestions_`. This filtered list is cached in
+  // `filtered_suggestions_` and becomes the current data used by clients
+  // through the provided API.
+  std::optional<SuggestionFilter> filter_;
+
+  // Cached matches, one per suggestion in `filtered_suggestions_` if
+  // the `filter_` is set, otherwise it is an empty vector.
+  std::vector<SuggestionFilterMatch> suggestion_filter_matches_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.

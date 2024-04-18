@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_active_popup.h"
@@ -18,6 +19,7 @@
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/gfx/range/range.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/public/test/scoped_accessibility_mode_override.h"
@@ -215,6 +217,86 @@ TEST_F(AutofillPopupControllerImplTest, HideInMainFrameOnZoomChange) {
   zoom_controller->SetZoomLevel(zoom_controller->GetZoomLevel() + 1.0);
   // Verify and clear before TearDown() closes the popup.
   Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       SuggestionFiltration_NoFilteringByDefault) {
+  AutofillPopupController& controller = client().popup_controller(manager());
+  ShowSuggestions(manager(), {Suggestion(u"abc")});
+
+  EXPECT_EQ(controller.GetSuggestions().size(), 1u);
+  EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       SuggestionFiltration_SuggestionChangeNotifications) {
+  AutofillPopupController& controller = client().popup_controller(manager());
+  ShowSuggestions(manager(), {
+                                 Suggestion(u"abc"),
+                                 Suggestion(u"axx"),
+                             });
+
+  EXPECT_CALL(client().popup_view(), OnSuggestionsChanged());
+  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
+
+  EXPECT_CALL(client().popup_view(), OnSuggestionsChanged());
+  controller.SetFilter(std::nullopt);
+}
+
+TEST_F(AutofillPopupControllerImplTest, SuggestionFiltration_MatchingMainText) {
+  AutofillPopupController& controller = client().popup_controller(manager());
+  ShowSuggestions(manager(), {
+                                 Suggestion(u"abc"),
+                                 Suggestion(u"abx"),
+                                 Suggestion(u"axx"),
+                             });
+
+  EXPECT_EQ(controller.GetSuggestions().size(), 3u);
+  EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
+
+  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
+  EXPECT_EQ(controller.GetSuggestions().size(), 2u);
+  EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 2u);
+  EXPECT_THAT(controller.GetSuggestionFilterMatches(),
+              ::testing::ElementsAre(
+                  AutofillPopupController::SuggestionFilterMatch{
+                      .main_text_match = gfx::Range(0, 2),
+                  },
+                  AutofillPopupController::SuggestionFilterMatch{
+                      .main_text_match = gfx::Range(0, 2),
+                  }));
+
+  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"abcdefg"));
+  EXPECT_EQ(controller.GetSuggestions().size(), 0u);
+  EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
+
+  controller.SetFilter(std::nullopt);
+  EXPECT_EQ(controller.GetSuggestions().size(), 3u);
+  EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       SuggestionFiltration_SuggestionIsDeletedFromFilteredList) {
+  AutofillPopupController& controller = client().popup_controller(manager());
+  ShowSuggestions(manager(), {
+                                 Suggestion(u"abc"),
+                                 Suggestion(u"abx"),
+                                 Suggestion(u"axx"),
+                             });
+
+  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
+  EXPECT_EQ(controller.GetSuggestions().size(), 2u);
+
+  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion)
+      .WillOnce(Return(true));
+  controller.RemoveSuggestion(
+      0, AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked);
+  EXPECT_EQ(controller.GetSuggestions().size(), 1u);
+  EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 1u);
+
+  controller.SetFilter(std::nullopt);
+  EXPECT_EQ(controller.GetSuggestions().size(), 2u);
+  EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

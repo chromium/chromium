@@ -63,6 +63,10 @@ class MockAutofillPopupController : public AutofillPopupController {
   std::vector<Suggestion> GetSuggestions() const override {
     return suggestions_;
   }
+  MOCK_METHOD(const std::vector<SuggestionFilterMatch>&,
+              GetSuggestionFilterMatches,
+              (),
+              (const override));
 
   int GetLineCount() const override { return suggestions_.size(); }
 
@@ -105,6 +109,7 @@ class MockAutofillPopupController : public AutofillPopupController {
               (base::span<const SelectOption>),
               (override));
   MOCK_METHOD(void, PinView, (), (override));
+  MOCK_METHOD(void, SetFilter, (std::optional<SuggestionFilter>), (override));
 
   void set_suggestions(const std::vector<PopupItemId>& ids) {
     suggestions_.clear();

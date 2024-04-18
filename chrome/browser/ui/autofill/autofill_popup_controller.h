@@ -15,6 +15,22 @@ namespace autofill {
 // specific to Desktop.
 class AutofillPopupController : public AutofillSuggestionController {
  public:
+  // The suggestion filter is implemented as a string directly reflecting user
+  // input. It could be refactored into a more complex data structure to enable
+  // advanced search functionality.
+  using SuggestionFilter =
+      base::StrongAlias<struct SuggestionFilterTag, std::u16string>;
+
+  // Suggestions consist of multiple parts (e.g., main text, labels). The filter
+  // match structure reveals how a suggestion was found, enabling
+  // the highlighting of these parts.
+  struct SuggestionFilterMatch {
+    // Shows the filter match location within the 'Suggestion::main_text'.
+    gfx::Range main_text_match;
+
+    bool operator==(const SuggestionFilterMatch& other) const = default;
+  };
+
   // Creates and shows a sub-popup adjacent to `anchor_bounds`. The sub-popup
   // represents another level of `suggestions` which must be semantically
   // connected to a parent level suggestion, e.g. an address suggestion
@@ -37,6 +53,21 @@ class AutofillPopupController : public AutofillSuggestionController {
   // Executes the action associated with the button that is displayed in the
   // suggestion at `index`. Button actions depend on the type of the suggestion.
   virtual void PerformButtonActionForSuggestion(int index) = 0;
+
+  // If the filter is set, returns the same number of items as returned by
+  // `AutofillSuggestionController::GetSuggestions()`, indicating how each
+  // suggestion meets the filter criteria. Otherwise, if the filter is
+  // `std::nullopt` (its default value), returns an empty vector.
+  // `SetFilter()` calls invalidate previously returned data.
+  virtual const std::vector<SuggestionFilterMatch>& GetSuggestionFilterMatches()
+      const = 0;
+
+  // Sets the suggestion filter or removes it with `std::nullopt`. The filter
+  // determines which suggestions are returned by GetSuggestions() and other
+  // related methods (like `GetLineCount()`). When the filter changes, previous
+  // suggestion indices (used in many `AutofillSuggestionController` methods,
+  // e.g. `RemoveSuggestion()`) become invalid.
+  virtual void SetFilter(std::optional<SuggestionFilter> filter) = 0;
 
   virtual base::WeakPtr<AutofillPopupController> GetWeakPtr() = 0;
 };

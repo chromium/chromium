@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -53,6 +54,30 @@
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace autofill {
+
+namespace {
+
+using SuggestionFiltrationResult =
+    std::pair<std::vector<Suggestion>,
+              std::vector<AutofillPopupController::SuggestionFilterMatch>>;
+SuggestionFiltrationResult FilterSuggestions(
+    const std::vector<Suggestion>& suggestions,
+    const AutofillPopupController::SuggestionFilter& filter) {
+  SuggestionFiltrationResult result;
+
+  for (const Suggestion& suggestion : suggestions) {
+    if (size_t pos = suggestion.main_text.value.find(*filter);
+        pos != std::u16string::npos) {
+      result.first.push_back(suggestion);
+      result.second.push_back(AutofillPopupController::SuggestionFilterMatch{
+          .main_text_match = {pos, pos + filter->size()}});
+    }
+  }
+
+  return result;
+}
+
+}  // namespace
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 // static
@@ -199,8 +224,8 @@ void AutofillPopupControllerImpl::Show(
     key_press_observer_.Reset();
     key_press_observer_.Observe(web_contents_->GetFocusedFrame());
 
-    if (suggestions_.size() == 1 &&
-        suggestions_[0].popup_item_id ==
+    if (non_filtered_suggestions_.size() == 1 &&
+        non_filtered_suggestions_[0].popup_item_id ==
             PopupItemId::kComposeSavedStateNotification) {
       const compose::Config& config = compose::GetComposeConfig();
       fading_popup_timer_.Start(
@@ -225,7 +250,8 @@ void AutofillPopupControllerImpl::KeepPopupOpenForTesting() {
 
 void AutofillPopupControllerImpl::UpdateDataListValues(
     base::span<const SelectOption> options) {
-  UpdateSuggestionsFromDataList(options, suggestions_);
+  UpdateSuggestionsFromDataList(options, non_filtered_suggestions_);
+  UpdateFilteredSuggestions(/*notify_suggestions_changed=*/false);
   if (HasSuggestions()) {
     OnSuggestionsChanged();
   } else {
@@ -317,7 +343,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
     return;
   }
 
-  if (static_cast<size_t>(index) >= suggestions_.size()) {
+  if (static_cast<size_t>(index) >= GetSuggestionsRef().size()) {
     // Prevents crashes from crbug.com/521133. It seems that in rare cases or
     // races the suggestions_ and the user-selected index may be out of sync.
     // If the index points out of bounds, Chrome will crash. Prevent this by
@@ -337,7 +363,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` can call `SetSuggestions()` and invalidate the
   // reference.
-  Suggestion suggestion = suggestions_[index];
+  Suggestion suggestion = GetSuggestionsRef()[index];
   NotifyIphAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
                                    suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
@@ -367,19 +393,44 @@ base::i18n::TextDirection AutofillPopupControllerImpl::GetElementTextDirection()
 }
 
 std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {
-  return suggestions_;
+  return GetSuggestionsRef();
 }
 
 bool AutofillPopupControllerImpl::IsRootPopup() const {
   return !parent_controller_;
 }
 
+std::vector<Suggestion>& AutofillPopupControllerImpl::GetSuggestionsRef() {
+  return filter_ ? filtered_suggestions_ : non_filtered_suggestions_;
+}
+
+const std::vector<Suggestion>& AutofillPopupControllerImpl::GetSuggestionsRef()
+    const {
+  return const_cast<AutofillPopupControllerImpl*>(this)->GetSuggestionsRef();
+}
+
+void AutofillPopupControllerImpl::UpdateFilteredSuggestions(
+    bool notify_suggestions_changed) {
+  if (filter_) {
+    SuggestionFiltrationResult filtration_result =
+        FilterSuggestions(non_filtered_suggestions_, *filter_);
+    filtered_suggestions_ = std::move(filtration_result.first);
+    suggestion_filter_matches_ = std::move(filtration_result.second);
+  } else {
+    filtered_suggestions_.clear();
+    suggestion_filter_matches_.clear();
+  }
+  if (notify_suggestions_changed) {
+    OnSuggestionsChanged();
+  }
+}
+
 int AutofillPopupControllerImpl::GetLineCount() const {
-  return suggestions_.size();
+  return GetSuggestionsRef().size();
 }
 
 const Suggestion& AutofillPopupControllerImpl::GetSuggestionAt(int row) const {
-  return suggestions_[row];
+  return GetSuggestionsRef()[row];
 }
 
 bool AutofillPopupControllerImpl::RemoveSuggestion(
@@ -393,18 +444,20 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
   // This function might be called in a callback, so ensure the list index is
   // still in bounds. If not, terminate the removing and consider it failed.
   // TODO(crbug.com/40766704): Replace these checks with a stronger identifier.
-  if (list_index < 0 || static_cast<size_t>(list_index) >= suggestions_.size())
+  if (list_index < 0 ||
+      static_cast<size_t>(list_index) >= GetSuggestionsRef().size()) {
     return false;
+  }
 
   // Only first level suggestions can be deleted.
   if (GetPopupLevel() > 0) {
     return false;
   }
 
-  if (!delegate_->RemoveSuggestion(suggestions_[list_index])) {
+  if (!delegate_->RemoveSuggestion(GetSuggestionsRef()[list_index])) {
     return false;
   }
-  PopupItemId suggestion_type = suggestions_[list_index].popup_item_id;
+  PopupItemId suggestion_type = GetSuggestionsRef()[list_index].popup_item_id;
   switch (GetFillingProductFromPopupItemId(suggestion_type)) {
     case FillingProduct::kAddress:
       switch (removal_method) {
@@ -424,7 +477,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
       if (view_) {
         view_->AxAnnounce(l10n_util::GetStringFUTF16(
             IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
-            suggestions_[list_index].main_text.value));
+            GetSuggestionsRef()[list_index].main_text.value));
       }
       break;
     case FillingProduct::kCreditCard:
@@ -440,7 +493,17 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
   }
 
   // Remove the deleted element.
-  suggestions_.erase(suggestions_.begin() + list_index);
+  if (filter_) {
+    auto suggestion_iter = std::find(non_filtered_suggestions_.begin(),
+                                     non_filtered_suggestions_.end(),
+                                     GetSuggestions()[list_index]);
+    CHECK(suggestion_iter != non_filtered_suggestions_.end());
+    non_filtered_suggestions_.erase(suggestion_iter);
+    UpdateFilteredSuggestions(/*notify_suggestions_changed=*/false);
+  } else {
+    non_filtered_suggestions_.erase(non_filtered_suggestions_.begin() +
+                                    list_index);
+  }
 
   if (HasSuggestions()) {
     delegate_->ClearPreviewedForm();
@@ -456,7 +519,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
 
 void AutofillPopupControllerImpl::SelectSuggestion(int index) {
   CHECK_GE(index, 0);
-  CHECK_LT(index, static_cast<int>(suggestions_.size()));
+  CHECK_LT(index, static_cast<int>(GetSuggestionsRef().size()));
 
   if (IsPointerLocked(web_contents_.get())) {
     Hide(PopupHidingReason::kMouseLocked);
@@ -486,17 +549,18 @@ AutofillPopupControllerImpl::GetPopupScreenLocation() const {
 }
 
 bool AutofillPopupControllerImpl::HasSuggestions() const {
-  if (suggestions_.empty()) {
+  if (GetSuggestionsRef().empty()) {
     return false;
   }
-  PopupItemId popup_item_id = suggestions_[0].popup_item_id;
+  PopupItemId popup_item_id = GetSuggestionsRef()[0].popup_item_id;
   return base::Contains(kItemsTriggeringFieldFilling, popup_item_id) ||
          popup_item_id == PopupItemId::kScanCreditCard;
 }
 
 void AutofillPopupControllerImpl::SetSuggestions(
     std::vector<Suggestion> suggestions) {
-  suggestions_ = std::move(suggestions);
+  non_filtered_suggestions_ = std::move(suggestions);
+  UpdateFilteredSuggestions(/*notify_suggestions_changed=*/false);
 }
 
 base::WeakPtr<AutofillPopupController>
@@ -507,7 +571,8 @@ AutofillPopupControllerImpl::GetWeakPtr() {
 void AutofillPopupControllerImpl::ClearState() {
   // Don't clear view_, because otherwise the popup will have to get
   // regenerated and this will cause flickering.
-  suggestions_.clear();
+  filtered_suggestions_.clear();
+  non_filtered_suggestions_.clear();
 }
 
 void AutofillPopupControllerImpl::HideViewAndDie() {
@@ -690,8 +755,19 @@ bool AutofillPopupControllerImpl::
 }
 
 void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(int index) {
-  CHECK_LE(base::checked_cast<size_t>(index), suggestions_.size());
-  delegate_->DidPerformButtonActionForSuggestion(suggestions_[index]);
+  CHECK_LE(base::checked_cast<size_t>(index), GetSuggestionsRef().size());
+  delegate_->DidPerformButtonActionForSuggestion(GetSuggestionsRef()[index]);
+}
+
+const std::vector<AutofillPopupController::SuggestionFilterMatch>&
+AutofillPopupControllerImpl::GetSuggestionFilterMatches() const {
+  return suggestion_filter_matches_;
+}
+
+void AutofillPopupControllerImpl::SetFilter(
+    std::optional<SuggestionFilter> filter) {
+  filter_ = std::move(filter);
+  UpdateFilteredSuggestions(/*notify_suggestions_changed=*/true);
 }
 
 }  // namespace autofill
