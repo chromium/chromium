@@ -65,6 +65,7 @@
   // The initial request should have no headers.
   testRunner.log('request url: ' + request.params.documentURL);
   testRunner.log('request headers: ' + request.params.headers);
+  testRunner.log('request data: ' + request.params.request.postData);
 
   // Then the requestExtraInfo specifies the headers.
   testRunner.log('requestExtraInfo has same requestId: '

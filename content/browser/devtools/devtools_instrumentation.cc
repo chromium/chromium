@@ -2296,18 +2296,11 @@ void DidCloseFedCmDialog(RenderFrameHost& render_frame_host) {
 
 void OnFencedFrameReportRequestSent(int initiator_frame_tree_node_id,
                                     const std::string& devtools_request_id,
-                                    network::ResourceRequest& request) {
-  const net::HttpRequestHeaders& headers = request.headers;
-  network::mojom::URLRequestDevToolsInfoPtr request_info =
-      network::ExtractDevToolsInfo(request);
-
+                                    network::ResourceRequest& request,
+                                    const std::string& event_data) {
   DispatchToAgents(initiator_frame_tree_node_id,
-                   &protocol::NetworkHandler::RequestSent,
-                   /*request_id=*/devtools_request_id,
-                   /*loader_id=*/devtools_request_id, headers, *request_info,
-                   protocol::Network::Initiator::TypeEnum::Other,
-                   /*initiator_url=*/std::nullopt,
-                   /*initiator_devtools_request_id=*/devtools_request_id,
+                   &protocol::NetworkHandler::FencedFrameReportRequestSent,
+                   /*request_id=*/devtools_request_id, request, event_data,
                    base::TimeTicks::Now());
 }
 

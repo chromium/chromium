@@ -476,7 +476,8 @@ void DidCloseFedCmDialog(RenderFrameHost& render_frame_host);
 // `FencedFrameReporter`.
 void OnFencedFrameReportRequestSent(int initiator_frame_tree_node_id,
                                     const std::string& devtools_request_id,
-                                    network::ResourceRequest& request);
+                                    network::ResourceRequest& request,
+                                    const std::string& event_data);
 void OnFencedFrameReportResponseReceived(
     int initiator_frame_tree_node_id,
     const std::string& devtools_request_id,

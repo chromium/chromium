@@ -708,23 +708,26 @@ bool FencedFrameReporter::SendReportInternal(
         NetworkServiceDevToolsObserver::MakeSelfOwned(
             initiator_frame_tree_node);
   }
+
+  std::optional<std::string> event_data;
+  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
+    event_data.emplace(absl::get<DestinationEnumEvent>(event_variant).data);
+  }
+  if (absl::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
+    event_data.emplace(absl::get<AutomaticBeaconEvent>(event_variant).data);
+  }
+
   devtools_instrumentation::OnFencedFrameReportRequestSent(
-      initiator_frame_tree_node_id, devtools_request_id, *request);
+      initiator_frame_tree_node_id, devtools_request_id, *request,
+      event_data.value_or(""));
 
   // Create and configure `SimpleURLLoader` instance.
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        kReportingBeaconNetworkTag);
-
-  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
+  if (event_data.has_value()) {
     simple_url_loader->AttachStringForUpload(
-        absl::get<DestinationEnumEvent>(event_variant).data,
-        /*upload_content_type=*/"text/plain;charset=UTF-8");
-  }
-  if (absl::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
-    simple_url_loader->AttachStringForUpload(
-        absl::get<AutomaticBeaconEvent>(event_variant).data,
-        /*upload_content_type=*/"text/plain;charset=UTF-8");
+        event_data.value(), /*upload_content_type=*/"text/plain;charset=UTF-8");
   }
 
   network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
