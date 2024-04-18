@@ -11,8 +11,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
   public var needsSizeUpdate: Bool = true
 
   /// Static decoration views that border the collection view.
-  public var leftStaticSeparator: TabStripDecorationView?
-  public var rightStaticSeparator: TabStripDecorationView?
+  public var leadingStaticSeparator: TabStripDecorationView?
+  public var trailingStaticSeparator: TabStripDecorationView?
 
   /// The tab strip new tab button.
   public var newTabButton: UIView?
@@ -106,6 +106,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
   }
 
   // MARK: - UICollectionViewLayout
+
+  override var flipsHorizontallyInOppositeLayoutDirection: Bool {
+    return true
+  }
 
   override func prepare() {
     /// Only recalculate the `tabCellSize` when needed to avoid extra
@@ -286,11 +290,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
           // Set its width to 0 and update its separators.
           frame.size.width = 0
-          if !isRTL {
-            cell.trailingSeparatorHidden = true
-          } else {
-            cell.leadingSeparatorHidden = true
-          }
+          cell.trailingSeparatorHidden = true
           cell.leadingSeparatorGradientViewHidden = true
           cell.trailingSeparatorGradientViewHidden = true
         }
@@ -326,11 +326,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
             min(rightBounds + collapseHorizontalInset - frame.origin.x, frame.size.width), 0)
 
           // Update its separators.
-          if !isRTL {
-            cell.leadingSeparatorHidden = true
-          } else {
-            cell.trailingSeparatorHidden = true
-          }
+          cell.leadingSeparatorHidden = true
           cell.leadingSeparatorGradientViewHidden = true
           cell.trailingSeparatorGradientViewHidden = true
         }
@@ -468,8 +464,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
       }
     }
 
-    var hideLeftStaticSeparator = true
-    var hideRightStaticSeparator = true
+    var hideLeadingStaticSeparator = true
+    var hideTrailingStaticSeparator = true
 
     // If the collection view is scrollable, add an horizontal inset to its
     // origin.
@@ -482,13 +478,13 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     // Check the left side.
     let minOringin = horizontalOffset + sectionInset.left + horizontalInset
-    // Show left static separators when all of the following conditions are
+    // Show leading static separators when all of the following conditions are
     // satisfied:
-    // - The selected cell is on the left edge.
-    // - A cell behind the selected cell is also reaching the left edge.
+    // - The selected cell is on the leading edge.
+    // - A cell behind the selected cell is also reaching the leading edge.
     // - The cell is not animated (inserted / deleted).
     if (minOringin - staticSeparatorHorizontalInset) >= origin.x {
-      hideLeftStaticSeparator = !isScrollable || cellAnimated
+      hideLeadingStaticSeparator = !isScrollable || cellAnimated
     }
     origin.x = max(origin.x, minOringin)
 
@@ -502,14 +498,14 @@ class TabStripLayout: UICollectionViewFlowLayout {
     // - A cell behind the selected cell is also reaching the right edge.
     // - The cell is not animated (inserted / deleted).
     if (maxOrigin + staticSeparatorHorizontalInset) <= origin.x {
-      hideRightStaticSeparator = !isScrollable || cellAnimated
+      hideTrailingStaticSeparator = !isScrollable || cellAnimated
     }
     origin.x = min(origin.x, maxOrigin)
 
-    leftStaticSeparator?.isHidden = hideLeftStaticSeparator
-    rightStaticSeparator?.isHidden = hideRightStaticSeparator
-    cell?.leftSelectedBorderBackgroundViewHidden = hideLeftStaticSeparator
-    cell?.rightSelectedBorderBackgroundViewHidden = hideRightStaticSeparator
+    leadingStaticSeparator?.isHidden = hideLeadingStaticSeparator
+    trailingStaticSeparator?.isHidden = hideTrailingStaticSeparator
+    cell?.leadingSelectedBorderBackgroundViewHidden = hideLeadingStaticSeparator
+    cell?.trailingSelectedBorderBackgroundViewHidden = hideTrailingStaticSeparator
 
     layoutAttributes.frame = CGRect(origin: origin, size: frame.size)
     layoutAttributes.zIndex = TabStripConstants.TabItem.selectedZIndex

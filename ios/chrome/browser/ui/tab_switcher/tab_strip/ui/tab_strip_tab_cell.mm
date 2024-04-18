@@ -78,8 +78,8 @@ UIImage* DefaultFavicon() {
   UIView* _trailingSeparatorGradientView;
 
   // Background views displayed when the selected cell in on an edge.
-  UIView* _leftSelectedBorderBackgroundView;
-  UIView* _rightSelectedBorderBackgroundView;
+  UIView* _leadingSelectedBorderBackgroundView;
+  UIView* _trailingSelectedBorderBackgroundView;
 
   // Wether the decoration layers have been updated.
   BOOL _decorationLayersUpdated;
@@ -87,9 +87,12 @@ UIImage* DefaultFavicon() {
   // Circular spinner that shows the loading state of the tab.
   MDCActivityIndicator* _activityIndicator;
 
-  // Title label's trailing constraints.
+  // Title container's trailing constraints.
   NSLayoutConstraint* _titleContainerCollapsedTrailingConstraint;
   NSLayoutConstraint* _titleContainerTrailingConstraint;
+  // Title label's alignment constraints.
+  NSLayoutConstraint* _titleLabelLeadingConstraint;
+  NSLayoutConstraint* _titleLabelTrailingConstraint;
 
   // Gradient view's constraints.
   NSLayoutConstraint* _titleGradientViewLeadingConstraint;
@@ -154,13 +157,13 @@ UIImage* DefaultFavicon() {
     _titleContainer = [self createTitleContainer];
     [_accessibilityContainerView addSubview:_titleContainer];
 
-    _leftSelectedBorderBackgroundView =
+    _leadingSelectedBorderBackgroundView =
         [self createSelectedBorderBackgroundView];
-    [self addSubview:_leftSelectedBorderBackgroundView];
+    [self addSubview:_leadingSelectedBorderBackgroundView];
 
-    _rightSelectedBorderBackgroundView =
+    _trailingSelectedBorderBackgroundView =
         [self createSelectedBorderBackgroundView];
-    [self addSubview:_rightSelectedBorderBackgroundView];
+    [self addSubview:_trailingSelectedBorderBackgroundView];
 
     _leftTailView = [self createDecorationView];
     [self addSubview:_leftTailView];
@@ -222,7 +225,7 @@ UIImage* DefaultFavicon() {
   NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
   _titleLabel.text = [title copy];
   _titleLabel.textAlignment = titleTextAligment;
-  [self updateTitleGradientViewConstraints];
+  [self updateTitleConstraints];
 }
 
 - (void)setGroupStrokeColor:(UIColor*)color {
@@ -280,20 +283,20 @@ UIImage* DefaultFavicon() {
   _trailingSeparatorGradientView.hidden = trailingSeparatorGradientViewHidden;
 }
 
-- (void)setLeftSelectedBorderBackgroundViewHidden:
-    (BOOL)leftSelectedBorderBackgroundViewHidden {
-  _leftSelectedBorderBackgroundViewHidden =
-      leftSelectedBorderBackgroundViewHidden;
-  _leftSelectedBorderBackgroundView.hidden =
-      leftSelectedBorderBackgroundViewHidden;
+- (void)setLeadingSelectedBorderBackgroundViewHidden:
+    (BOOL)leadingSelectedBorderBackgroundViewHidden {
+  _leadingSelectedBorderBackgroundViewHidden =
+      leadingSelectedBorderBackgroundViewHidden;
+  _leadingSelectedBorderBackgroundView.hidden =
+      leadingSelectedBorderBackgroundViewHidden;
 }
 
-- (void)setRightSelectedBorderBackgroundViewHidden:
-    (BOOL)rightSelectedBorderBackgroundViewHidden {
-  _rightSelectedBorderBackgroundViewHidden =
-      rightSelectedBorderBackgroundViewHidden;
-  _rightSelectedBorderBackgroundView.hidden =
-      rightSelectedBorderBackgroundViewHidden;
+- (void)setTrailingSelectedBorderBackgroundViewHidden:
+    (BOOL)trailingSelectedBorderBackgroundViewHidden {
+  _trailingSelectedBorderBackgroundViewHidden =
+      trailingSelectedBorderBackgroundViewHidden;
+  _trailingSelectedBorderBackgroundView.hidden =
+      trailingSelectedBorderBackgroundViewHidden;
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -326,8 +329,8 @@ UIImage* DefaultFavicon() {
   _leftTailView.hidden = !selected;
   _rightTailView.hidden = !selected;
   _bottomTailView.hidden = !selected;
-  [self setLeftSelectedBorderBackgroundViewHidden:YES];
-  [self setRightSelectedBorderBackgroundViewHidden:YES];
+  [self setLeadingSelectedBorderBackgroundViewHidden:YES];
+  [self setTrailingSelectedBorderBackgroundViewHidden:YES];
 
   [self updateCollapsedState];
   if (oldSelected != self.selected) {
@@ -389,8 +392,8 @@ UIImage* DefaultFavicon() {
   self.trailingSeparatorHidden = NO;
   self.leadingSeparatorGradientViewHidden = NO;
   self.trailingSeparatorGradientViewHidden = NO;
-  self.leftSelectedBorderBackgroundViewHidden = NO;
-  self.rightSelectedBorderBackgroundViewHidden = NO;
+  self.leadingSelectedBorderBackgroundViewHidden = NO;
+  self.trailingSelectedBorderBackgroundViewHidden = NO;
   self.isFirstTabInGroup = NO;
   self.isLastTabInGroup = NO;
 }
@@ -537,7 +540,7 @@ UIImage* DefaultFavicon() {
 }
 
 // Updates the `_titleGradientView` horizontal constraints.
-- (void)updateTitleGradientViewConstraints {
+- (void)updateTitleConstraints {
   NSTextAlignment titleTextAligment = _titleLabel.textAlignment;
 
   // To avoid breaking the layout, always disable the active constraint first.
@@ -546,20 +549,28 @@ UIImage* DefaultFavicon() {
       [_titleGradientView setTransform:CGAffineTransformMakeScale(1, 1)];
       _titleGradientViewTrailingConstraint.active = NO;
       _titleGradientViewLeadingConstraint.active = YES;
+      _titleLabelLeadingConstraint.active = NO;
+      _titleLabelTrailingConstraint.active = YES;
     } else {
       [_titleGradientView setTransform:CGAffineTransformMakeScale(-1, 1)];
       _titleGradientViewLeadingConstraint.active = NO;
       _titleGradientViewTrailingConstraint.active = YES;
+      _titleLabelTrailingConstraint.active = NO;
+      _titleLabelLeadingConstraint.active = YES;
     }
   } else {
     if (titleTextAligment == NSTextAlignmentLeft) {
       [_titleGradientView setTransform:CGAffineTransformMakeScale(1, 1)];
       _titleGradientViewLeadingConstraint.active = NO;
       _titleGradientViewTrailingConstraint.active = YES;
+      _titleLabelTrailingConstraint.active = NO;
+      _titleLabelLeadingConstraint.active = YES;
     } else {
       [_titleGradientView setTransform:CGAffineTransformMakeScale(-1, 1)];
       _titleGradientViewTrailingConstraint.active = NO;
       _titleGradientViewLeadingConstraint.active = YES;
+      _titleLabelLeadingConstraint.active = NO;
+      _titleLabelTrailingConstraint.active = YES;
     }
   }
 }
@@ -605,7 +616,7 @@ UIImage* DefaultFavicon() {
     leftPoint.x -= kCornerSize;
     [path addLineToPoint:leftPoint];
   }
-  [_groupStrokeView setLeftPath:path.CGPath];
+  [_groupStrokeView setLeadingPath:path.CGPath];
 
   // The right path starts like the left path, but flipped horizontally.
   [path applyTransform:CGAffineTransformMakeScale(-1, 1)];
@@ -621,7 +632,7 @@ UIImage* DefaultFavicon() {
     rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
     [path addLineToPoint:rightPoint];
   }
-  [_groupStrokeView setRightPath:path.CGPath];
+  [_groupStrokeView setTrailingPath:path.CGPath];
 }
 
 // Sets the cell constraints.
@@ -675,6 +686,10 @@ UIImage* DefaultFavicon() {
                      constant:-kTitleInset];
   _titleContainerCollapsedTrailingConstraint.priority =
       UILayoutPriorityDefaultLow;
+  _titleLabelLeadingConstraint = [_titleLabel.leadingAnchor
+      constraintEqualToAnchor:_titleContainer.leadingAnchor];
+  _titleLabelTrailingConstraint = [_titleLabel.trailingAnchor
+      constraintEqualToAnchor:_titleContainer.trailingAnchor];
   [NSLayoutConstraint activateConstraints:@[
     [_titleContainer.leadingAnchor
         constraintEqualToAnchor:leadingImageGuide.trailingAnchor
@@ -684,9 +699,7 @@ UIImage* DefaultFavicon() {
         constraintEqualToAnchor:contentView.heightAnchor],
     [_titleContainer.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
-
-    [_titleLabel.leadingAnchor
-        constraintEqualToAnchor:_titleContainer.leadingAnchor],
+    _titleLabelLeadingConstraint,
     [_titleLabel.centerYAnchor
         constraintEqualToAnchor:_titleContainer.centerYAnchor],
   ]];
@@ -706,26 +719,25 @@ UIImage* DefaultFavicon() {
         constraintEqualToAnchor:_titleContainer.centerYAnchor],
   ]];
 
-
-  /// `_leftSelectedBorderBackgroundView` and
-  /// `_rightSelectedBorderBackgroundView constraints.
+  /// `_leadingSelectedBorderBackgroundView` and
+  /// `_trailingSelectedBorderBackgroundView constraints.
   [NSLayoutConstraint activateConstraints:@[
-    [_leftSelectedBorderBackgroundView.rightAnchor
-        constraintEqualToAnchor:contentView.leftAnchor],
-    [_leftSelectedBorderBackgroundView.widthAnchor
+    [_leadingSelectedBorderBackgroundView.trailingAnchor
+        constraintEqualToAnchor:contentView.leadingAnchor],
+    [_leadingSelectedBorderBackgroundView.widthAnchor
         constraintEqualToConstant:kSelectedBorderBackgroundViewWidth],
-    [_leftSelectedBorderBackgroundView.heightAnchor
+    [_leadingSelectedBorderBackgroundView.heightAnchor
         constraintEqualToAnchor:contentView.heightAnchor],
-    [_leftSelectedBorderBackgroundView.centerYAnchor
+    [_leadingSelectedBorderBackgroundView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
 
-    [_rightSelectedBorderBackgroundView.leftAnchor
-        constraintEqualToAnchor:contentView.rightAnchor],
-    [_rightSelectedBorderBackgroundView.widthAnchor
+    [_trailingSelectedBorderBackgroundView.leadingAnchor
+        constraintEqualToAnchor:contentView.trailingAnchor],
+    [_trailingSelectedBorderBackgroundView.widthAnchor
         constraintEqualToConstant:kSelectedBorderBackgroundViewWidth],
-    [_rightSelectedBorderBackgroundView.heightAnchor
+    [_trailingSelectedBorderBackgroundView.heightAnchor
         constraintEqualToAnchor:contentView.heightAnchor],
-    [_rightSelectedBorderBackgroundView.centerYAnchor
+    [_trailingSelectedBorderBackgroundView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
 

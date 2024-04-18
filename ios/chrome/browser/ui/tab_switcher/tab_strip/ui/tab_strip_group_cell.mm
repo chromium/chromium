@@ -181,7 +181,7 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
                     endAngle:M_PI
                    clockwise:NO];
   leftPoint.x -= lineWidth / 2;
-  [_groupStrokeView setLeftPath:leftPath.CGPath];
+  [_groupStrokeView setLeadingPath:leftPath.CGPath];
 
   UIBezierPath* rightPath = [UIBezierPath bezierPath];
   CGPoint rightPoint = CGPointZero;
@@ -203,7 +203,7 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
     rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
     [rightPath addLineToPoint:rightPoint];
   }
-  [_groupStrokeView setRightPath:rightPath.CGPath];
+  [_groupStrokeView setTrailingPath:rightPath.CGPath];
 }
 
 @end

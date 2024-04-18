@@ -40,10 +40,10 @@
 @property(nonatomic, assign) BOOL trailingSeparatorGradientViewHidden;
 
 // Whether the left background view of the selected cell is hidden.
-@property(nonatomic, assign) BOOL leftSelectedBorderBackgroundViewHidden;
+@property(nonatomic, assign) BOOL leadingSelectedBorderBackgroundViewHidden;
 
 // Whether the right background view of the selected cell is hidden.
-@property(nonatomic, assign) BOOL rightSelectedBorderBackgroundViewHidden;
+@property(nonatomic, assign) BOOL trailingSelectedBorderBackgroundViewHidden;
 
 // Whether the cell is the first of its group. Default value is NO.
 @property(nonatomic, assign) BOOL isFirstTabInGroup;

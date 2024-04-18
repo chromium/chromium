@@ -35,8 +35,8 @@ class TabStripViewController: UIViewController,
   // Static decoration views that border the collection view. They are
   // visible when the selected cell reaches an edge of the collection view and
   // if the collection view can be scrolled.
-  private let leftStaticSeparator: TabStripDecorationView = TabStripDecorationView()
-  private let rightStaticSeparator: TabStripDecorationView = TabStripDecorationView()
+  private let leadingStaticSeparator = TabStripDecorationView()
+  private let trailingStaticSeparator = TabStripDecorationView()
 
   // Latest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
@@ -88,8 +88,8 @@ class TabStripViewController: UIViewController,
     super.init(nibName: nil, bundle: nil)
 
     layout.dataSource = dataSource
-    layout.leftStaticSeparator = leftStaticSeparator
-    layout.rightStaticSeparator = rightStaticSeparator
+    layout.leadingStaticSeparator = leadingStaticSeparator
+    layout.trailingStaticSeparator = trailingStaticSeparator
     layout.newTabButton = newTabButton
 
     collectionView.delegate = self
@@ -120,9 +120,9 @@ class TabStripViewController: UIViewController,
     view.insertSubview(trailingPlaceholder, aboveSubview: collectionView)
 
     // Mirror the layer.
-    rightStaticSeparator.transform = CGAffineTransformMakeScale(-1, 1)
-    view.addSubview(leftStaticSeparator)
-    view.addSubview(rightStaticSeparator)
+    trailingStaticSeparator.transform = CGAffineTransformMakeScale(-1, 1)
+    view.addSubview(leadingStaticSeparator)
+    view.addSubview(trailingStaticSeparator)
 
     newTabButton.delegate = self
     newTabButton.isIncognito = isIncognito
@@ -167,14 +167,14 @@ class TabStripViewController: UIViewController,
         newTabButton.topAnchor.constraint(equalTo: view.topAnchor),
         newTabButton.widthAnchor.constraint(equalToConstant: TabStripConstants.NewTabButton.width),
 
-        /// `leftStaticSeparator` constraints.
-        leftStaticSeparator.leftAnchor.constraint(equalTo: collectionView.leftAnchor),
-        leftStaticSeparator.bottomAnchor.constraint(
+        /// `leadingStaticSeparator` constraints.
+        leadingStaticSeparator.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
+        leadingStaticSeparator.bottomAnchor.constraint(
           equalTo: collectionView.bottomAnchor,
           constant: -TabStripConstants.StaticSeparator.bottomInset),
-        /// `rightStaticSeparator` constraints.
-        rightStaticSeparator.rightAnchor.constraint(equalTo: collectionView.rightAnchor),
-        rightStaticSeparator.bottomAnchor.constraint(
+        /// `trailingStaticSeparator` constraints.
+        trailingStaticSeparator.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+        trailingStaticSeparator.bottomAnchor.constraint(
           equalTo: collectionView.bottomAnchor,
           constant: -TabStripConstants.StaticSeparator.bottomInset),
       ])
@@ -661,10 +661,6 @@ class TabStripViewController: UIViewController,
       numberOfVisibleItemsChanged: true)
 
     if insertedLast {
-      // Don't scroll to the end of the collection view in RTL.
-      let isRTL: Bool = collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
-      if isRTL { return }
-
       let offset = collectionView.contentSize.width - collectionView.frame.width
       if offset > 0 {
         if #available(iOS 17.0, *) {
