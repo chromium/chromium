@@ -38,6 +38,7 @@ export function testPathWithSlash(done: () => void) {
     ],
     content: {
       keys: [],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [],

@@ -7,8 +7,9 @@
  */
 
 import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FileKey} from '../../state/state.js';
 
-import {unwrapEntry} from './entry_utils.js';
+import {unwrapEntry, urlToEntry} from './entry_utils.js';
 import {promisify} from './util.js';
 
 /**
@@ -303,4 +304,13 @@ export async function getMaterializedViews():
     console.warn(error);
     return [];
   }
+}
+
+export async function readMaterializedView(fileKey: FileKey): Promise<Entry[]> {
+  const url = new URL(fileKey);
+  const viewId = parseInt(url.pathname.replace('//', '').split('/')[0]!);
+  const entryData =
+      await chrome.fileManagerPrivate.readMaterializedView(viewId);
+  const entries = await Promise.all(entryData.map(e => urlToEntry(e.entryUrl)));
+  return entries;
 }

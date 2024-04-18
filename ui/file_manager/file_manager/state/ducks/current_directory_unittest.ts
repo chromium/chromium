@@ -63,6 +63,7 @@ export function testChangeDirectoryFromEmpty() {
     pathComponents: [],
     content: {
       keys: [],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [],
@@ -114,6 +115,7 @@ export function testChangeDirectoryTwice() {
     ],
     content: {
       keys: [],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [],
@@ -153,6 +155,7 @@ export function testChangeSelection() {
     ],
     content: {
       keys: [subDir.toURL(), file.toURL()],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [subDir.toURL()],
@@ -204,6 +207,7 @@ export function testChangeDirectoryContent() {
     ],
     content: {
       keys: [],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [],
@@ -279,6 +283,7 @@ export function testComputeHasDlpDisabledFiles() {
     ],
     content: {
       keys: [subDir.toURL(), file.toURL()],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [],

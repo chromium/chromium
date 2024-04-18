@@ -72,7 +72,7 @@ export function updMetadata(store: Store, metadata: EntryMetadata[]) {
 
 /** Updates the directory content in the store. */
 export function updateContent(store: Store, entries: Entry[]) {
-  store.dispatch(updateDirectoryContent({entries}));
+  store.dispatch(updateDirectoryContent({entries, status: PropStatus.SUCCESS}));
 }
 
 /**

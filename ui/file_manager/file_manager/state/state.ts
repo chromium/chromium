@@ -198,6 +198,7 @@ export interface Selection {
  * Represents the entries displayed in the file list/grid.
  */
 export interface DirectoryContent {
+  status: PropStatus;
   keys: FileKey[];
 }
 
