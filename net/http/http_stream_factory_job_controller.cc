@@ -814,7 +814,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
   // Create an alternative job if alternative service is set up for this domain,
   // but only if we'll be speaking directly to the server, since QUIC through
-  // proxies is not supported.
+  // proxies is not supported. TODO(https://crbug.com/324534606): allow this.
   if (proxy_info_.is_direct()) {
     alternative_service_info_ = GetAlternativeServiceInfoFor(
         http_request_info_url_, request_info_, delegate_, stream_type_);
@@ -825,6 +825,9 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         SelectQuicVersion(alternative_service_info_.advertised_versions());
     DCHECK_NE(quic_version, quic::ParsedQuicVersion::Unsupported());
   }
+  // Getting ALPN for H3 from DNS has a lot of preconditions. Among them:
+  // - proxied connections perform DNS on the proxy, so they can't get supported
+  //   ALPNs from DNS
   const bool dns_alpn_h3_job_enabled =
       !HttpStreamFactory::Job::OriginToForceQuicOn(
           *session_->context().quic_context->params(), destination) &&
@@ -832,7 +835,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
       session_->params().use_dns_https_svcb_alpn &&
       base::EqualsCaseInsensitiveASCII(origin_url_.scheme(),
                                        url::kHttpsScheme) &&
-      session_->IsQuicEnabled() &&
+      session_->IsQuicEnabled() && proxy_info_.is_direct() &&
       !session_->http_server_properties()->IsAlternativeServiceBroken(
           GetAlternativeServiceForDnsJob(origin_url_),
           request_info_.network_anonymization_key);

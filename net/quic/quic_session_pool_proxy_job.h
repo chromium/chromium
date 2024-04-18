@@ -23,7 +23,7 @@ namespace net {
 class QuicSessionPool::ProxyJob : public QuicSessionPool::Job {
  public:
   ProxyJob(QuicSessionPool* pool,
-           quic::ParsedQuicVersion quic_version,
+           quic::ParsedQuicVersion target_quic_version,
            const QuicSessionAliasKey& key,
            NetworkTrafficAnnotationTag proxy_annotation_tag,
            const HttpUserAgentSettings* http_user_agent_settings,
@@ -68,9 +68,10 @@ class QuicSessionPool::ProxyJob : public QuicSessionPool::Job {
   std::unique_ptr<QuicChromiumClientSession::Handle> proxy_session_;
   std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream_;
   NetErrorDetails net_error_details_;
-  quic::ParsedQuicVersion quic_version_;
-  quic::ParsedQuicVersion quic_version_used_ =
-      quic::ParsedQuicVersion::Unsupported();
+
+  // The QUIC version for the tunneled session created by this job.
+  quic::ParsedQuicVersion target_quic_version_;
+
   NetworkTrafficAnnotationTag proxy_annotation_tag_;
   const int cert_verify_flags_;
   raw_ptr<const HttpUserAgentSettings> http_user_agent_settings_;

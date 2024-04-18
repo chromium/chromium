@@ -30,6 +30,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/nqe/network_quality_estimator.h"
+#include "net/quic/quic_context.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_proxy_client_socket.h"
 #include "net/quic/quic_session_key.h"
@@ -725,9 +726,9 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   quic_session_request_ = std::make_unique<QuicSessionRequest>(
       common_connect_job_params()->quic_session_pool);
 
-  // Use default QUIC version, which is the version listed supported version.
-  quic::ParsedQuicVersion quic_version =
-      common_connect_job_params()->quic_supported_versions->front();
+  // Select the default QUIC version for the session to the proxy, since there
+  // is no DNS or Alt-Svc information to use.
+  quic::ParsedQuicVersion quic_version = SupportedQuicVersionForProxying();
 
   // The QuicSessionRequest will handle connecting to any proxies earlier in the
   // chain to this one, but expects a ProxyChain containing only QUIC proxies.

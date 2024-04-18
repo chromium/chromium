@@ -13,6 +13,7 @@
 #include "net/base/tracing.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/address_utils.h"
+#include "net/quic/quic_context.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
@@ -23,7 +24,7 @@ namespace net {
 
 QuicSessionPool::ProxyJob::ProxyJob(
     QuicSessionPool* pool,
-    quic::ParsedQuicVersion quic_version,
+    quic::ParsedQuicVersion target_quic_version,
     const QuicSessionAliasKey& key,
     NetworkTrafficAnnotationTag proxy_annotation_tag,
     const HttpUserAgentSettings* http_user_agent_settings,
@@ -41,11 +42,16 @@ QuicSessionPool::ProxyJob::ProxyJob(
               NetLogSourceType::QUIC_SESSION_POOL_PROXY_JOB)),
       io_callback_(base::BindRepeating(&QuicSessionPool::ProxyJob::OnIOComplete,
                                        base::Unretained(this))),
-      quic_version_(quic_version),
+      target_quic_version_(target_quic_version),
       proxy_annotation_tag_(proxy_annotation_tag),
       cert_verify_flags_(cert_verify_flags),
       http_user_agent_settings_(http_user_agent_settings) {
   DCHECK(!Job::key().session_key().proxy_chain().is_direct());
+  // The job relies on the the proxy to resolve DNS for the destination, so
+  // cannot determine protocol information from DNS. We must know the QUIC
+  // version already.
+  CHECK(target_quic_version.IsKnown())
+      << "Cannot make QUIC proxy connections without a known QUIC version";
 }
 
 QuicSessionPool::ProxyJob::~ProxyJob() = default;
@@ -157,9 +163,13 @@ int QuicSessionPool::ProxyJob::DoCreateProxySession() {
       NetLogEventType::QUIC_SESSION_POOL_PROXY_JOB_CREATE_PROXY_SESSION,
       "destination", destination.Serialize());
 
+  // Select the default QUIC version for the session to the proxy, since there
+  // is no DNS or Alt-Svc information to use.
+  quic::ParsedQuicVersion quic_version = SupportedQuicVersionForProxying();
+
   proxy_session_request_ = std::make_unique<QuicSessionRequest>(pool_);
   return proxy_session_request_->Request(
-      destination, quic_version_, proxy_chain_prefix, proxy_annotation_tag_,
+      destination, quic_version, proxy_chain_prefix, proxy_annotation_tag_,
       http_user_agent_settings_.get(), SessionUsage::kProxy,
       session_key.privacy_mode(), priority(), session_key.socket_tag(),
       session_key.network_anonymization_key(), session_key.secure_dns_policy(),
@@ -221,8 +231,9 @@ int QuicSessionPool::ProxyJob::DoAttemptSession() {
   }
 
   session_attempt_ = std::make_unique<SessionAttempt>(
-      this, std::move(local_address), std::move(peer_address), quic_version_,
-      cert_verify_flags_, std::move(proxy_stream_), http_user_agent_settings_);
+      this, std::move(local_address), std::move(peer_address),
+      target_quic_version_, cert_verify_flags_, std::move(proxy_stream_),
+      http_user_agent_settings_);
 
   return session_attempt_->Start(
       base::BindOnce(&ProxyJob::OnSessionAttemptComplete, GetWeakPtr()));
