@@ -362579,6 +362579,10 @@
       []
      ],
      "render-blocking": {
+      "WEB_FEATURES.yml": [
+       "36ab4f3010306b90fc1f47133087e94a3a0d445f",
+       []
+      ],
       "support": {
        "dummy-1.js": [
         "597772cf641d83b41f0e4238a1fa74a050f29d3c",
@@ -366165,6 +366169,10 @@
        "35449ec5bab7c3e8ac3c61fa50a8207e667eabe2",
        []
       ],
+      "WEB_FEATURES.yml": [
+       "210e2d3f99aea03af1675a0ec7bd222a05ca0236",
+       []
+      ],
       "document-level-focus-apis": {
        "support": {
         "popup.html": [
@@ -366200,6 +366208,10 @@
        }
       },
       "sequential-focus-navigation-and-the-tabindex-attribute": {
+       "WEB_FEATURES.yml": [
+        "6d868044c9e8c31421a0ebc33b868974f5cf079c",
+        []
+       ],
        "resources": {
         "frameset-using-page.html": [
          "e3aedea246e6f38904a4835c99c530a4777f41a6",
@@ -366404,6 +366416,10 @@
       "flow-content-0": {
        "DIR_METADATA": [
         "a7142360eb190ab0466fca43bfeb7a068c043b1d",
+        []
+       ],
+       "WEB_FEATURES.yml": [
+        "831b257f72b1619f1f48dab7ed0324ddfa71717a",
         []
        ],
        "div-align-ref.html": [
@@ -367205,6 +367221,10 @@
      "the-details-element": {
       "DIR_METADATA": [
        "72387ccff958b7a6fea9972a4f0cedad09e83c03",
+       []
+      ],
+      "WEB_FEATURES.yml": [
+       "769e741180af1e93f5ad453afc40c22adbaa281c",
        []
       ],
       "details-display-property-is-ignored-ref.html": [
@@ -368964,6 +368984,10 @@
        ]
       },
       "the-object-element": {
+       "WEB_FEATURES.yml": [
+        "d3411c2d8d2f45afdadc68967272102d2fdbbd4b",
+        []
+       ],
        "object-attributes-expected.txt": [
         "f7694843c68c36b6cd0a837ecfd367d9fcd8de23",
         []
@@ -369038,6 +369062,10 @@
        }
       },
       "constraints": {
+       "WEB_FEATURES.yml": [
+        "93b4c5745fc7461b7e815a1d790243fb2ed4cb71",
+        []
+       ],
        "support": {
         "validator.js": [
          "aa43b3a2f6afd63b745bdb78fefc1b086628e5ef",
@@ -369152,6 +369180,10 @@
         "4881f7e9eece3beb376c2b42cd4ad7e9c6a4413c",
         []
        ],
+       "WEB_FEATURES.yml": [
+        "f5a2aeaf4f829af3560e13cede06368e9b03e931",
+        []
+       ],
        "button-activate-frame.html": [
         "37619d79123be6855744ab82d65f2e72fe56bf04",
         []
@@ -369176,6 +369208,10 @@
         "66c747a5b5224140e9bcae06106116307db2157c",
         []
        ],
+       "WEB_FEATURES.yml": [
+        "912cb47c6d02d3ca01b930da37cd549afb69a5ee",
+        []
+       ],
        "accessibility": {
         "README.md": [
          "b238a023dc1344b9b35f0850bf75950e49edfdc7",
@@ -369184,6 +369220,10 @@
        }
       },
       "the-form-element": {
+       "WEB_FEATURES.yml": [
+        "04c20cb5ece542108f6c82693f6e144c55573f6b",
+        []
+       ],
        "form-nameditem-expected.txt": [
         "47a173633148e0f8237d9b7fc7560989ffda68f4",
         []
@@ -369214,6 +369254,10 @@
        }
       },
       "the-input-element": {
+       "WEB_FEATURES.yml": [
+        "4957615f2477552fb6075f1cc6e64915ecd743ce",
+        []
+       ],
        "auto-direction-ref.html": [
         "675ba509144515a44e06f39dd1ac727b4a2d2bc6",
         []
@@ -369363,6 +369407,10 @@
        "DIR_METADATA": [
         "5f96515e41ec80c00c0fd4075b1a4f15c274879d",
         []
+       ],
+       "WEB_FEATURES.yml": [
+        "2f7f8e8cc2d81246a26de7ab69184036883f6999",
+        []
        ]
       },
       "the-progress-element": {
@@ -369374,6 +369422,10 @@
       "the-select-element": {
        "DIR_METADATA": [
         "c8ba5e73831c7af891acb9ba7fd72d83926a78c9",
+        []
+       ],
+       "WEB_FEATURES.yml": [
+        "9695c9529424d612300127b3350254e15a05c27e",
         []
        ],
        "reset-algorithm-rendering-ref.html": [
@@ -369522,6 +369574,10 @@
       "the-textarea-element": {
        "DIR_METADATA": [
         "67b102f814349e5a672d01449796307ee7a37316",
+        []
+       ],
+       "WEB_FEATURES.yml": [
+        "14479d4bb3d44a72130eb7008e93b7b379bab48f",
         []
        ],
        "multiline-placeholder-ref.html": [
@@ -369676,6 +369732,10 @@
       "the-details-element": {
        "DIR_METADATA": [
         "72387ccff958b7a6fea9972a4f0cedad09e83c03",
+        []
+       ],
+       "WEB_FEATURES.yml": [
+        "be3924a26adb1663caf3f964fe51d97e3fd695f2",
         []
        ],
        "details-add-summary-ref.html": [
@@ -371778,6 +371838,10 @@
        }
       },
       "the-template-element": {
+       "WEB_FEATURES.yml": [
+        "bd821885c7b7d4add4db186a9a94a14181cc3d38",
+        []
+       ],
        "additions-to-the-css-user-agent-style-sheet": {
         "css-user-agent-style-sheet-test-001-ref.html": [
          "55c8b2e30c9d5353d03a09c195098f70d7b76fd2",
@@ -371912,6 +371976,10 @@
        ]
       },
       "pseudo-classes": {
+       "WEB_FEATURES.yml": [
+        "604e049f202c94d9bd55edefd7b09f57cd9fedf6",
+        []
+       ],
        "checked-indeterminate.window-expected.txt": [
         "15e63a9a7ad831ff201eb05ee60f1c6b2ce189ee",
         []
@@ -372330,6 +372398,12 @@
        ],
        "svg-script-self-closing.js": [
         "6dd286e7bc01f28dfa9d1565d45c3429c2359689",
+        []
+       ]
+      },
+      "template": {
+       "WEB_FEATURES.yml": [
+        "bd821885c7b7d4add4db186a9a94a14181cc3d38",
         []
        ]
       },
@@ -373999,6 +374073,10 @@
       }
      },
      "structured-clone": {
+      "WEB_FEATURES.yml": [
+       "423a469bf17283e0ec8d32d0e7debdc8eeb1fce2",
+       []
+      ],
       "structured-clone-battery-of-tests-harness.js": [
        "00a86fa74b9a968dabae400f57dd32ffb836aa2c",
        []
@@ -384522,7 +384600,7 @@
      []
     ],
     "testharnessreport.js": [
-     "e5cb40fe0ef652be407d4c48b1c59391864cec7b",
+     "405a2d8b06f00fe8292e0e9d5b917e193cfd416c",
      []
     ],
     "testharnessreport.js.headers": [
@@ -461293,6 +461371,15 @@
        ]
       ]
      },
+     "snap-events-with-pseudo-target.tentative.html": [
+      "baa3efc7ba7cd5c4a182b44a7e7d88a107f826fa",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "snapchanged": {
       "snapchanged-after-layout-change.tentative.html": [
        "a3ba05fdf5e9ffa42ab5689349e33b3c9a0aee15",
