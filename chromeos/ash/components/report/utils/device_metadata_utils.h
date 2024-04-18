@@ -18,7 +18,7 @@ namespace ash::report::utils {
 // Return the release Chrome Channel enum defined in fresnel service proto.
 ash::report::Channel GetChromeChannel(version_info::Channel channel);
 
-// Retrieve the release Chrome Milestone as a string.
+// Retrieve the major Chrome Milestone of the ChromeOS device as a string.
 std::string GetChromeMilestone();
 
 // Retrieve full hardware class from MachineStatistics as a string.

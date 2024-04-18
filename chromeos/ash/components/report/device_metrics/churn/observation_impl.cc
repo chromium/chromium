@@ -334,7 +334,7 @@ ObservationImpl::GenerateImportRequestBody() {
       GetParams()->GetChromeDeviceParams().market_segment;
 
   DeviceMetadata* device_metadata = import_request.mutable_device_metadata();
-  device_metadata->set_chromeos_version(utils::GetChromeMilestone());
+  device_metadata->set_chrome_milestone(utils::GetChromeMilestone());
   device_metadata->set_hardware_id(utils::GetFullHardwareClass());
   device_metadata->set_chromeos_channel(
       utils::GetChromeChannel(version_channel));
