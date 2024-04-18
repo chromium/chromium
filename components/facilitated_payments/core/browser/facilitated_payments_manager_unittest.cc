@@ -128,6 +128,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
     manager_ = std::make_unique<FacilitatedPaymentsManager>(
         driver_.get(), client_.get(), std::move(api_client),
         optimization_guide_decider_.get());
+    manager_->is_test_ = true;
   }
 
   void TearDown() override {

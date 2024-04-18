@@ -208,6 +208,9 @@ class FacilitatedPaymentsManager {
   std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
       initiate_payment_request_details_;
 
+  // Informs whether this instance was created in a test.
+  bool is_test_ = false;
+
   base::WeakPtrFactory<FacilitatedPaymentsManager> weak_ptr_factory_{this};
 };
 

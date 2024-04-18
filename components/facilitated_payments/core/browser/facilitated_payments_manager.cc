@@ -37,6 +37,11 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() = default;
 
 void FacilitatedPaymentsManager::Reset() {
+  // In tests, when the payment flow is abandoned, do not reset so the final
+  // states can be verified.
+  if (is_test_) {
+    return;
+  }
   pix_code_detection_attempt_count_ = 0;
   ukm_source_id_ = 0;
   pix_code_detection_triggering_timer_.Stop();
@@ -134,7 +139,9 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
     api_client_->IsAvailable(
         base::BindOnce(&FacilitatedPaymentsManager::OnApiAvailabilityReceived,
                        weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+  Reset();
 }
 
 void FacilitatedPaymentsManager::StartPixCodeDetectionLatencyTimer() {
@@ -150,6 +157,7 @@ int64_t FacilitatedPaymentsManager::GetPixCodeDetectionLatencyInMillis() const {
 void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     bool is_api_available) {
   if (!is_api_available) {
+    Reset();
     return;
   }
 
@@ -169,6 +177,10 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
 
 void FacilitatedPaymentsManager::OnRiskDataLoaded(
     const std::string& risk_data) {
+  if (risk_data.empty()) {
+    Reset();
+    return;
+  }
   initiate_payment_request_details_->risk_data_ = risk_data;
 
   // Populating the risk data and showing the payment prompt may occur
@@ -183,10 +195,11 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     bool is_prompt_accepted,
     int64_t selected_instrument_id) {
   if (!is_prompt_accepted) {
+    Reset();
     return;
   }
-
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
+
   api_client_->GetClientToken(
       base::BindOnce(&FacilitatedPaymentsManager::OnGetClientToken,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -194,6 +207,10 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
 
 void FacilitatedPaymentsManager::OnGetClientToken(
     std::vector<uint8_t> client_token) {
+  if (client_token.empty()) {
+    Reset();
+    return;
+  }
   initiate_payment_request_details_->client_token_ = client_token;
 
   if (initiate_payment_request_details_->IsReadyForPixPayment()) {
