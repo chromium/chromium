@@ -1051,7 +1051,7 @@ BASE_FEATURE(kUserActivationSameOriginVisibility,
 // RenderFrameHostImpl::VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch.
 BASE_FEATURE(kVerifyDidCommitParams,
              "VerifyDidCommitParams",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables future V8 VM features
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
