@@ -46,6 +46,8 @@ class OSSettingsMochaTest : public WebUIMochaBrowserTest {
       ash::features::kEnableHostnameSetting};
 };
 
+/* Start Test Classes */
+
 // This class parameterizes the tests to run once with
 // OSSettingsRevampWayfinding feature enabled and once disabled.
 class OSSettingsRevampMochaTest : public OSSettingsMochaTest,
@@ -363,6 +365,94 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampDeviceTestAltAndSplitAndBacklightEnabled::DescribeParams);
 
+class OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kApnRevamp,
+            ash::features::kHotspot,
+            ash::features::kPasspointSettings,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled::DescribeParams);
+
+class OSSettingsRevampInternetTestHotspotEnabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampInternetTestHotspotEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kHotspot);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampInternetTestHotspotEnabled,
+    testing::Bool(),
+    OSSettingsRevampInternetTestHotspotEnabled::DescribeParams);
+
+class OSSettingsRevampInternetTestApnAndPasspointEnabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampInternetTestApnAndPasspointEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kApnRevamp,
+            ash::features::kPasspointSettings,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampInternetTestApnAndPasspointEnabled,
+    testing::Bool(),
+    OSSettingsRevampInternetTestApnAndPasspointEnabled::DescribeParams);
+
+class OSSettingsRevampInternetTestPasspointEnabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampInternetTestPasspointEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPasspointSettings,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampInternetTestPasspointEnabled,
+    testing::Bool(),
+    OSSettingsRevampInternetTestPasspointEnabled::DescribeParams);
+
+/* End Test Classes */
+
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppLanguageSelectionDialog) {
   RunSettingsTest(
       "common/app_language_selection_dialog/"
@@ -657,6 +747,14 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestPeripheralAndSplitEnabled,
   RunSettingsTest("device_page/stylus_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, GuestOsSharedPaths) {
+  RunSettingsTest("guest_os/guest_os_shared_paths_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, GuestOsSharedUsbDevices) {
+  RunSettingsTest("guest_os/guest_os_shared_usb_devices_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsMochaTestApnRevamp, InternetPageApnSubpage) {
   RunSettingsTest("internet_page/apn_subpage_test.js");
 }
@@ -665,26 +763,9 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, InternetPageApnDetailDialog) {
   RunSettingsTest("internet_page/apn_detail_dialog_test.js");
 }
 
-class OSSettingsMochaTestApnAndHotspotAndPasspointEnabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsMochaTestApnAndHotspotAndPasspointEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kApnRevamp,
-            ash::features::kHotspot,
-            ash::features::kPasspointSettings,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnAndHotspotAndPasspointEnabled,
-                       InternetPage) {
+IN_PROC_BROWSER_TEST_P(
+    OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled,
+    InternetPage) {
   RunSettingsTest("internet_page/internet_page_test.js");
 }
 
@@ -698,188 +779,141 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("internet_page/cellular_roaming_toggle_button_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageCellularSetupDialog) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       InternetPageCellularSetupDialog) {
   RunSettingsTest("internet_page/cellular_setup_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPageEsimRemoveProfileDialog) {
   RunSettingsTest("internet_page/esim_remove_profile_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, GuestOsSharedPaths) {
-  RunSettingsTest("guest_os/guest_os_shared_paths_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, GuestOsSharedUsbDevices) {
-  RunSettingsTest("guest_os/guest_os_shared_usb_devices_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPageEsimInstallErrorDialog) {
   RunSettingsTest("internet_page/esim_install_error_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageEsimRenameDialog) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       InternetPageEsimRenameDialog) {
   RunSettingsTest("internet_page/esim_rename_dialog_test.js");
 }
 
-class OSSettingsInternetTestHotspotEnabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsInternetTestHotspotEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kHotspot);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestHotspotEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestHotspotEnabled,
                        InternetPageHotspotConfigDialog) {
   RunSettingsTest("internet_page/hotspot_config_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestHotspotEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestHotspotEnabled,
                        InternetPageHotspotSubpage) {
   RunSettingsTest("internet_page/hotspot_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestHotspotEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestHotspotEnabled,
                        InternetPageHotspotSummaryItem) {
   RunSettingsTest("internet_page/hotspot_summary_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetConfig) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, InternetPageInternetConfig) {
   RunSettingsTest("internet_page/internet_config_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetDetailMenu) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       InternetPageInternetDetailMenu) {
   RunSettingsTest("internet_page/internet_detail_menu_test.js");
 }
 
-class OSSettingsInternetTestApnAndPasspointEnabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsInternetTestApnAndPasspointEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kApnRevamp,
-            ash::features::kPasspointSettings,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestApnAndPasspointEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestApnAndPasspointEnabled,
                        InternetPageInternetDetailSubpage) {
   RunSettingsTest("internet_page/internet_detail_subpage_test.js");
 }
 
-class OSSettingsInternetTestPasspointEnabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsInternetTestPasspointEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kPasspointSettings,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestPasspointEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestPasspointEnabled,
                        InternetPageInternetKnownNetworksSubpage) {
   RunSettingsTest("internet_page/internet_known_networks_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetSubpageMenu) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       InternetPageInternetSubpageMenu) {
   RunSettingsTest("internet_page/internet_subpage_menu_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, InternetPageInternetSubpage) {
   RunSettingsTest("internet_page/internet_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkAlwaysOnVpn) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       InternetPageNetworkAlwaysOnVpn) {
   RunSettingsTest("internet_page/network_always_on_vpn_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPageNetworkDeviceInfoDialog) {
   RunSettingsTest("internet_page/network_device_info_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkProxySection) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       InternetPageNetworkProxySection) {
   RunSettingsTest("internet_page/network_proxy_section_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkSummary) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, InternetPageNetworkSummary) {
   RunSettingsTest("internet_page/network_summary_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkSummaryItem) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       InternetPageNetworkSummaryItem) {
   RunSettingsTest("internet_page/network_summary_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestPasspointEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestPasspointEnabled,
                        InternetPagePasspointSubpage) {
   RunSettingsTest("internet_page/passpoint_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestPasspointEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestPasspointEnabled,
                        InternetPagePasspointRemoveDialog) {
   RunSettingsTest("internet_page/passpoint_remove_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPageSettingsTrafficCounters) {
   RunSettingsTest("internet_page/settings_traffic_counters_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPageTetherConnectionDialog) {
   RunSettingsTest("internet_page/tether_connection_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, KerberosPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, KerberosPage) {
   RunSettingsTest("kerberos_page/kerberos_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        KerberosPageKerberosAccountsSubpage) {
   RunSettingsTest("kerberos_page/kerberos_accounts_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        KerberosPageKerberosAddAccountDialog) {
   RunSettingsTest("kerberos_page/kerberos_add_account_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, KeyboardShortcutBanner) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, KeyboardShortcutBanner) {
   RunSettingsTest("keyboard_shortcut_banner/keyboard_shortcut_banner_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, LockScreenSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, LockScreenSubpage) {
   RunSettingsTest("lock_screen_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, MainPageContainer) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, MainPageContainer) {
   RunSettingsTest("main_page_container/main_page_container_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
-                       MainPageContainerRevamp) {
-  RunSettingsTest("main_page_container/main_page_container_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, MainPageContainerPageDisplayer) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       MainPageContainerPageDisplayer) {
   RunSettingsTest("main_page_container/page_displayer_test.js");
 }
 
