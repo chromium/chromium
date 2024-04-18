@@ -8,7 +8,7 @@ import("//build/config/chromeos/ui_mode.gni")
 declare_args() {
   # Whether the browser provides a speech recognition service
   # (//media/mojo/mojom/speech_recognition_service.mojom) to the renderer.
-  # TODO(crbug.com/1378804) Enable on Fuchsia.
+  # TODO(crbug.com/40244098) Enable on Fuchsia.
   enable_speech_service = is_chromeos || is_linux || is_mac || is_win
 }
 

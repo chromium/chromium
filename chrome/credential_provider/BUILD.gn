@@ -25,7 +25,7 @@ action("gcp_installer") {
 }
 
 group("credential_provider") {
-  # TODO(https://crbug.com/1143303): Get this working in cross builds.
+  # TODO(crbug.com/40155023): Get this working in cross builds.
   if (host_os == "win") {
     deps = [ ":gcp_installer" ]
   }

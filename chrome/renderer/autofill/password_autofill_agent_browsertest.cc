@@ -688,7 +688,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
-  // TODO(crbug.com/1472209): Only expect one of IsPreviewed()/IsAutofilled().
+  // TODO(crbug.com/40278548): Only expect one of IsPreviewed()/IsAutofilled().
   void CheckTextFieldsStateForElements(const WebInputElement& username_element,
                                        const std::string& username,
                                        bool username_autofilled,
@@ -4056,7 +4056,7 @@ TEST_F(PasswordAutofillAgentTest, SuggestPasswordFieldSignInForm) {
   CheckSuggestions(u"", true);
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
+// TODO(crbug.com/40819370): Amend the test to port it on Android if possible.
 // Otherwise, remove the TODO and add the reason why it is excluded.
 #if !BUILDFLAG(IS_ANDROID)
 // Tests that a suggestion dropdown is shown on each password field. But when a

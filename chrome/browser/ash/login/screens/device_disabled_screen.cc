@@ -36,12 +36,12 @@ void DeviceDisabledScreen::ShowImpl() {
     return;
   }
 
-  view_->Show(
-      DeviceDisablingManager()->serial_number(),
-      DeviceDisablingManager()->enrollment_domain(),
-      DeviceDisablingManager()->disabled_message(),
-      // TODO() remove this parameter from DeviceDisabledScreenHandler::Show.
-      /*is_disabled_ad_device=*/false);
+  view_->Show(DeviceDisablingManager()->serial_number(),
+              DeviceDisablingManager()->enrollment_domain(),
+              DeviceDisablingManager()->disabled_message(),
+              // TODO() remove this parameter from
+              // DeviceDisabledScreenHandler::Show.
+              /*is_disabled_ad_device=*/false);
   DeviceDisablingManager()->AddObserver(this);
 }
 

@@ -491,7 +491,7 @@ gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
       .SetProperty("mostVisitedAvailable",
                    &NewTabPageBindings::GetMostVisitedAvailable)
       .SetProperty("ntpTheme", &NewTabPageBindings::GetNtpTheme)
-      // TODO(https://crbug.com/1020450): remove "themeBackgroundInfo" legacy
+      // TODO(crbug.com/40656475): remove "themeBackgroundInfo" legacy
       // name when we're sure no third-party NTP needs it.
       .SetProperty("themeBackgroundInfo", &NewTabPageBindings::GetNtpTheme)
       .SetMethod("deleteMostVisitedItem",

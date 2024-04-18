@@ -274,7 +274,7 @@ void ChromeExtensionsRendererClient::WillSendRequest(
     *new_url = GURL(chrome::kExtensionInvalidRequestURL);
   }
 
-  // TODO(https://crbug.com/588766): Remove metrics after bug is fixed.
+  // TODO(crbug.com/41240557): Remove metrics after bug is fixed.
   GURL request_url(url);
   if (url.ProtocolIs(extensions::kExtensionScheme) &&
       request_url.host_piece() == extension_misc::kDocsOfflineExtensionId) {

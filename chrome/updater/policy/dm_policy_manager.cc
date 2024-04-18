@@ -96,7 +96,7 @@ std::string DMPolicyManager::source() const {
 
 std::optional<bool> DMPolicyManager::CloudPolicyOverridesPlatformPolicy()
     const {
-  // TODO(crbug.com/1313620): read the policy value from the proto once it
+  // TODO(crbug.com/40221041): read the policy value from the proto once it
   // contains the policy.
   return std::nullopt;
 }

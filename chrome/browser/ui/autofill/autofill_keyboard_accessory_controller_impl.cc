@@ -215,7 +215,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   // `time_view_shown_` will remain null for at least
   // `kIgnoreEarlyClicksOnPopupDuration`. Therefore we do not have to check any
   // times here.
-  // TODO(crbug.com/1475902): Once `kAutofillPopupImprovedTimingChecksV2` is
+  // TODO(crbug.com/40279821): Once `kAutofillPopupImprovedTimingChecksV2` is
   // launched, clean up most of the timing checks. That is:
   // - Remove paint checks inside views.
   // - Remove `event_time` parameters.
@@ -284,7 +284,7 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
 
   // This function might be called in a callback, so ensure the list index is
   // still in bounds. If not, terminate the removing and consider it failed.
-  // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
+  // TODO(crbug.com/40766704): Replace these checks with a stronger identifier.
   if (index < 0 || static_cast<size_t>(index) >= suggestions_.size()) {
     return false;
   }
@@ -306,7 +306,7 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
       }
       break;
     case FillingProduct::kCreditCard:
-      // TODO(1509457): Add metrics for credit cards.
+      // TODO(crbug.com/41482065): Add metrics for credit cards.
       break;
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:

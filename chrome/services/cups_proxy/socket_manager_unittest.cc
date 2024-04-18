@@ -237,7 +237,7 @@ TEST_F(SocketManagerTest, SyncEverything) {
   EXPECT_TRUE(http_handshake);
 
   // Pre-load |socket_| with request/response.
-  // TODO(crbug.com/495409): Test with actual http response.
+  // TODO(crbug.com/41179657): Test with actual http response.
   socket_->set_request(*http_handshake);
   socket_->set_response(*http_handshake);
 

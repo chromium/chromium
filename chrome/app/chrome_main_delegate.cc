@@ -1078,7 +1078,7 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   chrome::CacheChannelInfo();
 #endif
 
-  // TODO(https://crbug.com/1360376): Consider deferring this to run after
+  // TODO(crbug.com/40237627): Consider deferring this to run after
   // startup.
   RequestUnwindPrerequisitesInstallation(chrome::GetChannel());
 
@@ -1560,7 +1560,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
         chromeos::BrowserParamsProxy::Get();
     chrome::SetLacrosDefaultPathsFromInitParams(
         init_params->DefaultPaths().get());
-    // TODO(crbug.com/1357874): Currently, when launching Lacros at login
+    // TODO(crbug.com/40861376): Currently, when launching Lacros at login
     // screen, and if resource file sharing is also enabled, Lacros will block
     // here waiting for login. That's before the Zygote process is forked, so we
     // can't take full advantage of the pre-launching optimization. Investigate

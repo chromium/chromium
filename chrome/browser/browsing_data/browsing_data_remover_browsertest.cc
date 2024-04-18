@@ -1484,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        MAYBE_StorageRemovedFromDisk) {
   // Deletions should remove all traces of browsing data from disk
   // but there are a few bugs that need to be fixed.
-  // Any addition to this list must have an associated TODO().
+  // Any addition to this list must have an associated TODO.
   static const std::vector<std::string> ignore_file_patterns = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/846297): Many leveldb files remain on ChromeOS. I couldn't

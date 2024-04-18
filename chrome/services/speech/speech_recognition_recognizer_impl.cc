@@ -84,7 +84,7 @@ void OnSodaResponse(const char* serialized_proto,
   }
 
   if (response.soda_type() == soda::chrome::SodaResponse::LANGID) {
-    // TODO(crbug.com/1175357): Use the langid event to prompt users to switch
+    // TODO(crbug.com/40167928): Use the langid event to prompt users to switch
     // languages.
     soda::chrome::SodaLangIdEvent event = response.langid_event();
 

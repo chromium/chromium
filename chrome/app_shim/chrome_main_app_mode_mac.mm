@@ -170,7 +170,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     const base::FilePath user_data_dir =
         base::FilePath(info->user_data_dir).DirName().DirName().DirName();
 
-    // TODO(https://crbug.com/1274807): Specify `user_data_dir` to  CrashPad.
+    // TODO(crbug.com/40807881): Specify `user_data_dir` to  CrashPad.
     ChromeCrashReporterClient::Create();
     crash_reporter::InitializeCrashpad(true, "app_shim");
 

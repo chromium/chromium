@@ -104,7 +104,8 @@ ImplementationPlatform::CreateMultiThreadExecutor(int max_concurrency) {
 
 std::unique_ptr<ScheduledExecutor>
 ImplementationPlatform::CreateScheduledExecutor() {
-  // TODO(crbug/1091190): Figure out if task runner needs to run in main thread.
+  // TODO(crbug.com/40134072): Figure out if task runner needs to run in main
+  // thread.
   return std::make_unique<chrome::ScheduledExecutor>(
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
 }

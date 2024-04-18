@@ -147,7 +147,7 @@ std::optional<RenderData> PrepareRenderData(
   // For security reasons we need to use a copy of the data, and not operate
   // on it directly out of shared memory.  Make a copy here if the underlying
   // `Metafile` implementation doesn't do it automatically.
-  // TODO(crbug.com/1135729)  Eliminate this copy when the shared memory can't
+  // TODO(crbug.com/40151989)  Eliminate this copy when the shared memory can't
   // be written by the sender.
   base::span<const uint8_t> data = mapping.GetMemoryAsSpan<uint8_t>();
   if (render_data.metafile->ShouldCopySharedMemoryRegionData()) {
@@ -589,7 +589,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
     // implicitly allowed.  In order to preserve ordering, the utility process
     // must process this synchronously by blocking.
     //
-    // TODO(crbug.com/1163635):  Investigate whether utility process main
+    // TODO(crbug.com/40163200):  Investigate whether utility process main
     // thread should be allowed to block like in-process workers are.
     base::ScopedAllowBlocking allow_blocking;
     caps.user_defined_papers = GetMacCustomPaperSizes();

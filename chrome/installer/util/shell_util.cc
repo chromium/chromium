@@ -2509,7 +2509,7 @@ bool ShellUtil::DeleteFileAssociations(const std::wstring& app_prog_id) {
   const std::vector<std::wstring> file_handler_prog_ids =
       ShellUtil::GetFileHandlerProgIdsForAppId(app_prog_id);
 
-  // TODO(crbug.com/1247824): This can be replaced with DeleteApplicationClass
+  // TODO(crbug.com/40197012): This can be replaced with DeleteApplicationClass
   // once currently installed web apps have been upgraded to use per-file
   // handler ProgIds. Those web apps were only installed in Origin Trials so
   // this is just best effort.

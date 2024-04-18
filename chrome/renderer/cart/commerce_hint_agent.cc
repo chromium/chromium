@@ -527,7 +527,7 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
   if (navigation_url.DomainIs("dickssportinggoods.com")) {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.spec());
   } else if (url.DomainIs("rei.com")) {
-    // TODO(crbug.com/1188143): There are other true positives like
+    // TODO(crbug.com/40754689): There are other true positives like
     // 'neo-product/rs/cart/item' that are missed here. Figure out a more
     // comprehensive solution.
     is_add_to_cart = url.path_piece() == "/rest/cart/item";
@@ -587,8 +587,8 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
     if (element.type != blink::HTTPBodyElementType::kTypeData)
       continue;
 
-    // TODO(crbug/1168704): this copy is avoidable if element is guaranteed to
-    // have contiguous buffer.
+    // TODO(crbug.com/40165127): this copy is avoidable if element is guaranteed
+    // to have contiguous buffer.
     std::vector<uint8_t> buf = element.data.Copy().ReleaseVector();
     base::StringPiece str(reinterpret_cast<char*>(buf.data()), buf.size());
 
@@ -719,7 +719,7 @@ bool CommerceHintAgent::IsAddToCartForDomBasedHeuristics(
                            GetDOMBasedAddToCartPattern());
 }
 
-// TODO(crbug.com/1310422): Remove below two APIs and move all related unit
+// TODO(crbug.com/40219864): Remove below two APIs and move all related unit
 // tests to component.
 bool CommerceHintAgent::IsVisitCart(const GURL& url) {
   return commerce_heuristics::IsVisitCart(url);
@@ -995,7 +995,7 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
 
   // The rest of this method is not concerned with data URLs but makes a copy of
   // the URL which can be expensive for large data URLs.
-  // TODO(crbug.com/1321924): Clean up this method to avoid copies once this
+  // TODO(crbug.com/40224104): Clean up this method to avoid copies once this
   // optimization has been measured in the field and launches.
   if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
       request.Url().ProtocolIs(url::kDataScheme)) {
@@ -1109,7 +1109,7 @@ void CommerceHintAgent::DidCommitProvisionalLoadCallback(
     CommerceHeuristicsData::GetInstance().UpdateVersion(
         base::Version(heuristics->version_number));
   }
-  // TODO(crbug.com/1383422): Add a test for when starting_url_ is invalid
+  // TODO(crbug.com/40061704): Add a test for when starting_url_ is invalid
   // because of multiple continuous DidCommitProvisionalLoad calls.
   if (!starting_url_.is_valid())
     return;

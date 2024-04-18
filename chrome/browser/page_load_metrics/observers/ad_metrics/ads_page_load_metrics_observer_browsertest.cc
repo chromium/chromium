@@ -1053,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       entries.front(), ukm::builders::AdFrameLoad::kLoading_NumResourcesName,
       3);
 
-  // TODO(https://crbug.com/): We should verify that we also receive FCP for
+  // TODO(crbug.com/): We should verify that we also receive FCP for
   // frames that are loaded in this manner. Currently timing updates are not
   // sent for aborted navigations due to doc.write.
 }

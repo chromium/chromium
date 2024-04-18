@@ -40,7 +40,8 @@ base::FilePath GetExecutableVersionDirName(const base::FilePath& exe_path) {
 // directories named after the version of chrome.exe or new_chrome.exe are
 // excluded.
 DirectorySet GetOldVersionDirectories(const base::FilePath& install_dir) {
-  // TODO(crbug/1182976): Delete old version directory from all known locations.
+  // TODO(crbug.com/40171016): Delete old version directory from all known
+  // locations.
   const base::FilePath new_chrome_exe_version_dir_name =
       GetExecutableVersionDirName(install_dir.Append(kChromeNewExe));
   const base::FilePath chrome_exe_version_dir_name =

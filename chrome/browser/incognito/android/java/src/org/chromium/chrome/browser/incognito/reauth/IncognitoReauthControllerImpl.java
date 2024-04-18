@@ -37,8 +37,8 @@ import java.util.List;
  * {@link IncognitoReauthCoordinator} and showing/hiding the re-auth dialog. The {@link
  * IncognitoReauthCoordinator} is created and destroyed each time the dialog is shown and hidden.
  *
- * TODO(crbug.com/1227656): Change the scope of this to make it package protected and design a way
- * to create and destroy this for {@link RootUiCoordinator}.
+ * <p>TODO(crbug.com/40056462): Change the scope of this to make it package protected and design a
+ * way to create and destroy this for {@link RootUiCoordinator}.
  */
 public class IncognitoReauthControllerImpl
         implements IncognitoReauthController,
@@ -366,7 +366,7 @@ public class IncognitoReauthControllerImpl
     }
 
     /**
-     * TODO(crbug.com/1227656): Add an extra check on IncognitoReauthManager#canAuthenticate method
+     * TODO(crbug.com/40056462): Add an extra check on IncognitoReauthManager#canAuthenticate method
      * if needed here to tackle the case where a re-authentication might not be possible from the
      * systems end in which case we should not show a re-auth dialog. The method currently doesn't
      * exists and may need to be exposed.

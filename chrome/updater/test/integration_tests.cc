@@ -693,7 +693,7 @@ class IntegrationTest : public ::testing::Test {
   ScopedIPCSupportWrapper ipc_support_;
 };
 
-// TODO(crbug.com/1424548): re-enable the tests once they are passing on
+// TODO(crbug.com/40063600): re-enable the tests once they are passing on
 // Windows ARM64.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_InstallLowerVersion DISABLED_InstallLowerVersion
@@ -2133,7 +2133,8 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
 }
 
 #if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
-// TODO(crbug.com/1281688): standalone installers are supported on Windows only.
+// TODO(crbug.com/40209325): standalone installers are supported on Windows
+// only.
 TEST_F(IntegrationTest, OfflineInstall) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());

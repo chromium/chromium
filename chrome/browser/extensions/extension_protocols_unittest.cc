@@ -382,7 +382,7 @@ class ExtensionProtocolsIncognitoTest : public ExtensionProtocolsTestBase {
       : ExtensionProtocolsTestBase(true /*force_incognito*/) {}
 };
 
-// TODO(crbug.com/1484767): remove this class before launch to stable.
+// TODO(crbug.com/40282364): remove this class before launch to stable.
 class ExtensionProtocolsOriginTrial : public ExtensionProtocolsTestBase {
  public:
   ExtensionProtocolsOriginTrial()

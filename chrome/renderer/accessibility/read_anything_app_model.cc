@@ -1167,7 +1167,7 @@ std::string ReadAnythingAppModel::GetHeadingHtmlTagForPDF(
 }
 
 int ReadAnythingAppModel::GetNextSentence(const std::u16string& text) {
-  // TODO(crbug.com/1474941): Investigate providing correct line breaks
+  // TODO(crbug.com/40927693): Investigate providing correct line breaks
   // or alternatively making adjustments to ax_text_utils to return boundaries
   // that minimize choppiness.
   std::vector<int> offsets;

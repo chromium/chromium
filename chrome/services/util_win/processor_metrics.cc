@@ -103,7 +103,7 @@ void RecordProcessorMetricsFromWMI(const ComPtr<IWbemServices>& services) {
   }
 }
 
-// TODO(crbug.com/1136224) Can be removed once CET support is stable.
+// TODO(crbug.com/40152192) Can be removed once CET support is stable.
 void RecordCetAvailability() {
   bool available = false;
   auto is_user_cet_available_in_environment =

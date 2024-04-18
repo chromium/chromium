@@ -3589,7 +3589,7 @@ TEST_F(FormAutofillTest, Labels) {
 
 // <label for=fieldId> elements are correctly assigned to their inputs. Multiple
 // labels are separated with a space.
-// TODO(crbug.com/1339277): Simplify the test using `ExpectLabels()`. This
+// TODO(crbug.com/40229922): Simplify the test using `ExpectLabels()`. This
 // requires some refactoring of the fixture, as only owned forms are supported
 // at the moment.
 TEST_F(FormAutofillTest, LabelForAttribute) {

@@ -170,7 +170,7 @@ stage_install_common() {
   # V8 snapshot files; Necessary when the GN v8_use_external_startup_data flag
   # is true.
   # Use v8_context_snapshot.bin instead of snapshot_blob.bin if it is available.
-  # TODO(crbug.com/764576): Unship snapshot_blob.bin on ChromeOS and drop this branch
+  # TODO(crbug.com/40539769): Unship snapshot_blob.bin on ChromeOS and drop this branch
   if [ -f "${OUTPUTDIR}/v8_context_snapshot.bin" ]; then
     install -m 644 "${OUTPUTDIR}/v8_context_snapshot.bin" "${STAGEDIR}/${INSTALLDIR}/"
   else
@@ -192,7 +192,7 @@ stage_install_common() {
     cp -a '{}' "${STAGEDIR}/${INSTALLDIR}/locales/" \;
   find "${STAGEDIR}/${INSTALLDIR}/locales" -type f -exec chmod 644 '{}' \;
 
-  # TODO(https://crbug.com/1077934): The below conditions check for the
+  # TODO(crbug.com/40688962): The below conditions check for the
   # existence of files to determine if they should be copied to the staging
   # directory.  However, these may be stale if the build config no longer
   # builds these files.  The build config should be obtained from gn rather than

@@ -379,7 +379,7 @@ bool AssociatedUserValidator::DenySigninForUsersWithInvalidTokenHandles(
         user_denied_signin = true;
       }
     } else if (manager->IsUserDomainJoined(sid)) {
-      // TODO(crbug.com/973160): Description provided in the bug.
+      // TODO(crbug.com/40631676): Description provided in the bug.
       LOGFN(VERBOSE) << "Not denying signin for AD user accounts.";
     }
   }

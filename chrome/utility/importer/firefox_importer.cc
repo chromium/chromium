@@ -251,7 +251,7 @@ void FirefoxImporter::ImportBookmarks() {
   std::vector<importer::SearchEngineInfo> search_engines;
   FaviconMap favicon_map;
 
-  // TODO(https://crbug.com/18107): We do not support POST based keywords yet.
+  // TODO(crbug.com/40304654): We do not support POST based keywords yet.
   // We won't include them in the list.
   std::set<int> post_keyword_ids;
   const char query[] =

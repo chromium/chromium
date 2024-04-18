@@ -1218,7 +1218,7 @@ GURL ChromeContentRendererClient::GetNaClContentHandlerURL(
 void ChromeContentRendererClient::GetInterface(
     const std::string& interface_name,
     mojo::ScopedMessagePipeHandle interface_pipe) {
-  // TODO(crbug.com/977637): Get rid of the use of this implementation of
+  // TODO(crbug.com/40633267): Get rid of the use of this implementation of
   // |service_manager::LocalInterfaceProvider|. This was done only to avoid
   // churning spellcheck code while eliminting the "chrome" and
   // "chrome_renderer" services. Spellcheck is (and should remain) the only

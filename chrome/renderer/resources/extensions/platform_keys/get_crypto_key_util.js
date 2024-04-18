@@ -61,7 +61,7 @@ function combineAlgorithms(algorithm, importParams) {
 }
 
 function getPublicKey(cert, importParams, callback) {
-  // TODO(crbug.com/1096486): Check cert type is ArrayBuffer.
+  // TODO(crbug.com/40136219): Check cert type is ArrayBuffer.
   importParams = normalizeImportParams(importParams);
   internalAPI.getPublicKey(
     cert, importParams.name, function (publicKey, algorithm) {

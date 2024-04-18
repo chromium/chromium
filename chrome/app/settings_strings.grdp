@@ -3448,7 +3448,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_MUTE_DEFAULT_MENU" desc="Label for the default menu item to mute sound for a particular site.">
     Mute (default)
   </message>
-  <!-- TODO(https://crbug.com/753173): Consolidate these strings with those used in the Page Info bubble. -->
+  <!-- TODO(crbug.com/41338113): Consolidate these strings with those used in the Page Info bubble. -->
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOW_MENU" desc="Label for the menu item to allow permission for a particular site.">
     Allow
   </message>

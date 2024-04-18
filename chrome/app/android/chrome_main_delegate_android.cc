@@ -100,7 +100,7 @@ ChromeMainDelegateAndroid::RunProcess(
     if (!process_start_time.is_null()) {
       startup_metric_utils::GetCommon().RecordStartupProcessCreationTime(
           process_start_time);
-      // TODO(crbug.com/1127482): Perf bots should add support for measuring
+      // TODO(crbug.com/40719075): Perf bots should add support for measuring
       // Startup.LoadTime.ProcessCreateToApplicationStart, then the
       // kUseProcessStartTimeForMetrics feature can be removed.
       if (base::FeatureList::IsEnabled(kUseProcessStartTimeForMetrics))

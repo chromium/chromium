@@ -10452,7 +10452,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_OK" desc="Button in a dialog that informs the user that the deletion of Chrome's browsing data has been completed.">
         Ok, got it
       </message>
-      <!-- TODO(crbug.com/1099260): Add proper strings and make them translateable. -->
+      <!-- TODO(crbug.com/40137391): Add proper strings and make them translateable. -->
       <message name="IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE" desc="Body text of a dialog informing the user that some of their passwords were not successfully deleted." translateable="false">
         We were not able to delete all passwords stored in your Google Account. Try again or visit <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>passwords.google.com<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>

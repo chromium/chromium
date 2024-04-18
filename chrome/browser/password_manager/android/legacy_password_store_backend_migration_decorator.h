@@ -124,7 +124,7 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
 
   // React on sync changes to keep GMS Core local storage up-to-date.
   // Called when the changed setting is applied.
-  // TODO(https://crbug.com/) Remove this method when no longer needed.
+  // TODO(crbug.com/) Remove this method when no longer needed.
   void SyncStatusChanged();
 
   // Proxy backend to which all responsibilities are being delegated.

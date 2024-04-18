@@ -1452,7 +1452,7 @@ TEST_P(GcpGaiaCredentialBaseCloudMappingTest,
   // No new user is created.
   EXPECT_EQ(1ul, fake_os_user_manager()->GetUserCount());
 
-  // TODO(crbug.com/976406): Set the error message appropriately for failure
+  // TODO(crbug.com/40632675): Set the error message appropriately for failure
   // scenarios.
   ASSERT_EQ(S_OK, FinishLogonProcess(
                       /*expected_success=*/false,

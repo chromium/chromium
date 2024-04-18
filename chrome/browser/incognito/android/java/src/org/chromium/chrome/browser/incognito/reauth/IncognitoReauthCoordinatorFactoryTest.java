@@ -59,7 +59,7 @@ import java.util.Collection;
 /**
  * Robolectric tests for {@link IncognitoReauthCoordinatorFactory}.
  *
- * <p>TODO(crbug.com/1227656): Remove parameterization to improve readability of the tests.
+ * <p>TODO(crbug.com/40056462): Remove parameterization to improve readability of the tests.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)

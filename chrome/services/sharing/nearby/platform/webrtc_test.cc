@@ -243,7 +243,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessages) {
   loop.Run();
 }
 
-// TODO(crbug.com/1146543): Test is flaky.
+// TODO(crbug.com/40730139): Test is flaky.
 TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
   ByteArray message("message");
   const std::string from = "from";

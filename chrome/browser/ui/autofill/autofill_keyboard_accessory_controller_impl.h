@@ -140,7 +140,7 @@ class AutofillKeyboardAccessoryControllerImpl
 
   // Callback invoked to try to show the password migration warning on Android.
   // Used to facilitate testing.
-  // TODO(crbug.com/1454469): Remove when the warning isn't needed anymore.
+  // TODO(crbug.com/40272324): Remove when the warning isn't needed anymore.
   ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryControllerImpl>

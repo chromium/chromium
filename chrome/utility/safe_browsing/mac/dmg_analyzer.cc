@@ -207,7 +207,7 @@ bool DMGAnalyzer::ResumeExtraction() {
           continue;
         }
 
-        // TODO(crbug.com/1373671): Support file length here.
+        // TODO(crbug.com/40871873): Support file length here.
         return !UpdateResultsForEntry(
             temp_file_.Duplicate(), GetRootPath().Append(path),
             /*file_length=*/0,

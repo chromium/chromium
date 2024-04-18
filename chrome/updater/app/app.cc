@@ -55,7 +55,7 @@ void App::Shutdown(int exit_code) {
     return;
   }
 
-  // TODO(crbug.com/1422360): for non-silent scenarios where UI is not
+  // TODO(crbug.com/40259598): for non-silent scenarios where UI is not
   // otherwise shown, some UI is needed here if exit_code indicates a failure.
   std::move(quit_).Run(exit_code);
 }

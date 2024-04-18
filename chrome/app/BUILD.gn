@@ -175,7 +175,7 @@ static_library("test_support") {
   public_deps = []
 
   if (!is_fuchsia) {
-    # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
+    # TODO(crbug.com/40188745): Complete crash reporting integration on Fuchsia.
     deps += [
       "//components/crash/core/app",
       "//components/crash/core/app:test_support",

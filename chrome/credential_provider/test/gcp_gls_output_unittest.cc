@@ -328,7 +328,7 @@ GcpUsingChromeTest::GoogleApisHtmlResponseHandler(
   return std::move(http_response);
 }
 
-// TODO(crbug.com/909722): Enable tests again once they are all passing.
+// TODO(crbug.com/41428735): Enable tests again once they are all passing.
 // Currently, all tests are flaky on all bots except win-asan.
 TEST_F(GcpUsingChromeTest, DISABLED_VerifyMissingSigninInfoOutput) {
   SetPasswordForSignin(std::string());

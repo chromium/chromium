@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /**
- * Tests for the Incognito reauth lock settings in Privacy and security. TODO(crbug.com/1227656) :
+ * Tests for the Incognito reauth lock settings in Privacy and security. TODO(crbug.com/40056462) :
  * Add reauth check when user toggles the setting once the reauth feature is implemented.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)

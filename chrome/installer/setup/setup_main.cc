@@ -846,8 +846,8 @@ installer::InstallStatus CreateShortcutsInChildProc(
   // installing missing per-user shortcuts on system-level install (i.e.,
   // quick launch, taskbar pin, and possibly deleted all-users shortcuts).
   CreateOrUpdateShortcuts(chrome_exe, prefs, install_level, install_operation);
-  // TODO(): Plumb shortcut creation failure through and return a failure exit
-  // code.
+  // TODO(): Plumb shortcut creation failure through and return a
+  // failure exit code.
   return installer::CREATE_SHORTCUTS_SUCCESS;
 }
 

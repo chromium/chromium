@@ -75,9 +75,10 @@ bool SevenZipAnalyzer::EntryDone(seven_zip::Result result,
   // Since unpacking an encrypted entry is expected to fail, allow all results
   // here for encrypted entries.
   if (result == seven_zip::Result::kSuccess || entry.is_encrypted) {
-    // TODO(crbug/1373509): We have the entire file in memory, so it's silly
-    // to do all this work to flush it and read it back. Can we simplify this
-    // process? This also reduces the risk that the file is not flushed fully.
+    // TODO(crbug.com/40871783): We have the entire file in memory, so it's
+    // silly to do all this work to flush it and read it back. Can we simplify
+    // this process? This also reduces the risk that the file is not flushed
+    // fully.
     mapped_file_.reset();
     if (!UpdateResultsForEntry(
             temp_file_.Duplicate(), GetRootPath().Append(entry.file_path),

@@ -825,11 +825,11 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
   ExpectUKMCount(FormSubmittedEntry::kEntryName, "IsTransaction", 1);
 }
 
-// TODO(crbug.com/1180268): CrOS multi-profiles implementation is different from
-// the rest and below tests don't work on CrOS yet. Re-enable them on CrOS after
-// figuring out the reason for failure.
-// Signing out on Lacros is not possible.
-// TODO(crbug.com/1332878): Intentionally skip below two tests for Android for
+// TODO(crbug.com/40169871): CrOS multi-profiles implementation is different
+// from the rest and below tests don't work on CrOS yet. Re-enable them on CrOS
+// after figuring out the reason for failure. Signing out on Lacros is not
+// possible.
+// TODO(crbug.com/40227790): Intentionally skip below two tests for Android for
 // now.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 // TODO(crbug/1258803): Skip work on non-eligible profiles.
@@ -1300,11 +1300,11 @@ class CommerceHintCartPatternTest : public CommerceHintAgentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(https://crbug.com/1362442): Deflake this test.
+// TODO(crbug.com/40238349): Deflake this test.
 IN_PROC_BROWSER_TEST_F(CommerceHintCartPatternTest, DISABLED_VisitCart) {
   // The test is flaky with same-site back/forward cache, presumably because it
   // doesn't expect a RenderView change on same-site navigations.
-  // TODO(https://crbug.com/1302902): Investigate and fix this.
+  // TODO(crbug.com/40217176): Investigate and fix this.
   content::DisableBackForwardCacheForTesting(
       web_contents(),
       content::BackForwardCache::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
@@ -1531,7 +1531,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug/1310497): This test is flaky on ChromeOS.
+// TODO(crbug.com/40830409): This test is flaky on ChromeOS.
 class CommerceHintAgentFencedFrameTest : public CommerceHintAgentTest {
  public:
   CommerceHintAgentFencedFrameTest() {

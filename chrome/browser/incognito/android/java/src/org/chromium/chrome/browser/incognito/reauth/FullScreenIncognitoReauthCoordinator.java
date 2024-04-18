@@ -67,7 +67,7 @@ class FullScreenIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBas
     public void show() {
         prepareToShow(
                 mIncognitoReauthMenuDelegate.getListMenuButtonDelegate(), /* fullscreen= */ true);
-        // TODO(crbug.com/1227656): Find a cleaner way to test.
+        // TODO(crbug.com/40056462): Find a cleaner way to test.
         if (!mIgnoreDialogCreationForTesting) {
             assert mIncognitoReauthDialog == null : "Incognito re-auth dialog already exists.";
             mIncognitoReauthDialog =

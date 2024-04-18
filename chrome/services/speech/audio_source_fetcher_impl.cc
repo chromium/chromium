@@ -130,7 +130,7 @@ void AudioSourceFetcherImpl::Start(
   send_error_callback_ = base::BindPostTaskToCurrentDefault(base::BindRepeating(
       &AudioSourceFetcherImpl::SendError, weak_factory_.GetWeakPtr()));
 
-  // TODO(crbug.com/1185978): Check implementation / sandbox policy on Mac and
+  // TODO(crbug.com/40753481): Check implementation / sandbox policy on Mac and
   // Windows.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   is_started_ = true;

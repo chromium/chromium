@@ -842,7 +842,7 @@ if (is_win) {
   }
 
   # Create and bundle an InfoPlist.strings for the alert helper app.
-  # TODO(crbug.com/1182393): Disambiguate and localize alert helper app name.
+  # TODO(crbug.com/40751430): Disambiguate and localize alert helper app name.
   compile_plist("chrome_helper_app_alerts_plist_strings") {
     format = "binary1"
     plist_templates = [ "app/helper-alerts-InfoPlist.strings" ]

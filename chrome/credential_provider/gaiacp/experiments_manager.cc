@@ -99,7 +99,7 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
   return true;
 }
 
-// TODO(crbug.com/1143829): Reload experiments if they were fetched by ESA.
+// TODO(crbug.com/40155245): Reload experiments if they were fetched by ESA.
 void ExperimentsManager::ReloadAllExperiments() {
   std::map<std::wstring, UserTokenHandleInfo> sid_to_gaia_id;
   HRESULT hr = GetUserTokenHandles(&sid_to_gaia_id);
