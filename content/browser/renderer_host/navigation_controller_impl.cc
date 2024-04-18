@@ -2656,9 +2656,10 @@ bool NavigationControllerImpl::ValidateDataURLAsString(
   // From the GURL's POV, the only important part here is scheme, it doesn't
   // check the actual content. Thus we can take only the prefix of the url, to
   // avoid unneeded copying of a potentially long string.
-  constexpr size_t kDataUriPrefixMaxLen = 64;
-  const size_t len = std::min(data_url_as_string->size(), kDataUriPrefixMaxLen);
-  GURL data_url(base::as_string_view(*data_url_as_string).substr(0u, len));
+  const size_t kDataUriPrefixMaxLen = 64;
+  GURL data_url(
+      std::string(data_url_as_string->front_as<char>(),
+                  std::min(data_url_as_string->size(), kDataUriPrefixMaxLen)));
   if (!data_url.is_valid() || !data_url.SchemeIs(url::kDataScheme))
     return false;
 
@@ -4034,7 +4035,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*visited_link_salt=*/std::nullopt);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
-    commit_params->data_url_as_string = params.data_url_as_string->as_string();
+    commit_params->data_url_as_string = params.data_url_as_string->data();
   }
 #endif
 

@@ -94,15 +94,8 @@ class CRDTP_EXPORT Binary : public Serializable {
   // Implements Serializable.
   void AppendSerialized(std::vector<uint8_t>* out) const override;
 
-  // Allow explicit conversion to `base::span`.
-  const uint8_t* data() const { return bytes_->data(); }
+  const uint8_t* data() const { return bytes_->front(); }
   size_t size() const { return bytes_->size(); }
-  // data()/size() provide access to Binary's data as a span, but each one
-  // requires a virtual call. Like RefCountedData, provide this operator as an
-  // optimization.
-  explicit operator base::span<const uint8_t>() const {
-    return base::span(*bytes_);
-  }
   scoped_refptr<base::RefCountedMemory> bytes() const { return bytes_; }
 
   std::string toBase64() const;

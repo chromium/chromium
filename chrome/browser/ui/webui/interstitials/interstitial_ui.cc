@@ -577,7 +577,7 @@ void InterstitialHTMLSource::StartDataRequest(
         IDR_SECURITY_INTERSTITIAL_UI_HTML);
   }
   scoped_refptr<base::RefCountedString> html_bytes = new base::RefCountedString;
-  html_bytes->as_string() = html;
+  html_bytes->data().assign(html.begin(), html.end());
   std::move(callback).Run(html_bytes.get());
 }
 

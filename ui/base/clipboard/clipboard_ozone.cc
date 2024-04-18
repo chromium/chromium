@@ -217,11 +217,11 @@ class ClipboardOzone::AsyncClipboardOzone {
       auto it = offered_data_[buffer].find(mime_type);
       if (it == offered_data_[buffer].end())
         return {};
-      return base::span(it->second->as_vector());
+      return base::make_span(it->second->front(), it->second->size());
     }
 
     if (auto data = Read(buffer, mime_type))
-      return base::span(data->as_vector());
+      return base::make_span(data->front(), data->size());
 
     return {};
   }

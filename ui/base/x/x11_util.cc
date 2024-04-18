@@ -294,11 +294,7 @@ bool GetRawBytesOfProperty(x11::Window window,
   if (!response || !response->format) {
     return false;
   }
-  // SAFETY: The GetProperty response has a `format` which specified the number
-  // of bits per object in the `value` and `value_len` for the number of
-  // objects, so `value_len * format / 8` gives the number of bytes in `value`.
-  *out_data = UNSAFE_BUFFERS(x11::SizedRefCountedMemory::From(
-      response->value, response->value_len * response->format / 8u));
+  *out_data = response->value;
   if (out_type) {
     *out_type = response->type;
   }

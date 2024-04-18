@@ -473,7 +473,7 @@ void NavigationEntryImpl::SetDataURLAsString(
     scoped_refptr<base::RefCountedString> data_url) {
   if (data_url) {
     // A quick check that it's actually a data URL.
-    DCHECK(base::StartsWith(base::as_string_view(*data_url), url::kDataScheme,
+    DCHECK(base::StartsWith(data_url->front_as<char>(), url::kDataScheme,
                             base::CompareCase::SENSITIVE));
   }
   data_url_as_string_ = std::move(data_url);
@@ -977,10 +977,9 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
   // main frames, because loadData* navigations can only happen on the main
   // frame.
   bool is_for_main_frame = (root_node()->frame_entry == &frame_entry);
-  scoped_refptr<const base::RefCountedString> string = GetDataURLAsString();
   if (is_for_main_frame &&
-      NavigationControllerImpl::ValidateDataURLAsString(string)) {
-    commit_params->data_url_as_string = string->as_string();
+      NavigationControllerImpl::ValidateDataURLAsString(GetDataURLAsString())) {
+    commit_params->data_url_as_string = GetDataURLAsString()->data();
   }
 #endif
 

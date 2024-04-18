@@ -286,13 +286,9 @@ void AndroidUsbDevice::Queue(std::unique_ptr<AdbMessage> message) {
   // Queue body.
   if (!message->body.empty()) {
     auto body_buffer = base::MakeRefCounted<base::RefCountedBytes>(body_length);
-    {
-      auto& v = body_buffer->as_vector();
-      memcpy(v.data(), message->body.data(), message->body.length());
-      if (append_zero) {
-        v[body_length - 1] = 0;
-      }
-    }
+    memcpy(body_buffer->front(), message->body.data(), message->body.length());
+    if (append_zero)
+      body_buffer->data()[body_length - 1] = 0;
     outgoing_queue_.push(body_buffer);
     if (android_device_info_.zero_mask &&
         (body_length & android_device_info_.zero_mask) == 0) {
@@ -311,10 +307,10 @@ void AndroidUsbDevice::ProcessOutgoing() {
 
   BulkMessage message = outgoing_queue_.front();
   outgoing_queue_.pop();
-  DumpMessage(true, message->data(), message->size());
+  DumpMessage(true, message->front(), message->size());
 
   device_->GenericTransferOut(
-      android_device_info_.outbound_address, message->as_vector(), kUsbTimeout,
+      android_device_info_.outbound_address, message->data(), kUsbTimeout,
       base::BindOnce(&AndroidUsbDevice::OutgoingMessageSent,
                      weak_factory_.GetWeakPtr()));
 }

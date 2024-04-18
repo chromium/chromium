@@ -428,7 +428,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, EncodesUserImageToPngBuffer) {
   // The BigBuffer data received from the observer should be equal to the test
   // image encoded to png.
   ASSERT_GT(expected_data.size(), 0u);
-  EXPECT_EQ(expected_data, base::span(*encoded_png));
+  EXPECT_EQ(expected_data, encoded_png->data());
 }
 
 TEST_F(PersonalizationAppUserProviderImplTest,

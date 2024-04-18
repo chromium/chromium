@@ -83,28 +83,22 @@ int MimeTypeToFormat(const std::string& mime_type) {
 template <typename StringType>
 StringType BytesTo(PlatformClipboard::Data bytes) {
   using ValueType = typename StringType::value_type;
-  const size_t bytes_size = bytes->size();
-  const size_t rounded_bytes_size =
-      bytes_size - (bytes_size % sizeof(ValueType));
-  if (bytes_size != rounded_bytes_size) {
+  if (bytes->size() % sizeof(ValueType) != 0U) {
     // This is suspicious.
     LOG(WARNING)
         << "Data is possibly truncated, or a wrong conversion is requested.";
   }
 
-  StringType result;
-  result.resize(rounded_bytes_size / sizeof(ValueType));
-  base::as_writable_byte_span(result).copy_from(
-      base::span(*bytes).first(rounded_bytes_size));
+  StringType result(bytes->front_as<ValueType>(),
+                    bytes->size() / sizeof(ValueType));
   return result;
 }
 
 void AddString(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   DCHECK(provider);
 
-  if (data->as_vector().empty()) {
+  if (data->data().empty())
     return;
-  }
 
   provider->SetString(base::UTF8ToUTF16(BytesTo<std::string>(data)));
 }
@@ -112,9 +106,8 @@ void AddString(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 void AddHtml(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   DCHECK(provider);
 
-  if (data->as_vector().empty()) {
+  if (data->data().empty())
     return;
-  }
 
   provider->SetHtml(base::UTF8ToUTF16(BytesTo<std::string>(data)), GURL());
 }
@@ -174,9 +167,8 @@ void AddFileContents(const std::string& filename,
 void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   DCHECK(provider);
 
-  if (data->as_vector().empty()) {
+  if (data->data().empty())
     return;
-  }
 
   std::u16string data_as_string16 = BytesTo<std::u16string>(data);
 
@@ -204,9 +196,8 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 void AddSource(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   DCHECK(provider);
 
-  if (data->as_vector().empty()) {
+  if (data->data().empty())
     return;
-  }
 
   std::string source_dte = BytesTo<std::string>(data);
   provider->SetSource(ConvertJsonToDataTransferEndpoint(source_dte));

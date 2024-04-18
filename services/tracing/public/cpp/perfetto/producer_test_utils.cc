@@ -271,8 +271,7 @@ void DataSourceTester::OnTraceData(
     const scoped_refptr<base::RefCountedString>& chunk,
     bool has_more_events) {
   perfetto::protos::Trace trace;
-  auto chunk_data = base::span(*chunk);
-  bool ok = trace.ParseFromArray(chunk_data.data(), chunk_data.size());
+  bool ok = trace.ParseFromArray(chunk->data().data(), chunk->data().size());
   DCHECK(ok);
   for (const auto& packet : trace.packet()) {
     // Filter out packets from the tracing service.

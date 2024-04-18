@@ -76,7 +76,7 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmapResult(int w,
   // Create bitmap and fill with |color|.
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
   gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(w, h, color), false,
-                                    &data->as_vector());
+                                    &data->data());
   result.bitmap_data = data;
 
   result.pixel_size = gfx::Size(w, h);

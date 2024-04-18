@@ -49,7 +49,8 @@ void DetermineCharset(const std::string& mime_type,
                        base::CompareCase::INSENSITIVE_ASCII)) {
     // All of our HTML files should be UTF-8 and for other resource types
     // (like images), charset doesn't matter.
-    DCHECK(base::IsStringUTF8(base::as_string_view(*data)));
+    DCHECK(base::IsStringUTF8(base::StringPiece(
+        reinterpret_cast<const char*>(data->front()), data->size())));
     *out_charset = "utf-8";
   }
 }
@@ -68,8 +69,9 @@ scoped_refptr<base::RefCountedMemory> GetResource(
           : nullptr;
 
   if (replacements) {
-    std::string temp_str = ui::ReplaceTemplateExpressions(
-        base::as_string_view(*bytes), *replacements);
+    base::StringPiece input(reinterpret_cast<const char*>(bytes->front()),
+                            bytes->size());
+    std::string temp_str = ui::ReplaceTemplateExpressions(input, *replacements);
     DCHECK(!temp_str.empty());
     return base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
   } else {
@@ -181,7 +183,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
                                std::nullopt);
 
     size_t write_size = data->size();
-    MojoResult result = producer_handle->WriteData(data->data(), &write_size,
+    MojoResult result = producer_handle->WriteData(data->front(), &write_size,
                                                    MOJO_WRITE_DATA_FLAG_NONE);
     OnFileWritten(result);
   }

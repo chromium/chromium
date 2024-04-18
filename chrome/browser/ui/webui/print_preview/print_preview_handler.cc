@@ -730,6 +730,7 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
     return;
   }
   DCHECK(data->size());
+  DCHECK(data->front());
 
   // After validating |settings|, record metrics.
   const mojom::RequestPrintPreviewParams* request_params = GetRequestParams();

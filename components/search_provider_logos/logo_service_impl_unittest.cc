@@ -77,13 +77,14 @@ scoped_refptr<base::RefCountedString> EncodeBitmapAsPNG(
     const SkBitmap& bitmap) {
   scoped_refptr<base::RefCountedMemory> png_bytes =
       gfx::Image::CreateFrom1xBitmap(bitmap).As1xPNGBytes();
-  return base::MakeRefCounted<base::RefCountedString>(
-      std::string(base::as_string_view(*png_bytes)));
+  scoped_refptr<base::RefCountedString> str = new base::RefCountedString();
+  str->data().assign(png_bytes->front_as<char>(), png_bytes->size());
+  return str;
 }
 
 std::string EncodeBitmapAsPNGBase64(const SkBitmap& bitmap) {
   scoped_refptr<base::RefCountedString> png_bytes = EncodeBitmapAsPNG(bitmap);
-  return base::Base64Encode(*png_bytes);
+  return base::Base64Encode(png_bytes->data());
 }
 
 SkBitmap MakeBitmap(int width, int height) {

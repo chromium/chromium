@@ -56,10 +56,10 @@ class FakeLargeIconService : public favicon::LargeIconServiceImpl {
       bitmapResult.expired = false;
 
       // Create bitmap.
-      auto data = base::MakeRefCounted<base::RefCountedBytes>();
+      scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
       SkBitmap bitmap;
       bitmap.allocN32Pixels(30, 30);
-      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data->as_vector());
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data->data());
       bitmapResult.bitmap_data = data;
 
       favicon_base::LargeIconResult result(bitmapResult);

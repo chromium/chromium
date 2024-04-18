@@ -565,7 +565,7 @@ bool FaviconBackend::SetFaviconBitmaps(favicon_base::FaviconID icon_id,
   for (size_t i = 0; i < bitmaps.size(); ++i) {
     scoped_refptr<base::RefCountedBytes> bitmap_data(new base::RefCountedBytes);
     if (!gfx::PNGCodec::EncodeBGRASkBitmap(bitmaps[i], false,
-                                           &bitmap_data->as_vector())) {
+                                           &bitmap_data->data())) {
       continue;
     }
     to_add.push_back(std::make_pair(

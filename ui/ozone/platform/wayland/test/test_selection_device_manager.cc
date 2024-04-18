@@ -46,7 +46,7 @@ std::vector<uint8_t> ReadDataOnWorkerThread(base::ScopedFD fd) {
 
 void WriteDataOnWorkerThread(base::ScopedFD fd,
                              ui::PlatformClipboard::Data data) {
-  if (!base::WriteFileDescriptor(fd.get(), data->as_vector())) {
+  if (!base::WriteFileDescriptor(fd.get(), data->data())) {
     LOG(ERROR) << "Failed to write selection data to clipboard.";
   }
 }

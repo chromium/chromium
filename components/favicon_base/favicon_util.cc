@@ -204,8 +204,9 @@ gfx::Image SelectFaviconFramesFromPNGs(
       continue;
 
     SkBitmap bitmap;
-    if (gfx::PNGCodec::Decode(png_data[i].bitmap_data->data(),
-                              png_data[i].bitmap_data->size(), &bitmap)) {
+    if (gfx::PNGCodec::Decode(png_data[i].bitmap_data->front(),
+                              png_data[i].bitmap_data->size(),
+                              &bitmap)) {
       bitmaps.push_back(bitmap);
     }
   }
@@ -232,8 +233,9 @@ gfx::Image SelectFaviconFramesFromPNGs(
     scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
     if (gfx::PNGCodec::EncodeBGRASkBitmap(
             resized_image_skia_reps[i].GetBitmap(), false,
-            &png_bytes->as_vector())) {
-      png_reps.emplace_back(png_bytes, resized_image_skia_reps[i].scale());
+            &png_bytes->data())) {
+      png_reps.push_back(
+          gfx::ImagePNGRep(png_bytes, resized_image_skia_reps[i].scale()));
     }
   }
 

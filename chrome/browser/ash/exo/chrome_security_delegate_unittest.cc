@@ -50,15 +50,12 @@ std::vector<uint8_t> Data(const std::string& s) {
 }
 
 void Capture(std::string* result, scoped_refptr<base::RefCountedMemory> data) {
-  *result = std::string(base::as_string_view(*data));
+  *result = std::string(data->front_as<char>(), data->size());
 }
 
 void CaptureUTF16(std::string* result,
                   scoped_refptr<base::RefCountedMemory> data) {
-  base::span<const uint8_t> bytes = *data;
-  std::u16string str(bytes.size() / 2u, u'\0');
-  base::as_writable_byte_span(str).copy_from(bytes);
-  *result = base::UTF16ToUTF8(str);
+  base::UTF16ToUTF8(data->front_as<char16_t>(), data->size() / 2, result);
 }
 
 }  // namespace

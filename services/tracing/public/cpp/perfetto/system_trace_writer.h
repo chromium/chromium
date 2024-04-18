@@ -29,7 +29,7 @@ inline const std::string& GetString(const std::string& string) {
 
 inline const std::string& GetString(
     const scoped_refptr<base::RefCountedString>& string) {
-  return string->as_string();
+  return string->data();
 }
 }  // namespace internal
 

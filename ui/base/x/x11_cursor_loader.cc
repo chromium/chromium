@@ -386,7 +386,7 @@ scoped_refptr<X11Cursor> XCursorLoader::CreateCursor(
       .width = width,
       .height = height,
       .depth = 32,
-      .data = base::MakeRefCounted<base::RefCountedBytes>(std::move(vec)),
+      .data = base::RefCountedBytes::TakeVector(&vec),
   };
   connection->PutImage(put_image_request);
 

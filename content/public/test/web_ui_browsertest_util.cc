@@ -49,7 +49,7 @@ void GetResource(const std::string& id,
   CHECK(base::ReadFileToString(path, &contents)) << path.value();
 
   base::RefCountedString* ref_contents = new base::RefCountedString;
-  ref_contents->as_string() = contents;
+  ref_contents->data() = contents;
   std::move(callback).Run(ref_contents);
 }
 

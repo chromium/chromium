@@ -81,7 +81,8 @@ void ReadData(
   if (replacements) {
     // We won't know the the final output size ahead of time, so we have to
     // use an intermediate string.
-    auto input = base::as_string_view(*bytes);
+    std::string_view input(reinterpret_cast<const char*>(bytes->front()),
+                           bytes->size());
     std::string temp_str;
     if (replace_in_js) {
       CHECK(

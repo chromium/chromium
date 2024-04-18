@@ -5,7 +5,6 @@
 #include "ui/gfx/x/connection.h"
 
 #include "base/memory/ref_counted_memory.h"
-#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
@@ -75,8 +74,8 @@ TEST(X11ConnectionTest, Event) {
       .property = Atom::WM_NAME,
       .type = Atom::STRING,
       .format = CHAR_BIT,
-      .data_len = base::checked_cast<uint32_t>(data.size()),
-      .data = base::MakeRefCounted<base::RefCountedBytes>(std::move(data)),
+      .data_len = 1,
+      .data = base::RefCountedBytes::TakeVector(&data),
   });
   EXPECT_FALSE(prop_future.Sync().error);
 

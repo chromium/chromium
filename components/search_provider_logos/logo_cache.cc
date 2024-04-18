@@ -170,7 +170,7 @@ std::unique_ptr<EncodedLogo> LogoCache::GetCachedLogo() {
   if (logo_num_bytes_ != 0) {
     encoded_image = new base::RefCountedString();
 
-    if (!base::ReadFileToString(logo_path, &encoded_image->as_string())) {
+    if (!base::ReadFileToString(logo_path, &encoded_image->data())) {
       UpdateMetadata(nullptr);
       return nullptr;
     }
@@ -187,8 +187,7 @@ std::unique_ptr<EncodedLogo> LogoCache::GetCachedLogo() {
   if (dark_logo_num_bytes_ != 0) {
     dark_encoded_image = new base::RefCountedString();
 
-    if (!base::ReadFileToString(dark_logo_path,
-                                &dark_encoded_image->as_string())) {
+    if (!base::ReadFileToString(dark_logo_path, &dark_encoded_image->data())) {
       UpdateMetadata(nullptr);
       return nullptr;
     }

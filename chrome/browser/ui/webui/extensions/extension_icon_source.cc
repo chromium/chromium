@@ -46,7 +46,7 @@ namespace {
 
 scoped_refptr<base::RefCountedMemory> BitmapToMemory(const SkBitmap* image) {
   auto image_bytes = base::MakeRefCounted<base::RefCountedBytes>();
-  gfx::PNGCodec::EncodeBGRASkBitmap(*image, false, &image_bytes->as_vector());
+  gfx::PNGCodec::EncodeBGRASkBitmap(*image, false, &image_bytes->data());
   return image_bytes;
 }
 
@@ -251,9 +251,8 @@ void ExtensionIconSource::OnFaviconDataAvailable(
     std::move(request->callback).Run(bitmap_result.bitmap_data.get());
     ClearData(request_id);
   } else {
-    FinalizeImage(ToBitmap(bitmap_result.bitmap_data->data(),
-                           bitmap_result.bitmap_data->size()),
-                  request_id);
+    FinalizeImage(ToBitmap(bitmap_result.bitmap_data->front(),
+                           bitmap_result.bitmap_data->size()), request_id);
   }
 }
 

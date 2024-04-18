@@ -1377,7 +1377,7 @@ void NewTabPageHandler::OnLogoAvailable(
     }
     auto image_doodle = new_tab_page::mojom::AllModeImageDoodle::New();
     image_doodle->light = MakeImageDoodle(
-        logo->metadata.type, logo->encoded_image->as_string(),
+        logo->metadata.type, logo->encoded_image->data(),
         logo->metadata.mime_type, logo->metadata.animated_url,
         logo->metadata.width_px, logo->metadata.height_px, "#ffffff",
         logo->metadata.share_button_x, logo->metadata.share_button_y,
@@ -1386,7 +1386,7 @@ void NewTabPageHandler::OnLogoAvailable(
         logo->metadata.cta_log_url);
     if (logo->dark_encoded_image) {
       image_doodle->dark = MakeImageDoodle(
-          logo->metadata.type, logo->dark_encoded_image->as_string(),
+          logo->metadata.type, logo->dark_encoded_image->data(),
           logo->metadata.dark_mime_type, logo->metadata.dark_animated_url,
           logo->metadata.dark_width_px, logo->metadata.dark_height_px,
           logo->metadata.dark_background_color,

@@ -437,8 +437,9 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
     PngMap::const_iterator exact_png_it = png_map_.find(scale_factor);
     if (exact_png_it != png_map_.end()) {
       SkBitmap bitmap;
-      if (!gfx::PNGCodec::Decode(exact_png_it->second->data(),
-                                 exact_png_it->second->size(), &bitmap)) {
+      if (!gfx::PNGCodec::Decode(exact_png_it->second->front(),
+                                 exact_png_it->second->size(),
+                                 &bitmap)) {
         NOTREACHED();
         return gfx::ImageSkiaRep();
       }
@@ -468,7 +469,7 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
         bitmap_map_.find(available_scale_factor);
     if (available_bitmap_it == bitmap_map_.end()) {
       SkBitmap available_bitmap;
-      if (!gfx::PNGCodec::Decode(available_png_it->second->data(),
+      if (!gfx::PNGCodec::Decode(available_png_it->second->front(),
                                  available_png_it->second->size(),
                                  &available_bitmap)) {
         NOTREACHED();
@@ -1545,7 +1546,7 @@ bool BrowserThemePack::LoadRawBitmapsTo(
           image_memory_[raw_id] = raw_data;
         } else {
           SkBitmap bitmap;
-          if (gfx::PNGCodec::Decode(raw_data->data(), raw_data->size(),
+          if (gfx::PNGCodec::Decode(raw_data->front(), raw_data->size(),
                                     &bitmap)) {
             image_skia.AddRepresentation(gfx::ImageSkiaRep(
                 bitmap, ui::GetScaleForResourceScaleFactor(scale_factor)));
@@ -1983,7 +1984,8 @@ void BrowserThemePack::MergeImageCaches(
 void BrowserThemePack::AddRawImagesTo(const RawImages& images,
                                       RawDataForWriting* out) const {
   for (const auto& pair : images) {
-    (*out)[pair.first] = base::as_string_view(*pair.second);
+    (*out)[pair.first] =
+        std::string_view(pair.second->front_as<char>(), pair.second->size());
   }
 }
 
@@ -2074,7 +2076,8 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
   int available_raw_id = GetRawIDByPersistentID(prs_id, available_scale_factor);
   RawImages::const_iterator it = image_memory_.find(available_raw_id);
   SkBitmap available_bitmap;
-  if (!gfx::PNGCodec::Decode(it->second->data(), it->second->size(),
+  if (!gfx::PNGCodec::Decode(it->second->front(),
+                             it->second->size(),
                              &available_bitmap)) {
     NOTREACHED() << "Unable to decode theme image for prs_id=" << prs_id
                  << " for scale_factor=" << available_scale_factor;

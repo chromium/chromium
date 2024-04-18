@@ -347,10 +347,10 @@ void SanitizedImageSource::EncodeAndReplyStaticImage(
             const bool success =
                 encode_type == RequestAttributes::EncodeType::kWebP
                     ? gfx::WebpCodec::Encode(bitmap, /*quality=*/90,
-                                             &encoded->as_vector())
+                                             &encoded->data())
                     : gfx::PNGCodec::EncodeBGRASkBitmap(
                           bitmap, /*discard_transparency=*/false,
-                          &encoded->as_vector());
+                          &encoded->data());
             return success ? encoded
                            : base::MakeRefCounted<base::RefCountedBytes>();
           },

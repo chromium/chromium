@@ -36,7 +36,7 @@ gfx::Image ResizeLargeIconOnBackgroundThread(
     const favicon_base::FaviconRawBitmapResult& db_result,
     int desired_size) {
   gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
-      db_result.bitmap_data->data(), db_result.bitmap_data->size());
+      db_result.bitmap_data->front(), db_result.bitmap_data->size());
 
   if (desired_size == 0 || db_result.pixel_size.width() == desired_size) {
     return image;

@@ -80,7 +80,7 @@ class GpuMemoryBufferImplTest : public gfx::GpuMemoryBuffer {
   void* memory(size_t plane) override {
     DCHECK(mapped_);
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    return bytes_->as_vector().data() +
+    return reinterpret_cast<uint8_t*>(&bytes_->data().front()) +
            gfx::BufferOffsetForBufferFormat(size_, format_, plane);
   }
   void Unmap() override {

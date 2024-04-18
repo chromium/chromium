@@ -71,7 +71,7 @@ gfx::Rect GetWorkAreaSync(x11::Future<x11::GetPropertyReply> future) {
   if (!response || response->format != 32 || response->value_len != 4) {
     return gfx::Rect();
   }
-  const uint32_t* value = response->value->cast_to<uint32_t>();
+  const uint32_t* value = response->value->front_as<uint32_t>();
   return gfx::Rect(value[0], value[1], value[2], value[3]);
 }
 
@@ -92,11 +92,11 @@ x11::Future<x11::GetPropertyReply> GetIccProfileFuture(
 
 gfx::ICCProfile GetIccProfileSync(x11::Future<x11::GetPropertyReply> future) {
   auto response = future.Sync();
-  if (!response || !response->value_len) {
+  if (!response || !response->value->size()) {
     return gfx::ICCProfile();
   }
-  return gfx::ICCProfile::FromData(response->value->bytes(),
-                                   response->value_len * response->format / 8u);
+  return gfx::ICCProfile::FromData(response->value->data(),
+                                   response->value->size());
 }
 
 x11::Future<x11::RandR::GetOutputPropertyReply> GetEdidFuture(

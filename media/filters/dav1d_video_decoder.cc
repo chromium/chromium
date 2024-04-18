@@ -416,14 +416,12 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
         fake_uv_data_ =
             base::MakeRefCounted<base::RefCountedBytes>(size_needed);
 
-        uint16_t* data =
-            reinterpret_cast<uint16_t*>(fake_uv_data_->as_vector().data());
+        uint16_t* data = fake_uv_data_->front_as<uint16_t>();
         std::fill(data, data + size_needed / 2, kBlankUV);
       }
     }
 
-    u_plane = v_plane =
-        reinterpret_cast<uint8_t*>(fake_uv_data_->as_vector().data());
+    u_plane = v_plane = fake_uv_data_->front_as<uint8_t>();
   }
 
   auto frame = VideoFrame::WrapExternalYuvData(

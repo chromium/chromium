@@ -96,18 +96,16 @@ scoped_refptr<base::RefCountedBytes> BuildControlTransferBuffer(
     scoped_refptr<base::RefCountedBytes> original_buffer) {
   auto new_buffer = base::MakeRefCounted<base::RefCountedBytes>(
       original_buffer->size() + sizeof(usb_ctrlrequest));
-  usb_ctrlrequest setup;
-  setup.bRequestType = ConvertEndpointDirection(direction) |
-                       ConvertRequestType(request_type) |
-                       ConvertRecipient(recipient);
-  setup.bRequest = request;
-  setup.wValue = value;
-  setup.wIndex = index;
-  setup.wLength = original_buffer->size();
-  auto [setup_span, remain] =
-      base::span(new_buffer->as_vector()).split_at<sizeof(setup)>();
-  setup_span.copy_from(base::byte_span_from_ref(setup));
-  remain.copy_from(base::span(*original_buffer));
+  usb_ctrlrequest* setup = new_buffer->front_as<usb_ctrlrequest>();
+  setup->bRequestType = ConvertEndpointDirection(direction) |
+                        ConvertRequestType(request_type) |
+                        ConvertRecipient(recipient);
+  setup->bRequest = request;
+  setup->wValue = value;
+  setup->wIndex = index;
+  setup->wLength = original_buffer->size();
+  memcpy(new_buffer->front() + sizeof(usb_ctrlrequest),
+         original_buffer->front(), original_buffer->size());
   return new_buffer;
 }
 
@@ -375,19 +373,19 @@ void UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::
 }
 
 UsbDeviceHandleUsbfs::Transfer::Transfer(
-    scoped_refptr<base::RefCountedBytes> in_buffer,
+    scoped_refptr<base::RefCountedBytes> buffer,
     TransferCallback callback)
-    : buffer(std::move(in_buffer)), callback(std::move(callback)) {
+    : buffer(buffer), callback(std::move(callback)) {
   urb.usercontext = this;
-  urb.buffer = buffer->as_vector().data();
+  urb.buffer = buffer->front();
 }
 
 UsbDeviceHandleUsbfs::Transfer::Transfer(
-    scoped_refptr<base::RefCountedBytes> in_buffer,
+    scoped_refptr<base::RefCountedBytes> buffer,
     IsochronousTransferCallback callback)
-    : buffer(std::move(in_buffer)), isoc_callback(std::move(callback)) {
+    : buffer(buffer), isoc_callback(std::move(callback)) {
   urb.usercontext = this;
-  urb.buffer = buffer->as_vector().data();
+  urb.buffer = buffer->front();
 }
 
 UsbDeviceHandleUsbfs::Transfer::~Transfer() = default;
@@ -626,9 +624,8 @@ void UsbDeviceHandleUsbfs::ControlTransfer(
       direction, request_type, recipient, request, value, index, buffer);
   transfer->urb.type = USBDEVFS_URB_TYPE_CONTROL;
   transfer->urb.endpoint = 0;
-  transfer->urb.buffer = transfer->control_transfer_buffer->as_vector().data();
-  transfer->urb.buffer_length =
-      transfer->control_transfer_buffer->as_vector().size();
+  transfer->urb.buffer = transfer->control_transfer_buffer->front();
+  transfer->urb.buffer_length = transfer->control_transfer_buffer->size();
 
   // USBDEVFS_SUBMITURB appears to be non-blocking as completion is reported
   // by USBDEVFS_REAPURBNDELAY.
@@ -920,12 +917,9 @@ void UsbDeviceHandleUsbfs::TransferComplete(
     if (transfer->urb.status == 0 &&
         transfer->urb.type == USBDEVFS_URB_TYPE_CONTROL) {
       // Copy the result of the control transfer back into the original buffer.
-      const auto actual_length =
-          base::checked_cast<size_t>(transfer->urb.actual_length);
-      base::span(transfer->buffer->as_vector())
-          .first(actual_length)
-          .copy_from(base::span(*transfer->control_transfer_buffer)
-                         .subspan(8u, actual_length));
+      memcpy(transfer->buffer->front(),
+             transfer->control_transfer_buffer->front() + 8,
+             transfer->urb.actual_length);
     }
 
     transfer->RunCallback(ConvertTransferResult(-transfer->urb.status),

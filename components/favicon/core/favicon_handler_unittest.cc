@@ -100,7 +100,7 @@ std::vector<FaviconRawBitmapResult> CreateRawBitmapResult(
     int edge_size = gfx::kFaviconSize,
     SkColor color = SK_ColorRED) {
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-  data->as_vector() = FillBitmapWithEdgeSize(edge_size, color);
+  data->data() = FillBitmapWithEdgeSize(edge_size, color);
   FaviconRawBitmapResult bitmap_result;
   bitmap_result.expired = expired;
   bitmap_result.bitmap_data = data;

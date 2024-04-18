@@ -35,7 +35,8 @@ void LoadDefaultImage(content::URLDataSource::GotDataCallback callback) {
           IDR_APP_DEFAULT_ICON, apps_util::GetPrimaryDisplayUIScaleFactor());
 
   base::RefCountedBytes* image_bytes = new base::RefCountedBytes();
-  image_bytes->as_vector().assign(contents.begin(), contents.end());
+  image_bytes->data().assign(contents.data(),
+                             contents.data() + contents.size());
   std::move(callback).Run(image_bytes);
 }
 

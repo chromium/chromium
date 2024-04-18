@@ -131,9 +131,7 @@ void FeedbackData::OnGetTraceData(
   if (tracing_manager_)
     tracing_manager_->DiscardTraceData(trace_id);
 
-  std::string s;
-  std::swap(s, trace_data->as_string());
-  AddFile(kTraceFilename, std::move(s));
+  AddFile(kTraceFilename, std::move(trace_data->data()));
 
   set_category_tag(kPerformanceCategoryTag);
   --pending_op_count_;

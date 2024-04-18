@@ -275,7 +275,7 @@ void RunFaviconCallbackAsync(favicon_base::FaviconResultsCallback callback,
   for (const gfx::ImageSkiaRep& image_rep : image_reps) {
     auto bitmap_data = base::MakeRefCounted<base::RefCountedBytes>();
     if (gfx::PNGCodec::EncodeBGRASkBitmap(image_rep.GetBitmap(), false,
-                                          &bitmap_data->as_vector())) {
+                                          &bitmap_data->data())) {
       favicon_base::FaviconRawBitmapResult bitmap_result;
       bitmap_result.bitmap_data = bitmap_data;
       bitmap_result.pixel_size = gfx::Size(image_rep.pixel_width(),

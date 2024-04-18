@@ -49,6 +49,7 @@ void ReadEvent<Input::DeviceValuatorEvent>(Input::DeviceValuatorEvent* event_,
   auto& num_valuators = (*event_).num_valuators;
   auto& first_valuator = (*event_).first_valuator;
   auto& valuators = (*event_).valuators;
+  size_t valuators_len = valuators.size();
 
   // response_type
   uint8_t response_type;
@@ -206,8 +207,11 @@ void ReadEvent<Input::DeviceStateNotifyEvent>(
   auto& num_valuators = (*event_).num_valuators;
   auto& classes_reported = (*event_).classes_reported;
   auto& buttons = (*event_).buttons;
+  size_t buttons_len = buttons.size();
   auto& keys = (*event_).keys;
+  size_t keys_len = keys.size();
   auto& valuators = (*event_).valuators;
+  size_t valuators_len = valuators.size();
 
   // response_type
   uint8_t response_type;
@@ -350,6 +354,7 @@ void ReadEvent<Input::DeviceKeyStateNotifyEvent>(
   auto& device_id = (*event_).device_id;
   auto& sequence = (*event_).sequence;
   auto& keys = (*event_).keys;
+  size_t keys_len = keys.size();
 
   // response_type
   uint8_t response_type;
@@ -380,6 +385,7 @@ void ReadEvent<Input::DeviceButtonStateNotifyEvent>(
   auto& device_id = (*event_).device_id;
   auto& sequence = (*event_).sequence;
   auto& buttons = (*event_).buttons;
+  size_t buttons_len = buttons.size();
 
   // response_type
   uint8_t response_type;
@@ -496,6 +502,7 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
   auto& sourceid = (*event_).sourceid;
   auto& reason = (*event_).reason;
   auto& classes = (*event_).classes;
+  size_t classes_len = classes.size();
 
   // response_type
   uint8_t response_type;
@@ -563,6 +570,7 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
         data.key.emplace();
         uint16_t num_keys{};
         auto& keys = (*data.key).keys;
+        size_t keys_len = keys.size();
 
         // num_keys
         Read(&num_keys, &buf);
@@ -578,7 +586,9 @@ void ReadEvent<Input::DeviceChangedEvent>(Input::DeviceChangedEvent* event_,
         data.button.emplace();
         uint16_t num_buttons{};
         auto& state = (*data.button).state;
+        size_t state_len = state.size();
         auto& labels = (*data.button).labels;
+        size_t labels_len = labels.size();
 
         // num_buttons
         Read(&num_buttons, &buf);
@@ -749,8 +759,11 @@ void ReadEvent<Input::DeviceEvent>(Input::DeviceEvent* event_,
   auto& mods = (*event_).mods;
   auto& group = (*event_).group;
   auto& button_mask = (*event_).button_mask;
+  size_t button_mask_len = button_mask.size();
   auto& valuator_mask = (*event_).valuator_mask;
+  size_t valuator_mask_len = valuator_mask.size();
   auto& axisvalues = (*event_).axisvalues;
+  size_t axisvalues_len = axisvalues.size();
 
   // response_type
   uint8_t response_type;
@@ -1051,6 +1064,7 @@ void ReadEvent<Input::HierarchyEvent>(Input::HierarchyEvent* event_,
   auto& flags = (*event_).flags;
   uint16_t num_infos{};
   auto& infos = (*event_).infos;
+  size_t infos_len = infos.size();
 
   // response_type
   uint8_t response_type;
@@ -1193,8 +1207,11 @@ void ReadEvent<Input::RawDeviceEvent>(Input::RawDeviceEvent* event_,
   uint16_t valuators_len{};
   auto& flags = (*event_).flags;
   auto& valuator_mask = (*event_).valuator_mask;
+  size_t valuator_mask_len = valuator_mask.size();
   auto& axisvalues = (*event_).axisvalues;
+  size_t axisvalues_len = axisvalues.size();
   auto& axisvalues_raw = (*event_).axisvalues_raw;
+  size_t axisvalues_raw_len = axisvalues_raw.size();
 
   // response_type
   uint8_t response_type;
@@ -2106,7 +2123,9 @@ std::unique_ptr<Input::ListInputDevicesReply> detail::ReadReply<
   uint8_t devices_len{};
   auto& devices = (*reply).devices;
   auto& infos = (*reply).infos;
+  size_t infos_len = infos.size();
   auto& names = (*reply).names;
+  size_t names_len = names.size();
 
   // response_type
   uint8_t response_type;
@@ -2329,6 +2348,7 @@ std::unique_ptr<Input::OpenDeviceReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint8_t num_classes{};
   auto& class_info = (*reply).class_info;
+  size_t class_info_len = class_info.size();
 
   // response_type
   uint8_t response_type;
@@ -2599,7 +2619,9 @@ std::unique_ptr<Input::GetSelectedExtensionEventsReply> detail::ReadReply<
   uint16_t num_this_classes{};
   uint16_t num_all_classes{};
   auto& this_classes = (*reply).this_classes;
+  size_t this_classes_len = this_classes.size();
   auto& all_classes = (*reply).all_classes;
+  size_t all_classes_len = all_classes.size();
 
   // response_type
   uint8_t response_type;
@@ -2753,6 +2775,7 @@ std::unique_ptr<Input::GetDeviceDontPropagateListReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t num_classes{};
   auto& classes = (*reply).classes;
+  size_t classes_len = classes.size();
 
   // response_type
   uint8_t response_type;
@@ -2849,6 +2872,7 @@ std::unique_ptr<Input::GetDeviceMotionEventsReply> detail::ReadReply<
   auto& num_axes = (*reply).num_axes;
   auto& device_mode = (*reply).device_mode;
   auto& events = (*reply).events;
+  size_t events_len = events.size();
 
   // response_type
   uint8_t response_type;
@@ -2885,6 +2909,7 @@ std::unique_ptr<Input::GetDeviceMotionEventsReply> detail::ReadReply<
     {
       auto& time = events_elem.time;
       auto& axisvalues = events_elem.axisvalues;
+      size_t axisvalues_len = axisvalues.size();
 
       // time
       Read(&time, &buf);
@@ -3773,6 +3798,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t num_feedbacks{};
   auto& feedbacks = (*reply).feedbacks;
+  size_t feedbacks_len = feedbacks.size();
 
   // response_type
   uint8_t response_type;
@@ -3827,6 +3853,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
         auto& click = (*data.keyboard).click;
         auto& percent = (*data.keyboard).percent;
         auto& auto_repeats = (*data.keyboard).auto_repeats;
+        size_t auto_repeats_len = auto_repeats.size();
 
         // pitch
         Read(&pitch, &buf);
@@ -3881,6 +3908,7 @@ std::unique_ptr<Input::GetFeedbackControlReply> detail::ReadReply<
         auto& max_symbols = (*data.string).max_symbols;
         uint16_t num_keysyms{};
         auto& keysyms = (*data.string).keysyms;
+        size_t keysyms_len = keysyms.size();
 
         // max_symbols
         Read(&max_symbols, &buf);
@@ -4069,6 +4097,7 @@ Future<void> Input::ChangeFeedbackControl(
     if (CaseEq(data_expr, FeedbackClass::String)) {
       uint16_t num_keysyms{};
       auto& keysyms = (*data.string).keysyms;
+      size_t keysyms_len = keysyms.size();
 
       // pad1
       Pad(&buf, 2);
@@ -4193,6 +4222,7 @@ std::unique_ptr<Input::GetDeviceKeyMappingReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& keysyms_per_keycode = (*reply).keysyms_per_keycode;
   auto& keysyms = (*reply).keysyms;
+  size_t keysyms_len = keysyms.size();
 
   // response_type
   uint8_t response_type;
@@ -4338,6 +4368,7 @@ std::unique_ptr<Input::GetDeviceModifierMappingReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& keycodes_per_modifier = (*reply).keycodes_per_modifier;
   auto& keymaps = (*reply).keymaps;
+  size_t keymaps_len = keymaps.size();
 
   // response_type
   uint8_t response_type;
@@ -4515,6 +4546,7 @@ std::unique_ptr<Input::GetDeviceButtonMappingReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint8_t map_size{};
   auto& map = (*reply).map;
+  size_t map_len = map.size();
 
   // response_type
   uint8_t response_type;
@@ -4694,6 +4726,7 @@ std::unique_ptr<Input::QueryDeviceStateReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint8_t num_classes{};
   auto& classes = (*reply).classes;
+  size_t classes_len = classes.size();
 
   // response_type
   uint8_t response_type;
@@ -4738,6 +4771,7 @@ std::unique_ptr<Input::QueryDeviceStateReply> detail::ReadReply<
         data.key.emplace();
         auto& num_keys = (*data.key).num_keys;
         auto& keys = (*data.key).keys;
+        size_t keys_len = keys.size();
 
         // num_keys
         Read(&num_keys, &buf);
@@ -4755,6 +4789,7 @@ std::unique_ptr<Input::QueryDeviceStateReply> detail::ReadReply<
         data.button.emplace();
         auto& num_buttons = (*data.button).num_buttons;
         auto& buttons = (*data.button).buttons;
+        size_t buttons_len = buttons.size();
 
         // num_buttons
         Read(&num_buttons, &buf);
@@ -4773,6 +4808,7 @@ std::unique_ptr<Input::QueryDeviceStateReply> detail::ReadReply<
         uint8_t num_valuators{};
         auto& mode = (*data.valuator).mode;
         auto& valuators = (*data.valuator).valuators;
+        size_t valuators_len = valuators.size();
 
         // num_valuators
         Read(&num_valuators, &buf);
@@ -5042,8 +5078,11 @@ std::unique_ptr<Input::GetDeviceControlReply> detail::ReadReply<
       data.resolution.emplace();
       uint32_t num_valuators{};
       auto& resolution_values = (*data.resolution).resolution_values;
+      size_t resolution_values_len = resolution_values.size();
       auto& resolution_min = (*data.resolution).resolution_min;
+      size_t resolution_min_len = resolution_min.size();
       auto& resolution_max = (*data.resolution).resolution_max;
+      size_t resolution_max_len = resolution_max.size();
 
       // num_valuators
       Read(&num_valuators, &buf);
@@ -5226,6 +5265,7 @@ Future<Input::ChangeDeviceControlReply> Input::ChangeDeviceControl(
       auto& first_valuator = (*data.resolution).first_valuator;
       uint8_t num_valuators{};
       auto& resolution_values = (*data.resolution).resolution_values;
+      size_t resolution_values_len = resolution_values.size();
 
       // first_valuator
       buf.Write(&first_valuator);
@@ -5425,6 +5465,7 @@ std::unique_ptr<Input::ListDevicePropertiesReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t num_atoms{};
   auto& atoms = (*reply).atoms;
+  size_t atoms_len = atoms.size();
 
   // response_type
   uint8_t response_type;
@@ -5518,6 +5559,7 @@ Future<void> Input::ChangeDeviceProperty(
   auto items_expr = format;
   if (CaseEq(items_expr, PropertyFormat::c_8Bits)) {
     auto& data8 = *items.data8;
+    size_t data8_len = data8.size();
 
     // data8
     CHECK_EQ(static_cast<size_t>(num_items), data8.size());
@@ -5531,6 +5573,7 @@ Future<void> Input::ChangeDeviceProperty(
   }
   if (CaseEq(items_expr, PropertyFormat::c_16Bits)) {
     auto& data16 = *items.data16;
+    size_t data16_len = data16.size();
 
     // data16
     CHECK_EQ(static_cast<size_t>(num_items), data16.size());
@@ -5544,6 +5587,7 @@ Future<void> Input::ChangeDeviceProperty(
   }
   if (CaseEq(items_expr, PropertyFormat::c_32Bits)) {
     auto& data32 = *items.data32;
+    size_t data32_len = data32.size();
 
     // data32
     CHECK_EQ(static_cast<size_t>(num_items), data32.size());
@@ -5734,6 +5778,7 @@ std::unique_ptr<Input::GetDevicePropertyReply> detail::ReadReply<
   if (CaseEq(items_expr, Input::PropertyFormat::c_8Bits)) {
     items.data8.emplace();
     auto& data8 = *items.data8;
+    size_t data8_len = data8.size();
 
     // data8
     data8.resize(num_items);
@@ -5748,6 +5793,7 @@ std::unique_ptr<Input::GetDevicePropertyReply> detail::ReadReply<
   if (CaseEq(items_expr, Input::PropertyFormat::c_16Bits)) {
     items.data16.emplace();
     auto& data16 = *items.data16;
+    size_t data16_len = data16.size();
 
     // data16
     data16.resize(num_items);
@@ -5762,6 +5808,7 @@ std::unique_ptr<Input::GetDevicePropertyReply> detail::ReadReply<
   if (CaseEq(items_expr, Input::PropertyFormat::c_32Bits)) {
     items.data32.emplace();
     auto& data32 = *items.data32;
+    size_t data32_len = data32.size();
 
     // data32
     data32.resize(num_items);
@@ -6518,6 +6565,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t num_infos{};
   auto& infos = (*reply).infos;
+  size_t infos_len = infos.size();
 
   // response_type
   uint8_t response_type;
@@ -6552,6 +6600,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
       auto& enabled = infos_elem.enabled;
       auto& name = infos_elem.name;
       auto& classes = infos_elem.classes;
+      size_t classes_len = classes.size();
 
       // deviceid
       Read(&deviceid, &buf);
@@ -6613,6 +6662,7 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
             data.key.emplace();
             uint16_t num_keys{};
             auto& keys = (*data.key).keys;
+            size_t keys_len = keys.size();
 
             // num_keys
             Read(&num_keys, &buf);
@@ -6628,7 +6678,9 @@ std::unique_ptr<Input::XIQueryDeviceReply> detail::ReadReply<
             data.button.emplace();
             uint16_t num_buttons{};
             auto& state = (*data.button).state;
+            size_t state_len = state.size();
             auto& labels = (*data.button).labels;
+            size_t labels_len = labels.size();
 
             // num_buttons
             Read(&num_buttons, &buf);
@@ -7250,6 +7302,7 @@ std::unique_ptr<Input::XIPassiveGrabDeviceReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t num_modifiers{};
   auto& modifiers = (*reply).modifiers;
+  size_t modifiers_len = modifiers.size();
 
   // response_type
   uint8_t response_type;
@@ -7417,6 +7470,7 @@ std::unique_ptr<Input::XIListPropertiesReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t num_properties{};
   auto& properties = (*reply).properties;
+  size_t properties_len = properties.size();
 
   // response_type
   uint8_t response_type;
@@ -7507,6 +7561,7 @@ Future<void> Input::XIChangeProperty(
   auto items_expr = format;
   if (CaseEq(items_expr, PropertyFormat::c_8Bits)) {
     auto& data8 = *items.data8;
+    size_t data8_len = data8.size();
 
     // data8
     CHECK_EQ(static_cast<size_t>(num_items), data8.size());
@@ -7520,6 +7575,7 @@ Future<void> Input::XIChangeProperty(
   }
   if (CaseEq(items_expr, PropertyFormat::c_16Bits)) {
     auto& data16 = *items.data16;
+    size_t data16_len = data16.size();
 
     // data16
     CHECK_EQ(static_cast<size_t>(num_items), data16.size());
@@ -7533,6 +7589,7 @@ Future<void> Input::XIChangeProperty(
   }
   if (CaseEq(items_expr, PropertyFormat::c_32Bits)) {
     auto& data32 = *items.data32;
+    size_t data32_len = data32.size();
 
     // data32
     CHECK_EQ(static_cast<size_t>(num_items), data32.size());
@@ -7715,6 +7772,7 @@ std::unique_ptr<Input::XIGetPropertyReply> detail::ReadReply<
   if (CaseEq(items_expr, Input::PropertyFormat::c_8Bits)) {
     items.data8.emplace();
     auto& data8 = *items.data8;
+    size_t data8_len = data8.size();
 
     // data8
     data8.resize(num_items);
@@ -7729,6 +7787,7 @@ std::unique_ptr<Input::XIGetPropertyReply> detail::ReadReply<
   if (CaseEq(items_expr, Input::PropertyFormat::c_16Bits)) {
     items.data16.emplace();
     auto& data16 = *items.data16;
+    size_t data16_len = data16.size();
 
     // data16
     data16.resize(num_items);
@@ -7743,6 +7802,7 @@ std::unique_ptr<Input::XIGetPropertyReply> detail::ReadReply<
   if (CaseEq(items_expr, Input::PropertyFormat::c_32Bits)) {
     items.data32.emplace();
     auto& data32 = *items.data32;
+    size_t data32_len = data32.size();
 
     // data32
     data32.resize(num_items);
@@ -7803,6 +7863,7 @@ std::unique_ptr<Input::XIGetSelectedEventsReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint16_t num_masks{};
   auto& masks = (*reply).masks;
+  size_t masks_len = masks.size();
 
   // response_type
   uint8_t response_type;

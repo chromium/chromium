@@ -101,28 +101,24 @@ void HidConnectionMac::InputReportCallback(void* context,
                                            void* sender,
                                            IOHIDReportType type,
                                            uint32_t report_id,
-                                           uint8_t* report_bytes_ptr,
-                                           CFIndex report_bytes_len) {
+                                           uint8_t* report_bytes,
+                                           CFIndex report_length) {
   HidConnectionMac* connection = static_cast<HidConnectionMac*>(context);
   if (result != kIOReturnSuccess) {
     HID_LOG(EVENT) << "Failed to read input report: " << HexErrorCode(result);
     return;
   }
 
-  // SAFETY: This function is called by macOS with the guarantee that
-  // `report_byte_ptr` will point to at least `report_bytes_len` many bytes.
-  base::span<const uint8_t> report_bytes = UNSAFE_BUFFERS(base::span(
-      report_bytes_ptr, base::checked_cast<size_t>(report_bytes_len)));
-
   scoped_refptr<base::RefCountedBytes> buffer;
   if (connection->device_info()->has_report_id()) {
     // report_id is already contained in report_bytes
-    buffer = base::MakeRefCounted<base::RefCountedBytes>(report_bytes);
+    buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        report_bytes, base::checked_cast<size_t>(report_length));
   } else {
     buffer = base::MakeRefCounted<base::RefCountedBytes>(
-        (base::CheckedNumeric<size_t>(report_bytes.size()) + 1u).ValueOrDie());
-    buffer->as_vector()[0] = 0;
-    base::span(buffer->as_vector()).subspan(1u).copy_from(report_bytes);
+        (base::CheckedNumeric<size_t>(report_length) + 1).ValueOrDie());
+    buffer->front()[0] = 0;
+    memcpy(buffer->front() + 1, report_bytes, report_length);
   }
 
   connection->ProcessInputReport(buffer, buffer->size());
@@ -141,7 +137,7 @@ void HidConnectionMac::GetFeatureReportAsync(uint8_t report_id,
   // kernel API that this is safe.
   IOReturn result =
       IOHIDDeviceGetReport(device_.get(), kIOHIDReportTypeFeature, report_id,
-                           buffer->as_vector().data(), &report_size);
+                           buffer->front(), &report_size);
   if (result == kIOReturnSuccess) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&HidConnectionMac::ReturnAsyncResult, this,
@@ -160,12 +156,15 @@ void HidConnectionMac::SetReportAsync(
     IOHIDReportType report_type,
     scoped_refptr<base::RefCountedBytes> buffer,
     WriteCallback callback) {
-  auto data = base::span(buffer->as_vector());
-  uint8_t report_id = data[0u];
+  uint8_t* data = buffer->front();
+  size_t size = buffer->size();
+  DCHECK_GE(size, 1u);
+  uint8_t report_id = data[0];
   if (report_id == 0) {
     // OS X only expects the first byte of the buffer to be the report ID if the
     // report ID is non-zero.
-    data = data.subspan(1u);
+    ++data;
+    --size;
   }
 
   // The IOHIDDevice object is shared with the UI thread and so this function
@@ -173,8 +172,8 @@ void HidConnectionMac::SetReportAsync(
   // version is NOT IMPLEMENTED. I've examined the open source implementation
   // of this function and believe it is a simple enough wrapper around the
   // kernel API that this is safe.
-  IOReturn result = IOHIDDeviceSetReport(device_.get(), report_type, report_id,
-                                         data.data(), data.size());
+  IOReturn result =
+      IOHIDDeviceSetReport(device_.get(), report_type, report_id, data, size);
   if (result == kIOReturnSuccess) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&HidConnectionMac::ReturnAsyncResult, this,

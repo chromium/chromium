@@ -79,7 +79,7 @@ static void OnTraceDataCollected(
     trace_event::TraceResultBuffer* buffer,
     const scoped_refptr<RefCountedString>& json_events_str,
     bool has_more_events) {
-  buffer->AddFragment(json_events_str->as_string());
+  buffer->AddFragment(json_events_str->data());
   if (!has_more_events)
     std::move(quit_closure).Run();
 }

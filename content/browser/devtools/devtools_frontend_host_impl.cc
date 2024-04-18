@@ -99,7 +99,7 @@ std::string DevToolsFrontendHost::GetFrontendResource(const std::string& path) {
   scoped_refptr<base::RefCountedMemory> bytes = GetFrontendResourceBytes(path);
   if (!bytes)
     return std::string();
-  return std::string(base::as_string_view(*bytes));
+  return std::string(bytes->front_as<char>(), bytes->size());
 }
 
 DevToolsFrontendHostImpl::DevToolsFrontendHostImpl(

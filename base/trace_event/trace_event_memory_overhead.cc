@@ -91,7 +91,7 @@ void TraceEventMemoryOverhead::AddString(const std::string& str) {
 void TraceEventMemoryOverhead::AddRefCountedString(
     const RefCountedString& str) {
   Add(kOther, sizeof(RefCountedString));
-  AddString(str.as_string());
+  AddString(str.data());
 }
 
 void TraceEventMemoryOverhead::AddValue(const Value& value) {

@@ -449,7 +449,7 @@ void UsbDeviceHandleMac::ControlTransfer(
   device_request.wIndex = index;
   device_request.bmRequestType =
       CreateRequestType(direction, request_type, recipient);
-  device_request.pData = buffer->as_vector().data();
+  device_request.pData = buffer->front_as<void*>();
   device_request.wLength = static_cast<uint16_t>(buffer->size());
   device_request.completionTimeout = timeout;
   device_request.noDataTimeout = timeout;
@@ -550,7 +550,7 @@ void UsbDeviceHandleMac::IsochronousTransferIn(
   kr = (*interface_interface.get())
            ->ReadIsochPipeAsync(interface_interface.get(),
                                 endpoint_it->second.pipe_reference,
-                                buffer->as_vector().data(), bus_frame,
+                                buffer->front_as<void*>(), bus_frame,
                                 static_cast<uint32_t>(packet_lengths.size()),
                                 transfer->frame_list.data(), &AsyncIoCallback,
                                 reinterpret_cast<void*>(transfer_data));
@@ -636,7 +636,7 @@ void UsbDeviceHandleMac::IsochronousTransferOut(
   kr = (*interface_interface.get())
            ->WriteIsochPipeAsync(interface_interface.get(),
                                  endpoint_it->second.pipe_reference,
-                                 buffer->as_vector().data(), bus_frame,
+                                 buffer->front_as<void*>(), bus_frame,
                                  static_cast<uint32_t>(packet_lengths.size()),
                                  transfer->frame_list.data(), &AsyncIoCallback,
                                  reinterpret_cast<void*>(transfer_data));
@@ -749,7 +749,7 @@ void UsbDeviceHandleMac::BulkIn(
   auto result = transfers_.insert(std::move(transfer));
   IOReturn kr = (*interface_interface.get())
                     ->ReadPipeAsyncTO(interface_interface.get(), pipe_reference,
-                                      buffer->as_vector().data(),
+                                      buffer->front_as<void*>(),
                                       static_cast<uint32_t>(buffer->size()),
                                       timeout, timeout, &AsyncIoCallback,
                                       reinterpret_cast<void*>(transfer_data));
@@ -773,7 +773,7 @@ void UsbDeviceHandleMac::BulkOut(
   IOReturn kr =
       (*interface_interface.get())
           ->WritePipeAsyncTO(interface_interface.get(), pipe_reference,
-                             buffer->as_vector().data(),
+                             buffer->front_as<void*>(),
                              static_cast<uint32_t>(buffer->size()), timeout,
                              timeout, &AsyncIoCallback,
                              reinterpret_cast<void*>(transfer_data));
@@ -795,7 +795,7 @@ void UsbDeviceHandleMac::InterruptIn(
   auto result = transfers_.insert(std::move(transfer));
   IOReturn kr = (*interface_interface.get())
                     ->ReadPipeAsync(interface_interface.get(), pipe_reference,
-                                    buffer->as_vector().data(),
+                                    buffer->front_as<void*>(),
                                     static_cast<uint32_t>(buffer->size()),
                                     &AsyncIoCallback,
                                     reinterpret_cast<void*>(transfer_data));
@@ -816,7 +816,7 @@ void UsbDeviceHandleMac::InterruptOut(
   auto result = transfers_.insert(std::move(transfer));
   IOReturn kr = (*interface_interface.get())
                     ->WritePipeAsync(interface_interface.get(), pipe_reference,
-                                     buffer->as_vector().data(),
+                                     buffer->front_as<void*>(),
                                      static_cast<uint32_t>(buffer->size()),
                                      &AsyncIoCallback,
                                      reinterpret_cast<void*>(transfer_data));

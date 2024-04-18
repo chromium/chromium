@@ -415,8 +415,8 @@ bool HasGzipHeader(const base::RefCountedMemory& maybe_gzipped) {
   net::GZipHeader::Status header_status = net::GZipHeader::INCOMPLETE_HEADER;
   const char* header_end = nullptr;
   while (header_status == net::GZipHeader::INCOMPLETE_HEADER) {
-    auto chars = base::as_chars(base::span(maybe_gzipped));
-    header_status = header.ReadMore(chars.data(), chars.size(), &header_end);
+    header_status = header.ReadMore(maybe_gzipped.front_as<char>(),
+                                    maybe_gzipped.size(), &header_end);
   }
   return header_status == net::GZipHeader::COMPLETE_HEADER;
 }
@@ -424,13 +424,11 @@ bool HasGzipHeader(const base::RefCountedMemory& maybe_gzipped) {
 void AppendGzippedResource(const base::RefCountedMemory& encoded,
                            std::string* to_append) {
   auto source_stream = std::make_unique<net::MockSourceStream>();
-  auto encoded_chars = base::as_chars(base::span(encoded));
-  source_stream->AddReadResult(encoded_chars.data(), encoded_chars.size(),
+  source_stream->AddReadResult(encoded.front_as<char>(), encoded.size(),
                                net::OK, net::MockSourceStream::SYNC);
   // Add an EOF.
-  auto end = encoded_chars.last(0u);
-  source_stream->AddReadResult(end.data(), end.size(), net::OK,
-                               net::MockSourceStream::SYNC);
+  source_stream->AddReadResult(encoded.front_as<char>() + encoded.size(), 0,
+                               net::OK, net::MockSourceStream::SYNC);
   std::unique_ptr<net::GzipSourceStream> filter = net::GzipSourceStream::Create(
       std::move(source_stream), net::SourceStream::TYPE_GZIP);
   scoped_refptr<net::IOBufferWithSize> dest_buffer =
@@ -1915,12 +1913,10 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
           IDR_ASH_WEBUI_COMMON_WEBUI_RESOURCE_TEST_JS);
 
-  if (HasGzipHeader(*bytes)) {
+  if (HasGzipHeader(*bytes))
     AppendGzippedResource(*bytes, &script);
-  } else {
-    auto chars = base::as_chars(base::span(*bytes));
-    script.append(chars.data(), chars.size());
-  }
+  else
+    script.append(bytes->front_as<char>(), bytes->size());
 
   script.append("\n");
   ExecuteScriptAsync(web_contents, script);

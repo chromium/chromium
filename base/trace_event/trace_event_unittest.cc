@@ -198,12 +198,12 @@ void TraceEventTestFixture::OnTraceDataCollected(
     bool has_more_events) {
   num_flush_callbacks_++;
   if (num_flush_callbacks_ > 1) {
-    EXPECT_FALSE(events_str->as_string().empty());
+    EXPECT_FALSE(events_str->data().empty());
   }
   AutoLock lock(lock_);
   json_output_.json_output.clear();
   trace_buffer_.Start();
-  trace_buffer_.AddFragment(events_str->as_string());
+  trace_buffer_.AddFragment(events_str->data());
   trace_buffer_.Finish();
 
   std::optional<Value> root = base::JSONReader::Read(

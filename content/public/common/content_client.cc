@@ -125,7 +125,7 @@ std::string ContentClient::GetDataResourceString(int resource_id) {
       GetDataResourceBytes(resource_id);
   if (!memory)
     return std::string();
-  return std::string(base::as_string_view(*memory));
+  return std::string(memory->front_as<char>(), memory->size());
 }
 
 gfx::Image& ContentClient::GetNativeImageNamed(int resource_id) {

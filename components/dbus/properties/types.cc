@@ -146,7 +146,8 @@ DbusByteArray::~DbusByteArray() = default;
 
 bool DbusByteArray::IsEqual(const DbusType& other_type) const {
   const DbusByteArray* other = static_cast<const DbusByteArray*>(&other_type);
-  return value_->Equals(other->value_);
+  return value_->size() == other->value_->size() &&
+         !memcmp(value_->front(), other->value_->front(), value_->size());
 }
 
 void DbusByteArray::Write(dbus::MessageWriter* writer) const {
