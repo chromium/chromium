@@ -585,7 +585,7 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
           base::Milliseconds(100));
 }
 
-AXObject* AXNodeObject::ActiveDescendant() {
+AXObject* AXNodeObject::ActiveDescendant() const {
   Element* element = GetElement();
   if (!element)
     return nullptr;

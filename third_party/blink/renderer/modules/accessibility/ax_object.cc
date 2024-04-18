@@ -1342,7 +1342,7 @@ void SerializeAriaNotificationAttributes(const AriaNotifications& notifications,
 }  // namespace
 
 void AXObject::Serialize(ui::AXNodeData* node_data,
-                         ui::AXMode accessibility_mode) {
+                         ui::AXMode accessibility_mode) const {
   // Reduce redundant ancestor chain walking for display lock computations.
   auto memoization_scope =
       DisplayLockUtilities::CreateLockCheckMemoizationScope();
@@ -1496,7 +1496,7 @@ void AXObject::PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
     bounds.transform = std::make_unique<gfx::Transform>(container_transform);
 }
 
-void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) const {
   if (CanSetValueAttribute())
     node_data->AddAction(ax::mojom::blink::Action::kSetValue);
   if (IsSlider()) {
@@ -1513,7 +1513,7 @@ void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
   }
 }
 
-void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
+void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) const {
   // If a child tree has explicitly been stitched at this object via the
   // `ax::mojom::blink::Action::kStitchChildTree`, then override any child trees
   // coming from HTML.
@@ -1566,7 +1566,7 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
   node_data->AddChildTreeId(child_tree_id);
 }
 
-void AXObject::SerializeChooserPopupAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeChooserPopupAttributes(ui::AXNodeData* node_data) const {
   AXObject* chooser_popup = ChooserPopup();
   if (!chooser_popup)
     return;
@@ -1579,7 +1579,7 @@ void AXObject::SerializeChooserPopupAttributes(ui::AXNodeData* node_data) {
       ax::mojom::blink::IntListAttribute::kControlsIds, controls_ids);
 }
 
-void AXObject::SerializeColorAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeColorAttributes(ui::AXNodeData* node_data) const {
   // Text attributes.
   if (RGBA32 bg_color = BackgroundColor()) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kBackgroundColor,
@@ -1590,7 +1590,7 @@ void AXObject::SerializeColorAttributes(ui::AXNodeData* node_data) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColor, color);
 }
 
-void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) const {
   Element* element = GetElement();
   if (!element)
     return;
@@ -1608,7 +1608,7 @@ void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
       node_data, ax::mojom::blink::StringAttribute::kRole, role_str);
 }
 
-void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) {
+void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) const {
   Element* element = GetElement();
   if (!element) {
     if (IsA<Document>(GetNode())) {
@@ -1628,7 +1628,7 @@ void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) {
   }
 }
 
-void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) const {
   Element* element = GetElement();
   DCHECK(element);
   for (const Attribute& attr : element->Attributes()) {
@@ -1673,7 +1673,7 @@ void AXObject::SerializeInlineTextBoxAttributes(
       ax::mojom::blink::IntListAttribute::kWordEnds, word_ends, node_data);
 }
 
-void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) {
+void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) const {
   AXObject* parent = ParentObject();
   if (Language().length()) {
     // TODO(chrishall): should we still trim redundant languages off here?
@@ -1684,7 +1684,7 @@ void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) {
   }
 }
 
-void AXObject::SerializeListAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeListAttributes(ui::AXNodeData* node_data) const {
   if (SetSize()) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSetSize,
                                SetSize());
@@ -1798,7 +1798,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
       node_data, ax::mojom::blink::StringAttribute::kPlaceholder, placeholder);
 }
 
-void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const {
   if (ui::IsText(RoleValue())) {
     // Don't serialize these attributes on text, where it is uninteresting.
     return;
@@ -2007,7 +2007,7 @@ void AXObject::SerializeOtherScreenReaderAttributes(
   }
 }
 
-void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) const {
   // Only mark as scrollable if user has actual scrollbars to use.
   node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kScrollable,
                               IsUserScrollable());
@@ -2032,7 +2032,7 @@ void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
                              max_scroll_offset.y());
 }
 
-void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) const {
   if (IsVirtualObject()) {
     AccessibleNode* accessible_node = GetAccessibleNode();
     if (accessible_node) {
@@ -2070,7 +2070,7 @@ void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
   }
 }
 
-void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) const {
   // Only serialize font family if there is one, and it is different from the
   // parent. Use the value from computed style first since that is a fast lookup
   // and comparison, and serialize the user-friendly name at points in the tree
@@ -2142,7 +2142,7 @@ void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
   }
 }
 
-void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
   if (ui::IsTableLike(RoleValue())) {
     int aria_colcount = AriaColumnCount();
     if (aria_colcount) {
@@ -2199,7 +2199,7 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
 
 // Attributes that don't need to be serialized on ignored nodes.
 void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
-                                            ui::AXMode accessibility_mode) {
+                                            ui::AXMode accessibility_mode) const {
   AccessibilityExpanded expanded = IsExpanded();
   if (expanded) {
     if (expanded == kExpandedCollapsed)
@@ -2457,13 +2457,13 @@ AXObject* AXObject::GetTargetPopoverForInvoker() const {
 // helps identify focusable options in the listbox using activedescendant
 // detection, even though the focus is on the textbox and not on the listbox
 // ancestor.
-AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
+AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
   // Only perform work for textfields.
   if (!ui::IsTextField(RoleValue()))
     return nullptr;
 
   // Object is ignored for some reason, most likely hidden.
-  if (AccessibilityIsIgnored()) {
+  if (LastKnownIsIgnoredValue()) {
     return nullptr;
   }
 
@@ -2522,7 +2522,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
 }
 
 const AtomicString& AXObject::GetRoleStringForSerialization(
-    ui::AXNodeData* node_data) {
+    ui::AXNodeData* node_data) const {
   // All ARIA roles are exposed in xml-roles.
   if (const AtomicString& role_str =
           GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
@@ -7937,11 +7937,11 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
 }
 
 // Extra checks that only occur during serialization.
-void AXObject::PreSerializationConsistencyCheck() {
+void AXObject::PreSerializationConsistencyCheck() const{
   CHECK(!IsDetached()) << "Do not serialize detached nodes: " << this;
   CHECK(AXObjectCache().IsFrozen());
   CHECK(!NeedsToUpdateCachedValues()) << "Stale values on: " << this;
-  if (!AccessibilityIsIncludedInTree()) {
+  if (!LastKnownIsIncludedInTreeValue()) {
     AXObject* included_parent = ParentObjectIncludedInTree();
     // TODO(accessibility): Return to CHECK once it has been resolved,
     // so that the message does not bloat stable releases.

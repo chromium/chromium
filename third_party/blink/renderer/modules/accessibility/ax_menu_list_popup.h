@@ -53,7 +53,7 @@ class AXMenuListPopup final : public AXMockObject {
   void DidUpdateActiveOption(int option_index, bool fire_notifications = true);
   void DidShow();
   void DidHide();
-  AXObject* ActiveDescendant() final;
+  AXObject* ActiveDescendant() const final;
   AXObject* owner() const { return owner_; }
 
  private:

@@ -513,13 +513,17 @@ class MODULES_EXPORT AXObjectCacheImpl
       std::set<ui::AXSerializationErrorFlag>* out_error = nullptr) override;
 
   // Marks an object as dirty to be serialized in the next serialization.
+  // If |subtree| is true, the entire subtree is dirty.
+  // |event_from| and |event_from_action| annotate this node change with info
+  // about the event which caused the change. For example, an event from a user
+  // or an event from a focus action.
   void AddDirtyObjectToSerializationQueue(
-      AXObject* obj,
+      const AXObject* obj,
       ax::mojom::blink::EventFrom event_from =
           ax::mojom::blink::EventFrom::kNone,
       ax::mojom::blink::Action event_from_action =
           ax::mojom::blink::Action::kNone,
-      const std::vector<ui::AXEventIntent>& event_intents = {}) override;
+      const std::vector<ui::AXEventIntent>& event_intents = {});
 
   void GetUpdatesAndEventsForSerialization(
       std::vector<ui::AXTreeUpdate>& updates,
@@ -649,7 +653,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
  private:
   struct AXDirtyObject : public GarbageCollected<AXDirtyObject> {
-    AXDirtyObject(AXObject* obj_arg,
+    AXDirtyObject(const AXObject* obj_arg,
                   ax::mojom::blink::EventFrom event_from_arg,
                   ax::mojom::blink::Action event_from_action_arg,
                   std::vector<ui::AXEventIntent> event_intents_arg)
@@ -658,7 +662,7 @@ class MODULES_EXPORT AXObjectCacheImpl
           event_from_action(event_from_action_arg),
           event_intents(event_intents_arg) {}
 
-    static AXDirtyObject* Create(AXObject* obj,
+    static AXDirtyObject* Create(const AXObject* obj,
                                  ax::mojom::blink::EventFrom event_from,
                                  ax::mojom::blink::Action event_from_action,
                                  std::vector<ui::AXEventIntent> event_intents) {
@@ -668,7 +672,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
     void Trace(Visitor* visitor) const { visitor->Trace(obj); }
 
-    Member<AXObject> obj;
+    Member<const AXObject> obj;
     ax::mojom::blink::EventFrom event_from;
     ax::mojom::blink::Action event_from_action;
     std::vector<ui::AXEventIntent> event_intents ALLOW_DISCOURAGED_TYPE(
@@ -1159,8 +1163,8 @@ class MODULES_EXPORT AXObjectCacheImpl
       render_accessibility_host_;
 
   Member<BlinkAXTreeSource> ax_tree_source_;
-  std::unique_ptr<ui::AXTreeSerializer<AXObject*,
-                                       HeapVector<Member<AXObject>>,
+  std::unique_ptr<ui::AXTreeSerializer<const AXObject*,
+                                       HeapVector<Member<const AXObject>>,
                                        ui::AXTreeUpdate*,
                                        ui::AXTreeData*,
                                        ui::AXNodeData>>

@@ -22,7 +22,7 @@ namespace blink {
 // accessibility attribute.
 
 using AXSparseSetterFunc =
-    base::RepeatingCallback<void(AXObject* ax_object,
+    base::RepeatingCallback<void(const AXObject* ax_object,
                                  ui::AXNodeData* node_data,
                                  const AtomicString& value)>;
 using AXSparseAttributeSetterMap = HashMap<QualifiedName, AXSparseSetterFunc>;

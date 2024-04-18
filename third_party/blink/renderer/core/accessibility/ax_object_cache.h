@@ -239,18 +239,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   virtual void MarkElementDirty(const Node*) = 0;
 
-  // Notifies that an AXObject is dirty and its state needs
-  // to be serialized again. If |subtree| is true, the entire subtree is
-  // dirty.
-  // |event_from| and |event_from_action| annotate this node change with info
-  // about the event which caused the change. For example, an event from a user
-  // or an event from a focus action.
-  virtual void AddDirtyObjectToSerializationQueue(
-      AXObject* obj,
-      ax::mojom::blink::EventFrom event_from,
-      ax::mojom::blink::Action event_from_action,
-      const std::vector<ui::AXEventIntent>& event_intents) = 0;
-
   // Returns a vector of the images found in |updates|.
   virtual void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                                    std::vector<ui::AXNodeData*>&) = 0;

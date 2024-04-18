@@ -200,7 +200,7 @@ void AXMenuListPopup::DidShow() {
   cache.MarkAXSubtreeDirtyWithCleanLayout(ParentObject());
 }
 
-AXObject* AXMenuListPopup::ActiveDescendant() {
+AXObject* AXMenuListPopup::ActiveDescendant() const {
   // Some Windows screen readers don't work properly if the active descendant
   // gets the focus before they focus the list menu popup.
   if (parent_ && !parent_->IsFocused())

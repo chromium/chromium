@@ -98,8 +98,8 @@ std::string ParentChainToStringHelper(const AXObject* obj) {
 
 void CheckTreeConsistency(
     AXObjectCacheImpl& cache,
-    ui::AXTreeSerializer<AXObject*,
-                         HeapVector<Member<AXObject>>,
+    ui::AXTreeSerializer<const AXObject*,
+                         HeapVector<Member<const AXObject>>,
                          ui::AXTreeUpdate*,
                          ui::AXTreeData*,
                          ui::AXNodeData>& serializer,
@@ -156,7 +156,7 @@ void CheckTreeConsistency(
       AXObject* obj = cache.ObjectFromAXID(id);
       if (!obj) {
         msg << "\n* Serialized node does not exist: " << id;
-        if (AXObject* parent = serializer.ParentOf(id)) {
+        if (const AXObject* parent = serializer.ParentOf(id)) {
           msg << "\n* Parent = " << parent;
         }
       } else if (!obj->LastKnownIsIncludedInTreeValue()) {

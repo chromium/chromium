@@ -839,7 +839,7 @@ void AXObjectCacheImpl::EnsureRelationCacheAndInitialTree() {
 void AXObjectCacheImpl::EnsureSerializer() {
   if (!ax_tree_serializer_) {
     ax_tree_serializer_ = std::make_unique<ui::AXTreeSerializer<
-        AXObject*, HeapVector<Member<AXObject>>, ui::AXTreeUpdate*,
+        const AXObject*, HeapVector<Member<const AXObject>>, ui::AXTreeUpdate*,
         ui::AXTreeData*, ui::AXNodeData>>(ax_tree_source_,
                                           /*crash_on_error*/ true);
   }
@@ -5235,7 +5235,7 @@ bool AXObjectCacheImpl::SerializeEntireTree(
   // or a partial accessibility tree. AXTreeSerializer is stateful, but the
   // first time you serialize from a brand-new tree you're guaranteed to get a
   // complete tree.
-  ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>,
+  ui::AXTreeSerializer<const AXObject*, HeapVector<Member<const AXObject>>,
                        ui::AXTreeUpdate*, ui::AXTreeData*, ui::AXNodeData>
       serializer(tree_source);
 
@@ -5260,7 +5260,7 @@ bool AXObjectCacheImpl::SerializeEntireTree(
 }
 
 void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
-    AXObject* obj,
+    const AXObject* obj,
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     const std::vector<ui::AXEventIntent>& event_intents) {
@@ -5313,7 +5313,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
   }
   ui::AXNodeData::AXNodeDataSize node_data_size;
   for (auto& current_dirty_object : dirty_objects_) {
-    AXObject* obj = current_dirty_object->obj;
+    const AXObject* obj = current_dirty_object->obj;
 
     // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
     // parts of the code as well, so we need to ensure the object still
@@ -5333,7 +5333,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     // cas a children changed will also be fired on the included ancestor. The
     // children changed event on the ancestor means that attempting to
     // serialize this unincluded object is not necessary.
-    if (!obj->AccessibilityIsIncludedInTree())
+    if (!obj->LastKnownIsIncludedInTreeValue())
       continue;
 
     DCHECK(obj->AXObjectID());

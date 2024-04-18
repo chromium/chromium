@@ -84,7 +84,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ax::mojom::blink::Role DetermineRoleValue() override;
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
   void AlterSliderOrSpinButtonValue(bool increase);
-  AXObject* ActiveDescendant() override;
+  AXObject* ActiveDescendant() const override;
   String AriaAccessibilityDescription() const;
   String AutoComplete() const override;
   void AccessibilityChildrenFromAOMProperty(AOMRelationListProperty,

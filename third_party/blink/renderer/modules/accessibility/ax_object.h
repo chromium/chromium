@@ -373,7 +373,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   //
   // TODO(crbug.com/1068668): AX onion soup - finish migrating
   // BlinkAXTreeSource::SerializeNode into AXObject::Serialize.
-  void Serialize(ui::AXNodeData* node_data, ui::AXMode accessibility_mode);
+  void Serialize(ui::AXNodeData* node_data, ui::AXMode accessibility_mode) const;
 
   // Determine subclass type.
   virtual bool IsImageMapLink() const;
@@ -883,11 +883,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Get the role to be used in StringAttribute::kRole, which is used in the
   // xml-roles object attribute.
-  const AtomicString& GetRoleStringForSerialization(ui::AXNodeData* node_data);
+  const AtomicString& GetRoleStringForSerialization(ui::AXNodeData* node_data) const;
 
   // ARIA attributes.
   bool HasAriaAttribute(bool does_undo_role_presentation = false) const;
-  virtual AXObject* ActiveDescendant() { return nullptr; }
+  virtual AXObject* ActiveDescendant() const { return nullptr; }
   virtual String AutoComplete() const { return String(); }
   virtual void AriaOwnsElements(AXObjectVector& owns) const {}
   virtual void AriaDescribedbyElements(AXObjectVector&) const {}
@@ -911,7 +911,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AXObject* GetTargetPopoverForInvoker() const;
 
   // Heuristic to get the listbox for an <input role="combobox">.
-  AXObject* GetControlsListboxForTextfieldCombobox();
+  AXObject* GetControlsListboxForTextfieldCombobox() const;
 
   // Returns true if this object is within or at the root of an editable region,
   // such as a contenteditable. Also, returns true if this object is an atomic
@@ -1447,7 +1447,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
       const AXObject* aria_label_or_description_root) const;
 
   // Extra checks that occur right before a node is evaluated for serialization.
-  void PreSerializationConsistencyCheck();
+  void PreSerializationConsistencyCheck() const;
 
   // Returns a string representation of this object.
   String ToString(bool verbose = true) const;
@@ -1520,28 +1520,28 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Helpers for serialization.
   void SerializeBoundingBoxAttributes(ui::AXNodeData& dst) const;
-  void SerializeActionAttributes(ui::AXNodeData* node_data);
-  void SerializeChildTreeID(ui::AXNodeData* node_data);
-  void SerializeChooserPopupAttributes(ui::AXNodeData* node_data);
-  void SerializeColorAttributes(ui::AXNodeData* node_data);
-  void SerializeElementAttributes(ui::AXNodeData* node_data);
-  void SerializeHTMLTagAndClass(ui::AXNodeData* node_data);
-  void SerializeHTMLAttributes(ui::AXNodeData* node_data);
+  void SerializeActionAttributes(ui::AXNodeData* node_data) const;
+  void SerializeChildTreeID(ui::AXNodeData* node_data) const;
+  void SerializeChooserPopupAttributes(ui::AXNodeData* node_data) const;
+  void SerializeColorAttributes(ui::AXNodeData* node_data) const;
+  void SerializeElementAttributes(ui::AXNodeData* node_data) const;
+  void SerializeHTMLTagAndClass(ui::AXNodeData* node_data) const;
+  void SerializeHTMLAttributes(ui::AXNodeData* node_data) const;
   void SerializeInlineTextBoxAttributes(ui::AXNodeData* node_data) const;
-  void SerializeLangAttribute(ui::AXNodeData* node_data);
-  void SerializeListAttributes(ui::AXNodeData* node_data);
+  void SerializeLangAttribute(ui::AXNodeData* node_data) const;
+  void SerializeListAttributes(ui::AXNodeData* node_data) const;
   void SerializeListMarkerAttributes(ui::AXNodeData* dst) const;
   void SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const;
   void SerializeNameAndDescriptionAttributes(ui::AXMode accessibility_mode,
                                              ui::AXNodeData* node_data) const;
   void SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) const;
-  void SerializeScreenReaderAttributes(ui::AXNodeData* node_data);
-  void SerializeScrollAttributes(ui::AXNodeData* node_data);
-  void SerializeSparseAttributes(ui::AXNodeData* node_data);
-  void SerializeStyleAttributes(ui::AXNodeData* node_data);
-  void SerializeTableAttributes(ui::AXNodeData* node_data);
+  void SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const;
+  void SerializeScrollAttributes(ui::AXNodeData* node_data) const;
+  void SerializeSparseAttributes(ui::AXNodeData* node_data) const;
+  void SerializeStyleAttributes(ui::AXNodeData* node_data) const;
+  void SerializeTableAttributes(ui::AXNodeData* node_data) const;
   void SerializeUnignoredAttributes(ui::AXNodeData* node_data,
-                                    ui::AXMode accessibility_mode);
+                                    ui::AXMode accessibility_mode) const;
   void SerializeComputedDetailsRelation(ui::AXNodeData* node_data) const;
 
   // Serialization implemented in specific subclasses.
