@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.xsurface_provider;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -32,6 +34,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
     private final @Nullable LibraryResolver mLibraryResolver;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
     private final String mApiKey;
+    private final ConnectivityManager mConnectivityManager;
 
     private static boolean sEnableAppFlowDebugging;
 
@@ -48,6 +51,8 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
         } else {
             mLibraryResolver = null;
         }
+        mConnectivityManager =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     @Override
@@ -191,6 +196,17 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
     @Override
     public boolean enableAppFlowDebugging() {
         return sEnableAppFlowDebugging;
+    }
+
+    @Override
+    public boolean isNetworkOnline() {
+        NetworkCapabilities capabilities =
+                mConnectivityManager.getNetworkCapabilities(
+                        mConnectivityManager.getActiveNetwork());
+        return capabilities != null
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED);
     }
 
     @VisibleForTesting
