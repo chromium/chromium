@@ -42,11 +42,11 @@ void ResetTabPickupLastDisplayedURLPref() {
   [ChromeEarlGrey clearUserPrefWithName:prefs::kTabPickupLastDisplayedURL];
 }
 
-// Sign in and sync using a fake identity.
-void SignInAndSync() {
+// Sign in and enable history/tab sync using a fake identity.
+void SignInAndEnableHistorySync() {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fake_identity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:YES];
+  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableHistorySync:YES];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }
@@ -102,7 +102,7 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
   ResetTabPickupLastDisplayedTimePref();
   ResetTabPickupLastDisplayedURLPref();
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  SignInAndSync();
+  SignInAndEnableHistorySync();
 }
 
 - (void)tearDown {

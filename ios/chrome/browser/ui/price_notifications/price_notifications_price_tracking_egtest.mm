@@ -81,7 +81,9 @@
 - (void)signinPriceTrackingUser {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  // Price tracking requires "Make Searches and Browsing Better" consent, which
+  // is granted when accepting the history sync opt-in screen.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:YES];
 }
 
 @end

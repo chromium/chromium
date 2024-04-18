@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/sync/base/user_selectable_type.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -41,7 +44,7 @@
 }
 
 // Tests that non Android Switchers should not see the prompt, even if they have
-// enrolled in sync and have recent tabs from Android phones.
+// enabled history sync and have recent tabs from Android phones.
 - (void)testNonAndroidSwitcherShouldNotSeePrompt {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
@@ -51,13 +54,13 @@
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromAndroidPhone,
       self.testServer->base_url());
-  CompleteFREWithSyncEnabled(YES);
+  SignInViaFREWithHistorySyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
 }
 
 // Tests that if the user is currently using Chrome on iPad, they should not see
-// the prompt, even if they are classified as Android switcher, enrolled in
+// the prompt, even if they are classified as Android switcher, enabled history
 // sync, and have recent tabs from Android phones.
 - (void)testAndroidSwitcherOnIPadShouldNotSeePrompt {
   if (![ChromeEarlGrey isIPadIdiom]) {
@@ -66,34 +69,38 @@
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromAndroidPhone,
       self.testServer->base_url());
-  CompleteFREWithSyncEnabled(YES);
+  SignInViaFREWithHistorySyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
 }
 
-// Tests that users who are not enrolled in sync would not see the prompt, even
+// Tests that users with history sync disabled would not see the prompt, even
 // if they have recent tabs from Android phones.
-- (void)testUserWhoIsNotEnrolledInSyncShouldNotSeePromptUntilSync {
+- (void)testUserWithHistorySyncDisabledShouldNotSeePrompt {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromAndroidPhone,
       self.testServer->base_url());
-  CompleteFREWithSyncEnabled(NO);
+  SignInViaFREWithHistorySyncEnabled(NO);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
-  // Enroll in sync and check again.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
-  SignInAndSync();
+  // Enable history sync and check again. Note: the "History and Tabs" toggle
+  // in account settings controls both UserSelectableType::kHistory and kTabs,
+  // but only the latter is relevant here.
+  [SigninEarlGrey setSelectedType:syncer::UserSelectableType::kTabs
+                          enabled:YES];
+
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(YES);
 }
 
-// Tests that Android switchers enrolled in sync would not see the prompt, if
-// the tabs synced from other devices have not been active for more than two
-// weeks.
+// Tests that Android switchers with history sync enabled would not see the
+// prompt, if the tabs synced from other devices have not been active for more
+// than two weeks.
 - (void)testAndroidSwitcherWithOnlyExpiredTabsShouldNotSeePrompt {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
@@ -101,13 +108,13 @@
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kExpiredFromAndroidPhone,
       self.testServer->base_url());
-  CompleteFREWithSyncEnabled(YES);
+  SignInViaFREWithHistorySyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
 }
 
-// Tests that Android switchers enrolled in sync would not see the prompt, if
-// the tabs are not synced from phone devices.
+// Tests that Android switchers with history sync enabled would not see the
+// prompt, if the tabs are not synced from phone devices.
 - (void)testAndroidSwitcherWithNoTabsFromPhoneShouldNotSeePrompt {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
@@ -115,14 +122,14 @@
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromDesktop,
       self.testServer->base_url());
-  CompleteFREWithSyncEnabled(YES);
+  SignInViaFREWithHistorySyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
 }
 
-// Tests that Android switchers enrolled in sync and have recent tabs would see
-// the prompt, but the prompt would not include tabs that have not been active
-// for more than two weeks or are not from an Android phone.
+// Tests that Android switchers with history sync enabled and recent tabs would
+// see the prompt, but the prompt would not include tabs that have not been
+// active for more than two weeks or are not from an Android phone.
 - (void)testAndroidSwitcherShouldSeePromptShowingOnlyRecentSessionsFromPhone {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
@@ -136,7 +143,7 @@
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromDesktop, testServer);
   // Execute test behavior.
-  CompleteFREWithSyncEnabled(YES);
+  SignInViaFREWithHistorySyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(YES);
   // Verify tab count.

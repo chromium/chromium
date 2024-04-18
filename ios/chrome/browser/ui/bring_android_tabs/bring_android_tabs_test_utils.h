@@ -16,17 +16,15 @@ class GURL;
 // NO.
 AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher);
 
-// On first run experience promos, logs in, enrolls in sync if `sync` is YES,
-// and dismisses the default browser promo to show the new tab page.
-void CompleteFREWithSyncEnabled(BOOL sync);
+// On first run experience promos, signs in, enables history/tab sync if
+// `enable_history_sync` is YES, and dismisses the default browser promo to show
+// the new tab page.
+void SignInViaFREWithHistorySyncEnabled(BOOL enable_history_sync);
 
 // Adds a session to fake sync server.
 void AddSessionToFakeSyncServerFromTestServer(
     BringAndroidTabsTestSession session,
     const GURL& test_server);
-
-// Opens Chrome Settings, sign in and enroll in sync.
-void SignInAndSync();
 
 // Verifies the visual state of the prompt. If `visibility` is YES, this
 // verification passes that the prompt is visible; otherwise it passes when the

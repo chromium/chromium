@@ -46,7 +46,7 @@ id<GREYMatcher> ChromiumLogoPageTitle() {
 // Triggers the tab list by selecting "review tabs" from the Bring Android Tabs
 // confirmation alert prompt.
 void TriggerTabList() {
-  CompleteFREWithSyncEnabled(YES);
+  SignInViaFREWithHistorySyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(YES);
   [[EarlGrey selectElementWithMatcher:

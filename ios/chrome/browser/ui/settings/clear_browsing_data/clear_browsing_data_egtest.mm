@@ -283,13 +283,8 @@ using chrome_test_util::WindowWithNumber;
                   @"Did not navigate to the search activity url.");
 }
 
-// Sign-in and clear browsing data.
-- (void)signInOpenCBDAndClearDataWithFakeIdentity:
-            (FakeSystemIdentity*)fakeIdentity
-                                       enableSync:(BOOL)enableSync {
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:enableSync];
-
+// Clear browsing data.
+- (void)openCBDAndClearData {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
   [ChromeEarlGreyUI
@@ -307,18 +302,22 @@ using chrome_test_util::WindowWithNumber;
 // after clearing their browsing history.
 - (void)testUserSignedInWhenClearingBrowsingData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [self openCBDAndClearData];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests that a supervised user in the `ConsentLevel::kSync` state will remain
 // signed-in after clearing their browsing history.
+// TODO(crbug.com/40066949): Delete this test after the syncing state is gone.
 - (void)testSupervisedUserSyncingWhenClearingBrowsingData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
 
-  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity enableSync:YES];
+  [self openCBDAndClearData];
+
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
@@ -328,8 +327,10 @@ using chrome_test_util::WindowWithNumber;
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity enableSync:NO];
+  [self openCBDAndClearData];
+
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 

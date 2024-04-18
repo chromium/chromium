@@ -105,8 +105,8 @@ using chrome_test_util::SecondarySignInButton;
 // See http://crbug.com/1428495.
 - (void)testSignInPromoAfterSignOut {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  // Sign-in+sync with identity1.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:YES];
+  // Sign-in with identity1.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
   [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
   // Sign-in with bookmark account storage with identity2.
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
@@ -194,9 +194,8 @@ using chrome_test_util::SecondarySignInButton;
 
 // Tests that the account model is not shown on sign-out.
 - (void)testAccountModelNotShownOnSignout {
-  // Sign-in with sync with `fakeIdentity1`.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
+  // Sign-in with `fakeIdentity1`.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Add bookmarks to account model.
   [BookmarkEarlGrey
@@ -224,9 +223,8 @@ using chrome_test_util::SecondarySignInButton;
 
 // Tests that only the account model is not shown on sign-out.
 - (void)testOnlyAccountModelNotShownOnSignout {
-  // Sign-in with sync with `fakeIdentity1`.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
+  // Sign-in with `fakeIdentity1`.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Add bookmarks to local and account models.
   [BookmarkEarlGrey

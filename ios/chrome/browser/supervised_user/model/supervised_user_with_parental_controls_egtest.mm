@@ -56,16 +56,12 @@ static const char* kInterstitialFirstTimeBanner =
 
 @implementation SupervisedUserWithParentalControlsTestCase
 
-- (void)signInSupervisedUserWithSync:(BOOL)withSync {
+- (void)signInSupervisedUser {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:withSync];
-}
-
-- (void)signInSupervisedUser {
-  [self signInSupervisedUserWithSync:YES];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 }
 
 - (void)setUp {
@@ -734,29 +730,32 @@ static const char* kInterstitialFirstTimeBanner =
 
 #pragma mark - Clear Content Behaviour
 
-// Tests that a logged in user with enabled "Sync" remains logged in after
+// Tests that a user in the legacy "syncing" state remains signed in after
 // clearing the browsing data (Cookies and BrowsingHistory).
-- (void)testSupervisedUserWithSyncIsLoggedInAfterClearingBrowsingData {
-  [self signInSupervisedUserWithSync:YES];
+// TODO(crbug.com/40066949): Delete this test after the syncing state is gone.
+- (void)testSupervisedUserWithLegacySyncStaysSignedInAfterClearingBrowsingData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [self clearBrowsingData];
 
-  // The user should be still logged in.
+  // The user should be still signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-// Tests that a logged in user with disabled "Sync" remains logged in after
-// clearing the browsing data (Cookies and BrowsingHistory).
-- (void)testSupervisedUserWithoutSyncIsLoggedInAfterClearingBrowsingData {
-  [self signInSupervisedUserWithSync:NO];
+// Tests that a signed in user remains signed in after clearing the browsing
+// data (Cookies and BrowsingHistory).
+- (void)testSupervisedUserStaysSignedInAfterClearingBrowsingData {
+  [self signInSupervisedUser];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [self clearBrowsingData];
 
-  // The user should be still logged in.
+  // The user should be still signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 

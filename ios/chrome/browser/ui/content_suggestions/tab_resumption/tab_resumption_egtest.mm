@@ -32,11 +32,11 @@ namespace {
 // Timeout in seconds to wait for asynchronous sync operations.
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
-// Sign in and sync using a fake identity.
-void SignInAndSync() {
+// Sign in and enable history/tab sync using a fake identity.
+void SignInAndEnableHistorySync() {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fake_identity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:YES];
+  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableHistorySync:YES];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }
@@ -122,7 +122,7 @@ NSString* HostnameFromGURL(GURL URL) {
   [super setUp];
   [ChromeEarlGrey clearBrowsingHistory];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  SignInAndSync();
+  SignInAndEnableHistorySync();
   [NewTabPageAppInterface disableSetUpList];
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];

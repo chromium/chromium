@@ -119,7 +119,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 // an account without history sync.
 - (void)testHistoryOptInPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
   [SigninEarlGrey
       setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
                                                   forIdentity:fakeIdentity];
@@ -139,7 +139,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
 - (void)testHistoryOptInPromoNotShownWhenAlreadyGranted {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:YES];
   [SigninEarlGrey
       setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
                                                   forIdentity:fakeIdentity];

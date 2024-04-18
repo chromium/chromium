@@ -92,13 +92,15 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
 @implementation SigninEarlGreyUI
 
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
-  [self signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [self signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
 }
 
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity
-                    enableSync:(BOOL)enableSync {
+             enableHistorySync:(BOOL)enableHistorySync {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  if (!enableSync) {
+  // TODO(crbug.com/335592853): There's no good reason why the with-history vs
+  // without-history flows should be completely different, unify them.
+  if (!enableHistorySync) {
     [ChromeEarlGrey signInWithoutSyncWithIdentity:fakeIdentity];
     CloseManagedAccountDialogIfAny(fakeIdentity);
     ConditionBlock condition = ^bool {

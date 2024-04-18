@@ -34,7 +34,7 @@
     AddSessionToFakeSyncServerFromTestServer(
         BringAndroidTabsTestSession::kRecentFromAndroidPhone,
         self.testServer->base_url());
-    CompleteFREWithSyncEnabled(YES);
+    SignInViaFREWithHistorySyncEnabled(YES);
   }
 }
 

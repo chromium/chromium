@@ -59,24 +59,23 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
   return config;
 }
 
-void CompleteFREWithSyncEnabled(BOOL sync) {
+void SignInViaFREWithHistorySyncEnabled(BOOL enable_history_sync) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fake_identity];
   // Sign in.
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
-  // Sync.
-  TapPromoStyleButton(sync ? kPromoStylePrimaryActionAccessibilityIdentifier
-                           : kPromoStyleSecondaryActionAccessibilityIdentifier);
+  // Enable history/tab sync if appropriate.
+  TapPromoStyleButton(enable_history_sync
+                          ? kPromoStylePrimaryActionAccessibilityIdentifier
+                          : kPromoStyleSecondaryActionAccessibilityIdentifier);
   // Default browser promo dismissal.
   TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
   // Omnibox position choice promo dismissal.
   if ([FirstRunAppInterface isOmniboxPositionChoiceEnabled]) {
     TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
   }
-  if (sync) {
-    [ChromeEarlGrey
-        waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-  }
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }
 
 void AddSessionToFakeSyncServerFromTestServer(
@@ -85,14 +84,6 @@ void AddSessionToFakeSyncServerFromTestServer(
   [BringAndroidTabsAppInterface
       addFakeSyncServerSession:session
                 fromTestServer:base::SysUTF8ToNSString(test_server.spec())];
-}
-
-void SignInAndSync() {
-  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fake_identity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:YES];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }
 
 void VerifyConfirmationAlertPromptVisibility(BOOL visibility) {
@@ -119,7 +110,7 @@ void VerifyThatPromptDoesNotShowOnRestart(const GURL& test_server) {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromAndroidPhone, test_server);
-  CompleteFREWithSyncEnabled(YES);
+  SignInViaFREWithHistorySyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
 }

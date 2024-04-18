@@ -81,10 +81,11 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
   return config;
 }
 
-// Ensures that the tab pickup settings are correctly working when synced.
-- (void)testTabPickupSettingsSynced {
+// Ensures that the tab pickup settings are correctly working when history/tab
+// sync is enabled.
+- (void)testTabPickupSettingsWhenHistorySyncEnabled {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
+                         enableHistorySync:YES];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 
@@ -101,8 +102,9 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Ensures that the tab pickup settings are correctly working when not synced.
-- (void)testTabPickupSettingsNotSynced {
+// Ensures that the tab pickup settings are correctly working when the user
+// is signed out.
+- (void)testTabPickupSettingsWhenSignedOut {
   OpenTabsSettings();
   [[EarlGrey selectElementWithMatcher:TabsSettingsTabPickupDetailText(false)]
       assertWithMatcher:grey_sufficientlyVisible()];

@@ -291,16 +291,17 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
               _URL3.GetContent())] assertWithMatcher:grey_nil()];
 }
 
-// Tests that searching a typed URL (after Sync is enabled and the URL is
-// uploaded to the Sync server) displays only entries matching the search term.
+// Tests that searching a typed URL (after history sync is enabled and the URL
+// is uploaded to the sync server) displays only entries matching the search
+// term.
 - (void)testSearchSyncedHistory {
   const char syncedURL[] = "http://mockurl/sync/";
   const GURL mockURL(syncedURL);
 
-  // Sign in to sync.
+  // Sign in and enable history sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:YES];
 
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];

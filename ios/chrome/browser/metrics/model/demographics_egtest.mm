@@ -44,7 +44,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   birthYear_ = [MetricsAppInterface maximumEligibleBirthYearForTime:now];
   [self addUserDemographicsToSyncServerWithBirthYear:birthYear_
                                               gender:kTestGender];
-  [self signInAndSync];
+  [self signInAndEnableHistorySync];
   [self grantMetricsConsent];
 }
 
@@ -115,14 +115,15 @@ const metrics::UserDemographicsProto::Gender kTestGender =
       1, @"The fake sync server should have one priority preference.");
 }
 
-// Signs into Chrome with a fake identity, turns on sync, and then waits up to
-// kSyncUKMOperationsTimeout for sync to initialize.
-- (void)signInAndSync {
+// Signs into Chrome with a fake identity, enables history sync, and then waits
+// up to kSyncUKMOperationsTimeout for sync to initialize.
+- (void)signInAndEnableHistorySync {
   // Note that there is only one profile on iOS. Additionally, URL-keyed
   // anonymized data collection is turned on as part of the flow to Sign in to
-  // Chrome and Turn on sync. This matches the main user flow that enables
-  // UKM.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  // Chrome and enable history sync. This matches the main user flow that
+  // enables UKM.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                         enableHistorySync:YES];
   [ChromeEarlGrey
       waitForSyncEngineInitialized:YES
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
@@ -190,7 +191,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 }
 
 // Tests that user demographics are neither recorded by UKM nor logged in
-// histograms when sync is turned on.
+// histograms when the user is signed-in and history sync is on.
 //
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/ukm_browsertest.cc with features disabled.
@@ -241,7 +242,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 }
 
 // Tests that user demographics are neither recorded by UMA nor logged in
-// histograms when sync is turned on.
+// histograms when the user is signed-in and history sync is on.
 //
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc

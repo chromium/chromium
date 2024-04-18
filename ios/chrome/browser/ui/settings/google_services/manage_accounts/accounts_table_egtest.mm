@@ -215,7 +215,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGrey addFakeIdentity:fakeIdentity3];
 
   // Sign In `fakeIdentity`, then open the Account Settings.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  // TODO(crbug.com/335444727): Investigate why enableHistorySync:YES is needed
+  // here. More details in the linked bug.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableHistorySync:YES];
   [self openAccountSettings];
 
   // Open the remove identity confirmation dialog for the first time.

@@ -446,9 +446,9 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [SigninEarlGrey verifySignedOut];
 
   // Sign back in with the same identity using the settings sign-in promo.
-  // The history sync opt-in was accepted in the first sign-in earlier in this
+  // The history sync opt-in was declined in the first sign-in earlier in this
   // test.
-  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/NO);
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
 
   // Verify the account settings row is showing in the settings menu.
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
@@ -1572,9 +1572,9 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [SigninEarlGrey verifySignedOut];
 
   // Sign back in with the same identity using the settings sign-in promo.
-  // The history sync opt-in was accepted in the first sign-in earlier in this
+  // The history sync opt-in was declined in the first sign-in earlier in this
   // test.
-  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/NO);
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
 
   // Verify the account settings row is showing in the settings menu.
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
