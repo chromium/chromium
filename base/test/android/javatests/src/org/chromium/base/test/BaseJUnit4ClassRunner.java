@@ -33,7 +33,6 @@ import org.chromium.base.test.util.EspressoIdleTimeoutRule;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,18 +40,15 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- *  A custom runner for JUnit4 tests that checks requirements to conditionally ignore tests.
+ * A custom runner for JUnit4 tests that checks requirements to conditionally ignore tests.
  *
- *  This ClassRunner imports from AndroidJUnit4ClassRunner which is a hidden but accessible
- *  class. The reason is that default JUnit4 runner for Android is a final class,
- *  AndroidJUnit4. We need to extends an inheritable class to change {@link #runChild}
- *  and {@link #isIgnored} to add SkipChecks and PreTesthook.
+ * <p>This ClassRunner imports from AndroidJUnit4ClassRunner which is a hidden but accessible class.
+ * The reason is that default JUnit4 runner for Android is a final class, AndroidJUnit4. We need to
+ * extends an inheritable class to change {@link #runChild} and {@link #isIgnored} to add SkipChecks
+ * and PreTesthook.
  */
 public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     private static final String TAG = "BaseJUnit4ClassRunnr";
-
-    private static final String EXTRA_TRACE_FILE =
-            "org.chromium.base.test.BaseJUnit4ClassRunner.TraceFile";
 
     // Arbirary int that must not overlap with status codes defined by
     // https://developer.android.com/reference/android/test/InstrumentationTestRunner.html#REPORT_VALUE_ID
@@ -115,30 +111,17 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                 : "Must use BaseChromiumAndroidJUnitRunner instrumentation with "
                         + "BaseJUnit4ClassRunner, but found: "
                         + InstrumentationRegistry.getInstrumentation().getClass();
-        String traceOutput = InstrumentationRegistry.getArguments().getString(EXTRA_TRACE_FILE);
-
-        if (traceOutput != null) {
-            File traceOutputFile = new File(traceOutput);
-            File traceOutputDir = traceOutputFile.getParentFile();
-
-            if (traceOutputDir != null) {
-                if (traceOutputDir.exists() || traceOutputDir.mkdirs()) {
-                    TestTraceEvent.enable(traceOutputFile);
-                }
-            }
-        }
     }
 
     /** Returns the singleton Application instance. */
     public static Application getApplication() {
-        return (Application)
-                BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext.getBaseContext();
+        return BaseChromiumAndroidJUnitRunner.sApplication;
     }
 
     /**
      * Merge two List into a new ArrayList.
      *
-     * Used to merge the default SkipChecks/PreTestHooks with the subclasses's
+     * <p>Used to merge the default SkipChecks/PreTestHooks with the subclasses's
      * SkipChecks/PreTestHooks.
      */
     private static <T> List<T> mergeList(List<T> listA, List<T> listB) {
