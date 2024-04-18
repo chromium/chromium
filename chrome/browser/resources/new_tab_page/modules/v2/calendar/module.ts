@@ -6,14 +6,21 @@ import '../../module_header.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin} from '../../../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
+import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
 import {getTemplate} from './module.html.js';
 
 export enum CalendarSource {
   GOOGLE,
   OUTLOOK,
+}
+
+export interface CalendarModuleElement {
+  $: {
+    moduleHeaderElementV2: ModuleHeaderElementV2,
+  };
 }
 
 /**
@@ -32,15 +39,73 @@ export class CalendarModuleElement extends I18nMixin
 
   static get properties() {
     return {
-      calendarSource_: Object,
+      calendarSource_: {
+        type: Object,
+        observer: 'setSourceText_',
+      },
+      sourceDisableText_: String,
+      sourceTitle_: String,
     };
   }
 
   private calendarSource_: CalendarSource;
+  private sourceDisableText_: string = '';
+  private sourceTitle_: string = '';
 
   constructor(calendarSource: CalendarSource) {
     super();
     this.calendarSource_ = calendarSource;
+    this.setSourceText_();
+  }
+
+  private setSourceText_() {
+    switch(this.calendarSource_) {
+      case CalendarSource.GOOGLE:
+        this.sourceTitle_ = this.i18n('modulesGoogleCalendarTitle');
+        this.sourceDisableText_ =
+            this.i18n('modulesGoogleCalendarDisableButtonText');
+        break;
+      case CalendarSource.OUTLOOK:
+        this.sourceTitle_ = this.i18n('modulesOutlookCalendarTitle');
+        this.sourceDisableText_ =
+            this.i18n('modulesOutlookCalendarDisableButtonText');
+        break;
+    }
+  }
+
+  private getMenuItemGroups_(): MenuItem[][] {
+    return [
+      [
+        {
+          action: 'disable',
+          icon: 'modules:block',
+          text: this.sourceDisableText_,
+        },
+      ],
+      [
+        {
+          action: 'customize-module',
+          icon: 'modules:tune',
+          text: this.i18n('modulesCustomizeButtonText'),
+        },
+      ],
+    ];
+  }
+
+  private onDisableButtonClick_() {
+    const disableEvent = new CustomEvent('disable-module', {
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            this.sourceTitle_),
+      },
+    });
+    this.dispatchEvent(disableEvent);
+  }
+
+  private onMenuButtonClick_(e: Event) {
+    this.$.moduleHeaderElementV2.showAt(e);
   }
 }
 

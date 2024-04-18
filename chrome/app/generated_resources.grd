@@ -8339,8 +8339,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE" desc="Title of the Google Calendar module shown in various UIs for Customize Chrome and the NTP." meaning="Title of feature for showing a glimpse of a user's Google Calendar.">
         Google Calendar
       </message>
+      <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Google Calendar card." translateable="false">
+        Don't show Google Calendar
+      </message>
       <message name="IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE" desc="Title of the Google Calendar module shown in various UIs for Customize Chrome and the NTP." meaning="Title of feature for showing a glimpse of a user's Google Calendar.">
         Outlook Calendar
+      </message>
+      <message name="IDS_NTP_MODULES_OUTLOOK_CALENDAR_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Outlook Calendar card." translateable="false">
+        Don't show Outlook Calendar
       </message>
       <message name="IDS_NTP_MODULES_PHOTOS_TITLE" desc="Title shown in the header of the photos module.">
         From your Google Photos

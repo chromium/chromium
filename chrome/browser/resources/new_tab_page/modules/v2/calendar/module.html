@@ -1,5 +1,10 @@
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
-    header-text="[[i18n('modulesTodayCalendarHeader')]]">
+    header-text="[[sourceTitle_]]"
+    menu-item-groups="[[getMenuItemGroups_(sourceDisableText_)]]"
+    more-actions-text="[[i18nRecursive('',
+                          'modulesMoreActions',
+                          sourceTitle_)]]"
+    on-disable-button-click="onDisableButtonClick_"
+    on-menu-button-click="onMenuButtonClick_">
 </ntp-module-header-v2>
-<p>[[calendarSource_]]</p>

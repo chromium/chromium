@@ -4,6 +4,7 @@
 
 import type {CalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {googleCalendarDescriptor, outlookCalendarDescriptor} from 'chrome://new-tab-page/lazy_load.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -13,29 +14,22 @@ suite('NewTabPageModulesCalendarModuleTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  test('creates google calendar module', async () => {
-    const module =
-        await googleCalendarDescriptor.initialize(0) as CalendarModuleElement;
-    assertTrue(!!module);
-    document.body.append(module);
-    await waitAfterNextRender(module);
+  [
+    {descriptor: googleCalendarDescriptor, title: 'Google Calendar'},
+    {descriptor: outlookCalendarDescriptor, title: 'Outlook Calendar'},
+  ].forEach(({descriptor, title}) => {
+    test(`creates ${title} module`, async () => {
+      loadTimeData.overrideValues({
+        modulesGoogleCalendarTitle: title,
+      });
+      const module = await descriptor.initialize(0) as CalendarModuleElement;
+      assertTrue(!!module);
+      document.body.append(module);
+      await waitAfterNextRender(module);
 
-    // Assert.
-    assertTrue(
-        isVisible(module.shadowRoot!.querySelector('ntp-module-header-v2')));
-    assertEquals(module.shadowRoot!.querySelector('p')!.innerText, '0');
-  });
-
-  test('creates outlook calendar module', async () => {
-    const module =
-        await outlookCalendarDescriptor.initialize(0) as CalendarModuleElement;
-    assertTrue(!!module);
-    document.body.append(module);
-    await waitAfterNextRender(module);
-
-    // Assert.
-    assertTrue(
-        isVisible(module.shadowRoot!.querySelector('ntp-module-header-v2')));
-    assertEquals(module.shadowRoot!.querySelector('p')!.innerText, '1');
+      // Assert.
+      assertTrue(isVisible(module.$.moduleHeaderElementV2));
+      assertEquals(module.$.moduleHeaderElementV2.headerText, title);
+    });
   });
 });
