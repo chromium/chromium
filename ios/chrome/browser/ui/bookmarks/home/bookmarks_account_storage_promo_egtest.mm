@@ -165,6 +165,11 @@ using chrome_test_util::SecondarySignInButton;
   // Result: the sign-in is successful without any issue.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
                                         consent:signin::ConsentLevel::kSignin];
+  // Verify that the batch upload dialog is visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(
+              kBookmarksHomeBatchUploadRecommendationItemIdentifier)];
 }
 
 // Tests to sign-in in incognito mode with the promo.
