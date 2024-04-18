@@ -262,17 +262,27 @@ chromium-metrics-reviews@google.com.
   <token key="AppType" variants="AppType"/>
 </histogram>
 
+<histogram name="Apps.AppDiscovery.MallUsageTime" units="ms"
+    expires_after="2025-03-26">
+  <owner>joelhockey@chromium.org</owner>
+  <owner>crosdev-commerce-eng@google.com</owner>
+  <summary>
+    Records the Mall running duration in Chrome OS for the last 2 hours. This is
+    logged every 2 hours, and on shutdown.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppDiscovery.Uninstall" enum="AppType"
     expires_after="2025-03-26">
   <owner>joelhockey@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <owner>crosdev-commerce-eng@google.com</owner>
   <summary>Records when an app is uninstalled, grouped by app type.</summary>
 </histogram>
 
 <histogram name="Apps.AppDiscovery.{InstallReason}.Install" enum="AppType"
     expires_after="2025-03-26">
   <owner>joelhockey@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
     Records when an app is installed for InstallReason {InstallReason}, grouped
     by app type.

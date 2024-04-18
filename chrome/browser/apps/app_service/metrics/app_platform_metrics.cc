@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/app_constants/constants.h"
@@ -1212,6 +1213,13 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
             .SetDuration(it.second.running_time.InMilliseconds())
             .SetUserDeviceMatrix(user_type_by_device_type_)
             .Record(ukm::UkmRecorder::Get());
+      }
+
+      // UMA for Mall app.
+      if (it.second.app_id == web_app::kMallAppId) {
+        base::UmaHistogramCustomTimes("Apps.AppDiscovery.MallUsageTime",
+                                      it.second.running_time, base::Seconds(1),
+                                      base::Hours(2), 100);
       }
 
       // Also reset time in the pref store now that we have reported this data.
