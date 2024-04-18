@@ -13,7 +13,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -23,29 +22,25 @@ namespace {
 
 constexpr base::TimeDelta kDefaultRetryDelay = base::Seconds(3);
 
+bool delay_network_calls_for_testing = false;
+
 bool IsOnline(const NetworkState* default_network) {
-  if (!network_portal_detector::IsInitialized()) {
-    // Network portal detector is not initialized yet so we can't reliably
-    // detect network portals. We will optimistically return true here,
-    // assuming that the default network is online.
+  if (default_network->IsOnline()) {
     return true;
   }
-
-  const NetworkPortalDetector::CaptivePortalStatus status =
-      network_portal_detector::GetInstance()->GetCaptivePortalStatus();
-  if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
-    return true;
-  }
-
-  DVLOG(1) << "DelayNetworkCall: Not online. CaptivePortalStatus for "
+  DVLOG(1) << "DelayNetworkCall: Not online. Connection state for "
            << default_network->name() << " = "
-           << NetworkPortalDetector::CaptivePortalStatusString(status);
+           << default_network->connection_state();
   return false;
 }
 
 }  // namespace
 
 bool AreNetworkCallsDelayed() {
+  if (delay_network_calls_for_testing) {
+    return true;
+  }
+
   const NetworkState* default_network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
   if (!default_network) {
@@ -83,8 +78,12 @@ void DelayNetworkCallWithCustomDelay(base::OnceClosure callback,
         retry_delay);
     return;
   }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback)));
+}
 
-  std::move(callback).Run();
+void SetDelayNetworkCallsForTesting(bool delay_network_calls) {
+  delay_network_calls_for_testing = delay_network_calls;
 }
 
 }  // namespace ash

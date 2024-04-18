@@ -46,6 +46,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
@@ -268,6 +269,9 @@ class SamlTestBase : public OobeBaseTest {
   }
 
   void SetUpOnMainThread() override {
+    // Without this tests are flaky. TODO(b/333450354): Determine why and fix.
+    SetDelayNetworkCallsForTesting(true);
+
     // Allowlist the default EMK to sign enterprise challenge.
     ::attestation::SignEnterpriseChallengeRequest
         sign_enterprise_challenge_request;

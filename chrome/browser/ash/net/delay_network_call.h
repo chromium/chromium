@@ -27,6 +27,12 @@ void DelayNetworkCall(base::OnceClosure callback);
 void DelayNetworkCallWithCustomDelay(base::OnceClosure callback,
                                      base::TimeDelta retry_delay);
 
+// Sets DelayNetworkCallsForTesting for compatibility with the deprecated
+// NetworkPortalDetector::CaptivePortalStatus which defaulted to kUnknown
+// causing IsCaptivePortal to return true and delaying network calls.
+// See b/333450354 for details.
+void SetDelayNetworkCallsForTesting(bool delay_network_calls);
+
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_DELAY_NETWORK_CALL_H_
