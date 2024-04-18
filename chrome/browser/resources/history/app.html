@@ -134,6 +134,7 @@
               <div class="history-cards">
                 <history-embeddings-promo></history-embeddings-promo>
                 <cr-history-embeddings-filter-chips
+                    time-range-start="[[queryStateAfterDate_]]"
                     show-results-by-group="[[
                         getShowResultsByGroup_(selectedPage_)]]"
                     on-show-results-by-group-changed="onShowResultsByGroupChanged_"
@@ -143,7 +144,7 @@
                     if="[[shouldShowHistoryEmbeddings_(queryState_.searchTerm)]]">
                   <cr-history-embeddings
                       search-query="[[queryState_.searchTerm]]"
-                      time-range-start="[[timeRangeStart_]]"
+                      time-range-start="[[queryStateAfterDate_]]"
                       on-more-from-site-click="onHistoryEmbeddingsItemMoreFromSiteClick_"
                       on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_">
                   </cr-history-embeddings>

@@ -67,10 +67,11 @@ export class HistoryRouterElement extends PolymerElement {
   lastSelectedTab: number;
   selectedPage: string;
   queryState: QueryState;
+  timeRangeStart?: Date;
   private parsing_: boolean = false;
   private debouncer_: Debouncer|null = null;
   private query_: string;
-  private queryParams_: {q: string};
+  private queryParams_: {q: string, after?: string};
   private path_: string;
   private urlQuery_: string;
 
@@ -112,6 +113,7 @@ export class HistoryRouterElement extends PolymerElement {
     // the outcome.
     this.path_ = '/' + path;
     this.set('queryParams_.q', this.queryState.searchTerm || null);
+    this.set('queryParams_.after', this.queryState.after || null);
   }
 
   private selectedPageChanged_() {
@@ -124,13 +126,22 @@ export class HistoryRouterElement extends PolymerElement {
 
   private parseUrl_() {
     this.parsing_ = true;
-    const changes: {search: string} = {search: ''};
+    const changes: {search: string, after?: string} = {search: ''};
     const sections = this.path_.substr(1).split('/');
     const page = sections[0] ||
         (window.location.search ? 'history' :
                                   TABBED_PAGES[this.lastSelectedTab]);
 
     changes.search = this.queryParams_.q || '';
+
+    let after = '';
+    if (this.queryParams_.after) {
+      const afterAsDate = new Date(this.queryParams_.after);
+      if (!isNaN(afterAsDate.getTime())) {
+        after = this.queryParams_.after;
+      }
+    }
+    changes.after = after;
 
     // Must change selectedPage before `change-query`, otherwise the
     // query-manager will call serializeUrl() with the old page.

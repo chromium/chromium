@@ -113,4 +113,51 @@ suite('HistoryAppTest', function() {
     assertEquals(1, removeVisitsArg[0].timestamps.length);
     assertEquals(1000, removeVisitsArg[0].timestamps[0]);
   });
+
+  test('ChangesQueryStateWithFilterChips', async () => {
+    const filterChips = element.shadowRoot!.querySelector(
+        'cr-history-embeddings-filter-chips')!;
+    const changeQueryEventPromise = eventToPromise('change-query', element);
+    filterChips.dispatchEvent(new CustomEvent('selected-suggestion-changed', {
+      detail: {
+        value: {
+          timeRangeStart: new Date('2011-01-01'),
+        },
+      },
+      composed: true,
+      bubbles: true,
+    }));
+    const changeQueryEvent = await changeQueryEventPromise;
+    assertEquals('', changeQueryEvent.detail.search);
+    assertEquals('2011-01-01', changeQueryEvent.detail.after);
+  });
+
+  test('UpdatesBindingsOnChangeQuery', async () => {
+    // Change query to a multi-word search term and an after date.
+    element.dispatchEvent(new CustomEvent('change-query', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        search: 'two words',
+        after: '2022-04-02',
+      },
+    }));
+    await flushTasks();
+
+    const expectedDateObject = new Date('2022-04-02');
+    expectedDateObject.setHours(0, 0, 0, 0);
+
+    const filterChips = element.shadowRoot!.querySelector(
+        'cr-history-embeddings-filter-chips')!;
+    assertTrue(!!filterChips);
+    assertEquals(
+        expectedDateObject.getTime(), filterChips.timeRangeStart?.getTime());
+
+    const historyEmbeddings =
+        element.shadowRoot!.querySelector('cr-history-embeddings');
+    assertTrue(!!historyEmbeddings);
+    assertEquals(
+        expectedDateObject.getTime(),
+        historyEmbeddings.timeRangeStart?.getTime());
+  });
 });

@@ -90,21 +90,31 @@ export class HistoryQueryManagerElement extends PolymerElement {
     promise.then(result => this.onQueryResult_(result), () => {});
   }
 
-  private onChangeQuery_(e: CustomEvent<{search?: string}>) {
+  private onChangeQuery_(e: CustomEvent<{search?: string, after?: string}>) {
     const changes = e.detail;
-    let needsUpdate = false;
+
+    let needsToRequery = false;
+    let needsToUpdateRouter = false;
 
     if (changes.search !== null &&
         changes.search !== this.queryState.searchTerm) {
       this.set('queryState.searchTerm', changes.search);
-      needsUpdate = true;
+      needsToRequery = true;
+      needsToUpdateRouter = true;
     }
 
-    if (needsUpdate) {
+    if (changes.after !== null &&
+        changes.after !== this.queryState.after) {
+      this.set('queryState.after', changes.after);
+      needsToUpdateRouter = true;
+    }
+
+    if (needsToRequery) {
       this.queryHistory_(false);
-      if (this.router) {
-        this.router.serializeUrl();
-      }
+    }
+
+    if (needsToUpdateRouter && this.router) {
+      this.router.serializeUrl();
     }
   }
 

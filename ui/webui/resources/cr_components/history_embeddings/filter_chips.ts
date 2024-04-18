@@ -64,6 +64,10 @@ export class HistoryEmbeddingsFilterChips extends PolymerElement {
 
   static get properties() {
     return {
+      timeRangeStart: {
+        type: Object,
+        observer: 'onTimeRangeStartChanged_',
+      },
       selectedSuggestion: {
         type: String,
         notify: true,
@@ -95,6 +99,18 @@ export class HistoryEmbeddingsFilterChips extends PolymerElement {
 
   private onByGroupClick_() {
     this.showResultsByGroup = !this.showResultsByGroup;
+  }
+
+  private onTimeRangeStartChanged_() {
+    if (this.timeRangeStart?.getTime() ===
+        this.selectedSuggestion?.timeRangeStart.getTime()) {
+      return;
+    }
+
+    this.selectedSuggestion = this.suggestions_.find(suggestion => {
+      return suggestion.timeRangeStart.getTime() ===
+          this.timeRangeStart?.getTime();
+    });
   }
 
   private onSuggestionClick_(e: DomRepeatEvent<Suggestion>) {

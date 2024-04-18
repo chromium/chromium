@@ -187,17 +187,18 @@ import {navigateTo} from './test_util.js';
           assertEquals(
               'chrome://history/?q=' + searchTerm, window.location.href);
 
-      if (isHistoryClustersEnabled) {
-        const tabs = app.shadowRoot!.querySelector('cr-tabs');
-        assertTrue(!!tabs);
-        tabs.selected = 1;
-        await tabs.updateComplete;
-        assertEquals('grouped', sidebar.$.menu.selected);
-        assertEquals(searchTerm, app.$.toolbar.searchTerm);
-        assertEquals(
-            'chrome://history/grouped?q=' + searchTerm, window.location.href);
-      }
-    });
+          if (isHistoryClustersEnabled) {
+            const tabs = app.shadowRoot!.querySelector('cr-tabs');
+            assertTrue(!!tabs);
+            tabs.selected = 1;
+            await tabs.updateComplete;
+            assertEquals('grouped', sidebar.$.menu.selected);
+            assertEquals(searchTerm, app.$.toolbar.searchTerm);
+            assertEquals(
+                'chrome://history/grouped?q=' + searchTerm,
+                window.location.href);
+          }
+        });
   });
 });
 
@@ -288,7 +289,7 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
     return flushTasks();
   });
 
-  test('route updates from filter chips', () => {
+  test('route updates from group filter chip', () => {
     // Tabs should be hidden.
     assertEquals(null, app.shadowRoot!.querySelector('cr-tabs'));
 
@@ -305,5 +306,59 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
     filterChips.dispatchEvent(new CustomEvent(
         'show-results-by-group-changed', {detail: {value: false}}));
     assertEquals('chrome://history/', window.location.href);
+  });
+
+  test('route updates from date filter chip', () => {
+    navigateTo('/?q=test', app);
+
+    const filterChips =
+        app.shadowRoot!.querySelector('cr-history-embeddings-filter-chips');
+    assertTrue(!!filterChips);
+
+    // Changing the "By group" chip to should change the URL.
+    filterChips.dispatchEvent(new CustomEvent('selected-suggestion-changed', {
+      detail: {
+        value: {
+          timeRangeStart: new Date('2011-01-01'),
+        },
+      },
+      composed: true,
+      bubbles: true,
+    }));
+    assertEquals(
+        'chrome://history/?q=test&after=2011-01-01', window.location.href);
+  });
+
+  test('route clears date if invalid', () => {
+    navigateTo('/?q=test&after=2022-invalid-date', app);
+    assertEquals('chrome://history/?q=test', window.location.href);
+  });
+
+  test('route sets correct date', () => {
+    navigateTo('/?q=test&after=2022-12-04', app);
+
+    function stringAsDateObject(dateString: string) {
+      const dateObject = new Date(dateString);
+      dateObject.setHours(0, 0, 0, 0);
+      return dateObject;
+    }
+
+    const expectedDateObject = new Date('2022-12-04');
+    expectedDateObject.setHours(0, 0, 0, 0);
+
+    const filterChips =
+        app.shadowRoot!.querySelector('cr-history-embeddings-filter-chips');
+    assertTrue(!!filterChips);
+    assertEquals(
+        stringAsDateObject('2022-12-04').getTime(),
+        filterChips.timeRangeStart?.getTime());
+
+    navigateTo('/?q=test&after=1999-01-30', app);
+    assertEquals(
+        stringAsDateObject('1999-01-30').getTime(),
+        filterChips.timeRangeStart?.getTime());
+
+    navigateTo('/?q=test', app);
+    assertEquals(undefined, filterChips.timeRangeStart);
   });
 });

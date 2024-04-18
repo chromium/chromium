@@ -248,6 +248,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
       },
 
       scrollTarget_: Object,
+
+      queryStateAfterDate_: {
+        type: Object,
+        computed: 'computeQueryStateAfterDate_(queryState_.after)',
+      },
     };
   }
 
@@ -271,7 +276,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private toolbarShadow_: boolean;
   private historyClustersViewStartTime_: Date|null = null;
   private scrollTarget_: HTMLElement;
-  private timeRangeStart_?: Date;
+  private queryStateAfterDate_?: Date;
 
   constructor() {
     super();
@@ -708,7 +713,21 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private onSelectedSuggestionChanged_(e: CustomEvent<{value: Suggestion}>) {
-    this.timeRangeStart_ = e.detail.value?.timeRangeStart;
+    this.fire_('change-query', {
+      search: this.queryState_.searchTerm,
+      after: e.detail.value?.timeRangeStart.toISOString().split('T')[0],
+    });
+  }
+
+  private computeQueryStateAfterDate_(): Date|undefined {
+    const afterString = this.queryState_.after;
+    if (!afterString) {
+      return undefined;
+    }
+
+    const afterDate = new Date(afterString);
+    afterDate.setHours(0, 0, 0, 0);
+    return afterDate;
   }
 
   private onHistoryEmbeddingsItemMoreFromSiteClick_(
