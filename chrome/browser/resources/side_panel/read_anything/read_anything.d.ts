@@ -246,6 +246,13 @@ declare namespace chrome {
     // toolbar and are ready to consume.
     function updateTheme(): void;
 
+    // Called with the response of sendGetVoicePackInfoRequest()
+    function updateVoicePackStatus(lang: string, status: string): void;
+
+    // Called with the response of sendInstallVoicePackRequest()
+    function updateVoicePackStatusFromInstallResponse(
+        lang: string, status: string): void;
+
     // Ping that the theme choices of the user have been retrieved from
     // preferences and can be used to set up the page.
     function restoreSettingsFromPrefs(): void;
@@ -297,6 +304,16 @@ declare namespace chrome {
     // Gets the readable name for a locale code
     function getDisplayNameForLocale(locale: string, displayLocale: string):
         string;
+
+    // Sends an async request to get the status of a Natural voice pack for a
+    // specific language. The response is sent back to the UI via
+    // updateVoicePackStatus()
+    function sendGetVoicePackInfoRequest(language: string): void;
+
+    // Sends an async request to install a  Natural voice pack for a
+    // specific language. The response is sent back to the UI via
+    // updateVoicePackStatusFromInstallResponse()
+    function sendInstallVoicePackRequest(language: string): void;
 
     // Log UmaHistogramLong
     function logMetric(time: number, metricName: string): void;

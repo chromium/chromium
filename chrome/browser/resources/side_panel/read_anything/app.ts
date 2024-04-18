@@ -127,6 +127,19 @@ if (chrome.readingMode) {
     readAnythingApp.updateSelection();
   };
 
+  chrome.readingMode.updateVoicePackStatus = (lang: string, status: string) => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp, 'no app');
+    readAnythingApp.updateVoicePackStatus(lang, status);
+  };
+
+  chrome.readingMode.updateVoicePackStatusFromInstallResponse =
+      (lang: string, status: string) => {
+        const readAnythingApp = document.querySelector('read-anything-app');
+        assert(readAnythingApp, 'no app');
+        readAnythingApp.updateVoicePackStatusFromInstallResponse(lang, status);
+      };
+
   chrome.readingMode.updateTheme = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp, 'no app');
@@ -156,6 +169,13 @@ if (chrome.readingMode) {
     assert(readAnythingApp, 'no app');
     readAnythingApp.languageChanged();
   };
+}
+
+export enum VoicePackStatus {
+  NOT_INSTALLED,
+  INSTALLING,
+  INSTALLED,
+  ERROR,
 }
 
 export enum PauseActionSource {
@@ -258,6 +278,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private previewVoicePlaying: SpeechSynthesisVoice|null;
 
   private localeToDisplayName: {[locale: string]: string};
+
+  private voicePackInstallStatus: {[language: string]: VoicePackStatus} = {};
 
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
@@ -715,6 +737,41 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       const replacement = this.buildSubtree_(nodeId);
       this.replaceElement(elem, replacement);
     }
+  }
+
+  updateVoicePackStatusFromInstallResponse(lang: string, status: string) {
+    // Do not rely on this status from Install response. It has responded
+    // "installed" for voices that are not installed. Instead, rely on the
+    // status from GetVoicePackStatus.
+    // TODO (b/323159502) Trigger ChromeOS system notification that voice has
+    // been installed
+    if (lang && status === 'kInstalled') {
+      // TODO (b/335472298) Handle voice menu downloading voice spinners. Keep
+      // in mind that this status is not reliable, and to explicitly check that
+      // the Natural voices have been installed.
+    }
+  }
+
+  updateVoicePackStatus(lang: string, status: string) {
+    if (!lang) {
+      return;
+    }
+    // The following possible values of "status" is a union of enum values of
+    // enum InstallationState and enum ErrorCode in read_anything.mojom
+    let voicePackStatus: VoicePackStatus;
+    if (status === 'kNotInstalled') {
+      voicePackStatus = VoicePackStatus.NOT_INSTALLED;
+    } else if (status === 'kInstalling') {
+      voicePackStatus = VoicePackStatus.INSTALLING;
+    } else if (status === 'kInstalled') {
+      voicePackStatus = VoicePackStatus.INSTALLED;
+    } else {
+      // TODO (b/331795122) Handle install errors on the UI
+      voicePackStatus = VoicePackStatus.ERROR;
+    }
+    this.voicePackInstallStatus =
+        {...this.voicePackInstallStatus, [lang]: voicePackStatus};
+    // TODO (b/335472298) Handle voice menu downloading voice spinners
   }
 
   private onSpeechRateChange_(event: CustomEvent<{rate: number}>) {

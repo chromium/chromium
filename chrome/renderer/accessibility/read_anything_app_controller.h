@@ -155,10 +155,10 @@ class ReadAnythingAppController
   std::string GetAltText(ui::AXNodeID ax_node_id) const;
   void SendGetVoicePackInfoRequest(const std::string& language) const;
   void OnGetVoicePackInfoResponse(
-      read_anything::mojom::VoicePackInfoPtr voice_pack_info) const;
+      read_anything::mojom::VoicePackInfoPtr voice_pack_info);
   void SendInstallVoicePackRequest(const std::string& language) const;
   void OnInstallVoicePackResponse(
-      read_anything::mojom::VoicePackInfoPtr voice_pack_info) const;
+      read_anything::mojom::VoicePackInfoPtr voice_pack_info);
   bool ShouldBold(ui::AXNodeID ax_node_id) const;
   bool IsOverline(ui::AXNodeID ax_node_id) const;
   bool IsLeafNode(ui::AXNodeID ax_node_id) const;

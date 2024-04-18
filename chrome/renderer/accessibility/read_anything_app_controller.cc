@@ -787,7 +787,11 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getDisplayNameForLocale",
                  &ReadAnythingAppController::GetDisplayNameForLocale)
       .SetMethod("logMetric",
-                 &ReadAnythingAppController::LogUmaHistogramLongTimes);
+                 &ReadAnythingAppController::LogUmaHistogramLongTimes)
+      .SetMethod("sendGetVoicePackInfoRequest",
+                 &ReadAnythingAppController::SendGetVoicePackInfoRequest)
+      .SetMethod("sendInstallVoicePackRequest",
+                 &ReadAnythingAppController::SendInstallVoicePackRequest);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1054,8 +1058,15 @@ void ReadAnythingAppController::SendGetVoicePackInfoRequest(
 }
 
 void ReadAnythingAppController::OnGetVoicePackInfoResponse(
-    read_anything::mojom::VoicePackInfoPtr voice_pack_info) const {
-  // TODO (b/40927698) Send the voice_pack_info to the read-aloud UI
+    read_anything::mojom::VoicePackInfoPtr voice_pack_info) {
+  std::string status =
+      voice_pack_info->pack_state->is_installation_state()
+          ? base::ToString(
+                voice_pack_info->pack_state->get_installation_state())
+          : base::ToString(voice_pack_info->pack_state->get_error_code());
+
+  ExecuteJavaScript("chrome.readingMode.updateVoicePackStatus(\'" +
+                    voice_pack_info->language + "\', \'" + status + "\');");
 }
 
 void ReadAnythingAppController::SendInstallVoicePackRequest(
@@ -1067,12 +1078,21 @@ void ReadAnythingAppController::SendInstallVoicePackRequest(
 }
 
 void ReadAnythingAppController::OnInstallVoicePackResponse(
-    read_anything::mojom::VoicePackInfoPtr voice_pack_info) const {
-  // TODO (b/40927698) Send the voice_pack_info to the read-aloud UI.
+    read_anything::mojom::VoicePackInfoPtr voice_pack_info) {
   // TODO (b/40927698) Investigate the fact that VoicePackManager doesn't return
   // the expected pack_state. Even when a voice is unavailable and not
   // installed, it responds "INSTALLED" in the InstallVoicePackCallback. So we
   // probably need to rely on GetVoicePackInfo for the pack_state.
+
+  std::string status =
+      voice_pack_info->pack_state->is_installation_state()
+          ? base::ToString(
+                voice_pack_info->pack_state->get_installation_state())
+          : base::ToString(voice_pack_info->pack_state->get_error_code());
+
+  ExecuteJavaScript(
+      "chrome.readingMode.updateVoicePackStatusFromInstallResponse(\'" +
+      voice_pack_info->language + "\', \'" + status + "\');");
 }
 
 std::string ReadAnythingAppController::GetAltText(
