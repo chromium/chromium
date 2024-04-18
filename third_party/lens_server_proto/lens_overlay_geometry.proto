@@ -30,7 +30,12 @@ message Geometry {
   // Specifies the bounding box for this geometry.
   optional CenterRotatedBox bounding_box = 1;
 
-  reserved 2, 3, 4, 5, 6;
+  // Specifies the segmentation polygon. The vertices of the outer-boundaries
+  // are in clockwise, and the ones of inner-boundaries are in counter-clockwise
+  // ordering.
+  repeated Polygon segmentation_polygon = 5;
+
+  reserved 2, 3, 4, 6;
 }
 
 // A cropped and potentially re-scaled image region, rectangular subregion of a
