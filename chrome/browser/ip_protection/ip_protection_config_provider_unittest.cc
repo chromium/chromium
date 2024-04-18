@@ -877,7 +877,15 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
 TEST_F(IpProtectionConfigProviderTest, TokenFormat) {
   network::mojom::BlindSignedAuthTokenPtr result =
       CreateMockBlindSignedAuthToken("single-use-1", expiration_time_);
+  std::string token = (*result).token;
+  size_t token_position = token.find("PrivateToken token=");
+  size_t extensions_position = token.find("extensions=");
 
-  EXPECT_TRUE(base::StartsWith((*result).token, "PrivateToken token="));
-  EXPECT_NE((*result).token.find("extensions="), std::string::npos);
+  EXPECT_EQ(token_position, 0u);
+  EXPECT_NE(extensions_position, std::string::npos);
+
+  // Check if the comma is between "PrivateToken token=" and "extensions=".
+  size_t comma_position = token.find(",", token_position);
+  EXPECT_NE(comma_position, std::string::npos);
+  EXPECT_LT(comma_position, extensions_position);
 }

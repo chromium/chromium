@@ -457,7 +457,7 @@ IpProtectionConfigProvider::CreateBlindSignedAuthToken(
   if (privacy_pass_token_data.ParseFromString(bsa_token.token)) {
     token_header_value =
         base::StrCat({"PrivateToken token=\"", privacy_pass_token_data.token(),
-                      "\" extensions=\"",
+                      "\", extensions=\"",
                       privacy_pass_token_data.encoded_extensions(), "\""});
   }
   return network::mojom::BlindSignedAuthToken::New(
