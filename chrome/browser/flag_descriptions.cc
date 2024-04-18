@@ -1542,6 +1542,12 @@ const char kBoundaryEventDispatchTracksNodeRemovalDescription[] =
     "over, out events) tracks DOM node removal to fix event pairing on "
     "ancestor nodes.";
 
+const char kEnableAutomaticSharedImageManagementName[] =
+    "Enable automatic shared image management";
+const char kEnableAutomaticSharedImageManagementDescription[] =
+    "When enabled, allows the shared image lifetime to be automatically "
+    "managed via ClientSharedImage.";
+
 const char kEnableCssSelectorFragmentAnchorName[] =
     "Enables CSS selector fragment anchors";
 const char kEnableCssSelectorFragmentAnchorDescription[] =
