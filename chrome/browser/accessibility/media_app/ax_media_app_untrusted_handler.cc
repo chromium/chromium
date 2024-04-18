@@ -394,7 +394,7 @@ content::WebContents* AXMediaAppUntrustedHandler::GetMediaAppWebContents()
 content::RenderFrameHost*
 AXMediaAppUntrustedHandler::GetMediaAppRenderFrameHost() const {
   content::WebContents* web_contents = GetMediaAppWebContents();
-  return web_contents ? web_contents->GetFocusedFrame() : nullptr;
+  return web_contents ? web_contents->GetPrimaryMainFrame() : nullptr;
 }
 
 ui::AXNodeID AXMediaAppUntrustedHandler::GetMediaAppRootNodeID() const {
