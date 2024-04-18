@@ -63,6 +63,7 @@
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "third_party/pdfium/public/fpdf_attachment.h"
+#include "third_party/pdfium/public/fpdf_catalog.h"
 #include "third_party/pdfium/public/fpdf_ext.h"
 #include "third_party/pdfium/public/fpdf_fwlevent.h"
 #include "third_party/pdfium/public/fpdf_ppo.h"
@@ -1124,6 +1125,10 @@ AccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {
     }
   }
   return focus_info;
+}
+
+bool PDFiumEngine::IsPDFDocTagged() {
+  return FPDFCatalog_IsTagged(doc());
 }
 
 uint32_t PDFiumEngine::GetLoadedByteSize() {

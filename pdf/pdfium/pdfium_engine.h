@@ -186,6 +186,7 @@ class PDFiumEngine : public PDFEngine,
   void KillFormFocus() override;
   void UpdateFocus(bool has_focus) override;
   AccessibilityFocusInfo GetFocusInfo() override;
+  bool IsPDFDocTagged() override;
   uint32_t GetLoadedByteSize() override;
   bool ReadLoadedBytes(uint32_t length, void* buffer) override;
   void RequestThumbnail(int page_index,

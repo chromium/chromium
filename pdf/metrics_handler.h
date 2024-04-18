@@ -18,6 +18,7 @@ class MetricsHandler {
   ~MetricsHandler();
 
   void RecordDocumentMetrics(const DocumentMetadata& metadata);
+  void RecordAccessibilityIsDocTagged(bool is_tagged);
 };
 
 }  // namespace chrome_pdf

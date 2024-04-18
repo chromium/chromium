@@ -1744,6 +1744,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PDF.IsPDFTagged" enum="BooleanExists"
+    expires_after="2025-02-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When a PDF is constructed for accessibility, true if the PDF is tagged as
+    specified by ISO 14289-1 (PDF/UA).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened"
     enum="BooleanExists" expires_after="2025-02-28">
   <owner>kyungjunlee@google.com</owner>

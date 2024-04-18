@@ -473,6 +473,8 @@ class PDFEngine {
   // Returns the focus info of current focus item.
   virtual AccessibilityFocusInfo GetFocusInfo() = 0;
 
+  virtual bool IsPDFDocTagged() = 0;
+
   virtual uint32_t GetLoadedByteSize() = 0;
   virtual bool ReadLoadedBytes(uint32_t length, void* buffer) = 0;
 

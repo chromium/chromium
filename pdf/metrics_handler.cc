@@ -37,4 +37,8 @@ void MetricsHandler::RecordDocumentMetrics(const DocumentMetadata& metadata) {
   base::UmaHistogramEnumeration("PDF.FormType", metadata.form_type);
 }
 
+void MetricsHandler::RecordAccessibilityIsDocTagged(bool is_tagged) {
+  base::UmaHistogramBoolean("Accessibility.PDF.IsPDFTagged", is_tagged);
+}
+
 }  // namespace chrome_pdf
