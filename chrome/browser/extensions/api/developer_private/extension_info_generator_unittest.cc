@@ -694,6 +694,20 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_OffStore) {
     CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kOffstore,
                                   info.get());
   }
+  {
+    // CWSInfo - Command line extension without CWS info.
+    const scoped_refptr<const Extension> extension_command_line =
+        CreateExtension("test", base::Value::List(),
+                        ManifestLocation::kCommandLine);
+    CWSInfoService::CWSInfo cws_not_present;
+    profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, false);
+    EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+        .Times(1)
+        .WillOnce(testing::Return(cws_not_present));
+    std::unique_ptr<developer::ExtensionInfo> info =
+        GenerateExtensionInfo(extension_command_line->id());
+    CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kNone, info.get());
+  }
 }
 
 TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_PolicyViolation) {

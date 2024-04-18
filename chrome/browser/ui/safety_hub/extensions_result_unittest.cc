@@ -137,13 +137,15 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult_BlocklistPrefs) {
 
 TEST_F(SafetyHubExtensionsResultTest, GetResult_OffStore_Extensions) {
   static extensions::CWSInfoService::CWSInfo cws_info_no_data;
-  // Create 3 mock extensions:
+  // Create 4 mock extensions:
   //    - One that lacks CWS data
   //    - One with a non-CWS update URL
   //    - One that is unpacked while Chrome's dev mode is false
+  //    - One that is installed by the command line
   const std::string extension_name_url = "TestExtensionNonCWSUpdateURL";
   const std::string extension_name_no_cws_info = "TestExtensionCWSNoINFO";
   const std::string extension_name_unpacked = "TestExtensionUnpacked";
+  const std::string extension_name_commandline = "TestExtensionCommandline";
   safety_hub_test_util::AddExtension(
       extension_name_url, extensions::mojom::ManifestLocation::kInternal,
       profile(), "https://example.com");
@@ -153,12 +155,15 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult_OffStore_Extensions) {
   safety_hub_test_util::AddExtension(
       extension_name_no_cws_info,
       extensions::mojom::ManifestLocation::kInternal, profile());
-
+  safety_hub_test_util::AddExtension(
+      extension_name_commandline,
+      extensions::mojom::ManifestLocation::kCommandLine, profile());
   std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
       cws_info_service = safety_hub_test_util::GetMockCWSInfoService(
           profile(), /*with_calls=*/false);
   EXPECT_CALL(*cws_info_service, GetCWSInfo)
-      .Times(3)
+      .Times(4)
+      .WillOnce(testing::Return(safety_hub_test_util::GetCWSInfoNoTrigger()))
       .WillOnce(testing::Return(safety_hub_test_util::GetCWSInfoNoTrigger()))
       .WillOnce(testing::Return(cws_info_no_data))
       .WillOnce(testing::Return(safety_hub_test_util::GetCWSInfoNoTrigger()));
