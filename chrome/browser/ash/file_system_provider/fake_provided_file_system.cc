@@ -535,7 +535,6 @@ AbortCallback FakeProvidedFileSystem::AddWatcher(
   const WatcherKey key(entry_watcher, recursive);
   const Watchers::iterator it = watchers_.find(key);
   if (it != watchers_.end()) {
-    std::move(callback).Run(base::File::FILE_OK);
     return PostAbortableTask(
         base::BindOnce(std::move(callback), base::File::FILE_OK));
   }
