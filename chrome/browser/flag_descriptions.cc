@@ -2820,6 +2820,14 @@ const char kLeftHandSideActivityIndicatorsName[] =
 const char kLeftHandSideActivityIndicatorsDescription[] =
     "Moves activity indicators to the left-hand side of location bar.";
 
+#if BUILDFLAG(IS_CHROMEOS)
+const char kCrosSystemLevelPermissionBlockedWarningsName[] =
+    "Chrome OS block warnings";
+const char kCrosSystemLevelPermissionBlockedWarningsDescription[] =
+    "Displays warnings in browser if camera, microphone or geolocation is "
+    "disabled in the OS.";
+#endif
+
 const char kPermissionPredictionsName[] = "Permission Predictions";
 const char kPermissionPredictionsDescription[] =
     "Use the Permission Predictions Service to surface permission requests "

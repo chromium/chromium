@@ -82,6 +82,12 @@ BASE_FEATURE(kLeftHandSideActivityIndicators,
              "LeftHandSideActivityIndicators",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kCrosSystemLevelPermissionBlockedWarnings,
+             "CrosBlockWarnings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kTrackingProtection3pcd,
              "TrackingProtection3pcd",
              base::FEATURE_DISABLED_BY_DEFAULT);

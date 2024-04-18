@@ -1648,6 +1648,11 @@ extern const char kImprovedSemanticsActivityIndicatorsDescription[];
 extern const char kLeftHandSideActivityIndicatorsName[];
 extern const char kLeftHandSideActivityIndicatorsDescription[];
 
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kCrosSystemLevelPermissionBlockedWarningsName[];
+extern const char kCrosSystemLevelPermissionBlockedWarningsDescription[];
+#endif
+
 extern const char kPermissionPredictionsName[];
 extern const char kPermissionPredictionsDescription[];
 
