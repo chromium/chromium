@@ -129,7 +129,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # TODO(b/315002705): Migrate shimless_rma to TypeScript and remove
       # exception.
       'ash/webui/shimless_rma/',
-      'ash/webui/shortcut_customization_ui/',
       # TODO(b/267329383): Migrate A11y to TypeScript.
       'chrome/browser/resources/chromeos/accessibility',
       'ui/file_manager/',
@@ -160,7 +159,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/test/data/webui/chromeos/shimless_rma',
       'chrome/test/data/webui/cr_components/chromeos',
       'chrome/test/data/webui/nearby_share',
-      'chrome/test/data/webui/settings/chromeos',
       'components/policy/resources/webui',
       'ui/webui/resources/js',
       'ui/webui/resources/mojo',
