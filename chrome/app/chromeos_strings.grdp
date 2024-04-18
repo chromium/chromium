@@ -7521,6 +7521,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_EXTENDED_UPDATES_DIALOG_ENABLE_BUTTON" desc="Enable button label of the Extended Updates Dialog" translateable="false">
     Turn on
   </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_DESCRIPTION" desc="Description of the loss of Android Apps" translateable="false">
+    You won’t be able to use Android apps or the Google Play Store
+  </message>
+    <message name="IDS_EXTENDED_UPDATES_DIALOG_SECURITY_DESCRIPTION" desc="Description of the extended security updates"  translateable="false">
+    You’ll get security updates and the latest features for 2 more years
+  </message>
   <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_TITLE" desc="Title of the confirmation popup in the Extended Updates Dialog" translateable="false">
     Turn on extended updates?
   </message>

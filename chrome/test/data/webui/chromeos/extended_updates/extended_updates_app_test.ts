@@ -28,23 +28,23 @@ suite('<extended-updates>', () => {
   });
 
   function getEnableButton(): HTMLElement|null {
-    return app.shadowRoot!.querySelector<HTMLElement>('#enable-button');
+    return app.shadowRoot!.querySelector<HTMLElement>('#enableButton');
   }
 
   function getCancelButton(): HTMLElement|null {
-    return app.shadowRoot!.querySelector<HTMLElement>('#cancel-button');
+    return app.shadowRoot!.querySelector<HTMLElement>('#cancelButton');
   }
 
   function getPopupDialog(): CrDialogElement|null {
-    return app.shadowRoot!.querySelector<CrDialogElement>('#popup-dialog');
+    return app.shadowRoot!.querySelector<CrDialogElement>('#popupDialog');
   }
 
   function getPopupConfirmButton(): HTMLElement|null {
-    return app.shadowRoot!.querySelector<HTMLElement>('#popup-confirm-button');
+    return app.shadowRoot!.querySelector<HTMLElement>('#popupConfirmButton');
   }
 
   function getPopupCancelButton(): HTMLElement|null {
-    return app.shadowRoot!.querySelector<HTMLElement>('#popup-cancel-button');
+    return app.shadowRoot!.querySelector<HTMLElement>('#popupCancelButton');
   }
 
   function assertPopupVisibility(expectedVisibility: boolean): void {

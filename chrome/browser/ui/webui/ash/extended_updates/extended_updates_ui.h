@@ -13,6 +13,11 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace ash::extended_updates {
 
@@ -30,6 +35,12 @@ class ExtendedUpdatesUI
       mojo::PendingReceiver<ash::extended_updates::mojom::PageHandlerFactory>
           receiver);
 
+  // Binds to the Jelly dynamic color Mojo.
+  // Needed to update UI colors when users switch between dark and light modes.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
  private:
   // ash::extended_updates::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -38,6 +49,7 @@ class ExtendedUpdatesUI
       override;
 
   std::unique_ptr<ExtendedUpdatesPageHandler> page_handler_;
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   mojo::Receiver<ash::extended_updates::mojom::PageHandlerFactory>
       page_factory_receiver_{this};

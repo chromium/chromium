@@ -22,10 +22,17 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [
     "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/browser/resources/chromeos/login:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+  ts_path_mappings = [ "//chromeos/login/components/*|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/chromeos/login/tsc/components/*",
+                           target_gen_dir) ]
+
+  icons_html_files = [ "icons.html" ]
 
   webui_context_type = "trusted"
 }
