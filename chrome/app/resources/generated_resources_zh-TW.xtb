@@ -1110,6 +1110,7 @@
 <translation id="1823768272150895732">字型</translation>
 <translation id="1823781806707127806">將現有瀏覽資料加入受管理的設定檔</translation>
 <translation id="18245044880483936">備份資料不會計入貴子女的雲端硬碟儲存空間配額。</translation>
+<translation id="1824870205483790748">將群組固定在書籤列上</translation>
 <translation id="1825073796163165618">啟用連結</translation>
 <translation id="1825565032302550710">連接埠必須介於 1024 與 65535 之間</translation>
 <translation id="182577151972096764">最近瀏覽過的食譜</translation>
@@ -1132,6 +1133,7 @@
 <translation id="1834503245783133039">下載失敗：<ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">正在升級 Linux</translation>
 <translation id="1835612721186505600">允許應用程式和網站存取相機</translation>
+<translation id="1837441256780906162">Microsoft OneDrive 已拒絕要求，請稍後再試。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839021455997460752">你的電子郵件地址</translation>
 <translation id="1839540115464516994">在「<ph name="LOCATION" />」中顯示</translation>
@@ -1632,6 +1634,7 @@
 <translation id="2204387456724731099">無法翻譯這個選取的項目</translation>
 <translation id="2207116775853792104">保留這項擴充功能</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
+<translation id="2211043920024403606">設定檔資訊</translation>
 <translation id="2211245494465528624">管理同步選項</translation>
 <translation id="2214018885812055163">共用資料夾</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;還有 1 行未顯示&gt;}other{&lt;還有 <ph name="NUMBER_OF_LINES" /> 行未顯示&gt;}}</translation>
@@ -2846,6 +2849,11 @@
 <translation id="311394601889664316">禁止網站編輯裝置上的檔案或資料夾</translation>
 <translation id="3115147772012638511">等候快取...</translation>
 <translation id="3115580024857770654">全部收合</translation>
+<translation id="3115728370128632723">「為你提供更優質的網路體驗」是指：
+      &lt;ul&gt;
+        &lt;li&gt;在瀏覽網路時保護你的安全&lt;/li&gt;
+        &lt;li&gt;使生態系統蓬勃發展，確保網路安全、開放、快速又免費&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="3115743155098198207">管理 Google 帳戶語言</translation>
 <translation id="3117362587799608430">座架不完全相容</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{無法將 <ph name="ATTACHMENTS" />傳送給「<ph name="DEVICE_NAME" />」}other{無法將 <ph name="ATTACHMENTS" />傳送給「<ph name="DEVICE_NAME" />」}}</translation>
@@ -3666,6 +3674,7 @@
 <translation id="3760460896538743390">檢查背景頁面(&amp;B)</translation>
 <translation id="37613671848467444">在無痕視窗中開啟(&amp;I)</translation>
 <translation id="3761556954875533505">要允許網站編輯檔案嗎？</translation>
+<translation id="3761733456040768239">更多可對「<ph name="CARD_DESCRIPTION" />」執行的操作，信用卡驗證碼已儲存</translation>
 <translation id="3763433740586298940">如果不想讓網站儲存造訪資訊，建議你封鎖這些網站。Chrome 也會自動將 30 天前的網站從清單中刪除。</translation>
 <translation id="3763549179847864476">「隱私權指南」返回按鈕</translation>
 <translation id="3764314093345384080">詳細版本資訊</translation>
@@ -5687,6 +5696,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右側)</translation>
 <translation id="534449933710420173">未命名的資料夾</translation>
 <translation id="5345916423802287046">當你登入時啟動應用程式</translation>
+<translation id="5347920333985823270">Chrome 贊同「免費網路」的概念</translation>
 <translation id="5350293332385664455">關閉 Google 助理</translation>
 <translation id="535123479159372765">從其他裝置複製的文字</translation>
 <translation id="5352033265844765294">時間戳記</translation>
@@ -5878,6 +5888,7 @@
 <translation id="5493792505296048976">螢幕已開啟</translation>
 <translation id="5494016731375030300">最近關閉的分頁</translation>
 <translation id="5494362494988149300">下載完成時自動開啟檔案(&amp;D)</translation>
+<translation id="5494843939447324326">Chrome 的設定由你做主</translation>
 <translation id="5494920125229734069">全選</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、資料和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持開啟螢幕</translation>
@@ -5934,6 +5945,12 @@
 <translation id="5542132724887566711">設定檔</translation>
 <translation id="5542750926112347543">系統已封鎖 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在連線至「<ph name="CARRIER_NAME" />」</translation>
+<translation id="5543901591855628053">對許多線上商家來說，廣告非常重要。商家仰賴廣告提供免付費的線上內容，確保人人都能使用。Chrome 也開發了多種方式，讓網站既可放送個人化廣告，又能保護使用者的隱私。如果運用得當，廣告可造福網路上的所有使用者，這是因為當你瀏覽廣告時：
+      &lt;ul&gt;
+        &lt;li&gt;你可能會發現新奇或有趣的內容&lt;/li&gt;
+        &lt;li&gt;廣告主可能會觸及新客&lt;/li&gt;
+        &lt;li&gt;你造訪的網站會因代管廣告而賺取收益&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="5543983818738093899">正在檢查狀態...</translation>
 <translation id="5544482392629385159">第 <ph name="DEVICE_INDEX" /> 部 <ph name="DEVICE_NAME" /> 裝置 (共 <ph name="DEVICE_COUNT" /> 部)</translation>
 <translation id="554517701842997186">轉譯器</translation>
@@ -6032,6 +6049,7 @@
 <translation id="5616571005307953937">最舊</translation>
 <translation id="5616726534702877126">預留大小</translation>
 <translation id="561698261642843490">關閉 Firefox</translation>
+<translation id="5616991717083739666">將群組固定在書籤列上</translation>
 <translation id="5620163320393916465">未儲存任何密碼</translation>
 <translation id="5620540760831960151">這份清單會受到 <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> 和 <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> 政策影響</translation>
 <translation id="5620568081365989559">DevTools 要求取得 <ph name="FOLDER_PATH" /> 的完整權限。請務必小心，不要透露任何機密資訊。</translation>
@@ -6625,6 +6643,12 @@
 <translation id="6082877069782862752">對應按鍵</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 屬於未命名群組</translation>
 <translation id="6086004606538989567">你驗證的帳戶未經授權，無法存取這部裝置。</translation>
+<translation id="6086366524552602071">你可以按照自己的喜好自訂 Chrome：
+      &lt;ul&gt;
+        &lt;li&gt;Google 優質服務&lt;em&gt;&lt;/em&gt;：你可以視需要決定是否使用。舉例來說，你可以將 Google 搜尋設為 Chrome 的預設搜尋引擎，並在任何裝置上使用 Google 密碼管理工具存取所有密碼。&lt;/li&gt;
+        &lt;li&gt;依需求做選擇&lt;em&gt;&lt;/em&gt;：Chrome 提供設定控制選項和相關資訊，方便你做出符合需求的決定。&lt;/li&gt;
+        &lt;li&gt;擴充功能&lt;em&gt;&lt;/em&gt;：Chrome 線上應用程式商店上有超過 10 萬個擴充功能，善用擴充功能可拓展 Chrome 的功能。&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">由您的管理員安裝</translation>
 <translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
 <translation id="6087960857463881712">好看的臉蛋</translation>
@@ -6719,6 +6743,7 @@
 <translation id="6154240335466762404">移除所有連接埠</translation>
 <translation id="615436196126345398">通訊協定</translation>
 <translation id="6154739047827675957">OneDrive 設定失敗</translation>
+<translation id="6154820449290823443">管理這部 Chromebook 上允許及禁止存的應用程式。</translation>
 <translation id="6155141482566063812">背景分頁正在分享你的螢幕畫面</translation>
 <translation id="6156323911414505561">顯示書籤列</translation>
 <translation id="6156863943908443225">指令碼快取</translation>
@@ -6808,6 +6833,7 @@
 <translation id="6226777517901268232">私密金鑰檔案 (選填)</translation>
 <translation id="6227002569366039565">按下 |<ph name="ACCELERATOR" />| 即可聚焦這個泡泡，再次按下即可聚焦泡泡指向的元素。</translation>
 <translation id="6227280783235722609">擴充功能</translation>
+<translation id="622902691730729894">將群組從書籤列上取消固定</translation>
 <translation id="6229062790325126537">重設 ApnMigrator</translation>
 <translation id="6229849828796482487">中斷與 Wi-Fi 網路的連線</translation>
 <translation id="6231782223312638214">建議</translation>
@@ -7640,6 +7666,7 @@
 <translation id="686831807558000905">不登入</translation>
 <translation id="686839242150793617">允許自動進入子母畫面</translation>
 <translation id="6868934826811377550">查看詳情</translation>
+<translation id="6869093950561306644">為確保這部裝置能安全使用，貴機構可能要查看裝置的作業系統、瀏覽器和設定的相關資訊，以及裝置上安裝的軟體。</translation>
 <translation id="6871644448911473373">OCSP 回應程式：<ph name="LOCATION" /></translation>
 <translation id="6873571253135628430">變更網站權限</translation>
 <translation id="6876155724392614295">自行車</translation>
@@ -8553,6 +8580,7 @@
 <translation id="7605594153474022051">同步處理功能無法正常運作</translation>
 <translation id="7606248551867844312">確認裁剪</translation>
 <translation id="7606560865764296217">暫停播放動畫</translation>
+<translation id="7606639338662398635">分頁群組</translation>
 <translation id="7606992457248886637">授權單位</translation>
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7608810328871051088">Android 偏好設定</translation>
@@ -10220,6 +10248,7 @@
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡</translation>
 <translation id="8838778928843281408">管理手機</translation>
+<translation id="8838841425230629509">將群組從書籤列上取消固定</translation>
 <translation id="883924185304953854">以圖搜尋</translation>
 <translation id="8841786407272321022">密碼只會儲存在這部裝置上。如要將新密碼儲存到 Google 帳戶，請更新 Google Play 服務。</translation>
 <translation id="8841843049738266382">讀取及變更列入許可清單的使用者</translation>
@@ -10228,6 +10257,7 @@
 <translation id="8846132060409673887">閱讀這部電腦的製造商和型號資訊</translation>
 <translation id="8846163936679269230">重設 eSIM 卡設定檔</translation>
 <translation id="8846239054091760429">單聲道音訊、啟動、即時字幕等</translation>
+<translation id="8847459600640933659">廣告收益也讓 Google 能夠推出許多免付費產品和服務，例如 Chrome、Gmail、Google 地圖和 YouTube。</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8849219423513870962">取消移除名為「<ph name="PROFILE_NAME" />」的 eSIM 卡設定檔</translation>
@@ -10587,7 +10617,6 @@
 <translation id="9101691533782776290">啟動應用程式</translation>
 <translation id="9102610709270966160">啟用擴充功能</translation>
 <translation id="9102864637938129124">網站和廣告主可以瞭解廣告成效。這項設定已開啟。</translation>
-<translation id="9103479157856427471">放大的螢幕畫面會追蹤鍵盤焦點</translation>
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
 <translation id="9107096627210171112">翻譯(&amp;R)...</translation>
 <translation id="9108035152087032312">命名視窗...(&amp;W)</translation>

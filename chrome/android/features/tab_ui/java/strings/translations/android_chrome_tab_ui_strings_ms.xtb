@@ -49,6 +49,7 @@
 <translation id="3996880007329611795">Dapatkan pemberitahuan</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Dibuat <ph name="NUM_DAYS_ONE" /> hari yang lalu}other{Dibuat <ph name="NUM_DAYS_MANY" /> hari yang lalu}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab kelihatan berkaitan. Himpunkan semua tab itu?</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Tutup kumpulan <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup kumpulan <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4212246570487010370">Teruskan penyemakan imbas</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab.}other{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
@@ -72,6 +73,7 @@
 <translation id="5490235265819901748">Kumpulan tab dikembangkan</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5545379293264651575">Tutup tanpa membuat semakan</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tutup kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Lihat maklumat kedai, pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pautan daripada Chrome}other{<ph name="TABS_COUNT_MANY" /> pautan daripada Chrome}}</translation>
 <translation id="575494663145460764">Dapatkan makluman untuk penurunan harga?</translation>
@@ -113,6 +115,7 @@
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7966321538264951561">Tolak cadangan.</translation>
 <translation id="8029301326595421733">Maklumat tentang kedai ini dibuka pada ketinggian penuh</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Alihkan tab ke atas</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tutup <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Tutup <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="8398929769197326728">Folder Baharu - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -125,6 +128,7 @@
 <translation id="9090098097337832354">Maklumat tentang kedai ini ditutup</translation>
 <translation id="9150694013019234766">Beralih antara tab dalam kumpulan tab anda berhampiran bahagian bawah skrin</translation>
 <translation id="9169594135889675189">Tambahkan tab baharu pada kumpulan</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="955558140275419384">Semak semua tab yang diarkibkan untuk mengurangkan selerak dengan memasukkan editor ini.</translation>
 <translation id="959682366969460160">Jadi teratur</translation>
 <translation id="992256792861109788">Merah Jambu</translation>

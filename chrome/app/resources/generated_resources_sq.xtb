@@ -3400,6 +3400,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3569682580018832495"><ph name="ORIGIN" /> mund t'i shikojë skedarët dhe dosjet e mëposhtme</translation>
 <translation id="3571734092741541777">Konfigurimi</translation>
 <translation id="3575121482199441727">Lejo për këtë sajt</translation>
+<translation id="3575224072358507281">Mblidh rezultatet për adresën IP dhe matjen e rrjetit për Measurement Lab, sipas politikës përkatëse të privatësisë (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="3577487026101678864">Sinkronizimi i skedarëve është aktiv</translation>
 <translation id="3577745545227000795">Mbledhja e të dhënave të harduerit të <ph name="DEVICE_OS" /></translation>
@@ -8009,6 +8010,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7180865173735832675">Personalizo</translation>
 <translation id="7181117767881540376">&amp;Fshih shiritin e faqeshënuesve</translation>
 <translation id="7181329571386134105">Për të lejuar që <ph name="CHILD_NAME" /> të instalojë shtesat në të ardhmen pa miratimin tënd, hap aplikacionin Family Link në pajisjen tënde dhe përditëso cilësimet e Google Chrome për <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Përdor një llogari të ndryshme</translation>
 <translation id="7182063559013288142">Zona e qasjes për internet në çast</translation>
 <translation id="7182791023900310535">Lëviz fjalëkalimin</translation>
 <translation id="718427252411067142">Për t'i ndaluar të tjerët që të mos përdorin fjalëkalimin tënd, hap aplikacionin për të ndryshuar fjalëkalimin</translation>
@@ -8553,6 +8555,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7605594153474022051">Sinkronizimi nuk po funksionon.</translation>
 <translation id="7606248551867844312">Konfirmo prerjen</translation>
 <translation id="7606560865764296217">Vendos në pauzë animacionin</translation>
+<translation id="7606639338662398635">Grupet e skedave</translation>
 <translation id="7606992457248886637">Autoritetet</translation>
 <translation id="7607002721634913082">Ndërprerë</translation>
 <translation id="7608810328871051088">Preferencat e Android</translation>
@@ -8570,6 +8573,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7617263010641145920">Aktivizo "Dyqanin e Play"</translation>
 <translation id="7617648809369507487">Përdor mesazhe më të qeta</translation>
 <translation id="7619937211696316184">Mirëmbajtja përfundoi</translation>
+<translation id="7620616707541471029">Zgjidh një llogari për të vazhduar</translation>
 <translation id="7621382409404463535">Sistemi nuk arriti të ruante konfigurimin e pajisjes.</translation>
 <translation id="7621480263311228380">Nuk lejohet të përdorë informacionet që ka ruajtur rreth teje</translation>
 <translation id="7621595347123595643">Nuk do të mund t'i rikuperosh të dhënat lokale nëse harron fjalëkalimin ose kodin PIN.</translation>
@@ -10584,7 +10588,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9101691533782776290">Nis aplikacionin</translation>
 <translation id="9102610709270966160">Aktivizo shtesën</translation>
 <translation id="9102864637938129124">Sajtet dhe reklamuesit mund të kuptojnë se si funksionojnë reklamat. Ky cilësim është aktiv.</translation>
-<translation id="9103479157856427471">Ekrani i zmadhuar ndjek fokusin e tastierës</translation>
 <translation id="9103868373786083162">Shtyp për t'u kthyer prapa. Historiku mund të shihet nga menyja kontekstuale.</translation>
 <translation id="9107096627210171112">&amp;Përkthe...</translation>
 <translation id="9108035152087032312">Dritarja e &amp;emrit...</translation>

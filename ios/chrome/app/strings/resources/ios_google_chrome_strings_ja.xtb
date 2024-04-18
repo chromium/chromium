@@ -123,6 +123,7 @@
 <translation id="4633328489441962921">Chrome でアップデートを確認できません</translation>
 <translation id="4636900170638246267">このサイトと Chrome にログインしてください。</translation>
 <translation id="4761869838909035636">Chrome の安全チェックを実行</translation>
+<translation id="4798859546468762093">パーソナライズなどの機能を利用するには、Chrome を <ph name="FEATURE_NAME_1" /> と、<ph name="FEATURE_NAME_2" /> に追加します</translation>
 <translation id="4819268619367838612">アプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Chrome データの一部が Google アカウントにまだ保存されていません。
 
@@ -179,6 +180,7 @@
 <translation id="6389317667633680932">Chrome を最大限に活用するための新機能をご紹介します。</translation>
 <translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="6427126399757991875">組織で Chrome を設定しています...</translation>
+<translation id="6481963882741794338">パーソナライズなどの目的で、Chrome と他の Google サービスをリンクします</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> としてログインしています。
 
 データはパスフレーズで暗号化されます。Google アカウントで Chrome のデータを使用して保存するには、パスフレーズを入力してください。</translation>

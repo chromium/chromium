@@ -1389,7 +1389,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="2018189721942291407">Nie seker of jy moet inskryf nie?</translation>
 <translation id="2018352199541442911">Jammer, jou eksterne bergingtoestel word nie in hierdie stadium gesteun nie.</translation>
 <translation id="2018615379714355980">Rekenaar is bedraad en Chromecast is op wi-fi</translation>
-<translation id="2018796023998975363">Jy sal oortjiegroepvoorstelle kry wat soortgelyke oortjies groepeer. Jou oortjies, titels en groepe word na Google gestuur en kan deur mense hersien word om hierdie kenmerk te verbeter.</translation>
+<translation id="2018796023998975363">Jy sal oortjiegroepvoorstelle kry wat soortgelyke oortjies groepeer. Jou oortjies, titels en groepe word na Google gestuur en kan deur mense gekontroleer word om hierdie kenmerk te verbeter.</translation>
 <translation id="2019718679933488176">Maak oudio in nuwe oortjie oop</translation>
 <translation id="2020183425253392403">Wys netwerkadresinstellings</translation>
 <translation id="2020225359413970060">Skandeer lêer</translation>
@@ -6499,7 +6499,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> kan hierdie lêers in <ph name="FOLDERNAME" /> bekyk</translation>
 <translation id="5969728632630673489">Kortpadsleutelkennisgewing is toegemaak</translation>
 <translation id="5971037678316050792">Beheer Bluetooth-aansluitertoestand en -saambinding</translation>
-<translation id="5971400953982411053">Google Lens Soekborrel</translation>
+<translation id="5971400953982411053">Google Lens-soekborrel</translation>
 <translation id="597235323114979258">Sien nog bestemmings</translation>
 <translation id="5972543790327947908">Sommige gesteunde skakels sal steeds in <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> of <ph name="APP_NAME_3" /> oopmaak.</translation>
 <translation id="5972559880616357748">Meer handelinge vir <ph name="SITE_GROUP" /></translation>
@@ -8574,6 +8574,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7605594153474022051">Sinkronisering werk nie</translation>
 <translation id="7606248551867844312">Bevestig snoei</translation>
 <translation id="7606560865764296217">Onderbreek animasie</translation>
+<translation id="7606639338662398635">Oortjiegroepe</translation>
 <translation id="7606992457248886637">Outoriteite</translation>
 <translation id="7607002721634913082">Laat wag</translation>
 <translation id="7608810328871051088">Android-voorkeure</translation>
@@ -10607,7 +10608,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9101691533782776290">Begin program</translation>
 <translation id="9102610709270966160">Aktiveer uitbreiding</translation>
 <translation id="9102864637938129124">Werwe en adverteerders kan verstaan hoe advertensies vaar. Hierdie instelling is aan.</translation>
-<translation id="9103479157856427471">Ingezoemde skerm volg sleutelbordfokus</translation>
 <translation id="9103868373786083162">Druk om terug te gaan, kontekskieslys om geskiedenis te sien</translation>
 <translation id="9107096627210171112">Vertaal …</translation>
 <translation id="9108035152087032312">Naam en venster</translation>

@@ -136,6 +136,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1243027604378859286">Tekijä:</translation>
 <translation id="1247030632403369975">Alumiini</translation>
 <translation id="1252209483516427155">Ulkoiluvaatteet</translation>
+<translation id="1253096324252841344">Maksa tällä: <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkronoitu)</translation>
 <translation id="1255086252236620440">Sähkövatkaimet</translation>
 <translation id="1256368399071562588">&lt;p&gt;Jos verkkosivuston avaaminen ei onnistu, kokeile ensin seuraavia vianetsintäkeinoja:&lt;/p&gt;
@@ -1511,6 +1512,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="385489333361351399">Kamera- ja valokuvauslaitteet</translation>
 <translation id="3858027520442213535">Päivitä päivämäärä ja aika</translation>
 <translation id="3858860766373142691">Nimi</translation>
+<translation id="3865339060090354361">Katso ehdot: <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Tiede</translation>
 <translation id="3875783148670536197">Näytä miten</translation>
 <translation id="3880456882942693779">Taide ja viihde</translation>
@@ -2348,6 +2350,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="553377674408670169">Koulutusalantyöt</translation>
 <translation id="5536214594743852365">Näytä osio <ph name="SECTION" /></translation>
 <translation id="553782666181800029">Kirjekuori Chou 2</translation>
+<translation id="5538270463355278784">automaattinen koko näyttö</translation>
 <translation id="5539243836947087108">Lautta</translation>
 <translation id="5540224163453853">Pyydettyä artikkelia ei löydy.</translation>
 <translation id="5540969246441091044">Ratsastus</translation>
@@ -2712,6 +2715,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ylläpidä Chromessa lataamiasi tiedostoja painamalla sarkainta ja sitten Enter</translation>
 <translation id="6254436959401408446">Muisti ei riitä sivun avaamiseen</translation>
 <translation id="625463612687472648">Estä</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Kun teet ostoksia Chromessa, näet vaihtoehtona <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Kun teet ostoksia Chromessa, näet vaihtoehtoina <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Toista uudelleenjärjestely</translation>
 <translation id="6263376278284652872">Verkkotunnuksen <ph name="DOMAIN" /> kirjanmerkit</translation>
 <translation id="6264376385120300461">Lataa silti</translation>
@@ -3846,6 +3850,7 @@ Lisätietoja:
 <translation id="8378714024927312812">Organisaatiosi ylläpitämä</translation>
 <translation id="8380941800586852976">Vaarallinen</translation>
 <translation id="8381674639488873545">Veloitukset voivat olla kertaluontoisia tai toistuvia, eikä niitä välttämättä esitetä selkeästi. <ph name="BEGIN_LINK" />Näytä silti<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automaattinen koko näyttö</translation>
 <translation id="838307841291975086">Farmariautot</translation>
 <translation id="8389532092404711541">Yleensä <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Kustom‑ ja urheiluautot</translation>

@@ -28,6 +28,7 @@
 <translation id="1707458603865303524">Use Chrome any time that you tap links in messages and other apps.</translation>
 <translation id="1722370509450468186">Your password will be saved in your Account (<ph name="EMAIL" />).</translation>
 <translation id="1791845338122684020">Opens your Chromium History Page.</translation>
+<translation id="1811860791247653035">To get personalisation and other features, include Chromium in <ph name="FEATURE_NAME_1" /> and <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
 <translation id="1843424232666537147">Chromium has features that help you manage your Internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
@@ -89,6 +90,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3639997914391704523">Chromium can check your passwords when you sign in with your Google Account.</translation>
 <translation id="3688710892786762883">Chromium will detect package tracking numbers on sites that you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone.</translation>
 <translation id="372658070733623520">To use and save Chromium data in your Google Account, verify that it's you.</translation>
+<translation id="3728124580182886854">Link Chromium and other Google services for personalisation and other purposes</translation>
 <translation id="3780779443901618967">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chromium warnings.</translation>
 <translation id="3784369638459513223">Opens a New Chromium Incognito Tab.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>

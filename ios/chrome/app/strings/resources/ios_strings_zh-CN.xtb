@@ -843,6 +843,7 @@
 <translation id="5407969256130905701">舍弃更改</translation>
 <translation id="5414763847370083940">当相应商品在所跟踪的任何网站上降价时，您都会收到提醒。</translation>
 <translation id="5416022985862681400">过去 7 天</translation>
+<translation id="5416455648658732408">移至标签页分组</translation>
 <translation id="5423269318075950257">跟踪价格</translation>
 <translation id="543338862236136125">修改密码</translation>
 <translation id="5433691172869980887">已复制用户名</translation>
@@ -1327,6 +1328,7 @@
 <translation id="7853202427316060426">活动</translation>
 <translation id="7856733331829174190">无法下载</translation>
 <translation id="7859704718976024901">浏览记录</translation>
+<translation id="7860900259978879139">从分组中移除</translation>
 <translation id="7866501058614003444">已成功取消跟踪此包裹。</translation>
 <translation id="7866872729285243843">若要将阅读清单同步到您的所有设备上，请在设置中开启“阅读清单”。</translation>
 <translation id="7866993391592926595">隐藏此卡片会关闭包裹跟踪功能，并移除您的所有数据</translation>
@@ -1414,9 +1416,11 @@
 <translation id="8273982424131314219">您的信息将会自动填充到 <ph name="URL" /> 中</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
+<translation id="8282657446819506217">在标签页分组中打开</translation>
 <translation id="828291969289324795">{count,plural, =1{在新标签页分组中添加标签页}other{在新标签页分组中添加标签页}}</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8286036467436129157">登录</translation>
+<translation id="8289930144142009940">“<ph name="FEATURE_NAME" />”通知已关闭</translation>
 <translation id="8292843446079898078">接收所跟踪商品的降价提醒。</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
@@ -1424,6 +1428,7 @@
 <translation id="8313645224014086262">保存文件</translation>
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8328777765163860529">全部关闭</translation>
+<translation id="8343286328361420468">关闭“<ph name="FEATURE_NAME" />”的通知</translation>
 <translation id="8343993175958086504">备份您的资料，以便在任意设备上使用。</translation>
 <translation id="834783239627985533">最常访问的网站</translation>
 <translation id="8358401059263985056">开启通知功能</translation>

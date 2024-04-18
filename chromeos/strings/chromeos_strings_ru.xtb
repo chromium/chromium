@@ -372,6 +372,7 @@
 <translation id="3170673040743561620">Положите документ в сканер.</translation>
 <translation id="3174321110679064523">Обои с рассветом, переходящим в закат</translation>
 <translation id="3178532070248519384">авангард</translation>
+<translation id="3182676044300231689">Введите запрос, например "сделай тон текста увереннее"</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="319101249942218879">Аватар изменен</translation>
 <translation id="3192947282887913208">Аудиофайлы</translation>
@@ -575,6 +576,7 @@
 <translation id="4394049700291259645">Отключить</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />: перезапуск…</translation>
 <translation id="4395835743215824109">настроить клавиатуру</translation>
+<translation id="439946595190720558">Это фоновое изображение создано искусственным интеллектом на основании запроса "<ph name="PROMPT" />".</translation>
 <translation id="4415951057168511744">Текущий аватар</translation>
 <translation id="4417830657741848074">Администратор настроил автоматический запуск для нескольких приложений. Некоторые из них нельзя закрыть.</translation>
 <translation id="4422041425070339732">стрелка вниз</translation>
@@ -1016,6 +1018,7 @@
 <translation id="6905724422583748843">Вернуться на страницу "<ph name="PAGE_NAME" />"</translation>
 <translation id="6910312834584889076">Открыта крышка сканера. Закройте крышку и повторите попытку.</translation>
 <translation id="6911383237894364323">Не удалось подключиться к медиасерверам.</translation>
+<translation id="6930597342185648547">О фоне</translation>
 <translation id="6939766318048400022">Кафе</translation>
 <translation id="6943893908656559156">Удаленное удостоверение (необязательно)</translation>
 <translation id="6953137545147683679">золотой</translation>

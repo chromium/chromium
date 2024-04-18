@@ -3403,6 +3403,7 @@
 <translation id="3569682580018832495">Сайт <ph name="ORIGIN" /> можа праглядаць наступныя файлы і папкі</translation>
 <translation id="3571734092741541777">Наладзіць</translation>
 <translation id="3575121482199441727">Дазволіць для гэтага сайта</translation>
+<translation id="3575224072358507281">Збіраць IP-адрас і вынікі ацэнкі сеткі для сэрвісу Measurement Lab у адпаведнасці з яго палітыкай прыватнасці (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3577487026101678864">Сінхранізацыя файлаў уключана</translation>
 <translation id="3577745545227000795">Збор даных аб апаратным забеспячэнні <ph name="DEVICE_OS" /></translation>
@@ -8015,6 +8016,7 @@
 <translation id="7180865173735832675">Наладзіць</translation>
 <translation id="7181117767881540376">&amp;Схаваць панэль закладак</translation>
 <translation id="7181329571386134105"><ph name="CHILD_NAME" /> зможа ўсталёўваць пашырэнні без вашага ўхвалення, калі змяніць налады Google Chrome для карыстальніка <ph name="CHILD_NAME" />. Зрабіць гэта можна на прыладзе ў праграме Family Link.</translation>
+<translation id="7182051712900867547">Выкарыстаць іншы ўліковы запіс</translation>
 <translation id="7182063559013288142">Імгненны хот-спот</translation>
 <translation id="7182791023900310535">Перамясціце пароль</translation>
 <translation id="718427252411067142">Каб іншыя не змаглі скарыстаць ваш пароль, адкрыйце праграму і змяніце яго</translation>
@@ -8559,6 +8561,7 @@
 <translation id="7605594153474022051">Сінхранізацыя не працуе</translation>
 <translation id="7606248551867844312">Пацвердзіць абрэзку</translation>
 <translation id="7606560865764296217">Прыпыніць анімацыю</translation>
+<translation id="7606639338662398635">Групы ўкладак</translation>
 <translation id="7606992457248886637">Цэнтры</translation>
 <translation id="7607002721634913082">Прыпынена</translation>
 <translation id="7608810328871051088">Налады Android</translation>
@@ -8576,6 +8579,7 @@
 <translation id="7617263010641145920">Уключыць Краму Play</translation>
 <translation id="7617648809369507487">Выкарыстоўваць ціхі рэжым для паведамленняў</translation>
 <translation id="7619937211696316184">Тэхнічнае абслугоўванне завершана</translation>
+<translation id="7620616707541471029">Каб працягнуць, выберыце ўліковы запіс</translation>
 <translation id="7621382409404463535">Сістэме не ўдалося захаваць канфігурацыю прылады.</translation>
 <translation id="7621480263311228380">Не дазволена выкарыстоўваць захаваную інфармацыю пра вас</translation>
 <translation id="7621595347123595643">Вы не зможаце аднавіць лакальныя даныя, калі забудзеце пароль або PIN-код.</translation>
@@ -10591,7 +10595,6 @@
 <translation id="9101691533782776290">Запусціць праграму</translation>
 <translation id="9102610709270966160">Уключыць пашырэнне</translation>
 <translation id="9102864637938129124">Сайты і рэкламадаўцы могуць ацэньваць эфектыўнасць рэкламы. Гэта налада ўключана.</translation>
-<translation id="9103479157856427471">Пры павелічэнні маштабу перамяшчаць павялічаны ўчастак экрана за фокусам клавіятуры</translation>
 <translation id="9103868373786083162">Націсніце гэту кнопку, каб перайсці назад, кантэкстнае меню – для прагляду гісторыі</translation>
 <translation id="9107096627210171112">&amp;Перакласці</translation>
 <translation id="9108035152087032312">Дадаць назву &amp;акна...</translation>

@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Авторы:</translation>
 <translation id="1247030632403369975">Алюминий</translation>
 <translation id="1252209483516427155">Сырт киім</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> арқылы төлеу</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхрондалған)</translation>
 <translation id="1255086252236620440">Тамақ өнімдерін араластырғыштар</translation>
 <translation id="1256368399071562588">&lt;p&gt;Егер веб-сайт ашылмаса, қатені түзету үшін алдымен мына ақауларды жою қадамдарын жасаңыз:&lt;/p&gt;
@@ -1509,6 +1510,7 @@
 <translation id="385489333361351399">Камера және фотосурет жабдығы</translation>
 <translation id="3858027520442213535">Күні мен уақытын жаңарту</translation>
 <translation id="3858860766373142691">Аты</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> шарттарын осы жерден көріңіз.</translation>
 <translation id="3872834068356954457">Ғылым</translation>
 <translation id="3875783148670536197">Орындалуын көру</translation>
 <translation id="3880456882942693779">Өнер және ойын-сауық</translation>
@@ -2105,6 +2107,7 @@
 <translation id="5040262127954254034">Құпиялық</translation>
 <translation id="5043480802608081735">Көшірілген сілтеме</translation>
 <translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
+<translation id="5048293684454354469">Жарнама тақырыптары — сайт жарнамаларды жекелендіру үшін қолдана алатын көп нәрсенің бірі ғана. Бұл тақырыптар болмаса да, сайттарда сізге жарнамалар көрсетіле береді, бірақ оларды жекелендіру азаюы мүмкін. <ph name="BEGIN_LINK" />Жарнамадағы құпиялықты басқару<ph name="LINK_END" /> туралы толық ақпарат алыңыз.</translation>
 <translation id="5052517576853118371">Қолданыстағы тақырыптар</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Бұл файлды Nearby Share арқылы жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}other{Бұл файлдарды Nearby Share арқылы жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}}</translation>
 <translation id="505757197798929356">Ашу себебін көрсетіңіз (міндетті)</translation>
@@ -2323,6 +2326,7 @@
     <ph name="LINE_BREAK" />
     Жүйелік әкімшімен хабарласып көріңіз.</translation>
 <translation id="549333378215107354">Өлшемі: 3</translation>
+<translation id="5496804587179176046">Қауіпсіздік кодтарын сақтаңыз. Әзірше ешқандай қауіпсіздік коды сақталмаған</translation>
 <translation id="550365051221576010">Барлығын толтыру</translation>
 <translation id="5508443345185481044">Камералар мен бейне жазу құрылғылары</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2346,6 +2350,7 @@
 <translation id="553377674408670169">Білім беру жүйесіндегі жұмыстар</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" бөлімін көрсету</translation>
 <translation id="553782666181800029">Chou 2 хатқалтасы</translation>
+<translation id="5538270463355278784">автоматты толық экран</translation>
 <translation id="5539243836947087108">Тақта</translation>
 <translation id="5540224163453853">Сұралған мақаланы табу мүмкін болмады.</translation>
 <translation id="5540969246441091044">Ат спорты</translation>
@@ -2710,6 +2715,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузеріндегі жүктеп алған файлдарыңызды басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="6254436959401408446">Бұл бетті ашу үшін жад жеткіліксіз</translation>
 <translation id="625463612687472648">Рұқсат беруді тоқтату</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome-да тауар сатып алатын кезде, <ph name="FINANCIAL_ACCOUNT_TYPES" /> опция ретінде көрсетіледі}other{Chrome-да тауар сатып алатын кезде, <ph name="FINANCIAL_ACCOUNT_TYPES" /> опциялар ретінде көрсетіледі}}</translation>
 <translation id="6259156558325130047">&amp;Қайта ретке келтіру әрекетін қайталау</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> бетбелгілері</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
@@ -3844,6 +3850,7 @@
 <translation id="8378714024927312812">Ұйым басқарады</translation>
 <translation id="8380941800586852976">Қауіпті</translation>
 <translation id="8381674639488873545">Бұл ақылар сізге білдіртпей бір рет не бірнеше қайтара алынуы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Автоматты толық экран</translation>
 <translation id="838307841291975086">Әмбебап автомобильдер</translation>
 <translation id="8389532092404711541">Әдетте <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Өзгертілген және өнімділігі жоғары көліктер</translation>

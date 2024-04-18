@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store қолданбасы</translation>
 <translation id="1225748608451425081">Белгілі мәселеге байланысты Chromebook құлыпталды. Келесі уақыттан кейін аккаунтқа кіре аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Таңдауды тоқтату</translation>
+<translation id="1230853660706736937">Суреттердегі мәтінді іздеу және суреттің алғы көріністерін көру</translation>
 <translation id="1235458158152011030">Сақталған желілер</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> қосылды.</translation>
 <translation id="1240638468526743569">Қолданба</translation>
@@ -160,6 +161,7 @@
 <translation id="1569384531973824928">Бұл камера мен микрофон рұқсаттары бар барлық қолданба мен веб-сайттың пайдалануына мүмкіндік береді. Веб-бетті жаңарту немесе қолданбаны өшіріп қосу керек болуы мүмкін.</translation>
 <translation id="1571697193564730395">Мазаламау режимін қосыңыз/өшіріңіз. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Ұлғайтқыш қосылған кезде кішірейту</translation>
+<translation id="1582946770779745370">Ойын тақтасы қолжетімді. Ашу үшін <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, содан кейін <ph name="LAUNCHER_KEY_NAME" /> + g тіркесімін басыңыз.</translation>
 <translation id="1586324912145647027">Жұмыс үстелдеріне (1–8) өту</translation>
 <translation id="158838227375272121">Google Classroom веб-сайты</translation>
 <translation id="1589090746204042747">Осы сеанстағы барлық әрекеттеріңізге кіріңіз</translation>
@@ -715,11 +717,13 @@
 <translation id="3824784079442479685">Бұл <ph name="APP_NAME" /> қолданбасының және камера рұқсаты бар барлық қолданба мен веб-сайттың камераны пайдалануына мүмкіндік береді. Веб-бетті жаңарту немесе қолданбаны өшіріп қосу керек болуы мүмкін.</translation>
 <translation id="3826099427150913765">Құпия сөзге ауысу</translation>
 <translation id="383058930331066723">Батареяны үнемдеу режимі қосулы.</translation>
+<translation id="3831226344927851293">Оқулық көрінісінен шығу</translation>
 <translation id="383629559565718788">Пернетақта параметрлерін көрсету</translation>
 <translation id="384082539148746321">Үлгі жойылсын ба?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, одан кейін <ph name="KEY_ONE" /> не <ph name="KEY_TWO" /> не <ph name="KEY_THREE" /> не <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Қолжетімді желі мәліметтері жоқ</translation>
+<translation id="3848526302597027234">Келесі рұқсаттарды алу:</translation>
 <translation id="385051799172605136">Артқа</translation>
 <translation id="385300504083504382">Басына өту</translation>
 <translation id="3859364108019690">Қолданбаларды трансляциялау мүмкін емес</translation>

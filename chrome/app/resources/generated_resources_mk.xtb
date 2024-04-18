@@ -3418,6 +3418,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да ги прегледува следниве датотеки и папки</translation>
 <translation id="3571734092741541777">Постави</translation>
 <translation id="3575121482199441727">Дозволи за овој сајт</translation>
+<translation id="3575224072358507281">да ги прибира резултатите за IP-адресата и мерењето на мрежата за Measurement Lab, согласно со својата политика за приватност (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
 <translation id="3577487026101678864">Синхронизацијата на датотеки е вклучена</translation>
 <translation id="3577745545227000795">Прибирање хардверски податоци за <ph name="DEVICE_OS" /></translation>
@@ -8030,6 +8031,7 @@
 <translation id="7180865173735832675">Приспособи</translation>
 <translation id="7181117767881540376">Скриј ја лентата со обележувачи</translation>
 <translation id="7181329571386134105">За да дозволите <ph name="CHILD_NAME" /> да инсталира екстензии без ваше одобрување во иднина, отворете ја апликацијата Family Link на вашиот уред и променете ги поставките за Google Chrome на <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Користете друга сметка</translation>
 <translation id="7182063559013288142">Инстант точка на пристап</translation>
 <translation id="7182791023900310535">Преместете ја лозинката</translation>
 <translation id="718427252411067142">За да сопрете други да ја користат вашата лозинка, отворете ја апликацијата за да ја промените лозинката</translation>
@@ -8574,6 +8576,7 @@
 <translation id="7605594153474022051">Синхронизацијата не функционира</translation>
 <translation id="7606248551867844312">Потврдете го сечењето</translation>
 <translation id="7606560865764296217">Паузирај анимација</translation>
+<translation id="7606639338662398635">Групи картички</translation>
 <translation id="7606992457248886637">Органи</translation>
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7608810328871051088">Поставки за Android</translation>
@@ -8591,6 +8594,7 @@
 <translation id="7617263010641145920">Вклучување на Play Store</translation>
 <translation id="7617648809369507487">Користи потивка размена на пораки</translation>
 <translation id="7619937211696316184">Одржувањето заврши</translation>
+<translation id="7620616707541471029">Изберете сметка за да продолжите</translation>
 <translation id="7621382409404463535">Системот не успеа да ја зачува конфигурацијата на уредот.</translation>
 <translation id="7621480263311228380">Не е дозволено сајтот да ги користи податоците што ги зачувал за вас</translation>
 <translation id="7621595347123595643">Нема да може да ги вратите локалните податоци ако ја заборавите лозинката или PIN-кодот.</translation>
@@ -10610,7 +10614,6 @@
 <translation id="9101691533782776290">Стартувај апликација</translation>
 <translation id="9102610709270966160">Овозможи екстензија</translation>
 <translation id="9102864637938129124">Сајтовите и огласувачите може да ја разберат изведбата на рекламите. Оваа поставка е вклучена.</translation>
-<translation id="9103479157856427471">Зумираниот екран го следи фокусот на тастатурата</translation>
 <translation id="9103868373786083162">Притиснете за да се вратите назад, контекстуално мени за да ја видите историјата</translation>
 <translation id="9107096627210171112">Преведи…</translation>
 <translation id="9108035152087032312">Именувајте го &amp;прозорецот…</translation>

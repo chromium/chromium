@@ -843,6 +843,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5407969256130905701">Kassér ændringer</translation>
 <translation id="5414763847370083940">Du får en underretning, hvis prisen falder på et website.</translation>
 <translation id="5416022985862681400">De seneste syv dage</translation>
+<translation id="5416455648658732408">Flyt til fanegruppe</translation>
 <translation id="5423269318075950257">Hold øje med prisudviklingen</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
 <translation id="5433691172869980887">Brugernavnet er kopieret</translation>
@@ -1324,6 +1325,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7856733331829174190">Downloaden mislykkedes</translation>
 <translation id="7859704718976024901">Browserhistorik</translation>
+<translation id="7860900259978879139">Fjern fra gruppe</translation>
 <translation id="7866501058614003444">Denne pakke spores ikke længere.</translation>
 <translation id="7866872729285243843">Du kan få adgang til din læseliste på alle dine enheder ved at aktivere "læseliste" i indstillingerne.</translation>
 <translation id="7866993391592926595">Hvis du skjuler dette kort, deaktiveres pakkesporing, og alle dine data fjernes</translation>
@@ -1411,9 +1413,11 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8273982424131314219">Du skal udfylde oplysningerne på <ph name="URL" /></translation>
 <translation id="8281781826761538115">Standardsprog – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Spring over</translation>
+<translation id="8282657446819506217">Åbn i fanegruppe</translation>
 <translation id="828291969289324795">{count,plural, =1{Føj fane til ny gruppe}one{Føj fane til ny gruppe}other{Føj faner til ny gruppe}}</translation>
 <translation id="8283172974887967105">Angiv…</translation>
 <translation id="8286036467436129157">Log ind</translation>
+<translation id="8289930144142009940">Notifikationer for <ph name="FEATURE_NAME" /> er deaktiveret</translation>
 <translation id="8292843446079898078">Få notifikationer om prisfald på de produkter, du holder øje med.</translation>
 <translation id="8299417921174340354">Før du kan bruge adgangskoder, skal du angive en adgangskode på din enhed.</translation>
 <translation id="8299613349954694191">Åbn en inkognitofane for at bruge nettet privat.</translation>
@@ -1421,6 +1425,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8313645224014086262">Gem fil</translation>
 <translation id="8319076807703933069">Ny søgning</translation>
 <translation id="8328777765163860529">Luk alt</translation>
+<translation id="8343286328361420468">Deaktiver notifikationer for <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed.</translation>
 <translation id="834783239627985533">Mest besøgte websites</translation>
 <translation id="8358401059263985056">Aktivér notifikationer</translation>

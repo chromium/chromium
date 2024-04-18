@@ -123,6 +123,7 @@
 <translation id="4633328489441962921">Chrome에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="4636900170638246267">이 사이트 및 Chrome에 로그인하세요.</translation>
 <translation id="4761869838909035636">Chrome 안전 확인 실행</translation>
+<translation id="4798859546468762093">맞춤설정 및 기타 기능을 사용하려면 <ph name="FEATURE_NAME_1" />과 <ph name="FEATURE_NAME_2" />에 Chrome을 포함하세요.</translation>
 <translation id="4819268619367838612">앱 개선을 위해 Chrome에서 사용 통계 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Chrome 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다.
 
@@ -179,6 +180,7 @@
 <translation id="6389317667633680932">Chrome을 최대한 활용하는 데 도움이 되는 새로운 기능을 살펴보세요.</translation>
 <translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6427126399757991875">조직에서 Chrome을 설정하는 중...</translation>
+<translation id="6481963882741794338">맞춤설정 및 기타 목적으로 Chrome과 다른 Google 서비스를 연결합니다</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> 계정으로 로그인되었습니다.
 
 데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chrome 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>

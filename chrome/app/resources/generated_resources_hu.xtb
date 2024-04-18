@@ -8572,6 +8572,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7605594153474022051">A szinkronizálás nem működik.</translation>
 <translation id="7606248551867844312">Kivágás megerősítése</translation>
 <translation id="7606560865764296217">Animáció szüneteltetése</translation>
+<translation id="7606639338662398635">Lapcsoportok</translation>
 <translation id="7606992457248886637">Kibocsátók</translation>
 <translation id="7607002721634913082">Szünet</translation>
 <translation id="7608810328871051088">Android-beállítások</translation>
@@ -10606,7 +10607,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9101691533782776290">Alkalmazás indítása</translation>
 <translation id="9102610709270966160">Bővítmény engedélyezése</translation>
 <translation id="9102864637938129124">A webhelyek és a hirdetők megismerhetik a hirdetések teljesítményét. Ez a beállítás be van kapcsolva.</translation>
-<translation id="9103479157856427471">A nagyított képernyő a billentyűzetfókuszt követi</translation>
 <translation id="9103868373786083162">Nyomja meg a visszalépéshez, illetve választhatja a helyi menüt az előzmények megtekintéséshez</translation>
 <translation id="9107096627210171112">Fordítás…</translation>
 <translation id="9108035152087032312">Ablak elnevezése…</translation>

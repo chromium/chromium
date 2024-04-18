@@ -136,6 +136,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1243027604378859286">Author:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Outerwear</translation>
+<translation id="1253096324252841344">Pay with <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synced)</translation>
 <translation id="1255086252236620440">Food Mixers</translation>
 <translation id="1256368399071562588">&lt;p&gt;If you try to visit a website and it doesn’t open, first try to fix the error with these troubleshooting steps:&lt;/p&gt;
@@ -1510,6 +1511,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="385489333361351399">Camera and Photo Equipment</translation>
 <translation id="3858027520442213535">Update date and time</translation>
 <translation id="3858860766373142691">Name</translation>
+<translation id="3865339060090354361">See terms here for <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Science</translation>
 <translation id="3875783148670536197">Show me how</translation>
 <translation id="3880456882942693779">Arts and entertainment</translation>
@@ -2347,6 +2349,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="553377674408670169">Education Jobs</translation>
 <translation id="5536214594743852365">Show the '<ph name="SECTION" />' section</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
+<translation id="5538270463355278784">automatic full screen</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">Could not find the requested article.</translation>
 <translation id="5540969246441091044">Equestrian</translation>
@@ -2711,6 +2714,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage files that you have downloaded in Chrome</translation>
 <translation id="6254436959401408446">Not enough memory to open this page</translation>
 <translation id="625463612687472648">Stop allowing</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{When you make purchases on Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES" /> as an option}other{When you make purchases on Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES" /> as options}}</translation>
 <translation id="6259156558325130047">&amp;Redo Reorder</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> bookmarks</translation>
 <translation id="6264376385120300461">Download anyway</translation>
@@ -3845,6 +3849,7 @@ Additional details:
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8380941800586852976">Dangerous</translation>
 <translation id="8381674639488873545">These charges could be one-time or recurring and may not be obvious. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automatic full screen</translation>
 <translation id="838307841291975086">Estate cars</translation>
 <translation id="8389532092404711541">Typically <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Custom and performance vehicles</translation>

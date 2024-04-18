@@ -136,6 +136,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1243027604378859286">Autors:</translation>
 <translation id="1247030632403369975">Alumīnijs</translation>
 <translation id="1252209483516427155">Āra apģērbs</translation>
+<translation id="1253096324252841344">Norēķiniem varat izmantot <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (veikta sinhronizācija)</translation>
 <translation id="1255086252236620440">Mikseri</translation>
 <translation id="1256368399071562588">&lt;p&gt;Ja, mēģinot apmeklēt vietni, tā netiek atvērta, vispirms izmēģiniet tālāk norādītās problēmu novēršanas darbības.&lt;/p&gt;
@@ -1509,6 +1510,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="385489333361351399">Kameru un foto aprīkojums</translation>
 <translation id="3858027520442213535">Atjaunināt datumu un laiku</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> noteikumus skatiet šeit</translation>
 <translation id="3872834068356954457">Zinātne</translation>
 <translation id="3875783148670536197">Parādīt, kā</translation>
 <translation id="3880456882942693779">Māksla un izklaide</translation>
@@ -2346,6 +2348,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="553377674408670169">Darba piedāvājumi izglītības nozarē</translation>
 <translation id="5536214594743852365">Rādīt sadaļu “<ph name="SECTION" />”</translation>
 <translation id="553782666181800029">Aploksne Chou 2</translation>
+<translation id="5538270463355278784">automātisks pilnekrāna režīms</translation>
 <translation id="5539243836947087108">Pamatne</translation>
 <translation id="5540224163453853">Pieprasīto rakstu nevarēja atrast.</translation>
 <translation id="5540969246441091044">Jāšana</translation>
@@ -2710,6 +2713,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai pārvaldītu pārlūkā Chrome lejupielādētos failus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter</translation>
 <translation id="6254436959401408446">Nav pietiekami daudz vietas atmiņā, lai atvērtu šo lapu</translation>
 <translation id="625463612687472648">Atsaukt atļauju</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Veicot pirkumus pārlūkā Chrome, varat izmantot <ph name="FINANCIAL_ACCOUNT_TYPES" />}zero{Veicot pirkumus pārlūkā Chrome, varat izmantot <ph name="FINANCIAL_ACCOUNT_TYPES" />}one{Veicot pirkumus pārlūkā Chrome, varat izmantot <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Veicot pirkumus pārlūkā Chrome, varat izmantot <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Pārkārtošanas atsaukuma atcelšana</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> grāmatzīmes</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
@@ -3844,6 +3848,7 @@ Papildu informācija:
 <translation id="8378714024927312812">Pārvalda jūsu organizācija</translation>
 <translation id="8380941800586852976">Bīstama</translation>
 <translation id="8381674639488873545">Maksa var tikt pieprasīta vienreiz vai atkārtoti; iespējams, pieprasījums nebūs skaidri pamanāms. <ph name="BEGIN_LINK" />Tik un tā rādīt<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automātisks pilnekrāna režīms</translation>
 <translation id="838307841291975086">Autofurgoni</translation>
 <translation id="8389532092404711541">Parasti: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Pielāgotas un sacīkšu automašīnas</translation>
