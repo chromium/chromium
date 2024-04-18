@@ -246,6 +246,10 @@ VideoCaptureServiceImpl::VideoCaptureServiceImpl(
 #if BUILDFLAG(IS_MAC)
     InitializeDeviceMonitor();
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    media::CameraAppDeviceBridgeImpl::GetInstance()->SetUITaskRunner(
+        ui_task_runner_);
+#endif
 }
 
 VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {

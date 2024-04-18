@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/webui/camera_app_ui/document_scanner_service_host.h"
 #include "base/task/bind_post_task.h"
 
 namespace media {
@@ -18,6 +19,7 @@ CameraAppDeviceProviderImpl::CameraAppDeviceProviderImpl(
     : connect_to_bridge_callback_(std::move(connect_to_bridge_callback)),
       mapping_callback_(std::move(mapping_callback)),
       weak_ptr_factory_(this) {
+  ash::DocumentScannerServiceHost::GetInstance()->Start();
   ConnectToCameraAppDeviceBridge();
 }
 

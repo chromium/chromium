@@ -71,6 +71,9 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   void RemoveVCDTaskRunner(const std::string& device_id);
 
+  void SetUITaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
   // cros::mojom::CameraAppDeviceBridge implementations.
   void GetCameraAppDevice(const std::string& device_id,
                           GetCameraAppDeviceCallback callback) override;
@@ -123,6 +126,8 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
   base::Thread ipc_thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 };
 
 }  // namespace media

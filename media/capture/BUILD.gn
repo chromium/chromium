@@ -340,6 +340,7 @@ component("capture_lib") {
       "//components/device_event_log",
       "//gpu/ipc/common:common",
       "//media/capture/video/chromeos/mojom:cros_camera",
+      "//media/capture/video/chromeos/mojom:document_scanner",
       "//media/capture/video/chromeos/mojom:jpeg_accelerator",
       "//media/capture/video/chromeos/mojom:system_event_monitor",
       "//media/capture/video/chromeos/mojom:video_capture_device_info_monitor",
@@ -585,5 +586,10 @@ copy("system_event_monitor_mojo_policy") {
 
 copy("video_capture_device_info_monitor_mojo_policy") {
   sources = [ "video/chromeos/video_capture_device_info_monitor.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("document_scanner_mojo_policy") {
+  sources = [ "video/chromeos/document_scanner_mojo_policy.jsonc" ]
   outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }

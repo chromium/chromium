@@ -11,12 +11,12 @@
 #include <utility>
 #include <vector>
 
-#include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
 #include "media/base/video_transformation.h"
 #include "media/capture/capture_export.h"
@@ -57,7 +57,9 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   static int GetPortraitSegResultCode(
       const cros::mojom::CameraMetadataPtr* metadata);
 
-  explicit CameraAppDeviceImpl(const std::string& device_id);
+  CameraAppDeviceImpl(
+      const std::string& device_id,
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
   CameraAppDeviceImpl(const CameraAppDeviceImpl&) = delete;
   CameraAppDeviceImpl& operator=(const CameraAppDeviceImpl&) = delete;
@@ -149,6 +151,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   std::optional<std::vector<int32_t>> GetCropRegion();
 
  private:
+  class DocumentScanner;
+
   void OnMojoConnectionError();
 
   bool IsCloseToPreviousDetectionRequest();
@@ -223,9 +227,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   mojo::RemoteSet<cros::mojom::CameraInfoObserver> camera_info_observers_;
 
-  // Client to connect to document detection service. It should only be
-  // used/destructed on the Mojo thread.
-  std::unique_ptr<ash::DocumentScannerServiceClient> document_scanner_service_;
+  // Client to connect to the CrosDocumentScanner service.
+  base::SequenceBound<DocumentScanner> document_scanner_;
 
   base::Lock multi_stream_lock_;
   bool multi_stream_enabled_ GUARDED_BY(multi_stream_lock_) = false;

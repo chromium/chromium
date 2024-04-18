@@ -98,6 +98,8 @@ source_set("document_scanning") {
     "document_scanner_installer.h",
     "document_scanner_service_client.cc",
     "document_scanner_service_client.h",
+    "document_scanner_service_host.cc",
+    "document_scanner_service_host.h",
   ]
 
   public_deps = [ "//dbus" ]
@@ -106,9 +108,11 @@ source_set("document_scanning") {
     "//base",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
     "//components/device_event_log",
+    "//media/capture/video/chromeos/mojom:document_scanner",
     "//mojo/public/cpp/bindings",
     "//ui/gfx/geometry",
   ]
