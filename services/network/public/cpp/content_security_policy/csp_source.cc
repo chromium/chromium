@@ -78,10 +78,9 @@ bool SourceAllowHost(const mojom::CSPSource& source, const std::string& host) {
     // The renderer version of this function counts how many times it happens.
     // It might be useful to do it outside of blink too.
     // See third_party/blink/renderer/core/frame/csp/csp_source.cc
-    return base::EndsWith(host, '.' + source.host,
-                          base::CompareCase::INSENSITIVE_ASCII);
+    return base::EndsWith(host, '.' + source.host);
   } else {
-    return base::EqualsCaseInsensitiveASCII(host, source.host);
+    return host == source.host;
   }
 }
 

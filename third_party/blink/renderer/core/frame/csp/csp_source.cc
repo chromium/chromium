@@ -52,13 +52,13 @@ bool HostMatches(const network::mojom::blink::CSPSource& source,
       // host-part = "*"
       return true;
     }
-    if (host.ToString().EndsWithIgnoringCase(String("." + source.host))) {
+    if (host.ToString().EndsWith(String("." + source.host))) {
       // host-part = "*." 1*host-char *( "." 1*host-char )
       return true;
     }
     return false;
   }
-  return EqualIgnoringASCIICase(source.host, host);
+  return source.host == host;
 }
 
 bool PathMatches(const network::mojom::blink::CSPSource& source,
@@ -90,8 +90,8 @@ PortMatchingResult PortMatches(const network::mojom::blink::CSPSource& source,
 
   bool is_scheme_http;  // needed for detecting an upgrade when the port is 0
   is_scheme_http = source.scheme.empty()
-                       ? EqualIgnoringASCIICase("http", self_protocol)
-                       : EqualIgnoringASCIICase("http", source.scheme);
+                       ? "http" == self_protocol
+                       : "http" == source.scheme;
 
   if ((source.port == 80 ||
        ((source.port == url::PORT_UNSPECIFIED || source.port == 443) &&

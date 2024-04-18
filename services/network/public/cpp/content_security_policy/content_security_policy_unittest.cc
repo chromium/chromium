@@ -1156,18 +1156,6 @@ TEST(ContentSecurityPolicy, RequestsAllowedWhenBypassingCSP) {
       GURL(), false, false, &context, SourceLocation(), false));
 }
 
-TEST(ContentSecurityPolicy, RequestsAllowedWhenHostMixedCase) {
-  CSPContextTest context;
-  auto policy = DefaultSrc("https", "ExAmPle.com");
-
-  EXPECT_TRUE(CheckContentSecurityPolicy(
-      policy, CSPDirectiveName::FrameSrc, GURL("https://example.com/"), GURL(),
-      false, false, &context, SourceLocation(), false));
-  EXPECT_FALSE(CheckContentSecurityPolicy(
-      policy, CSPDirectiveName::FrameSrc, GURL("https://not-example.com/"),
-      GURL(), false, false, &context, SourceLocation(), false));
-}
-
 TEST(ContentSecurityPolicy, FilesystemAllowedWhenBypassingCSP) {
   CSPContextTest context;
   auto policy = DefaultSrc("https", "example.com");

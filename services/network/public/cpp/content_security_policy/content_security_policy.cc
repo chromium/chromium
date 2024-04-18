@@ -423,7 +423,8 @@ bool ParseScheme(std::string_view scheme, mojom::CSPSource* csp_source) {
   if (!std::all_of(scheme.begin() + 1, scheme.end(), is_scheme_character))
     return false;
 
-  csp_source->scheme = std::string(scheme);
+  csp_source->scheme = base::ToLowerASCII(scheme);
+
 
   return true;
 }
@@ -462,7 +463,7 @@ bool ParseHost(std::string_view host, mojom::CSPSource* csp_source) {
     }
     ++i;
   }
-  csp_source->host = std::string(host);
+  csp_source->host = base::ToLowerASCII(host);
 
   return true;
 }

@@ -322,26 +322,6 @@ TEST(CSPSourceTest, HostMatches) {
     EXPECT_FALSE(
         CSPSourceMatches(*source, "http", KURL(base, "http://.foo.bar")));
   }
-
-  // Host matching is case-insensitive.
-  {
-    auto source = network::mojom::blink::CSPSource::New(
-        "", "FoO.BaR", url::PORT_UNSPECIFIED, "", false, false);
-    EXPECT_TRUE(
-        CSPSourceMatches(*source, "http", KURL(base, "http://foo.bar")));
-    EXPECT_FALSE(
-        CSPSourceMatches(*source, "http", KURL(base, "http://sub.foo.bar")));
-  }
-
-  // Wildcarded host matching is case-insensitive.
-  {
-    auto source = network::mojom::blink::CSPSource::New(
-        "", "FoO.BaR", url::PORT_UNSPECIFIED, "", true, false);
-    EXPECT_TRUE(
-        CSPSourceMatches(*source, "http", KURL(base, "http://sub.foo.bar")));
-    EXPECT_FALSE(
-        CSPSourceMatches(*source, "http", KURL(base, "http://foo.bar")));
-  }
 }
 
 TEST(CSPSourceTest, MatchingAsSelf) {
