@@ -53,7 +53,7 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
   bool IsCompatible(HardwareDisplayPlane* plane,
                     const DrmOverlayPlane& overlay,
                     uint32_t crtc_id) const override;
-  bool CommitPendingCrtcState(CrtcState* state) override;
+  bool CommitPendingCrtcState(CrtcState& state) override;
 };
 
 }  // namespace ui

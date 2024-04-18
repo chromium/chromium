@@ -238,22 +238,22 @@ bool HardwareDisplayPlaneManagerLegacy::IsCompatible(
 }
 
 bool HardwareDisplayPlaneManagerLegacy::CommitPendingCrtcState(
-    CrtcState* crtc_state) {
-  CrtcProperties& crtc_props = crtc_state->properties;
+    CrtcState& crtc_state) {
+  CrtcProperties& crtc_props = crtc_state.properties;
   bool result = true;
 
   if (!CommitPendingCrtcProperty(drm_, crtc_props.id, crtc_props.ctm,
-                                 crtc_state->pending_ctm_blob)) {
+                                 crtc_state.pending_ctm_blob)) {
     LOG(ERROR) << "Failed to set CTM property for crtc=" << crtc_props.id;
     result = false;
   }
   if (!CommitPendingCrtcProperty(drm_, crtc_props.id, crtc_props.gamma_lut,
-                                 crtc_state->pending_gamma_lut_blob)) {
+                                 crtc_state.pending_gamma_lut_blob)) {
     LOG(ERROR) << "Failed to set GAMMA_LUT property for crtc=" << crtc_props.id;
     result = false;
   }
   if (!CommitPendingCrtcProperty(drm_, crtc_props.id, crtc_props.degamma_lut,
-                                 crtc_state->pending_degamma_lut_blob)) {
+                                 crtc_state.pending_degamma_lut_blob)) {
     LOG(ERROR) << "Failed to set DEGAMMA_LUT property for crtc="
                << crtc_props.id;
     result = false;

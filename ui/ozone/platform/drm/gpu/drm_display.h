@@ -116,7 +116,6 @@ class DrmDisplay {
   gfx::Point origin_;
   bool is_hdr_capable_ = false;
   std::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
-  gfx::ColorSpace current_color_space_;
   std::unique_ptr<PrivacyScreenProperty> privacy_screen_property_;
 };
 

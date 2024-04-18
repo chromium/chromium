@@ -312,41 +312,35 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
 void HardwareDisplayPlaneManager::SetColorTemperatureAdjustment(
     uint32_t crtc_id,
     const display::ColorTemperatureAdjustment& cta) {
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
-  CrtcState* crtc_state = &crtc_state_[*crtc_index];
-  crtc_state->color_temperature_adjustment = cta;
-  UpdateAndCommitCrtcState(crtc_id, crtc_state);
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  crtc_state.color_temperature_adjustment = cta;
+  UpdatePendingCrtcState(crtc_state);
+  CommitPendingCrtcState(crtc_state);
 }
 
 void HardwareDisplayPlaneManager::SetColorCalibration(
     uint32_t crtc_id,
     const display::ColorCalibration& calibration) {
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
-  CrtcState* crtc_state = &crtc_state_[*crtc_index];
-  crtc_state->color_calibration = calibration;
-  UpdateAndCommitCrtcState(crtc_id, crtc_state);
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  crtc_state.color_calibration = calibration;
+  UpdatePendingCrtcState(crtc_state);
+  CommitPendingCrtcState(crtc_state);
 }
 
 void HardwareDisplayPlaneManager::SetGammaAdjustment(
     uint32_t crtc_id,
     const display::GammaAdjustment& adjustment) {
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
-  CrtcState* crtc_state = &crtc_state_[*crtc_index];
-  crtc_state->gamma_adjustment = adjustment;
-  UpdateAndCommitCrtcState(crtc_id, crtc_state);
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  crtc_state.gamma_adjustment = adjustment;
+  UpdatePendingCrtcState(crtc_state);
+  CommitPendingCrtcState(crtc_state);
 }
 
 void HardwareDisplayPlaneManager::SetBackgroundColor(
     uint32_t crtc_id,
     const uint64_t background_color) {
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
-  CrtcState* crtc_state = &crtc_state_[*crtc_index];
-
-  crtc_state->properties.background_color.value = background_color;
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  crtc_state.properties.background_color.value = background_color;
 }
 
 bool HardwareDisplayPlaneManager::InitializeCrtcState() {
@@ -536,22 +530,21 @@ uint32_t HardwareDisplayPlaneManager::GetPossibleCrtcsBitmaskForConnector(
   return connector_prop->possible_crtcs_bitmask;
 }
 
-void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(
-    uint32_t crtc_id,
-    CrtcState* crtc_state) {
-  CrtcProperties* crtc_props = &crtc_state->properties;
+void HardwareDisplayPlaneManager::UpdatePendingCrtcState(
+    CrtcState& crtc_state) {
+  const auto& crtc_props = crtc_state.properties;
 
   // Set the CTM to the concatenation of the color profile matrix and the color
   // temperature adjustment matrix.
   // TODO(https://crbug.com/1505062): This is incorrect if the color profile
   // DEGAMMA/GAMMA curves are ever not the identity.
   const skcms_Matrix3x3 ctm = skcms_Matrix3x3_concat(
-      &crtc_state->color_calibration.srgb_to_device_matrix,
-      &crtc_state->color_temperature_adjustment.srgb_matrix);
-  if (crtc_state->properties.ctm.id) {
+      &crtc_state.color_calibration.srgb_to_device_matrix,
+      &crtc_state.color_temperature_adjustment.srgb_matrix);
+  if (crtc_state.properties.ctm.id) {
     ScopedDrmColorCtmPtr ctm_blob_data =
         CreateCTMBlob(ctm, ctm_negative_values_broken_);
-    crtc_state->pending_ctm_blob =
+    crtc_state.pending_ctm_blob =
         drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm));
   }
 
@@ -560,42 +553,41 @@ void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(
   // TODO(https://crbug.com/1505062): This always has to be the identity because
   // many devices have broken implementations. Identitify devices where this
   // functionality is not broken.
-  if (crtc_props->gamma_lut.id && crtc_props->gamma_lut_size.id &&
-      crtc_props->degamma_lut.id && crtc_props->degamma_lut_size.id) {
-    const auto& degamma_curve = crtc_state->color_calibration.srgb_to_linear;
+  if (crtc_props.gamma_lut.id && crtc_props.gamma_lut_size.id &&
+      crtc_props.degamma_lut.id && crtc_props.degamma_lut_size.id) {
+    const auto& degamma_curve = crtc_state.color_calibration.srgb_to_linear;
     if (degamma_curve.IsDefaultIdentity()) {
-      crtc_state->pending_degamma_lut_blob = nullptr;
+      crtc_state.pending_degamma_lut_blob = nullptr;
     } else {
       ScopedDrmColorLutPtr degamma_blob_data =
-          CreateLutBlob(degamma_curve, crtc_props->degamma_lut_size.value);
-      crtc_state->pending_degamma_lut_blob = drm_->CreatePropertyBlob(
+          CreateLutBlob(degamma_curve, crtc_props.degamma_lut_size.value);
+      crtc_state.pending_degamma_lut_blob = drm_->CreatePropertyBlob(
           degamma_blob_data.get(),
-          sizeof(drm_color_lut) * crtc_props->degamma_lut_size.value);
+          sizeof(drm_color_lut) * crtc_props.degamma_lut_size.value);
     }
   }
 
   // Set the GAMMA curve to the concatenation of the color profile with the
   // gamma adjustment.
-  // TODO(https://crbug.com/1505062):
+  // TODO(https://crbug.com/1505062): Identify devices where this functionality
+  // is reliable.
   const auto gamma_curve = display::GammaCurve::MakeConcat(
-      crtc_state->color_calibration.linear_to_device,
-      crtc_state->gamma_adjustment.curve);
-  if (crtc_props->gamma_lut.id && crtc_props->gamma_lut_size.id) {
+      crtc_state.color_calibration.linear_to_device,
+      crtc_state.gamma_adjustment.curve);
+  if (crtc_props.gamma_lut.id && crtc_props.gamma_lut_size.id) {
     if (gamma_curve.IsDefaultIdentity()) {
-      crtc_state->pending_gamma_lut_blob = nullptr;
+      crtc_state.pending_gamma_lut_blob = nullptr;
     } else {
       ScopedDrmColorLutPtr gamma_blob_data =
-          CreateLutBlob(gamma_curve, crtc_props->gamma_lut_size.value);
-      crtc_state->pending_gamma_lut_blob = drm_->CreatePropertyBlob(
+          CreateLutBlob(gamma_curve, crtc_props.gamma_lut_size.value);
+      crtc_state.pending_gamma_lut_blob = drm_->CreatePropertyBlob(
           gamma_blob_data.get(),
-          sizeof(drm_color_lut) * crtc_props->gamma_lut_size.value);
+          sizeof(drm_color_lut) * crtc_props.gamma_lut_size.value);
     }
   } else {
     // Fall back to legacy gamma if needed.
-    drm_->SetGammaRamp(crtc_id, gamma_curve);
+    drm_->SetGammaRamp(crtc_props.id, gamma_curve);
   }
-
-  CommitPendingCrtcState(crtc_state);
 }
 
 }  // namespace ui

@@ -141,7 +141,6 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
   is_hdr_capable_ = display_snapshot.bits_per_channel() > 8 &&
                     display_snapshot.color_space().IsHDR();
   hdr_static_metadata_ = display_snapshot.hdr_static_metadata();
-  current_color_space_ = gfx::ColorSpace::CreateSRGB();
   privacy_screen_property_ =
       std::make_unique<PrivacyScreenProperty>(drm_, connector_.get());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -152,7 +151,6 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
   if (is_hdr_capable_ &&
       base::FeatureList::IsEnabled(
           display::features::kEnableExternalDisplayHDR10Mode)) {
-    current_color_space_ = display_snapshot.color_space();
     SetColorspaceProperty(display_snapshot.color_space());
     SetHdrOutputMetadata(display_snapshot.color_space());
   }

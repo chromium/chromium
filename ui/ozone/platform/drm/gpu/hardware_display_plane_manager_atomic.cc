@@ -102,6 +102,37 @@ bool AddPendingCrtcProperty(drmModeAtomicReq* property_set,
   return true;
 }
 
+bool AddAllPendingCrtcProperties(
+    drmModeAtomicReq* property_set,
+    HardwareDisplayPlaneManager::CrtcState& crtc_state,
+    std::vector<ScopedDrmPropertyBlob>& pending_blobs) {
+  bool result = true;
+  auto& crtc_props = crtc_state.properties;
+
+  if (!AddPendingCrtcProperty(property_set, crtc_props.id, crtc_props.ctm,
+                              crtc_state.pending_ctm_blob, pending_blobs)) {
+    LOG(ERROR) << "Failed to set CTM property for crtc=" << crtc_props.id;
+    result = false;
+  }
+
+  if (!AddPendingCrtcProperty(
+          property_set, crtc_props.id, crtc_props.degamma_lut,
+          crtc_state.pending_degamma_lut_blob, pending_blobs)) {
+    LOG(ERROR) << "Failed to set DEGAMMA_LUT property for crtc="
+               << crtc_props.id;
+    result = false;
+  }
+
+  if (!AddPendingCrtcProperty(property_set, crtc_props.id, crtc_props.gamma_lut,
+                              crtc_state.pending_gamma_lut_blob,
+                              pending_blobs)) {
+    LOG(ERROR) << "Failed to set GAMMA_LUT property for crtc=" << crtc_props.id;
+    result = false;
+  }
+
+  return result;
+}
+
 }  // namespace
 
 HardwareDisplayPlaneManagerAtomic::HardwareDisplayPlaneManagerAtomic(
@@ -484,33 +515,12 @@ HardwareDisplayPlaneManagerAtomic::CreatePlane(uint32_t plane_id) {
 }
 
 bool HardwareDisplayPlaneManagerAtomic::CommitPendingCrtcState(
-    CrtcState* crtc_state) {
-  CrtcProperties& crtc_props = crtc_state->properties;
+    CrtcState& crtc_state) {
   std::vector<ScopedDrmPropertyBlob> pending_blobs;
   ScopedDrmAtomicReqPtr property_set(drmModeAtomicAlloc());
-  bool result = true;
 
-  if (!AddPendingCrtcProperty(property_set.get(), crtc_props.id, crtc_props.ctm,
-                              crtc_state->pending_ctm_blob, pending_blobs)) {
-    LOG(ERROR) << "Failed to set CTM property for crtc=" << crtc_props.id;
-    result = false;
-  }
-
-  if (!AddPendingCrtcProperty(
-          property_set.get(), crtc_props.id, crtc_props.degamma_lut,
-          crtc_state->pending_degamma_lut_blob, pending_blobs)) {
-    LOG(ERROR) << "Failed to set DEGAMMA_LUT property for crtc="
-               << crtc_props.id;
-    result = false;
-  }
-
-  if (!AddPendingCrtcProperty(
-          property_set.get(), crtc_props.id, crtc_props.gamma_lut,
-          crtc_state->pending_gamma_lut_blob, pending_blobs)) {
-    LOG(ERROR) << "Failed to set GAMMA_LUT property for crtc="
-               << crtc_props.id;
-    result = false;
-  }
+  bool result = AddAllPendingCrtcProperties(property_set.get(), crtc_state,
+                                            pending_blobs);
 
   // If we aren't committing any new blobs, early-out.
   if (pending_blobs.empty()) {
@@ -523,7 +533,8 @@ bool HardwareDisplayPlaneManagerAtomic::CommitPendingCrtcState(
   // TODO(dnicoara): Should cache these values locally and aggregate them with
   // the page flip event otherwise this "steals" a vsync to apply the property.
   if (!drm_->CommitProperties(property_set.get(), 0, 0, nullptr)) {
-    LOG(ERROR) << "Failed to commit properties for crtc=" << crtc_props.id;
+    LOG(ERROR) << "Failed to commit properties for crtc="
+               << crtc_state.properties.id;
     result = false;
   }
 

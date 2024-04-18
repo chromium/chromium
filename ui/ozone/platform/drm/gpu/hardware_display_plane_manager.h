@@ -294,8 +294,8 @@ class HardwareDisplayPlaneManager {
   // Populates scanout formats supported by all planes.
   void PopulateSupportedFormats();
 
-  void UpdateAndCommitCrtcState(uint32_t crtc_id, CrtcState* state);
-  virtual bool CommitPendingCrtcState(CrtcState* state) = 0;
+  void UpdatePendingCrtcState(CrtcState& state);
+  virtual bool CommitPendingCrtcState(CrtcState& state) = 0;
 
   // Object containing the connection to the graphics device and wraps the API
   // calls to control it. Not owned.
