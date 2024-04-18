@@ -22,8 +22,32 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+void ShowUpdaterPromotionInfoBarOnUISequence() {
+  // If the user clicked the "don't ask again" button at some point in the
+  // past, or if the "don't ask about the default browser" command-line switch
+  // is present, bail out.  That command-line switch is recycled here because
+  // it's likely that the set of users that don't want to be nagged about the
+  // default browser also don't want to be nagged about the update check.
+  // (Automated testers, I'm thinking of you...)
+  Browser* browser = chrome::FindLastActive();
+  if (!browser || !browser->profile() ||
+      !browser->profile()->GetPrefs()->GetBoolean(
+          prefs::kShowUpdatePromotionInfoBar) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kNoDefaultBrowserCheck)) {
+    return;
+  }
+  KeystonePromotionInfoBarDelegate::Create(
+      browser->tab_strip_model()->GetActiveWebContents());
+}
+
+}  // namespace
 
 // KeystonePromotionInfoBarDelegate -------------------------------------------
 
@@ -89,20 +113,6 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
 }
 
 void ShowUpdaterPromotionInfoBar() {
-  // If the user clicked the "don't ask again" button at some point in the
-  // past, or if the "don't ask about the default browser" command-line switch
-  // is present, bail out.  That command-line switch is recycled here because
-  // it's likely that the set of users that don't want to be nagged about the
-  // default browser also don't want to be nagged about the update check.
-  // (Automated testers, I'm thinking of you...)
-  Browser* browser = chrome::FindLastActive();
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!browser || !browser->profile() ||
-      !browser->profile()->GetPrefs()->GetBoolean(
-          prefs::kShowUpdatePromotionInfoBar) ||
-      command_line->HasSwitch(switches::kNoDefaultBrowserCheck)) {
-    return;
-  }
-  KeystonePromotionInfoBarDelegate::Create(
-      browser->tab_strip_model()->GetActiveWebContents());
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ShowUpdaterPromotionInfoBarOnUISequence));
 }
