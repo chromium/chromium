@@ -1,7 +1,7 @@
 <style include="cr-hidden-style">
   .trace-card {
     display: grid;
-    grid-auto-columns: 1fr;
+    grid-template-columns: 1fr 1fr 1fr 3fr auto auto auto;
     grid-auto-flow: column;
     grid-column-gap: 12px;
     grid-row-gap: 0px;
@@ -17,22 +17,17 @@
   }
 
   .trace-card > div {
-    white-space: nowrap;
     overflow: hidden;
     min-width: 0;
   }
 
-  .trace-id-container,
-  .trace-upload-state-container {
-    grid-column: span 2;
-  }
-
-  .trace-size-container {
-    width: 120px;
-  }
-
   /* remove default button styling */
   .clickable-field {
+    text-align: start;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
     background: none;
     color: inherit;
     border: none;
@@ -47,8 +42,10 @@
   }
 
   .trace-upload-state-container {
+    white-space: nowrap;
     display: flex;
     flex-direction: column;
+    font-weight: bold;
   }
 
   .upload-state-card {
@@ -125,26 +122,8 @@
     }
   }
 
-  .skip-reason {
-    margin-top: 4px;
-    margin-left: 2px;
-    font-size: 10px;
-    color: var(--cr-secondary-text-color);
-  }
-
-  .upload-action {
-    display: flex;
-    width: 64px;
-    justify-content: flex-end;
-  }
-
-  .upload-action > .action-button {
-    margin-left: 0;
-    margin-right: 4px;
-  }
-
   .actions-container {
-    width: 160px;
+    width: 150px;
   }
 
   .action-button {
@@ -158,11 +137,6 @@
     background-color: WhiteSmoke;
   }
 
-  .upload-button-container {
-    width: 50px;
-    display: inline-block;
-  }
-
   .info {
     font-size: 13px;
     color: var(--cr-secondary-text-color);
@@ -172,11 +146,6 @@
   .trace-skip-value,
   .trace-size-value {
     color: var(--cr-primary-text-color)
-  }
-
-
-  .trace-upload-state-container {
-    font-weight: bold;
   }
 
   .trace-spinner {
@@ -204,7 +173,8 @@
     </div>
   </template>
   <div class="trace-id-container">
-    <button class="clickable-field copiable" on-click="onCopyUuidClick_">
+    <button class="clickable-field copiable"
+        on-click="onCopyUuidClick_" title="[[tokenToString_(trace.uuid)]]">
       [[tokenToString_(trace.uuid)]]
     </button>
     <div class="info">Trace ID</div>
@@ -214,12 +184,14 @@
     <div class="info">Date created</div>
   </div>
   <div class="trace-scenario-container">
-    <button class="clickable-field copiable" on-click="onCopyScenarioClick_">
+    <button class="clickable-field copiable"
+        on-click="onCopyScenarioClick_" title="[[trace.scenarioName]]">
       [[trace.scenarioName]]
     </button>
   </div>
   <div class="trace-trigger-container">
-    <button class="clickable-field copiable" on-click="onCopyUploadRuleClick_">
+    <button class="clickable-field copiable"
+        on-click="onCopyUploadRuleClick_" title="[[trace.uploadRuleName]]">
       [[trace.uploadRuleName]]
     </button>
     <div class="info">Trigger rule</div>
@@ -252,15 +224,13 @@
     </div>
   </div>
   <div class="actions-container">
-    <div class="upload-button-container">
-      <cr-icon-button class="action-button" title="Upload Trace"
-          iron-icon="trace-report-icons:cloud_upload" aria-label="Upload Trace"
-          on-click="onUploadTraceClick_"
-          hidden="[[!uploadStateEqual(trace.uploadState,
-              uploadStateEnum_.NOT_UPLOADED)]]"
-          disabled="[[!isManualUploadPermitted_(trace.skipReason)]]">
-      </cr-icon-button>
-    </div>
+    <cr-icon-button class="action-button" title="Upload Trace"
+        iron-icon="trace-report-icons:cloud_upload" aria-label="Upload Trace"
+        on-click="onUploadTraceClick_"
+        hidden="[[!uploadStateEqual(trace.uploadState,
+            uploadStateEnum_.NOT_UPLOADED)]]"
+        disabled="[[!isManualUploadPermitted_(trace.skipReason)]]">
+    </cr-icon-button>
     <cr-icon-button class="action-button" iron-icon="cr:file-download"
         title="Download Trace" on-click="onDownloadTraceClick_"
         disabled="[[isDownloadDisabled_(isLoading, trace.uploadState)]]"
