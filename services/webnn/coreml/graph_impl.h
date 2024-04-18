@@ -11,9 +11,9 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
-
 #include "services/webnn/coreml/graph_builder.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -106,11 +106,20 @@ class API_AVAILABLE(macos(14.0)) GraphImpl final : public WebNNGraphImpl {
   void ComputeImpl(
       base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
       mojom::WebNNGraph::ComputeCallback callback) override;
+  void DidPredict(base::ElapsedTimer model_predict_timer,
+                  mojom::WebNNGraph::ComputeCallback callback,
+                  id<MLFeatureProvider> output_features,
+                  NSError* error);
 
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
   std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info_;
   base::flat_map<std::string, std::string> coreml_name_to_operand_name_;
   MLModel* __strong ml_model_;
+
+  base::WeakPtrFactory<GraphImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace webnn::coreml

@@ -14,11 +14,13 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
@@ -292,10 +294,13 @@ GraphImpl::~GraphImpl() = default;
 void GraphImpl::ComputeImpl(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
-  base::ElapsedTimer model_predict_timer;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("gpu", "webnn::coreml::GraphImpl::ComputeImpl");
   CHECK(ml_model_);
-  // Create MLFeatureValue for each of the named_inputs
+
+  base::ElapsedTimer model_predict_timer;
+
+  // Create MLFeatureValue for each of the `named_inputs`.
   NSMutableSet* feature_names = [[NSMutableSet alloc] init];
   NSMutableDictionary* feature_values = [[NSMutableDictionary alloc] init];
   for (auto& [key, buffer] : named_inputs) {
@@ -329,17 +334,28 @@ void GraphImpl::ComputeImpl(
         [MLFeatureValue featureValueWithMultiArray:placeholder_input];
   }
 
-  // Run the MLModel
+  // Run the MLModel asynchronously.
   WebNNMLFeatureProvider* feature_provider =
       [[WebNNMLFeatureProvider alloc] initWithFeatures:feature_names
                                          featureValues:feature_values];
-  // TODO(https://crbug.com/1522281): Consider using async version of this
-  // API that is available in Mac OS 14.
-  NSError* error;
-  id<MLFeatureProvider> output_features =
-      [ml_model_ predictionFromFeatures:feature_provider error:&error];
+  auto done_callback =
+      base::BindOnce(&GraphImpl::DidPredict, weak_factory_.GetWeakPtr(),
+                     std::move(model_predict_timer), std::move(callback));
+  [ml_model_ predictionFromFeatures:feature_provider
+                  completionHandler:base::CallbackToBlock(
+                                        base::BindPostTaskToCurrentDefault(
+                                            std::move(done_callback)))];
+}
+
+void GraphImpl::DidPredict(base::ElapsedTimer model_predict_timer,
+                           mojom::WebNNGraph::ComputeCallback callback,
+                           id<MLFeatureProvider> output_features,
+                           NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelPredict",
                              model_predict_timer.Elapsed());
+
   if (error) {
     DLOG(ERROR) << "webnn::coreml predictionError : " << error;
     std::move(callback).Run(mojom::ComputeResult::NewError(mojom::Error::New(
