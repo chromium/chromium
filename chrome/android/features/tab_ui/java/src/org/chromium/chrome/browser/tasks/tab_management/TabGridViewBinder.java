@@ -137,15 +137,15 @@ class TabGridViewBinder {
 
     private static void bindClosableTabProperties(
             PropertyModel model, ViewLookupCachingFrameLayout view, PropertyKey propertyKey) {
-        if (TabProperties.TAB_CLOSED_LISTENER == propertyKey) {
-            if (model.get(TabProperties.TAB_CLOSED_LISTENER) == null) {
+        if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
+            if (model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER) == null) {
                 view.fastFindViewById(R.id.action_button).setOnClickListener(null);
             } else {
                 view.fastFindViewById(R.id.action_button)
                         .setOnClickListener(
                                 v -> {
                                     int tabId = model.get(TabProperties.TAB_ID);
-                                    model.get(TabProperties.TAB_CLOSED_LISTENER).run(tabId);
+                                    model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER).run(tabId);
                                 });
             }
         } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {

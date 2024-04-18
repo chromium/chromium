@@ -57,7 +57,7 @@ class TabStripViewBinder {
             if (model.get(TabProperties.IS_SELECTED)) {
                 button.setOnClickListener(
                         v -> {
-                            model.get(TabProperties.TAB_CLOSED_LISTENER)
+                            model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
                                     .run(model.get(TabProperties.TAB_ID));
                         });
                 button.setContentDescription(

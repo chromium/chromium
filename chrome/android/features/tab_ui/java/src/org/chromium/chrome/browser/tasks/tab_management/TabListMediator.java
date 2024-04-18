@@ -1501,7 +1501,9 @@ class TabListMediator {
         mModel.get(index).model.set(TabProperties.TITLE, getLatestTitleForTab(pseudoTab));
         mModel.get(index)
                 .model
-                .set(TabProperties.TAB_CLOSED_LISTENER, isRealTab ? mTabClosedListener : null);
+                .set(
+                        TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                        isRealTab ? mTabClosedListener : null);
         updateDescriptionString(pseudoTab, mModel.get(index).model);
         updateCloseButtonDescriptionString(pseudoTab, mModel.get(index).model);
         if (isRealTab) {
@@ -1517,8 +1519,7 @@ class TabListMediator {
         boolean forceUpdateLastSelected =
                 mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
         // TODO(crbug.com/40273706): Fetching thumbnail for group is expansive, we should consider
-        // to
-        // improve it.
+        // to improve it.
         if (mThumbnailProvider != null
                 && mVisible
                 && (mModel.get(index).model.get(TabProperties.THUMBNAIL_FETCHER) == null
@@ -1837,8 +1838,7 @@ class TabListMediator {
                                     ? R.color.default_icon_color_light
                                     : R.color.default_icon_color_tint_list);
             // TODO(crbug.com/41477267): Update color baseline_primary_80 to active_color_dark when
-            // the
-            // associated bug is landed.
+            // the associated bug is landed.
             ColorStateList actionbuttonSelectedBackgroundColorList =
                     ColorStateList.valueOf(
                             pseudoTab.isIncognito()
@@ -1856,7 +1856,9 @@ class TabListMediator {
                     TabProperties.SELECTABLE_TAB_CLICKED_LISTENER, mSelectableTabOnClickListener);
         } else {
             tabInfo.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
-            tabInfo.set(TabProperties.TAB_CLOSED_LISTENER, isRealTab ? mTabClosedListener : null);
+            tabInfo.set(
+                    TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                    isRealTab ? mTabClosedListener : null);
             updateDescriptionString(pseudoTab, tabInfo);
             updateCloseButtonDescriptionString(pseudoTab, tabInfo);
         }

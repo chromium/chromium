@@ -715,7 +715,7 @@ public class TabListMediatorUnitTest {
     public void sendsCloseSignalCorrectly() {
         mModel.get(1)
                 .model
-                .get(TabProperties.TAB_CLOSED_LISTENER)
+                .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
                 .run(mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(false), eq(true));
@@ -3512,10 +3512,10 @@ public class TabListMediatorUnitTest {
                 instanceOf(TabListMediator.TabActionListener.class));
 
         assertThat(
-                mModel.get(0).model.get(TabProperties.TAB_CLOSED_LISTENER),
+                mModel.get(0).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER),
                 instanceOf(TabListMediator.TabActionListener.class));
         assertThat(
-                mModel.get(1).model.get(TabProperties.TAB_CLOSED_LISTENER),
+                mModel.get(1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER),
                 instanceOf(TabListMediator.TabActionListener.class));
     }
 

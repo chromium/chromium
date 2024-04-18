@@ -55,7 +55,7 @@ public class TabProperties {
             TAB_SELECTED_LISTENER = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
-            TAB_CLOSED_LISTENER = new WritableObjectPropertyKey<>();
+            TAB_ACTION_BUTTON_LISTENER = new WritableObjectPropertyKey<>();
 
     /**
      * Indicator that a {@link TabProperties.FAVICON_FETCHER} has completed fetching a favicon. Only
@@ -141,7 +141,7 @@ public class TabProperties {
             new PropertyKey[] {
                 TAB_ID,
                 TAB_SELECTED_LISTENER,
-                TAB_CLOSED_LISTENER,
+                TAB_ACTION_BUTTON_LISTENER,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
                 IS_SELECTED,
@@ -175,7 +175,7 @@ public class TabProperties {
             new PropertyKey[] {
                 TAB_ID,
                 TAB_SELECTED_LISTENER,
-                TAB_CLOSED_LISTENER,
+                TAB_ACTION_BUTTON_LISTENER,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
                 IS_SELECTED,

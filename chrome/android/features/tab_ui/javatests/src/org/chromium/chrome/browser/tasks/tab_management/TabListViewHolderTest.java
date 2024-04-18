@@ -305,7 +305,9 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     .with(
                                             TabProperties.TAB_SELECTED_LISTENER,
                                             mMockSelectedListener)
-                                    .with(TabProperties.TAB_CLOSED_LISTENER, mMockCloseListener)
+                                    .with(
+                                            TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                                            mMockCloseListener)
                                     .with(
                                             TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
                                             mSelectedTabBackgroundDrawableId)
@@ -315,7 +317,9 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     .with(
                                             TabProperties.TAB_SELECTED_LISTENER,
                                             mMockSelectedListener)
-                                    .with(TabProperties.TAB_CLOSED_LISTENER, mMockCloseListener)
+                                    .with(
+                                            TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                                            mMockCloseListener)
                                     .with(
                                             TabProperties.TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
                                             R.color.favicon_background_color)
@@ -813,7 +817,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         mCloseClicked.set(false);
 
-        mGridModel.set(TabProperties.TAB_CLOSED_LISTENER, null);
+        mGridModel.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, null);
         gridActionButton.performClick();
         Assert.assertFalse(mCloseClicked.get());
         listActionButton.performClick();
