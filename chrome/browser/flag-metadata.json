@@ -1752,17 +1752,17 @@
   {
     "name": "customize-chrome-wallpaper-search",
     "owners": [ "huiyingst@chromium.org", "pauladedeji@chromium.org", "rtatum@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "customize-chrome-wallpaper-search-button",
     "owners": [ "pauladedeji@google.com", "tiborg@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "customize-chrome-wallpaper-search-inspiration-card",
     "owners": [ "pauladedeji@google.com", "tiborg@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "cws-info-fast-check",
@@ -5959,12 +5959,12 @@
   {
     "name": "ntp-wallpaper-search-button",
     "owners": [ "pauladedeji@google.com", "tiborg@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "ntp-wallpaper-search-button-animation",
     "owners": [ "pauladedeji@google.com", "tiborg@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "ntp-wide-modules",
@@ -8537,7 +8537,7 @@
   {
     "name": "wallpaper-search-settings-visibility",
     "owners": [ "pauladedeji@gooogle.com","tbansal@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "web-app-dedupe-install-urls",
