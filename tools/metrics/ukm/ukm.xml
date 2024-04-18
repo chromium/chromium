@@ -7191,11 +7191,11 @@ be describing additional metrics about the same event.
   <metric name="Duration">
     <summary>
       The milliseconds that the website was accessed in the focused tab and the
-      activated browser window. The accessing time is calculated each five
-      minutes, then the noise is applied, and sum the running time for five
-      minutes with noise to calculate the two hours accessing time. For example
-      the running time in the past 2 hours = time1 * noise1 + time2 * noise2 +
-      time3 * noise3....
+      activated browser window. The accessing time is calculated each two hours,
+      then the noise is applied, and sum the running time for two hours with
+      noise to calculate the two hours accessing time. For example the running
+      time in the past 2 hours = time1 * noise1 + time2 * noise2 + time3 *
+      noise3....
     </summary>
     <aggregation>
       <history>
@@ -7263,13 +7263,13 @@ be describing additional metrics about the same event.
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
-    Records each five minutes in Chrome OS to log the input events happened on
-    the app window. This is logged only when the user allows app syncing or
-    allows sync of everything, and the user does not set up a sync passphrase.
+    Records each two hours in Chrome OS to log the input events happened on the
+    app window. This is logged only when the user allows app syncing or allows
+    sync of everything, and the user does not set up a sync passphrase.
   </summary>
   <metric name="AppInputEventCount">
     <summary>
-      The number of the input events happened in each five minutes.
+      The number of the input events happened in each two hours.
     </summary>
   </metric>
   <metric name="AppInputEventSource" enum="AppInputEventSource">
@@ -7487,11 +7487,11 @@ be describing additional metrics about the same event.
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
-    Records the amount of time that the app were used in the last five minutes
-    on Chrome OS, only when the user allows app syncing or allows sync of
+    Records the amount of time that the app was used in the last two hours on
+    Chrome OS, only when the user allows app syncing or allows sync of
     everything, and the user does not set up a sync passphrase. Only ARC apps,
-    Chrome apps and web apps(PWA), system web apps, buildin apps are recorded.
-    This is logged every five minutes.
+    Chrome apps and web apps(PWA), system web apps, builtin apps are recorded.
+    This is logged every two hours and at shutdown.
   </summary>
   <metric name="AppType" enum="AppType">
     <summary>
@@ -7535,8 +7535,8 @@ be describing additional metrics about the same event.
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
-    Records the amount of time that the app were used in the last five minutes
-    on Chrome OS, only when the user allows app syncing or allows sync of
+    Records the amount of time that the app were used in the last two hours on
+    Chrome OS, only when the user allows app syncing or allows sync of
     everything, and the user does not set up a sync passphrase. Only ARC apps,
     Chrome apps and web apps(PWA), system web apps, buildin apps are recorded.
     This is logged every two hours.
