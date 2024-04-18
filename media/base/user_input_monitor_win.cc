@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -256,10 +258,10 @@ LRESULT UserInputMonitorWinCore::OnInput(HRAWINPUT input_handle) {
   DCHECK_EQ(0u, result);
 
   // Retrieve the input record itself.
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[size]);
-  RAWINPUT* input = reinterpret_cast<RAWINPUT*>(buffer.get());
-  result = GetRawInputData(
-      input_handle, RID_INPUT, buffer.get(), &size, sizeof(RAWINPUTHEADER));
+  auto buffer = base::HeapArray<uint8_t>::Uninit(size);
+  RAWINPUT* input = reinterpret_cast<RAWINPUT*>(buffer.data());
+  result = GetRawInputData(input_handle, RID_INPUT, buffer.data(), &size,
+                           sizeof(RAWINPUTHEADER));
   if (result == static_cast<UINT>(-1)) {
     PLOG(ERROR) << "GetRawInputData() failed";
     return 0;

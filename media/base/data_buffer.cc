@@ -8,31 +8,27 @@
 
 namespace media {
 
-DataBuffer::DataBuffer(int buffer_size)
-    : buffer_size_(buffer_size),
-      data_size_(0) {
+DataBuffer::DataBuffer(int buffer_size) : data_size_(buffer_size) {
   CHECK_GE(buffer_size, 0);
-  data_ = std::make_unique<uint8_t[]>(buffer_size_);
+  data_ = base::HeapArray<uint8_t>::Uninit(buffer_size);
 }
 
-DataBuffer::DataBuffer(std::unique_ptr<uint8_t[]> buffer, int buffer_size)
-    : data_(std::move(buffer)),
-      buffer_size_(buffer_size),
-      data_size_(buffer_size) {
-  CHECK(data_.get());
-  CHECK_GE(buffer_size, 0);
+DataBuffer::DataBuffer(base::HeapArray<uint8_t> buffer)
+    : data_size_(buffer.size()) {
+  data_ = std::move(buffer);
+  CHECK(data_.data());
 }
 
 DataBuffer::DataBuffer(const uint8_t* data, int data_size)
-    : buffer_size_(data_size), data_size_(data_size) {
+    : data_size_(data_size) {
   if (!data) {
     CHECK_EQ(data_size, 0);
     return;
   }
 
   CHECK_GE(data_size, 0);
-  data_ = std::make_unique<uint8_t[]>(buffer_size_);
-  memcpy(data_.get(), data, data_size_);
+  data_ = base::HeapArray<uint8_t>::Uninit(data_size);
+  memcpy(data_.data(), data, data_size_);
 }
 DataBuffer::DataBuffer(DataBufferType data_buffer_type)
     : is_end_of_stream_(data_buffer_type == DataBufferType::kEndOfStream) {}

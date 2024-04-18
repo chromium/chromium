@@ -7,9 +7,8 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -28,8 +27,7 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   // Allocates buffer of size |buffer_size| >= 0.
   explicit DataBuffer(int buffer_size);
 
-  // Assumes valid data of size |buffer_size|.
-  DataBuffer(std::unique_ptr<uint8_t[]> buffer, int buffer_size);
+  explicit DataBuffer(base::HeapArray<uint8_t> buffer);
 
   DataBuffer(const DataBuffer&) = delete;
   DataBuffer& operator=(const DataBuffer&) = delete;
@@ -65,14 +63,16 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
     duration_ = duration;
   }
 
+  // TODO(b/335662415): Change data(), writable_data() so they always return a
+  // span to remove no data_size() member.
   const uint8_t* data() const {
     DCHECK(!end_of_stream());
-    return data_.get();
+    return data_.data();
   }
 
   uint8_t* writable_data() {
     DCHECK(!end_of_stream());
-    return data_.get();
+    return data_.data();
   }
 
   // The size of valid data in bytes.
@@ -83,9 +83,9 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
     return data_size_;
   }
 
-  void set_data_size(int data_size) {
+  void set_data_size(size_t data_size) {
     DCHECK(!end_of_stream());
-    CHECK_LE(data_size, buffer_size_);
+    CHECK_LE(data_size, data_.size());
     data_size_ = data_size;
   }
 
@@ -107,8 +107,7 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   base::TimeDelta timestamp_;
   base::TimeDelta duration_;
 
-  std::unique_ptr<uint8_t[]> data_;
-  int buffer_size_;
+  base::HeapArray<uint8_t> data_;
   int data_size_;
   const bool is_end_of_stream_ = false;
 };

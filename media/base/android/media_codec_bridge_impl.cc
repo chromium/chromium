@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/heap_array.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -629,8 +630,8 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
   // one subsample here just to be on the safe side.
   int num_subsamples = std::max(static_cast<size_t>(1), subsamples.size());
 
-  std::unique_ptr<jint[]> native_clear_array(new jint[num_subsamples]);
-  std::unique_ptr<jint[]> native_cypher_array(new jint[num_subsamples]);
+  auto native_clear_array = base::HeapArray<jint>::Uninit(num_subsamples);
+  auto native_cypher_array = base::HeapArray<jint>::Uninit(num_subsamples);
 
   if (subsamples.empty()) {
     native_clear_array[0] = 0;
@@ -650,9 +651,9 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
   }
 
   ScopedJavaLocalRef<jintArray> clear_array = base::android::ToJavaIntArray(
-      env, native_clear_array.get(), num_subsamples);
+      env, native_clear_array.data(), num_subsamples);
   ScopedJavaLocalRef<jintArray> cypher_array = base::android::ToJavaIntArray(
-      env, native_cypher_array.get(), num_subsamples);
+      env, native_cypher_array.data(), num_subsamples);
 
   MediaCodecStatus status = static_cast<MediaCodecStatus>(
       Java_MediaCodecBridge_queueSecureInputBuffer(
