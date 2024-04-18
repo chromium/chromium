@@ -5037,7 +5037,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Drive.PushNotificationRegistered" enum="BooleanRegistered"
-    expires_after="M137">
+    expires_after="2024-05-19">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -5808,6 +5808,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records how many times PIIs are redacted by the Client side log redaction
     tool.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.RedactionTool.Caller" enum="RedactionToolCaller"
+    expires_after="2024-09-15">
+  <owner>rohkap@google.com</owner>
+  <owner>dpchromeos-core-eng@google.com</owner>
+  <summary>
+    Records which caller invoked the redaction tool. This helps us determine
+    where the most redactions are happening and so places emitting most PII in
+    logs.
   </summary>
 </histogram>
 

@@ -40,6 +40,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Wayland"/>
 </enum>
 
+<enum name="RedactionToolCaller">
+  <summary>The caller of the redaction tool.</summary>
+  <int value="1" label="System Logs Uploader"/>
+  <int value="2" label="System Logs Fetcher"/>
+  <int value="3" label="Support Tool"/>
+  <int value="4" label="Error Reporting"/>
+  <int value="5" label="Feedback Tool"/>
+  <int value="6" label="Browser System Logs"/>
+  <int value="7" label="Unit Tests"/>
+  <int value="8" label="Undetermined"/>
+  <int value="9" label="Unknown"/>
+</enum>
+
 <enum name="SilentPushEvent">
   <int value="0" label="New Silent Push request"/>
   <int value="1" label="Notification enforcement skipped"/>
