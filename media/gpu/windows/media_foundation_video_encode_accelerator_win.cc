@@ -983,9 +983,9 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
   frame_rate_ = framerate;
   // For SW BRC we don't reconfigure the encoder.
   if (rate_ctrl_) {
-    rate_ctrl_->UpdateRateControl(
-        CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
-                                   frame_rate_, num_temporal_layers_, codec_));
+    rate_ctrl_->UpdateRateControl(CreateRateControllerConfig(
+        bitrate_allocation_, size.value_or(input_visible_size_), frame_rate_,
+        num_temporal_layers_, codec_));
   } else {
     VARIANT var;
     var.vt = VT_UI4;
