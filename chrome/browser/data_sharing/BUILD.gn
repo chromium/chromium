@@ -14,9 +14,9 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactory.java" ]
 
     deps = [
+      ":ui_delegate_java",
       "//base:base_java",
       "//build/android:build_java",
-      "//chrome/browser/data_sharing/android:ui_delegate_java",
       "//chrome/browser/profiles/android:java",
       "//components/data_sharing/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -38,30 +38,56 @@ if (is_android) {
   android_library("java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
-      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogCoordinator.java",
-      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogMediator.java",
-      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
-      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesCoordinator.java",
-      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesMediator.java",
-      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesProperties.java",
-      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesViewBinder.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogMediator.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesMediator.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesProperties.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesViewBinder.java",
     ]
 
     deps = [
       ":java_resources",
       "//base:base_java",
+      "//base:base_java",
       "//chrome/browser/android/intents:java",
       "//chrome/browser/notifications:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/styles/android:java_resources",
       "//third_party/android_sdk:android_window_extensions_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
+
+    public_deps = [ ":ui_delegate_java" ]
+  }
+
+  android_library("ui_delegate_java") {
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/configs/AvatarConfig.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/configs/GroupMemberConfig.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/configs/MemberPickerConfig.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+
+    jar_excluded_patterns = [ "*/DataSharingUIDelegateImpl.class" ]
   }
 
   robolectric_library("junit") {
-    sources = [ "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManagerUnitTest.java" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManagerUnitTest.java" ]
     deps = [
       ":java",
       "//base:base_java",
@@ -78,7 +104,7 @@ if (is_android) {
     testonly = true
 
     sources = [
-      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogTest.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java",
     ]
     deps = [
