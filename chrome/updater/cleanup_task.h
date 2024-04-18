@@ -8,17 +8,20 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
+
+class Configurator;
 
 // The Cleanup houses both periodic and one-time cleanup work items. For
 // example, it is used to clean up obsolete files that were in-use at the time
 // setup ran but can be cleaned up now.
 class CleanupTask : public base::RefCountedThreadSafe<CleanupTask> {
  public:
-  explicit CleanupTask(UpdaterScope scope);
+  CleanupTask(UpdaterScope scope, scoped_refptr<Configurator> config);
   void Run(base::OnceClosure callback);
 
  private:
@@ -27,6 +30,7 @@ class CleanupTask : public base::RefCountedThreadSafe<CleanupTask> {
 
   SEQUENCE_CHECKER(sequence_checker_);
   UpdaterScope scope_;
+  scoped_refptr<Configurator> config_;
 };
 
 }  // namespace updater

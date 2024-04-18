@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
+#include "chrome/updater/configurator.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/unit_test_util.h"
@@ -58,7 +59,8 @@ TEST_F(CleanupTaskTest, RunCleanupObsoleteFiles) {
   ASSERT_TRUE(folder_path_current);
   ASSERT_TRUE(base::CreateDirectory(*folder_path_current));
 
-  auto cleanup_task = base::MakeRefCounted<CleanupTask>(GetTestScope());
+  auto cleanup_task =
+      base::MakeRefCounted<CleanupTask>(GetTestScope(), /*config=*/nullptr);
   base::RunLoop run_loop;
   cleanup_task->Run(run_loop.QuitClosure());
   run_loop.Run();
