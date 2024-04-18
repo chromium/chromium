@@ -38,7 +38,8 @@ ScreenAIServiceRouterFactory::~ScreenAIServiceRouterFactory() = default;
 std::unique_ptr<KeyedService>
 ScreenAIServiceRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* /*context*/) const {
-  return std::make_unique<screen_ai::ScreenAIServiceRouter>();
+  return base::WrapUnique<screen_ai::ScreenAIServiceRouter>(
+      new screen_ai::ScreenAIServiceRouter);
 }
 
 // static
