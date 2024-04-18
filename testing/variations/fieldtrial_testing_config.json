@@ -5185,6 +5185,24 @@
             ]
         }
     ],
+    "CrOSLateBootSwapZramTuning": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroupA",
+                    "params": {
+                        "multiplier": "1.5"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSwapZramDisksize"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootSwapZramWriteback": [
         {
             "platforms": [
