@@ -4488,8 +4488,6 @@ static_library("ui") {
       "cocoa/applescript/tab_applescript.mm",
       "cocoa/applescript/window_applescript.h",
       "cocoa/applescript/window_applescript.mm",
-      "cocoa/apps/app_shim_menu_controller_mac.h",
-      "cocoa/apps/app_shim_menu_controller_mac.mm",
       "cocoa/apps/quit_with_apps_controller_mac.cc",
       "cocoa/apps/quit_with_apps_controller_mac.h",
       "cocoa/apps/titlebar_background_view.h",

@@ -69,7 +69,6 @@
 #include "chrome/browser/ui/browser_mac.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#import "chrome/browser/ui/cocoa/apps/app_shim_menu_controller_mac.h"
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/confirm_quit.h"
@@ -585,9 +584,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   std::unique_ptr<HistoryMenuBridge> _historyMenuBridge;
 
-  // Controller that manages main menu items for packaged apps.
-  AppShimMenuController* __strong _appShimMenuController;
-
   // The profile menu, which appears right before the Help menu. It is only
   // available when multiple profiles is enabled.
   ProfileMenuController* __strong _profileMenuController;
@@ -907,7 +903,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   _profileAttributesStorageObserver.reset();
   [self unregisterEventHandlers];
-  _appShimMenuController = nil;
   _profileBookmarkMenuBridgeMap.clear();
 }
 
@@ -1062,10 +1057,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
       KeepAliveOrigin::APP_CONTROLLER, KeepAliveRestartOption::DISABLED);
 
   [self setUpdateCheckInterval];
-
-  // Start managing the menu for app windows. This needs to be done here because
-  // main menu item titles are not yet initialized in awakeFromNib.
-  [self initAppShimMenuController];
 
   // If enabled, keep Chrome alive when apps are open instead of quitting all
   // apps.
@@ -1870,11 +1861,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (TabMenuBridge*)tabMenuBridge {
   return _tabMenuBridge.get();
-}
-
-- (void)initAppShimMenuController {
-  if (!_appShimMenuController)
-    _appShimMenuController = [[AppShimMenuController alloc] init];
 }
 
 - (void)setLastProfile:(Profile*)profile {

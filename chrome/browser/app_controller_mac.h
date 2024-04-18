@@ -122,10 +122,6 @@ class ColorProvider;
 - (HistoryMenuBridge*)historyMenuBridge;
 - (TabMenuBridge*)tabMenuBridge;
 
-// Initializes the AppShimMenuController. This enables changing the menu bar for
-// apps.
-- (void)initAppShimMenuController;
-
 // Called when the user has changed browser windows, meaning the backing profile
 // may have changed. This can cause a rebuild of the user-data menus. This is a
 // no-op if the new profile is the same as the current one. This can be either
