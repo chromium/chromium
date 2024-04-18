@@ -4036,12 +4036,6 @@
       name: "VideoFullscreenOrientationLock",
     },
     {
-      name: "VideoPlaybackQuality",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "VideoRotateToFullscreen",
     },
     {

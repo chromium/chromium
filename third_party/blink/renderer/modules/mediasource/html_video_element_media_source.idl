@@ -29,8 +29,7 @@
  */
 
 [
-    ImplementedAs=HTMLVideoElementMediaSource,
-    RuntimeEnabled=VideoPlaybackQuality
+    ImplementedAs=HTMLVideoElementMediaSource
 ] partial interface HTMLVideoElement {
     [Measure] VideoPlaybackQuality getVideoPlaybackQuality();
 };

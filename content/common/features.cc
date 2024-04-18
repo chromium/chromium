@@ -532,11 +532,6 @@ BASE_FEATURE(kTrustedTypesFromLiteral,
              "TrustedTypesFromLiteral",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the <video>.getVideoPlaybackQuality() API is enabled.
-BASE_FEATURE(kVideoPlaybackQuality,
-             "VideoPlaybackQuality",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Pre-warm up the network process on browser startup.
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWarmUpNetworkProcess,

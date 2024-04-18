@@ -120,7 +120,6 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadAsyncPinchEvents);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadOverscrollHistoryNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTrustedTypesFromLiteral);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kVideoPlaybackQuality);
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWarmUpNetworkProcess);
 #endif
