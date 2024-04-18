@@ -1,0 +1,110 @@
+<style include="cr-hidden-style cr-icons">
+    #languageMenu::part(dialog) {
+      min-width: 304px;
+      width: auto;
+      margin-left: var(--sp-body-padding);
+      margin-right: var(--sp-body-padding);
+      height: 60%;
+    }
+
+    iron-icon {
+      --icon-size: 24px;
+      height: var(--icon-size);
+      width: var(--icon-size);
+    }
+
+    .language-menu-title-bar {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .language-menu-title {
+      float: left;
+      text-align: left;
+      font-size: 16px;
+      font-weight: 500;
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .language-menu-close-button {
+      float: right;
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .language-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: transparent;
+      border: none;
+      width: 100%;
+      color: var(--color-sys-on-surface-subtle);
+    }
+
+    .dropdown-line {
+      height: 48px;
+      align-items: center;
+    }
+
+    .language-name {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 13px;
+      font-weight: 500;
+      padding-inline-end: 16px;
+    }
+
+    .language-menu-body {
+      padding-bottom: 16px;
+    }
+
+    .search-field {
+      padding: 0 var(--sp-body-padding) 0 var(--sp-body-padding);
+    }
+
+  </style>
+
+<cr-dialog id="languageMenu" ignore-popstate>
+  <div slot="title" class="language-menu-title-bar">
+    <div class="language-menu-title">$i18n{readingModeLanguageMenuTitle}</div>
+    <cr-icon-button id="close" class="action-icon language-menu-close-button"
+      iron-icon="cr:close"
+      on-click="closeLanguageMenu_"
+      aria-label="$i18n{readingModeLanguageMenuClose}">
+    </cr-icon-button>
+  </div>
+  <div slot="header">
+    <cr-input
+      class="search-field"
+      type="search"
+      placeholder="$i18n{readingModeLanguageMenuSearchLabel}"
+      value="{{languageSearchValue_}}">
+        <iron-icon slot="inline-prefix" alt="" icon="cr:search">
+        </iron-icon>
+        <cr-icon-button iron-icon="cr:clear"
+          hidden$="[[!languageSearchValue_]]" slot="inline-suffix"
+          on-click="onClearSearchClick_"
+          title="$i18n{readingModeLanguageMenuSearchClear}">
+        </cr-icon-button>
+    </cr-input>
+  </div>
+  <div slot="body" class="language-menu-body">
+    <!-- TODO(b/333785012): Add initial-counts to the dom-repeats here. -->
+    <template is="dom-repeat"
+        items="[[filterSearchLanguages_(availableLanguages_,
+         languageSearchValue_)]]">
+        <div class="language-line dropdown-line">
+          <span class="language-name">
+            [[item]]
+          </span>
+          <!-- TODO(b/332638963): filter voice menu with language pref-->
+          <cr-toggle></cr-toggle>
+        </div>
+    </template>
+  </div>
+</cr-dialog>

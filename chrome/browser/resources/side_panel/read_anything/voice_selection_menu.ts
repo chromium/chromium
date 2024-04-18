@@ -8,6 +8,7 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import './icons.html.js';
+import './language_menu.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -18,11 +19,13 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {LanguageMenuElement} from './language_menu.js';
 import {getTemplate} from './voice_selection_menu.html.js';
 
 export interface VoiceSelectionMenuElement {
   $: {
     voiceSelectionMenu: CrLazyRenderElement<CrActionMenuElement>,
+    languageMenu: CrLazyRenderElement<LanguageMenuElement>,
   };
 }
 
@@ -166,6 +169,11 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
         },
       }));
     }
+  }
+
+  private openLanguageMenu_() {
+    this.$.voiceSelectionMenu.get().close();
+    this.$.languageMenu.get().showDialog();
   }
 
   private onClose_() {

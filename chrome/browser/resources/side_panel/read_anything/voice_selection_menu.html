@@ -69,6 +69,19 @@
   .item-invisible-true {
     visibility: hidden;
   }
+  .menu-divider {
+    border-top: 1px solid var(--cr-active-background-color);
+  }
+  .language-menu-button {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 3px;
+    height: 24px;
+  }
+
 </style>
 
 <!-- TODO(b/333785012): Add initial-counts to the dom-repeats here. -->
@@ -103,6 +116,26 @@
           </template>
         </div>
       </template>
+
+      <hr class="menu-divider">
+
+      <div>
+        <button
+          class="dropdown-item
+            dropdown-voice-selection-button language-menu-button"
+          on-click="openLanguageMenu_">
+            $i18n{readingModeLanguageMenu}
+        </button>
+      </div>
     </cr-action-menu>
+  </template>
+</cr-lazy-render>
+
+<cr-lazy-render id="languageMenu">
+  <template>
+    <language-menu
+      locale-to-display-name="[[localeToDisplayName]]"
+      available-voices="[[availableVoices]]">
+    </language-menu>
   </template>
 </cr-lazy-render>

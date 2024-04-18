@@ -16,6 +16,7 @@ build_webui("build") {
 
   web_component_files = [
     "app.ts",
+    "language_menu.ts",
     "read_anything_toolbar.ts",
     "voice_selection_menu.ts",
   ]

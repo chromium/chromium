@@ -9118,6 +9118,21 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_VOICE_SELECTION" desc="Accessibility label for button that opens a dropdown with options for changing the voice used for Read Aloud." translateable="false">
         Voice selection
       </message>
+      <message name="IDS_READING_MODE_LANGUAGE_MENU" desc="Label for a button that opens a dialog with options for managing language preferences for Read Aloud." translateable="false">
+        Languages...
+      </message>
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_TITLE" desc="Dialog title label for a dialog with options for managing language preferences for Read Aloud." translateable="false">
+        Languages
+      </message>
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_CLOSE" desc="Label for a button to close a dialog with options for managing language preferences for Read Aloud." translateable="false">
+        Close
+      </message>
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_SEARCH_LABEL" desc="Label for a search field that searches for language preference to be managed for Read Aloud." translateable="false">
+        Search
+      </message>
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_SEARCH_CLEAR" desc="Accessibility label for a button to clear search field that searches for language preference to be managed for Read Aloud." translateable="false">
+        Clear search
+      </message>
       <message name="IDS_READING_MODE_SIDE_PANEL_PROMO"
                desc="Text for the in-product-help bubble shown for the reading mode bubble.">
         To show a simplified view of this page, open the side panel and select Reading mode

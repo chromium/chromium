@@ -6,6 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_m
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -17,6 +18,9 @@ suite('VoiceSelectionMenuElement', () => {
   let voiceSelectionMenu: VoiceSelectionMenuElement|null;
   let availableVoices: SpeechSynthesisVoice[];
   let myClickEvent: MouseEvent;
+
+  const voiceSelectionButtonSelector: string =
+      '.dropdown-voice-selection-button:not(.language-menu-button)';
 
   const setAvailableVoices = () => {
     // Bypass Typescript compiler to allow us to set a private readonly
@@ -71,6 +75,17 @@ suite('VoiceSelectionMenuElement', () => {
           availableVoices[0]!.name);
     });
 
+    test('it shows language menu after button click', () => {
+      const button =
+          voiceSelectionMenu!.$.voiceSelectionMenu.get()
+              .querySelector<HTMLButtonElement>('.language-menu-button');
+      button!.click();
+      const languageMenuElement: LanguageMenuElement =
+          voiceSelectionMenu!.$.languageMenu.get();
+      assertTrue(isPositionedOnPage(languageMenuElement.$.languageMenu));
+      flush();
+    });
+
     suite('when availableVoices updates', () => {
       setup(() => {
         availableVoices = [
@@ -87,7 +102,7 @@ suite('VoiceSelectionMenuElement', () => {
         const dropdownItems: NodeListOf<HTMLElement> =
             voiceSelectionMenu!.$.voiceSelectionMenu.get()
                 .querySelectorAll<HTMLButtonElement>(
-                    '.dropdown-voice-selection-button');
+                    voiceSelectionButtonSelector);
 
         assertEquals(
             getDropdownItemForVoice(availableVoices[0]!).textContent!.trim(),

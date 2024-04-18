@@ -1,0 +1,272 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
+
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
+import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+
+
+suite('LanguageMenuElement', () => {
+  let languageMenu: LanguageMenuElement;
+  let availableVoices: SpeechSynthesisVoice[];
+
+
+  const setAvailableVoices = () => {
+    // Bypass Typescript compiler to allow us to set a private readonly
+    // property
+    // @ts-ignore
+    languageMenu.availableVoices = availableVoices;
+    flush();
+  };
+
+  const getLanguageLineItems = () => {
+    return languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
+        '.language-line');
+  };
+
+  const getLanguageSearchField = () => {
+    return languageMenu.$.languageMenu.querySelector<CrInputElement>(
+        '.search-field')!;
+  };
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    languageMenu = document.createElement('language-menu');
+    document.body.appendChild(languageMenu);
+    flush();
+  });
+
+  suite('with one language', () => {
+    setup(() => {
+      availableVoices =
+          [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
+      setAvailableVoices();
+      languageMenu.showDialog();
+    });
+
+    test(
+        'defaults to the locale when there is no display name with a switch',
+        () => {
+          assertTrue(isPositionedOnPage(languageMenu));
+          assertEquals(getLanguageLineItems().length, 1);
+          assertLanguageLineWithTextAndSwitch(
+              getLanguageLineItems()[0]!, 'en-US');
+          assertEquals(getLanguageSearchField().value, '');
+        });
+
+    suite('when availableVoices updates', () => {
+      setup(() => {
+        availableVoices = [
+          {name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice,
+          {name: 'test voice 2', lang: 'en-UK'} as SpeechSynthesisVoice,
+        ];
+        setAvailableVoices();
+      });
+
+      test('it updates and displays the new languages', () => {
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(getLanguageLineItems().length, 2);
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[0]!, 'en-US');
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[1]!, 'en-UK');
+        assertEquals(getLanguageSearchField().value, '');
+      });
+    });
+
+    suite('with display names for locales', () => {
+      setup(() => {
+        // Bypass Typescript compiler to allow us to set a private readonly
+        // property
+        // @ts-ignore
+        languageMenu.localeToDisplayName = {
+          'en-US': 'English (United States)',
+        };
+        flush();
+      });
+
+      test('it displays the display name', () => {
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(getLanguageLineItems().length, 1);
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[0]!, 'English (United States)');
+      });
+
+      suite('with search input', () => {
+        test('it displays no language without a match', async () => {
+          getLanguageSearchField().value = 'test';
+          await getLanguageSearchField().updateComplete;
+          assertTrue(isPositionedOnPage(languageMenu));
+          assertEquals(getLanguageLineItems().length, 0);
+        });
+
+        test('it displays matching language with a match', async () => {
+          getLanguageSearchField().value = 'english';
+          await getLanguageSearchField().updateComplete;
+          assertEquals(getLanguageLineItems().length, 1);
+          assertLanguageLineWithTextAndSwitch(
+              getLanguageLineItems()[0]!, 'English (United States)');
+        });
+      });
+    });
+  });
+
+  // TODO(b/332638963): add a test to group languages with multiple locales
+  suite('with multiple languages', () => {
+    setup(() => {
+      availableVoices = [
+        {name: 'test voice 0', lang: 'en-US'} as SpeechSynthesisVoice,
+        {name: 'test voice 1', lang: 'it-IT'} as SpeechSynthesisVoice,
+        {name: 'test voice 2', lang: 'en-UK'} as SpeechSynthesisVoice,
+      ];
+      setAvailableVoices();
+      languageMenu.showDialog();
+    });
+
+    test(
+        'defaults to the locale when there is no display name with a switch',
+        () => {
+          assertTrue(isPositionedOnPage(languageMenu));
+          assertEquals(getLanguageLineItems().length, 3);
+          assertLanguageLineWithTextAndSwitch(
+              getLanguageLineItems()[0]!, 'en-US');
+          assertLanguageLineWithTextAndSwitch(
+              getLanguageLineItems()[1]!, 'it-IT');
+          assertLanguageLineWithTextAndSwitch(
+              getLanguageLineItems()[2]!, 'en-UK');
+          assertEquals(getLanguageSearchField().value, '');
+        });
+
+    suite('with display names for locales', () => {
+      setup(() => {
+        // Bypass Typescript compiler to allow us to set a private readonly
+        // property
+        // @ts-ignore
+        languageMenu.localeToDisplayName = {
+          'en-US': 'English (United States)',
+          'it-IT': 'Italian',
+          'en-UK': 'English (United Kingdom)',
+        };
+        flush();
+      });
+
+      test('it displays the display name', () => {
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(getLanguageLineItems().length, 3);
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[0]!, 'English (United States)');
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[1]!, 'Italian');
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[2]!, 'English (United Kingdom)');
+        assertEquals(getLanguageSearchField().value, '');
+      });
+
+      suite('with search input', () => {
+        test('it displays no language without a match', async () => {
+          getLanguageSearchField().value = 'test';
+          await getLanguageSearchField().updateComplete;
+          assertTrue(isPositionedOnPage(languageMenu));
+          assertEquals(getLanguageLineItems().length, 0);
+        });
+
+        test('it displays matching language with a match', async () => {
+          getLanguageSearchField().value = 'italian';
+          await getLanguageSearchField().updateComplete;
+          assertEquals(getLanguageLineItems().length, 1);
+          assertLanguageLineWithTextAndSwitch(
+              getLanguageLineItems()[0]!, 'Italian');
+        });
+      });
+    });
+  });
+
+  suite('with multiple voices for the same language', () => {
+    setup(() => {
+      availableVoices = [
+        {name: 'test voice 0', lang: 'en-US'} as SpeechSynthesisVoice,
+        {name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice,
+        {name: 'test voice 2', lang: 'en-UK'} as SpeechSynthesisVoice,
+        {name: 'test voice 3', lang: 'en-UK'} as SpeechSynthesisVoice,
+        {name: 'test voice 4', lang: 'it-IT'} as SpeechSynthesisVoice,
+        {name: 'test voice 5', lang: 'zh-CN'} as SpeechSynthesisVoice,
+
+      ];
+      setAvailableVoices();
+      languageMenu.showDialog();
+    });
+
+    test('only shows one line per unique language name', () => {
+      assertTrue(isPositionedOnPage(languageMenu));
+      assertEquals(getLanguageLineItems().length, 4);
+      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[0]!, 'en-US');
+      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[1]!, 'en-UK');
+      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[2]!, 'it-IT');
+      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[3]!, 'zh-CN');
+    });
+
+    suite('with display names for locales', () => {
+      setup(() => {
+        // Bypass Typescript compiler to allow us to set a private readonly
+        // property
+        // @ts-ignore
+        languageMenu.localeToDisplayName = {
+          'en-US': 'English (United States)',
+          'it-IT': 'Italian',
+          'en-UK': 'English (United Kingdom)',
+          'zh-CN': 'Chinese',
+        };
+        flush();
+      });
+
+      test('it displays the display name', () => {
+        flush();
+        assertTrue(isPositionedOnPage(languageMenu));
+        assertEquals(getLanguageLineItems().length, 4);
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[0]!, 'English (United States)');
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[1]!, 'English (United Kingdom)');
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[2]!, 'Italian');
+        assertLanguageLineWithTextAndSwitch(
+            getLanguageLineItems()[3]!, 'Chinese');
+        assertEquals(getLanguageSearchField().value, '');
+      });
+
+      suite('with search input', () => {
+        test('it displays no language without a match', async () => {
+          getLanguageSearchField().value = 'test';
+          await getLanguageSearchField().updateComplete;
+          assertTrue(isPositionedOnPage(languageMenu));
+          assertEquals(getLanguageLineItems().length, 0);
+        });
+
+        test('it displays matching language with a match', async () => {
+          getLanguageSearchField().value = 'chin';
+          await getLanguageSearchField().updateComplete;
+          assertEquals(getLanguageLineItems().length, 1);
+          assertLanguageLineWithTextAndSwitch(
+              getLanguageLineItems()[0]!, 'Chinese');
+        });
+      });
+    });
+  });
+});
+
+function isPositionedOnPage(element: HTMLElement) {
+  return !!element &&
+      !!(element.offsetWidth || element.offsetHeight ||
+         element.getClientRects().length);
+}
+
+function assertLanguageLineWithTextAndSwitch(
+    element: HTMLElement, expectedText: string) {
+  assertEquals(element.textContent!.trim(), expectedText);
+  assertEquals(element.children.length, 2);
+  assertEquals(element.children[1]!.tagName, 'CR-TOGGLE');
+}
