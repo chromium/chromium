@@ -202,7 +202,7 @@ auto IsFieldOfInterest() {
 
 // Matches `object.member` and `object->member` where `member` is a
 // member-of-interest of a class-of-interest
-auto member_expr_of_interest() {
+auto IsMemberExprOfInterest() {
   using namespace clang::ast_matchers;
   return memberExpr(allOf(member(allOf(IsFieldOfInterest(),
                                        fieldDecl(hasParent(cxxRecordDecl(
@@ -214,13 +214,26 @@ auto member_expr_of_interest() {
 }
 
 // Matches `f.member = foo`.
-auto write_access() {
+auto IsWriteExprOfInterest() {
   using namespace clang::ast_matchers;
   return expr(binaryOperation(
                   hasOperatorName("="),
-                  hasLHS(ignoringParenImpCasts(member_expr_of_interest())),
+                  hasLHS(ignoringParenImpCasts(IsMemberExprOfInterest())),
                   hasRHS(expr().bind("rhs"))))
       .bind("assignment");
+}
+
+// Matches `f.member` and `f->member`, except on the left-hand side of
+// assignments.
+auto IsReadExprOfInterest() {
+  using namespace clang::ast_matchers;
+  return expr(
+      anyOf(allOf(IsMemberExprOfInterest(),
+                  unless(hasAncestor(IsWriteExprOfInterest()))),
+            expr(binaryOperation(
+                hasOperatorName("="),
+                hasRHS(anyOf(IsMemberExprOfInterest(),
+                             hasDescendant(IsMemberExprOfInterest())))))));
 }
 
 }  // namespace matchers
@@ -242,17 +255,7 @@ class FieldReadAccessRewriter
   using BaseRewriter::BaseRewriter;
 
   void AddMatchers(clang::ast_matchers::MatchFinder& match_finder) {
-    using namespace clang::ast_matchers;
-    using namespace matchers;
-    // Matches `f.member` and `f->member`, except on the left-hand side of
-    // assignments.
-    auto read_access = expr(anyOf(
-        allOf(member_expr_of_interest(), unless(hasAncestor(write_access()))),
-        expr(binaryOperation(
-            hasOperatorName("="),
-            hasRHS(anyOf(member_expr_of_interest(),
-                         hasDescendant(member_expr_of_interest())))))));
-    match_finder.addMatcher(read_access, this);
+    match_finder.addMatcher(matchers::IsReadExprOfInterest(), this);
   }
 
  private:
@@ -287,7 +290,7 @@ class FieldWriteAccessRewriter
   using BaseRewriter::BaseRewriter;
 
   void AddMatchers(clang::ast_matchers::MatchFinder& match_finder) {
-    match_finder.addMatcher(matchers::write_access(), this);
+    match_finder.addMatcher(matchers::IsWriteExprOfInterest(), this);
   }
 
  private:
