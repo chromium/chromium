@@ -33,7 +33,7 @@ build_webui_tests("build_webui_tests") {
     "reimaging_calibration_failed_page_test.ts",
     "reimaging_calibration_run_page_test.ts",
     "reimaging_calibration_setup_page_test.ts",
-    "reimaging_device_information_page_test.js",
+    "reimaging_device_information_page_test.ts",
     "reimaging_firmware_update_page_test.ts",
     "reimaging_provisioning_page_test.js",
     "repair_component_chip_test.js",

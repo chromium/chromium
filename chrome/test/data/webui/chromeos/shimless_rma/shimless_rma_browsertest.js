@@ -33,10 +33,6 @@ this.ShimlessRmaBrowserTest = class extends PolymerTest {
 };
 
 const tests = [
-  [
-    'ReimagingDeviceInformationPageTest',
-    'reimaging_device_information_page_test.js'
-  ],
   ['ReimagingProvisioningPageTest', 'reimaging_provisioning_page_test.js'],
   ['RepairComponentChipTest', 'repair_component_chip_test.js'],
   ['Shimless3pDiagTest', 'shimless_3p_diag_test.js'],

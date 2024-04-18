@@ -139,6 +139,11 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, RestockPage) {
   RunTest("chromeos/shimless_rma/wrapup_restock_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, DeviceInformationPage) {
+  RunTest("chromeos/shimless_rma/reimaging_device_information_page_test.js",
+          "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash
