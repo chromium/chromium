@@ -373,6 +373,11 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
   // No need to continue running the timer, if it's running.
   timer_.Stop();
 
+  if (fetches_paused_) {
+    deferred_start_batch_due_to_fetch_pause_ = true;
+    return;
+  }
+
   std::unique_ptr<TrustedSignalsUrlBuilder> url_builder;
   bool split_fetch = base::FeatureList::IsEnabled(
       blink::features::kFledgeSplitTrustedSignalsFetchingURL);
@@ -399,6 +404,19 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
   queued_requests_.clear();
 
   return;
+}
+
+void TrustedSignalsRequestManager::Pause() {
+  fetches_paused_ = true;
+}
+
+void TrustedSignalsRequestManager::Resume() {
+  DCHECK(fetches_paused_);
+  fetches_paused_ = false;
+  if (deferred_start_batch_due_to_fetch_pause_) {
+    deferred_start_batch_due_to_fetch_pause_ = false;
+    StartBatchedTrustedSignalsRequest();
+  }
 }
 
 TrustedSignalsRequestManager::RequestImpl::RequestImpl(
@@ -518,13 +536,9 @@ void TrustedSignalsRequestManager::OnRequestDestroyed(RequestImpl* request) {
 }
 
 void TrustedSignalsRequestManager::QueueRequest(RequestImpl* request) {
-  // If the timer is not running, then either `automatically_send_requests_`
-  // is false, or no requests should be in `queued_requests_`.
-  DCHECK_EQ(timer_.IsRunning(),
-            automatically_send_requests_ && !queued_requests_.empty());
-
   queued_requests_.insert(request);
-  if (automatically_send_requests_ && !timer_.IsRunning()) {
+  if (automatically_send_requests_ &&
+      !deferred_start_batch_due_to_fetch_pause_ && !timer_.IsRunning()) {
     timer_.Start(
         FROM_HERE, kAutoSendDelay,
         base::BindOnce(

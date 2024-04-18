@@ -137,6 +137,12 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
   const GURL& trusted_signals_url() const { return trusted_signals_url_; }
 
+  // If Pause() is called, no actual fetches will happen until Resume() is
+  // invoked. If any fetches would have started during the window between
+  // Pause() and Resume(), Resume() will kick things off immediately.
+  void Pause();
+  void Resume();
+
  private:
   struct BatchedTrustedSignalsRequest;
 
@@ -249,6 +255,16 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   std::set<std::unique_ptr<BatchedTrustedSignalsRequest>,
            base::UniquePtrComparator>
       batched_requests_;
+
+  // If this is true, outgoing requests will not be made until Resume() is
+  // called; instead we merely denote that we were going to do so in
+  // `deferred_start_batch_due_to_fetch_pause_`.
+  bool fetches_paused_ = false;
+
+  // This is set if StartBatchedTrustedSignalsRequest() got called when
+  // Pause()d, and denotes that queued fetches should be issued as soon as
+  // Resume() is called.
+  bool deferred_start_batch_due_to_fetch_pause_ = false;
 
   base::OneShotTimer timer_;
 
