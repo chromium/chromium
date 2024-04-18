@@ -557,6 +557,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
                     loadTimeData.getString('pauseLabel');
   }
 
+  private playPauseButtonTitle_(paused: boolean) {
+    return paused ? loadTimeData.getString('playTooltip') :
+                    loadTimeData.getString('pauseTooltip');
+  }
+
   private playPauseButtonIronIcon_(paused: boolean) {
     return paused ? 'read-anything-20:play' : 'read-anything-20:pause';
   }
