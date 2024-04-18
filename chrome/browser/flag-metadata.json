@@ -2134,7 +2134,7 @@
   {
     "name": "dynamic-top-chrome",
     "owners": ["wenyufu@chromium.org", "clank-large-form-factors@google.com"],
-    "expiry_milestone": 126
+    "expiry_milestone": 128
   },
   {
     "name": "eap-gtc-wifi-authentication",
