@@ -6,19 +6,49 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "ios/web/public/test/test_web_thread.h"
 #include "ios/web/web_thread_impl.h"
 
 namespace web {
+namespace {
+
+// Returns the base::TaskEnvironment::MainThreadType corresponding to
+// `main_thread_type`.
+base::test::TaskEnvironment::MainThreadType ConvertMainThreadType(
+    WebTaskEnvironment::MainThreadType main_thread_type) {
+  switch (main_thread_type) {
+    case WebTaskEnvironment::MainThreadType::UI:
+      return base::test::TaskEnvironment::MainThreadType::UI;
+
+    case WebTaskEnvironment::MainThreadType::IO:
+      return base::test::TaskEnvironment::MainThreadType::IO;
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
 
 WebTaskEnvironment::WebTaskEnvironment(
     int options,
     base::test::TaskEnvironment::TimeSource time_source)
-    : base::test::TaskEnvironment(
-          options == IO_MAINLOOP ? MainThreadType::IO : MainThreadType::UI,
-          time_source) {
-  Init(options);
+    : WebTaskEnvironment(
+          time_source,
+          ((options & IO_MAINLOOP) == IO_MAINLOOP ? MainThreadType::IO
+                                                  : MainThreadType::UI),
+          ((options & REAL_IO_THREAD) == REAL_IO_THREAD
+               ? IOThreadType::REAL_THREAD
+               : IOThreadType::DEFAULT)) {}
+
+WebTaskEnvironment::WebTaskEnvironment(TimeSource time_source,
+                                       MainThreadType main_thread_type,
+                                       IOThreadType io_thread_type,
+                                       base::trait_helpers::NotATraitTag tag)
+    : TaskEnvironment(time_source, ConvertMainThreadType(main_thread_type)),
+      io_thread_type_(io_thread_type) {
+  Init();
 }
 
 WebTaskEnvironment::~WebTaskEnvironment() {
@@ -43,13 +73,13 @@ WebTaskEnvironment::~WebTaskEnvironment() {
   WebThreadImpl::ResetTaskExecutorForTesting();
 }
 
-void WebTaskEnvironment::Init(int options) {
+void WebTaskEnvironment::Init() {
   WebThreadImpl::CreateTaskExecutor();
 
   ui_thread_ =
       std::make_unique<TestWebThread>(WebThread::UI, GetMainThreadTaskRunner());
 
-  if (options & WebTaskEnvironment::REAL_IO_THREAD) {
+  if (io_thread_type_ == IOThreadType::REAL_THREAD) {
     io_thread_ = std::make_unique<TestWebThread>(WebThread::IO);
     io_thread_->StartIOThread();
   } else {

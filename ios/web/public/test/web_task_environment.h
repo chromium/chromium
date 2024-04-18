@@ -5,7 +5,11 @@
 #ifndef IOS_WEB_PUBLIC_TEST_WEB_TASK_ENVIRONMENT_H_
 #define IOS_WEB_PUBLIC_TEST_WEB_TASK_ENVIRONMENT_H_
 
+#include <memory>
+
+#include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
+#include "base/traits_bag.h"
 
 // WebTaskEnvironment is the iOS equivalent of content::BrowserTaskEnvironment.
 //
@@ -30,8 +34,6 @@
 // will use a MessageLoopForIO for the main MessageLoop. Most of the time, this
 // avoids needing to use a REAL_IO_THREAD.
 
-#include <memory>
-
 namespace base {
 class MessageLoop;
 }  // namespace base
@@ -51,6 +53,43 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
     REAL_IO_THREAD = 1 << 1,
   };
 
+  // This type will determine which events will be pumped by the main
+  // thread. Note that the default is different from TaskEnvironment.
+  enum class MainThreadType {
+    UI,
+    IO,
+    DEFAULT = UI,
+  };
+
+  // This type will determine whether the IO thread is backed by a real
+  // thread or not (DEFAULT).
+  enum class IOThreadType {
+    FAKE_THREAD,
+    REAL_THREAD,
+    DEFAULT = FAKE_THREAD,
+  };
+
+  // List of traits that are valid inputs for the constructor below.
+  struct ValidTraits {
+    ValidTraits(TimeSource);
+    ValidTraits(IOThreadType);
+    ValidTraits(MainThreadType);
+  };
+
+  // Constructor accepts zero or more traits which customize the environment.
+  template <typename... WebTaskEnvironmentTraits>
+    requires base::trait_helpers::AreValidTraits<ValidTraits,
+                                                 WebTaskEnvironmentTraits...>
+  NOINLINE explicit WebTaskEnvironment(WebTaskEnvironmentTraits... traits)
+      : WebTaskEnvironment(
+            base::trait_helpers::GetEnum<TimeSource,  //
+                                         TimeSource::DEFAULT>(traits...),
+            base::trait_helpers::GetEnum<MainThreadType,  //
+                                         MainThreadType::DEFAULT>(traits...),
+            base::trait_helpers::GetEnum<IOThreadType,  //
+                                         IOThreadType::DEFAULT>(traits...),
+            base::trait_helpers::NotATraitTag()) {}
+
   explicit WebTaskEnvironment(
       int options = Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource time_source =
@@ -62,8 +101,16 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
   ~WebTaskEnvironment() override;
 
  private:
-  void Init(int options);
+  // The template constructor has to be in the header but it delegates to this
+  // constructor to initialize all other members out-of-line.
+  WebTaskEnvironment(TimeSource time_source,
+                     MainThreadType main_thread_type,
+                     IOThreadType io_thread_type,
+                     base::trait_helpers::NotATraitTag tag);
 
+  void Init();
+
+  const IOThreadType io_thread_type_;
   std::unique_ptr<TestWebThread> ui_thread_;
   std::unique_ptr<TestWebThread> io_thread_;
 };
