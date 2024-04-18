@@ -40,6 +40,21 @@ void RecordCheckUrlTimeout(bool timed_out) {
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.CheckUrl.Timeout", timed_out);
 }
 
+std::string GetPerformedCheckSuffix(
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  switch (performed_check) {
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck:
+      return "HashDatabase";
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck:
+      return "UrlRealTime";
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashRealTimeCheck:
+      return "HashRealTime";
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown:
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kCheckSkipped:
+      NOTREACHED_NORETURN();
+  }
+}
+
 void MaybeRecordFirstRequestMetrics(SBThreatType threat_type,
                                     std::optional<ThreatSource> threat_source) {
   static bool is_first_request = true;
@@ -547,7 +562,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
   DCHECK(performed_check != PerformedCheck::kUnknown);
   lookup_mechanism_runner_ =
       std::make_unique<SafeBrowsingLookupMechanismRunner>(
-          std::move(lookup_mechanism),
+          std::move(lookup_mechanism), GetPerformedCheckSuffix(performed_check),
           base::BindOnce(
               &SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf,
               weak_factory_.GetWeakPtr(), performed_check));

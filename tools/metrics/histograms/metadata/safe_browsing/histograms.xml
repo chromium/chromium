@@ -405,6 +405,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.CheckUrl.TimeTaken.{CheckType}" units="ms"
+    expires_after="2024-09-15">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long a Safe Browsing {CheckType} lookup took. Logged each time
+    this kind of check completes, even if it times out. Note: This is the check
+    that was initially attempted, even if it ended up falling back to a
+    different type of check.
+  </summary>
+  <token key="CheckType">
+    <variant name="HashDatabase" summary="hash-prefix database"/>
+    <variant name="HashRealTime" summary="hash-prefix real-time"/>
+    <variant name="UrlRealTime" summary="URL real-time"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.CheckUrl.UrlScheme" enum="SafeBrowsingUrlScheme"
     expires_after="2024-09-22">
   <owner>thefrog@chromium.org</owner>

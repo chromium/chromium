@@ -25,10 +25,12 @@ class SafeBrowsingLookupMechanismRunner {
 
   // |lookup_mechanism| is the mechanism that the runner will use to perform the
   // lookup. |complete_check_callback| is the callback that will be called if
-  // the run does not complete synchronously. Its |result| parameter will only
-  // be populated if the run did not time out.
+  // the run does not complete synchronously; its |result| parameter will only
+  // be populated if the run did not time out. |performed_check_suffix| is a
+  // suffix used for a metric logging how long the check took to run.
   SafeBrowsingLookupMechanismRunner(
       std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism,
+      const std::string& performed_check_suffix,
       CompleteCheckCallbackWithTimeout complete_check_callback);
   ~SafeBrowsingLookupMechanismRunner();
   SafeBrowsingLookupMechanismRunner(const SafeBrowsingLookupMechanismRunner&) =
@@ -58,6 +60,9 @@ class SafeBrowsingLookupMechanismRunner {
   // The lookup mechanism responsible for running the check and returning the
   // relevant results.
   std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism_;
+  // Suffix used for a metric logging how long the check took to run
+  // (SafeBrowsing.CheckUrl.TimeTaken.*).
+  std::string performed_check_suffix_;
   // The callback passed in through the constructor that should be called either
   // when the mechanism completes or when it times out, unless the run completes
   // synchronously. Its |result| parameter will only be populated if the run did
@@ -66,6 +71,8 @@ class SafeBrowsingLookupMechanismRunner {
   // Timer to abort the SafeBrowsing check if it takes too long.
   std::unique_ptr<base::OneShotTimer> timer_ =
       std::make_unique<base::OneShotTimer>();
+  // The time the run began. Used for metrics only.
+  base::TimeTicks start_lookup_time_;
 
 #if DCHECK_IS_ON()
   // Used only for a DCHECK to confirm that |OnCheckComplete| is called only

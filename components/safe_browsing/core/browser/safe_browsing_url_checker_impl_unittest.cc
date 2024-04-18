@@ -456,6 +456,19 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
           expect_url_lookup_service_metric_suffix.value() ? 1 : 0);
     }
   }
+  void ValidateCheckUrlTimeTakenMetrics(int expected_hprt_log_count,
+                                        int expected_urt_log_count,
+                                        int expected_hpd_log_count) {
+    histogram_tester_.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.CheckUrl.TimeTaken.HashRealTime",
+        /*expected_count=*/expected_hprt_log_count);
+    histogram_tester_.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.CheckUrl.TimeTaken.UrlRealTime",
+        /*expected_count=*/expected_urt_log_count);
+    histogram_tester_.ExpectTotalCount(
+        /*name=*/"SafeBrowsing.CheckUrl.TimeTaken.HashDatabase",
+        /*expected_count=*/expected_hpd_log_count);
+  }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -493,6 +506,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
   histogram_tester_.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
                                        /*sample=*/false,
                                        /*expected_bucket_count=*/1);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
@@ -515,6 +531,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RedirectUrlsSafe) {
@@ -555,6 +574,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RedirectUrlsSafe) {
                                       redirect_callback.Get());
 
   task_environment_.RunUntilIdle();
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/2);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -594,6 +616,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       .Times(1);
   database_manager_->RestartDelayedCallback(origin_url);
   task_environment_.RunUntilIdle();
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledAllowlistMatch) {
@@ -626,6 +651,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledAllowlistMatch) {
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/true,
       /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
@@ -666,6 +694,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -695,6 +726,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/std::nullopt,
       /*expect_url_lookup_service_metric_suffix=*/std::nullopt);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -732,6 +766,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/false);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -772,6 +809,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -808,6 +848,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -845,6 +888,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -873,6 +919,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -902,6 +951,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -930,6 +982,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -960,6 +1015,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1005,6 +1063,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
                                       redirect_callback.Get());
 
   task_environment_.RunUntilIdle();
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/2,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
@@ -1029,6 +1090,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
 
     task_environment_.RunUntilIdle();
+    ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                     /*expected_urt_log_count=*/0,
+                                     /*expected_hpd_log_count=*/0);
   }
   // Do cancel check for local checks.
   {
@@ -1050,6 +1114,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
     EXPECT_TRUE(database_manager_->HasCalledCancelCheck());
 
     task_environment_.RunUntilIdle();
+    ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                     /*expected_urt_log_count=*/0,
+                                     /*expected_hpd_log_count=*/0);
   }
 }
 
@@ -1082,6 +1149,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
     histograms.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
                                   /*sample=*/true,
                                   /*expected_bucket_count=*/1);
+    histograms.ExpectUniqueTimeSample(
+        "SafeBrowsing.CheckUrl.TimeTaken.UrlRealTime",
+        /*sample=*/base::Seconds(5),
+        /*expected_bucket_count=*/1);
   }
   // Timeout for local checks should cancel the database check.
   {
@@ -1111,6 +1182,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
     histograms.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
                                   /*sample=*/true,
                                   /*expected_bucket_count=*/1);
+    histograms.ExpectUniqueTimeSample(
+        "SafeBrowsing.CheckUrl.TimeTaken.HashDatabase",
+        /*sample=*/base::Seconds(5),
+        /*expected_bucket_count=*/1);
   }
 }
 
@@ -1142,6 +1217,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_InvalidUrl) {
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/std::nullopt,
                            /*expected_is_service_found=*/std::nullopt,
                            /*expected_can_check_reputation=*/false);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1175,6 +1253,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/true,
                            /*expected_is_service_found=*/std::nullopt,
                            /*expected_can_check_reputation=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1205,6 +1286,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/true,
                            /*expected_is_service_found=*/std::nullopt,
                            /*expected_can_check_reputation=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
@@ -1238,6 +1322,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
                            /*expected_is_service_found=*/true,
                            /*expected_can_check_reputation=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_UnsafeLookup) {
@@ -1268,6 +1355,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_UnsafeLookup) {
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
                            /*expected_is_service_found=*/true,
                            /*expected_can_check_reputation=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1299,6 +1389,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
                            /*expected_is_service_found=*/false,
                            /*expected_can_check_reputation=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1331,6 +1424,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
                            /*expected_is_service_found=*/true,
                            /*expected_can_check_reputation=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1359,6 +1455,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1390,6 +1489,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/std::nullopt,
                            /*expected_is_service_found=*/std::nullopt,
                            /*expected_can_check_reputation=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_InvalidRequestDestination) {
@@ -1419,6 +1521,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_InvalidRequestDestination) {
       /*name=*/"SB2.RequestDestination.Skipped",
       /*sample=*/network::mojom::RequestDestination::kAudio,
       /*expected_bucket_count=*/1);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_AllowlistedUrl) {
@@ -1441,6 +1546,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_AllowlistedUrl) {
 
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/0,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 }  // namespace safe_browsing
