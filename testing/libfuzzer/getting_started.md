@@ -83,18 +83,16 @@ In the near future we'll support adding `FUZZ_TEST`s alongside existing
 unit tests, even in the same .cc file.
 
 ```
-if (is_linux) {
-  test("existing_unit_tests") {
-    sources = [ "existing_unit_tests.cc" ] # add FUZZ_TESTs here
+test("existing_unit_tests") {
+  sources = [ "existing_unit_tests.cc" ] # add FUZZ_TESTs here
 
-    fuzztests = ["MyApiTest.ApiWorksAlways"]
-      # Add this!
+  fuzztests = ["MyApiTest.ApiWorksAlways"]
+    # Add this!
 
-    deps = [
-      ":existing_component",
-      # Other stuff
-    ]
-  }
+  deps = [
+    ":existing_component",
+    # Other stuff
+  ]
 }
 ```
 
