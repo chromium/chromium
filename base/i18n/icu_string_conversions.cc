@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -175,17 +176,17 @@ bool CodepageToUTF16(std::string_view encoded,
   size_t uchar_max_length = encoded.length() + 1;
 
   SetUpErrorHandlerForToUChars(on_error, converter, &status);
-  std::unique_ptr<char16_t[]> buffer(new char16_t[uchar_max_length]);
-  int actual_size = ucnv_toUChars(
-      converter, buffer.get(), static_cast<int>(uchar_max_length),
-      encoded.data(), static_cast<int>(encoded.length()), &status);
+  auto buffer = base::HeapArray<char16_t>::Uninit(uchar_max_length);
+  int actual_size =
+      ucnv_toUChars(converter, buffer.data(), buffer.size(), encoded.data(),
+                    static_cast<int>(encoded.length()), &status);
   ucnv_close(converter);
   if (!U_SUCCESS(status)) {
     utf16->clear();  // Make sure the output is empty on error.
     return false;
   }
 
-  utf16->assign(buffer.get(), actual_size);
+  utf16->assign(buffer.data(), actual_size);
   return true;
 }
 
