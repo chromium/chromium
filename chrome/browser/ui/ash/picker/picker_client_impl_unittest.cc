@@ -12,6 +12,7 @@
 #include "ash/picker/picker_controller.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
@@ -30,6 +31,7 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/history/core/browser/history_database_params.h"
@@ -486,7 +488,18 @@ class PickerClientImplEditorTest : public PickerClientImplTest {
 };
 
 TEST_F(PickerClientImplEditorTest,
+       CacheEditorContextReturnsNullCallbackWhenEditorFlagDisabled) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  GetEditorMediator(profile()).OverrideEditorModeForTesting(
+      ash::input_method::EditorMode::kBlocked);
+
+  EXPECT_TRUE(client.CacheEditorContext().is_null());
+}
+
+TEST_F(PickerClientImplEditorTest,
        CacheEditorContextReturnsNullCallbackWhenBlocked) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
@@ -497,6 +510,7 @@ TEST_F(PickerClientImplEditorTest,
 
 TEST_F(PickerClientImplEditorTest,
        CacheEditorContextReturnsCallbackWhenNotBlocked) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
@@ -506,6 +520,7 @@ TEST_F(PickerClientImplEditorTest,
 }
 
 TEST_F(PickerClientImplEditorTest, CacheEditorContextCachesCaretBounds) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
