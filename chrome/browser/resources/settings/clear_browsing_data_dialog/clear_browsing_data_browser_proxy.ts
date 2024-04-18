@@ -52,6 +52,14 @@ export interface ClearBrowsingDataBrowserProxy {
    * @return A promise with the current sync state.
    */
   getSyncState(): Promise<UpdateSyncStateEvent>;
+
+  /**
+   * Requests the backend to restart the browsing data counters of the basic or
+   * advanced tab (determined by |isBasic|), instructing them to calculate the
+   * data volume for the |timePeriod|. No return value, as the frontend needn't
+   * wait for the counting to be completed.
+   */
+  restartCounters(isBasic: boolean, timePeriod: number): void;
 }
 
 export class ClearBrowsingDataBrowserProxyImpl implements
@@ -66,6 +74,11 @@ export class ClearBrowsingDataBrowserProxyImpl implements
 
   getSyncState() {
     return sendWithPromise('getSyncState');
+  }
+
+  restartCounters(isBasic: boolean, timePeriod: number) {
+    return chrome.send('restartClearBrowsingDataCounters',
+                       [isBasic, timePeriod]);
   }
 
   static getInstance(): ClearBrowsingDataBrowserProxy {

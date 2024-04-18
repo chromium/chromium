@@ -14,7 +14,7 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
   private clearBrowsingDataPromise_: Promise<ClearBrowsingDataResult>|null;
 
   constructor() {
-    super(['initialize', 'clearBrowsingData']);
+    super(['initialize', 'clearBrowsingData', 'restartCounters']);
 
     /**
      * The promise to return from |clearBrowsingData|.
@@ -51,5 +51,10 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
       isNonGoogleDse: false,
       nonGoogleSearchHistoryString: 'somestring',
     });
+  }
+
+  restartCounters(isBasic: boolean, timePeriod: number) {
+    this.methodCalled('restartCounters', isBasic, timePeriod);
+    return Promise.resolve();
   }
 }

@@ -27,7 +27,7 @@ import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_
 import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import type {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
@@ -543,6 +543,19 @@ export class SettingsClearBrowsingDataDialogElement extends
     return dropdownMenu;
   }
 
+  private isBasicTabSelected_() {
+    const page = this.$.pages.selectedItem as HTMLElement;
+    assert(page);
+    switch (page.id) {
+      case 'basic-tab':
+        return true;
+      case 'advanced-tab':
+        return false;
+      default:
+        assertNotReached();
+    }
+  }
+
   // TODO(crbug.com/1487530): Remove this after CbdTimeframeRequired finishes.
   /** Highlight the time period dropdown in case no selection was made. */
   private validateSelectedTimeRange_(): boolean {
@@ -585,7 +598,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     const dataTypes = this.getSelectedDataTypes_(page);
     const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
 
-    if (page.id === 'basic-tab') {
+    if (this.isBasicTabSelected_()) {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_BasicTab');
     } else {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
@@ -610,11 +623,6 @@ export class SettingsClearBrowsingDataDialogElement extends
     if (this.$.clearBrowsingDataDialog.open) {
       closeDialog(this.$.clearBrowsingDataDialog, isLastDialog);
     }
-  }
-
-  private onTimeRangeChange_() {
-    const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
-    dropdownMenu.classList.remove('dropdown-error');
   }
 
   private onCancelClick_() {
@@ -739,6 +747,24 @@ export class SettingsClearBrowsingDataDialogElement extends
         !this.syncStatus.hasError;
   }
 
+  private onTimePeriodChanged_() {
+    const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
+
+    // Needed in the |enableCbdTimeframeRequired_| experiment, no-op otherwise.
+    // TODO(crbug.com/1487530): Remove when crbug.com/1487530 finished.
+    dropdownMenu.classList.remove('dropdown-error');
+
+    let timePeriod = parseInt(dropdownMenu.getSelectedValue(), 10);
+    assert(!Number.isNaN(timePeriod));
+
+    // If the time period is not selected, count all the data.
+    if (timePeriod === TimePeriodExperiment.NOT_SELECTED) {
+      timePeriod = TimePeriodExperiment.ALL_TIME;
+    }
+
+    this.browserProxy_.restartCounters(this.isBasicTabSelected_(), timePeriod);
+  }
+
   private onTimePeriodAdvancedPrefUpdated_() {
     this.onTimePeriodPrefUpdated_(false);
   }
@@ -748,9 +774,9 @@ export class SettingsClearBrowsingDataDialogElement extends
   }
 
 
-  private onTimePeriodPrefUpdated_(basic: boolean) {
-    const timePeriodPref = basic ? 'browser.clear_data.time_period_basic' :
-                                   'browser.clear_data.time_period';
+  private onTimePeriodPrefUpdated_(isBasic: boolean) {
+    const timePeriodPref = isBasic ? 'browser.clear_data.time_period_basic' :
+                                     'browser.clear_data.time_period';
 
     const timePeriodValue = this.getPref(timePeriodPref).value;
 

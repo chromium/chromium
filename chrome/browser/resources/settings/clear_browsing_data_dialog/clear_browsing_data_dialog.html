@@ -168,20 +168,21 @@
                 $i18n{clearTimeRange}
               </span>
               <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFromBasic"
+                <settings-dropdown-menu id="clearFromBasic" no-set-pref
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period_basic}}"
-                    menu-options="[[clearFromOptions_]]">
+                    menu-options="[[clearFromOptions_]]"
+                    on-settings-control-change="onTimePeriodChanged_">
                 </settings-dropdown-menu>
               </template>
               <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFromBasic" required
+                <settings-dropdown-menu id="clearFromBasic" required no-set-pref
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period_v2_basic}}"
                     menu-options="[[clearFromOptionsV2_]]"
-                    on-settings-control-change="onTimeRangeChange_">
+                    on-settings-control-change="onTimePeriodChanged_">
                 </settings-dropdown-menu>
               </template>
             </div>
@@ -247,21 +248,21 @@
                 $i18n{clearTimeRange}
               </span>
               <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFrom"
+                <settings-dropdown-menu id="clearFrom" no-set-pref
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period}}"
-                    menu-options="[[clearFromOptions_]]">
+                    menu-options="[[clearFromOptions_]]"
+                    on-settings-control-change="onTimePeriodChanged_">
                 </settings-dropdown-menu>
               </template>
               <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFrom" required
+                <settings-dropdown-menu id="clearFrom" required no-set-pref
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period_v2}}"
                     menu-options="[[clearFromOptionsV2_]]"
-                    on-settings-control-change="onTimeRangeChange_">
-                </settings-dropdown-menu>
+                    on-settings-control-change="onTimePeriodChanged_">
               </template>
             </div>
             <settings-checkbox id="browsingCheckbox"

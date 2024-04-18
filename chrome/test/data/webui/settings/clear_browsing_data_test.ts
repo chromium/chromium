@@ -471,11 +471,11 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertEquals(
         TimePeriod.LAST_DAY.toString(), dropdownMenu.getSelectedValue());
 
-    // Changing the dropdown selection does persist its value to the pref.
+    // Changing the dropdown selection does not persist its value to the pref.
     dropdownMenu.$.dropdownMenu.value = TimePeriod.LAST_WEEK.toString();
     dropdownMenu.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
     await waitAfterNextRender(dropdownMenu);
-    assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
+    assertEquals(TimePeriod.LAST_DAY, element.getPref(prefName).value);
 
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckbox);
@@ -484,11 +484,13 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
-    // Confirming the deletion sends the time range for clearing.
+    // Confirming the deletion persists the dropdown selection to the pref and
+    // sends the time range for clearing.
     const actionButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!actionButton);
     actionButton.click();
+    assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
     const args = await testBrowserProxy.whenCalled('clearBrowsingData');
     const timeRange = args[1];
     assertEquals(TimePeriod.LAST_WEEK, timeRange);
@@ -795,7 +797,42 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertFalse(element.$.clearBrowsingDataDialog.open);
   });
 
-  test('Counters', function() {
+  async function testDropdownResetsCounters(tabIndex: number) {
+    testBrowserProxy.reset();
+
+    // Select the right tab.
+    assertTrue(element.$.clearBrowsingDataDialog.open);
+    element.$.tabs.selected = tabIndex;
+    await element.$.tabs.updateComplete;
+
+    // Wait for the dropdown to render, so that we can select an option.
+    const page = element.$.pages.selectedItem as HTMLElement;
+    const dropdownMenu =
+        page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
+    assertTrue(!!dropdownMenu);
+    await waitAfterNextRender(dropdownMenu);
+
+    // Select a non-default option.
+    const selectedOption = TimePeriod.LAST_WEEK;
+    dropdownMenu.$.dropdownMenu.value = selectedOption.toString();
+    dropdownMenu.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
+    await waitAfterNextRender(dropdownMenu);
+
+    // The proxy should request re-calculation for this option.
+    const args = await testBrowserProxy.whenCalled('restartCounters');
+    assertEquals(args[0] /* isBasic */ ? 0 : 1, tabIndex);
+    assertEquals(args[1], selectedOption);
+  }
+
+  test('DropdownResetsCounters_Basic', async function() {
+    await testDropdownResetsCounters(0 /* tabIndex */);
+  });
+
+  test('DropdownResetsCounters_Advanced', async function() {
+    await testDropdownResetsCounters(1 /* tabIndex */);
+  });
+
+  test('CountersUpdateText', function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
 
     const checkbox = element.shadowRoot!.querySelector<SettingsCheckboxElement>(

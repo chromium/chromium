@@ -13,18 +13,45 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/browsing_data/core/browsing_data_utils.h"
+#include "components/browsing_data/core/counters/browsing_data_counter.h"
+#include "components/browsing_data/core/pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace settings {
 
+using ::testing::_;
 using ::testing::Optional;
+
+static const char* kTestingDatatypePref = "counter.testing.datatype";
+
+namespace {
+
+class MockBrowsingDataCounter : public browsing_data::BrowsingDataCounter {
+ public:
+  MockBrowsingDataCounter() {
+    ON_CALL(*this, SetBeginTime).WillByDefault([this](base::Time begin_time) {
+      browsing_data::BrowsingDataCounter::SetBeginTime(begin_time);
+    });
+  }
+  ~MockBrowsingDataCounter() override = default;
+
+  MOCK_METHOD(void, Count, ());
+  MOCK_METHOD(void, SetBeginTime, (base::Time));
+
+  const char* GetPrefName() const override { return kTestingDatatypePref; }
+};
+
+}  // namespace
 
 class TestingClearBrowsingDataHandler
     : public settings::ClearBrowsingDataHandler {
@@ -33,7 +60,24 @@ class TestingClearBrowsingDataHandler
   using settings::ClearBrowsingDataHandler::set_web_ui;
 
   TestingClearBrowsingDataHandler(content::WebUI* webui, Profile* profile)
-      : ClearBrowsingDataHandler(webui, profile) {}
+      : ClearBrowsingDataHandler(webui, profile) {
+    AddCounter(std::make_unique<MockBrowsingDataCounter>(),
+               browsing_data::ClearBrowsingDataTab::BASIC);
+    AddCounter(std::make_unique<MockBrowsingDataCounter>(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED);
+  }
+
+  void HandleRestartCounters(const base::Value::List& args) {
+    settings::ClearBrowsingDataHandler::HandleRestartCounters(args);
+  }
+
+  MockBrowsingDataCounter* basic_counter() const {
+    return static_cast<MockBrowsingDataCounter*>(counters_basic_[0].get());
+  }
+
+  MockBrowsingDataCounter* advanced_counter() const {
+    return static_cast<MockBrowsingDataCounter*>(counters_advanced_[0].get());
+  }
 
   // Some services initialized in |OnJavascriptAllowed()| don't have test
   // versions, hence are not available in unittests. For this reason we only
@@ -74,6 +118,9 @@ class ClearBrowsingDataHandlerUnitTest : public testing::Test {
 void ClearBrowsingDataHandlerUnitTest::SetUp() {
   TestingProfile::Builder builder;
   profile_ = builder.Build();
+
+  profile_->GetTestingPrefService()->registry()->RegisterBooleanPref(
+      kTestingDatatypePref, true);
 
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(profile_.get()));
@@ -198,6 +245,38 @@ TEST_F(ClearBrowsingDataHandlerUnitTest,
       true,
       l10n_util::GetStringUTF16(
           IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_NON_PREPOPULATED_DSE));
+}
+
+TEST_F(ClearBrowsingDataHandlerUnitTest, HandleRestartCounters) {
+  base::Value::List basic_args;
+  basic_args.Append(true /* basic */);
+  basic_args.Append(static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
+
+  EXPECT_CALL(*(handler_->basic_counter()), Count());
+  EXPECT_CALL(*(handler_->basic_counter()), SetBeginTime(_));
+
+  EXPECT_CALL(*(handler_->advanced_counter()), Count()).Times(0);
+  EXPECT_CALL(*(handler_->advanced_counter()), SetBeginTime(_)).Times(0);
+
+  handler_->HandleRestartCounters(basic_args);
+
+  // Test a different combination of parameters.
+  testing::Mock::VerifyAndClearExpectations(handler_->basic_counter());
+  testing::Mock::VerifyAndClearExpectations(handler_->advanced_counter());
+
+  base::Value::List advanced_args;
+  advanced_args.Append(false /* basic */);
+  advanced_args.Append(static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
+
+  EXPECT_CALL(*(handler_->basic_counter()), Count()).Times(0);
+  EXPECT_CALL(*(handler_->basic_counter()), SetBeginTime(_)).Times(0);
+
+  EXPECT_CALL(*(handler_->advanced_counter()), Count());
+  EXPECT_CALL(*(handler_->advanced_counter()),
+              SetBeginTime(browsing_data::CalculateBeginDeleteTime(
+                  browsing_data::TimePeriod::ALL_TIME)));
+
+  handler_->HandleRestartCounters(advanced_args);
 }
 
 }  // namespace settings

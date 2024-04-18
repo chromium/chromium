@@ -99,6 +99,10 @@ void ClearBrowsingDataHandler::RegisterMessages() {
       "getSyncState",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleGetSyncState,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "restartClearBrowsingDataCounters",
+      base::BindRepeating(&ClearBrowsingDataHandler::HandleRestartCounters,
+                          base::Unretained(this)));
 }
 
 void ClearBrowsingDataHandler::OnJavascriptAllowed() {
@@ -107,7 +111,9 @@ void ClearBrowsingDataHandler::OnJavascriptAllowed() {
 
   dse_service_observation_.Observe(
       TemplateURLServiceFactory::GetForProfile(profile_));
-  DCHECK(counters_.empty());
+
+  DCHECK(counters_basic_.empty());
+  DCHECK(counters_advanced_.empty());
   for (const std::string& pref : kCounterPrefsBasic) {
     AddCounter(BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref),
                browsing_data::ClearBrowsingDataTab::BASIC);
@@ -116,26 +122,14 @@ void ClearBrowsingDataHandler::OnJavascriptAllowed() {
     AddCounter(BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref),
                browsing_data::ClearBrowsingDataTab::ADVANCED);
   }
-  PrefService* prefs = profile_->GetPrefs();
-  period_ = std::make_unique<IntegerPrefMember>();
-  period_->Init(
-      browsing_data::prefs::kDeleteTimePeriod, prefs,
-      base::BindRepeating(&ClearBrowsingDataHandler::HandleTimePeriodChanged,
-                          base::Unretained(this)));
-  periodBasic_ = std::make_unique<IntegerPrefMember>();
-  periodBasic_->Init(
-      browsing_data::prefs::kDeleteTimePeriodBasic, prefs,
-      base::BindRepeating(&ClearBrowsingDataHandler::HandleTimePeriodChanged,
-                          base::Unretained(this)));
 }
 
 void ClearBrowsingDataHandler::OnJavascriptDisallowed() {
   dse_service_observation_.Reset();
   sync_service_observation_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
-  counters_.clear();
-  period_.reset();
-  periodBasic_.reset();
+  counters_basic_.clear();
+  counters_advanced_.clear();
 }
 
 void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
@@ -321,8 +315,18 @@ void ClearBrowsingDataHandler::HandleInitialize(const base::Value::List& args) {
   RefreshHistoryNotice();
 
   // Restart the counters each time the dialog is reopened.
-  for (const auto& counter : counters_)
-    counter->Restart();
+  //
+  // TODO(crbug.com/331925113): Since each Clear Browsing Data dialog execution
+  // commits the time selection to prefs, we may read it back from there.
+  // However, it would be safer if the "initializeClearBrowsingData" delivered
+  // the actual initial selection from the UI.
+  PrefService* prefs = profile_->GetPrefs();
+  auto initial_period_basic = static_cast<browsing_data::TimePeriod>(
+      prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriodBasic));
+  auto initial_period_advanced = static_cast<browsing_data::TimePeriod>(
+      prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
+  RestartCounters(true /* basic */, initial_period_basic);
+  RestartCounters(false /* basic */, initial_period_advanced);
 
   ResolveJavascriptCallback(callback_id, base::Value() /* Promise<void> */);
 }
@@ -332,6 +336,14 @@ void ClearBrowsingDataHandler::HandleGetSyncState(
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, CreateSyncStateEvent());
+}
+
+void ClearBrowsingDataHandler::HandleRestartCounters(
+    const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(2U, args.size());
+  RestartCounters(args[0].GetBool() /* basic */,
+                  static_cast<browsing_data::TimePeriod>(args[1].GetInt()));
 }
 
 void ClearBrowsingDataHandler::OnStateChanged(syncer::SyncService* sync) {
@@ -403,11 +415,14 @@ void ClearBrowsingDataHandler::AddCounter(
     std::unique_ptr<browsing_data::BrowsingDataCounter> counter,
     browsing_data::ClearBrowsingDataTab tab) {
   DCHECK(counter);
-  counter->Init(
-      profile_->GetPrefs(), tab,
+  counter->InitWithoutPeriodPref(
+      profile_->GetPrefs(), tab, base::Time(),
       base::BindRepeating(&ClearBrowsingDataHandler::UpdateCounterText,
                           base::Unretained(this)));
-  counters_.push_back(std::move(counter));
+
+  ((tab == browsing_data::ClearBrowsingDataTab::BASIC) ? counters_basic_
+                                                       : counters_advanced_)
+      .push_back(std::move(counter));
 }
 
 void ClearBrowsingDataHandler::UpdateCounterText(
@@ -416,6 +431,15 @@ void ClearBrowsingDataHandler::UpdateCounterText(
       "update-counter-text", base::Value(result->source()->GetPrefName()),
       base::Value(browsing_data_counter_utils::GetChromeCounterTextFromResult(
           result.get(), profile_)));
+}
+
+void ClearBrowsingDataHandler::RestartCounters(
+    bool basic,
+    browsing_data::TimePeriod time_period) {
+  // Updating the begin time of a counter automatically forces a restart.
+  for (const auto& counter : (basic ? counters_basic_ : counters_advanced_)) {
+    counter->SetBeginTime(browsing_data::CalculateBeginDeleteTime(time_period));
+  }
 }
 
 void ClearBrowsingDataHandler::HandleTimePeriodChanged(

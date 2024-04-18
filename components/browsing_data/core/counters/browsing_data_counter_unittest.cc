@@ -88,19 +88,36 @@ class BrowsingDataCounterTest : public testing::Test {
     counter_->Init(pref_service_.get(),
                    browsing_data::ClearBrowsingDataTab::ADVANCED,
                    base::DoNothing());
+
+    counter_no_period_ = std::make_unique<MockBrowsingDataCounter>();
+    counter_no_period_->InitWithoutPeriodPref(
+        pref_service_.get(), browsing_data::ClearBrowsingDataTab::ADVANCED,
+        base::Time::Min(), base::DoNothing());
   }
 
   void TearDown() override {
     counter_.reset();
+    counter_no_period_.reset();
     pref_service_.reset();
     testing::Test::TearDown();
   }
 
+ protected:
+  void UpdatePeriodPref() {
+    int current = pref_service_->GetInteger(prefs::kDeleteTimePeriod);
+    pref_service_->SetInteger(prefs::kDeleteTimePeriod, current ? 0 : 1);
+  }
+
   MockBrowsingDataCounter* counter() { return counter_.get(); }
+
+  MockBrowsingDataCounter* counter_no_period() {
+    return counter_no_period_.get();
+  }
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<MockBrowsingDataCounter> counter_;
+  std::unique_ptr<MockBrowsingDataCounter> counter_no_period_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
@@ -192,6 +209,33 @@ TEST_F(BrowsingDataCounterTest, RestartingDoesntBreak) {
   std::vector<BrowsingDataCounter::State> expected = {
       BrowsingDataCounter::State::RESTARTED, BrowsingDataCounter::State::IDLE};
   EXPECT_EQ(expected, state_transitions);
+}
+
+TEST_F(BrowsingDataCounterTest, InitWithoutPeriodPref) {
+  const std::vector<BrowsingDataCounter::State>& state_transitions =
+      counter()->GetStateTransitionsForTesting();
+  const std::vector<BrowsingDataCounter::State>& state_transitions_no_period =
+      counter_no_period()->GetStateTransitionsForTesting();
+
+  // Changing the time period pref restarts the counter initialized with a time
+  // period, but not one initialized without a time period.
+  UpdatePeriodPref();
+
+  counter()->WaitForResult();
+  std::vector<BrowsingDataCounter::State> expected = {
+      BrowsingDataCounter::State::RESTARTED, BrowsingDataCounter::State::IDLE};
+  EXPECT_EQ(expected, state_transitions);
+
+  EXPECT_TRUE(state_transitions_no_period.empty());
+
+  // Instead, a counter with no time period pref restarts when |SetBeginTime|
+  // is called to update the period.
+  counter_no_period()->SetBeginTime(base::Time::Now());
+  counter_no_period()->WaitForResult();
+
+  expected = {BrowsingDataCounter::State::RESTARTED,
+              BrowsingDataCounter::State::IDLE};
+  EXPECT_EQ(expected, state_transitions_no_period);
 }
 
 }  // namespace browsing_data

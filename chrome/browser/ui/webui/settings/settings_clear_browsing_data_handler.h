@@ -79,6 +79,16 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // Returns the current sync state to the WebUI.
   void HandleGetSyncState(const base::Value::List& args);
 
+  // Called by WebUI when the user takes an action that warrants restarting
+  // counters.
+  // TODO(crbug.com/331925113): Currently, this only happens when the time
+  // range dropdown is changed. However, it would make sense to also restart
+  // timers when a checkbox state changes. If that's not the case, this method
+  // should be reconciled with `HandleTimePeriodChanged` below which likewise
+  // triggers on the dropdown change, but only after the deletion has been
+  // executed and prefs updated.
+  void HandleRestartCounters(const base::Value::List& args);
+
   // Implementation of SyncServiceObserver.
   void OnStateChanged(syncer::SyncService* sync) override;
 
@@ -105,6 +115,11 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   void UpdateCounterText(
       std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result);
 
+  // Restarts |counters_basic_| or |counters_advanced_| depending on the |basic|
+  // argument, and instructs them to calculate the data volume for
+  // the |time_period|.
+  void RestartCounters(bool basic, browsing_data::TimePeriod time_period);
+
   // Record changes to the time period preferences.
   void HandleTimePeriodChanged(const std::string& pref_name);
 
@@ -115,7 +130,10 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   raw_ptr<Profile> profile_;
 
   // Counters that calculate the data volume for individual data types.
-  std::vector<std::unique_ptr<browsing_data::BrowsingDataCounter>> counters_;
+  std::vector<std::unique_ptr<browsing_data::BrowsingDataCounter>>
+      counters_basic_;
+  std::vector<std::unique_ptr<browsing_data::BrowsingDataCounter>>
+      counters_advanced_;
 
   // SyncService to observe sync state changes.
   raw_ptr<syncer::SyncService> sync_service_;
@@ -128,10 +146,6 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // Whether we should show a dialog informing the user about other forms of
   // history stored in their account after the history deletion is finished.
   bool show_history_deletion_dialog_;
-
-  // The TimePeriod preferences.
-  std::unique_ptr<IntegerPrefMember> period_;
-  std::unique_ptr<IntegerPrefMember> periodBasic_;
 
   // A weak pointer factory for asynchronous calls referencing this class.
   // The weak pointers are invalidated in |OnJavascriptDisallowed()| and

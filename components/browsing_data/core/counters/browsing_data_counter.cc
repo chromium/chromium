@@ -43,6 +43,22 @@ void BrowsingDataCounter::Init(PrefService* pref_service,
   OnInitialized();
 }
 
+void BrowsingDataCounter::InitWithoutPeriodPref(
+    PrefService* pref_service,
+    ClearBrowsingDataTab clear_browsing_data_tab,
+    base::Time begin_time,
+    ResultCallback callback) {
+  DCHECK(!initialized_);
+  callback_ = std::move(callback);
+  clear_browsing_data_tab_ = clear_browsing_data_tab;
+  pref_.Init(GetPrefName(), pref_service,
+             base::BindRepeating(&BrowsingDataCounter::Restart,
+                                 base::Unretained(this)));
+  begin_time_ = begin_time;
+  initialized_ = true;
+  OnInitialized();
+}
+
 void BrowsingDataCounter::InitWithoutPref(base::Time begin_time,
                                           ResultCallback callback) {
   DCHECK(!initialized_);
@@ -93,6 +109,12 @@ void BrowsingDataCounter::Restart() {
   TRACE_EVENT1("browsing_data", "BrowsingDataCounter::Count", "data_type",
                GetPrefName());
   Count();
+}
+
+void BrowsingDataCounter::SetBeginTime(base::Time begin_time) {
+  DCHECK(period_.GetPrefName().empty());
+  begin_time_ = begin_time;
+  Restart();
 }
 
 void BrowsingDataCounter::ReportResult(ResultInt value) {
