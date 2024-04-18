@@ -125,6 +125,16 @@ class NearbyPresenceCredentialStorage
       base::TimeTicks initialization_start_time,
       leveldb_proto::Enums::InitStatus remote_public_db_initialization_status);
 
+  void RecordCredentialsCountAndSize();
+  void RecordLocalSharedCredentialsCountAndSize(
+      bool success,
+      std::unique_ptr<std::vector<::nearby::internal::SharedCredential>>
+          entries);
+  void RecordRemoteSharedCredentialsCountAndSize(
+      bool success,
+      std::unique_ptr<std::vector<::nearby::internal::SharedCredential>>
+          entries);
+
   std::unique_ptr<
       leveldb_proto::ProtoDatabase<::nearby::internal::LocalCredential>>
       private_db_;

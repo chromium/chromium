@@ -477,6 +477,60 @@ void NearbyPresenceCredentialStorage::OnRemotePublicDatabaseInitialized(
   receiver_.Bind(std::move(pending_receiver_));
 
   std::move(on_fully_initialized).Run(/*success=*/true);
+
+  RecordCredentialsCountAndSize();
+}
+
+void NearbyPresenceCredentialStorage::RecordCredentialsCountAndSize() {
+  local_public_db_->LoadEntries(
+      base::BindOnce(&NearbyPresenceCredentialStorage::
+                         RecordLocalSharedCredentialsCountAndSize,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbyPresenceCredentialStorage::RecordLocalSharedCredentialsCountAndSize(
+    bool success,
+    std::unique_ptr<std::vector<::nearby::internal::SharedCredential>>
+        entries) {
+  if (!success) {
+    LOG(ERROR)
+        << __func__
+        << ": failed to load entries for local shared credential database.";
+    return;
+  }
+
+  metrics::RecordNumberOfLocalSharedCredentials(entries->size());
+
+  size_t size_of_credentials_in_bytes = 0;
+  for (const auto& entry : *entries) {
+    size_of_credentials_in_bytes += entry.ByteSizeLong();
+  }
+  metrics::RecordSizeOfLocalSharedCredentials(size_of_credentials_in_bytes);
+
+  remote_public_db_->LoadEntries(
+      base::BindOnce(&NearbyPresenceCredentialStorage::
+                         RecordRemoteSharedCredentialsCountAndSize,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbyPresenceCredentialStorage::RecordRemoteSharedCredentialsCountAndSize(
+    bool success,
+    std::unique_ptr<std::vector<::nearby::internal::SharedCredential>>
+        entries) {
+  if (!success) {
+    LOG(ERROR)
+        << __func__
+        << ": failed to load entries for remote shared credential database.";
+    return;
+  }
+
+  metrics::RecordNumberOfRemoteSharedCredentials(entries->size());
+
+  size_t size_of_credentials_in_bytes = 0;
+  for (const auto& entry : *entries) {
+    size_of_credentials_in_bytes += entry.ByteSizeLong();
+  }
+  metrics::RecordSizeOfRemoteSharedCredentials(size_of_credentials_in_bytes);
 }
 
 }  // namespace ash::nearby::presence

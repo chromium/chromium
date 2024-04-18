@@ -455,6 +455,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Nearby.Presence.Credentials.Storage.LocalSharedCredentials.Count"
+    units="count" expires_after="2025-04-10">
+  <owner>hansberry@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of local shared credentials stored in the local
+    shared credential database of the Nearby Presence Credential Storage
+    component. Emitted to once each time Nearby Presence is initialized in the
+    utility process.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.Storage.LocalSharedCredentials.Size"
+    units="KB" expires_after="2025-04-10">
+  <owner>hansberry@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total size of local shared credentials stored in the local
+    shared credential database of the Nearby Presence Credential Storage
+    component. Emitted to once each time Nearby Presence is initialized in the
+    utility process.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Presence.Credentials.Storage.PrivateDatabaseInitializationDuration"
     units="microseconds" expires_after="2025-04-10">
   <owner>hansberry@chromium.org</owner>
@@ -503,6 +529,32 @@ chromium-metrics-reviews@google.com.
     Records the result of an initialization attempt of the remote public
     credential database in the Nearby Presence Credential Storage component.
     Emitted after an initialization attempt completes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.Storage.RemoteSharedCredentials.Count"
+    units="count" expires_after="2025-04-10">
+  <owner>hansberry@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of remote shared credentials stored in the remote
+    shared credential database of the Nearby Presence Credential Storage
+    component. Emitted to once each time Nearby Presence is initialized in the
+    utility process.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.Storage.RemoteSharedCredentials.Size"
+    units="KB" expires_after="2025-04-10">
+  <owner>hansberry@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total size of remote shared credentials stored in the remote
+    shared credential database of the Nearby Presence Credential Storage
+    component. Emitted to once each time Nearby Presence is initialized in the
+    utility process.
   </summary>
 </histogram>
 
