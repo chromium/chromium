@@ -446,16 +446,16 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
                                             FormControlType::kInputText,
                                             "given-name"));
-  form.fields.back().name_attribute = form.fields.back().name();
-  form.fields.back().id_attribute = u"first_name";
+  form.fields.back().set_name_attribute(form.fields.back().name());
+  form.fields.back().set_id_attribute(u"first_name");
   form.fields.back().css_classes = u"class1 class2";
   form.fields.back().properties_mask = FieldPropertiesFlags::kHadFocus;
   test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
 
   form.fields.push_back(CreateTestFormField(
       "Last Name", "lastname", "", FormControlType::kInputText, "family-name"));
-  form.fields.back().name_attribute = form.fields.back().name();
-  form.fields.back().id_attribute = u"last_name";
+  form.fields.back().set_name_attribute(form.fields.back().name());
+  form.fields.back().set_id_attribute(u"last_name");
   form.fields.back().css_classes = u"class1 class2";
   form.fields.back().properties_mask =
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped;
@@ -463,8 +463,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
 
   form.fields.push_back(CreateTestFormField(
       "Email", "email", "", FormControlType::kInputEmail, "email"));
-  form.fields.back().name_attribute = form.fields.back().name();
-  form.fields.back().id_attribute = u"e-mail";
+  form.fields.back().set_name_attribute(form.fields.back().name());
+  form.fields.back().set_id_attribute(u"e-mail");
   form.fields.back().css_classes = u"class1 class2";
   form.fields.back().properties_mask =
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped;
@@ -1181,9 +1181,9 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   form.full_url = GURL("http://www.foo.com/?foo=bar");
   for (const auto& f : kFieldMetadata) {
     FormFieldData field;
-    field.id_attribute = ASCIIToUTF16(f.id);
-    field.name_attribute = ASCIIToUTF16(f.name);
-    field.set_name(field.name_attribute);
+    field.set_id_attribute(ASCIIToUTF16(f.id));
+    field.set_name_attribute(ASCIIToUTF16(f.name));
+    field.set_name(field.name_attribute());
     field.set_label(ASCIIToUTF16(f.label));
     field.placeholder = ASCIIToUTF16(f.placeholder);
     field.aria_label = ASCIIToUTF16(f.aria_label);
@@ -1253,13 +1253,13 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     const auto& metadata = upload.field(i).randomized_field_metadata();
     const auto& field = *form_structure.field(i);
     const auto field_signature = field.GetFieldSignature();
-    if (field.id_attribute.empty()) {
+    if (field.id_attribute().empty()) {
       EXPECT_FALSE(metadata.has_id());
     } else {
       EXPECT_EQ(metadata.id().encoded_bits(),
                 encoder.EncodeForTesting(form_signature, field_signature,
                                          RandomizedEncoder::FIELD_ID,
-                                         field.id_attribute));
+                                         field.id_attribute()));
     }
     if (field.name().empty()) {
       EXPECT_FALSE(metadata.has_name());
@@ -1267,7 +1267,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
       EXPECT_EQ(metadata.name().encoded_bits(),
                 encoder.EncodeForTesting(form_signature, field_signature,
                                          RandomizedEncoder::FIELD_NAME,
-                                         field.name_attribute));
+                                         field.name_attribute()));
     }
     EXPECT_EQ(
         metadata.type().encoded_bits(),

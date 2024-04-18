@@ -22,8 +22,8 @@ namespace {
 FormFieldData CreateTestField() {
   FormFieldData f;
   f.set_name(u"SomeName");
-  f.name_attribute = f.name();
-  f.id_attribute = u"some_id";
+  f.set_name_attribute(f.name());
+  f.set_id_attribute(u"some_id");
   f.set_form_control_type(FormControlType::kInputText);
   f.check_status = FormFieldData::CheckStatus::kChecked;
   return f;
@@ -154,12 +154,12 @@ TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs) {
 
   // If name attributes differ, they are not similar.
   f2 = f1;
-  f2.name_attribute = f1.name_attribute + u"x";
+  f2.set_name_attribute(f1.name_attribute() + u"x");
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 
   // If id attributes differ, they are not similar.
   f2 = f1;
-  f2.id_attribute = f1.id_attribute + u"x";
+  f2.set_id_attribute(f1.id_attribute() + u"x");
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 
   // If form control types differ, they are not similar.

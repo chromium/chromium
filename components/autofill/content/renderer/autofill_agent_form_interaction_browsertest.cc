@@ -38,7 +38,7 @@ using ::testing::Property;
 
 // Returns a matcher that matches a `FormFieldData::id_attribute`.
 auto HasFieldIdAttribute(std::u16string id_attribute) {
-  return Field("id_attribute", &FormFieldData::id_attribute, id_attribute);
+  return Property("id_attribute", &FormFieldData::id_attribute, id_attribute);
 }
 
 // Returns a matcher that matches a `FormFieldData::form_control_type`.

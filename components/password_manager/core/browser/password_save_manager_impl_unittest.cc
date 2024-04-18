@@ -214,30 +214,30 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
 
     FormFieldData field;
     field.set_name(u"firstname");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(autofill::FieldRendererId(1));
     observed_form_.fields.push_back(field);
 
     field.set_name(u"username");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(autofill::FieldRendererId(2));
     observed_form_.fields.push_back(field);
 
     field.set_name(u"password");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.set_renderer_id(autofill::FieldRendererId(3));
     observed_form_.fields.push_back(field);
     observed_form_only_password_fields_.fields.push_back(field);
 
     field.set_name(u"password2");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.set_renderer_id(autofill::FieldRendererId(5));
     observed_form_only_password_fields_.fields.push_back(field);
@@ -1302,23 +1302,23 @@ TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
   const std::u16string matched_form_username_field_name = u"new_username_id";
   FormFieldData field1;
   field1.set_name(matched_form_username_field_name);
-  field1.id_attribute = field1.name();
-  field1.name_attribute = field1.name();
+  field1.set_id_attribute(field1.name());
+  field1.set_name_attribute(field1.name());
   field1.set_form_control_type(autofill::FormControlType::kInputText);
   saved_match_.form_data.fields.push_back(field1);
 
   FormFieldData field2;
   field2.set_name(u"firstname");
-  field2.id_attribute = field2.name();
-  field2.name_attribute = field2.name();
+  field2.set_id_attribute(field2.name());
+  field2.set_name_attribute(field2.name());
   field2.set_form_control_type(autofill::FormControlType::kInputText);
   saved_match_.form_data.fields.push_back(field2);
   saved_match_.username_element = field2.name();
 
   FormFieldData field3;
   field3.set_name(u"password");
-  field3.id_attribute = field3.name();
-  field3.name_attribute = field3.name();
+  field3.set_id_attribute(field3.name());
+  field3.set_name_attribute(field3.name());
   field3.set_form_control_type(autofill::FormControlType::kInputPassword);
   saved_match_.form_data.fields.push_back(field3);
   saved_match_.password_element = field3.name();

@@ -292,8 +292,8 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   field.set_value(u"value");
   field.set_label(u"label");
   field.placeholder = u"placeholder";
-  field.id_attribute = u"id";
-  field.name_attribute = field.name();
+  field.set_id_attribute(u"id");
+  field.set_name_attribute(field.name());
   field.css_classes = u"css_classes";
   pending.form_data.fields.push_back(field);
 
@@ -321,8 +321,8 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   EXPECT_TRUE(saved_field.value().empty());
   EXPECT_TRUE(saved_field.label().empty());
   EXPECT_TRUE(saved_field.placeholder.empty());
-  EXPECT_TRUE(saved_field.id_attribute.empty());
-  EXPECT_TRUE(saved_field.name_attribute.empty());
+  EXPECT_TRUE(saved_field.id_attribute().empty());
+  EXPECT_TRUE(saved_field.name_attribute().empty());
   EXPECT_TRUE(saved_field.css_classes.empty());
 }
 

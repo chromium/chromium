@@ -281,8 +281,8 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
             : u"";
     filled_fields_to_be_sent_to_devtools->push_back(
         protocol::Autofill::FilledField::Create()
-            .SetId(base::UTF16ToUTF8(autofill_field->id_attribute))
-            .SetName(base::UTF16ToUTF8(autofill_field->name_attribute))
+            .SetId(base::UTF16ToUTF8(autofill_field->id_attribute()))
+            .SetName(base::UTF16ToUTF8(autofill_field->name_attribute()))
             .SetValue(base::UTF16ToUTF8(filled_value))
             .SetHtmlType(std::string(autofill::FormControlTypeToString(
                 autofill_field->form_control_type())))

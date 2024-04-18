@@ -50,8 +50,8 @@ FormFieldData CreateTestField(std::u16string name = u"SomeName") {
   static uint64_t renderer_id = 1;
   FormFieldData f;
   f.set_name(std::move(name));
-  f.name_attribute = f.name();
-  f.id_attribute = u"some_id";
+  f.set_name_attribute(f.name());
+  f.set_id_attribute(u"some_id");
   f.set_form_control_type(FormControlType::kInputText);
   f.check_status = FormFieldData::CheckStatus::kChecked;
   f.role = FormFieldData::RoleAttribute::kOther;

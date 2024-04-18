@@ -43,8 +43,8 @@ FormData GenerateWithProto(const ::form_data_fuzzer::Form& form_proto) {
   result.fields.resize(form_proto.fields_size());
   for (int i = 0; i < form_proto.fields_size(); ++i) {
     const ::form_data_fuzzer::FormField& form_data_proto = form_proto.fields(i);
-    result.fields[i].id_attribute = UTF8ToUTF16(form_data_proto.id());
-    result.fields[i].name_attribute = UTF8ToUTF16(form_data_proto.name());
+    result.fields[i].set_id_attribute(UTF8ToUTF16(form_data_proto.id()));
+    result.fields[i].set_name_attribute(UTF8ToUTF16(form_data_proto.name()));
     result.fields[i].is_focusable = form_data_proto.is_focusable();
     result.fields[i].set_form_control_type(
         static_cast<autofill::FormControlType>(

@@ -405,15 +405,15 @@ class PasswordFormManagerTest : public testing::Test,
 
     FormFieldData field;
     field.set_name(u"firstname");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(autofill::FieldRendererId(2));
     observed_form_.fields.push_back(field);
 
     field.set_name(u"username");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(autofill::FieldRendererId(3));
     observed_form_.fields.push_back(field);
@@ -421,16 +421,16 @@ class PasswordFormManagerTest : public testing::Test,
     non_password_form_ = observed_form_;
 
     field.set_name(u"password");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.set_renderer_id(autofill::FieldRendererId(4));
     observed_form_.fields.push_back(field);
     observed_form_only_password_fields_.fields.push_back(field);
 
     field.set_name(u"password2");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.set_renderer_id(autofill::FieldRendererId(5));
     observed_form_only_password_fields_.fields.push_back(field);
@@ -2136,7 +2136,8 @@ TEST_P(PasswordFormManagerTest, UpdateFormAndFill) {
       form.fields[kUsernameFieldIndex].renderer_id().value() + 1000));
   form.fields[kUsernameFieldIndex].set_name(
       form.fields[kUsernameFieldIndex].name() + u"1");
-  form.fields[kUsernameFieldIndex].id_attribute += u"1";
+  form.fields[kUsernameFieldIndex].set_id_attribute(
+      form.fields[kUsernameFieldIndex].id_attribute() + u"1");
   form.fields[kPasswordFieldIndex].set_renderer_id(FieldRendererId(
       form.fields[kPasswordFieldIndex].renderer_id().value() + 1000));
 

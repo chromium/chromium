@@ -48,11 +48,11 @@ void FillVersion6Fields(FormFieldData* data) {
 }
 
 void FillVersion7Fields(FormFieldData* data) {
-  data->id_attribute = u"id";
+  data->set_id_attribute(u"id");
 }
 
 void FillVersion8Fields(FormFieldData* data) {
-  data->name_attribute = u"name";
+  data->set_name_attribute(u"name");
 }
 
 void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
@@ -115,11 +115,11 @@ void WriteVersion6Specific(const FormFieldData& data, base::Pickle* pickle) {
 }
 
 void WriteVersion7Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.id_attribute);
+  pickle->WriteString16(data.id_attribute());
 }
 
 void WriteVersion8Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.name_attribute);
+  pickle->WriteString16(data.name_attribute());
 }
 
 void SerializeInVersion1Format(const FormFieldData& data,

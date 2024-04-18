@@ -274,8 +274,14 @@ struct FormFieldData {
   const std::u16string& name() const { return name_; }
   void set_name(std::u16string name) { name_ = std::move(name); }
 
-  std::u16string id_attribute;
-  std::u16string name_attribute;
+  const std::u16string& id_attribute() const { return id_attribute_; }
+  void set_id_attribute(std::u16string id_attribute) {
+    id_attribute_ = std::move(id_attribute);
+  }
+  const std::u16string& name_attribute() const { return name_attribute_; }
+  void set_name_attribute(std::u16string name_attribute) {
+    name_attribute_ = std::move(name_attribute);
+  }
   const std::u16string& label() const { return label_; }
   void set_label(std::u16string label) { label_ = std::move(label); }
 
@@ -431,6 +437,8 @@ struct FormFieldData {
 
  private:
   std::u16string name_;
+  std::u16string id_attribute_;
+  std::u16string name_attribute_;
   std::u16string label_;
   std::u16string value_;
   FormControlType form_control_type_ = FormControlType::kInputText;
@@ -525,8 +533,8 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
     EXPECT_EQ(expected.section, actual.section);                               \
     EXPECT_EQ(expected.check_status, actual.check_status);                     \
     EXPECT_EQ(expected.properties_mask, actual.properties_mask);               \
-    EXPECT_EQ(expected.id_attribute, actual.id_attribute);                     \
-    EXPECT_EQ(expected.name_attribute, actual.name_attribute);                 \
+    EXPECT_EQ(expected.id_attribute(), actual.id_attribute());                 \
+    EXPECT_EQ(expected.id_attribute(), actual.id_attribute());                 \
   } while (0)
 
 // Produces a <table> element with information about the form.

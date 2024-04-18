@@ -294,16 +294,16 @@ class FormParserTest : public testing::Test {
       const autofill::FieldRendererId renderer_id = GetUniqueId();
       field.set_renderer_id(renderer_id);
       if (field_description.id_attribute == kNonimportantValue) {
-        field.id_attribute = StampUniqueSuffix(u"html_id");
+        field.set_id_attribute(StampUniqueSuffix(u"html_id"));
       } else {
-        field.id_attribute = std::u16string(field_description.id_attribute);
+        field.set_id_attribute(std::u16string(field_description.id_attribute));
       }
       if (field_description.name == kNonimportantValue) {
         field.set_name(StampUniqueSuffix(u"html_name"));
       } else {
         field.set_name(std::u16string(field_description.name));
       }
-      field.name_attribute = field.name();
+      field.set_name_attribute(field.name());
       field.set_form_control_type(field_description.form_control_type);
       field.is_focusable = field_description.is_focusable;
       field.is_enabled = field_description.is_enabled;

@@ -236,7 +236,7 @@ bool DeserializeSection10(base::PickleIterator* iter,
   if (!iter->ReadString16(&id_attribute)) {
     return false;
   }
-  field_data->id_attribute = std::move(id_attribute);
+  field_data->set_id_attribute(std::move(id_attribute));
   return true;
 }
 
@@ -246,13 +246,13 @@ bool DeserializeSection11(base::PickleIterator* iter,
   if (!iter->ReadString16(&name_attribute)) {
     return false;
   }
-  field_data->name_attribute = std::move(name_attribute);
+  field_data->set_name_attribute(std::move(name_attribute));
   return true;
 }
 
 auto IdentityTuple(const FormFieldData& f) {
   return std::tuple_cat(
-      std::tie(f.label(), f.name(), f.name_attribute, f.id_attribute,
+      std::tie(f.label(), f.name(), f.name_attribute(), f.id_attribute(),
                f.form_control_type(), f.autocomplete_attribute, f.placeholder,
                f.max_length, f.css_classes, f.is_focusable,
                f.should_autocomplete, f.role, f.text_direction, f.options),
@@ -499,8 +499,8 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteString16(field_data.placeholder);
   pickle->WriteString16(field_data.css_classes);
   pickle->WriteUInt32(field_data.properties_mask);
-  pickle->WriteString16(field_data.id_attribute);
-  pickle->WriteString16(field_data.name_attribute);
+  pickle->WriteString16(field_data.id_attribute());
+  pickle->WriteString16(field_data.name_attribute());
 }
 
 bool DeserializeFormFieldData(base::PickleIterator* iter,
@@ -645,8 +645,8 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
   return os << "label='" << field.label() << "' "
             << "unique_Id=" << field.global_id() << " " << "origin='"
             << field.origin.Serialize() << "' " << "name='" << field.name()
-            << "' " << "id_attribute='" << field.id_attribute << "' "
-            << "name_attribute='" << field.name_attribute << "' " << "value='"
+            << "' " << "id_attribute='" << field.id_attribute() << "' "
+            << "name_attribute='" << field.name_attribute() << "' " << "value='"
             << field.value() << "' " << "control='" << field.form_control_type()
             << "' " << "autocomplete='" << field.autocomplete_attribute << "' "
             << "parsed_autocomplete='"
@@ -681,8 +681,8 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
                           "), host form renderer id: ",
                           base::NumberToString(field.host_form_id.value())});
   buffer << Tr{} << "Origin:" << field.origin.Serialize();
-  buffer << Tr{} << "Name attribute:" << field.name_attribute;
-  buffer << Tr{} << "Id attribute:" << field.id_attribute;
+  buffer << Tr{} << "Name attribute:" << field.name_attribute();
+  buffer << Tr{} << "Id attribute:" << field.id_attribute();
   constexpr size_t kMaxLabelSize = 100;
   const std::u16string truncated_label =
       field.label().substr(0, std::min(field.label().length(), kMaxLabelSize));

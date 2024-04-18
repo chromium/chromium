@@ -91,7 +91,7 @@ auto HasFieldsWithIdAttributes(std::vector<std::u16string> id_attributes) {
   std::vector<Matcher<FormFieldData>> field_matchers;
   for (std::u16string& id_attribute : id_attributes) {
     field_matchers.push_back(
-        Field(&FormFieldData::id_attribute, std::move(id_attribute)));
+        Property(&FormFieldData::id_attribute, std::move(id_attribute)));
   }
   return Field(&FormData::fields, ElementsAreArray(field_matchers));
 }
@@ -1035,7 +1035,7 @@ TEST_P(AutofillAgentSubmissionTest,
   }
 
   for (FormFieldData& field : form->fields) {
-    field.set_value(field.id_attribute + u" autofilled");
+    field.set_value(field.id_attribute() + u" autofilled");
     field.is_autofilled = true;
   }
 

@@ -186,14 +186,14 @@ bool StructTraits<
     if (!data.ReadIdAttribute(&id_attribute)) {
       return false;
     }
-    out->id_attribute = std::move(id_attribute);
+    out->set_id_attribute(std::move(id_attribute));
   }
   {
     std::u16string name_attribute;
     if (!data.ReadNameAttribute(&name_attribute)) {
       return false;
     }
-    out->name_attribute = std::move(name_attribute);
+    out->set_name_attribute(std::move(name_attribute));
   }
   {
     std::u16string value;

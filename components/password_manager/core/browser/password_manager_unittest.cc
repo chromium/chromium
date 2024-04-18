@@ -322,8 +322,8 @@ void SanitizeFormData(FormData* form) {
     field.options.clear();
     field.placeholder = {};
     field.css_classes = {};
-    field.id_attribute = {};
-    field.name_attribute = {};
+    field.set_id_attribute({});
+    field.set_name_attribute({});
   }
 }
 
@@ -523,16 +523,16 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData field;
     field.set_name(u"Email");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_value(u"googleuser");
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(FieldRendererId(2));
     form_data.fields.push_back(field);
 
     field.set_name(u"Passwd");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_value(u"p4ssword");
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.set_renderer_id(FieldRendererId(3));
@@ -606,8 +606,8 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData field;
     field.set_name(u"Email");
-    field.id_attribute = field.name();
-    field.name_attribute = field.name();
+    field.set_id_attribute(field.name());
+    field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(FieldRendererId(31));
     form_data.fields.push_back(field);
@@ -643,7 +643,7 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData password_field;
     password_field.set_name(form.password_element);
-    password_field.id_attribute = form.password_element;
+    password_field.set_id_attribute(form.password_element);
     password_field.set_value(form.password_value);
     password_field.set_form_control_type(
         autofill::FormControlType::kInputPassword);
@@ -652,7 +652,7 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData captcha_field;
     captcha_field.set_name(u"captcha_element");
-    captcha_field.id_attribute = captcha_field.name();
+    captcha_field.set_id_attribute(captcha_field.name());
     captcha_field.set_value(u"captcha_value");
     captcha_field.set_form_control_type(autofill::FormControlType::kInputText);
     captcha_field.set_renderer_id(FieldRendererId(3));
@@ -672,8 +672,8 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData otp_field;
     otp_field.set_name(form.username_element);
-    otp_field.name_attribute = form.username_element;
-    otp_field.id_attribute = form.username_element;
+    otp_field.set_name_attribute(form.username_element);
+    otp_field.set_id_attribute(form.username_element);
     otp_field.set_form_control_type(autofill::FormControlType::kInputText);
     otp_field.set_renderer_id(FieldRendererId(61));
     form.form_data.fields.push_back(otp_field);
@@ -689,8 +689,8 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData search_field;
     search_field.set_name(u"search_bar");
-    search_field.name_attribute = search_field.name();
-    search_field.id_attribute = search_field.name_attribute;
+    search_field.set_name_attribute(search_field.name());
+    search_field.set_id_attribute(search_field.name_attribute());
     search_field.set_value(u"search_field_value");
 
     search_field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -712,7 +712,7 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData name_field;
     name_field.set_name(u"name");
-    name_field.id_attribute = name_field.name();
+    name_field.set_id_attribute(name_field.name());
     name_field.set_value(u"Name");
     name_field.set_form_control_type(autofill::FormControlType::kInputText);
     name_field.set_renderer_id(FieldRendererId(2));
@@ -720,7 +720,7 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData surname_field;
     surname_field.set_name(form.username_element);
-    surname_field.id_attribute = surname_field.name();
+    surname_field.set_id_attribute(surname_field.name());
     surname_field.set_value(form.username_value);
     surname_field.set_form_control_type(autofill::FormControlType::kInputText);
     surname_field.set_renderer_id(FieldRendererId(3));
@@ -728,7 +728,7 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData password_field;
     password_field.set_name(form.password_element);
-    password_field.id_attribute = form.password_element;
+    password_field.set_id_attribute(form.password_element);
     password_field.set_value(form.password_value);
     password_field.set_form_control_type(
         autofill::FormControlType::kInputPassword);
@@ -750,7 +750,7 @@ class PasswordManagerTestBase : public testing::Test {
 
     FormFieldData field;
     field.set_name(form.username_element);
-    field.id_attribute = field.name();
+    field.set_id_attribute(field.name());
     field.set_value(form.username_value);
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(FieldRendererId(2));
@@ -758,7 +758,7 @@ class PasswordManagerTestBase : public testing::Test {
     form.form_data.fields.push_back(field);
 
     field.set_name(form.password_element);
-    field.id_attribute = field.name();
+    field.set_id_attribute(field.name());
     field.set_value(form.password_value);
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.set_renderer_id(FieldRendererId(3));
@@ -1084,7 +1084,7 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_LikelyOtp) {
   ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
 
   FormData form_data = MakeSingleUsernameFormData();
-  form_data.fields[0].name_attribute = u"onetime";
+  form_data.fields[0].set_name_attribute(u"onetime");
   FieldRendererId username_renderer_id = form_data.fields[0].renderer_id();
 
   ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
@@ -1169,8 +1169,8 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnNonTextInput) {
   FormFieldData& field = form_data.fields[0];
   field.set_form_control_type(autofill::FormControlType::kInputCheckbox);
   field.set_name(u"checkbox");
-  field.id_attribute = field.name();
-  field.name_attribute = field.name();
+  field.set_id_attribute(field.name());
+  field.set_name_attribute(field.name());
 
   ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
 
@@ -1201,8 +1201,8 @@ TEST_P(PasswordManagerTest,
 
   FormData form_data = MakeSingleUsernameFormData();
   // Single character values that aren't considered as a username.
-  form_data.fields[0].name_attribute = u"a";
-  form_data.fields[0].id_attribute = u"a";
+  form_data.fields[0].set_name_attribute(u"a");
+  form_data.fields[0].set_id_attribute(u"a");
 
   ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
 
@@ -2156,8 +2156,8 @@ TEST_P(PasswordManagerTest, DoNotSaveWithEmptyNewPasswordAndNonemptyPassword) {
   ASSERT_FALSE(form_data.fields[1].value().empty());
   FormFieldData field;
   field.set_name(u"new_password_element");
-  field.id_attribute = field.name();
-  field.name_attribute = field.name();
+  field.set_id_attribute(field.name());
+  field.set_name_attribute(field.name());
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.set_renderer_id(FieldRendererId(4));
   form_data.fields.push_back(field);
@@ -3844,7 +3844,7 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnNonPasswordForm) {
   non_password_form.password_value = u"379 390";  // One time SMS code.
   non_password_form.form_data.fields[1].set_value(
       non_password_form.password_value);
-  non_password_form.form_data.fields[1].id_attribute = u"one-time-code";
+  non_password_form.form_data.fields[1].set_id_attribute(u"one-time-code");
   non_password_form.only_for_fallback = true;
 
   PasswordFormFillData form_data;
@@ -3943,7 +3943,7 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnOtpFormWithoutUsername) {
   one_time_code_form.password_element = u"one-time-code";
   one_time_code_form.form_data.url = one_time_code_form.url;
   FormFieldData field;
-  field.name_attribute = one_time_code_form.password_element;
+  field.set_name_attribute(one_time_code_form.password_element);
   field.set_value(one_time_code_form.password_value);
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   one_time_code_form.form_data.fields.push_back(field);
@@ -4002,8 +4002,8 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnOtpFormWithUsername) {
   one_time_code_form.password_element = u"one-time-code";
   one_time_code_form.form_data.fields[1].set_value(
       one_time_code_form.password_value);
-  one_time_code_form.form_data.fields[1].name_attribute =
-      one_time_code_form.password_element;
+  one_time_code_form.form_data.fields[1].set_name_attribute(
+      one_time_code_form.password_element);
 
   PasswordFormFillData form_data;
   EXPECT_CALL(driver_, SetPasswordFillData)
@@ -4897,7 +4897,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowOTPPasswordForm) {
   otp_form.password_element = u"one-time-code";
   otp_form.only_for_fallback = true;
   otp_form.form_data.fields[0].set_name(otp_form.password_element);
-  otp_form.form_data.fields[0].name_attribute = otp_form.password_element;
+  otp_form.form_data.fields[0].set_name_attribute(otp_form.password_element);
 
   manager()->OnPasswordFormsParsed(&driver_, {otp_form.form_data});
   manager()->OnPasswordFormsRendered(&driver_, {otp_form.form_data});
@@ -5760,12 +5760,12 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
   one_time_code_form.form_data.fields.push_back(otp_field);
   switch (prediction_type) {
     case PredictionSource::ID_ATTRIBUTE:
-      one_time_code_form.form_data.fields[otp_form_has_username].id_attribute =
-          test_form_password_element_;
+      one_time_code_form.form_data.fields[otp_form_has_username]
+          .set_id_attribute(test_form_password_element_);
       break;
     case PredictionSource::NAME_ATTRIBUTE:
       one_time_code_form.form_data.fields[otp_form_has_username]
-          .name_attribute = test_form_password_element_;
+          .set_name_attribute(test_form_password_element_);
       break;
     case PredictionSource::AUTOCOMPLETE:
       one_time_code_form.form_data.fields[otp_form_has_username]

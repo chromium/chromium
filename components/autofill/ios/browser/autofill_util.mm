@@ -296,10 +296,10 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
 
   // Optional fields.
   if (const std::string* name_attribute = field.FindString("name_attribute")) {
-    field_data->name_attribute = base::UTF8ToUTF16(*name_attribute);
+    field_data->set_name_attribute(base::UTF8ToUTF16(*name_attribute));
   }
   if (const std::string* id_attribute = field.FindString("id_attribute")) {
-    field_data->id_attribute = base::UTF8ToUTF16(*id_attribute);
+    field_data->set_id_attribute(base::UTF8ToUTF16(*id_attribute));
   }
   if (const std::string* label = field.FindString("label")) {
     field_data->set_label(base::UTF8ToUTF16(*label));

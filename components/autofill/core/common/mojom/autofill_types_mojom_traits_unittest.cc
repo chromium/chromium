@@ -337,8 +337,8 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
   input.set_name(u"name");
-  input.id_attribute = u"id";
-  input.name_attribute = u"name";
+  input.set_id_attribute(u"id");
+  input.set_name_attribute(u"name");
   input.set_value(u"value");
   input.set_form_control_type(FormControlType::kInputText);
   input.autocomplete_attribute = "on";
@@ -381,8 +381,8 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
   input.set_renderer_id(FieldRendererId(1234));
-  input.id_attribute = u"id";
-  input.name_attribute = u"name";
+  input.set_id_attribute(u"id");
+  input.set_name_attribute(u"name");
   input.autocomplete_attribute = "on";
   input.parsed_autocomplete = std::nullopt;
   input.placeholder = u"placeholder";

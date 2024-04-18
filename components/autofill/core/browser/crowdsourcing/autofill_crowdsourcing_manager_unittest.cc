@@ -1483,9 +1483,9 @@ TEST_P(AutofillQueryTest, Metadata) {
 
   // Add field 0.
   FormFieldData field;
-  field.id_attribute = u"field-id-attribute-1";
-  field.name_attribute = u"field-name-attribute-1";
-  field.set_name(field.name_attribute);
+  field.set_id_attribute(u"field-id-attribute-1");
+  field.set_name_attribute(u"field-name-attribute-1");
+  field.set_name(field.name_attribute());
   field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-description";
@@ -1495,9 +1495,9 @@ TEST_P(AutofillQueryTest, Metadata) {
   form.fields.push_back(field);
 
   // Add field 1.
-  field.id_attribute = u"field-id-attribute-2";
-  field.name_attribute = u"field-name-attribute-2";
-  field.set_name(field.name_attribute);
+  field.set_id_attribute(u"field-id-attribute-2");
+  field.set_name_attribute(u"field-name-attribute-2");
+  field.set_name(field.name_attribute());
   field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-description";
@@ -1507,9 +1507,9 @@ TEST_P(AutofillQueryTest, Metadata) {
   form.fields.push_back(field);
 
   // Add field 2.
-  field.id_attribute = u"field-id-attribute-3";
-  field.name_attribute = u"field-name-attribute-3";
-  field.set_name(field.name_attribute);
+  field.set_id_attribute(u"field-id-attribute-3");
+  field.set_name_attribute(u"field-name-attribute-3");
+  field.set_name(field.name_attribute());
   field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-description";
@@ -1570,9 +1570,9 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   form.name = form.name_attribute;
 
   FormFieldData field;
-  field.id_attribute = u"field-id-attribute-1";
-  field.name_attribute = u"field-name-attribute-1";
-  field.set_name(field.name_attribute);
+  field.set_id_attribute(u"field-id-attribute-1");
+  field.set_name_attribute(u"field-name-attribute-1");
+  field.set_name(field.name_attribute());
   field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-descriptionm";
@@ -1581,9 +1581,9 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
-  field.id_attribute = u"field-id-attribute-2";
-  field.name_attribute = u"field-name-attribute-2";
-  field.set_name(field.name_attribute);
+  field.set_id_attribute(u"field-id-attribute-2");
+  field.set_name_attribute(u"field-name-attribute-2");
+  field.set_name(field.name_attribute());
   field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-descriptionm";
@@ -1592,9 +1592,9 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
-  field.id_attribute = u"field-id-attribute-3";
-  field.name_attribute = u"field-name-attribute-3";
-  field.set_name(field.name_attribute);
+  field.set_id_attribute(u"field-id-attribute-3");
+  field.set_name_attribute(u"field-name-attribute-3");
+  field.set_name(field.name_attribute());
   field.set_label(u"field-label");
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-descriptionm";

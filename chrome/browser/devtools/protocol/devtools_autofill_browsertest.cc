@@ -480,11 +480,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   form.renderer_id = form_id().renderer_id;
   form.fields.push_back(test::CreateTestFormField(
       /*label=*/"", "name_1", "value_1", FormControlType::kInputText));
-  form.fields.back().id_attribute = u"id_1";
+  form.fields.back().set_id_attribute(u"id_1");
   form.fields.back().host_frame = form.host_frame;
   form.fields.push_back(test::CreateTestFormField(
       /*label=*/"", "name_2", "value_2", FormControlType::kInputText));
-  form.fields.back().id_attribute = u"id_2";
+  form.fields.back().set_id_attribute(u"id_2");
   form.fields.back().host_frame = form.host_frame;
 
   // The parsed form is queried by
@@ -549,7 +549,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
     const FormFieldData* ffd = filled_fields_by_autofill[i];
     const AutofillField* af = fs.GetFieldById(ffd->global_id());
 
-    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16("id", af->id_attribute));
+    EXPECT_THAT(ff,
+                FilledFieldHasAttributeWithValue16("id", af->id_attribute()));
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue(
                         "autofillType",
                         std::string(FieldTypeToDeveloperRepresentationString(
@@ -566,8 +567,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
                 FilledFieldHasAttributeWithValue(
                     "htmlType", std::string(autofill::FormControlTypeToString(
                                     af->form_control_type()))));
-    EXPECT_THAT(ff,
-                FilledFieldHasAttributeWithValue16("name", af->name_attribute));
+    EXPECT_THAT(
+        ff, FilledFieldHasAttributeWithValue16("name", af->name_attribute()));
     EXPECT_EQ(*ff.GetDict().FindIntByDottedPath("fieldId"),
               (int)(ffd->renderer_id().value()));
   }

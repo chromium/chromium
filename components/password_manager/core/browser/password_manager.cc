@@ -952,13 +952,14 @@ void PasswordManager::UpdateStateOnUserInput(
   }
 
   if (!util::CanFieldBeConsideredAsSingleUsername(
-          field.name_attribute, field.id_attribute, field.label()) ||
+          field.name_attribute(), field.id_attribute(), field.label()) ||
       !util::CanValueBeConsideredAsSingleUsername(field.value())) {
     return;
   }
 
   bool is_likely_otp = password_manager::util::IsLikelyOtp(
-      field.name_attribute, field.id_attribute, field.autocomplete_attribute);
+      field.name_attribute(), field.id_attribute(),
+      field.autocomplete_attribute);
 
   OnUserModifiedNonPasswordField(
       driver, field_id, field_value,

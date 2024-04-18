@@ -123,8 +123,8 @@ bool StringMatchesHiddenValue(const std::u16string& str) {
 // autocomplete attribute or keywords in field's id and name.
 bool IsCreditCardField(const ProcessedField& field) {
   return field.autocomplete_flag == AutocompleteFlag::kCreditCardField ||
-         StringMatchesCVC(field.field->name_attribute) ||
-         StringMatchesCVC(field.field->id_attribute);
+         StringMatchesCVC(field.field->name_attribute()) ||
+         StringMatchesCVC(field.field->id_attribute());
 }
 
 // Returns true if the `field` is suspected to be not a password field
@@ -135,12 +135,12 @@ bool IsNotPasswordField(const ProcessedField& field,
                         bool* otp_field_detected_with_regex = nullptr) {
   if (IsCreditCardField(field) ||
       field.autocomplete_flag == AutocompleteFlag::kOneTimeCode ||
-      StringMatchesSSN(field.field->name_attribute) ||
-      StringMatchesSSN(field.field->id_attribute)) {
+      StringMatchesSSN(field.field->name_attribute()) ||
+      StringMatchesSSN(field.field->id_attribute())) {
     return true;
   }
-  bool is_otp_field = StringMatchesOTP(field.field->name_attribute) ||
-                      StringMatchesOTP(field.field->id_attribute);
+  bool is_otp_field = StringMatchesOTP(field.field->name_attribute()) ||
+                      StringMatchesOTP(field.field->id_attribute());
   if (otp_field_detected_with_regex) {
     *otp_field_detected_with_regex |= is_otp_field;
   }
@@ -344,7 +344,7 @@ ProcessedField* FindField(std::vector<ProcessedField>* processed_fields,
 bool CanBeConsideredAsSingleUsernameField(const FormFieldData* field) {
   return field &&
          util::CanFieldBeConsideredAsSingleUsername(
-             field->name_attribute, field->id_attribute, field->label());
+             field->name_attribute(), field->id_attribute(), field->label());
 }
 
 // Given a `new_password` field tries to find a matching confirmation_password

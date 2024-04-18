@@ -38,8 +38,8 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
                  base::NumberToString(field->GetFieldSignature().value()));
   field_data.Set("hostFormSignature",
                  base::NumberToString(field->host_form_signature.value()));
-  field_data.Set("idAttribute", field->id_attribute);
-  field_data.Set("parseableNameAttribute", field->name_attribute);
+  field_data.Set("idAttribute", field->id_attribute());
+  field_data.Set("parseableNameAttribute", field->name_attribute());
   field_data.Set("autocompleteAttribute", field->autocomplete_attribute);
   field_data.Set("labelAttribute", field->label());
   field_data.Set("placeholderAttribute", field->placeholder);

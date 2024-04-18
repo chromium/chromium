@@ -228,8 +228,8 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormData_IdAndNames) {
   EXPECT_EQ(form_data.name_attribute, u"form-name");
   ASSERT_EQ(form_data.fields.size(), 1u);
   EXPECT_EQ(form_data.fields[0].name(), u"input-name");
-  EXPECT_EQ(form_data.fields[0].id_attribute, u"input-id");
-  EXPECT_EQ(form_data.fields[0].name_attribute, u"input-name");
+  EXPECT_EQ(form_data.fields[0].id_attribute(), u"input-id");
+  EXPECT_EQ(form_data.fields[0].name_attribute(), u"input-name");
 }
 
 // Tests that large option values/contents are truncated while building the
@@ -1940,8 +1940,8 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   EXPECT_EQ(form->renderer_id, field.host_form_id);
   EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
   EXPECT_EQ(field.name(), u"my-id");
-  EXPECT_EQ(field.id_attribute, u"my-id");
-  EXPECT_EQ(field.name_attribute, u"my-name");
+  EXPECT_EQ(field.id_attribute(), u"my-id");
+  EXPECT_EQ(field.name_attribute(), u"my-name");
   EXPECT_EQ(field.css_classes, u"my-class");
   EXPECT_EQ(field.value(),
             u"\n            This is the textContent!\n         ");
@@ -1968,8 +1968,8 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
   EXPECT_EQ(form->renderer_id, field.host_form_id);
   EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
   EXPECT_EQ(field.name(), u"my-id");
-  EXPECT_EQ(field.id_attribute, u"my-id");
-  EXPECT_EQ(field.name_attribute, u"my-name");
+  EXPECT_EQ(field.id_attribute(), u"my-id");
+  EXPECT_EQ(field.name_attribute(), u"my-name");
   EXPECT_EQ(field.css_classes, u"my-class");
   // Only extract 1024 characters from the div.
   EXPECT_EQ(field.value().length(), 1024u);
