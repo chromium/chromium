@@ -157,7 +157,12 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
   void SetNewGlobalRef(JNIEnv* env, jobject obj);
   void ResetLocalRef(JNIEnv* env);
   void ResetGlobalRef();
-  jobject ReleaseInternal();
+
+  jobject ReleaseInternal() {
+    jobject obj = obj_;
+    obj_ = nullptr;
+    return obj;
+  }
 
  private:
   jobject obj_ = nullptr;
