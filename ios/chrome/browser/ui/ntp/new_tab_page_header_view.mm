@@ -456,6 +456,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     percent = std::clamp<CGFloat>(
         animatingOffset / ntp_header::kAnimationDistance, 0, 1);
   }
+  if (!IsSplitToolbarMode(self)) {
+    // For ipad and landscape iphone, this makes the animation start slowly
+    // and accelerate especially towards the end.
+    percent = percent * percent;
+  }
   return percent;
 }
 
@@ -710,11 +715,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // For non-split toolbar, the fake omnibox goes beneath the toolbar.
   if (!IsSplitToolbarMode(self)) {
-    // The animation should start when the primary toolbar is met, with an
-    // additional 1/4 height so the fake omnibox text appears to fade into the
-    // primary toolbar.
-    offset += content_suggestions::FakeOmniboxHeight() +
-              (content_suggestions::FakeOmniboxHeight() / 4);
+    // The animation should start when the primary toolbar is met.
+    offset += content_suggestions::FakeOmniboxHeight();
 
     // iPads pin slightly earlier than landscape iPhones.
     if (IsRegularXRegularSizeClass(self)) {

@@ -1738,12 +1738,15 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   // for Discover infinite feed.
   CGFloat minimumHeight = collectionViewHeight + headerHeight;
   if (!IsRegularXRegularSizeClass(self.collectionView)) {
-    CGFloat toolbarHeight = IsSplitToolbarMode(self.collectionView)
-                                ? [self stickyOmniboxHeight]
-                                : 0;
-    CGFloat additionalHeight =
-        toolbarHeight + self.collectionView.contentInset.bottom;
-    minimumHeight -= additionalHeight;
+    minimumHeight -= self.collectionView.contentInset.bottom;
+    if (IsSplitToolbarMode(self)) {
+      minimumHeight -= [self stickyOmniboxHeight];
+    } else {
+      // Add in half of the margin between the fakebox and the rest of the
+      // content suggestions, to ensure there is enough height to fully
+      // finish the fakebox to omnibox transition.
+      minimumHeight += content_suggestions::HeaderBottomPadding() / 2;
+    }
   }
 
   return minimumHeight;
