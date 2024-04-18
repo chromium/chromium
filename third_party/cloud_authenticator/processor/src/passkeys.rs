@@ -76,7 +76,7 @@ const COSE_ALGORITHM_ECDSA_P256_SHA256: i64 = -7;
 
 // The number of incorrect PIN attempts before further PIN attempts will be
 // denied.
-const MAX_PIN_ATTEMPTS: i64 = 3;
+const MAX_PIN_ATTEMPTS: i64 = 5;
 
 fn key(k: &str) -> MapKey {
     MapKey::String(String::from(k))

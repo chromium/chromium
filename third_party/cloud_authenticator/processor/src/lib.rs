@@ -1690,26 +1690,28 @@ mod tests {
         assert_eq!(pin_state.generation_high_water, 1);
         assert_eq!(pin_state.attempts, 0);
 
-        // The wrong PIN three times in a row should lock the device.
+        // The wrong PIN five times in a row should lock the device.
+        let (_error, _pin_state, state) = attempt_pin(state, &wrapped_pin_data, &wrong_pin_claim);
+        let (_error, _pin_state, state) = attempt_pin(state, &wrapped_pin_data, &wrong_pin_claim);
         let (_error, _pin_state, state) = attempt_pin(state, &wrapped_pin_data, &wrong_pin_claim);
         let (_error, _pin_state, state) = attempt_pin(state, &wrapped_pin_data, &wrong_pin_claim);
         let (error, pin_state, state) = attempt_pin(state, &wrapped_pin_data, &wrong_pin_claim);
         assert_eq!(error, Some(Value::Int(3)));
         assert_eq!(pin_state.generation_high_water, 1);
-        assert_eq!(pin_state.attempts, 3);
+        assert_eq!(pin_state.attempts, 5);
 
         // Now the wrong PIN will generate a different error and not increment the
         // counter.
         let (error, pin_state, state) = attempt_pin(state, &wrapped_pin_data, &wrong_pin_claim);
         assert_eq!(error, Some(Value::Int(4)));
         assert_eq!(pin_state.generation_high_water, 1);
-        assert_eq!(pin_state.attempts, 3);
+        assert_eq!(pin_state.attempts, 5);
 
         // And so will the correct PIN.
         let (error, pin_state, _state) = attempt_pin(state, &wrapped_pin_data, &pin_claim);
         assert_eq!(error, Some(Value::Int(4)));
         assert_eq!(pin_state.generation_high_water, 1);
-        assert_eq!(pin_state.attempts, 3);
+        assert_eq!(pin_state.attempts, 5);
     }
 
     #[test]
