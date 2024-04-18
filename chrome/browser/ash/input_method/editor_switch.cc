@@ -434,10 +434,6 @@ void EditorSwitch::OnTextSelectionLengthChanged(size_t text_length) {
   MaybeNotifyEditorModeChanged(prev_mode);
 }
 
-void EditorSwitch::SetProfile(Profile* profile) {
-  profile_ = profile;
-}
-
 void EditorSwitch::MaybeNotifyEditorModeChanged(const EditorMode& prev_mode) {
   EditorMode new_mode = GetEditorMode();
   if (prev_mode != new_mode) {

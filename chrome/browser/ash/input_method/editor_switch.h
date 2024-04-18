@@ -47,8 +47,6 @@ class EditorSwitch {
 
   void OnTextSelectionLengthChanged(size_t new_length);
 
-  void SetProfile(Profile* profile);
-
   EditorMode GetEditorMode() const;
 
   EditorOpportunityMode GetEditorOpportunityMode() const;
