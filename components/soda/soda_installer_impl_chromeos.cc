@@ -5,6 +5,7 @@
 #include "components/soda/soda_installer_impl_chromeos.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -395,8 +396,8 @@ void SodaInstallerImplChromeOS::OnSodaCombinedProgress() {
   }
 }
 
-void SodaInstallerImplChromeOS::OnDlcUninstalled(const std::string& dlc_id,
-                                                 const std::string& err) {
+void SodaInstallerImplChromeOS::OnDlcUninstalled(std::string_view dlc_id,
+                                                 std::string_view err) {
   if (err != dlcservice::kErrorNone) {
     LOG(ERROR) << "Failed to uninstall DLC " << dlc_id << ". Error: " << err;
   } else {

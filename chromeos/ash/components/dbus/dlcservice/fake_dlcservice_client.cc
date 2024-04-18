@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -31,7 +33,7 @@ void FakeDlcserviceClient::Install(
       base::BindOnce(std::move(callback), std::move(install_result)));
 }
 
-void FakeDlcserviceClient::Uninstall(const std::string& dlc_id,
+void FakeDlcserviceClient::Uninstall(std::string_view dlc_id,
                                      UninstallCallback callback) {
   VLOG(1) << "Requesting to uninstall DLC=" << dlc_id;
   for (auto iter = dlcs_with_content_.dlc_infos().begin();
@@ -44,28 +46,32 @@ void FakeDlcserviceClient::Uninstall(const std::string& dlc_id,
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), uninstall_err_));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::string_view(uninstall_err_)));
 }
 
-void FakeDlcserviceClient::Purge(const std::string& dlc_id,
+void FakeDlcserviceClient::Purge(std::string_view dlc_id,
                                  PurgeCallback callback) {
   VLOG(1) << "Requesting to purge DLC=" << dlc_id;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), purge_err_));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::string_view(purge_err_)));
 }
 
-void FakeDlcserviceClient::GetDlcState(const std::string& dlc_id,
+void FakeDlcserviceClient::GetDlcState(std::string_view dlc_id,
                                        GetDlcStateCallback callback) {
   VLOG(1) << "Requesting to get DLC state of" << dlc_id;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), get_dlc_state_err_, dlc_state_));
+      base::BindOnce(std::move(callback), std::string_view(get_dlc_state_err_),
+                     dlc_state_));
 }
 
 void FakeDlcserviceClient::GetExistingDlcs(GetExistingDlcsCallback callback) {
   VLOG(1) << "Requesting to get existing DLC(s).";
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), get_existing_dlcs_err_,
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                std::string_view(get_existing_dlcs_err_),
                                 dlcs_with_content_));
 }
 

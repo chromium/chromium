@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_dlc_installer.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -118,12 +119,12 @@ class AccessibilityDlcInstallerTest : public testing::Test {
     install_data_[type].dlc_root_path = root_path;
   }
   void OnProgress(double progress) {}
-  void OnError(DlcType type, const std::string& error) {
+  void OnError(DlcType type, std::string_view error) {
     install_data_[type].success = false;
     install_data_[type].last_error = error;
   }
 
-  void SetDlcRootPath(const std::string& root_path) {
+  void SetDlcRootPath(std::string_view root_path) {
     fake_dlcservice_client_.set_install_root_path(root_path);
   }
 
@@ -131,10 +132,10 @@ class AccessibilityDlcInstallerTest : public testing::Test {
     fake_dlcservice_client_.set_install_error(dlcservice::kErrorNeedReboot);
   }
 
-  void SetDlcAlreadyInstalled(const std::string& root_path) {
+  void SetDlcAlreadyInstalled(std::string_view root_path) {
     dlcservice::DlcState dlc_state;
     dlc_state.set_state(dlcservice::DlcState_State_INSTALLED);
-    dlc_state.set_root_path(root_path);
+    dlc_state.set_root_path(std::string(root_path));
     fake_dlcservice_client_.set_dlc_state(dlc_state);
   }
 

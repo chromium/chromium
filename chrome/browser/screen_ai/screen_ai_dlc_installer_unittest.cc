@@ -4,6 +4,8 @@
 
 #include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -44,11 +46,11 @@ class ScreenAIDlcInstallerTest
     task_environment_.RunUntilIdle();
   }
 
-  void SetInstallError(const std::string& error_code) {
+  void SetInstallError(std::string_view error_code) {
     fake_dlcservice_client_.set_install_error(error_code);
   }
 
-  void ExpectSuccessHistogramCount(const std::string& histogram_name,
+  void ExpectSuccessHistogramCount(std::string_view histogram_name,
                                    int expected_count,
                                    int expected_total_count) {
     histogram_tester_.ExpectBucketCount(histogram_name, true, expected_count);

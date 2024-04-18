@@ -135,7 +135,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
                        std::move(progress_callback)));
   }
 
-  void Uninstall(const std::string& dlc_id,
+  void Uninstall(std::string_view dlc_id,
                  UninstallCallback uninstall_callback) override {
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kUninstallMethod);
@@ -150,7 +150,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
                        std::move(uninstall_callback)));
   }
 
-  void Purge(const std::string& dlc_id, PurgeCallback purge_callback) override {
+  void Purge(std::string_view dlc_id, PurgeCallback purge_callback) override {
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kPurgeMethod);
     dbus::MessageWriter writer(&method_call);
@@ -164,7 +164,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
                        std::move(purge_callback)));
   }
 
-  void GetDlcState(const std::string& dlc_id,
+  void GetDlcState(std::string_view dlc_id,
                    GetDlcStateCallback callback) override {
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kGetDlcStateMethod);
@@ -398,16 +398,14 @@ class DlcserviceClientImpl : public DlcserviceClient {
                    dbus::Response* response,
                    dbus::ErrorResponse* err_response) {
     std::move(uninstall_callback)
-        .Run(response ? dlcservice::kErrorNone
-                      : std::string(ParseError(err_response)));
+        .Run(response ? dlcservice::kErrorNone : ParseError(err_response));
   }
 
   void OnPurge(PurgeCallback purge_callback,
                dbus::Response* response,
                dbus::ErrorResponse* err_response) {
     std::move(purge_callback)
-        .Run(response ? dlcservice::kErrorNone
-                      : std::string(ParseError(err_response)));
+        .Run(response ? dlcservice::kErrorNone : ParseError(err_response));
   }
 
   void OnGetDlcState(GetDlcStateCallback callback,
@@ -418,8 +416,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
         dbus::MessageReader(response).PopArrayOfBytesAsProto(&dlc_state)) {
       std::move(callback).Run(dlcservice::kErrorNone, dlc_state);
     } else {
-      std::move(callback).Run(std::string(ParseError(err_response)),
-                              dlcservice::DlcState());
+      std::move(callback).Run(ParseError(err_response), dlcservice::DlcState());
     }
   }
 
@@ -431,7 +428,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
                         &dlcs_with_content)) {
       std::move(callback).Run(dlcservice::kErrorNone, dlcs_with_content);
     } else {
-      std::move(callback).Run(std::string(ParseError(err_response)),
+      std::move(callback).Run(ParseError(err_response),
                               dlcservice::DlcsWithContent());
     }
   }

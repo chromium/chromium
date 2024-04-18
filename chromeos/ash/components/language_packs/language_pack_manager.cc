@@ -159,7 +159,7 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
 void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
                             std::string_view feature_id,
                             const std::string& locale,
-                            const std::string& err) {
+                            std::string_view err) {
   PackResult result;
   result.feature_id = feature_id;
   result.language_code = locale;
@@ -181,7 +181,7 @@ void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
 void OnGetDlcState(GetPackStateCallback callback,
                    std::string feature_id,
                    const std::string& locale,
-                   const std::string& err,
+                   std::string_view err,
                    const dlcservice::DlcState& dlc_state) {
   PackResult result;
   if (dlc_state.is_verified() &&
@@ -249,7 +249,7 @@ void UpdateFromInputMethodPrefs(
 // Callback for dlcservice::GetExistingDlcs().
 // TODO: b/294162606 - Write unit tests for this function if possible.
 void OnGetExistingDlcs(PrefService* prefs,
-                       const std::string& err,
+                       std::string_view err,
                        const dlcservice::DlcsWithContent& dlcs_with_content) {
   if (!err.empty() && err != dlcservice::kErrorNone) {
     DLOG(ERROR) << "DlcserviceClient::GetExisingDlcs() returned error";

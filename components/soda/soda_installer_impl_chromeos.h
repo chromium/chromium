@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SODA_SODA_INSTALLER_IMPL_CHROMEOS_H_
 #define COMPONENTS_SODA_SODA_INSTALLER_IMPL_CHROMEOS_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -76,7 +78,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   void OnSodaCombinedProgress();
 
   // This is the UninstallCallback for DlcserviceClient::Uninstall().
-  void OnDlcUninstalled(const std::string& dlc_id, const std::string& err);
+  void OnDlcUninstalled(std::string_view dlc_id, std::string_view err);
 
   double soda_progress_ = 0.0;
 

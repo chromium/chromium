@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -26,7 +27,7 @@ class AccessibilityDlcInstaller {
       base::OnceCallback<void(const bool success,
                               const std::string& root_path)>;
   using ProgressCallback = base::RepeatingCallback<void(double progress)>;
-  using ErrorCallback = base::OnceCallback<void(const std::string& error)>;
+  using ErrorCallback = base::OnceCallback<void(std::string_view error)>;
 
  public:
   enum class DlcType { kFaceGazeAssets, kPumpkin };
@@ -42,7 +43,7 @@ class AccessibilityDlcInstaller {
 
     void RunOnInstalled(const bool success, std::string root_path);
     void RunOnProgress(double progress);
-    void RunOnError(const std::string& error);
+    void RunOnError(std::string_view error);
 
    private:
     // A callback that is run when a DLC is installed.
@@ -72,7 +73,7 @@ class AccessibilityDlcInstaller {
   // A helper function that is run once we've grabbed the state of a DLC from
   // the DLC service.
   void MaybeInstallHelper(DlcType type,
-                          const std::string& error,
+                          std::string_view error,
                           const dlcservice::DlcState& dlc_state);
   void OnInstalled(DlcType type,
                    const base::Time start_time,

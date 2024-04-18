@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_DLCSERVICE_FAKE_DLCSERVICE_CLIENT_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
@@ -26,11 +27,10 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
                InstallCallback callback,
                ProgressCallback progress_callback) override;
   // Uninstalling disables the DLC.
-  void Uninstall(const std::string& dlc_id,
-                 UninstallCallback callback) override;
+  void Uninstall(std::string_view dlc_id, UninstallCallback callback) override;
   // Purging removes the DLC entirely from disk.
-  void Purge(const std::string& dlc_id, PurgeCallback callback) override;
-  void GetDlcState(const std::string& dlc_id,
+  void Purge(std::string_view dlc_id, PurgeCallback callback) override;
+  void GetDlcState(std::string_view dlc_id,
                    GetDlcStateCallback callback) override;
   void GetExistingDlcs(GetExistingDlcsCallback callback) override;
   void DlcStateChangedForTest(dbus::Signal* signal) override;
@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
 
   // This error will be returned by default (i.e. when there are no errors
   // queued by set_install_errors().
-  void set_install_error(const std::string& err) { install_err_ = err; }
+  void set_install_error(std::string_view err) { install_err_ = err; }
 
   // Set a list of errors which will be returned (in queue order). When there
   // are no errors left the default error set by set_install_error() will be
@@ -52,15 +52,15 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
     extra_install_errs_ = std::move(errs);
   }
 
-  void set_install_root_path(const std::string& path) {
+  void set_install_root_path(std::string_view path) {
     install_root_path_ = path;
   }
-  void set_uninstall_error(const std::string& err) { uninstall_err_ = err; }
-  void set_purge_error(const std::string& err) { purge_err_ = err; }
-  void set_get_dlc_state_error(const std::string& err) {
+  void set_uninstall_error(std::string_view err) { uninstall_err_ = err; }
+  void set_purge_error(std::string_view err) { purge_err_ = err; }
+  void set_get_dlc_state_error(std::string_view err) {
     get_dlc_state_err_ = err;
   }
-  void set_get_existing_dlcs_error(const std::string& err) {
+  void set_get_existing_dlcs_error(std::string_view err) {
     get_existing_dlcs_err_ = err;
   }
   void set_dlcs_with_content(
@@ -79,7 +79,6 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
   std::string uninstall_err_ = dlcservice::kErrorNone;
   std::string purge_err_ = dlcservice::kErrorNone;
   std::string get_dlc_state_err_ = dlcservice::kErrorNone;
-  std::string get_installed_err_ = dlcservice::kErrorNone;
   std::string get_existing_dlcs_err_ = dlcservice::kErrorNone;
   std::string install_root_path_;
   dlcservice::DlcsWithContent dlcs_with_content_;

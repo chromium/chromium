@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_SESSION_ARC_DLC_INSTALLER_H_
 #define ASH_COMPONENTS_ARC_SESSION_ARC_DLC_INSTALLER_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -82,7 +82,7 @@ class ArcDlcInstaller {
   // Callback function when all the ARC DLC has completed
   // installation.
   void OnDlcInstalled(
-      const std::string& dlc,
+      std::string_view dlc,
       const ash::DlcserviceClient::InstallResult& install_result);
 
   // Uninstalls all the installed ARC DLCs.
@@ -90,7 +90,7 @@ class ArcDlcInstaller {
 
   // Callback function when all the ARC DLC has completed
   // uninstallation.
-  void OnDlcUninstalled(const std::string& dlc, const std::string& err);
+  void OnDlcUninstalled(std::string_view dlc, std::string_view err);
 
   // Invokes and clears the list of callbacks in callback_list_.
   void InvokeCallbacks();

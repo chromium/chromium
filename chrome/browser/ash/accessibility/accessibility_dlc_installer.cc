@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_dlc_installer.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -49,8 +51,7 @@ void AccessibilityDlcInstaller::Callbacks::RunOnProgress(double progress) {
   on_progress_.Run(progress);
 }
 
-void AccessibilityDlcInstaller::Callbacks::RunOnError(
-    const std::string& error) {
+void AccessibilityDlcInstaller::Callbacks::RunOnError(std::string_view error) {
   DCHECK(!on_error_.is_null());
   std::move(on_error_).Run(error);
 }
@@ -80,7 +81,7 @@ void AccessibilityDlcInstaller::MaybeInstall(DlcType type,
 
 void AccessibilityDlcInstaller::MaybeInstallHelper(
     DlcType type,
-    const std::string& error,
+    std::string_view error,
     const dlcservice::DlcState& dlc_state) {
   pending_requests_.insert_or_assign(type, false);
   if (error != dlcservice::kErrorNone) {

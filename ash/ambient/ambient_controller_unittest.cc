@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/ambient/ambient_constants.h"
@@ -1734,7 +1735,7 @@ TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
 TEST_F(AmbientControllerTest, InstallsVideoDlcInBackground) {
   task_environment()->FastForwardBy(kAmbientDlcBackgroundInstallMinDelay * 2);
   ASSERT_FALSE(ambient_controller()->ShouldShowAmbientUi());
-  base::test::TestFuture<const std::string&, const dlcservice::DlcsWithContent&>
+  base::test::TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
       future;
   dlcservice_client_.GetExistingDlcs(future.GetCallback());
   ASSERT_EQ(future.Get<0>(), dlcservice::kErrorNone);
@@ -1748,7 +1749,7 @@ TEST_F(AmbientControllerTest, DoesNotInstallVideoDlcInBackground) {
                                        {features::kTimeOfDayDlc});
   task_environment()->FastForwardBy(kAmbientDlcBackgroundInstallMinDelay * 2);
   ASSERT_FALSE(ambient_controller()->ShouldShowAmbientUi());
-  base::test::TestFuture<const std::string&, const dlcservice::DlcsWithContent&>
+  base::test::TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
       future;
   dlcservice_client_.GetExistingDlcs(future.GetCallback());
   ASSERT_EQ(future.Get<0>(), dlcservice::kErrorNone);

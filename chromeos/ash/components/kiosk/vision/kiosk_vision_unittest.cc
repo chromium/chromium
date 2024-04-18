@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -37,7 +38,7 @@ DlcserviceClient::InstallResult InstallKioskVisionDlc(
     FakeDlcserviceClient& service) {
   base::test::TestFuture<const DlcserviceClient::InstallResult&> future;
   dlcservice::InstallRequest request;
-  request.set_id(kKioskVisionDlcId);
+  request.set_id(std::string(kKioskVisionDlcId));
   service.Install(request, future.GetCallback(), base::DoNothing());
   return future.Take();
 }
@@ -45,7 +46,7 @@ DlcserviceClient::InstallResult InstallKioskVisionDlc(
 dlcservice::DlcsWithContent GetExistingDlcs(FakeDlcserviceClient& service) {
   base::test::TestFuture<const dlcservice::DlcsWithContent&> future;
   service.GetExistingDlcs(
-      base::BindOnce([](const std::string& err,
+      base::BindOnce([](const std::string_view err,
                         const dlcservice::DlcsWithContent& dlcs) {
         return dlcs;
       }).Then(future.GetCallback()));

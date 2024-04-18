@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -269,7 +270,7 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessNotInstalledButVerified) {
   EXPECT_EQ(pack_result_.path, "/path");
   EXPECT_EQ(pack_result_.feature_id, kHandwritingFeatureId);
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
-  base::test::TestFuture<const std::string&, const dlcservice::DlcsWithContent&>
+  base::test::TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
       future;
   dlcservice_client_.GetExistingDlcs(future.GetCallback());
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();

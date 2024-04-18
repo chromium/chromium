@@ -4,6 +4,8 @@
 
 #include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -78,7 +80,7 @@ void OnInstallCompleted(
                               metadata.install_retries);
 }
 
-void OnUninstallCompleted(const std::string& err) {
+void OnUninstallCompleted(std::string_view err) {
   screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
       /*install=*/false,
       /*successful=*/err == dlcservice::kErrorNone);

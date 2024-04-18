@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crostini/termina_installer.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -75,7 +77,7 @@ class TerminaInstallTest : public testing::Test {
   const std::string dlc_root_path_ = "/dlc/root/path";
 
   void CheckDlcInstallCalledTimes(int times) {
-    TestFuture<const std::string&, const dlcservice::DlcsWithContent&>
+    TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
         result_future;
     fake_dlc_client_.GetExistingDlcs(result_future.GetCallback());
 

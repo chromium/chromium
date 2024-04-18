@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
@@ -163,7 +164,7 @@ void TerminaInstaller::RemoveDlcIfPresent(base::OnceCallback<void()> callback,
   ash::DlcserviceClient::Get()->GetExistingDlcs(base::BindOnce(
       [](base::WeakPtr<TerminaInstaller> weak_this,
          base::OnceCallback<void()> callback, UninstallResult* result,
-         const std::string& err,
+         std::string_view err,
          const dlcservice::DlcsWithContent& dlcs_with_content) {
         if (!weak_this) {
           return;
@@ -192,20 +193,20 @@ void TerminaInstaller::RemoveDlcIfPresent(base::OnceCallback<void()> callback,
 void TerminaInstaller::RemoveDlc(base::OnceCallback<void()> callback,
                                  UninstallResult* result) {
   ash::DlcserviceClient::Get()->Uninstall(
-      kCrostiniDlcName,
-      base::BindOnce(
-          [](base::OnceCallback<void()> callback, UninstallResult* result,
-             const std::string& err) {
-            if (err == dlcservice::kErrorNone) {
-              VLOG(1) << "Removed DLC";
-              *result = true;
-            } else {
-              LOG(ERROR) << "Failed to remove termina-dlc: " << err;
-              *result = false;
-            }
-            std::move(callback).Run();
-          },
-          std::move(callback), result));
+      kCrostiniDlcName, base::BindOnce(
+                            [](base::OnceCallback<void()> callback,
+                               UninstallResult* result, std::string_view err) {
+                              if (err == dlcservice::kErrorNone) {
+                                VLOG(1) << "Removed DLC";
+                                *result = true;
+                              } else {
+                                LOG(ERROR)
+                                    << "Failed to remove termina-dlc: " << err;
+                                *result = false;
+                              }
+                              std::move(callback).Run();
+                            },
+                            std::move(callback), result));
 }
 
 void TerminaInstaller::OnUninstallFinished(

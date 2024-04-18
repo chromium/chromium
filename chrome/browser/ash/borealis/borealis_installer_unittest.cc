@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <ratio>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -116,7 +117,7 @@ class BorealisInstallerTest : public testing::Test,
     base::RunLoop run_loop;
     bool installed = false;
     FakeDlcserviceClient()->GetExistingDlcs(base::BindLambdaForTesting(
-        [&](const std::string& err,
+        [&](std::string_view err,
             const dlcservice::DlcsWithContent& dlcs_with_content) {
           for (const auto& dlc : dlcs_with_content.dlc_infos()) {
             if (dlc.id() == kBorealisDlcName) {

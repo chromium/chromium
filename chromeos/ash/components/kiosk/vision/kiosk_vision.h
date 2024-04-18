@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_KIOSK_VISION_H_
 #define CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_KIOSK_VISION_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -33,7 +35,7 @@ class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
   PrefObserver pref_observer_;
 };
 
-inline constexpr char kKioskVisionDlcId[] = "kiosk-vision";
+inline constexpr std::string_view kKioskVisionDlcId = "kiosk-vision";
 
 // Registers prefs used in Kiosk Vision.
 COMPONENT_EXPORT(KIOSK_VISION)

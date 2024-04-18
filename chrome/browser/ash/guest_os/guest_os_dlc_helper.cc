@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 
+#include <string_view>
+
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -103,7 +105,7 @@ void GuestOsDlcInstallation::CheckState() {
 }
 
 void GuestOsDlcInstallation::OnGetDlcStateCompleted(
-    const std::string& err,
+    std::string_view err,
     const dlcservice::DlcState& dlc_state) {
   ash::DlcserviceClient::InstallResult result;
   switch (dlc_state.state()) {

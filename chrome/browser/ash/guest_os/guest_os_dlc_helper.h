@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_DLC_HELPER_H_
 
 #include <ostream>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -69,7 +70,7 @@ class GuestOsDlcInstallation {
  private:
   void CheckState();
 
-  void OnGetDlcStateCompleted(const std::string& err,
+  void OnGetDlcStateCompleted(std::string_view err,
                               const dlcservice::DlcState& dlc_state);
 
   void StartInstall();

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/functional/bind.h"
@@ -66,23 +67,23 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
 
   // The callback used for `Uninstall()`, if the error is something other than
   // `dlcservice::kErrorNone` the call has failed.
-  using UninstallCallback = base::OnceCallback<void(const std::string& err)>;
+  using UninstallCallback = base::OnceCallback<void(std::string_view err)>;
 
   // The callback used for `Purge()`, if the error is something other than
   // `dlcservice::kErrorNone` the call has failed.
-  using PurgeCallback = base::OnceCallback<void(const std::string& err)>;
+  using PurgeCallback = base::OnceCallback<void(std::string_view err)>;
 
   // The callback used for `GetDlcState()`, if the error is something other
   // than `dlcservice::kErrorNone` the call has failed.
   using GetDlcStateCallback =
-      base::OnceCallback<void(const std::string& err,
+      base::OnceCallback<void(std::string_view err,
                               const dlcservice::DlcState& dlc_state)>;
 
   // The callback used for `GetExistingDlcs()`, if the error is something other
   // than `dlcservice::kErrorNone` the call has failed. It is a very rare case
   // for `GetExistingDlcs()` call to fail.
   using GetExistingDlcsCallback = base::OnceCallback<void(
-      const std::string& err,
+      std::string_view err,
       const dlcservice::DlcsWithContent& dlcs_with_content)>;
 
   // Installs the DLC passed in while reporting progress through the progress
@@ -93,18 +94,17 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
 
   // Uninstalls a single DLC and calls the callback with indication of
   // success/failure. Uninstall is the same as `Purge()`.
-  virtual void Uninstall(const std::string& dlc_id,
+  virtual void Uninstall(std::string_view dlc_id,
                          UninstallCallback callback) = 0;
 
   // Purges a single DLC and calls the callback with indication of
   // success/failure. Purging removes the DLC entirely from disk, regardless if
   // the DLC has been uninstalled already.
-  virtual void Purge(const std::string& dlc_id,
-                     PurgeCallback purge_callback) = 0;
+  virtual void Purge(std::string_view dlc_id, PurgeCallback purge_callback) = 0;
 
   // Returns the state of a single DLC. Including information
   // such as installation state, id, and verification state.
-  virtual void GetDlcState(const std::string& dlc_id,
+  virtual void GetDlcState(std::string_view dlc_id,
                            GetDlcStateCallback callback) = 0;
 
   // Provides the DLC(s) information such as:

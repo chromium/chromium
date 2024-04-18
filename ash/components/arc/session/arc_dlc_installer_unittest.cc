@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -120,7 +121,7 @@ class ArcDlcInstallerTest : public testing::Test {
     std::vector<std::string> dlc_list;
     fake_dlc_client_.GetExistingDlcs(base::BindOnce(
         [](base::OnceClosure quit, std::vector<std::string>* dlc_list,
-           const std::string& err,
+           std::string_view err,
            const dlcservice::DlcsWithContent& dlcs_with_content) {
           for (const auto& dlc : dlcs_with_content.dlc_infos()) {
             dlc_list->push_back(dlc.id());

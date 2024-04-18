@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/public/cpp/window_tree_host_lookup.h"
@@ -611,7 +612,7 @@ class AccessibilityManager
 
   // Pumpkin-related methods.
   void OnPumpkinInstalled(bool success, const std::string& root_path);
-  void OnPumpkinError(const std::string& error);
+  void OnPumpkinError(std::string_view error);
   void OnPumpkinDataCreated(
       std::optional<::extensions::api::accessibility_private::PumpkinData>
           data);

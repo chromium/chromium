@@ -5,6 +5,7 @@
 #include "device_dlc_predownload_list_policy_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -51,7 +52,7 @@ class DeviceDlcPredownloadListPolicyHandlerTest : public testing::Test {
 
 void RecordGetExistingDlcsResult(std::string& out_err,
                                  dlcservice::DlcsWithContent& out_dlcs,
-                                 const std::string& err,
+                                 std::string_view err,
                                  const dlcservice::DlcsWithContent& dlcs) {
   out_dlcs = dlcs;
   out_err = err;

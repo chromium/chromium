@@ -2793,8 +2793,8 @@ void AccessibilityManager::InstallFaceGazeAssets(
       AccessibilityDlcInstaller::DlcType::kFaceGazeAssets,
       base::BindOnce(&AccessibilityManager::OnFaceGazeAssetsInstalled,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating([](double progress) {}),
-      base::BindOnce([](const std::string& error) {}));
+      /*on_progress=*/base::DoNothing(),
+      /*on_error=*/base::DoNothing());
 }
 
 void AccessibilityManager::OnFaceGazeAssetsInstalled(
@@ -2881,7 +2881,7 @@ void AccessibilityManager::OnPumpkinDataCreated(
   std::move(install_pumpkin_callback_).Run(std::move(data));
 }
 
-void AccessibilityManager::OnPumpkinError(const std::string& error) {
+void AccessibilityManager::OnPumpkinError(std::string_view error) {
   if (install_pumpkin_callback_.is_null()) {
     return;
   }

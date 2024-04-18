@@ -5,6 +5,7 @@
 #include "chromeos/services/machine_learning/cpp/ash/handwriting_model_loader.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -69,7 +70,7 @@ class HandwritingModelLoaderTest : public testing::Test {
   }
 
   // Sets InstallDlc error.
-  void SetInstallError(const std::string& error) {
+  void SetInstallError(std::string_view error) {
     fake_client_.set_install_error(error);
     fake_client_.set_install_root_path("/any-path");
   }

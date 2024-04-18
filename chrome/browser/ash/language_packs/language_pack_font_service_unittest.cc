@@ -47,7 +47,7 @@ using testing::StartsWith;
 // `GetExistingDlcs`, so we use that to observe whether any DLCs have been
 // installed.
 using GetExistingDlcsTestFuture =
-    base::test::TestFuture<const std::string&,
+    base::test::TestFuture<std::string_view,
                            const dlcservice::DlcsWithContent&>;
 using MockAddFontDir =
     testing::MockFunction<LanguagePackFontService::AddFontDir>;

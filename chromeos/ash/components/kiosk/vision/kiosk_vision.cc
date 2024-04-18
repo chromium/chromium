@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -28,7 +29,7 @@ namespace {
 void InstallDlc(base::OnceCallback<void(std::string dlc_root_path)> on_done) {
   auto& dlc_service = CHECK_DEREF(DlcserviceClient::Get());
   dlcservice::InstallRequest install_request;
-  install_request.set_id(kKioskVisionDlcId);
+  install_request.set_id(std::string(kKioskVisionDlcId));
   dlc_service.Install(
       install_request,
       base::BindOnce(
@@ -45,7 +46,7 @@ void InstallDlc(base::OnceCallback<void(std::string dlc_root_path)> on_done) {
 void UninstallDlc() {
   auto& dlc_service = CHECK_DEREF(DlcserviceClient::Get());
   dlc_service.Uninstall(
-      kKioskVisionDlcId, base::BindOnce([](const std::string& error) {
+      kKioskVisionDlcId, base::BindOnce([](std::string_view error) {
         if (error != dlcservice::kErrorNone) {
           LOG(WARNING) << "Failed to uninstall Kiosk Vision DLC: " << error;
         }

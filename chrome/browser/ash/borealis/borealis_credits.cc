@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/borealis/borealis_credits.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -33,7 +35,7 @@ std::string LoadCreditsFileBlocking(std::string dlc_root_path) {
 }
 
 void OnStateQueried(base::OnceCallback<void(std::string)> callback,
-                    const std::string& err,
+                    std::string_view err,
                     const dlcservice::DlcState& state) {
   if (err != dlcservice::kErrorNone) {
     LOG(ERROR) << "Failed to load credits file: DLC error: " << err;
