@@ -18,6 +18,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/switch.h"
+#include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
@@ -365,6 +366,10 @@ TEST_F(BirchBarTest, DoNotShowBirchBarForSecondaryUser) {
 }
 
 TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
+  // Ensure a consistent timezone for this test.
+  calendar_test_utils::ScopedLibcTimeZone scoped_timezone(
+      "America/Los_Angeles");
+
   base::HistogramTester histograms;
 
   // Add an ongoing calendar event at the current time. This will create a

@@ -9,12 +9,14 @@
 
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -45,7 +47,9 @@ class TestNewWindowDelegateImpl : public TestNewWindowDelegate {
 
 class BirchItemTest : public testing::Test {
  public:
-  BirchItemTest() {
+  BirchItemTest()
+      : ash_timezone_(u"America/Los_Angeles"),
+        scoped_libc_timezone_("America/Los_Angeles") {
     auto new_window_delegate = std::make_unique<TestNewWindowDelegateImpl>();
     new_window_delegate_ = new_window_delegate.get();
     new_window_delegate_provider_ =
@@ -64,6 +68,10 @@ class BirchItemTest : public testing::Test {
   raw_ptr<TestNewWindowDelegateImpl> new_window_delegate_ = nullptr;
   // Use an arbitrary but fixed "now" time for tests.
   base::ScopedMockClockOverride mock_clock_override_;
+
+  // Ensure consistent timezones for testing.
+  ash::system::ScopedTimezoneSettings ash_timezone_;
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone_;
 };
 
 TEST_F(BirchItemTest, RecordActionMetrics_Basics) {
