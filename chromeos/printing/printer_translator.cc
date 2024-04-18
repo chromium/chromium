@@ -216,7 +216,7 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
   return printer;
 }
 
-std::unique_ptr<Printer> ManagedPrinterToPrinter(
+std::optional<Printer> ManagedPrinterToPrinter(
     const base::Value::Dict& managed_printer) {
   static auto LogRequiredFieldMissing = [](std::string_view field) {
     LOG(WARNING) << "Managed printer is missing required field: " << field;
@@ -230,37 +230,37 @@ std::unique_ptr<Printer> ManagedPrinterToPrinter(
   const std::string* description = managed_printer.FindString(kDescription);
   if (!guid) {
     LogRequiredFieldMissing(kGuid);
-    return nullptr;
+    return std::nullopt;
   }
   if (!display_name) {
     LogRequiredFieldMissing(kDisplayName);
-    return nullptr;
+    return std::nullopt;
   }
   if (!uri) {
     LogRequiredFieldMissing(kUri);
-    return nullptr;
+    return std::nullopt;
   }
   if (!ppd_resource) {
     LogRequiredFieldMissing(kPpdResource);
-    return nullptr;
+    return std::nullopt;
   }
 
-  auto printer = std::make_unique<Printer>(*guid);
-  printer->set_source(Printer::SRC_POLICY);
-  printer->set_display_name(*display_name);
+  Printer printer(*guid);
+  printer.set_source(Printer::SRC_POLICY);
+  printer.set_display_name(*display_name);
   std::string set_uri_error_message;
-  if (!printer->SetUri(*uri, &set_uri_error_message)) {
+  if (!printer.SetUri(*uri, &set_uri_error_message)) {
     LOG(WARNING) << base::StringPrintf(
         "Managed printer '%s' has invalid %s value: %s, error: %s",
         display_name->c_str(), kUri, uri->c_str(),
         set_uri_error_message.c_str());
-    return nullptr;
+    return std::nullopt;
   }
-  if (!ValidateAndSetPpdReference(*ppd_resource, *printer)) {
-    return nullptr;
+  if (!ValidateAndSetPpdReference(*ppd_resource, printer)) {
+    return std::nullopt;
   }
   if (description) {
-    printer->set_description(*description);
+    printer.set_description(*description);
   }
   return printer;
 }

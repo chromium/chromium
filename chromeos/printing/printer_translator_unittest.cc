@@ -4,6 +4,7 @@
 
 #include "chromeos/printing/printer_translator.h"
 
+#include <optional>
 #include <string>
 
 #include "base/test/values_test_util.h"
@@ -353,7 +354,7 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithoutGuid) {
                      .Set("display_name", "name")
                      .Set("uri", "ipp://uri")
                      .SetByDottedPath("ppd_resource.autoconf", true);
-  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer).has_value());
 }
 
 TEST(PrinterTranslatorTest, ManagedPrinterWithoutDisplayName) {
@@ -361,7 +362,7 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithoutDisplayName) {
                      .Set("guid", "1")
                      .Set("uri", "ipp://uri")
                      .SetByDottedPath("ppd_resource.autoconf", true);
-  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer).has_value());
 }
 
 TEST(PrinterTranslatorTest, ManagedPrinterWithoutUri) {
@@ -369,7 +370,7 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithoutUri) {
                      .Set("guid", "1")
                      .Set("display_name", "name")
                      .SetByDottedPath("ppd_resource.autoconf", true);
-  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer).has_value());
 }
 
 TEST(PrinterTranslatorTest, ManagedPrinterWithBadUri) {
@@ -378,7 +379,7 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithBadUri) {
                      .Set("display_name", "name")
                      .Set("uri", "bad://uri")
                      .SetByDottedPath("ppd_resource.autoconf", true);
-  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer).has_value());
 }
 
 TEST(PrinterTranslatorTest, ManagedPrinterWithInvalidPpdResource) {
@@ -408,10 +409,13 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithInvalidPpdResource) {
           .SetByDottedPath("ppd_resource.user_supplied_ppd_uri",
                            "http://ppd-uri");
 
-  EXPECT_FALSE(ManagedPrinterToPrinter(printer_without_ppd_resource));
-  EXPECT_FALSE(ManagedPrinterToPrinter(printer_no_autoconf_and_no_model));
-  EXPECT_FALSE(ManagedPrinterToPrinter(printer_autoconf_and_model));
-  EXPECT_FALSE(ManagedPrinterToPrinter(printer_user_supplied_ppd_and_model));
+  EXPECT_FALSE(
+      ManagedPrinterToPrinter(printer_without_ppd_resource).has_value());
+  EXPECT_FALSE(
+      ManagedPrinterToPrinter(printer_no_autoconf_and_no_model).has_value());
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer_autoconf_and_model).has_value());
+  EXPECT_FALSE(
+      ManagedPrinterToPrinter(printer_user_supplied_ppd_and_model).has_value());
 }
 
 TEST(PrinterTranslatorTest, ManagedPrinterWithAutoconf) {
@@ -421,9 +425,9 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithAutoconf) {
                              .Set("uri", "ipp://uri:1234")
                              .SetByDottedPath("ppd_resource.autoconf", true);
 
-  std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
+  std::optional<Printer> printer = ManagedPrinterToPrinter(managed_printer);
 
-  ASSERT_TRUE(printer);
+  ASSERT_TRUE(printer.has_value());
   EXPECT_EQ(printer->id(), "1");
   EXPECT_EQ(printer->display_name(), "name");
   EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");
@@ -439,9 +443,9 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithModel) {
           .SetByDottedPath("ppd_resource.autoconf", false)
           .SetByDottedPath("ppd_resource.effective_model", "model");
 
-  std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
+  std::optional<Printer> printer = ManagedPrinterToPrinter(managed_printer);
 
-  ASSERT_TRUE(printer);
+  ASSERT_TRUE(printer.has_value());
   EXPECT_EQ(printer->id(), "1");
   EXPECT_EQ(printer->display_name(), "name");
   EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");
@@ -458,9 +462,9 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithUserSuppliedPpdUri) {
           .SetByDottedPath("ppd_resource.user_supplied_ppd_uri",
                            "https://ppd-uri");
 
-  std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
+  std::optional<Printer> printer = ManagedPrinterToPrinter(managed_printer);
 
-  ASSERT_TRUE(printer);
+  ASSERT_TRUE(printer.has_value());
   EXPECT_EQ(printer->id(), "1");
   EXPECT_EQ(printer->display_name(), "name");
   EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");
@@ -475,7 +479,7 @@ TEST(PrinterTranslatorTest, ManagedPrinterWithInvalidUserSuppliedPpdUri) {
                      .Set("uri", "ipp://uri:1234")
                      .SetByDottedPath("ppd_resource.user_supplied_ppd_uri",
                                       "ftp://scheme-not-allowed");
-  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer).has_value());
 }
 
 TEST(PrinterTranslatorTest, ManagedPrinterOptionalFieldsSet) {
@@ -486,9 +490,9 @@ TEST(PrinterTranslatorTest, ManagedPrinterOptionalFieldsSet) {
                              .Set("description", "desc")
                              .SetByDottedPath("ppd_resource.autoconf", true);
 
-  std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
+  std::optional<Printer> printer = ManagedPrinterToPrinter(managed_printer);
 
-  ASSERT_TRUE(printer);
+  ASSERT_TRUE(printer.has_value());
   EXPECT_EQ(printer->id(), "1");
   EXPECT_EQ(printer->display_name(), "name");
   EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");

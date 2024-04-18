@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/bulk_printers_calculator.h"
 
+#include <optional>
 #include <set>
 
 #include "base/containers/contains.h"
@@ -36,17 +37,17 @@ struct TaskDataInternal {
   explicit TaskDataInternal(unsigned id) : task_id(id) {}
 };
 
-using PrinterCache = std::vector<std::unique_ptr<chromeos::Printer>>;
+using PrinterCache = std::vector<std::optional<chromeos::Printer>>;
 using TaskData = std::unique_ptr<TaskDataInternal>;
 
 // Parses |data|, a JSON blob, into a vector of Printers.  If |data| cannot be
 // parsed, returns nullptr.  This is run off the UI thread as it could be very
 // slow.
-std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
+std::optional<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
   if (!data) {
     PRINTER_LOG(ERROR) << "Failed to parse printers policy ("
                        << "received null data)";
-    return nullptr;
+    return std::nullopt;
   }
 
   // This could be really slow.
@@ -60,25 +61,25 @@ std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
                        << value_with_error.error().message << ") on line "
                        << value_with_error.error().line << " at position "
                        << value_with_error.error().column;
-    return nullptr;
+    return std::nullopt;
   }
 
   base::Value& json_blob = *value_with_error;
   if (!json_blob.is_list()) {
     PRINTER_LOG(ERROR) << "Failed to parse printers policy "
                        << "(an array was expected)";
-    return nullptr;
+    return std::nullopt;
   }
 
   const base::Value::List& printer_list = json_blob.GetList();
   if (printer_list.size() > kMaxRecords) {
     PRINTER_LOG(ERROR) << "Failed to parse printers policy ("
                        << "too many records: " << printer_list.size() << ")";
-    return nullptr;
+    return std::nullopt;
   }
 
-  auto parsed_printers = std::make_unique<PrinterCache>();
-  parsed_printers->reserve(printer_list.size());
+  PrinterCache parsed_printers;
+  parsed_printers.reserve(printer_list.size());
   for (const base::Value& val : printer_list) {
     if (!val.is_dict()) {
       PRINTER_LOG(ERROR) << "Entry in printers policy skipped ("
@@ -92,7 +93,7 @@ std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
                          << "failed to parse printer configuration)";
       continue;
     }
-    parsed_printers->push_back(std::move(printer));
+    parsed_printers.push_back(std::move(printer));
   }
 
   return parsed_printers;
@@ -104,9 +105,7 @@ std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
 // printers take TaskData (see above) as |task_data| parameter and returned it.
 class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
  public:
-  Restrictions() : printers_cache_(nullptr) {
-    DETACH_FROM_SEQUENCE(sequence_checker_);
-  }
+  Restrictions() { DETACH_FROM_SEQUENCE(sequence_checker_); }
 
   Restrictions(const Restrictions&) = delete;
   Restrictions& operator=(const Restrictions&) = delete;
@@ -213,7 +212,7 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
   }
 
   // Cache of the parsed printer configuration file.
-  std::unique_ptr<PrinterCache> printers_cache_;
+  std::optional<PrinterCache> printers_cache_;
   // The type of restriction which is enforced.
   BulkPrintersCalculator::AccessMode mode_ = BulkPrintersCalculator::UNSET;
   // Blocklist: the list of ids which should not appear in the final list.

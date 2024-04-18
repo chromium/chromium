@@ -6,6 +6,7 @@
 #define CHROMEOS_PRINTING_PRINTER_TRANSLATOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/values.h"
@@ -26,7 +27,7 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
 // `printer` does not represent a valid managed printer configuration. See
 // `BulkPrintersConfiguration` and `DevicePrinters` policies.
 COMPONENT_EXPORT(CHROMEOS_PRINTING)
-std::unique_ptr<Printer> ManagedPrinterToPrinter(
+std::optional<Printer> ManagedPrinterToPrinter(
     const base::Value::Dict& printer);
 
 // Returns a JSON representation of |printer| as a CupsPrinterInfo. If the
