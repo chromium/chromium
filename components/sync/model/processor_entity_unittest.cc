@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/hash/hash.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -533,7 +534,8 @@ TEST_F(ProcessorEntityTest, LocalDeletionWithSpecifiedOrigin) {
   EXPECT_TRUE(entity->metadata().has_deletion_origin());
   EXPECT_EQ(location.line_number(),
             entity->metadata().deletion_origin().file_line_number());
-  EXPECT_TRUE(entity->metadata().deletion_origin().has_file_name_hash());
+  EXPECT_EQ(base::PersistentHash(location.file_name()),
+            entity->metadata().deletion_origin().file_name_hash());
   EXPECT_TRUE(entity->metadata().deletion_origin().has_chromium_version());
 }
 

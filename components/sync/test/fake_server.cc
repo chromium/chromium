@@ -644,6 +644,12 @@ void FakeServer::OnHistoryCommit(const std::string& url) {
   committed_history_urls_.insert(url);
 }
 
+void FakeServer::OnCommittedDeletionOrigin(
+    syncer::ModelType type,
+    const sync_pb::DeletionOrigin& deletion_origin) {
+  committed_deletion_origins_[type].push_back(deletion_origin);
+}
+
 void FakeServer::EnableStrongConsistencyWithConflictDetectionModel() {
   DCHECK(thread_checker_.CalledOnValidThread());
   loopback_server_->EnableStrongConsistencyWithConflictDetectionModel();
@@ -680,6 +686,16 @@ const std::set<std::string>& FakeServer::GetCommittedHistoryURLs() const {
 
 std::string FakeServer::GetStoreBirthday() const {
   return loopback_server_->GetStoreBirthday();
+}
+
+const std::vector<sync_pb::DeletionOrigin>&
+FakeServer::GetCommittedDeletionOrigins(syncer::ModelType type) const {
+  auto it = committed_deletion_origins_.find(type);
+  if (it == committed_deletion_origins_.end()) {
+    static const std::vector<sync_pb::DeletionOrigin> empty_result;
+    return empty_result;
+  }
+  return it->second;
 }
 
 base::WeakPtr<FakeServer> FakeServer::AsWeakPtr() {

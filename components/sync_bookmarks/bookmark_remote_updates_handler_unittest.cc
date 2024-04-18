@@ -1282,7 +1282,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(entity->bookmark_node()->uuid(), Eq(kGuid));
 
   auto* node = entity->bookmark_node();
-  tracker()->MarkDeleted(entity);
+  tracker()->MarkDeleted(entity, FROM_HERE);
   tracker()->IncrementSequenceNumber(entity);
   bookmark_model()->Remove(node, FROM_HERE);
 
@@ -1359,7 +1359,7 @@ TEST_F(
   ASSERT_THAT(entity, NotNull());
 
   // Mark the entity as deleted locally.
-  tracker()->MarkDeleted(entity);
+  tracker()->MarkDeleted(entity, FROM_HERE);
   tracker()->IncrementSequenceNumber(entity);
   ASSERT_THAT(tracker()->GetEntityForUuid(kGuid)->IsUnsynced(), Eq(true));
 
@@ -1439,7 +1439,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
 
   // Mark the entity as deleted locally.
-  tracker()->MarkDeleted(entity);
+  tracker()->MarkDeleted(entity, FROM_HERE);
   tracker()->IncrementSequenceNumber(entity);
   ASSERT_THAT(entity->IsUnsynced(), Eq(true));
 
@@ -1535,7 +1535,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
 
   // Mark the entity as deleted locally.
-  tracker()->MarkDeleted(entity);
+  tracker()->MarkDeleted(entity, FROM_HERE);
   tracker()->IncrementSequenceNumber(entity);
   ASSERT_THAT(entity->IsUnsynced(), Eq(true));
 

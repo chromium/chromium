@@ -5,6 +5,7 @@
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
 #include "base/base64.h"
+#include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -443,9 +444,9 @@ TEST(SyncedBookmarkTrackerTest,
   ASSERT_THAT(tracker, NotNull());
 
   // Mark entities deleted in that order kId2, kId4, kId1
-  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId2));
-  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId4));
-  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId1));
+  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId2), FROM_HERE);
+  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId4), FROM_HERE);
+  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId1), FROM_HERE);
 
   const sync_pb::BookmarkModelMetadata output_model_metadata =
       tracker->BuildBookmarkModelMetadata();
@@ -482,6 +483,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
   bookmarks::BookmarkNode node(kId, kGuid, GURL());
   const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
+  const base::Location kLocation = FROM_HERE;
 
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
   ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
@@ -494,7 +496,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
   ASSERT_THAT(entity->bookmark_node(), Eq(&node));
 
   // Delete the bookmark, leading to a pending deletion (local tombstone).
-  tracker->MarkDeleted(entity);
+  tracker->MarkDeleted(entity, kLocation);
 
   EXPECT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(1U));
   EXPECT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
@@ -503,8 +505,15 @@ TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
       tracker->GetEntityForClientTagHash(syncer::ClientTagHash::FromUnhashed(
           syncer::BOOKMARKS, kGuid.AsLowercaseString())),
       Eq(entity));
-  EXPECT_TRUE(entity->metadata().is_deleted());
+
   EXPECT_THAT(entity->bookmark_node(), IsNull());
+  EXPECT_TRUE(entity->metadata().is_deleted());
+  EXPECT_TRUE(entity->metadata().has_deletion_origin());
+  EXPECT_EQ(kLocation.line_number(),
+            entity->metadata().deletion_origin().file_line_number());
+  EXPECT_EQ(base::PersistentHash(kLocation.file_name()),
+            entity->metadata().deletion_origin().file_name_hash());
+  EXPECT_TRUE(entity->metadata().deletion_origin().has_chromium_version());
 }
 
 TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
@@ -526,7 +535,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
   ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
 
   // Delete the bookmark, leading to a pending deletion (local tombstone).
-  tracker->MarkDeleted(entity);
+  tracker->MarkDeleted(entity, FROM_HERE);
   ASSERT_THAT(entity->bookmark_node(), IsNull());
   ASSERT_TRUE(entity->metadata().is_deleted());
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(1U));

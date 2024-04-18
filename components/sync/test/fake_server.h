@@ -25,6 +25,7 @@
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/client_commands.pb.h"
+#include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -256,10 +257,17 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // Implement LoopbackServer::ObserverForTests:
   void OnCommit(syncer::ModelTypeSet committed_model_types) override;
   void OnHistoryCommit(const std::string& url) override;
+  void OnCommittedDeletionOrigin(
+      syncer::ModelType type,
+      const sync_pb::DeletionOrigin& deletion_origin) override;
 
   // Returns all URLs that were committed to server-side history through the
   // HISTORY data type.
   const std::set<std::string>& GetCommittedHistoryURLs() const;
+
+  // Returns all DeletionOrigin protos committed to the server for `type`.
+  const std::vector<sync_pb::DeletionOrigin>& GetCommittedDeletionOrigins(
+      syncer::ModelType type) const;
 
   std::string GetStoreBirthday() const;
 
@@ -311,6 +319,10 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   // All URLs received via HISTORY sync.
   std::set<std::string> committed_history_urls_;
+
+  // All committed deletion origins (optional part of committed tombstone).
+  std::map<syncer::ModelType, std::vector<sync_pb::DeletionOrigin>>
+      committed_deletion_origins_;
 
   // Used as the error_code field of ClientToServerResponse on all commit
   // requests.

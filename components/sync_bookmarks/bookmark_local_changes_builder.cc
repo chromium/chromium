@@ -61,7 +61,15 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
                    syncer::BOOKMARKS,
                    entity->bookmark_node()->uuid().AsLowercaseString()));
 
-    if (!metadata.is_deleted()) {
+    if (metadata.is_deleted()) {
+      // Absence of deletion origin is primarily needed for pre-existing
+      // tombstones in storage before this field was introduced. Nevertheless,
+      // it seems best to treat it as optional here, in case some codepaths
+      // don't provide it in the future.
+      if (metadata.has_deletion_origin()) {
+        data->deletion_origin = metadata.deletion_origin();
+      }
+    } else {
       const bookmarks::BookmarkNode* node = entity->bookmark_node();
       DCHECK(!node->is_permanent_node());
 

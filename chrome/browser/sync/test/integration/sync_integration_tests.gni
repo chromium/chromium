@@ -147,6 +147,7 @@ if (is_android) {
     "//components/sync_device_info:test_support",
     "//components/sync_preferences:common_syncable_prefs_database",
     "//components/undo",
+    "//components/version_info",
     "//content/test:android_test_message_pump_support",
     "//testing/android/native_test:native_test_support",
   ]

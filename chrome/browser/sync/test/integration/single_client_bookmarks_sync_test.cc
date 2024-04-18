@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_util.h"
@@ -58,6 +59,7 @@
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -92,12 +94,13 @@ using bookmarks_helper::IsFolderWithTitleAndChildrenAre;
 using bookmarks_helper::IsUrlBookmarkWithTitleAndUrl;
 using bookmarks_helper::Move;
 using bookmarks_helper::Remove;
-using bookmarks_helper::RemoveAll;
 using bookmarks_helper::SetFavicon;
 using bookmarks_helper::SetTitle;
 using BookmarkGeneration =
     fake_server::BookmarkEntityBuilder::BookmarkGeneration;
+using testing::AllOf;
 using testing::Contains;
+using testing::Each;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
@@ -124,6 +127,27 @@ const char kBookmarkPageUrl[] = "http://www.foo.com/";
 
 MATCHER(HasUniquePosition, "") {
   return arg.specifics().bookmark().has_unique_position();
+}
+
+MATCHER_P2(MatchesDeletionOrigin, expected_version, expected_location, "") {
+  const sync_pb::DeletionOrigin& actual_origin = arg;
+  if (actual_origin.chromium_version() != expected_version) {
+    *result_listener << "Expected version " << expected_version << " but got "
+                     << actual_origin.chromium_version();
+    return false;
+  }
+  if (actual_origin.file_name_hash() !=
+      base::PersistentHash(expected_location.file_name())) {
+    *result_listener << "Unexpected file name hash: "
+                     << actual_origin.file_name_hash();
+    return false;
+  }
+  if (actual_origin.file_line_number() != expected_location.line_number()) {
+    *result_listener << "Unexpected line number: "
+                     << actual_origin.file_line_number();
+    return false;
+  }
+  return true;
 }
 
 // Fake device info sync service that does the necessary setup to be used in a
@@ -752,6 +776,49 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, DeleteFaviconFromSync) {
       GetBookmarkModel(kSingleProfileIndex)->GetFavicon(bookmark).IsEmpty());
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, OneFolderRemovedEvent) {
+  ASSERT_TRUE(SetupClients());
+  // Starting state:
+  // other_node
+  //    -> folder0
+  //      -> http://yahoo.com
+  //    -> http://www.cnn.com
+  // bookmark_bar
+
+  const BookmarkNode* folder0 = AddFolder(
+      kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "folder0");
+  ASSERT_TRUE(AddURL(kSingleProfileIndex, folder0, 0, "Yahoo",
+                     GURL("http://www.yahoo.com")));
+  ASSERT_TRUE(AddURL(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 1,
+                     "CNN", GURL("http://www.cnn.com")));
+
+  // Set up sync, wait for its completion and verify that changes propagated.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_EQ(2u, GetOtherNode(kSingleProfileIndex)->children().size());
+  ASSERT_EQ(0u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
+
+  // Remove one folder and wait for sync completion.
+  const base::Location kDeletionLocation = FROM_HERE;
+  GetBookmarkModel(kSingleProfileIndex)
+      ->Remove(folder0, bookmarks::metrics::BookmarkEditSource::kOther,
+               kDeletionLocation);
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
+                  GetFakeServer())
+                  .Wait());
+
+  EXPECT_EQ(1u, GetOtherNode(kSingleProfileIndex)->children().size());
+  EXPECT_EQ(0u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
+
+  // The folder contained one bookmark inside, so two deletions should have been
+  // recorded.
+  EXPECT_THAT(GetFakeServer()->GetCommittedDeletionOrigins(
+                  syncer::ModelType::BOOKMARKS),
+              AllOf(SizeIs(2),
+                    Each(MatchesDeletionOrigin(version_info::GetVersionNumber(),
+                                               kDeletionLocation))));
+}
+
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        BookmarkAllNodesRemovedEvent) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -802,11 +869,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_EQ(3u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 
   // Remove all bookmarks and wait for sync completion.
-  RemoveAll(kSingleProfileIndex);
+  const base::Location kDeletionLocation = FROM_HERE;
+  GetBookmarkModel(kSingleProfileIndex)
+      ->RemoveAllUserBookmarks(kDeletionLocation);
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
                   GetFakeServer())
                   .Wait());
+
+  EXPECT_THAT(GetFakeServer()->GetCommittedDeletionOrigins(
+                  syncer::ModelType::BOOKMARKS),
+              AllOf(SizeIs(11),
+                    Each(MatchesDeletionOrigin(version_info::GetVersionNumber(),
+                                               kDeletionLocation))));
 
   // Verify other node has no children now.
   EXPECT_TRUE(GetOtherNode(kSingleProfileIndex)->children().empty());

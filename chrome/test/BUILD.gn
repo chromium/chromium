@@ -12023,6 +12023,7 @@ if (!is_android) {
       "//components/trusted_vault",
       "//components/trusted_vault:test_support",
       "//components/undo",
+      "//components/version_info",
       "//components/webapps/browser",
       "//components/webapps/common",
       "//components/webauthn/core/browser",

@@ -136,7 +136,7 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
     // OnWillRemoveBookmarks() cannot be invoked here because |node| is already
     // moved and unsyncable, whereas OnWillRemoveBookmarks() assumes the change
     // hasn't happened yet.
-    ProcessDelete(node);
+    ProcessDelete(node, FROM_HERE);
     nudge_for_commit_closure_.Run();
     bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
     return;
@@ -229,8 +229,7 @@ void BookmarkModelObserverImpl::OnWillRemoveBookmarks(
     return;
   }
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
-  // TODO(crbug.com/334001702): Plumb `location` into sync metadata.
-  ProcessDelete(node);
+  ProcessDelete(node, location);
   nudge_for_commit_closure_.Run();
 }
 
@@ -252,8 +251,7 @@ void BookmarkModelObserverImpl::OnWillRemoveAllUserBookmarks(
   for (const auto& permanent_node : root_node->children()) {
     for (const auto& child : permanent_node->children()) {
       if (bookmark_model_->IsNodeSyncable(child.get())) {
-        // TODO(crbug.com/334001702): Plumb `location` into sync metadata.
-        ProcessDelete(child.get());
+        ProcessDelete(child.get(), location);
       }
     }
   }
@@ -541,10 +539,11 @@ void BookmarkModelObserverImpl::ProcessUpdate(
 }
 
 void BookmarkModelObserverImpl::ProcessDelete(
-    const bookmarks::BookmarkNode* node) {
+    const bookmarks::BookmarkNode* node,
+    const base::Location& location) {
   // If not a leaf node, process all children first.
   for (const auto& child : node->children()) {
-    ProcessDelete(child.get());
+    ProcessDelete(child.get(), location);
   }
   // Process the current node.
   const SyncedBookmarkTrackerEntity* entity =
@@ -558,7 +557,7 @@ void BookmarkModelObserverImpl::ProcessDelete(
     bookmark_tracker_->Remove(entity);
     return;
   }
-  bookmark_tracker_->MarkDeleted(entity);
+  bookmark_tracker_->MarkDeleted(entity, location);
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
 }

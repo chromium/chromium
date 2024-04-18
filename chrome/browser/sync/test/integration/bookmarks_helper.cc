@@ -731,10 +731,6 @@ void Remove(int profile, const BookmarkNode* parent, size_t index) {
                 bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 }
 
-void RemoveAll(int profile) {
-  GetBookmarkModel(profile)->RemoveAllUserBookmarks(FROM_HERE);
-}
-
 void SortChildren(int profile, const BookmarkNode* parent) {
   BookmarkModel* model = GetBookmarkModel(profile);
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, parent->id()), parent)

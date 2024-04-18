@@ -693,6 +693,10 @@ bool LoopbackServer::HandleCommitRequest(
             specifics.redirect_entries(specifics.redirect_entries_size() - 1)
                 .url());
       }
+      if (client_entity.deleted() && client_entity.has_deletion_origin()) {
+        observer_for_tests_->OnCommittedDeletionOrigin(
+            iter->second->GetModelType(), client_entity.deletion_origin());
+      }
     }
   }
 

@@ -32,7 +32,7 @@ class BookmarkModelView;
 // those local changes to the sync engine.
 class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
  public:
-  // |bookmark_model| and |bookmark_tracker| must not be null and must outlive
+  // `bookmark_model` and `bookmark_tracker` must not be null and must outlive
   // this object. Note that this class doesn't self register as observer.
   BookmarkModelObserverImpl(
       BookmarkModelView* bookmark_model,
@@ -79,32 +79,35 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
                                          size_t index,
                                          const std::string& sync_id);
 
-  // Process a modification of a local node and updates |bookmark_tracker_|
-  // accordingly. No-op if the commit can be optimized away, i.e. if |specifics|
+  // Process a modification of a local node and updates `bookmark_tracker_`
+  // accordingly. No-op if the commit can be optimized away, i.e. if `specifics`
   // are identical to the previously-known specifics (in hashed form).
   void ProcessUpdate(const SyncedBookmarkTrackerEntity* entity,
                      const sync_pb::EntitySpecifics& specifics);
 
   // Processes the deletion of a bookmake node and updates the
-  // |bookmark_tracker_| accordingly. If |node| is a bookmark, it gets marked
+  // `bookmark_tracker_` accordingly. If `node` is a bookmark, it gets marked
   // as deleted and that it requires a commit. If it's a folder, it recurses
-  // over all children before processing the folder itself.
-  void ProcessDelete(const bookmarks::BookmarkNode* node);
+  // over all children before processing the folder itself. `location`
+  // represents the origin of the deletion, i.e. which specific codepath was
+  // responsible for deleting `node`.
+  void ProcessDelete(const bookmarks::BookmarkNode* node,
+                     const base::Location& location);
 
-  // Returns current unique_position from sync metadata for the tracked |node|.
+  // Returns current unique_position from sync metadata for the tracked `node`.
   syncer::UniquePosition GetUniquePositionForNode(
       const bookmarks::BookmarkNode* node) const;
 
-  // Updates the unique position in sync metadata for the tracked |node| and
+  // Updates the unique position in sync metadata for the tracked `node` and
   // returns the new position. A new position is generated based on the left and
-  // right node's positions. At least one of |prev| and |next| must be valid.
+  // right node's positions. At least one of `prev` and `next` must be valid.
   syncer::UniquePosition UpdateUniquePositionForNode(
       const bookmarks::BookmarkNode* node,
       const syncer::UniquePosition& prev,
       const syncer::UniquePosition& next);
 
-  // Updates unique positions for all children from |parent| starting from
-  // |start_index| (must not be 0).
+  // Updates unique positions for all children from `parent` starting from
+  // `start_index` (must not be 0).
   void UpdateAllUniquePositionsStartingAt(const bookmarks::BookmarkNode* parent,
                                           size_t start_index);
 

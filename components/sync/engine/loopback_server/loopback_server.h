@@ -25,6 +25,7 @@
 #include "net/http/http_status_code.h"
 
 namespace sync_pb {
+class DeletionOrigin;
 class LoopbackServerProto;
 class EntitySpecifics;
 class SyncEntity;
@@ -49,6 +50,11 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
 
     // Called when a page URL is committed to ModelType::HISTORY.
     virtual void OnHistoryCommit(const std::string& url) = 0;
+
+    // Called when a committed tombstone includes a deletion origin.
+    virtual void OnCommittedDeletionOrigin(
+        syncer::ModelType type,
+        const sync_pb::DeletionOrigin& deletion_origin) = 0;
   };
 
   explicit LoopbackServer(const base::FilePath& persistent_file);

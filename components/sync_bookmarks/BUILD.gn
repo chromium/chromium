@@ -43,6 +43,7 @@ static_library("sync_bookmarks") {
     "//components/keyed_service/core:core",
     "//components/sync",
     "//components/undo",
+    "//components/version_info",
     "//ui/base",
     "//ui/gfx",
   ]
