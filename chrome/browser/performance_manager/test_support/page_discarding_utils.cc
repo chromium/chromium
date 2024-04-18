@@ -96,7 +96,8 @@ void MakePageNodeDiscardable(PageNodeImpl* page_node,
   page_node->OnMainFrameNavigationCommitted(
       false, base::TimeTicks::Now(), 42, kUrl, "text/html",
       /*notification_permission_status=*/blink::mojom::PermissionStatus::ASK);
-  (*page_node->main_frame_nodes().begin())->OnNavigationCommitted(kUrl, false);
+  (*page_node->main_frame_nodes().begin())
+      ->OnNavigationCommitted(kUrl, url::Origin::Create(kUrl), false);
   task_env.FastForwardBy(base::Minutes(10));
   const auto* helper =
       policies::PageDiscardingHelper::GetFromGraph(page_node->graph());

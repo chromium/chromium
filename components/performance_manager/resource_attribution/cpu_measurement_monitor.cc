@@ -62,6 +62,17 @@ void ValidateCPUTimeResult(const CPUTimeResult& result) {
   CHECK(!result.cumulative_cpu.is_negative());
 }
 
+std::optional<url::Origin> GetOriginForNode(const FrameNode* frame_node) {
+  return frame_node->GetOrigin();
+}
+
+std::optional<url::Origin> GetOriginForNode(const WorkerNode* worker_node) {
+  // TODO(http://crbug.com/333248839): Instead of creating the Origin from an
+  // URL, which loses some information, should store it as a node property. See
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md
+  return url::Origin::Create(worker_node->GetURL());
+}
+
 template <typename FrameOrWorkerNode>
 std::optional<OriginInPageContext> OriginInPageContextForNode(
     const FrameOrWorkerNode* node,
@@ -70,21 +81,18 @@ std::optional<OriginInPageContext> OriginInPageContextForNode(
   if (!base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins)) {
     return std::nullopt;
   }
-  // If this node was just assigned a new URL, assign CPU usage before the
-  // change to the previous URL.
-  GraphChangeUpdateURL* url_change =
-      absl::get_if<GraphChangeUpdateURL>(&graph_change);
-  const GURL url = (url_change && url_change->node == node)
-                       ? url_change->previous_url
-                       : node->GetURL();
-  if (!url.is_valid()) {
+  // If this node was just assigned a new origin, assign CPU usage before the
+  // change to the previous origin.
+  GraphChangeUpdateOrigin* origin_change =
+      absl::get_if<GraphChangeUpdateOrigin>(&graph_change);
+  const std::optional<url::Origin> origin =
+      (origin_change && origin_change->node == node)
+          ? origin_change->previous_origin
+          : GetOriginForNode(node);
+  if (!origin.has_value()) {
     return std::nullopt;
   }
-  // TODO(http://crbug.com/333248839): Instead of creating the Origin from an
-  // URL, which loses some information, should store it as a node property. See
-  // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md.
-  return OriginInPageContext(url::Origin::Create(url),
-                             page_node->GetResourceContext());
+  return OriginInPageContext(origin.value(), page_node->GetResourceContext());
 }
 
 }  // namespace
@@ -227,14 +235,15 @@ void CPUMeasurementMonitor::OnBeforeFrameNodeRemoved(
   SaveFinalMeasurements({frame_node->GetResourceContext()});
 }
 
-void CPUMeasurementMonitor::OnURLChanged(const FrameNode* frame_node,
-                                         const GURL& previous_value) {
+void CPUMeasurementMonitor::OnOriginChanged(
+    const FrameNode* frame_node,
+    const std::optional<url::Origin>& previous_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take a measurement of the process CPU usage, but assign this frame's CPU to
   // its previous origin for OriginInPageContext, so that the CPU usage from
   // before the navigation committed is attributed to the old origin.
   UpdateCPUMeasurements(frame_node->GetProcessNode(),
-                        GraphChangeUpdateURL(frame_node, previous_value));
+                        GraphChangeUpdateOrigin(frame_node, previous_value));
 }
 
 void CPUMeasurementMonitor::OnBeforePageNodeRemoved(const PageNode* page_node) {
@@ -358,8 +367,9 @@ void CPUMeasurementMonitor::OnFinalResponseURLDetermined(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take a measurement of the process CPU usage, but don't assign this worker's
   // CPU to an OriginInPageContext, since the origin wasn't defined until now.
-  UpdateCPUMeasurements(worker_node->GetProcessNode(),
-                        GraphChangeUpdateURL(worker_node, GURL()));
+  UpdateCPUMeasurements(
+      worker_node->GetProcessNode(),
+      GraphChangeUpdateOrigin(worker_node, /*previous_origin=*/std::nullopt));
 }
 
 base::Value::Dict CPUMeasurementMonitor::DescribeFrameNodeData(
@@ -420,7 +430,7 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
   CHECK(process_node);
 
   if (!base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins) &&
-      absl::holds_alternative<GraphChangeUpdateURL>(graph_change)) {
+      absl::holds_alternative<GraphChangeUpdateOrigin>(graph_change)) {
     // No need to update measurements on origin changes when origins aren't
     // being measured.
     return;

@@ -219,6 +219,12 @@ class ResourceAttrCPUMonitorTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // URLs and corresponding origins used in tests.
+  const GURL kUrl1 = GURL("http://a.com");
+  const GURL kUrl2 = GURL("http://b.com");
+  const url::Origin kOrigin1 = url::Origin::Create(kUrl1);
+  const url::Origin kOrigin2 = url::Origin::Create(kUrl2);
+
   // Factory to return CPUMeasurementDelegates for `cpu_monitor_`. This must be
   // created before `cpu_monitor_` and deleted afterward to ensure that it
   // outlives all delegates it creates.
@@ -556,11 +562,12 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
 
   // Assign URL's to frames and workers in the graph so that they'll be mapped
   // to OriginInPageContexts.
-  const auto kUrl1 = GURL("http://a.com");
-  const auto kUrl2 = GURL("http://b.com");
-  mock_graph.frame->OnNavigationCommitted(kUrl1, /*same_document=*/false);
-  mock_graph.other_frame->OnNavigationCommitted(kUrl2, /*same_document=*/false);
-  mock_graph.child_frame->OnNavigationCommitted(kUrl1, /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                          /*same_document=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
+                                                /*same_document=*/false);
+  mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                                /*same_document=*/false);
   mock_graph.worker->OnFinalResponseURLDetermined(kUrl1);
   mock_graph.other_worker->OnFinalResponseURLDetermined(kUrl2);
 
@@ -605,13 +612,13 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
       mock_graph.other_process->GetResourceContext();
 
   const auto origin1_in_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl1), page_context);
+      OriginInPageContext(kOrigin1, page_context);
   const auto origin2_in_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl2), page_context);
+      OriginInPageContext(kOrigin2, page_context);
   const auto origin1_in_other_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl1), other_page_context);
+      OriginInPageContext(kOrigin1, other_page_context);
   const auto origin2_in_other_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl2), other_page_context);
+      OriginInPageContext(kOrigin2, other_page_context);
 
   EXPECT_THAT(current_measurements_[browser_process_context],
               AllOf(CPUDeltaMatches(browser_process_context,
@@ -835,11 +842,12 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
 
   // Assign URL's to frames and workers in the graph so that they'll be mapped
   // to OriginInPageContexts.
-  const auto kUrl1 = GURL("http://a.com");
-  const auto kUrl2 = GURL("http://b.com");
-  mock_graph.frame->OnNavigationCommitted(kUrl1, /*same_document=*/false);
-  mock_graph.other_frame->OnNavigationCommitted(kUrl2, /*same_document=*/false);
-  mock_graph.child_frame->OnNavigationCommitted(kUrl1, /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                          /*same_document=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
+                                                /*same_document=*/false);
+  mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                                /*same_document=*/false);
   mock_graph.worker->OnFinalResponseURLDetermined(kUrl1);
   mock_graph.other_worker->OnFinalResponseURLDetermined(kUrl2);
 
@@ -869,13 +877,13 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
       mock_graph.other_process->GetResourceContext();
 
   const auto origin1_in_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl1), page_context);
+      OriginInPageContext(kOrigin1, page_context);
   const auto origin2_in_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl2), page_context);
+      OriginInPageContext(kOrigin2, page_context);
   const auto origin1_in_other_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl1), other_page_context);
+      OriginInPageContext(kOrigin1, other_page_context);
   const auto origin2_in_other_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl2), other_page_context);
+      OriginInPageContext(kOrigin2, other_page_context);
 
   // `new_frame1` and `new_worker1` are added just after a measurement.
   // `new_frame2` and `new_worker2` are added between measurements.
@@ -888,7 +896,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   // part of any page.
   auto new_frame1 =
       CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
-  new_frame1->OnNavigationCommitted(kUrl1, /*same_document=*/false);
+  new_frame1->OnNavigationCommitted(kUrl1, kOrigin1, /*same_document=*/false);
   auto new_worker1 = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
   new_worker1->OnFinalResponseURLDetermined(kUrl1);
@@ -899,7 +907,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
   auto new_frame2 =
       CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
-  new_frame2->OnNavigationCommitted(kUrl2, /*same_document=*/false);
+  new_frame2->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
   auto new_worker2 = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
   new_worker2->OnFinalResponseURLDetermined(kUrl2);
@@ -910,7 +918,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
   auto new_frame3 =
       CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
-  new_frame3->OnNavigationCommitted(kUrl2, /*same_document=*/false);
+  new_frame3->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
   auto new_worker3 = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
   new_worker3->OnFinalResponseURLDetermined(kUrl2);
@@ -1185,11 +1193,12 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
 
   // Assign URL's to frames and workers in the graph so that they'll be mapped
   // to OriginInPageContexts.
-  const auto kUrl1 = GURL("http://a.com");
-  const auto kUrl2 = GURL("http://b.com");
-  mock_graph.frame->OnNavigationCommitted(kUrl1, /*same_document=*/false);
-  mock_graph.other_frame->OnNavigationCommitted(kUrl2, /*same_document=*/false);
-  mock_graph.child_frame->OnNavigationCommitted(kUrl1, /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                          /*same_document=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
+                                                /*same_document=*/false);
+  mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                                /*same_document=*/false);
   mock_graph.worker->OnFinalResponseURLDetermined(kUrl1);
   mock_graph.other_worker->OnFinalResponseURLDetermined(kUrl2);
 
@@ -1206,13 +1215,13 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
       mock_graph.other_page->GetResourceContext();
 
   const auto origin1_in_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl1), page_context);
+      OriginInPageContext(kOrigin1, page_context);
   const auto origin2_in_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl2), page_context);
+      OriginInPageContext(kOrigin2, page_context);
   const auto origin1_in_other_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl1), other_page_context);
+      OriginInPageContext(kOrigin1, other_page_context);
   const auto origin2_in_other_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl2), other_page_context);
+      OriginInPageContext(kOrigin2, other_page_context);
 
   auto new_worker1 = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, mock_graph.process.get());
@@ -1537,11 +1546,12 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
 
   // Assign URL's to frames in the graph so that they'll be mapped to
   // OriginInPageContexts.
-  const auto kUrl1 = GURL("http://a.com");
-  const auto kUrl2 = GURL("http://b.com");
-  mock_graph.frame->OnNavigationCommitted(kUrl1, /*same_document=*/false);
-  mock_graph.other_frame->OnNavigationCommitted(kUrl2, /*same_document=*/false);
-  mock_graph.child_frame->OnNavigationCommitted(kUrl1, /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                          /*same_document=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
+                                                /*same_document=*/false);
+  mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                                /*same_document=*/false);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
@@ -1557,19 +1567,21 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
       mock_graph.other_page->GetResourceContext();
 
   const auto origin1_in_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl1), page_context);
+      OriginInPageContext(kOrigin1, page_context);
   const auto origin2_in_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl2), page_context);
+      OriginInPageContext(kOrigin2, page_context);
   const auto origin1_in_other_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl1), other_page_context);
+      OriginInPageContext(kOrigin1, other_page_context);
   const auto origin2_in_other_page_context =
-      OriginInPageContext(url::Origin::Create(kUrl2), other_page_context);
+      OriginInPageContext(kOrigin2, other_page_context);
 
   // Navigate a frame partway through the measurement.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
-  mock_graph.other_frame->OnNavigationCommitted(kUrl1, /*same_document=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                                /*same_document=*/false);
   // Same-document navigation should not change the origin.
   mock_graph.child_frame->OnNavigationCommitted(GURL("http://a.com#fragment"),
+                                                kOrigin1,
                                                 /*same_document=*/true);
   const base::TimeTicks navigation_time = base::TimeTicks::Now();
 

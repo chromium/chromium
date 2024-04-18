@@ -63,7 +63,10 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   // Document specific properties. These are emitted in a nested dictionary, as
   // a frame node can be reused for different documents.
   base::Value::Dict doc;
-  doc.Set("url", impl->document_.url.value().possibly_invalid_spec());
+  doc.Set("url", impl->document_.url.possibly_invalid_spec());
+  doc.Set("origin", impl->document_.origin.has_value()
+                        ? impl->document_.origin->GetDebugString()
+                        : "undefined");
   doc.Set("has_nonempty_beforeunload",
           impl->document_.has_nonempty_beforeunload);
   doc.Set("network_almost_idle", impl->document_.network_almost_idle.value());

@@ -82,6 +82,10 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnURLChanged(const performance_manager::FrameNode* frame_node,
                     const GURL& previous_value) override;
   // Ignored.
+  void OnOriginChanged(
+      const performance_manager::FrameNode* frame_node,
+      const std::optional<url::Origin>& previous_value) override {}
+  // Ignored.
   void OnIsAdFrameChanged(
       const performance_manager::FrameNode* frame_node) override {}
   // Ignored.

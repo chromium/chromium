@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 class Node;
@@ -84,12 +86,18 @@ struct GraphChangeRemoveClientWorkerFromWorker {
 // Not technically a graph change, but modifies the distribution of FrameNode
 // and WorkerNode measurements to OriginInPageContexts the same way graph
 // changes modify the distribution of measurements to PageContexts.
-struct GraphChangeUpdateURL {
-  GraphChangeUpdateURL(const performance_manager::Node* node, GURL previous_url)
-      : node(node), previous_url(std::move(previous_url)) {}
+struct GraphChangeUpdateOrigin {
+  GraphChangeUpdateOrigin(const performance_manager::Node* node,
+                          std::optional<url::Origin> previous_origin);
+  ~GraphChangeUpdateOrigin();
+
+  GraphChangeUpdateOrigin(const GraphChangeUpdateOrigin&);
+  GraphChangeUpdateOrigin& operator=(const GraphChangeUpdateOrigin&);
+  GraphChangeUpdateOrigin(GraphChangeUpdateOrigin&&);
+  GraphChangeUpdateOrigin& operator=(GraphChangeUpdateOrigin&&);
 
   raw_ptr<const performance_manager::Node> node;
-  GURL previous_url;
+  std::optional<url::Origin> previous_origin;
 };
 
 using GraphChange = absl::variant<NoGraphChange,
@@ -101,7 +109,7 @@ using GraphChange = absl::variant<NoGraphChange,
                                   GraphChangeRemoveClientFrameFromWorker,
                                   GraphChangeAddClientWorkerToWorker,
                                   GraphChangeRemoveClientWorkerFromWorker,
-                                  GraphChangeUpdateURL>;
+                                  GraphChangeUpdateOrigin>;
 
 }  // namespace resource_attribution
 

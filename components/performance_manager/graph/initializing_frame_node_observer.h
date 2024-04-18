@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -34,6 +35,9 @@ class InitializingFrameNodeObserver {
   virtual void OnFrameLifecycleStateChanged(const FrameNode* frame_node) {}
   virtual void OnURLChanged(const FrameNode* frame_node,
                             const GURL& previous_value) {}
+  virtual void OnOriginChanged(
+      const FrameNode* frame_node,
+      const std::optional<url::Origin>& previous_value) {}
   virtual void OnIsAdFrameChanged(const FrameNode* frame_node) {}
   virtual void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) {}
   virtual void OnFrameIsHoldingIndexedDBLockChanged(
@@ -80,6 +84,9 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
   void OnFrameLifecycleStateChanged(const FrameNode* frame_node) override;
   void OnURLChanged(const FrameNode* frame_node,
                     const GURL& previous_value) override;
+  void OnOriginChanged(
+      const FrameNode* frame_node,
+      const std::optional<url::Origin>& previous_value) override;
   void OnIsAdFrameChanged(const FrameNode* frame_node) override;
   void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) override;
   void OnFrameIsHoldingIndexedDBLockChanged(

@@ -77,6 +77,14 @@ void InitializingFrameNodeObserverManager::OnURLChanged(
   }
 }
 
+void InitializingFrameNodeObserverManager::OnOriginChanged(
+    const FrameNode* frame_node,
+    const std::optional<url::Origin>& previous_value) {
+  for (InitializingFrameNodeObserver& observer : observer_list_) {
+    observer.OnOriginChanged(frame_node, previous_value);
+  }
+}
+
 void InitializingFrameNodeObserverManager::OnIsAdFrameChanged(
     const FrameNode* frame_node) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {

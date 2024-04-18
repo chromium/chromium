@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -88,6 +89,7 @@ class FrameNodeImpl
   LifecycleState GetLifecycleState() const override;
   bool HasNonemptyBeforeUnload() const override;
   const GURL& GetURL() const override;
+  const std::optional<url::Origin>& GetOrigin() const override;
   bool IsCurrent() const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
   bool GetNetworkAlmostIdle() const override;
@@ -135,7 +137,7 @@ class FrameNodeImpl
   void SetPrivateFootprintKbEstimate(uint64_t private_footprint_estimate);
 
   // Invoked when a navigation is committed in the frame.
-  void OnNavigationCommitted(const GURL& url, bool same_document);
+  void OnNavigationCommitted(GURL url, url::Origin origin, bool same_document);
 
   // Invoked by |worker_node| when it starts/stops being a child of this frame.
   void AddChildWorker(WorkerNodeImpl* worker_node);
@@ -199,13 +201,15 @@ class FrameNodeImpl
     DocumentProperties();
     ~DocumentProperties();
 
-    void Reset(FrameNodeImpl* frame_node, const GURL& url_in);
+    void Reset(FrameNodeImpl* frame_node, GURL url_in, url::Origin origin_in);
 
-    ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-        GURL,
-        const GURL&,
-        &FrameNodeObserver::OnURLChanged>
-        url;
+    // FrameNodeObserver::OnURLChanged/OnOriginChanged() is invoked when the
+    // URL/origin changes. Not using ObservedProperty here to allow updating
+    // both properties before notifying observers (see
+    // `FrameNodeImpl::DocumentProperties::Reset` implementation).
+    GURL url;
+    std::optional<url::Origin> origin;
+
     bool has_nonempty_beforeunload = false;
 
     // Network is considered almost idle when there are no more than 2 network

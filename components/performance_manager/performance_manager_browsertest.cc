@@ -24,8 +24,10 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -111,6 +113,48 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, OpenerTrackingWorks) {
     EXPECT_EQ(1u, frame->GetOpenedPageNodes().size());
     auto* embedded_page = *(frame->GetOpenedPageNodes().begin());
     EXPECT_EQ(frame, embedded_page->GetOpenerFrameNode());
+  });
+}
+
+namespace {
+
+MATCHER_P(IsOpaqueDerivedFrom,
+          base_origin,
+          "is opaque derived from " + base_origin.GetDebugString()) {
+  return arg.has_value() && arg->opaque() &&
+         arg->GetTupleOrPrecursorTupleIfOpaque() ==
+             base_origin.GetTupleOrPrecursorTupleIfOpaque();
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, OriginAboutBlankFrame) {
+  // Load a page with:
+  // - A regular frame navigated to about:blank.
+  // - A sandboxed frame navigated to about:blank.
+  GURL main_frame_url(
+      embedded_test_server()->GetURL("a.com", "/about_blank_iframes.html"));
+  const url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  auto* contents = shell()->web_contents();
+  auto page = PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
+
+  // Jump into the graph and make sure everything is connected as expected.
+  RunInGraph([&]() {
+    EXPECT_TRUE(page);
+
+    // Verify that the regular frame has the same origin as its parent whereas
+    // the sandboxed frame has an opaque origin derived from it, as assumed by
+    // Resource Attribution.
+    std::vector<std::optional<url::Origin>> child_frame_origins;
+    for (const FrameNode* node :
+         page->GetMainFrameNode()->GetChildFrameNodes()) {
+      child_frame_origins.push_back(node->GetOrigin());
+    }
+    EXPECT_THAT(child_frame_origins,
+                testing::UnorderedElementsAre(
+                    main_frame_origin, IsOpaqueDerivedFrom(main_frame_origin)));
   });
 }
 

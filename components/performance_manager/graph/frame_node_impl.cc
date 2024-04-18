@@ -168,7 +168,12 @@ bool FrameNodeImpl::HasNonemptyBeforeUnload() const {
 
 const GURL& FrameNodeImpl::GetURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.url.value();
+  return document_.url;
+}
+
+const std::optional<url::Origin>& FrameNodeImpl::GetOrigin() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return document_.origin;
 }
 
 bool FrameNodeImpl::IsCurrent() const {
@@ -382,11 +387,20 @@ void FrameNodeImpl::SetPrivateFootprintKbEstimate(
   private_footprint_kb_estimate_ = private_footprint_estimate;
 }
 
-void FrameNodeImpl::OnNavigationCommitted(const GURL& url, bool same_document) {
+void FrameNodeImpl::OnNavigationCommitted(GURL url,
+                                          url::Origin origin,
+                                          bool same_document) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (same_document) {
-    document_.url.SetAndMaybeNotify(this, url);
+    url = std::exchange(document_.url, std::move(url));
+
+    if (url != document_.url) {
+      for (auto& observer : GetObservers()) {
+        observer.OnURLChanged(this, /*previous_value=*/url);
+      }
+    }
+
     return;
   }
 
@@ -415,7 +429,7 @@ void FrameNodeImpl::OnNavigationCommitted(const GURL& url, bool same_document) {
   receiver_.reset();
 
   // Reset properties.
-  document_.Reset(this, url);
+  document_.Reset(this, std::move(url), std::move(origin));
 }
 
 void FrameNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {
@@ -749,8 +763,30 @@ FrameNodeImpl::DocumentProperties::DocumentProperties() = default;
 FrameNodeImpl::DocumentProperties::~DocumentProperties() = default;
 
 void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
-                                              const GURL& url_in) {
-  url.SetAndMaybeNotify(frame_node, url_in);
+                                              GURL url_in,
+                                              url::Origin origin_in) {
+  // Update the URL and origin properties.
+  url_in = std::exchange(url, std::move(url_in));
+
+  std::optional<url::Origin> previous_origin = std::move(origin);
+  origin = std::move(origin_in);
+
+  // Notify observers of the URL and origin change after updating both
+  // properties, to avoid having observers that mistakenly access the URL and
+  // origin of different documents.
+  if (url != url_in) {
+    for (auto& observer : frame_node->GetObservers()) {
+      observer.OnURLChanged(frame_node, /*previous_value=*/url_in);
+    }
+  }
+
+  if (origin != previous_origin) {
+    for (auto& observer : frame_node->GetObservers()) {
+      observer.OnOriginChanged(frame_node, /*previous_value=*/previous_origin);
+    }
+  }
+
+  // Update other properties.
   has_nonempty_beforeunload = false;
   // Network is busy on navigation.
   network_almost_idle.SetAndMaybeNotify(frame_node, false);

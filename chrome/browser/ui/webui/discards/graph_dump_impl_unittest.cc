@@ -210,7 +210,8 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
       kAskPermissionStatus);
 
   auto* main_frame = mock_graph.page->main_frame_node();
-  main_frame->OnNavigationCommitted(kExampleUrl, /* same_document */ false);
+  main_frame->OnNavigationCommitted(
+      kExampleUrl, url::Origin::Create(kExampleUrl), /* same_document */ false);
 
   std::unique_ptr<DiscardsGraphDumpImpl> impl =
       std::make_unique<DiscardsGraphDumpImpl>();

@@ -232,12 +232,14 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
           site_instance->GetBrowsingInstanceId(), site_instance->GetId(),
           render_frame_host->IsActive(),
           base::BindOnce(
-              [](const GURL& url, FrameNodeImpl* frame_node) {
+              [](GURL url, url::Origin origin, FrameNodeImpl* frame_node) {
                 if (!url.is_empty())
-                  frame_node->OnNavigationCommitted(url,
-                                                    /* same_document */ false);
+                  frame_node->OnNavigationCommitted(std::move(url),
+                                                    std::move(origin),
+                                                    /*same_document=*/false);
               },
-              render_frame_host->GetLastCommittedURL()));
+              render_frame_host->GetLastCommittedURL(),
+              render_frame_host->GetLastCommittedOrigin()));
 
   frames_[render_frame_host] = std::move(frame);
 }
@@ -413,10 +415,11 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
   auto* frame_node = frame_it->second.get();
 
   // Notify the frame of the committed URL.
-  GURL url = navigation_handle->GetURL();
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&FrameNodeImpl::OnNavigationCommitted,
-                                base::Unretained(frame_node), url,
+                                base::Unretained(frame_node),
+                                render_frame_host->GetLastCommittedURL(),
+                                render_frame_host->GetLastCommittedOrigin(),
                                 navigation_handle->IsSameDocument()));
 
   if (!navigation_handle->IsInPrimaryMainFrame())
@@ -432,7 +435,8 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
                      base::Unretained(primary_page_node()),
                      navigation_handle->IsSameDocument(),
                      navigation_committed_time,
-                     navigation_handle->GetNavigationId(), url,
+                     navigation_handle->GetNavigationId(),
+                     render_frame_host->GetLastCommittedURL(),
                      navigation_handle->GetWebContents()->GetContentsMimeType(),
                      GetNotificationPermissionStatusAndObserveChanges()));
 }

@@ -30,8 +30,6 @@
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 
-class GURL;
-
 namespace resource_attribution {
 
 // Periodically collect CPU usage from process nodes.
@@ -91,8 +89,9 @@ class CPUMeasurementMonitor
   // FrameNode::Observer:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
-  void OnURLChanged(const FrameNode* frame_node,
-                    const GURL& previous_value) override;
+  void OnOriginChanged(
+      const FrameNode* frame_node,
+      const std::optional<url::Origin>& previous_value) override;
 
   // PageNode::Observer:
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;

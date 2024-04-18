@@ -233,19 +233,21 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
   // results are cleared along with the PageContext.
   auto page1 = CreateNode<PageNodeImpl>();
   const GURL kUrl1("https://a.com");
+  const url::Origin kOrigin1 = url::Origin::Create(kUrl1);
   auto frame1 = CreateFrameNodeAutoId(process3.get(), page1.get());
-  frame1->OnNavigationCommitted(kUrl1, /*same_document=*/false);
+  frame1->OnNavigationCommitted(kUrl1, kOrigin1, /*same_document=*/false);
   const GURL kUrl2("https://b.com");
+  const url::Origin kOrigin2 = url::Origin::Create(kUrl2);
   auto frame2 = CreateFrameNodeAutoId(process3.get(), page1.get());
-  frame2->OnNavigationCommitted(kUrl2, /*same_document=*/false);
+  frame2->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
 
   const auto page_context1 = page1->GetResourceContext();
   const auto frame_context1 = frame1->GetResourceContext();
   const auto frame_context2 = frame2->GetResourceContext();
-  const auto origin_in_page_context1 = OriginInPageContext(
-      url::Origin::Create(kUrl1), page1->GetResourceContext());
-  const auto origin_in_page_context2 = OriginInPageContext(
-      url::Origin::Create(kUrl2), page1->GetResourceContext());
+  const auto origin_in_page_context1 =
+      OriginInPageContext(kOrigin1, page1->GetResourceContext());
+  const auto origin_in_page_context2 =
+      OriginInPageContext(kOrigin2, page1->GetResourceContext());
 
   // Also test that WorkerContexts are tracked correctly.
   auto worker1 = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,

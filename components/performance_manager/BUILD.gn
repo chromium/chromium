@@ -200,6 +200,7 @@ static_library("performance_manager") {
     "resource_attribution/cpu_measurement_monitor.h",
     "resource_attribution/cpu_proportion_tracker.cc",
     "resource_attribution/frame_context.cc",
+    "resource_attribution/graph_change.cc",
     "resource_attribution/graph_change.h",
     "resource_attribution/memory_measurement_delegate.cc",
     "resource_attribution/memory_measurement_provider.cc",

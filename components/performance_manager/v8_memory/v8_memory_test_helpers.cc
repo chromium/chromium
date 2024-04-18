@@ -267,7 +267,9 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
       frame_routing_id, frame_token,
       content::BrowsingInstanceId(browsing_instance_id));
   if (url) {
-    frame->OnNavigationCommitted(GURL(*url), /*same document*/ true);
+    const GURL gurl(*url);
+    frame->OnNavigationCommitted(gurl, url::Origin::Create(gurl),
+                                 /*same document=*/true);
   }
   if (memory_usage || canvas_memory_usage) {
     auto* data =
