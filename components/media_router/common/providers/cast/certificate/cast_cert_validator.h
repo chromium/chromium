@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_CERT_VALIDATOR_H_
 #define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_CERT_VALIDATOR_H_
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
@@ -107,7 +109,13 @@ class CertVerificationContext {
   virtual std::string GetCommonName() const = 0;
 };
 
-// Verifies a cast device certficate given a chain of DER-encoded certificates,
+// These provide access for tests to change the CastTrustStoreSingleton.
+void CastTrustStoreAddDefaultCertificatesForTesting();
+void CastTrustStoreAddBuiltInCertificatesForTesting();
+void CastTrustStoreAddCertificateFromPathForTesting(base::FilePath cert_path);
+void CastTrustStoreClearForTesting();
+
+// Verifies a cast device certificate given a chain of DER-encoded certificates,
 // using the built-in Cast trust anchors.
 //
 // Inputs:

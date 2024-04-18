@@ -31,6 +31,8 @@ static_library("certificate") {
     "cast_cert_validator.h",
     "cast_crl.cc",
     "cast_crl.h",
+    "cast_trust_store.cc",
+    "cast_trust_store.h",
     "switches.cc",
     "switches.h",
   ]
