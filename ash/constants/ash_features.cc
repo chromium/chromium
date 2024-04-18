@@ -3205,12 +3205,12 @@ bool IsAmbientModeThrottleAnimationEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeThrottleAnimation);
 }
 
-bool IsApnPoliciesEnabled() {
-  return base::FeatureList::IsEnabled(kApnPolicies);
-}
-
 bool IsApnRevampEnabled() {
   return base::FeatureList::IsEnabled(kApnRevamp);
+}
+
+bool IsApnPoliciesEnabled() {
+  return IsApnRevampEnabled() && base::FeatureList::IsEnabled(kApnPolicies);
 }
 
 bool IsAppNotificationsPageEnabled() {
