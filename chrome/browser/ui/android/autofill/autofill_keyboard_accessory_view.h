@@ -26,7 +26,8 @@ class AutofillKeyboardAccessoryController;
 class AutofillKeyboardAccessoryView
     : public AutofillKeyboardAccessoryAdapter::AccessoryView {
  public:
-  explicit AutofillKeyboardAccessoryView(
+  AutofillKeyboardAccessoryView(
+      base::WeakPtr<AutofillKeyboardAccessoryController> adapter,
       base::WeakPtr<AutofillKeyboardAccessoryController> controller);
 
   AutofillKeyboardAccessoryView(const AutofillKeyboardAccessoryView&) = delete;
@@ -70,6 +71,11 @@ class AutofillKeyboardAccessoryView
 
  private:
   // Weak reference to owner of this class. Always outlives this view.
+  // TODO(crbug.com/333316034): Eliminate this reference.
+  base::WeakPtr<AutofillKeyboardAccessoryController> adapter_;
+
+  // Weak reference to the controller of this view. It can be null if the
+  // controller has started hiding before this view is destroyed.
   base::WeakPtr<AutofillKeyboardAccessoryController> controller_;
 
   // Invoked when the user confirms or declines the deletion process.

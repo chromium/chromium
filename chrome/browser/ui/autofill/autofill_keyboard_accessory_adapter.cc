@@ -246,8 +246,7 @@ void AutofillKeyboardAccessoryAdapter::ViewDestroyed() {
 }
 
 gfx::NativeView AutofillKeyboardAccessoryAdapter::container_view() const {
-  CHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
-  return controller_->container_view();
+  NOTREACHED_NORETURN();
 }
 
 content::WebContents* AutofillKeyboardAccessoryAdapter::GetWebContents() const {

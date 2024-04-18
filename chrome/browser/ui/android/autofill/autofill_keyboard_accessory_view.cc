@@ -38,8 +38,9 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 AutofillKeyboardAccessoryView::AutofillKeyboardAccessoryView(
+    base::WeakPtr<AutofillKeyboardAccessoryController> adapter,
     base::WeakPtr<AutofillKeyboardAccessoryController> controller)
-    : controller_(controller) {
+    : adapter_(adapter), controller_(controller) {
   java_object_.Reset(Java_AutofillKeyboardAccessoryViewBridge_create(
       base::android::AttachCurrentThread()));
 }
@@ -50,6 +51,9 @@ AutofillKeyboardAccessoryView::~AutofillKeyboardAccessoryView() {
 }
 
 bool AutofillKeyboardAccessoryView::Initialize() {
+  if (!controller_) {
+    return false;
+  }
   ui::ViewAndroid* view_android = controller_->container_view();
   if (!view_android)
     return false;
@@ -70,14 +74,18 @@ void AutofillKeyboardAccessoryView::Hide() {
 
 void AutofillKeyboardAccessoryView::Show() {
   TRACE_EVENT0("passwords", "AutofillKeyboardAccessoryView::Show");
+  if (!controller_) {
+    return;
+  }
+  const int line_count = controller_->GetLineCount();
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> data_array =
       Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestionArray(
-          env, controller_->GetLineCount());
+          env, line_count);
 
   size_t position = 0;
-  for (int i = 0; i < controller_->GetLineCount(); ++i) {
-    const Suggestion& suggestion = controller_->GetSuggestionAt(i);
+  for (int i = 0; i < line_count; ++i) {
+    const Suggestion& suggestion = adapter_->GetSuggestionAt(i);
     int android_icon_id = 0;
     if (suggestion.icon != Suggestion::Icon::kNoIcon) {
       android_icon_id = ResourceMapper::MapToJavaDrawableId(
@@ -87,7 +95,7 @@ void AutofillKeyboardAccessoryView::Show() {
     std::u16string label = suggestion.main_text.value;
     std::u16string sublabel = suggestion.minor_text.value;
     if (std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
-            controller_->GetSuggestionLabelsAt(i);
+            adapter_->GetSuggestionLabelsAt(i);
         !suggestion_labels.empty()) {
       // Verify that there is a single line of label, and it contains a single
       // item.
@@ -107,7 +115,7 @@ void AutofillKeyboardAccessoryView::Show() {
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
         env, data_array, position++, label, sublabel, android_icon_id,
         base::to_underlying(suggestion.popup_item_id),
-        controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
+        adapter_->GetRemovalConfirmationText(i, nullptr, nullptr),
         suggestion.feature_for_iph ? suggestion.feature_for_iph->name : "",
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
@@ -132,14 +140,14 @@ void AutofillKeyboardAccessoryView::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  controller_->AcceptSuggestion(list_index);
+  adapter_->AcceptSuggestion(list_index);
 }
 
 void AutofillKeyboardAccessoryView::DeletionRequested(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  controller_->RemoveSuggestion(
+  adapter_->RemoveSuggestion(
       list_index,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 }
@@ -158,7 +166,7 @@ void AutofillKeyboardAccessoryView::OnDeletionDialogClosed(
 void AutofillKeyboardAccessoryView::ViewDismissed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  controller_->ViewDestroyed();
+  adapter_->ViewDestroyed();
 }
 
 // static
@@ -168,11 +176,13 @@ base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     return nullptr;
   }
 
-  auto adapter = std::make_unique<AutofillKeyboardAccessoryAdapter>(
+  base::WeakPtr<AutofillKeyboardAccessoryController> controller_weak =
       static_cast<AutofillKeyboardAccessoryController&>(*controller)
-          .GetWeakPtrToController());
+          .GetWeakPtrToController();
+  auto adapter =
+      std::make_unique<AutofillKeyboardAccessoryAdapter>(controller_weak);
   auto accessory_view = std::make_unique<AutofillKeyboardAccessoryView>(
-      adapter->GetWeakPtrToAdapter());
+      adapter->GetWeakPtrToAdapter(), controller_weak);
   if (!accessory_view->Initialize()) {
     return nullptr;  // Don't create an adapter without initialized view.
   }
