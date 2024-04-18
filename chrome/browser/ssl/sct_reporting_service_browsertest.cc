@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ssl/sct_reporting_service.h"
+
 #include <memory>
 #include <tuple>
 
@@ -23,7 +25,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
-#include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
@@ -59,6 +60,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/ct_log_info.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -868,6 +870,18 @@ class SCTHashdanceBrowserTest : public SCTReportingServiceBrowserTest {
     mock_cert_verifier()->AddResultForCertAndHost(
         https_server()->GetCertificate().get(), "hashdance.test", verify_result,
         net::OK);
+    network::mojom::CTLogInfoPtr log(std::in_place);
+    std::string googleLogIdAsString(
+        reinterpret_cast<const char*>(kTestGoogleLogId),
+        sizeof(kTestGoogleLogId));
+    log->id = googleLogIdAsString;
+    log->mmd = base::Seconds(86400);
+    std::vector<network::mojom::CTLogInfoPtr> log_list;
+    log_list.emplace_back(std::move(log));
+    base::RunLoop run_loop;
+    content::GetNetworkService()->UpdateCtLogList(std::move(log_list),
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
   }
 
  private:
