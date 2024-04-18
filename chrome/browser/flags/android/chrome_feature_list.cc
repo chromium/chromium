@@ -265,7 +265,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSuppressToolbarCaptures,
     &kTabDragDropAndroid,
     &kTabAndLinkDragDropAndroid,
-    &kTabStripGroupIndicatorsAndroid,
     &kTabGroupPaneAndroid,
     &kTabGroupParityAndroid,
     &kTabIdMapAndroid,
@@ -274,6 +273,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabletToolbarReordering,
     &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
+    &kTabStripGroupCollapseAndroid,
+    &kTabStripGroupIndicatorsAndroid,
     &kTabStripLayoutOptimization,
     &kTabStripStartupRefactoring,
     &kTabToGTSAnimation,
@@ -850,14 +851,6 @@ BASE_FEATURE(kTabIdMapAndroid,
              "TabIdMapAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabStripGroupIndicatorsAndroid,
-             "TabStripGroupIndicatorsAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabStateFlatBuffer,
-             "TabStateFlatBuffer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabletTabSwitcherLongPressMenu,
              "TabletTabSwitcherLongPressMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -868,6 +861,18 @@ BASE_FEATURE(kTabletToolbarIncognitoStatus,
 
 BASE_FEATURE(kTabletToolbarReordering,
              "TabletToolbarReordering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabStateFlatBuffer,
+             "TabStateFlatBuffer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabStripGroupCollapseAndroid,
+             "TabStripGroupCollapseAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabStripGroupIndicatorsAndroid,
+             "TabStripGroupIndicatorsAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripLayoutOptimization,

@@ -19520,6 +19520,7 @@ from previous Chrome versions.
   <int value="-741751264" label="SafetyCheckPermissions:disabled"/>
   <int value="-740850824"
       label="PrefetchNotificationSchedulingIntegration:enabled"/>
+  <int value="-740300751" label="TabStripGroupCollapseAndroid:enabled"/>
   <int value="-738957187" label="OmniboxUIExperimentSwapTitleAndUrl:disabled"/>
   <int value="-738264153" label="WaylandScreenCoordinatesEnabled:enabled"/>
   <int value="-737740161" label="SupportForAddPasswordsInSettings:enabled"/>
@@ -21321,6 +21322,7 @@ from previous Chrome versions.
   <int value="65750425" label="OmniboxMostVisitedTilesDynamicSpacing:disabled"/>
   <int value="66897259" label="ModalPermissionDialogView:enabled"/>
   <int value="67639499" label="stop-loading-in-background:disabled"/>
+  <int value="68506319" label="TabStripGroupCollapseAndroid:disabled"/>
   <int value="69571279" label="ExperimentalRgbKeyboardPatterns:disabled"/>
   <int value="69778786" label="NotificationPermissionVariant:disabled"/>
   <int value="71290103" label="ArcNearbySharing:enabled"/>

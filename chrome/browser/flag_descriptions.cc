@@ -4440,6 +4440,14 @@ const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
 const char kTabResumptionModuleAndroidDescription[] =
     "Enable showing tab suggestions on Android";
 
+const char kTabStripGroupCollapseAndroidName[] =
+    "Tab Strip Group Collapse Android";
+const char kTabStripGroupCollapseAndroidDescription[] =
+    "Enables tab strip group indicators to be clicked to collapse, temporarily "
+    "hiding the colored outline, the group title, and the grouped tabs. "
+    "Collapsed groups can be clicked again to expand. Synced tab groups will "
+    "immediately be collapsed.";
+
 const char kTabStripGroupIndicatorsAndroidName[] =
     "Tab Strip Group Indicators Android";
 const char kTabStripGroupIndicatorsAndroidDescription[] =

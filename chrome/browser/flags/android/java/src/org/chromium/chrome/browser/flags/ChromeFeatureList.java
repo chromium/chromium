@@ -457,6 +457,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_LINK_DRAG_DROP_ANDROID = "TabAndLinkDragDropAndroid";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
     public static final String TAB_ID_MAP = "TabIdMapAndroid";
+    public static final String TAB_STRIP_GROUP_COLLAPSE = "TabStripGroupCollapseAndroid";
     public static final String TAB_STRIP_GROUP_INDICATORS = "TabStripGroupIndicatorsAndroid";
     public static final String TAB_STRIP_LAYOUT_OPTIMIZATION = "TabStripLayoutOptimization";
     public static final String TAB_STRIP_STARTUP_REFACTORING = "TabStripStartupRefactoring";
@@ -649,6 +650,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TABLET_TOOLBAR_INCOGNITO_STATUS, true);
     public static final CachedFlag sTabletToolbarReordering =
             newCachedFlag(TABLET_TOOLBAR_REORDERING, false);
+    public static final CachedFlag sTabStripGroupCollapse =
+            newCachedFlag(TAB_STRIP_GROUP_COLLAPSE, false);
     public static final CachedFlag sTabStripGroupIndicators =
             newCachedFlag(TAB_STRIP_GROUP_INDICATORS, false);
     public static final CachedFlag sTabToGTSAnimation = newCachedFlag(TAB_TO_GTS_ANIMATION, true);
@@ -745,6 +748,7 @@ public abstract class ChromeFeatureList {
                     sTabLinkDragDropAndroid,
                     sTabResumptionModuleAndroid,
                     sTabStateFlatBuffer,
+                    sTabStripGroupCollapse,
                     sTabStripGroupIndicators,
                     sTabStripLayoutOptimization,
                     sTabStripStartupRefactoring,

@@ -9779,6 +9779,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupParityAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabGroupParityAndroid)},
 
+    {"tab-strip-group-collapse-android",
+     flag_descriptions::kTabStripGroupCollapseAndroidName,
+     flag_descriptions::kTabStripGroupCollapseAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupCollapseAndroid)},
+
     {"tab-strip-group-indicators-android",
      flag_descriptions::kTabStripGroupIndicatorsAndroidName,
      flag_descriptions::kTabStripGroupIndicatorsAndroidDescription, kOsAndroid,
