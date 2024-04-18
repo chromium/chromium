@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/api/tasks/tasks_types.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -79,24 +80,62 @@ constexpr DummyTaskData kTaskInitializationData[] = {
      .due_string = "",
      .updated_string = "10 Nov 2023 0:00 GMT"}};
 
-std::unique_ptr<api::Task> GetTaskFromDummyTask(
-    const DummyTaskData& task_data) {
-  base::Time update_date;
+FocusModeTask GetTaskFromDummyTask(const DummyTaskData& task_data) {
+  FocusModeTask task;
+
+  base::Time update_date, due_date;
   CHECK(base::Time::FromString(task_data.updated_string, &update_date));
 
-  base::Time due_date;
-  return std::make_unique<api::Task>(
-      task_data.id, task_data.title,
-      base::Time::FromString(task_data.due_string, &due_date)
-          ? std::make_optional<base::Time>(due_date)
-          : std::nullopt,
-      task_data.completed,
-      /*has_subtasks=*/false,
-      /*has_email_link=*/false,
-      /*has_notes=*/false, update_date, /*web_view_link=*/GURL());
+  task.task_id = task_data.id;
+  task.task_list_id = "1";
+  task.due = base::Time::FromString(task_data.due_string, &due_date)
+                 ? std::make_optional<base::Time>(due_date)
+                 : std::nullopt;
+  task.updated = update_date;
+  task.title = task_data.title;
+
+  return task;
 }
 
+// Used to sort tasks for the carousel.
+struct TaskComparator {
+  enum class TaskGroupOrdering {
+    kPastDue,
+    kDueSoon,
+    kDueLater,
+  };
+
+  bool operator()(const FocusModeTask& lhs, const FocusModeTask& rhs) const {
+    auto lhs_group = GetOrdering(lhs);
+    auto rhs_group = GetOrdering(rhs);
+    if (lhs_group != rhs_group) {
+      return lhs_group < rhs_group;
+    }
+
+    return lhs.updated > rhs.updated;
+  }
+
+  TaskGroupOrdering GetOrdering(const FocusModeTask& entry) const {
+    auto remaining = entry.due.value_or(base::Time::Max()) - now;
+    if (remaining < base::Hours(0)) {
+      return TaskGroupOrdering::kPastDue;
+    } else if (remaining < base::Hours(24)) {
+      return TaskGroupOrdering::kDueSoon;
+    }
+    return TaskGroupOrdering::kDueLater;
+  }
+
+  base::Time now;
+};
+
 }  // namespace
+
+FocusModeTask::FocusModeTask() = default;
+FocusModeTask::~FocusModeTask() = default;
+FocusModeTask::FocusModeTask(const FocusModeTask&) = default;
+FocusModeTask::FocusModeTask(FocusModeTask&&) = default;
+FocusModeTask& FocusModeTask::operator=(const FocusModeTask&) = default;
+FocusModeTask& FocusModeTask::operator=(FocusModeTask&&) = default;
 
 FocusModeTasksProvider::FocusModeTasksProvider() {
   for (const DummyTaskData& task_data : kTaskInitializationData) {
@@ -106,61 +145,48 @@ FocusModeTasksProvider::FocusModeTasksProvider() {
 
 FocusModeTasksProvider::~FocusModeTasksProvider() = default;
 
-std::vector<const api::Task*> FocusModeTasksProvider::GetTaskList() const {
-  std::vector<const api::Task*> tasks;
-  tasks.reserve(tasks_data_.size());
-
-  for (const std::unique_ptr<api::Task>& task : tasks_data_) {
-    tasks.push_back(task.get());
-  }
-
-  return tasks;
+std::vector<FocusModeTask> FocusModeTasksProvider::GetSortedTaskList() const {
+  return sorted_tasks_;
 }
 
 void FocusModeTasksProvider::AddTask(const std::string& title,
                                      OnTaskSavedCallback callback) {
-  std::unique_ptr<api::Task> task = std::make_unique<api::Task>(
-      /*id=*/base::NumberToString(task_id_++), title,
-      /*due=*/std::nullopt, /*completed=*/false, /*has_subtasks=*/false,
-      /*has_email_link=*/false,
-      /*has_notes=*/false, /*updated=*/base::Time::Now(),
-      /*web_view_link=*/GURL());
+  FocusModeTask task;
+  task.task_list_id = "1";
+  task.task_id = base::NumberToString(task_id_++);
+  task.title = title;
+  task.updated = base::Time::Now();
 
-  api::Task* task_ptr = task.get();
-  InsertTask(std::move(task));
-  std::move(callback).Run(task_ptr);
+  InsertTask(task);
+  std::move(callback).Run(task);
 }
 
-void FocusModeTasksProvider::UpdateTaskTitle(const std::string& task_id,
-                                             const std::string& title,
-                                             OnTaskSavedCallback callback) {
-  api::Task* found_task = nullptr;
-  for (auto& task : tasks_data_) {
-    if (task_id == task->id) {
-      task->title = title;
-      found_task = task.get();
-      break;
-    }
-  }
-  std::move(callback).Run(found_task);
-}
+void FocusModeTasksProvider::UpdateTask(const std::string& task_list_id,
+                                        const std::string& task_id,
+                                        const std::string& title,
+                                        bool completed,
+                                        OnTaskSavedCallback callback) {
+  auto task = base::ranges::find_if(sorted_tasks_, [&](const auto& task) {
+    return task.task_id == task_id && task.task_list_id == task_list_id;
+  });
 
-void FocusModeTasksProvider::MarkAsCompleted(const std::string& task_id) {
-  std::erase_if(tasks_data_,
-                [task_id](const auto& task) { return task->id == task_id; });
-}
-
-void FocusModeTasksProvider::InsertTask(std::unique_ptr<api::Task> task) {
-  for (auto it = tasks_data_.begin(); it != tasks_data_.end(); it++) {
-    if ((task->due.value_or(base::Time::Max()) <
-         it->get()->due.value_or(base::Time::Max())) ||
-        (!it->get()->due.has_value() && task->updated > it->get()->updated)) {
-      tasks_data_.insert(it, std::move(task));
-      return;
-    }
+  if (task == sorted_tasks_.end()) {
+    std::move(callback).Run(FocusModeTask{});
+    return;
   }
 
-  tasks_data_.push_back(std::move(task));
+  task->title = title;
+
+  auto copy = *task;
+  if (completed) {
+    sorted_tasks_.erase(task);
+  }
+  std::move(callback).Run(copy);
+}
+
+void FocusModeTasksProvider::InsertTask(FocusModeTask task) {
+  sorted_tasks_.push_back(std::move(task));
+  base::ranges::sort(sorted_tasks_, TaskComparator{base::Time::Now()});
 }
 
 }  // namespace ash

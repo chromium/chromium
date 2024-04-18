@@ -4,8 +4,11 @@
 
 #include "ash/system/focus_mode/focus_mode_chip_carousel.h"
 
+#include <vector>
+
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/system/focus_mode/focus_mode_tasks_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/rtl.h"
 #include "base/test/scoped_feature_list.h"
@@ -55,31 +58,19 @@ class FocusModeChipCarouselTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  std::unique_ptr<api::Task> MakeTask(const std::string& title) {
-    return std::make_unique<api::Task>(
-        /*id=*/base::NumberToString(task_id_++), title,
-        /*due=*/std::nullopt, /*completed=*/false, /*has_subtasks=*/false,
-        /*has_email_link=*/false,
-        /*has_notes=*/false, /*updated=*/base::Time::Now(),
-        /*web_view_link=*/GURL());
-  }
+  std::vector<FocusModeTask> GetTasks(const std::vector<std::string>& titles) {
+    std::vector<FocusModeTask> tasks;
 
-  std::vector<std::unique_ptr<const api::Task>> MakeTasks(
-      const std::vector<std::string>& titles) {
-    std::vector<std::unique_ptr<const api::Task>> tasks;
-    for (const std::string& title : titles) {
-      tasks.push_back(MakeTask(title));
+    base::Time updated = base::Time::Now();
+    for (size_t i = 0; i != titles.size(); ++i) {
+      FocusModeTask& task = tasks.emplace_back();
+      task.task_list_id = "task_list_id";
+      task.task_id = base::NumberToString(i);
+      task.title = titles[i];
+      task.updated = updated - base::Seconds(i);
     }
+
     return tasks;
-  }
-
-  std::vector<const api::Task*> GetTaskPtrs(
-      const std::vector<std::unique_ptr<const api::Task>>& tasks) {
-    std::vector<const api::Task*> task_ptrs;
-    for (const auto& task : tasks) {
-      task_ptrs.push_back(task.get());
-    }
-    return task_ptrs;
   }
 
   FocusModeChipCarousel* focus_mode_chip_carousel() {
@@ -106,8 +97,6 @@ class FocusModeChipCarouselTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<FocusModeChipCarousel> focus_mode_chip_carousel_;
-  // ID counter for creating fake tasks.
-  int task_id_ = 0;
 };
 
 // Tests that the task list displays the list of tasks.
@@ -116,9 +105,7 @@ TEST_F(FocusModeChipCarouselTest, ChipCarouselPopulates) {
   auto validate_tasks = [&](const std::vector<std::string> task_titles) {
     SCOPED_TRACE(::testing::Message()
                  << "Tasks length: " << task_titles.size());
-    auto tasks = MakeTasks(task_titles);
-    focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks));
-
+    focus_mode_chip_carousel()->SetTasks(GetTasks(task_titles));
     EXPECT_EQ(task_titles.size(),
               GetScrollContents()->GetChildrenInZOrder().size());
     EXPECT_NE(task_titles.empty(), focus_mode_chip_carousel()->HasTasks());
@@ -141,14 +128,15 @@ TEST_F(FocusModeChipCarouselTest, ChipCarouselPopulates) {
 // Tests that if more than 5 tasks are provided, the carousel only populates the
 // first 5.
 TEST_F(FocusModeChipCarouselTest, MaxOfFive) {
-  auto tasks = MakeTasks({"one", "two", "three", "four", "five", "six"});
-  focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks));
+  focus_mode_chip_carousel()->SetTasks(
+      GetTasks({"one", "two", "three", "four", "five", "six"}));
   EXPECT_EQ(5u, GetScrollContents()->GetChildrenInZOrder().size());
 
   // The first 5 tasks should be populated.
   std::vector<LabelMatcherMatcherP<std::u16string>> task_labels = {};
-  for (const std::string& task : {"one", "two", "three", "four", "five"}) {
-    task_labels.push_back(LabelMatcher(base::UTF8ToUTF16(task)));
+  for (const std::string& task_title :
+       {"one", "two", "three", "four", "five"}) {
+    task_labels.push_back(LabelMatcher(base::UTF8ToUTF16(task_title)));
   }
   EXPECT_THAT(GetScrollContents()->GetChildrenInZOrder(),
               testing::ElementsAreArray(task_labels));
@@ -162,14 +150,12 @@ TEST_F(FocusModeChipCarouselTest, GradientOnScroll) {
 
   // Setting 1 task shouldn't make the scroll view overflow, so there should
   // still be no gradient.
-  auto tasks_1 = MakeTasks({"Preparing for I485 form"});
-  focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks_1));
+  focus_mode_chip_carousel()->SetTasks(GetTasks({"Preparing for I485 form"}));
   views::test::RunScheduledLayout(focus_mode_chip_carousel());
   EXPECT_FALSE(GetScrollView()->layer()->HasGradientMask());
 
   // Three tasks should overflow the scroll view and the gradient should appear.
-  auto tasks_2 = MakeTasks(kTestTaskTitles);
-  focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks_2));
+  focus_mode_chip_carousel()->SetTasks(GetTasks(kTestTaskTitles));
   views::test::RunScheduledLayout(focus_mode_chip_carousel());
   EXPECT_TRUE(GetScrollView()->layer()->HasGradientMask());
 
@@ -212,8 +198,7 @@ TEST_F(FocusModeChipCarouselTest, GradientOnScroll) {
 TEST_F(FocusModeChipCarouselTest, GradientInRTL) {
   base::i18n::SetRTLForTesting(true);
 
-  auto tasks = MakeTasks(kTestTaskTitles);
-  focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks));
+  focus_mode_chip_carousel()->SetTasks(GetTasks(kTestTaskTitles));
   views::test::RunScheduledLayout(focus_mode_chip_carousel());
   EXPECT_TRUE(GetScrollView()->layer()->HasGradientMask());
 

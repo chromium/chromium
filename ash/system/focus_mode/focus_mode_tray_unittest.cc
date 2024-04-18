@@ -5,7 +5,10 @@
 #include "ash/system/focus_mode/focus_mode_tray.h"
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/api/tasks/fake_tasks_client.h"
+#include "ash/api/tasks/tasks_controller.h"
 #include "ash/api/tasks/tasks_types.h"
+#include "ash/api/tasks/test_tasks_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
@@ -186,16 +189,14 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
+  FocusModeTask task;
+  task.task_list_id = "123";
+  task.task_id = "1";
+  task.title = "make a travel plan";
+  task.updated = base::Time::Now();
+
   FocusModeController* controller = FocusModeController::Get();
-  controller->SetSelectedTask(
-      std::make_unique<api::Task>(
-          /*id=*/base::NumberToString(0), "make a travel plan",
-          /*due=*/std::nullopt, /*completed=*/false, /*has_subtasks=*/false,
-          /*has_email_link=*/false,
-          /*has_notes=*/false,
-          /*updated=*/base::Time::Now(),
-          /*web_view_link=*/GURL())
-          .get());
+  controller->SetSelectedTask(task);
 
   //  Start focus mode and click the tray to activate the button.
   controller->ToggleFocusMode();
@@ -296,15 +297,14 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
   const std::u16string time_remaining = focus_mode_util::GetDurationString(
       session_duration, /*digital_format=*/false);
   controller->SetInactiveSessionDuration(session_duration);
-  controller->SetSelectedTask(std::make_unique<api::Task>(
-                                  /*id=*/base::NumberToString(1), task_name,
-                                  /*due=*/std::nullopt, /*completed=*/false,
-                                  /*has_subtasks=*/false,
-                                  /*has_email_link=*/false,
-                                  /*has_notes=*/false,
-                                  /*updated=*/base::Time::Now(),
-                                  /*web_view_link=*/GURL())
-                                  .get());
+
+  FocusModeTask task;
+  task.task_list_id = "abc";
+  task.task_id = "1";
+  task.title = task_name;
+  task.updated = base::Time::Now();
+
+  controller->SetSelectedTask(task);
   controller->ToggleFocusMode();
 
   LeftClickOn(focus_mode_tray_);

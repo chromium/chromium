@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "ash/api/tasks/fake_tasks_client.h"
+#include "ash/api/tasks/tasks_controller.h"
 #include "ash/api/tasks/tasks_types.h"
+#include "ash/api/tasks/test_tasks_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -188,24 +191,23 @@ TEST_F(FocusModeControllerMultiUserTest, FirstTimeUserFlow) {
 TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
   SimulateUserLogin(GetUser1AccountId());
 
+  const std::string task_id = "0";
+  const std::string title = "Focus Task";
+
+  FocusModeTask task;
+  task.task_list_id = "abc";
+  task.task_id = task_id;
+  task.title = title;
+  task.updated = base::Time::Now();
+
   // Verify that initially there is no selected task.
   auto* controller = FocusModeController::Get();
   EXPECT_FALSE(controller->HasSelectedTask());
 
   // Select a task, and verify that the task data is accurate.
-  int id = 0;
-  const std::string title = "Focus Task";
-  controller->SetSelectedTask(std::make_unique<api::Task>(
-                                  /*id=*/base::NumberToString(id), title,
-                                  /*due=*/std::nullopt, /*completed=*/false,
-                                  /*has_subtasks=*/false,
-                                  /*has_email_link=*/false,
-                                  /*has_notes=*/false,
-                                  /*updated=*/base::Time::Now(),
-                                  /*web_view_link=*/GURL())
-                                  .get());
+  controller->SetSelectedTask(task);
   EXPECT_TRUE(controller->HasSelectedTask());
-  EXPECT_EQ(base::NumberToString(id), controller->selected_task_id());
+  EXPECT_EQ(task_id, controller->selected_task_id());
   EXPECT_EQ(title, controller->selected_task_title());
 
   // Complete the task, and verify that the task data is cleared.

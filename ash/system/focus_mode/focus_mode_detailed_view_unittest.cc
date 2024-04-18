@@ -799,17 +799,13 @@ TEST_F(FocusModeDetailedViewTest, CheckHasSelectedTaskHistogram) {
   EXPECT_FALSE(controller->in_focus_session());
 
   // 2. Start a focus session with a selected task.
-  int id = 0;
-  const std::string title = "Focus Task";
-  controller->SetSelectedTask(std::make_unique<api::Task>(
-                                  /*id=*/base::NumberToString(id), title,
-                                  /*due=*/std::nullopt, /*completed=*/false,
-                                  /*has_subtasks=*/false,
-                                  /*has_email_link=*/false,
-                                  /*has_notes=*/false,
-                                  /*updated=*/base::Time::Now(),
-                                  /*web_view_link=*/GURL())
-                                  .get());
+  FocusModeTask task;
+  task.task_list_id = "abc";
+  task.task_id = "1";
+  task.title = "Focus Task";
+  task.updated = base::Time::Now();
+
+  controller->SetSelectedTask(task);
   EXPECT_TRUE(controller->HasSelectedTask());
 
   controller->ToggleFocusMode();

@@ -156,8 +156,7 @@ void FocusModeChipCarousel::OnMouseExited(const ui::MouseEvent& event) {
   UpdateGradient();
 }
 
-void FocusModeChipCarousel::SetTasks(
-    const std::vector<const api::Task*>& tasks) {
+void FocusModeChipCarousel::SetTasks(const std::vector<FocusModeTask>& tasks) {
   scroll_contents_->RemoveAllChildViews();
   if (tasks.empty()) {
     return;
@@ -166,11 +165,10 @@ void FocusModeChipCarousel::SetTasks(
   // Populate a maximum of `kMaxTasks` tasks.
   const size_t num_tasks = std::min(tasks.size(), kMaxTasks);
   for (size_t i = 0; i < num_tasks; i++) {
-    const api::Task* task = tasks[i];
     views::LabelButton* chip =
         scroll_contents_->AddChildView(std::make_unique<views::LabelButton>(
-            base::BindRepeating(on_chip_pressed_, task),
-            base::UTF8ToUTF16(task->title)));
+            base::BindRepeating(on_chip_pressed_, tasks[i]),
+            base::UTF8ToUTF16(tasks[i].title)));
     SetupChip(chip, /*first=*/(i == 0));
   }
 

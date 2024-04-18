@@ -351,24 +351,20 @@ base::Time FocusModeController::GetActualEndTime() const {
                             : current_session_->end_time();
 }
 
-void FocusModeController::SetSelectedTask(const api::Task* task) {
-  if (!task) {
-    selected_task_id_.clear();
-    selected_task_title_.clear();
-  } else {
-    selected_task_id_ = task->id;
-    selected_task_title_ = task->title;
-  }
+void FocusModeController::SetSelectedTask(const FocusModeTask& task) {
+  selected_task_ = task;
   // TODO(b/305089077): Update user prefs.
 }
 
 bool FocusModeController::HasSelectedTask() const {
-  return !selected_task_id_.empty();
+  return !selected_task_.task_id.empty();
 }
 
 void FocusModeController::CompleteTask() {
-  tasks_provider_.MarkAsCompleted(selected_task_id_);
-  SetSelectedTask(nullptr);
+  tasks_provider_.UpdateTask(selected_task_.task_list_id,
+                             selected_task_.task_id, selected_task_.title,
+                             /*completed=*/true, base::DoNothing());
+  SetSelectedTask({});
 }
 
 void FocusModeController::MaybeShowEndingMomentNudge() {
