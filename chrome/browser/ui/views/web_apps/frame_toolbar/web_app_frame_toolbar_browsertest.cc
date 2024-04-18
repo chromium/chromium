@@ -453,8 +453,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu,
                                  /*event_flags=*/0);
 
   // Extensions icon and menu should be visible.
-  EXPECT_TRUE(toolbar_button_container->extensions_container()->GetVisible());
-  EXPECT_TRUE(ExtensionsMenuView::IsShowing());
+  ExtensionsToolbarContainer* extensions_container =
+      toolbar_button_container->extensions_container();
+  EXPECT_TRUE(extensions_container->GetVisible());
+  EXPECT_TRUE(extensions_container->IsExtensionsMenuShowing());
 }
 
 class WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu
