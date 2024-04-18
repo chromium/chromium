@@ -491,6 +491,8 @@ _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _WIN_11_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
+    'rendering.desktop',
+    'system_health.common_desktop',
     'v8.runtime_stats.top_25',
 ])
 _WIN_11_EXECUTABLE_CONFIGS = frozenset([
