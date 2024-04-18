@@ -164,21 +164,9 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount,
             Runnable successCallback,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(
-                () -> {
-                    Account account = getAccountOrFail(syncingAccount, failureCallback);
-                    if (account == null) return;
-                    PasswordWithLocalData parsedPassword =
-                            parsePwdWithLocalDataOrFail(pwdWithLocalData, failureCallback);
-                    if (parsedPassword == null) return;
-                    assert parsedPassword.getPasswordSpecificsData().hasSignonRealm();
-                    assert !containsPasswordWithSameUniqueKey(
-                                    mSavedPasswords.get(account), parsedPassword)
-                            : "Trying to add password with the same unique key,"
-                                    + " updateLogin() should be called.";
-                    mSavedPasswords.get(account).add(parsedPassword);
-                    successCallback.run();
-                });
+        // In the production both addLogin and updateLogin act the same: they add if it's a new
+        // credential and update if the credential with the same key already exists in the database.
+        updateLogin(pwdWithLocalData, syncingAccount, successCallback, failureCallback);
     }
 
     @Override
@@ -223,7 +211,9 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
                     List<PasswordWithLocalData> pwdsToRemove =
                             filterPasswords(
                                     mSavedPasswords.get(account),
-                                    p -> parsedPassword.equals(p.getPasswordSpecificsData()));
+                                    p ->
+                                            hasSameUniqueKey(
+                                                    parsedPassword, p.getPasswordSpecificsData()));
                     mSavedPasswords.get(account).removeAll(pwdsToRemove);
                     successCallback.run();
                 });
@@ -291,6 +281,11 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             PasswordWithLocalData pwd, PasswordWithLocalData parsedPassword) {
         PasswordSpecificsData data1 = pwd.getPasswordSpecificsData();
         PasswordSpecificsData data2 = parsedPassword.getPasswordSpecificsData();
+        return hasSameUniqueKey(data1, data2);
+    }
+
+    private static boolean hasSameUniqueKey(
+            PasswordSpecificsData data1, PasswordSpecificsData data2) {
         return data1.getUsernameElement().equals(data2.getUsernameElement())
                 && data1.getUsernameValue().equals(data2.getUsernameValue())
                 && data1.getOrigin().equals(data2.getOrigin())

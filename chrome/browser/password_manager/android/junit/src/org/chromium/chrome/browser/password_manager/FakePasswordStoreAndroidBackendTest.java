@@ -171,7 +171,7 @@ public class FakePasswordStoreAndroidBackendTest {
     }
 
     @Test
-    public void testUpdateLogin() throws TimeoutException {
+    public void testUpdateLoginReplacesExisting() throws TimeoutException {
         fillPasswordStore();
 
         CallbackHelper successCallback = new CallbackHelper();
@@ -203,12 +203,52 @@ public class FakePasswordStoreAndroidBackendTest {
     }
 
     @Test
+    public void testUpdateLoginAddsNew() throws TimeoutException {
+        fillPasswordStore();
+
+        CallbackHelper successCallback = new CallbackHelper();
+        PasswordSpecificsData updatedPasswordData =
+                PasswordSpecificsData.newBuilder()
+                        .setUsernameValue("Elisa Tester")
+                        .setUsernameElement("username")
+                        .setPasswordElement("pwd1")
+                        .setOrigin("https://accounts.google.com/signin")
+                        .setSignonRealm("https://accounts.google.com")
+                        .setPasswordValue("UpdatedPassword")
+                        .build();
+        PasswordWithLocalData updatedPwdWithLocalData =
+                PasswordWithLocalData.newBuilder()
+                        .setPasswordSpecificsData(updatedPasswordData)
+                        .build();
+        mBackend.updateLogin(
+                updatedPwdWithLocalData.toByteArray(),
+                sTestAccount,
+                successCallback::notifyCalled,
+                unexpected -> fail());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Map<Account, List<PasswordWithLocalData>> allPasswords = mBackend.getAllSavedPasswords();
+        assertThat(successCallback.getCallCount(), is(1));
+        assertThat(allPasswords.get(sTestAccount.get()), hasSize(4));
+        assertThat(
+                allPasswords, hasEntry(is(sTestAccount.get()), hasItem(updatedPwdWithLocalData)));
+    }
+
+    @Test
     public void testRemoveLogin() throws TimeoutException {
         fillPasswordStore();
 
         CallbackHelper successCallback = new CallbackHelper();
+        PasswordSpecificsData removedLogin =
+                PasswordSpecificsData.newBuilder()
+                        .setUsernameValue(sPasswordData.getUsernameValue())
+                        .setUsernameElement(sPasswordData.getUsernameElement())
+                        .setPasswordElement(sPasswordData.getPasswordElement())
+                        .setOrigin(sPasswordData.getOrigin())
+                        .setSignonRealm(sPasswordData.getSignonRealm())
+                        .build();
         mBackend.removeLogin(
-                sPasswordData.toByteArray(),
+                removedLogin.toByteArray(),
                 sTestAccount,
                 successCallback::notifyCalled,
                 unexpected -> fail());
