@@ -6,6 +6,7 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_PAYMENTS_FACILITATED_PAYMENTS_INITIATE_PAYMENT_REQUEST_DETAILS_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,8 +22,15 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
       const FacilitatedPaymentsInitiatePaymentRequestDetails&) = delete;
   ~FacilitatedPaymentsInitiatePaymentRequestDetails();
 
+  // Returns true if everything that's required for making a PIX payment request
+  // is available.
+  bool IsReadyForPixPayment();
+
   std::string risk_data_;
   std::vector<uint8_t> client_token_;
+  // The payment instrument identifier.
+  std::optional<int64_t> instrument_id_;
+  std::optional<std::string> pix_code_;
 };
 
 }  // namespace payments::facilitated

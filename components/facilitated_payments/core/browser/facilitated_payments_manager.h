@@ -7,7 +7,6 @@
 
 #include <cstring>
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -120,18 +119,6 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RetrievesClientTokenIfPixPaymentPromptAccepted);
   FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      NoUserSelection_IsReadyToSendInitiatedPaymentRequestReturnsFalse);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      NoRiskData_IsReadyToSendInitiatedPaymentRequestReturnsFalse);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      NoClientToken_IsReadyToSendInitiatedPaymentRequestReturnsFalse);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      AllRequestDetailsAvailable_IsReadyToSendInitiatedPaymentRequestReturnsTrue);
-  FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
       ValidPixCodeDetectionResultDoesNotTriggerApiClient);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
@@ -186,24 +173,9 @@ class FacilitatedPaymentsManager {
   // If not empty, the client token can be used for initiating payment.
   void OnGetClientToken(std::vector<uint8_t> client_token);
 
-  // Returns true if everything that's required for making a payment request is
-  // available.
-  bool IsReadyToSendInitiatedPaymentRequest();
-
   // Makes a payment request to the Payments server after the user has selected
   // the account for making the payment.
   void SendInitiatePaymentRequest();
-
-  void set_initiate_payment_request_details_for_testing(
-      std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
-          initiate_payment_request_details) {
-    initiate_payment_request_details_ =
-        std::move(initiate_payment_request_details);
-  }
-
-  void set_selected_instrument_id_for_testing(int64_t selected_instrument_id) {
-    selected_instrument_id_ = selected_instrument_id;
-  }
 
   // Owner.
   raw_ref<FacilitatedPaymentsDriver> driver_;
@@ -230,9 +202,6 @@ class FacilitatedPaymentsManager {
 
   // Measures the time taken to scan the document for the PIX code.
   base::TimeTicks pix_code_detection_latency_measuring_timestamp_;
-
-  // The instrument identifier that was selected in the payment prompt.
-  std::optional<int64_t> selected_instrument_id_;
 
   // Contains the details required for the `InitiatePayment` request to be sent
   // to the Payments server.

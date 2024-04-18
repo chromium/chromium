@@ -12,4 +12,9 @@ FacilitatedPaymentsInitiatePaymentRequestDetails::
 FacilitatedPaymentsInitiatePaymentRequestDetails::
     ~FacilitatedPaymentsInitiatePaymentRequestDetails() = default;
 
+bool FacilitatedPaymentsInitiatePaymentRequestDetails::IsReadyForPixPayment() {
+  return instrument_id_.has_value() && pix_code_.has_value() &&
+         !risk_data_.empty() && !client_token_.empty();
+}
+
 }  // namespace payments::facilitated

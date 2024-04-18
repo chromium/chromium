@@ -41,7 +41,6 @@ void FacilitatedPaymentsManager::Reset() {
   ukm_source_id_ = 0;
   pix_code_detection_triggering_timer_.Stop();
   initiate_payment_request_details_.reset();
-  selected_instrument_id_ = std::nullopt;
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -131,6 +130,7 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
 
   if (result == mojom::PixCodeDetectionResult::kValidPixCodeFound &&
       base::FeatureList::IsEnabled(kEnablePixPayments)) {
+    initiate_payment_request_details_->pix_code_ = pix_code;
     api_client_->IsAvailable(
         base::BindOnce(&FacilitatedPaymentsManager::OnApiAvailabilityReceived,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -174,7 +174,7 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
   // Populating the risk data and showing the payment prompt may occur
   // asynchronously. If the user has already selected the payment account, send
   // the request to initiate payment.
-  if (IsReadyToSendInitiatedPaymentRequest()) {
+  if (initiate_payment_request_details_->IsReadyForPixPayment()) {
     SendInitiatePaymentRequest();
   }
 }
@@ -186,7 +186,7 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     return;
   }
 
-  selected_instrument_id_ = selected_instrument_id;
+  initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
   api_client_->GetClientToken(
       base::BindOnce(&FacilitatedPaymentsManager::OnGetClientToken,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -196,15 +196,9 @@ void FacilitatedPaymentsManager::OnGetClientToken(
     std::vector<uint8_t> client_token) {
   initiate_payment_request_details_->client_token_ = client_token;
 
-  if (IsReadyToSendInitiatedPaymentRequest()) {
+  if (initiate_payment_request_details_->IsReadyForPixPayment()) {
     SendInitiatePaymentRequest();
   }
-}
-
-bool FacilitatedPaymentsManager::IsReadyToSendInitiatedPaymentRequest() {
-  return selected_instrument_id_.has_value() &&
-         !initiate_payment_request_details_->risk_data_.empty() &&
-         !initiate_payment_request_details_->client_token_.empty();
 }
 
 void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
