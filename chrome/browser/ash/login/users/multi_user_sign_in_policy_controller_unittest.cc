@@ -224,7 +224,8 @@ TEST_F(MultiUserSignInPolicyControllerTest, AllAllowedBeforeLogin) {
     SetCachedBehavior(0, kTestCases[i]);
     EXPECT_TRUE(
         controller()->IsUserAllowedInSession(test_users_[0].GetUserEmail()));
-    EXPECT_EQ(std::nullopt, controller()->GetPrimaryUserPolicy());
+    EXPECT_EQ(std::nullopt,
+              GetMultiUserSignInPolicy(fake_user_manager_->GetPrimaryUser()));
   }
 }
 
@@ -293,8 +294,9 @@ TEST_F(MultiUserSignInPolicyControllerTest, IsSecondaryAllowed) {
     SCOPED_TRACE(i);
     SetPrefBehavior(0, kBehaviorTestCases[i].primary);
     SetCachedBehavior(1, kBehaviorTestCases[i].secondary);
+
     EXPECT_EQ(kBehaviorTestCases[i].primary,
-              controller()->GetPrimaryUserPolicy());
+              GetMultiUserSignInPolicy(fake_user_manager_->GetPrimaryUser()));
     EXPECT_EQ(
         kBehaviorTestCases[i].expected_secondary_allowed,
         controller()->IsUserAllowedInSession(test_users_[1].GetUserEmail()));

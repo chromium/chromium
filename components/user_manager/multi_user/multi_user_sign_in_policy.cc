@@ -6,6 +6,9 @@
 
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager_pref_names.h"
 
 namespace user_manager {
 
@@ -33,6 +36,21 @@ std::optional<MultiUserSignInPolicy> ParseMultiUserSignInPolicyPref(
     }
   }
   return std::nullopt;
+}
+
+std::optional<MultiUserSignInPolicy> GetMultiUserSignInPolicy(
+    const User* user) {
+  if (!user) {
+    return std::nullopt;
+  }
+
+  auto* prefs = user->GetProfilePrefs();
+  if (!prefs) {
+    return std::nullopt;
+  }
+
+  return ParseMultiUserSignInPolicyPref(
+      prefs->GetString(prefs::kMultiProfileUserBehaviorPref));
 }
 
 }  // namespace user_manager

@@ -47,10 +47,6 @@ class USER_MANAGER_EXPORT MultiUserSignInPolicyController {
   // Returns the cached policy value for `user_email`.
   MultiUserSignInPolicy GetCachedValue(std::string_view user_email) const;
 
-  // Returns the primary user's policy. If there's no primary user,
-  // returns std::nullopt.
-  std::optional<MultiUserSignInPolicy> GetPrimaryUserPolicy() const;
-
   // Returns true if user allowed to be in the current session.
   bool IsUserAllowedInSession(const std::string& user_email) const;
 

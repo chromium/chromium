@@ -857,7 +857,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     } else {
       std::tie(user_info.is_multi_user_sign_in_allowed,
                user_info.multi_user_sign_in_policy) =
-          GetMultiUserSignInPolicy(user);
+          ash::GetMultiUserSignInPolicy(user);
     }
 
     // Fill public session data.

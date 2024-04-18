@@ -147,21 +147,6 @@ void OnRemoveUserComplete(const AccountId& account_id,
   }
 }
 
-bool GetUserLockAttributes(const user_manager::User* user,
-                           MultiUserSignInPolicy* policy) {
-  Profile* const profile = ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile) {
-    return false;
-  }
-  PrefService* const prefs = profile->GetPrefs();
-  if (policy) {
-    *policy = ParseMultiUserSignInPolicyPref(
-                  prefs->GetString(prefs::kMultiProfileUserBehaviorPref))
-                  .value_or(MultiUserSignInPolicy::kUnrestricted);
-  }
-  return true;
-}
-
 policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_ash()
@@ -419,7 +404,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
   }
 
   // No user is allowed if the primary user policy forbids it.
-  if (multi_user_sign_in_policy_controller_.GetPrimaryUserPolicy() ==
+  if (user_manager::GetMultiUserSignInPolicy(GetPrimaryUser()) ==
       MultiUserSignInPolicy::kNotAllowed) {
     return {};
   }
@@ -445,9 +430,10 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
     return user_manager::UserList();
   }
 
-  MultiUserSignInPolicy primary_policy;
   auto* primary_user = GetPrimaryUser();
-  if (!GetUserLockAttributes(primary_user, &primary_policy)) {
+  std::optional<MultiUserSignInPolicy> primary_policy =
+      user_manager::GetMultiUserSignInPolicy(primary_user);
+  if (!primary_policy.has_value()) {
     // Locking is not allowed until the primary user profile is created.
     return user_manager::UserList();
   }
@@ -464,8 +450,9 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
   } else {
     // Fill list of potential unlock users based on multi-user policy state.
     for (user_manager::User* user : logged_in_users) {
-      MultiUserSignInPolicy policy;
-      if (!GetUserLockAttributes(user, &policy)) {
+      std::optional<MultiUserSignInPolicy> policy =
+          user_manager::GetMultiUserSignInPolicy(user);
+      if (!policy.has_value()) {
         continue;
       }
       if (policy == MultiUserSignInPolicy::kUnrestricted && user->CanLock()) {
