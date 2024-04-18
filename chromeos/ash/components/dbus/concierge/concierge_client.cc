@@ -226,24 +226,8 @@ class ConciergeClientImpl : public ConciergeClient {
       const concierge::AttachUsbDeviceRequest& request,
       chromeos::DBusMethodCallback<concierge::AttachUsbDeviceResponse> callback)
       override {
-    dbus::MethodCall method_call(concierge::kVmConciergeInterface,
-                                 concierge::kAttachUsbDeviceMethod);
-    dbus::MessageWriter writer(&method_call);
-
-    if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      LOG(ERROR) << "Failed to encode AttachUsbDeviceRequest protobuf";
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
-      return;
-    }
-
-    writer.AppendFileDescriptor(fd.get());
-
-    concierge_proxy_->CallMethod(
-        &method_call, kConciergeDBusTimeoutMs,
-        base::BindOnce(&ConciergeClientImpl::OnDBusProtoResponse<
-                           concierge::AttachUsbDeviceResponse>,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    CallMethodWithFd(concierge::kAttachUsbDeviceMethod, request, std::move(fd),
+                     std::move(callback));
   }
 
   void DetachUsbDevice(
@@ -364,8 +348,7 @@ class ConciergeClientImpl : public ConciergeClient {
 
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode protobuf for " << method_name;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -395,8 +378,7 @@ class ConciergeClientImpl : public ConciergeClient {
 
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode protobuf for " << method_name;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
