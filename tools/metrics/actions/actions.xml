@@ -42175,8 +42175,6 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="_" ordering="suffix">
-  <suffix name="3pcdUserBypass"
-      label="For third party cookie deprecation user bypass feature."/>
   <suffix name="AdaptiveButtonInTopToolbarCustomization_AddToBookmarks"
       label="For AdaptiveButtonInTopToolbarCustomization add to bookmarks
              feature."/>

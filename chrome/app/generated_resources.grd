@@ -4131,15 +4131,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_PROMO_SEE_HOW_BUTTON_TEXT" desc="Text on the button that opens the cookie controls bubble on the in-product-help bubble shown for the cookie controls bubble. Encourages users to see how to temporarily enable third-party cookies.">
         See how
       </message>
-      <message name="IDS_3PCD_USER_BYPASS_PROMO_TITLE" desc="Title of the in-product-help bubble shown for the user bypass feature. Reminds the user that tracking protection is on.">
-        Reminder: Tracking Protection is on
-      </message>
-      <message name="IDS_3PCD_USER_BYPASS_PROMO_TEXT" desc="Text on the in-product-help bubble shown for the user bypass feature. Explains that if a site is broken, enabling third-party cookies for the site might fix it.">
-        If a site you visit isn't working as expected, try temporarily allowing third-party cookies for that site. That will mean less protection but site features are more likely to work as expected.
-      </message>
-      <message name="IDS_3PCD_USER_BYPASS_PROMO_SCREENREADER" desc="Text announced with the in-product-help bubble shown for the user bypass feature. Explains how to temporarily enable third-party cookies if a site isn't working.">
-        If a site isn't working as expected, you can enable third-party cookies for it through the Tracking Protection option in the address bar.
-      </message>
 
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">

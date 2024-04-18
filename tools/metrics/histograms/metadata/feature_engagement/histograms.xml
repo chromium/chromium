@@ -28,9 +28,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="IPHFeature">
-  <variant name="IPH_3pcdUserBypass"
-      summary="promo for bypassing cookie blocking during third-party cookie
-               deprecation"/>
   <variant name="IPH_AdaptiveButtonInTopToolbarCustomization_AddToBookmarks"
       summary="the add to bookmarks adaptive button in the top toolbar"/>
   <variant name="IPH_AdaptiveButtonInTopToolbarCustomization_NewTab"

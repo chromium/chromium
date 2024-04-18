@@ -1549,25 +1549,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPH3pcdUserBypassFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    // Show promo only once and only if user hasn't interacted with
-    // the cookie controls bubble in the last year.
-    config->trigger =
-        EventConfig("iph_3pcd_user_bypass_triggered", Comparator(EQUAL, 0),
-                    feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-#if !BUILDFLAG(IS_ANDROID)
-    config->used =
-        EventConfig(feature_engagement::events::kCookieControlsBubbleShown,
-                    Comparator(ANY, 0), 360, 360);
-#endif  // !BUILDFLAG(IS_ANDROID)
-    return config;
-  }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)

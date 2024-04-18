@@ -546,16 +546,6 @@ void MaybeRegisterChromeFeaturePromos(
           .SetCustomActionDismissText(
               IDS_COOKIE_CONTROLS_PROMO_CLOSE_BUTTON_TEXT)));
 
-  // kIPH3pcdUserBypassFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPH3pcdUserBypassFeature,
-          kCookieControlsIconElementId, IDS_3PCD_USER_BYPASS_PROMO_TEXT,
-          IDS_3PCD_USER_BYPASS_PROMO_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetBubbleTitleText(IDS_3PCD_USER_BYPASS_PROMO_TITLE)));
-
   // kIPHReadingListDiscoveryFeature:
   if (features::IsSidePanelPinningEnabled()) {
     registry.RegisterFeature(

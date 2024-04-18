@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <vector>
+
 #include "base/feature_list_buildflags.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -450,45 +451,17 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
-class CookieControlsInteractiveUiWith3pcdUserBypassIphTest
-    : public CookieControlsInteractiveUiBaseTest {
- public:
-  CookieControlsInteractiveUiWith3pcdUserBypassIphTest()
-      : CookieControlsInteractiveUiBaseTest(
-            {feature_engagement::kIPH3pcdUserBypassFeature}) {}
-  ~CookieControlsInteractiveUiWith3pcdUserBypassIphTest() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWith3pcdUserBypassIphTest,
-                       ShowAndHide3pcdUbIph) {
-  BlockThirdPartyCookies(/*use_3pcd=*/true);
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
+                       NotShownWhen3pcdEnabled) {
+  BlockThirdPartyCookies(/*use_3pcd*/ true);
+  SetHighSiteEngagement();
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      InAnyContext(WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
-      PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWith3pcdUserBypassIphTest,
-                       Show3pcdUbIphAndOpenCookieControlsViaIcon) {
-  BlockThirdPartyCookies(/*use_3pcd=*/true);
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      // Check that IPH shows, then open cookie controls bubble via icon.
-      InAnyContext(WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
-      PressButton(kCookieControlsIconElementId),
-      // Cookie controls bubble should show and IPH should close.
-      InAnyContext(
-          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
+      // Check that the IPH does not show.
       EnsureNotPresent(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
-
 // Opening the feedback dialog on CrOS & LaCrOS open a system level dialog,
 // which cannot be easily tested here. Instead, LaCrOS has a separate feedback
 // browser test which gives some coverage.
