@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -473,6 +475,10 @@ class SyncErrorStateProvider : public StateProvider,
     return last_avatar_error_ == AvatarSyncErrorType::kSyncPaused &&
            AccountConsistencyModeManager::IsDiceEnabledForProfile(
                &profile_.get());
+  }
+
+  std::optional<AvatarSyncErrorType> GetLastAvatarSyncErrorType() const {
+    return last_avatar_error_;
   }
 
  private:
@@ -1306,9 +1312,14 @@ std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
     case ButtonState::kShowIdentityName:
       return GetShortProfileName();
     case ButtonState::kSyncError: {
+      const internal::SyncErrorStateProvider* sync_error_state =
+          internal::StateProviderGetter(
+              *state_manager_->GetActiveStateProvider())
+              .AsSyncError();
+      CHECK(sync_error_state);
       std::optional<AvatarSyncErrorType> sync_error =
-          ::GetAvatarSyncErrorType(profile_);
-      DCHECK(sync_error);
+          sync_error_state->GetLastAvatarSyncErrorType();
+      CHECK(sync_error.has_value());
       return l10n_util::GetStringFUTF16(
           IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP, GetShortProfileName(),
           GetAvatarSyncErrorDescription(
