@@ -4139,9 +4139,6 @@ targets.legacy_basic_suite(
             ci_only = True,
         ),
         "ash_unittests": targets.legacy_test_config(
-            # TODO(crbug.com/333572800): remove "ci_only = True" when issue is
-            # fixed
-            ci_only = True,
             swarming = targets.swarming(
                 shards = 5,
             ),

@@ -39535,7 +39535,6 @@
         "test_id_prefix": "ninja://chrome/test:ash_crosapi_tests/"
       },
       {
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
