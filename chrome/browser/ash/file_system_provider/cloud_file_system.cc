@@ -37,10 +37,6 @@ const GURL GetContentCacheURL() {
   return GURL("chrome://content-cache/");
 }
 
-const base::FilePath RootFilePath() {
-  return base::FilePath("/");
-}
-
 std::ostream& operator<<(std::ostream& out,
                          const std::vector<base::FilePath>& entry_paths) {
   for (size_t i = 0; i < entry_paths.size(); ++i) {
@@ -119,26 +115,9 @@ CloudFileSystem::CloudFileSystem(
       file_system_->GetFileSystemInfo(),
       base::BindOnce(&CloudFileSystem::OnContentCacheInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  // Add watcher to keep content cache up to date. Notifications are received
-  // though Notify() so no notification_callback is needed.
-  AddWatcher(GetContentCacheURL(), RootFilePath(),
-             /*recursive=*/true, /*persistent=*/false,
-             base::BindOnce([](base::File::Error result) {
-               VLOG(1) << "Added file watcher on root: " << result;
-             }),
-             base::DoNothing());
 }
 
-CloudFileSystem::~CloudFileSystem() {
-  if (content_cache_) {
-    RemoveWatcher(GetContentCacheURL(), RootFilePath(),
-                  /*recursive=*/true,
-                  base::BindOnce([](base::File::Error result) {
-                    VLOG(1) << "Removed file watcher on root: " << result;
-                  }));
-  }
-}
+CloudFileSystem::~CloudFileSystem() = default;
 
 void CloudFileSystem::OnContentCacheInitialized(
     base::FileErrorOr<std::unique_ptr<ContentCache>> error_or_cache) {
@@ -146,6 +125,7 @@ void CloudFileSystem::OnContentCacheInitialized(
       << "Error initializing the content cache: " << error_or_cache.error();
   if (error_or_cache.has_value()) {
     content_cache_ = std::move(error_or_cache.value());
+    // TODO(b/328679875): Add watcher for every file in the cache.
   }
 }
 
@@ -257,18 +237,37 @@ void CloudFileSystem::OnReadFileCompleted(int file_handle,
   auto readchunk_success_callback = base::BindRepeating(
       std::move(callback), bytes_read, has_more, base::File::FILE_OK);
 
+  const OpenedCloudFile& opened_cloud_file = it->second;
   if (!content_cache_->StartWriteBytes(
-          it->second, buffer, offset, bytes_read,
+          opened_cloud_file, buffer, offset, bytes_read,
           base::BindOnce(&CloudFileSystem::OnBytesWrittenToCache,
                          weak_ptr_factory_.GetWeakPtr(),
+                         opened_cloud_file.file_path,
                          readchunk_success_callback))) {
     readchunk_success_callback.Run();
   }
 }
 
 void CloudFileSystem::OnBytesWrittenToCache(
+    const base::FilePath& file_path,
     base::RepeatingCallback<void()> readchunk_success_callback,
     base::File::Error result) {
+  if (result == base::File::FILE_OK) {
+    Watchers::const_iterator watcher =
+        GetWatchers()->find(WatcherKey(file_path, /*recursive=*/false));
+    if (watcher == GetWatchers()->end() ||
+        !watcher->second.subscribers.contains(GetContentCacheURL())) {
+      // This file is newly added to the cache so watch it to track any changes.
+      // Notifications are received though Notify() so no notification_callback
+      // is needed.
+      AddWatcher(GetContentCacheURL(), file_path,
+                 /*recursive=*/false, /*persistent=*/false,
+                 base::BindOnce([](base::File::Error result) {
+                   VLOG(1) << "Added file watcher on file: " << result;
+                 }),
+                 base::DoNothing());
+    }
+  }
   readchunk_success_callback.Run();
 }
 

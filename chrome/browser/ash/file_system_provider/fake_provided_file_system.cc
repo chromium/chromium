@@ -539,10 +539,16 @@ AbortCallback FakeProvidedFileSystem::AddWatcher(
         base::BindOnce(std::move(callback), base::File::FILE_OK));
   }
 
+  Subscriber subscriber;
+  subscriber.origin = origin;
+  subscriber.persistent = persistent;
+  subscriber.notification_callback = std::move(notification_callback);
+
   // Add watcher.
   Watcher* const watcher = &watchers_[key];
   watcher->entry_path = entry_watcher;
   watcher->recursive = recursive;
+  watcher->subscribers[origin] = subscriber;
 
   // Notify observers.
   for (auto& observer : observers_) {

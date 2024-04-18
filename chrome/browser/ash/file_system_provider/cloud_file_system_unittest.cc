@@ -32,7 +32,7 @@ using base::test::TestFuture;
 using testing::_;
 using testing::Field;
 using testing::IsEmpty;
-using testing::IsTrue;
+using testing::IsFalse;
 using testing::Return;
 
 using OpenFileFuture =
@@ -161,10 +161,11 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
 
   void ReadFileSuccessfully(CloudFileSystem& cloud_file_system,
                             int file_handle,
-                            scoped_refptr<net::IOBuffer> buffer) {
+                            scoped_refptr<net::IOBuffer> buffer,
+                            int64_t offset = 0,
+                            int length = 1) {
     ReadFileFuture read_file_future;
-    cloud_file_system.ReadFile(file_handle, buffer.get(), /*offset=*/0,
-                               /*length=*/1,
+    cloud_file_system.ReadFile(file_handle, buffer.get(), offset, length,
                                read_file_future.GetRepeatingCallback());
     EXPECT_EQ(read_file_future.Get<int>(), 1);
     EXPECT_EQ(read_file_future.Get<base::File::Error>(), base::File::FILE_OK);
@@ -193,37 +194,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
   std::unique_ptr<TestingProfile> profile_;
 };
 
-// Test that there always exists a self-added recursive watcher on root when
-// there is a CacheManager.
-TEST_F(FileSystemProviderCloudFileSystemTest,
-       WatcherOnRootIsAddedWhenCacheManagerExists) {
-  EXPECT_CALL(mock_cache_manager_,
-              InitializeForProvider(
-                  GetFileSystemInfo(/*with_mock_cache_manager=*/true), _))
-      .Times(1);
-  std::unique_ptr<CloudFileSystem> cloud_file_system =
-      CreateCloudFileSystem(/*with_mock_cache_manager=*/true);
-
-  // Expect recursive root watcher added.
-  EXPECT_THAT(cloud_file_system->GetWatchers(),
-              Pointee(ElementsAre(Pair(
-                  _, AllOf(Field(&Watcher::entry_path, base::FilePath("/")),
-                           Field(&Watcher::recursive, IsTrue()))))));
-}
-
-// Test that there is not a recursive watcher on root when there isn't a
-// CacheManager.
-TEST_F(FileSystemProviderCloudFileSystemTest,
-       WatcherOnRootIsNotAddedWhenCacheManagerDoesNotExist) {
-  EXPECT_CALL(mock_cache_manager_, InitializeForProvider(_, _)).Times(0);
-  std::unique_ptr<CloudFileSystem> cloud_file_system =
-      CreateCloudFileSystem(/*with_mock_cache_manager=*/false);
-
-  // Expect no watchers are added.
-  EXPECT_THAT(cloud_file_system->GetWatchers(), Pointee(IsEmpty()));
-}
-
-TEST_F(FileSystemProviderCloudFileSystemTest, FirstReadFileWritesToCache) {
+TEST_F(FileSystemProviderCloudFileSystemTest, ContiguousReadsWriteToCache) {
   auto [mock_content_cache, cloud_file_system] =
       CreateMockContentCacheAndCloudFileSystem();
 
@@ -252,7 +223,40 @@ TEST_F(FileSystemProviderCloudFileSystemTest, FirstReadFileWritesToCache) {
         return true;
       });
 
-  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer);
+  // Read the first chunk.
+  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer, /*offset=*/0,
+                       /*length=*/1);
+
+  // Expect watcher added for file.
+  EXPECT_THAT(
+      cloud_file_system->GetWatchers(),
+      Pointee(ElementsAre(Pair(
+          _, AllOf(Field(&Watcher::entry_path, base::FilePath(kFakeFilePath)),
+                   Field(&Watcher::recursive, IsFalse()))))));
+
+  // Read the next chunk.
+  EXPECT_CALL(*mock_content_cache,
+              StartReadBytes(_, buffer.get(), /*offset=*/1,
+                             /*length=*/1, IsNotNullCallback()))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*mock_content_cache,
+              StartWriteBytes(_, buffer.get(), /*offset=*/1,
+                              /*length=*/1, IsNotNullCallback()))
+      .WillOnce([](const OpenedCloudFile& file, net::IOBuffer* buffer,
+                   int64_t offset, int length, FileErrorCallback callback) {
+        std::move(callback).Run(base::File::FILE_OK);
+        return true;
+      });
+  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer, /*offset=*/1,
+                       /*length=*/1);
+
+  // Expect no new watcher added for the file.
+  EXPECT_THAT(
+      cloud_file_system->GetWatchers(),
+      Pointee(ElementsAre(Pair(
+          _, AllOf(Field(&Watcher::entry_path, base::FilePath(kFakeFilePath)),
+                   Field(&Watcher::recursive, IsFalse()))))));
+
   CloseFileSuccessfully(*cloud_file_system, file_handle);
 }
 
@@ -317,6 +321,9 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
       .WillOnce(Return(false));
 
   ReadFileSuccessfully(*cloud_file_system, file_handle, buffer);
+  // Expect no watcher is added.
+  EXPECT_THAT(cloud_file_system->GetWatchers(), Pointee(IsEmpty()));
+
   CloseFileSuccessfully(*cloud_file_system, file_handle);
 }
 
@@ -337,6 +344,9 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
   EXPECT_CALL(*mock_content_cache, StartWriteBytes(_, _, _, _, _)).Times(0);
 
   ReadFileSuccessfully(*cloud_file_system, file_handle, buffer);
+  // Expect no watcher is added.
+  EXPECT_THAT(cloud_file_system->GetWatchers(), Pointee(IsEmpty()));
+
   CloseFileSuccessfully(*cloud_file_system, file_handle);
 }
 
@@ -375,6 +385,8 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
   EXPECT_EQ(read_file_future.Get<int>(), 0);
   EXPECT_EQ(read_file_future.Get<base::File::Error>(),
             base::File::FILE_ERROR_INVALID_OPERATION);
+  // Expect no watcher is added.
+  EXPECT_THAT(cloud_file_system->GetWatchers(), Pointee(IsEmpty()));
 
   CloseFileSuccessfully(*cloud_file_system, file_handle);
 }

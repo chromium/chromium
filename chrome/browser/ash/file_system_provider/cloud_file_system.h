@@ -168,6 +168,7 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
   // successfully read the file, if the content cache fails to write the file to
   // disk this should not stop further FSP requests.
   void OnBytesWrittenToCache(
+      const base::FilePath& file_path,
       base::RepeatingCallback<void()> readchunk_success_callback,
       base::File::Error result);
 
