@@ -138,12 +138,11 @@ component("raw_ptr") {
   configs += [ ":dependants_extra_warnings" ]
 }
 
-# Changes the freelist implementation to use pointer offsets in lieu
-# of full-on pointers. Defaults to false, which implies the use of
-# "encoded next" freelist entry.
-#
-# Only usable when pointers are 64-bit.
-use_freelist_pool_offsets = has_64_bit_pointers
+# Enables compilation of the freelist dispatcher, which we'll use to
+# carry out runtime evaluation of PartitionAlloc's two freelist
+# implementations: the existing encoded-next freelist and the new
+# pool offset freelist. When false, the latter is not built.
+use_freelist_dispatcher = has_64_bit_pointers
 
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
@@ -199,7 +198,7 @@ buildflag_header("partition_alloc_buildflags") {
     "GLUE_CORE_POOLS=$_glue_core_pools",
     "ENABLE_POINTER_COMPRESSION=$_enable_pointer_compression",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
-    "USE_FREELIST_POOL_OFFSETS=$use_freelist_pool_offsets",
+    "USE_FREELIST_POOL_OFFSETS=$use_freelist_dispatcher",
 
     "USE_STARSCAN=$use_starscan",
 
@@ -512,11 +511,14 @@ if (is_clang_or_gcc) {
       # To support a trampoline for another arch, please refer to v8/src/heap/base.
       assert(!stack_scan_supported)
     }
-    if (use_freelist_pool_offsets) {
+
+    # TODO(crbug.com/40274683): once we evaluate pool offset freelists,
+    # we should erase the dispatcher and compile (& use) exactly one
+    # freelist implementation.
+    if (use_freelist_dispatcher) {
       sources += [ "pool_offset_freelist.h" ]
-    } else {
-      sources += [ "encoded_next_freelist.h" ]
     }
+    sources += [ "encoded_next_freelist.h" ]
 
     public_deps = [
       ":chromecast_buildflags",
