@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "device/fido/enclave/verify/claim.h"
+#include "device/fido/enclave/verify/hash.h"
 
 namespace device::enclave {
 
@@ -18,7 +19,7 @@ namespace device::enclave {
 // ready.
 // Compares the digest contained in the endorsement against the given one.
 bool VerifyBinaryDigest(base::span<const uint8_t> endorsement,
-                        base::span<const uint8_t> expected);
+                        const Hash& expected);
 
 // Verifies the binary endorsement against log entry and public keys.
 bool VerifyBinaryEndorsement(base::Time now,

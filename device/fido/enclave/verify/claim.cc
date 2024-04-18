@@ -14,7 +14,7 @@ Subject::~Subject() = default;
 ClaimEvidence::ClaimEvidence() = default;
 ClaimEvidence::ClaimEvidence(std::optional<std::string> role,
                              std::string uri,
-                             std::vector<uint8_t> digest)
+                             std::map<std::string, std::string> digest)
     : role(std::move(role)), uri(std::move(uri)), digest(std::move(digest)) {}
 ClaimEvidence::~ClaimEvidence() = default;
 

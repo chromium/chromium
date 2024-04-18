@@ -40,13 +40,13 @@ struct Statement {
 struct ClaimEvidence {
   ClaimEvidence(std::optional<std::string> role,
                 std::string uri,
-                std::vector<uint8_t> digest);
+                std::map<std::string, std::string> digest);
   ClaimEvidence();
   ~ClaimEvidence();
 
   std::optional<std::string> role;
   std::string uri;
-  std::vector<uint8_t> digest;
+  std::map<std::string, std::string> digest;
 };
 
 // Validity time range of an issued claim.
