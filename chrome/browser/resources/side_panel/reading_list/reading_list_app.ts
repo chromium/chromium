@@ -28,7 +28,7 @@ import {IronSelectableBehavior} from 'chrome://resources/polymer/v3_0/iron-selec
 import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './app.html.js';
+import {getTemplate} from './reading_list_app.html.js';
 import type {ReadLaterEntriesByStatus, ReadLaterEntry} from './reading_list.mojom-webui.js';
 import {CurrentPageActionButtonState} from './reading_list.mojom-webui.js';
 import type {ReadingListApiProxy} from './reading_list_api_proxy.js';

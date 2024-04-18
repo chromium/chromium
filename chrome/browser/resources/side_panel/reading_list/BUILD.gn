@@ -16,7 +16,7 @@ build_webui("build") {
   ]
 
   web_component_files = [
-    "app.ts",
+    "reading_list_app.ts",
     "reading_list_item.ts",
   ]
 

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://read-later.top-chrome/app.js';
+import 'chrome://read-later.top-chrome/reading_list_app.js';
 
-import type {ReadingListAppElement} from 'chrome://read-later.top-chrome/app.js';
+import type {ReadingListAppElement} from 'chrome://read-later.top-chrome/reading_list_app.js';
 import type {ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/reading_list.mojom-webui.js';
 import {ReadingListApiProxyImpl} from 'chrome://read-later.top-chrome/reading_list_api_proxy.js';
 import type {ReadingListItemElement} from 'chrome://read-later.top-chrome/reading_list_item.js';
