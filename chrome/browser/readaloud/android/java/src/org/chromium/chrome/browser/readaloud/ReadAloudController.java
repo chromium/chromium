@@ -128,9 +128,6 @@ public class ReadAloudController
     // Playback for voice previews
     @Nullable private Playback mVoicePreviewPlayback;
 
-    // TODO(b/322052505): Remove this and just observe mProfileSupplier.
-    @Nullable private Profile mProfile;
-
     private boolean mOnUserLeaveHint;
     private boolean mRestoringPlayer;
 
@@ -426,13 +423,12 @@ public class ReadAloudController
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void onProfileAvailable(Profile profile) {
-        mProfile = profile;
         mReadabilityHooks =
                 sReadabilityHooksForTesting != null
                         ? sReadabilityHooksForTesting
                         : new ReadAloudReadabilityHooksImpl(mActivity, profile);
         if (mReadabilityHooks.isEnabled()) {
-            boolean isAllowed = ReadAloudFeatures.isAllowed(mProfileSupplier.get());
+            boolean isAllowed = ReadAloudFeatures.isAllowed(profile);
             ReadAloudMetrics.recordIsUserEligible(isAllowed);
             if (!isAllowed) {
                 ReadAloudMetrics.recordIneligibilityReason(
@@ -611,7 +607,7 @@ public class ReadAloudController
         if (mReadabilityHooks == null) {
             return;
         }
-        if (mProfile == null || !mProfile.isNativeInitialized()) {
+        if (mProfileSupplier.get() == null || !mProfileSupplier.get().isNativeInitialized()) {
             return;
         }
         if (!isURLReadAloudSupported(url)) {
@@ -679,8 +675,8 @@ public class ReadAloudController
         if (tab == null
                 || tab.getUrl() == null
                 || tab.getWebContents() == null
-                || mProfile == null
-                || !mProfile.isNativeInitialized()) {
+                || mProfileSupplier.get() == null
+                || !mProfileSupplier.get().isNativeInitialized()) {
             return false;
         }
 
@@ -1192,7 +1188,7 @@ public class ReadAloudController
 
     private Promise<Playback> createPlayback(PlaybackArgs args) {
         final var promise = new Promise<Playback>();
-        if (mProfile == null || !mProfile.isNativeInitialized()) {
+        if (mProfileSupplier.get() == null || !mProfileSupplier.get().isNativeInitialized()) {
             promise.reject(new Exception("missing profile"));
             return promise;
         }
