@@ -699,6 +699,18 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for the button that opens actions menu in the document scanning feature view." name="IDS_DOC_SCAN_MENU_BUTTON">
         Actions
       </message>
+      <message desc="Dialog title introducing super-resolution photo taking" name="IDS_SUPER_RES_INTRO_DIALOG_TITLE">
+        Get sharper details with enhanced zoom
+      </message>
+      <message desc="Dialog description describing how to use super-resolution photo taking" name="IDS_SUPER_RES_INTRO_DIALOG_DESC">
+        First, press <ph name="button_name">$1<ex>Pan tilt zoom</ex></ph> to zoom in. Then, after you take a photo, you’ll see enhanced details.
+      </message>
+      <message desc="Dialog button to indicate that users acknowledge the introduction of the feature" name="IDS_SUPER_RES_INTRO_DIALOG_GOT_IT_BUTTON">
+        Got it
+      </message>
+      <message desc="Dialog button linking to help center page to let users learn more about the feature" name="IDS_SUPER_RES_INTRO_DIALOG_LEARN_MORE_BUTTON">
+        Learn more
+      </message>
     </messages>
   </release>
 </grit>

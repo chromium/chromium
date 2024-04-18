@@ -201,7 +201,9 @@
         </button>
         <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
                 i18n-label="open_ptz_panel_button"
-                data-svg="camera_button_ptz_panel.svg"></button>
+                data-svg="camera_button_ptz_panel.svg">
+          <div id="notify-super-res-indicator"></div>
+        </button>
       </div>
       <div id="scan-modes-group" class="mode-subgroup" role="radiogroup"
            i18n-aria="aria_scan_type_group">
@@ -546,6 +548,32 @@
         <svg-wrapper class="icon" name="document_mode_spinner.svg">
         </svg-wrapper>
         <div class="msg" tabindex="0" i18n-text="msg_processing_image"></div>
+      </div>
+    </div>
+    <div id="view-super-res-intro-dialog" class="dialog">
+      <div class="dialog-container" role="dialog"
+           aria-labelledby="super-res-dialog-title"
+           aria-describedby="super-res-dialog-description">
+        <div id="super-res-dialog-illustration">
+          <svg-wrapper name="super_res_intro_dialog.svg"></svg-wrapper>
+        </div>
+        <div id="super-res-dialog-content">
+          <div class="dialog-title dialog-msg-holder"
+               id="super-res-dialog-title"
+               i18n-text="super_res_intro_dialog_title">
+          </div>
+          <div class="dialog-description"
+               id="super-res-dialog-description"></div>
+          <div class="dialog-buttons">
+            <button class="dialog-negative-button text-button pill dark
+                    secondary" tabindex="0"
+                    i18n-text="super_res_intro_dialog_learn_more_button">
+            </button>
+            <button class="dialog-positive-button text-button pill primary dark
+                    inkdrop" tabindex="0"
+                    i18n-text="super_res_intro_dialog_got_it_button"></button>
+          </div>
+        </div>
       </div>
     </div>
     <div id="view-warning">

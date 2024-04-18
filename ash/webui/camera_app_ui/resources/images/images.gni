@@ -66,6 +66,7 @@ in_app_images = [
   "settings_feedback.svg",
   "settings_help.svg",
   "settings_resolution.svg",
+  "super_res_intro_dialog.svg",
   "wifi.svg",
 ]
 

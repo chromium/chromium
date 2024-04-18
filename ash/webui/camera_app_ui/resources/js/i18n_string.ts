@@ -171,6 +171,11 @@ export enum I18nString {
   STATUS_MSG_CAMERA_SWITCHED = 'status_msg_camera_switched',
   STATUS_MSG_CAMERA_UNPLUGGED = 'status_msg_camera_unplugged',
   STATUS_MSG_RECORDING_STOPPED = 'status_msg_recording_stopped',
+  SUPER_RES_INTRO_DIALOG_DESC = 'super_res_intro_dialog_desc',
+  SUPER_RES_INTRO_DIALOG_GOT_IT_BUTTON = 'super_res_intro_dialog_got_it_button',
+  SUPER_RES_INTRO_DIALOG_LEARN_MORE_BUTTON =
+      'super_res_intro_dialog_learn_more_button',
+  SUPER_RES_INTRO_DIALOG_TITLE = 'super_res_intro_dialog_title',
   SWITCH_CAMERA_BUTTON = 'switch_camera_button',
   SWITCH_RECORD_VIDEO_BUTTON = 'switch_record_video_button',
   SWITCH_SCAN_MODE_BUTTON = 'switch_scan_mode_button',

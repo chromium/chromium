@@ -26,6 +26,7 @@ import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as expert from './expert.js';
+import {Flag} from './flag.js';
 import {Intent} from './intent.js';
 import * as Comlink from './lib/comlink.js';
 import {startMeasuringMemoryUsage} from './memory_usage.js';
@@ -58,8 +59,10 @@ import {
 import {addUnloadCallback} from './unload.js';
 import * as util from './util.js';
 import {Camera} from './views/camera.js';
+import {toggleIndicatorOnOpenPTZButton} from './views/camera/options.js';
 import * as timertick from './views/camera/timertick.js';
 import {CameraIntent} from './views/camera_intent.js';
+import {SuperResIntroDialog} from './views/dialog.js';
 import {View} from './views/view.js';
 import {Warning, WarningType} from './views/warning.js';
 import {WaitableEvent} from './waitable_event.js';
@@ -427,6 +430,19 @@ function setupSvgs() {
   }
 }
 
+function maybeIntroduceSuperRes() {
+  // Only introduce the feature when both digital zoom and super res flags are
+  // enabled for the first time.
+  if (!loadTimeData.getChromeFlag(Flag.DIGITAL_ZOOM) ||
+      !loadTimeData.getChromeFlag(Flag.SUPER_RES) ||
+      localStorage.getBool(LocalStorageKey.SUPER_RES_DIALOG_SHOWN)) {
+    return;
+  }
+  nav.open(ViewName.SUPER_RES_INTRO_DIALOG);
+  toggleIndicatorOnOpenPTZButton(true);
+  localStorage.set(LocalStorageKey.SUPER_RES_DIALOG_SHOWN, true);
+}
+
 /**
  * Setup Camera App and starts camera stream.
  */
@@ -492,6 +508,7 @@ async function main() {
   // Set up views navigation by their DOM z-order.
   nav.setup([
     cameraView,
+    new SuperResIntroDialog(),
     new Warning(),
     new View(ViewName.SPLASH),
   ]);
@@ -583,6 +600,8 @@ async function main() {
   perfLogger.stop(
       PerfEvent.LAUNCHING_FROM_WINDOW_CREATION,
       {hasError: !cameraStartSuccessful});
+
+  maybeIntroduceSuperRes();
 
   // Start the memory measurement when the camera preview is ready. The first
   // measurement is performed immediately. The following measurements are
