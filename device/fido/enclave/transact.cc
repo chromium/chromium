@@ -41,26 +41,13 @@ struct Transaction : base::RefCounted<Transaction> {
   void OnData(device::enclave::EnclaveWebSocketClient::SocketStatus status,
               std::optional<std::vector<uint8_t>> data) {
     if (!done_handshake_) {
-      if (status != EnclaveWebSocketClient::SocketStatus::kOk) {
-        LOG(ERROR) << "Enclave WebSocket connection failed";
+      if (!CompleteHandshake(status, data)) {
         std::move(callback_).Run(std::nullopt);
         // client_ holds a RepeatingCallback that has a reference to this
         // object. Thus, by deleting it, this object should also be destroyed.
         client_.reset();
         return;
       }
-
-      cablev2::HandshakeResult result = handshake_.ProcessResponse(*data);
-      if (!result) {
-        LOG(ERROR) << "Enclave handshake failed";
-        std::move(callback_).Run(std::nullopt);
-        client_.reset();
-        return;
-      }
-
-      crypter_ = std::move(result->first);
-      handshake_hash_ = result->second;
-      done_handshake_ = true;
 
       FIDO_LOG(ERROR) << "<- " << cbor::DiagnosticWriter::Write(request_);
       BuildCommandRequestBody(
@@ -115,6 +102,37 @@ struct Transaction : base::RefCounted<Transaction> {
       return;
     }
     client_->Write(request);
+  }
+
+  bool CompleteHandshake(
+      device::enclave::EnclaveWebSocketClient::SocketStatus status,
+      const std::optional<std::vector<uint8_t>>& data) {
+    if (status != EnclaveWebSocketClient::SocketStatus::kOk) {
+      LOG(ERROR) << "Enclave WebSocket connection failed";
+      return false;
+    }
+
+    base::span<const uint8_t> response(*data);
+    if (response.size() < cablev2::HandshakeInitiator::kResponseSize) {
+      LOG(ERROR) << "Enclave handshake response too short";
+      return false;
+    }
+
+    // `response` may contain arbitrary extra data, which is ignored. In
+    // the future this will contain attestation information.
+    response = response.subspan(0, cablev2::HandshakeInitiator::kResponseSize);
+
+    cablev2::HandshakeResult result = handshake_.ProcessResponse(response);
+    if (!result) {
+      LOG(ERROR) << "Enclave handshake failed";
+      return false;
+    }
+
+    crypter_ = std::move(result->first);
+    handshake_hash_ = result->second;
+    done_handshake_ = true;
+
+    return true;
   }
 
   const std::array<uint8_t, kP256X962Length> enclave_public_key_;

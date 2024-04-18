@@ -279,6 +279,11 @@ using HandshakeResult =
 // the desktop.
 class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
  public:
+  // The size of a valid response message. Messages of a different length
+  // may be passed to `ProcessResponse` but will always be rejected.
+  static inline constexpr size_t kResponseSize =
+      kP256X962Length + /* empty AES-GCM ciphertext length */ 16;
+
   HandshakeInitiator(
       // psk is derived from the connection nonce and either QR-code secrets
       // pairing secrets. nullopt for enclave handshakes.

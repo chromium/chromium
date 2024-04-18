@@ -899,8 +899,8 @@ std::vector<uint8_t> HandshakeInitiator::BuildInitialMessage() {
 
 HandshakeResult HandshakeInitiator::ProcessResponse(
     base::span<const uint8_t> response) {
-  if (response.size() < kP256X962Length) {
-    FIDO_LOG(DEBUG) << "Handshake response truncated (" << response.size()
+  if (response.size() != kResponseSize) {
+    FIDO_LOG(DEBUG) << "Handshake response wrong size (" << response.size()
                     << " bytes)";
     return std::nullopt;
   }
