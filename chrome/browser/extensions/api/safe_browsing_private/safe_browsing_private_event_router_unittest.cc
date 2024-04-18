@@ -263,6 +263,17 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
         ->OnPasswordBreach(trigger, identities);
   }
 
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  void TriggerOnDataControlsSensitiveDataEvent(
+      const data_controls::Verdict::TriggeredRules& triggered_rules) {
+    SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+        ->OnDataControlsSensitiveDataEvent(
+            GURL(kUrl), GURL(kTabUrl), kSource, kDestination, "text/plain",
+            SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
+            triggered_rules, safe_browsing::EventResult::BLOCKED, 12345);
+  }
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
   void SetReportingPolicy(
       bool enabled,
       bool authorized = true,
@@ -1555,6 +1566,68 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestUnscannedFileEnabled) {
   // times.
   Mock::VerifyAndClearExpectations(client_.get());
 }
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+TEST_F(SafeBrowsingPrivateEventRouterTest, TestDataControlsSensitiveDataEvent) {
+  SetUpRouters();
+
+  base::Value::Dict report;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce(CaptureArg(&report));
+
+  TriggerOnDataControlsSensitiveDataEvent({
+      {"rule_id_1", "rule_name_1"},
+      {"rule_id_2", "rule_name_2"},
+  });
+  base::RunLoop().RunUntilIdle();
+
+  Mock::VerifyAndClearExpectations(client_.get());
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  ASSERT_NE(event_list, nullptr);
+  ASSERT_EQ(event_list->size(), 1u);
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event =
+      wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
+  ASSERT_NE(event, nullptr);
+
+  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl), kUrl);
+  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl),
+            kTabUrl);
+  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeySource),
+            kSource);
+  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyDestination),
+            kDestination);
+  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyContentSize),
+            "12345");
+  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyContentType),
+            "text/plain");
+  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger),
+            SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload);
+  EXPECT_EQ(
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult),
+      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED));
+
+  const base::Value::List* triggered_rule_info =
+      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+  ASSERT_NE(triggered_rule_info, nullptr);
+  ASSERT_EQ(triggered_rule_info->size(), 2u);
+  const base::Value::Dict& rule_1 = (*triggered_rule_info)[0].GetDict();
+  EXPECT_EQ(
+      *rule_1.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName),
+      "rule_name_1");
+  EXPECT_EQ(
+      *rule_1.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId),
+      "rule_id_1");
+  const base::Value::Dict& rule_2 = (*triggered_rule_info)[1].GetDict();
+  EXPECT_EQ(
+      *rule_2.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName),
+      "rule_name_2");
+  EXPECT_EQ(
+      *rule_2.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId),
+      "rule_id_2");
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 // Tests to make sure the feature flag and policy control real-time reporting
 // as expected.  The parameter for these tests is a tuple of bools:

@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -1421,6 +1422,13 @@ static_library("extensions") {
     deps += [ "//third_party/libbrlapi" ]
   } else {
     sources += [ "api/braille_display_private/braille_controller_stub.cc" ]
+  }
+
+  if (enterprise_data_controls) {
+    deps += [
+      "//components/enterprise/buildflags",
+      "//components/enterprise/data_controls",
+    ]
   }
 }
 

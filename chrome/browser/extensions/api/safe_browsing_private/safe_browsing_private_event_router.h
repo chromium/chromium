@@ -18,10 +18,15 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "components/enterprise/data_controls/verdict.h"
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 namespace content {
 class BrowserContext;
@@ -261,6 +266,23 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const GURL& url,
       const std::string& threat_type,
       const safe_browsing::RTLookupResponse& response);
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  // Helper function to report sensitive data event that were caused by
+  // triggering a Data Controls rule. This is similar to
+  // `OnSensitiveDataEvent()` with a signature more suited to Data Controls as
+  // opposed to scanning related events.
+  void OnDataControlsSensitiveDataEvent(
+      const GURL& url,
+      const GURL& tab_url,
+      const std::string& source,
+      const std::string& destination,
+      const std::string& mime_type,
+      const std::string& trigger,
+      const data_controls::Verdict::TriggeredRules& triggered_rules,
+      safe_browsing::EventResult event_result,
+      int64_t content_size);
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
  private:
   // Returns filename with full path if full path is required;
