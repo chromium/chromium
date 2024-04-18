@@ -170,7 +170,8 @@ static jlong JNI_SampleForTests_Init(
     const jni_zero::JavaParamRef<jobject>& caller,
     const jni_zero::JavaParamRef<jstring>& param,
     jni_zero::ByteArrayView& bytes,
-    jni_zero::tests::CPPClass* convertedType);
+    jni_zero::tests::CPPClass* convertedType,
+    std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& nonConvertedArray);
 
 JNI_BOUNDARY_EXPORT jlong Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1init(
     JNIEnv* env,
@@ -178,19 +179,24 @@ JNI_BOUNDARY_EXPORT jlong Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_t
     jobject caller,
     jstring param,
     jbyteArray bytes,
-    jobject convertedType) {
+    jobject convertedType,
+    jobjectArray nonConvertedArray) {
   jni_zero::ByteArrayView bytes_converted = jni_zero::ConvertArray<jni_zero::ByteArrayView>::FromJniType(
       env,
       jni_zero::JavaParamRef<jbyteArray>(env, static_cast<jbyteArray>(bytes)));
   jni_zero::tests::CPPClass* convertedType_converted = jni_zero::FromJniType<jni_zero::tests::CPPClass*>(
       env,
       jni_zero::JavaParamRef<jobject>(env, convertedType));
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> nonConvertedArray_converted = jni_zero::ConvertArray<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>::FromJniType(
+      env,
+      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(nonConvertedArray)));
   auto _ret = JNI_SampleForTests_Init(
       env,
       jni_zero::JavaParamRef<jobject>(env, caller),
       jni_zero::JavaParamRef<jstring>(env, param),
       bytes_converted,
-      convertedType_converted);
+      convertedType_converted,
+      nonConvertedArray_converted);
   return _ret;
 }
 

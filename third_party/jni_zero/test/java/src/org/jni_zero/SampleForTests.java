@@ -39,7 +39,7 @@ class SampleForTests {
 
     public void startExample() {
         // Calls C++ Init(...) method and holds a pointer to the C++ class.
-        mNativeCPPObject = SampleForTestsJni.get().init(this, "myParam", new byte[0], null);
+        mNativeCPPObject = SampleForTestsJni.get().init(this, "myParam", new byte[0], null, null);
     }
 
     public void doStuff() {
@@ -271,7 +271,8 @@ class SampleForTests {
                 SampleForTests caller,
                 String param,
                 @JniType("jni_zero::ByteArrayView") byte[] bytes,
-                @JniType("jni_zero::tests::CPPClass*") SampleForTests convertedType);
+                @JniType("jni_zero::tests::CPPClass*") SampleForTests convertedType,
+                @JniType("std::vector") SampleForTests[] nonConvertedArray);
 
         // This defines a function binding to the associated C++ class member function. The name is
         // derived from |nativeDestroy| and |nativeCPPClass| to arrive at CPPClass::Destroy() (i.e.

@@ -70,8 +70,8 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
-  public long init(SampleForTests caller, String param, byte[] bytes, SampleForTests convertedType) {
-    return (long) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_init(caller, param, bytes, convertedType);
+  public long init(SampleForTests caller, String param, byte[] bytes, SampleForTests convertedType, SampleForTests[] nonConvertedArray) {
+    return (long) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_init(caller, param, bytes, convertedType, nonConvertedArray);
   }
 
   @Override
