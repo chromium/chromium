@@ -25,7 +25,6 @@ import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -53,18 +52,6 @@ public class AccountManagerTestRule implements TestRule {
 
     // TODO(crbug.com/40890215): Use TEST_ACCOUNT_1 instead.
     @Deprecated public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
-
-    public static final AccountInfo TEST_CHILD_ACCOUNT =
-            new AccountInfo.Builder(
-                            generateChildEmail("test@gmail.com"),
-                            FakeAccountManagerFacade.toGaiaId("test-gaia-id"))
-                    .fullName("ChildTest Full")
-                    .givenName("ChildTest Given")
-                    .accountCapabilities(
-                            new AccountCapabilitiesBuilder()
-                                    .setIsSubjectToParentalControls(true)
-                                    .build())
-                    .build();
 
     private final @NonNull FakeAccountManagerFacade mFakeAccountManagerFacade;
     // TODO(https://crbug.com/1352119): Revise this test rule and make this non-nullable.
