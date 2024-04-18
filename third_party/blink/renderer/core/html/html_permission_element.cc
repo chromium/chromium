@@ -630,7 +630,7 @@ bool HTMLPermissionElement::IsClickingEnabled() {
 }
 
 void HTMLPermissionElement::DisableClickingIndefinitely(DisableReason reason) {
-  clicking_disabled_reasons_.insert(reason, base::TimeTicks::Max());
+  clicking_disabled_reasons_.Set(reason, base::TimeTicks::Max());
 }
 
 void HTMLPermissionElement::DisableClickingTemporarily(

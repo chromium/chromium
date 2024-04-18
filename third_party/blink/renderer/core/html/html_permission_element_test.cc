@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -877,6 +878,33 @@ class HTMLPemissionElementIntersectionTest
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     EXPECT_EQ(element->IsFullyVisibleForTesting(), fully_visible);
   }
+
+  void TestContainerStyleAffectsVisibility(CSSPropertyID property_name,
+                                           const String& property_value) {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    main_resource.Complete(R"HTML(
+    <div id='container'>
+      <permission id='camera' type='camera'>
+    </div>
+    )HTML");
+
+    Compositor().BeginFrame();
+    auto* permission_element = To<HTMLPermissionElement>(
+        GetDocument().QuerySelector(AtomicString("permission")));
+    auto* div =
+        To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+
+    WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ true);
+    ClickingEnabledChecker checker(permission_element);
+    checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                           /*expected_enabled*/ true);
+
+    div->SetInlineStyleProperty(property_name, property_value);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ false);
+    checker.CheckClickingEnabled(/*expected_enabled*/ false);
+  }
 };
 
 TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
@@ -911,6 +939,59 @@ TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
                                          /*expected_enabled*/ true);
   EXPECT_TRUE(permission_element->IsFullyVisibleForTesting());
   EXPECT_TRUE(permission_element->IsClickingEnabled());
+}
+
+TEST_F(HTMLPemissionElementIntersectionTest,
+       IntersectionChangedDisableEnableDisable) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id='cover' style='position: fixed; left: 0px; top: 100px; width: 100px; height: 100px;'></div>
+    <permission id='camera' type='camera'>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element = To<HTMLPermissionElement>(
+      GetDocument().QuerySelector(AtomicString("permission")));
+  auto* div =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ true);
+  ClickingEnabledChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+
+  // Placing the div over the element disables it.
+  div->SetInlineStyleProperty(CSSPropertyID::kTop, "0px");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ false);
+
+  // Moving the div again will re-enable the element after a delay. Deliberately
+  // don't make any calls that result in calling
+  // PermissionElement::IsClickingEnabled.
+  div->SetInlineStyleProperty(CSSPropertyID::kTop, "100px");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Placing the div over the element disables it again.
+  div->SetInlineStyleProperty(CSSPropertyID::kTop, "0px");
+  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ false);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ false);
+}
+
+TEST_F(HTMLPemissionElementIntersectionTest, ContainerDivRotates) {
+  TestContainerStyleAffectsVisibility(CSSPropertyID::kTransform,
+                                      "rotate(0.1turn)");
+}
+
+TEST_F(HTMLPemissionElementIntersectionTest, ContainerDivOpacity) {
+  TestContainerStyleAffectsVisibility(CSSPropertyID::kOpacity, "0.9");
+}
+
+TEST_F(HTMLPemissionElementIntersectionTest, ContainerDivClipPath) {
+  // Set up a mask that covers a bit of the container.
+  TestContainerStyleAffectsVisibility(CSSPropertyID::kClipPath,
+                                      "circle(40%)");
 }
 
 }  // namespace blink
