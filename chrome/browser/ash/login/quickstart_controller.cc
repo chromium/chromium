@@ -339,9 +339,12 @@ void QuickStartController::AbortFlow(AbortFlowReason reason) {
                                  ScreenClosedReasonFromAbortFlowReason(reason));
   }
 
-  // If user proceeds with enrollment, allow source device to gracefully close
-  // connection and show "setup complete" UI.
-  if (reason == QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT) {
+  // If user proceeds with school, enterprise, or unicorn setup, allow source
+  // device to gracefully close connection and show "setup complete" UI.
+  constexpr AbortFlowReason kUnsupportedUserTypes[] = {
+      AbortFlowReason::ENTERPRISE_ENROLLMENT, AbortFlowReason::SIGNIN_SCHOOL,
+      AbortFlowReason::ADD_CHILD};
+  if (base::Contains(kUnsupportedUserTypes, reason)) {
     bootstrap_controller_->OnSetupComplete();
     return;
   }
