@@ -35037,6 +35037,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="1798082697" label="/handlers"/>
   <int value="1799541633" label="/addresses"/>
   <int value="1810385625" label="/crostini"/>
+  <int value="1838355422" label="/getMostChrome"/>
   <int value="1853516270" label="/lockScreen/fingerprint"/>
   <int value="1935584577" label="/clearBrowserData"/>
   <int value="1956464558" label="/changePicture"/>
