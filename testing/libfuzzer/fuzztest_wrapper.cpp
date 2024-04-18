@@ -16,20 +16,15 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "testing/libfuzzer/fuzztest_wrapper_buildflags.h"
 
 extern const char* kFuzzerBinary;
 extern const char* kFuzzerArgs;
 
-namespace {
-void HandleReplayModeIfNeeded(auto& args) {
-  // For libfuzzer fuzzers, nothing needs to be done. To detect whether we're
-  // running a libfuzzer fuzztest, we check for `undefok` in the fuzzer args
-  // provided at compile time, which is only set for libfuzzer.
-  if (kFuzzerArgs && std::string_view(kFuzzerArgs).find("-undefok=") !=
-                         std::string_view::npos) {
-    return;
-  }
+#if BUILDFLAG(USE_CENTIPEDE)
 
+namespace {
+void HandleReplayMode(auto& args) {
   // We're handling a centipede based fuzzer. If the last argument is a
   // filepath, we're trying to replay a testcase, since it doesn't make sense
   // to get a filepath when running with the centipede binary.
@@ -55,6 +50,8 @@ void HandleReplayModeIfNeeded(auto& args) {
 }
 }  // namespace
 
+#endif  // BUILDFLAG(USE_CENTIPEDE)
+
 int main(int argc, const char* const* argv) {
   base::CommandLine::Init(argc, argv);
   base::FilePath fuzzer_path;
@@ -70,7 +67,9 @@ int main(int argc, const char* const* argv) {
     cmdline.AppendArg(arg);
   }
   auto args = base::CommandLine::ForCurrentProcess()->argv();
-  HandleReplayModeIfNeeded(args);
+#if BUILDFLAG(USE_CENTIPEDE)
+  HandleReplayMode(args);
+#endif  // BUILDFLAG(USE_CENTIPEDE)
 
   bool skipped_first = false;
   for (auto arg : args) {

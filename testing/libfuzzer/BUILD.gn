@@ -8,6 +8,7 @@
 # To enable libfuzzer, 'use_libfuzzer' GN option should be set to true.
 # Or equivalent 'use_afl' or 'use_centipede' options for those engines.
 
+import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
@@ -125,9 +126,17 @@ if (build_with_chromium && use_blink) {
   }
 }
 
+buildflag_header("fuzztest_wrapper_buildflags") {
+  header = "fuzztest_wrapper_buildflags.h"
+  flags = [ "USE_CENTIPEDE=$use_centipede" ]
+}
+
 # A wrapper that knows how to execute a single fuzztest within a binary
 # containing many fuzztests.
 source_set("individual_fuzztest_wrapper") {
   sources = [ "//testing/libfuzzer/fuzztest_wrapper.cpp" ]
-  deps = [ "//base" ]
+  deps = [
+    ":fuzztest_wrapper_buildflags",
+    "//base",
+  ]
 }
