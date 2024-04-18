@@ -75,17 +75,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.BreakpointsRestoredFromStorageCount"
-    enum="DevToolsBreakpointsRestoredFromStorageCount"
-    expires_after="2024-05-05">
-  <owner>bmeurer@google.com</owner>
-  <owner>kimanh@chromium.org</owner>
-  <summary>
-    Records the number of breakpoints restored from the storage. The breakpoint
-    count is restored when the debugger is initialized.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.CDPCommandFrom{ClientType}" enum="CDPCommands"
     expires_after="2024-09-01">
   <owner>wolfi@google.com</owner>
