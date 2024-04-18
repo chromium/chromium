@@ -106,7 +106,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     public GURL getCurrentGurl() {
         if (GURL.isEmptyOrInvalid(mGurl)) {
             assert LibraryLoader.getInstance().isInitialized();
-            mGurl = new GURL(SearchActivityPreferencesManager.getCurrent().searchEngineUrl);
+            mGurl = SearchActivityPreferencesManager.getCurrent().searchEngineUrl;
         }
 
         return mGurl;

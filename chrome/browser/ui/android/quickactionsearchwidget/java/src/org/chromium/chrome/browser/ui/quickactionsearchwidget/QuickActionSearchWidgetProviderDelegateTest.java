@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferen
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 import java.util.Locale;
 
@@ -186,7 +187,8 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
         AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
         SearchActivityPreferences prefs =
-                new SearchActivityPreferences("EngineName", "http://engine", true, true, true);
+                new SearchActivityPreferences(
+                        "EngineName", new GURL("http://engine"), true, true, true);
 
         Resources res = mContext.getResources();
         float density = res.getDisplayMetrics().density;

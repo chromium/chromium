@@ -19,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -49,8 +48,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         /** Name of the Default Search Engine. */
         public final @Nullable String searchEngineName;
 
-        /** URL of the Default Search Engine. TODO(crbug.com/40241069): migrate this to GURL. */
-        public final @Nullable String searchEngineUrl;
+        /** URL of the Default Search Engine. */
+        public final @NonNull GURL searchEngineUrl;
 
         /** Whether Voice Search functionality is available. */
         public final boolean voiceSearchAvailable;
@@ -64,12 +63,12 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         public SearchActivityPreferences(
                 @Nullable String searchEngineName,
-                @Nullable String searchEngineUrl,
+                @Nullable GURL searchEngineUrl,
                 boolean voiceSearchAvailable,
                 boolean googleLensAvailable,
                 boolean incognitoAvailable) {
             this.searchEngineName = searchEngineName;
-            this.searchEngineUrl = searchEngineUrl;
+            this.searchEngineUrl = searchEngineUrl != null ? searchEngineUrl : GURL.emptyGURL();
             this.voiceSearchAvailable = voiceSearchAvailable;
             this.googleLensAvailable = googleLensAvailable;
             this.incognitoAvailable = incognitoAvailable;
@@ -85,7 +84,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
                     && googleLensAvailable == other.googleLensAvailable
                     && incognitoAvailable == other.incognitoAvailable
                     && TextUtils.equals(searchEngineName, other.searchEngineName)
-                    && TextUtils.equals(searchEngineUrl, other.searchEngineUrl);
+                    && searchEngineUrl.equals(other.searchEngineUrl);
         }
 
         @Override
@@ -147,10 +146,24 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      */
     private static void initializeFromCache() {
         SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
+        String encodedUrl = manager.readString(SEARCH_WIDGET_SEARCH_ENGINE_URL, null);
+
+        boolean shouldUpdateStorageToSaveSerializedGurl = false;
+        GURL url = GURL.emptyGURL();
+        if (!TextUtils.isEmpty(encodedUrl)) {
+            url = GURL.deserialize(encodedUrl);
+            // Deserializing may fail if the URL is not a serialized GURL.
+            if (url.isEmpty()) {
+                // This will be slow once, as it will attempt to initialize part of native library.
+                url = new GURL(encodedUrl);
+                shouldUpdateStorageToSaveSerializedGurl = true;
+            }
+        }
+
         setCurrentlyLoadedPreferences(
                 new SearchActivityPreferences(
                         manager.readString(SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, null),
-                        manager.readString(SEARCH_WIDGET_SEARCH_ENGINE_URL, null),
+                        url,
                         manager.readBoolean(
                                 SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
                                 DEFAULT_VOICE_SEARCH_AVAILABILITY),
@@ -160,7 +173,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
                         manager.readBoolean(
                                 SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
                                 DEFAULT_INCOGNITO_AVAILABILITY)),
-                false);
+                shouldUpdateStorageToSaveSerializedGurl);
     }
 
     /**
@@ -201,7 +214,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
                         SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
                         manager.writeString(
                                 SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, prefs.searchEngineName);
-                        manager.writeString(SEARCH_WIDGET_SEARCH_ENGINE_URL, prefs.searchEngineUrl);
+                        manager.writeString(
+                                SEARCH_WIDGET_SEARCH_ENGINE_URL, prefs.searchEngineUrl.serialize());
                         manager.writeBoolean(
                                 SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
                                 prefs.voiceSearchAvailable);
@@ -225,7 +239,6 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      */
     public static void addObserver(@NonNull Consumer<SearchActivityPreferences> observer) {
         ThreadUtils.assertOnUiThread();
-        assert observer != null : "SearchActivityPreferences observer must be valid.";
         SearchActivityPreferencesManager self = get();
         if (!self.mObservers.hasObserver(observer)) {
             self.mObservers.addObserver(observer);
@@ -238,7 +251,6 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      * browser process must have been fully loaded before calling this.
      */
     public static void onNativeLibraryReady() {
-        assert LibraryLoader.getInstance().isInitialized();
         SearchActivityPreferencesManager self = get();
         TemplateUrlService service =
                 TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
@@ -282,12 +294,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      * the Native libraries are initialized.
      */
     private void updateDefaultSearchEngineInfo() {
-        assert LibraryLoader.getInstance().isInitialized();
         // Getting an instance of the TemplateUrlService requires that the native library be
         // loaded, but the TemplateUrlService also itself needs to be initialized.
         TemplateUrlService service =
                 TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
-        assert service.isLoaded() : "TemplateUrlServiceFactory is not ready yet.";
 
         // Update the URL that we show for zero-suggest.
         TemplateUrl dseTemplateUrl = service.getDefaultSearchEngineTemplateUrl();
@@ -298,7 +308,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         setCurrentlyLoadedPreferences(
                 new SearchActivityPreferences(
                         dseTemplateUrl.getShortName(),
-                        url.getOrigin().getSpec(),
+                        url.getOrigin(),
                         mCurrentlyLoadedPreferences.voiceSearchAvailable,
                         mCurrentlyLoadedPreferences.googleLensAvailable,
                         mCurrentlyLoadedPreferences.incognitoAvailable),
