@@ -101,9 +101,9 @@ def __use_large_b289968566(ctx, step_config):
         # use_remoteexec = true
         "./android_clang_arm/obj/content/browser/browser/browser_interface_binders.o",
         "./obj/chrome/test/unit_tests__library/chrome_browsing_data_remover_delegate_unittest.o",
+        "./obj/content/test/content_browsertests__library/fenced_frame_browsertest.o",
         "./obj/content/test/content_unittests__library/ad_auction_service_impl_unittest.o",
         "./obj/content/test/content_unittests__library/auction_runner_unittest.o",
-
         # Fallback happens with follwoing args.gn (try/fuchsia-x64-cast-receiver-rel).
         # Fallback may happen in other build config too.
         # cast_streaming_enable_remoting = true
