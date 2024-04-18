@@ -4104,18 +4104,16 @@ StyleRecalcChange Element::RecalcOwnStyle(
         apply_changes = LayoutObject::ApplyStyleChanges::kYes;
       }
     }
-    if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
-      if (style_recalc_context.is_interleaved_oof) {
-        // If we're in interleaved style recalc from out-of-flow,
-        // we're already in the middle of laying out the objects
-        // we would mark for layout.
-        apply_changes = LayoutObject::ApplyStyleChanges::kNo;
-      } else if (new_style->HasAnchorFunctionsWithoutEvaluator()) {
-        // For regular (non-interleaved) recalcs that depend on anchor*()
-        // functions, we need to invalidate layout even without a diff,
-        // see ComputedStyle::HasAnchorFunctionsWithoutEvaluator.
-        apply_changes = LayoutObject::ApplyStyleChanges::kYes;
-      }
+    if (style_recalc_context.is_interleaved_oof) {
+      // If we're in interleaved style recalc from out-of-flow,
+      // we're already in the middle of laying out the objects
+      // we would mark for layout.
+      apply_changes = LayoutObject::ApplyStyleChanges::kNo;
+    } else if (new_style->HasAnchorFunctionsWithoutEvaluator()) {
+      // For regular (non-interleaved) recalcs that depend on anchor*()
+      // functions, we need to invalidate layout even without a diff,
+      // see ComputedStyle::HasAnchorFunctionsWithoutEvaluator.
+      apply_changes = LayoutObject::ApplyStyleChanges::kYes;
     }
     layout_object->SetStyle(layout_style, apply_changes);
   }

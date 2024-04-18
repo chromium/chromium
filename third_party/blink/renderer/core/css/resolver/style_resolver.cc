@@ -145,9 +145,7 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // descendants of elements with anchor queries as well.
   return (style_recalc_context.container ||
           state.StyleBuilder().HasAnchorFunctions() ||
-          (RuntimeEnabledFeatures::
-               CSSAnchorPositioningCascadeFallbackEnabled() &&
-           state.StyleBuilder().GetPositionTryOptions() != nullptr)) &&
+          state.StyleBuilder().GetPositionTryOptions() != nullptr) &&
          state.CanAffectAnimations();
 }
 
@@ -2416,8 +2414,7 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // TODO(crbug.com/40943044): If we need to disable the optimization for
   // elements with position-fallback/anchor(), we probably need to disable
   // for descendants of such elements as well.
-  if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
-      base_style->GetPositionTryOptions() != nullptr) {
+  if (base_style->GetPositionTryOptions() != nullptr) {
     return false;
   }
 

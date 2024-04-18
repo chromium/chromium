@@ -745,12 +745,6 @@
       status: "stable",
     },
     {
-      // Use full cascading for applying @position-try fallback for anchor
-      // positioning during layout.
-      name: "CSSAnchorPositioningCascadeFallback",
-      implied_by: ["CSSAnchorPositioning"],
-    },
-    {
       // Support for the animation-delay-start and animation-delay-end
       // properties.
       //

@@ -3006,7 +3006,6 @@ TEST_P(ParameterizedStyleResolverTest,
 
 TEST_P(ParameterizedStyleResolverTest, PositionTryStylesBasic_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
-  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -3054,7 +3053,6 @@ TEST_P(ParameterizedStyleResolverTest, PositionTryStylesBasic_Cascade) {
 TEST_P(ParameterizedStyleResolverTest,
        PositionTryStylesResolveLogicalProperties_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
-  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -3103,7 +3101,6 @@ TEST_P(ParameterizedStyleResolverTest,
 TEST_P(ParameterizedStyleResolverTest,
        PositionTryStylesResolveRelativeLengthUnits_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
-  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -3134,7 +3131,6 @@ TEST_P(ParameterizedStyleResolverTest,
 TEST_P(ParameterizedStyleResolverTest,
        PositionTryStylesInBeforePseudoElement_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
-  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -3169,7 +3165,6 @@ TEST_P(ParameterizedStyleResolverTest,
 TEST_P(ParameterizedStyleResolverTest,
        PositionTryStylesCSSWideKeywords_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
-  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -3229,7 +3224,6 @@ TEST_P(ParameterizedStyleResolverTest,
 
 TEST_P(ParameterizedStyleResolverTest, PositionTryPropertyValueChange_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
-  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -3280,7 +3274,6 @@ TEST_P(ParameterizedStyleResolverTest, PositionTryPropertyValueChange_Cascade) {
 
 TEST_P(ParameterizedStyleResolverTest, PositionTry_PaintInvalidation) {
   ScopedCSSAnchorPositioningForTest enabled(true);
-  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>

@@ -244,10 +244,8 @@ class OOFCandidateStyleIterator {
   const ComputedStyle* UpdateStyle(const CSSPropertyValueSet* try_set,
                                    const TryTacticList& tactic_list) {
     CHECK(element_);
-    if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
-      element_->GetDocument().GetStyleEngine().UpdateStyleForOutOfFlow(
-          *element_, try_set, tactic_list, &anchor_evaluator_);
-    }
+    element_->GetDocument().GetStyleEngine().UpdateStyleForOutOfFlow(
+        *element_, try_set, tactic_list, &anchor_evaluator_);
     CHECK(element_->GetLayoutObject());
     // Returns LayoutObject ComputedStyle instead of element style for layout
     // purposes. The style may be different, in particular for body -> html
@@ -1881,8 +1879,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
           ? std::optional<OffsetInfo>()
           : non_overflowing_candidates.front().offset_info;
 
-  if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
-      try_fit_available_space) {
+  if (try_fit_available_space) {
     bool overflows_containing_block = false;
     if (non_overflowing_candidates.empty()) {
       // None of the options worked out.
