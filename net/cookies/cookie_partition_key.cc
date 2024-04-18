@@ -28,6 +28,11 @@ base::unexpected<std::string> WarnAndCreateUnexpected(
   return base::unexpected(message);
 }
 
+std::string SerializeSchemefulSite(const SchemefulSite& site) {
+  return site.GetURL().SchemeIsFile() ? site.SerializeFileSiteWithHost()
+                                      : site.Serialize();
+}
+
 }  // namespace
 
 CookiePartitionKey::SerializedCookiePartitionKey::SerializedCookiePartitionKey(
@@ -114,9 +119,7 @@ CookiePartitionKey::Serialize(const std::optional<CookiePartitionKey>& in) {
   }
 
   return base::ok(SerializedCookiePartitionKey(
-      in->site_.GetURL().SchemeIsFile() ? in->site_.SerializeFileSiteWithHost()
-                                        : in->site_.Serialize(),
-      in->IsThirdParty()));
+      SerializeSchemefulSite(in->site_), in->IsThirdParty()));
 }
 
 std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
@@ -164,7 +167,8 @@ CookiePartitionKey::FromStorage(const std::string& top_level_site,
   }
 
   base::expected<CookiePartitionKey, std::string> key = DeserializeInternal(
-      top_level_site, BoolToAncestorChainBit(has_cross_site_ancestor));
+      top_level_site, BoolToAncestorChainBit(has_cross_site_ancestor),
+      ParsingMode::kStrict);
   if (!key.has_value()) {
     DLOG(WARNING) << key.error();
   }
@@ -181,7 +185,8 @@ CookiePartitionKey::FromUntrustedInput(const std::string& top_level_site,
   }
 
   base::expected<CookiePartitionKey, std::string> key = DeserializeInternal(
-      top_level_site, BoolToAncestorChainBit(has_cross_site_ancestor));
+      top_level_site, BoolToAncestorChainBit(has_cross_site_ancestor),
+      ParsingMode::kLoose);
   if (!key.has_value()) {
     return WarnAndCreateUnexpected(key.error());
   }
@@ -191,11 +196,16 @@ CookiePartitionKey::FromUntrustedInput(const std::string& top_level_site,
 base::expected<CookiePartitionKey, std::string>
 CookiePartitionKey::DeserializeInternal(
     const std::string& top_level_site,
-    CookiePartitionKey::AncestorChainBit has_cross_site_ancestor) {
+    CookiePartitionKey::AncestorChainBit has_cross_site_ancestor,
+    CookiePartitionKey::ParsingMode parsing_mode) {
   auto schemeful_site = SchemefulSite::Deserialize(top_level_site);
   if (schemeful_site.opaque()) {
     return WarnAndCreateUnexpected(
         "Cannot deserialize opaque origin to CookiePartitionKey");
+  } else if (parsing_mode == ParsingMode::kStrict &&
+             SerializeSchemefulSite(schemeful_site) != top_level_site) {
+    return WarnAndCreateUnexpected(
+        "Cannot deserialize malformed top_level_site to CookiePartitionKey");
   }
   return base::ok(CookiePartitionKey(schemeful_site, std::nullopt,
                                      has_cross_site_ancestor));

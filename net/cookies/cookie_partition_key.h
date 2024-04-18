@@ -175,6 +175,18 @@ class NET_EXPORT CookiePartitionKey {
   }
 
  private:
+  // Used by DeserializeInternal to determine how strict the context should be
+  // about inconsistencies in the input.
+  enum class ParsingMode {
+    // The top_level_site string must be serialized exactly as a SchemefulSite
+    // would be.
+    // Use this when reading from storage.
+    kStrict = 0,
+    // The top_level_site string must be coercible to a SchemefulSite.
+    // Use this for user input.
+    kLoose = 1,
+  };
+
   explicit CookiePartitionKey(const SchemefulSite& site,
                               std::optional<base::UnguessableToken> nonce,
                               AncestorChainBit ancestor_chain_bit);
@@ -186,7 +198,8 @@ class NET_EXPORT CookiePartitionKey {
   [[nodiscard]] static base::expected<CookiePartitionKey, std::string>
   DeserializeInternal(
       const std::string& top_level_site,
-      CookiePartitionKey::AncestorChainBit has_cross_site_ancestor);
+      CookiePartitionKey::AncestorChainBit has_cross_site_ancestor,
+      CookiePartitionKey::ParsingMode parsing_mode);
 
   AncestorChainBit MaybeAncestorChainBit() const;
 

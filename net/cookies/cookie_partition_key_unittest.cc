@@ -43,6 +43,8 @@ TEST_P(CookiePartitionKeyTest, TestFromStorage) {
        "", true, CookiePartitionKey::FromURLForTesting(GURL(""))},
       /*invalid site*/
       {"Invalid", true, std::nullopt},
+      /*malformed site*/
+      {"https://toplevelsite.com/", true, std::nullopt},
       /*valid site: cross site*/
       {"https://toplevelsite.com", true,
        CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))},
@@ -80,6 +82,9 @@ TEST_P(CookiePartitionKeyTest, TestFromUntrustedInput) {
        true},
       {/*valid site: same site ancestor*/
        kValidSite, CookiePartitionKey::AncestorChainBit::kSameSite, true,
+       false},
+      {/*valid site with extra slash: same site ancestor*/
+       kValidSite + "/", CookiePartitionKey::AncestorChainBit::kSameSite, true,
        false},
       {/*invalid site (missing scheme)*/
        "toplevelsite.com", CookiePartitionKey::AncestorChainBit::kCrossSite,
