@@ -162,7 +162,7 @@
   {
     "name": "android-hats-refactor",
     "owners": [ "wenyufu@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 128
   },
   {
     "name": "android-hub",
