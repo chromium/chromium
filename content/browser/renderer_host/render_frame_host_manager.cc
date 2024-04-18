@@ -2035,16 +2035,6 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
               "RenderFrameHostManager::UnsetSpeculativeRenderFrameHost",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
-      speculative_render_frame_host_
-          ->HasPendingCommitForCrossDocumentNavigation()) {
-    // With navigation queueing, pending commit navigations in speculative
-    // RenderFrameHosts shouldn't get deleted, unless the FrameTreeNode or
-    // renderer process is gone/will be gone soon.
-    CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
-          reason == NavigationDiscardReason::kWillRemoveFrame);
-  }
-
   speculative_render_frame_host_->GetProcess()->RemovePendingView();
   if (speculative_render_frame_host_->lifecycle_state() ==
       LifecycleStateImpl::kSpeculative) {
@@ -2054,8 +2044,10 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
             : mojom::FrameDeleteIntention::
                   kSpeculativeMainFrameForNavigationCancelled);
   } else {
+    // TODO(dcheng): Upgrade this to a CHECK()?
     DCHECK_EQ(speculative_render_frame_host_->lifecycle_state(),
               LifecycleStateImpl::kPendingCommit);
+
     if (!ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
       // The browser process already asked the renderer to commit the
       // navigation. The renderer is guaranteed to commit the navigation and
@@ -2082,8 +2074,64 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
       speculative_render_frame_host_->UndoCommitNavigation(
           *proxy, frame_tree_node_->IsLoading());
     } else {
-      speculative_render_frame_host_->SetLifecycleState(
-          LifecycleStateImpl::kReadyToBeDeleted);
+      // A reasonable person might wonder: shouldn't a RenderFrameHostImpl in
+      // kPendingCommit always have a... pending commit?
+      //
+      // The surprising answer is no! When the browser process handles the
+      // renderer's commit navigation ack:
+      // - the NavigationRequest is unconditionally removed from
+      //   `RenderFrameHostImpl::navigation_requests_`.
+      // - but if the IPC fails validation, the browser process reports a bad
+      //   message (which kills the renderer process) and returns immediately.
+      //
+      // However, the kill is async and observing process termination (which is
+      // what cleans up the speculative RenderFrameHostImpl) is also async.
+      // Between reporting the bad message and the actual cleanup, the user can
+      // begin a new navigation, which will discard any speculative RFHs rather
+      // than blocking (since `HasPendingCommitForCrossDocumentNavigation()` now
+      // returns `false`!) for a reason other than `kRenderProcessGone` or
+      // `kWillRemoveFrame`.
+      //
+      // TODO(dcheng): it might help make state easier to reason about if the
+      // speculative RFH is proactively discarded rather than just leaving it
+      // around to be asynchronously cleaned up.
+      if (speculative_render_frame_host_
+              ->HasPendingCommitForCrossDocumentNavigation()) {
+        // With navigation queueing, pending commit navigations in speculative
+        // RenderFrameHosts shouldn't get deleted, unless the FrameTreeNode or
+        // renderer process is gone/will be gone soon.
+        CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
+              reason == NavigationDiscardReason::kWillRemoveFrame);
+      }
+
+      // TODO(dcheng): `CHECK(render_frame_host_->IsPendingDeletion())` would be
+      // a nice precondition to enforce here. However, this turns out to be
+      // Hard: `StartPendingDeletionOnSubtree()` performs its work in two
+      // phases: it resets all navigation requests first (which might delete
+      // speculative RFHs—even ones in pending commit), before doing a complex
+      // dance to invoke `DeleteRenderFrame()` a minimal number of times. In the
+      // future, it would be nice to refactor the code so this precondition can
+      // be enforced.
+
+      // A pending commit RFH is assumed/expected to have committed already in
+      // the renderer process. If the FrameTreeNode is going away, explicitly
+      // tear down the RenderFrame in the renderer process to keep the frame
+      // tree in sync.
+      if (frame_tree_node_->parent()) {
+        speculative_render_frame_host_->DeleteRenderFrame(
+            mojom::FrameDeleteIntention::kNotMainFrame);
+      } else {
+        // But for main frames, just advance the lifecycle state instead. In
+        // Blink, a live WebView must always have a live main frame; violating
+        // this invariant by destroying the already-committed (from the
+        // perspective of the renderer process) frame with `DeleteRenderFrame()`
+        // results in bugs like crbug.com/40091257.
+        //
+        // The main RenderFrame will be implicitly torn down later when the
+        // corresponding RenderViewHost/WebView are torn down.
+        speculative_render_frame_host_->SetLifecycleState(
+            LifecycleStateImpl::kReadyToBeDeleted);
+      }
     }
   }
 
