@@ -53,7 +53,6 @@ class KeepAliveScheduler : public ActiveHost::Observer,
 
   // KeepAliveOperation::Observer:
   void OnOperationFinished(
-      multidevice::RemoteDeviceRef remote_device,
       std::unique_ptr<DeviceStatus> device_status) override;
 
  private:

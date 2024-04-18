@@ -73,11 +73,7 @@ void KeepAliveScheduler::OnActiveHostChanged(
 }
 
 void KeepAliveScheduler::OnOperationFinished(
-    multidevice::RemoteDeviceRef remote_device,
     std::unique_ptr<DeviceStatus> device_status) {
-  // Make a copy before destroying the operation below.
-  const multidevice::RemoteDeviceRef device_copy = remote_device;
-
   keep_alive_operation_->RemoveObserver(this);
   keep_alive_operation_.reset();
 
@@ -103,10 +99,10 @@ void KeepAliveScheduler::OnOperationFinished(
   // assumed that setup is no longer required for an active connection attempt.
   host_scan_cache_->SetHostScanResult(
       *HostScanCacheEntry::Builder()
-           .SetTetherNetworkGuid(
-               device_id_tether_network_guid_map_
-                   ->GetTetherNetworkGuidForDeviceId(device_copy.GetDeviceId()))
-           .SetDeviceName(device_copy.name())
+           .SetTetherNetworkGuid(device_id_tether_network_guid_map_
+                                     ->GetTetherNetworkGuidForDeviceId(
+                                         active_host_device_->GetDeviceId()))
+           .SetDeviceName(active_host_device_->name())
            .SetCarrier(carrier)
            .SetBatteryPercentage(battery_percentage)
            .SetSignalStrength(signal_strength)

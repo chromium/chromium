@@ -51,7 +51,6 @@ class KeepAliveOperation : public MessageTransferOperation {
     // |device_status| points to a valid DeviceStatus if the operation completed
     // successfully and is null if the operation was not successful.
     virtual void OnOperationFinished(
-        multidevice::RemoteDeviceRef remote_device,
         std::unique_ptr<DeviceStatus> device_status) = 0;
   };
 

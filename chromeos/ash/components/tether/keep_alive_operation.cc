@@ -92,9 +92,8 @@ void KeepAliveOperation::OnOperationFinished() {
     // Note: If the operation did not complete successfully, |device_status_|
     // will still be null.
     observer.OnOperationFinished(
-        remote_device(), device_status_
-                             ? std::make_unique<DeviceStatus>(*device_status_)
-                             : nullptr);
+        device_status_ ? std::make_unique<DeviceStatus>(*device_status_)
+                       : nullptr);
   }
 }
 

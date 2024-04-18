@@ -43,13 +43,11 @@ class MockOperationObserver : public KeepAliveOperation::Observer {
 
   ~MockOperationObserver() = default;
 
-  MOCK_METHOD2(OnOperationFinishedRaw,
-               void(multidevice::RemoteDeviceRef, DeviceStatus*));
+  MOCK_METHOD1(OnOperationFinishedRaw, void(DeviceStatus*));
 
   void OnOperationFinished(
-      multidevice::RemoteDeviceRef remote_device,
       std::unique_ptr<DeviceStatus> device_status) override {
-    OnOperationFinishedRaw(remote_device, device_status.get());
+    OnOperationFinishedRaw(device_status.get());
   }
 };
 
@@ -154,10 +152,8 @@ TEST_F(KeepAliveOperationTest, NotifiesObserversOnResponse) {
   DeviceStatus test_status = CreateDeviceStatusWithFakeFields();
 
   // Verify that the observer is called with the correct parameters.
-  EXPECT_CALL(mock_observer_, OnOperationFinishedRaw(remote_device_, NotNull()))
-      .WillOnce(Invoke([this, &test_status](multidevice::RemoteDeviceRef device,
-                                            DeviceStatus* status) {
-        EXPECT_EQ(remote_device_, device);
+  EXPECT_CALL(mock_observer_, OnOperationFinishedRaw(NotNull()))
+      .WillOnce(Invoke([&test_status](DeviceStatus* status) {
         EXPECT_EQ(test_status.SerializeAsString(), status->SerializeAsString());
       }));
 
@@ -171,7 +167,7 @@ TEST_F(KeepAliveOperationTest, RecordsResponseDuration) {
   static constexpr base::TimeDelta kKeepAliveTickleResponseTime =
       base::Seconds(3);
 
-  EXPECT_CALL(mock_observer_, OnOperationFinishedRaw(remote_device_, _));
+  EXPECT_CALL(mock_observer_, OnOperationFinishedRaw(_));
 
   // Advance the clock in order to verify a non-zero response duration is
   // recorded and verified (below).
