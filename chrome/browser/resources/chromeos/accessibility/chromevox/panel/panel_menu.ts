@@ -11,12 +11,27 @@ import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
 import {PanelMenuItem} from './panel_menu_item.js';
 
+type MenuCallback = () => Promise<void>;
+
 export class PanelMenu {
+  menuBarItemElement: HTMLDivElement;
+  menuContainerElement: HTMLDivElement;
+  menuElement: HTMLTableElement;
+  menuMsg: string;
+
+  /** The current active menu item index, or -1 if none. */
+  protected activeIndex_ = -1;
+  private enabled_ = true;
+  protected items_: PanelMenuItem[] = [];
   /**
-   * @param {string} menuMsg The msg id of the menu.
+   * The return value from setTimeout for a function to update the
+   * scroll bars after an item has been added to a menu. Used so that we
+   * don't re-layout too many times.
    */
-  constructor(menuMsg) {
-    /** @type {string} */
+  private updateScrollbarsTimeout_: number | null = null;
+
+  /** @param menuMsg The msg id of the menu. */
+  constructor(menuMsg: string) {
     this.menuMsg = menuMsg;
     // The item in the menu bar containing the menu's title.
     this.menuBarItemElement = document.createElement('div');
@@ -39,75 +54,45 @@ export class PanelMenu {
     this.menuElement.setAttribute('aria-label', menuTitle);
     this.menuContainerElement.appendChild(this.menuElement);
 
-    /**
-     * The items in the menu.
-     * @type {!Array<!PanelMenuItem>}
-     * @private
-     */
-    this.items_ = [];
-
-    /**
-     * The return value from setTimeout for a function to update the
-     * scroll bars after an item has been added to a menu. Used so that we
-     * don't re-layout too many times.
-     * @type {?number}
-     * @private
-     */
-    this.updateScrollbarsTimeout_ = null;
-
-    /**
-     * The current active menu item index, or -1 if none.
-     * @type {number}
-     * @private
-     */
-    this.activeIndex_ = -1;
-
     this.menuElement.addEventListener(
         'keypress', this.onKeyPress_.bind(this), true);
-
-    /** @private {boolean} */
-    this.enabled_ = true;
   }
 
   /**
-   * @param {string} menuItemTitle The title of the menu item.
-   * @param {string|undefined} menuItemShortcut The keystrokes to select this
+   * @param menuItemTitle The title of the menu item.
+   * @param menuItemShortcut The keystrokes to select this
    *     item.
-   * @param {string|undefined} menuItemBraille
-   * @param {string|undefined} gesture
-   * @param {function(): !Promise} callback The function to call if this item
+   * @param callback The function to call if this item
    *     is selected.
-   * @param {string=} opt_id An optional id for the menu item element.
-   * @return {!PanelMenuItem} The menu item just created.
+   * @param id An optional id for the menu item element.
+   * @return The menu item just created.
    */
   addMenuItem(
-      menuItemTitle, menuItemShortcut, menuItemBraille, gesture, callback,
-      opt_id) {
+      menuItemTitle: string, menuItemShortcut: string | undefined,
+      menuItemBraille: string | undefined, gesture: string | undefined,
+      callback: MenuCallback, id?: string): PanelMenuItem {
     const menuItem = new PanelMenuItem(
         menuItemTitle, menuItemShortcut, menuItemBraille, gesture, callback,
-        opt_id);
+        id);
+    const menuElement = menuItem.element as Node;
     this.items_.push(menuItem);
-    this.menuElement.appendChild(menuItem.element);
+    this.menuElement.appendChild(menuElement);
 
     // Sync the active index with focus.
-    menuItem.element.addEventListener(
-        'focus', (function(index, event) {
-                   this.activeIndex_ = index;
-                 }).bind(this, this.items_.length - 1),
-        false);
+    const lastItemIndex = this.items_.length - 1;
+    menuElement.addEventListener(
+        'focus', () => this.activeIndex_ = lastItemIndex, false);
 
     // Update the container height, adding a scroll bar if necessary - but
     // to avoid excessive layout, schedule this once per batch of adding
     // menu items rather than after each add.
     if (!this.updateScrollbarsTimeout_) {
-      this.updateScrollbarsTimeout_ = setTimeout(
-          (function() {
-            const menuBounds = this.menuElement.getBoundingClientRect();
-            const maxHeight = window.innerHeight - menuBounds.top;
-            this.menuContainerElement.style.maxHeight = maxHeight + 'px';
-            this.updateScrollbarsTimeout_ = null;
-          }).bind(this),
-          0);
+      this.updateScrollbarsTimeout_ = setTimeout(() => {
+        const menuBounds = this.menuElement.getBoundingClientRect();
+        const maxHeight = window.innerHeight - menuBounds.top;
+        this.menuContainerElement.style.maxHeight = maxHeight + 'px';
+        this.updateScrollbarsTimeout_ = null;
+      }, 0);
     }
 
     return menuItem;
@@ -116,21 +101,21 @@ export class PanelMenu {
   /**
    * Activate this menu, which means showing it and positioning it on the
    * screen underneath its title in the menu bar.
-   * @param {boolean} activateFirstItem Whether or not we should activate the
-   *     menu's
-   * first item.
+   * @param activateFirstItem Whether or not we should activate the menu's
+   *     first item.
    */
-  activate(activateFirstItem) {
+  activate(activateFirstItem: boolean): void {
     if (!this.enabled_) {
       this.menuBarItemElement.focus();
       return;
     }
 
     this.menuContainerElement.style.visibility = 'visible';
-    this.menuContainerElement.style.opacity = 1;
+    this.menuContainerElement.style.opacity = String(1);
     this.menuBarItemElement.classList.add('active');
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     const barBounds =
-        this.menuBarItemElement.parentElement.getBoundingClientRect();
+        this.menuBarItemElement.parentElement!.getBoundingClientRect();
     const titleBounds = this.menuBarItemElement.getBoundingClientRect();
     const menuBounds = this.menuElement.getBoundingClientRect();
 
@@ -154,13 +139,14 @@ export class PanelMenu {
    * When activated, focus gets placed on the menuBarItem (title element)
    * instead of the first menu item.
    */
-  disable() {
+  disable(): void {
     this.enabled_ = false;
     this.menuBarItemElement.classList.add('disabled');
-    this.menuBarItemElement.setAttribute('aria-disabled', true);
-    this.menuBarItemElement.setAttribute('tabindex', 0);
+    this.menuBarItemElement.setAttribute('aria-disabled', String(true));
+    this.menuBarItemElement.setAttribute('tabindex', String(0));
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     this.menuBarItemElement.setAttribute(
-        'aria-label', this.menuBarItemElement.textContent);
+        'aria-label', this.menuBarItemElement.textContent!);
     this.activeIndex_ = -1;
   }
 
@@ -168,34 +154,31 @@ export class PanelMenu {
    * Hide this menu. Make it invisible first to minimize spurious
    * accessibility events before the next menu activates.
    */
-  deactivate() {
-    this.menuContainerElement.style.opacity = 0.001;
+  deactivate(): void {
+    this.menuContainerElement.style.opacity = String(0.001);
     this.menuBarItemElement.classList.remove('active');
     this.activeIndex_ = -1;
 
-    setTimeout(
-        (function() {
-          this.menuContainerElement.style.visibility = 'hidden';
-        }).bind(this),
-        0);
+    setTimeout(() => this.menuContainerElement.style.visibility = 'hidden', 0);
   }
 
   /**
    * Make a specific menu item index active.
-   * @param {number} itemIndex The index of the menu item.
+   * @param itemIndex The index of the menu item.
    */
-  activateItem(itemIndex) {
+  activateItem(itemIndex: number): void {
     this.activeIndex_ = itemIndex;
     if (this.activeIndex_ >= 0 && this.activeIndex_ < this.items_.length) {
-      this.items_[this.activeIndex_].element.focus();
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      this.items_[this.activeIndex_].element!.focus();
     }
   }
 
   /**
    * Advanced the active menu item index by a given number.
-   * @param {number} delta The number to add to the active menu item index.
+   * @param delta The number to add to the active menu item index.
    */
-  advanceItemBy(delta) {
+  advanceItemBy(delta: number): void {
     if (!this.enabled_) {
       return;
     }
@@ -219,42 +202,34 @@ export class PanelMenu {
       return;
     }
 
-    this.items_[this.activeIndex_].element.focus();
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.items_[this.activeIndex_].element!.focus();
   }
 
-  /**
-   * Sets the active menu item index to be 0.
-   */
-  scrollToTop() {
+  /** Sets the active menu item index to be 0. */
+  scrollToTop(): void {
     this.activeIndex_ = 0;
-    this.items_[this.activeIndex_].element.focus();
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.items_[this.activeIndex_].element!.focus();
   }
 
-  /**
-   * Sets the active menu item index to be the last index.
-   */
-  scrollToBottom() {
+  /** Sets the active menu item index to be the last index. */
+  scrollToBottom(): void {
     this.activeIndex_ = this.items_.length - 1;
-    this.items_[this.activeIndex_].element.focus();
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.items_[this.activeIndex_].element!.focus();
   }
 
-  /**
-   * Get the callback for the active menu item.
-   * @return {?function() : !Promise} The callback.
-   */
-  getCallbackForCurrentItem() {
+  /** Get the callback for the active menu item. */
+  getCallbackForCurrentItem(): MenuCallback | null {
     if (this.activeIndex_ >= 0 && this.activeIndex_ < this.items_.length) {
       return this.items_[this.activeIndex_].callback;
     }
     return null;
   }
 
-  /**
-   * Get the callback for a menu item given its DOM element.
-   * @param {Element} element The DOM element.
-   * @return {?function() : !Promise} The callback.
-   */
-  getCallbackForElement(element) {
+  /** Get the callback for a menu item given its DOM element. */
+  getCallbackForElement(element: HTMLElement): MenuCallback | null {
     for (let i = 0; i < this.items_.length; i++) {
       if (element === this.items_[i].element) {
         return this.items_[i].callback;
@@ -263,10 +238,8 @@ export class PanelMenu {
     return null;
   }
 
-  /**
-   * Handles key presses for first letter accelerators.
-   */
-  onKeyPress_(evt) {
+  /** Handles key presses for first letter accelerators. */
+  private onKeyPress_(evt: KeyboardEvent): void {
     if (!this.items_.length) {
       return;
     }
@@ -281,28 +254,19 @@ export class PanelMenu {
     }
   }
 
-  /**
-   * @return {boolean} The enabled state of this menu.
-   */
-  get enabled() {
+  get enabled(): boolean {
     return this.enabled_;
   }
 
-  /**
-   * @return {!Array<!PanelMenuItem>}
-   */
-  get items() {
+  get items(): PanelMenuItem[] {
     return this.items_;
   }
 
   /**
    * Starting at |startIndex|, looks for an enabled menu item.
-   * @param {number} startIndex
-   * @param {number} delta
-   * @return {number} The index of the enabled item. -1 if not found.
-   * @private
+   * @return The index of the enabled item. -1 if not found.
    */
-  findEnabledItemIndex_(startIndex, delta) {
+  private findEnabledItemIndex_(startIndex: number, delta: number): number {
     const endIndex = (delta > 0) ? this.items_.length : -1;
     while (startIndex !== endIndex) {
       if (this.items_[startIndex].enabled) {
@@ -316,8 +280,7 @@ export class PanelMenu {
 
 
 export class PanelNodeMenu extends PanelMenu {
-  /** @override */
-  activate(activateFirstItem) {
+  override activate(activateFirstItem: boolean): void {
     super.activate(false);
     if (activateFirstItem) {
       // The active index might have been set prior to this call in
@@ -327,8 +290,7 @@ export class PanelNodeMenu extends PanelMenu {
     }
   }
 
-  /** @param {!PanelNodeMenuItemData} data */
-  addItemFromData(data) {
+  addItemFromData(data: PanelNodeMenuItemData): void {
     this.addMenuItem(data.title, '', '', '', async () => {
       if (data.callbackId) {
         BridgeCallbackManager.performCallback(data.callbackId);
@@ -345,12 +307,15 @@ export class PanelNodeMenu extends PanelMenu {
  * ChromeVox menus.
  */
 export class PanelSearchMenu extends PanelMenu {
+  searchBar: HTMLInputElement;
+
+  private searchResultCounter_ = 0;
+
   /**
-   * @param {!string} menuMsg The msg id of the menu.
+   * @param menuMsg The msg id of the menu.
    */
-  constructor(menuMsg) {
+  constructor(menuMsg: string) {
     super(menuMsg);
-    this.searchResultCounter_ = 0;
 
     // Add id attribute to the menu so we can associate it with search bar.
     this.menuElement.setAttribute('id', 'search-results');
@@ -378,120 +343,112 @@ export class PanelSearchMenu extends PanelMenu {
     this.menuContainerElement.insertBefore(menuItem, this.menuElement);
   }
 
-  /** @override */
-  activate(activateFirstItem) {
+  override activate(_activateFirstItem: boolean): void {
     PanelMenu.prototype.activate.call(this, false);
     if (this.searchBar.value === '') {
       this.clear();
     }
-    if (this.items_.length > 0) {
+    if (this.items.length > 0) {
       this.activateItem(this.activeIndex_);
     }
     this.searchBar.focus();
   }
 
-  /** @override */
-  activateItem(index) {
+  override activateItem(index: number): void {
     this.resetItemAtActiveIndex();
-    if (this.items_.length === 0) {
+    if (this.items.length === 0) {
       return;
     }
     if (index >= 0) {
-      index = (index + this.items_.length) % this.items_.length;
+      index = (index + this.items.length) % this.items.length;
     } else {
       if (index >= this.activeIndex_) {
         index = 0;
       } else {
-        index = this.items_.length - 1;
+        index = this.items.length - 1;
       }
     }
     this.activeIndex_ = index;
-    const item = this.items_[this.activeIndex_];
-    this.searchBar.setAttribute('aria-activedescendant', item.element.id);
-    item.element.classList.add('active');
+    const item = this.items[this.activeIndex_];
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.searchBar.setAttribute('aria-activedescendant', item.element!.id);
+    item.element!.classList.add('active');
 
     // Scroll item into view, if necessary. Only check y-axis.
-    const itemBounds = item.element.getBoundingClientRect();
+    const itemBounds = item.element!.getBoundingClientRect();
     const menuBarBounds = this.menuBarItemElement.getBoundingClientRect();
     const topThreshold = menuBarBounds.bottom;
     const bottomThreshold = window.innerHeight;
     if (itemBounds.bottom > bottomThreshold) {
       // Item is too far down, so align to top.
-      item.element.scrollIntoView(true /* alignToTop */);
+      item.element!.scrollIntoView(true /* alignToTop */);
     } else if (itemBounds.top < topThreshold) {
       // Item is too far up, so align to bottom.
-      item.element.scrollIntoView(false /* alignToTop */);
+      item.element!.scrollIntoView(false /* alignToTop */);
     }
   }
 
-  /** @override */
-  addMenuItem(
-      menuItemTitle, menuItemShortcut, menuItemBraille, gesture, callback,
-      opt_id) {
+  override addMenuItem(
+      menuItemTitle: string, menuItemShortcut: string | undefined,
+      menuItemBraille: string | undefined, gesture: string | undefined,
+      callback: MenuCallback, _id?: string): PanelMenuItem {
     this.searchResultCounter_ += 1;
     const item = PanelMenu.prototype.addMenuItem.call(
         this, menuItemTitle, menuItemShortcut, menuItemBraille, gesture,
         callback, 'result-number-' + this.searchResultCounter_.toString());
     // Ensure that item styling is updated on mouse hovers.
-    item.element.addEventListener('mouseover', event => {
-      this.resetItemAtActiveIndex();
-    }, true);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    item.element!.addEventListener(
+      'mouseover', () => this.resetItemAtActiveIndex(), true);
     return item;
   }
 
-  /** @override */
-  advanceItemBy(delta) {
+  override advanceItemBy(delta: number): void {
     this.activateItem(this.activeIndex_ + delta);
   }
 
-  /**
-   * Clears this menu's contents.
-   */
-  clear() {
+  /** Clears this menu's contents. */
+  clear(): void {
     this.items_ = [];
     this.activeIndex_ = -1;
     while (this.menuElement.children.length !== 0) {
-      this.menuElement.removeChild(this.menuElement.firstChild);
+      this.menuElement.removeChild(this.menuElement.firstChild as Node);
     }
     this.searchBar.setAttribute('aria-activedescendant', '');
   }
 
   /**
    * A convenience method to add a copy of an existing PanelMenuItem.
-   * @param {!PanelMenuItem} item The item we want to copy.
-   * @return {!PanelMenuItem} The menu item that was just created.
+   * @param item The item we want to copy.
+   * @return The menu item that was just created.
    */
-  copyAndAddMenuItem(item) {
+  copyAndAddMenuItem(item: PanelMenuItem): PanelMenuItem {
     return this.addMenuItem(
         item.menuItemTitle, item.menuItemShortcut, item.menuItemBraille,
         item.gesture, item.callback);
   }
 
-  /** @override */
-  deactivate() {
+  override deactivate(): void {
     this.resetItemAtActiveIndex();
     PanelMenu.prototype.deactivate.call(this);
   }
 
-  /**
-   * Resets the item at this.activeIndex_.
-   */
-  resetItemAtActiveIndex() {
+  /** Resets the item at this.activeIndex_. */
+  resetItemAtActiveIndex(): void {
     // Sanity check.
     if (this.activeIndex_ < 0 || this.activeIndex_ >= this.items.length) {
       return;
     }
 
-    this.items_[this.activeIndex_].element.classList.remove('active');
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.items_[this.activeIndex_].element!.classList.remove('active');
   }
 
-  /** @override */
-  scrollToTop() {
+  override scrollToTop(): void {
     this.activateItem(0);
   }
 
-  /** @override */
-  scrollToBottom() {
+  override scrollToBottom(): void {
     this.activateItem(this.items_.length - 1);
   }
 }

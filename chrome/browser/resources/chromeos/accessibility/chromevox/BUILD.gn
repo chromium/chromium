@@ -82,6 +82,7 @@ ts_modules = [
   "panel/panel.ts",
   "panel/panel_captions.ts",
   "panel/panel_interface.ts",
+  "panel/panel_menu.ts",
   "panel/panel_menu_item.ts",
   "panel/panel_mode.ts",
   "third_party/tamachiyomi/ja_phonetic_data.ts",
@@ -172,7 +173,6 @@ js_modules = [
   "common/settings_manager.js",
   "common/tree_dumper.js",
   "panel/menu_manager.js",
-  "panel/panel_menu.js",
 ]
 
 # Closure library modules needed by chromevox.
