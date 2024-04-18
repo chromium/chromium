@@ -1294,7 +1294,7 @@ BASE_FEATURE(kUSeSequencedTaskRunnerForVEA,
 // Expiry: When GLImageProcessor is deleted
 BASE_FEATURE(kUseGLForScaling,
              "UseGLForScaling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Experimental support for GL based image processing. On some architectures,
 // the hardware accelerated video decoder outputs frames in a format not
 // understood by the display controller. We usually use LibYUV to convert these
