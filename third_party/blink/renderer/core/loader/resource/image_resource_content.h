@@ -303,8 +303,8 @@ class CORE_EXPORT ImageResourceContent final
 
   bool is_preloaded_with_early_hints_;
 
-  HeapHashCountedSet<WeakMember<ImageResourceObserver>> observers_;
-  HeapHashCountedSet<WeakMember<ImageResourceObserver>> finished_observers_;
+  HeapHashCountedSet<Member<ImageResourceObserver>> observers_;
+  HeapHashCountedSet<Member<ImageResourceObserver>> finished_observers_;
 
 #if DCHECK_IS_ON()
   bool is_update_image_being_called_ = false;
