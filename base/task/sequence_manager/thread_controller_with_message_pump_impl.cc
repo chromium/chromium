@@ -573,13 +573,14 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
 #endif  // BUILDFLAG(IS_WIN)
 
   if (main_thread_only().task_source->OnIdle()) {
+    work_id_provider_->IncrementWorkId();
     // The OnIdle() callback resulted in more immediate work, so schedule a
     // DoWork callback. For some message pumps returning true from here is
     // sufficient to do that but not on mac.
     pump_->ScheduleWork();
     return false;
   }
-
+  work_id_provider_->IncrementWorkId();
   // This is mostly redundant with the identical call in BeforeWait (upcoming)
   // but some uninstrumented MessagePump impls don't call BeforeWait so it must
   // also be done here.
