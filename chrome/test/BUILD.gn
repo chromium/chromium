@@ -848,6 +848,7 @@ static_library("test_support") {
       "//ash:test_support",
       "//ash/constants",
       "//ash/public/cpp:test_support",
+      "//ash/webui/diagnostics_ui:url_constants",
       "//ash/webui/firmware_update_ui:url_constants",
       "//ash/webui/os_feedback_ui:url_constants",
       "//ash/webui/personalization_app:test_support",

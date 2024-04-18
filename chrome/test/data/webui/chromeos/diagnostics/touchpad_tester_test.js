@@ -8,7 +8,7 @@ import 'chrome://diagnostics/strings.m.js';
 import {fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {TouchpadTesterElement} from 'chrome://diagnostics/touchpad_tester.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {MockController} from '../mock_controller.m.js';
