@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -175,13 +176,17 @@ TEST_F(PromosManagerCoordinatorTest, BanneredViewControllerDismissesViaSwipe) {
 }
 
 // Tests ...
-// TODO(crbug.com/333873672): Fails on device.
+// TODO(crbug.com/333873672): Re-enable after fixing.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_DisplayPromoCallbackTest DisplayPromoCallbackTest
 #else
 #define MAYBE_DisplayPromoCallbackTest DISABLED_DisplayPromoCallbackTest
 #endif
 TEST_F(PromosManagerCoordinatorTest, MAYBE_DisplayPromoCallbackTest) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Test is failing on iOS15 simulator.
+    return;
+  }
   // Prepare UI for promo display.
   SetupUIForPromoDisplay();
 
@@ -201,7 +206,7 @@ TEST_F(PromosManagerCoordinatorTest, MAYBE_DisplayPromoCallbackTest) {
   [mockCoordinator verify];
 }
 
-// TODO(crbug.com/333873672): Fails on device.
+// TODO(crbug.com/333873672): Re-enable after fixing.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_DisplayPromoCallbackUINotAvailableTest DisplayPromoCallbackUINotAvailableTest
 #else
@@ -210,6 +215,10 @@ TEST_F(PromosManagerCoordinatorTest, MAYBE_DisplayPromoCallbackTest) {
 #endif
 TEST_F(PromosManagerCoordinatorTest,
        MAYBE_DisplayPromoCallbackUINotAvailableTest) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Test is failing on iOS15 simulator.
+    return;
+  }
   // Prepare UI for promo display.
   SetupUIForPromoDisplay();
   CreatePromosManagerCoordinator();
