@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
 import android.os.Build;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageButton;
 
 import androidx.annotation.RequiresApi;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -140,6 +142,7 @@ public class AppHeaderCoordinatorBrowserTest {
                         .getTabSwitcherForTesting()
                         .getController()
                         .getTabSwitcherContainer();
+
         assertTrue(
                 "Tab switcher container view y-offset should be non-zero.",
                 tabSwitcherContainerView.getY() != 0);
@@ -203,6 +206,98 @@ public class AppHeaderCoordinatorBrowserTest {
                 tabSwitcherContainerView.getY(),
                 0f);
         // Exit tab switcher.
+        TabUiTestHelper.clickFirstCardFromTabSwitcher(activity);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB)
+    public void testEnterTabSwitcherInDesktopWindow_HubLayout() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+
+        // Enter desktop windowing mode.
+        triggerDesktopWindowingModeChange(true);
+        // Enter the tab switcher.
+        TabUiTestHelper.enterTabSwitcher(activity);
+
+        var layoutManager = (LayoutManagerChromeTablet) activity.getLayoutManager();
+        var hubLayout = ((HubLayout) layoutManager.getTabSwitcherLayoutForTesting());
+        var hubContainerView = hubLayout.getHubControllerForTesting().getContainerView();
+        var params = (LayoutParams) hubContainerView.getLayoutParams();
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tab switcher container view y-offset should match the app header"
+                                    + " height.",
+                            (int) hubContainerView.getY(),
+                            Matchers.is(APP_HEADER_HEIGHT_PX));
+                    Criteria.checkThat(
+                            "Tab switcher container view top margin should match the app header"
+                                    + " height.",
+                            params.topMargin,
+                            Matchers.is(APP_HEADER_HEIGHT_PX));
+                });
+
+        // Exit desktop windowing mode.
+        triggerDesktopWindowingModeChange(false);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tab switcher container view y-offset should be zero.",
+                            hubContainerView.getY(),
+                            Matchers.is(0f));
+                });
+        TabUiTestHelper.clickFirstCardFromTabSwitcher(activity);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB)
+    public void testEnterDesktopWindowWithTabSwitcherActive_HubLayout() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+
+        // Enter the tab switcher. Desktop windowing mode is not active initially.
+        TabUiTestHelper.enterTabSwitcher(activity);
+
+        var layoutManager = (LayoutManagerChromeTablet) activity.getLayoutManager();
+        var hubLayout = ((HubLayout) layoutManager.getTabSwitcherLayoutForTesting());
+        var hubContainerView = hubLayout.getHubControllerForTesting().getContainerView();
+        var params = (LayoutParams) hubContainerView.getLayoutParams();
+
+        assertEquals(
+                "Tab switcher container view y-offset should be zero.",
+                0,
+                hubContainerView.getY(),
+                0.0);
+        assertEquals("Tab switcher container view top margin should be zero.", 0, params.topMargin);
+
+        // Enter desktop windowing mode while the tab switcher is visible.
+        triggerDesktopWindowingModeChange(true);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tab switcher container view y-offset should match the app header"
+                                    + " height.",
+                            (int) hubContainerView.getY(),
+                            Matchers.is(APP_HEADER_HEIGHT_PX));
+                    Criteria.checkThat(
+                            "Tab switcher container view top margin should match the app header"
+                                    + " height.",
+                            params.topMargin,
+                            Matchers.is(APP_HEADER_HEIGHT_PX));
+                });
+
+        // Exit desktop windowing mode.
+        triggerDesktopWindowingModeChange(false);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tab switcher container view y-offset should be zero.",
+                            hubContainerView.getY(),
+                            Matchers.is(0f));
+                });
         TabUiTestHelper.clickFirstCardFromTabSwitcher(activity);
     }
 

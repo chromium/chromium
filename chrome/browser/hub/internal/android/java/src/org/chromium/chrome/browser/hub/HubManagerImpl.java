@@ -49,6 +49,9 @@ public class HubManagerImpl implements HubManager, HubController {
 
     private HubCoordinator mHubCoordinator;
 
+    private int mStatusIndicatorHeight;
+    private int mAppHeaderHeight;
+
     /** See {@link HubManagerFactory#createHubManager}. */
     public HubManagerImpl(
             @NonNull Context context,
@@ -101,7 +104,18 @@ public class HubManagerImpl implements HubManager, HubController {
     public void setStatusIndicatorHeight(int height) {
         LayoutParams params = (LayoutParams) mHubContainerView.getLayoutParams();
         assert params != null : "HubContainerView should always have layout params.";
-        params.topMargin = height;
+        mStatusIndicatorHeight = height;
+        params.topMargin = mStatusIndicatorHeight + mAppHeaderHeight;
+        mHubContainerView.setLayoutParams(params);
+    }
+
+    @Override
+    public void setAppHeaderHeight(int height) {
+        if (mAppHeaderHeight == height) return;
+        LayoutParams params = (LayoutParams) mHubContainerView.getLayoutParams();
+        assert params != null : "HubContainerView should always have layout params.";
+        mAppHeaderHeight = height;
+        params.topMargin = mStatusIndicatorHeight + mAppHeaderHeight;
         mHubContainerView.setLayoutParams(params);
     }
 

@@ -76,7 +76,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
     public void testTranslateUp() {
         HubLayoutAnimatorProvider animatorProvider =
                 TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
-                        mHubContainerView, mScrimController, DURATION_MS);
+                        mHubContainerView, mScrimController, DURATION_MS, 50);
         assertEquals(
                 HubLayoutAnimationType.TRANSLATE_UP, animatorProvider.getPlannedAnimationType());
 
@@ -99,7 +99,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
                             @Override
                             public void onEnd(boolean wasForcedToFinish) {
                                 assertEquals(View.VISIBLE, mHubContainerView.getVisibility());
-                                assertEquals(0.0f, mHubContainerView.getY(), FLOAT_TOLERANCE);
+                                assertEquals(50f, mHubContainerView.getY(), FLOAT_TOLERANCE);
                             }
                         });
         runner.addListener(mListener);
@@ -122,7 +122,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
 
         HubLayoutAnimatorProvider animatorProvider =
                 TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
-                        mHubContainerView, mScrimController, DURATION_MS);
+                        mHubContainerView, mScrimController, DURATION_MS, 50);
         assertEquals(
                 HubLayoutAnimationType.TRANSLATE_DOWN, animatorProvider.getPlannedAnimationType());
 
@@ -148,7 +148,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
 
                             @Override
                             public void afterEnd() {
-                                assertEquals(0.0f, mHubContainerView.getY(), FLOAT_TOLERANCE);
+                                assertEquals(50f, mHubContainerView.getY(), FLOAT_TOLERANCE);
                             }
                         });
         runner.addListener(mListener);

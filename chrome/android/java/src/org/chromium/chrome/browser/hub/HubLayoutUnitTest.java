@@ -39,6 +39,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
@@ -260,6 +261,8 @@ public class HubLayoutUnitTest {
         mFrameLayout = new FrameLayout(mActivity);
         mHubContainerView = new HubContainerView(mActivity);
         View hubLayout = LayoutInflater.from(activity).inflate(R.layout.hub_layout, null);
+        mHubContainerView.setLayoutParams(
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         mHubContainerView.addView(hubLayout);
         mActivity.setContentView(mFrameLayout);
 

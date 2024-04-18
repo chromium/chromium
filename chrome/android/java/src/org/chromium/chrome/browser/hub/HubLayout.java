@@ -17,6 +17,7 @@ import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -129,6 +130,23 @@ public class HubLayout extends Layout implements HubLayoutController {
         mPaneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocused);
         mScrimController = dependencyHolder.getScrimController();
         mOnToolbarAlphaChange = dependencyHolder.getOnToolbarAlphaChange();
+    }
+
+    @Override
+    public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
+        super.onDesktopWindowingModeChanged(isInDesktopWindow);
+        // If desktop windowing mode changes while the HubLayout is active, adjust the container
+        // view's y-offset. This update will be posted because it has been observed that an
+        // immediate update causes unexpected visual positioning in this scenario, potentially
+        // because the top margin for the view is also updated at nearly the same time, but the root
+        // cause is unknown.
+        // TODO (crbug/335651375): Investigate and remove the use of a PostTask for this update.
+        // TODO (crbug/334156232): Also update container height.
+        if (isActive()) {
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> mHubController.getContainerView().setY(getContainerYOffset()));
+        }
     }
 
     /** Returns the current {@link HubLayoutAnimationType}. */
@@ -594,7 +612,7 @@ public class HubLayout extends Layout implements HubLayoutController {
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
-                    containerView, mScrimController, TRANSLATE_DURATION_MS);
+                    containerView, mScrimController, TRANSLATE_DURATION_MS, getContainerYOffset());
         } else if (mPreviousLayoutTypeSupplier.get() == LayoutType.START_SURFACE || pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                     containerView, FADE_DURATION_MS, mOnToolbarAlphaChange);
@@ -609,7 +627,7 @@ public class HubLayout extends Layout implements HubLayoutController {
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
-                    containerView, mScrimController, TRANSLATE_DURATION_MS);
+                    containerView, mScrimController, TRANSLATE_DURATION_MS, getContainerYOffset());
         } else if (nextLayoutType == LayoutType.START_SURFACE || pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                     containerView, FADE_DURATION_MS, mOnToolbarAlphaChange);
@@ -710,5 +728,18 @@ public class HubLayout extends Layout implements HubLayoutController {
      */
     private int getIdForTab(@Nullable Tab tab) {
         return tab == null ? Tab.INVALID_TAB_ID : tab.getId();
+    }
+
+    /**
+     * @return The y-offset for the container view that may be impacted by the status indicator and
+     *     app header heights.
+     */
+    private float getContainerYOffset() {
+        var params = (FrameLayout.LayoutParams) mHubController.getContainerView().getLayoutParams();
+        return params.topMargin;
+    }
+
+    public HubController getHubControllerForTesting() {
+        return mHubController;
     }
 }

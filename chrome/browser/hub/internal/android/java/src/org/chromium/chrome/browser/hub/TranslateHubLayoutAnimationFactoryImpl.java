@@ -23,7 +23,8 @@ public class TranslateHubLayoutAnimationFactoryImpl {
     public static HubLayoutAnimatorProvider createTranslateUpAnimatorProvider(
             @NonNull HubContainerView hubContainerView,
             @NonNull ScrimController scrimController,
-            long durationMs) {
+            long durationMs,
+            float yOffset) {
         AnimatorSet animatorSet = new AnimatorSet();
 
         HubLayoutAnimationListener listener =
@@ -41,7 +42,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                                         hubContainerView,
                                         View.TRANSLATION_Y,
                                         hubContainerView.getHeight(),
-                                        0f);
+                                        yOffset);
                         animator.setInterpolator(Interpolators.EMPHASIZED_DECELERATE);
                         animator.setDuration(durationMs);
                         animatorSet.play(animator);
@@ -52,7 +53,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                     @Override
                     public void afterEnd() {
                         // Carried over from the legacy implementation in TabSwitcherLayout.
-                        hubContainerView.setY(0f);
+                        hubContainerView.setY(yOffset);
                     }
                 };
 
@@ -68,10 +69,14 @@ public class TranslateHubLayoutAnimationFactoryImpl {
     public static HubLayoutAnimatorProvider createTranslateDownAnimatorProvider(
             @NonNull HubContainerView hubContainerView,
             @NonNull ScrimController scrimController,
-            long durationMs) {
+            long durationMs,
+            float yOffset) {
         ObjectAnimator animator =
                 ObjectAnimator.ofFloat(
-                        hubContainerView, View.TRANSLATION_Y, 0f, hubContainerView.getHeight());
+                        hubContainerView,
+                        View.TRANSLATION_Y,
+                        yOffset,
+                        hubContainerView.getHeight());
         animator.setInterpolator(Interpolators.EMPHASIZED_ACCELERATE);
         animator.setDuration(durationMs);
 
@@ -88,7 +93,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                     @Override
                     public void afterEnd() {
                         // Reset the Y offset for the next animation.
-                        hubContainerView.setY(0f);
+                        hubContainerView.setY(yOffset);
                     }
                 };
         return new PresetHubLayoutAnimatorProvider(

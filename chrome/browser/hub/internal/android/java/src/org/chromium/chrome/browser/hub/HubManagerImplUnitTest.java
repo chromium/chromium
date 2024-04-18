@@ -279,4 +279,46 @@ public class HubManagerImplUnitTest {
         assertEquals(
                 statusIndicatorHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
     }
+
+    @Test
+    @SmallTest
+    public void testAppHeaderHeight() {
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
+        HubManagerImpl hubManager =
+                new HubManagerImpl(
+                        mActivity,
+                        builder,
+                        mBackPressManager,
+                        mMenuOrKeyboardActionController,
+                        mSnackbarManager,
+                        mTabSupplier,
+                        mMenuButtonCoordinator);
+        hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
+
+        HubController hubController = hubManager.getHubController();
+        hubController.setHubLayoutController(mHubLayoutController);
+        hubController.onHubLayoutShow();
+
+        int appHeaderHeight = 75;
+        hubManager.setAppHeaderHeight(appHeaderHeight);
+        FrameLayout containerView = hubController.getContainerView();
+        assertEquals(appHeaderHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
+
+        mRootView.addView(containerView);
+        assertEquals(appHeaderHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
+
+        appHeaderHeight = 0;
+        hubManager.setAppHeaderHeight(appHeaderHeight);
+        assertEquals(appHeaderHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
+
+        mRootView.removeView(containerView);
+        assertEquals(appHeaderHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
+    }
 }

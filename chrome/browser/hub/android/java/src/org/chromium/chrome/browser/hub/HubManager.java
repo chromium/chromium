@@ -33,4 +33,7 @@ public interface HubManager {
 
     /** Sets the status indicator height. */
     void setStatusIndicatorHeight(int height);
+
+    /** Sets the app header height. */
+    void setAppHeaderHeight(int height);
 }

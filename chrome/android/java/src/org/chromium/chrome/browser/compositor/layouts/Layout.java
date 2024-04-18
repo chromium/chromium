@@ -700,4 +700,12 @@ public abstract class Layout {
     public boolean isRunningAnimations() {
         return false;
     }
+
+    /**
+     * Called when the desktop windowing mode changes.
+     *
+     * @param isInDesktopWindow Whether the app is in a desktop window. {@code true} if the app
+     *     entered desktop windowing mode, {@code false} if the app exited desktop windowing mode.
+     */
+    public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {}
 }

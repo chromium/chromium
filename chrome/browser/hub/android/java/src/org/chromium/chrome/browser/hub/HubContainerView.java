@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 import android.widget.FrameLayout;
 
+import org.chromium.base.Log;
+
 /** Container view for the Hub. */
 public class HubContainerView extends FrameLayout implements RunOnNextLayout {
+    private static final String TAG = "HubContainerView";
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
 
     /** Default {@link FrameLayout} constructor. */
@@ -31,5 +34,12 @@ public class HubContainerView extends FrameLayout implements RunOnNextLayout {
     @Override
     public void runOnNextLayoutRunnables() {
         mRunOnNextLayoutDelegate.runOnNextLayoutRunnables();
+    }
+
+    @Override
+    public void setY(float y) {
+        super.setY(y);
+        Log.i(TAG, "Setting HubContainerView y-offset to " + y);
+        Thread.dumpStack();
     }
 }

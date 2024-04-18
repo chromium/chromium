@@ -15,32 +15,36 @@ public class TranslateHubLayoutAnimationFactory {
     /**
      * Creates a {@link HubLayoutAnimatorProvider} for translating up to show.
      *
-     * @param hubLayoutContainerView The {@link HubContainerView} to animate.
+     * @param hubContainerView The {@link HubContainerView} to animate.
      * @param scrimController A controller to manage showing a scrim.
      * @param durationMs The duration in milliseconds of the animation.
+     * @param yOffset The y-offset for the container view, in px.
      * @return a {@link HubLayoutAnimatorProvider} that provides the animation.
      */
     public static HubLayoutAnimatorProvider createTranslateUpAnimatorProvider(
             @NonNull HubContainerView hubContainerView,
             @NonNull ScrimController scrimController,
-            long durationMs) {
+            long durationMs,
+            float yOffset) {
         return TranslateHubLayoutAnimationFactoryImpl.createTranslateUpAnimatorProvider(
-                hubContainerView, scrimController, durationMs);
+                hubContainerView, scrimController, durationMs, yOffset);
     }
 
     /**
      * Creates a {@link HubLayoutAnimatorProvider} for translating down to hide.
      *
-     * @param hubLayoutContainerView The {@link HubContainerView} to animate.
+     * @param hubContainerView The {@link HubContainerView} to animate.
      * @param scrimController A controller to manage hiding a scrim.
      * @param durationMs The duration in milliseconds of the animation.
+     * @param yOffset The y-offset for the container view, in px.
      * @return a {@link HubLayoutAnimatorProvider} that provides the animation.
      */
     public static HubLayoutAnimatorProvider createTranslateDownAnimatorProvider(
             @NonNull HubContainerView hubContainerView,
             @NonNull ScrimController scrimController,
-            long durationMs) {
+            long durationMs,
+            float yOffset) {
         return TranslateHubLayoutAnimationFactoryImpl.createTranslateDownAnimatorProvider(
-                hubContainerView, scrimController, durationMs);
+                hubContainerView, scrimController, durationMs, yOffset);
     }
 }

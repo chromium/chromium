@@ -431,9 +431,24 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     @Override
                     public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
                         desktopWindowModeSupplier.set(isInDesktopWindow);
+                        if (hubManagerSupplier.hasValue()) {
+                            hubManagerSupplier.get().setAppHeaderHeight(getAppHeaderHeight());
+                        }
+                        if (layoutManagerSupplier.get() != null) {
+                            var layout = layoutManagerSupplier.get().getActiveLayout();
+                            layout.onDesktopWindowingModeChanged(isInDesktopWindow);
+                        }
                     }
                 };
         initAppHeaderCoordinator();
+    }
+
+    private int getAppHeaderHeight() {
+        if (VERSION.SDK_INT < VERSION_CODES.R || mAppHeaderCoordinator == null) return 0;
+        return (mAppHeaderCoordinator.isInDesktopWindow()
+                        && mAppHeaderCoordinator.getAppHeaderState() != null)
+                ? mAppHeaderCoordinator.getAppHeaderState().getAppHeaderHeight()
+                : 0;
     }
 
     @Override
@@ -1242,6 +1257,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mAppHeaderDelegateSupplier,
                         mTabStripTransitionCoordinatorSupplier);
         mAppHeaderCoordinator.addObserver(mAppHeaderObserver);
+        mHubManagerSupplier.onAvailable(
+                hubManager -> hubManager.setAppHeaderHeight(getAppHeaderHeight()));
     }
 
     @Override
