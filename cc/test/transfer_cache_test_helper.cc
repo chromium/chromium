@@ -115,7 +115,7 @@ uint32_t TransferCacheTestHelper::CreateEntryInternal(
   // Serialize data.
   uint32_t size = client_entry.SerializedSize();
   auto data = base::HeapArray<uint8_t>::Uninit(size);
-  auto span = base::make_span(data.data(), size);
+  auto span = base::make_span(data);
   bool success = client_entry.Serialize(span);
   DCHECK(success);
   CreateEntryDirect(key, span);
