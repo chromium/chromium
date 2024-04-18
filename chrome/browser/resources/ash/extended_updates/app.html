@@ -90,11 +90,8 @@ found in the LICENSE file.
 
 <!-- TODO(b/335461104): Split into smaller components. -->
 <oobe-adaptive-dialog id="extendedUpdatesDialog" role="dialog">
-  <iron-icon
-    class="dialog-icon"
-    icon="extended-updates-icons40:chrome"
-    slot="icon"
-  >
+  <iron-icon class="dialog-icon" icon="extended-updates-icons40:chrome"
+    slot="icon" aria-hidden="true">
   </iron-icon>
   <h1 id="dialogHeading" slot="title">$i18n{dialogHeading}</h1>
   <div slot="subtitle">
@@ -109,20 +106,16 @@ found in the LICENSE file.
   <div slot="content" class="landscape-vertical-centered">
     <div id="detailsCard">
       <div id="securityCard" class="detail-card">
-        <iron-icon
-          icon="extended-updates-icons32:checked"
-          class="dialog-icon detail-icon"
-        >
+        <iron-icon icon="extended-updates-icons32:checked"
+          class="dialog-icon detail-icon" aria-hidden="true">
         </iron-icon>
         <h2 id="securityDescription" class="detail-description">
           $i18n{securityDescription}
         </h2>
       </div>
       <div id="androidCard" class="detail-card">
-        <iron-icon
-          icon="extended-updates-icons32:removed"
-          class="dialog-icon detail-icon"
-        >
+        <iron-icon icon="extended-updates-icons32:removed"
+          class="dialog-icon detail-icon" aria-hidden="true">
         </iron-icon>
         <h2 id="androidDescription" class="detail-description">
           $i18n{androidDescription}
