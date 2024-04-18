@@ -79,18 +79,25 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   static std::string TypeToString(Type type);
 
   Type type() const { return type_; }
-  SkIRect filter_bounds(const SkIRect& src,
-                        const SkMatrix& ctm,
-                        MapDirection direction) const {
-    if (!cached_sk_filter_)
-      return SkIRect::MakeEmpty();
-    return cached_sk_filter_->filterBounds(src, ctm, direction);
-  }
   int count_inputs() const {
     if (!cached_sk_filter_)
       return 0;
     return cached_sk_filter_->countInputs();
   }
+
+  // Maps "forward" (to determine which pixels in a destination rect are
+  // affected by pixels in the source rect) or "backward" (to determine which
+  // pixels in the source affect the pixels in the destination rect). If `ctm`
+  // is not null, it should point to the CTM (2d scale components suffice) of
+  // the filter, and `rect` and the return value are in the device space.
+  // Otherwise the filter, `rect`, and the return value are in the same
+  // unspecified space, and the return value is guaranteed to cover all
+  // filtered pixels regardless of the CTM. Note: `ctm` must not be null if
+  // `direction` is kReverse_MapDirection.
+  SkIRect MapRect(const SkIRect& src,
+                  const SkMatrix* ctm,
+                  MapDirection direction) const;
+
   const CropRect* GetCropRect() const;
 
   bool has_discardable_images() const { return has_discardable_images_; }

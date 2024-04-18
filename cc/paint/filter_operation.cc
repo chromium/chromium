@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/paint/filter_operation.h"
+
 #include <stddef.h>
 
 #include <algorithm>
 #include <utility>
 
-#include "cc/paint/filter_operation.h"
-
 #include "base/notreached.h"
 #include "base/trace_event/traced_value.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "ui/gfx/animation/tween.h"
@@ -331,20 +332,22 @@ void FilterOperation::AsValueInto(base::trace_event::TracedValue* value) const {
 
 namespace {
 
-SkVector MapStdDeviation(float std_deviation, const SkMatrix& matrix) {
+SkVector MapStdDeviation(float std_deviation, const SkMatrix* ctm) {
   // Corresponds to SpreadForStdDeviation in filter_operations.cc.
   SkVector sigma = SkVector::Make(std_deviation, std_deviation);
-  matrix.mapVectors(&sigma, 1);
+  if (ctm) {
+    ctm->mapVectors(&sigma, 1);
+  }
   return sigma * SkIntToScalar(3);
 }
 
 gfx::Rect MapRectInternal(const FilterOperation& op,
                           const gfx::Rect& rect,
-                          const SkMatrix& matrix,
+                          const SkMatrix* ctm,
                           SkImageFilter::MapDirection direction) {
   switch (op.type()) {
     case FilterOperation::BLUR: {
-      SkVector spread = MapStdDeviation(op.amount(), matrix);
+      SkVector spread = MapStdDeviation(op.amount(), ctm);
       float spread_x = std::abs(spread.x());
       float spread_y = std::abs(spread.y());
 
@@ -358,16 +361,17 @@ gfx::Rect MapRectInternal(const FilterOperation& op,
       return gfx::ToEnclosingRect(result);
     }
     case FilterOperation::DROP_SHADOW: {
-      SkVector spread = MapStdDeviation(op.amount(), matrix);
+      SkVector spread = MapStdDeviation(op.amount(), ctm);
       float spread_x = std::abs(spread.x());
       float spread_y = std::abs(spread.y());
       gfx::RectF result(rect);
       result.Inset(gfx::InsetsF::VH(-spread_y, -spread_x));
 
-      gfx::Point drop_shadow_offset = op.offset();
-      SkVector mapped_drop_shadow_offset;
-      matrix.mapVector(drop_shadow_offset.x(), drop_shadow_offset.y(),
-                       &mapped_drop_shadow_offset);
+      SkVector mapped_drop_shadow_offset =
+          SkVector::Make(op.offset().x(), op.offset().y());
+      if (ctm) {
+        ctm->mapVectors(&mapped_drop_shadow_offset, 1);
+      }
       if (direction == SkImageFilter::kReverse_MapDirection)
         mapped_drop_shadow_offset = -mapped_drop_shadow_offset;
       result += gfx::Vector2dF(mapped_drop_shadow_offset.x(),
@@ -378,12 +382,14 @@ gfx::Rect MapRectInternal(const FilterOperation& op,
     case FilterOperation::REFERENCE: {
       if (!op.image_filter())
         return rect;
-      return gfx::SkIRectToRect(op.image_filter()->filter_bounds(
-          gfx::RectToSkIRect(rect), matrix, direction));
+      return gfx::SkIRectToRect(
+          op.image_filter()->MapRect(gfx::RectToSkIRect(rect), ctm, direction));
     }
     case FilterOperation::OFFSET: {
-      SkVector mapped_offset;
-      matrix.mapVector(op.offset().x(), op.offset().y(), &mapped_offset);
+      SkVector mapped_offset = SkVector::Make(op.offset().x(), op.offset().y());
+      if (ctm) {
+        ctm->mapVectors(&mapped_offset, 1);
+      }
       if (direction == SkImageFilter::kReverse_MapDirection)
         mapped_offset = -mapped_offset;
       return gfx::ToEnclosingRect(
@@ -398,14 +404,14 @@ gfx::Rect MapRectInternal(const FilterOperation& op,
 }  // namespace
 
 gfx::Rect FilterOperation::MapRect(const gfx::Rect& rect,
-                                   const SkMatrix& matrix) const {
-  return MapRectInternal(*this, rect, matrix,
+                                   const std::optional<SkMatrix>& ctm) const {
+  return MapRectInternal(*this, rect, base::OptionalToPtr(ctm),
                          SkImageFilter::kForward_MapDirection);
 }
 
 gfx::Rect FilterOperation::MapRectReverse(const gfx::Rect& rect,
-                                          const SkMatrix& matrix) const {
-  return MapRectInternal(*this, rect, matrix,
+                                          const SkMatrix& ctm) const {
+  return MapRectInternal(*this, rect, &ctm,
                          SkImageFilter::kReverse_MapDirection);
 }
 

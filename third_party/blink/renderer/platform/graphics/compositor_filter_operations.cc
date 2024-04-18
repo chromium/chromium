@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -109,8 +110,11 @@ bool CompositorFilterOperations::IsEmpty() const {
 
 gfx::RectF CompositorFilterOperations::MapRect(
     const gfx::RectF& input_rect) const {
-  return gfx::RectF(filter_operations_.MapRect(gfx::ToEnclosingRect(input_rect),
-                                               SkMatrix::I()));
+  return gfx::RectF(filter_operations_.MapRect(
+      gfx::ToEnclosingRect(input_rect),
+      RuntimeEnabledFeatures::NewFilterMapRectEnabled()
+          ? std::nullopt
+          : std::make_optional(SkMatrix::I())));
 }
 
 bool CompositorFilterOperations::HasFilterThatMovesPixels() const {

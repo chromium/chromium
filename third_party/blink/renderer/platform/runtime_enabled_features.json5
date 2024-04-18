@@ -2554,6 +2554,13 @@
       base_feature: "none",
     },
     {
+      // This is a killswitch for the changed behavior of
+      // CompositorFilterOperations::MapRect() for crbug.com/329235801.
+      // Can be removed in M127 if things are stable.
+      name: "NewFilterMapRect",
+      status: "stable",
+    },
+    {
       // This is a killswitch for the behavior of Element::GetFocusableArea
       // on delegatesFocus shadow hosts. This flag can be removed in M127 if
       // things are stable.

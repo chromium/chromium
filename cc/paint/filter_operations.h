@@ -6,7 +6,9 @@
 #define CC_PAINT_FILTER_OPERATIONS_H_
 
 #include <stddef.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -54,11 +56,12 @@ class CC_PAINT_EXPORT FilterOperations {
   bool IsEmpty() const;
 
   // Maps "forward" to determine which pixels in a destination rect are affected
-  // by pixels in the source rect.
-  gfx::Rect MapRect(const gfx::Rect& rect, const SkMatrix& matrix) const;
+  // by pixels in the source rect. See PaintFilter::MapRect() about `ctm`.
+  gfx::Rect MapRect(const gfx::Rect& rect,
+                    const std::optional<SkMatrix>& matrix = std::nullopt) const;
 
   // Maps "backward" to determine which pixels in the source affect the pixels
-  // in the destination rect.
+  // in the destination rect. See PaintFilter::MapRect() about `ctm`.
   gfx::Rect MapRectReverse(const gfx::Rect& rect, const SkMatrix& matrix) const;
 
   bool HasFilterThatMovesPixels() const;

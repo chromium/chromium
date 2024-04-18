@@ -136,6 +136,24 @@ std::string PaintFilter::TypeToString(Type type) {
   return "Unknown";
 }
 
+SkIRect PaintFilter::MapRect(const SkIRect& src,
+                             const SkMatrix* ctm,
+                             MapDirection direction) const {
+  if (!cached_sk_filter_) {
+    return SkIRect::MakeEmpty();
+  }
+  if (direction == MapDirection::kForward_MapDirection && !ctm) {
+    // Compared to filterbounds(), computeFastBounds ensures the result rect
+    // covers the affected pixels regardless of CTM.
+    SkRect rect = cached_sk_filter_->computeFastBounds(SkRect::Make(src));
+    SkIRect result;
+    rect.roundOut(&result);
+    return result;
+  }
+  CHECK(ctm);
+  return cached_sk_filter_->filterBounds(src, *ctm, direction);
+}
+
 const PaintFilter::CropRect* PaintFilter::GetCropRect() const {
   return base::OptionalToPtr(crop_rect_);
 }
