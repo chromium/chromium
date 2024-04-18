@@ -235,18 +235,18 @@ void NearbyPresenceCredentialStorage::OnPrivateCredentialsRetrieved(
     std::unique_ptr<std::vector<::nearby::internal::LocalCredential>> entries) {
   CHECK(callback);
 
-  if (!success) {
-    // TODO(b/287334363): Emit a failure metric.
+  metrics::RecordCredentialStorageRetrievePrivateCredentialsResult(success);
+  if (success) {
+    base::TimeDelta retrieval_duration =
+        base::TimeTicks::Now() - retrieval_start_time;
+    metrics::RecordCredentialStorageRetrievePrivateCredentialsDuration(
+        retrieval_duration);
+  } else {
     LOG(ERROR) << __func__ << ": failed to retrieve private credentials";
     std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kAborted,
                             std::nullopt);
     return;
   }
-
-  base::TimeDelta retrieval_duration =
-      base::TimeTicks::Now() - retrieval_start_time;
-  metrics::RecordCredentialStorageRetrievePrivateCredentialsDuration(
-      retrieval_duration);
 
   CHECK(entries);
 
@@ -270,25 +270,34 @@ void NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved(
         entries) {
   CHECK(callback);
 
-  if (!success) {
-    // TODO(b/287334363): Emit a failure metric.
+  switch (public_credential_type) {
+    case (mojom::PublicCredentialType::kLocalPublicCredential):
+      metrics::RecordCredentialStorageRetrieveLocalPublicCredentialsResult(
+          success);
+      break;
+    case (mojom::PublicCredentialType::kRemotePublicCredential):
+      metrics::RecordCredentialStorageRetrieveRemotePublicCredentialsResult(
+          success);
+      break;
+  }
+  if (success) {
+    base::TimeDelta retrieval_duration =
+        base::TimeTicks::Now() - retrieval_start_time;
+    switch (public_credential_type) {
+      case (mojom::PublicCredentialType::kLocalPublicCredential):
+        metrics::RecordCredentialStorageRetrieveLocalPublicCredentialsDuration(
+            retrieval_duration);
+        break;
+      case (mojom::PublicCredentialType::kRemotePublicCredential):
+        metrics::RecordCredentialStorageRetrieveRemotePublicCredentialsDuration(
+            retrieval_duration);
+        break;
+    }
+  } else {
     LOG(ERROR) << __func__ << ": failed to retrieve public credentials";
     std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kAborted,
                             std::nullopt);
     return;
-  }
-
-  base::TimeDelta retrieval_duration =
-      base::TimeTicks::Now() - retrieval_start_time;
-  switch (public_credential_type) {
-    case (mojom::PublicCredentialType::kLocalPublicCredential):
-      metrics::RecordCredentialStorageRetrieveLocalPublicCredentialsDuration(
-          retrieval_duration);
-      break;
-    case (mojom::PublicCredentialType::kRemotePublicCredential):
-      metrics::RecordCredentialStorageRetrieveRemotePublicCredentialsDuration(
-          retrieval_duration);
-      break;
   }
 
   CHECK(entries);

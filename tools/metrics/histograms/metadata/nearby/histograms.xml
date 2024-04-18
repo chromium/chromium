@@ -559,6 +559,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Nearby.Presence.Credentials.Storage.RetrieveLocalPublicCredentials.Result"
+    enum="BooleanSuccess" expires_after="2025-04-10">
+  <owner>hansberry@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of an attempt at retrieving credentials from the local
+    public credential database of the Nearby Presence Credential Storage
+    component. Emitted after an attempt to retrieve credentials from the local
+    public credential database completes.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Presence.Credentials.Storage.RetrieveLocalPublicCredentialsDuration"
     units="microseconds" expires_after="2025-04-10">
   <owner>hansberry@chromium.org</owner>
@@ -573,6 +586,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Nearby.Presence.Credentials.Storage.RetrievePrivateCredentials.Result"
+    enum="BooleanSuccess" expires_after="2025-04-10">
+  <owner>hansberry@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of an attempt at retrieving credentials from the private
+    credential database of the Nearby Presence Credential Storage component.
+    Emitted after an attempt to retrieve credentials from the private credential
+    database completes.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Presence.Credentials.Storage.RetrievePrivateCredentialsDuration"
     units="microseconds" expires_after="2025-04-10">
   <owner>hansberry@chromium.org</owner>
@@ -583,6 +609,19 @@ chromium-metrics-reviews@google.com.
     database. No metric is emitted on failure.
 
     Note: This is only recorded on devices with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.Storage.RetrieveRemotePublicCredentials.Result"
+    enum="BooleanSuccess" expires_after="2025-04-10">
+  <owner>hansberry@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of an attempt at retrieving credentials from the remote
+    public credential database of the Nearby Presence Credential Storage
+    component. Emitted after an attempt to retrieve credentials from the remote
+    public credential database completes.
   </summary>
 </histogram>
 

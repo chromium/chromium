@@ -26,6 +26,10 @@ void RecordCredentialStorageSaveLocalPublicCredentialsResult(bool success);
 void RecordCredentialStorageSaveRemotePublicCredentialsResult(bool success);
 void RecordCredentialStorageSavePrivateCredentialsResult(bool success);
 
+void RecordCredentialStorageRetrieveLocalPublicCredentialsResult(bool success);
+void RecordCredentialStorageRetrieveRemotePublicCredentialsResult(bool success);
+void RecordCredentialStorageRetrievePrivateCredentialsResult(bool success);
+
 void RecordCredentialStorageRetrieveLocalPublicCredentialsDuration(
     base::TimeDelta duration);
 void RecordCredentialStorageRetrieveRemotePublicCredentialsDuration(

@@ -75,6 +75,27 @@ void RecordCredentialStorageSavePrivateCredentialsResult(bool success) {
       success);
 }
 
+void RecordCredentialStorageRetrieveLocalPublicCredentialsResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Presence.Credentials.Storage.RetrieveLocalPublicCredentials."
+      "Result",
+      success);
+}
+
+void RecordCredentialStorageRetrieveRemotePublicCredentialsResult(
+    bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Presence.Credentials.Storage.RetrieveRemotePublicCredentials."
+      "Result",
+      success);
+}
+
+void RecordCredentialStorageRetrievePrivateCredentialsResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Presence.Credentials.Storage.RetrievePrivateCredentials.Result",
+      success);
+}
+
 void RecordCredentialStorageRetrieveLocalPublicCredentialsDuration(
     base::TimeDelta duration) {
   base::UmaHistogramMicrosecondsTimes(
