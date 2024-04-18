@@ -393,9 +393,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
                 && !getUserAcceptedAccountManagement()) {
-            String email = mSignInState.mCoreAccountInfo.getEmail();
             isAccountManaged(
-                    email,
+                    mSignInState.mCoreAccountInfo,
                     (Boolean isAccountManaged) -> {
                         if (isAccountManaged) {
                             throw new IllegalStateException(
@@ -718,18 +717,20 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     /**
-     * Verifies if the account is managed. Callback may be called either
-     * synchronously or asynchronously depending on the availability of the
-     * result.
+     * Verifies if the account is managed. Callback may be called either synchronously or
+     * asynchronously depending on the availability of the result.
+     *
      * @param email An email of the account.
      * @param callback The callback that will receive true if the account is managed, false
-     *                 otherwise.
+     *     otherwise.
+     * @deprecated Use the {@link CoreAccountInfo} version below.
      */
-    // TODO(crbug.com/1002408) Update API to use CoreAccountInfo instead of email
     @Override
+    @Deprecated
     public void isAccountManaged(String email, final Callback<Boolean> callback) {
         assert email != null;
         CoreAccountInfo account = mIdentityManager.findExtendedAccountInfoByEmailAddress(email);
+        if (account == null) throw new RuntimeException("Failed to find account for email.");
         isAccountManaged(account, callback);
     }
 
@@ -737,8 +738,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     public void isAccountManaged(
             @NonNull CoreAccountInfo account, final Callback<Boolean> callback) {
         assert account != null;
-        if (account == null) throw new RuntimeException("Null account");
-        if (callback == null) throw new RuntimeException("Null callback");
         SigninManagerImplJni.get().isAccountManaged(mNativeSigninManagerAndroid, account, callback);
     }
 
