@@ -21,7 +21,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -45,8 +44,6 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
-import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -854,14 +851,7 @@ public class StatusMediator
                 return;
             }
 
-            Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-            if (!tracker.wouldTriggerHelpUI(FeatureConstants.COOKIE_CONTROLS_3PCD_FEATURE)) return;
-
-            animateCookieControlsIcon(
-                    () ->
-                            mPageInfoIPHController.showCookieControlsReminderIPH(
-                                    getIPHTimeout(),
-                                    R.string.cookie_controls_reminder_iph_message));
+            animateCookieControlsIcon(() -> {});
         }
     }
 

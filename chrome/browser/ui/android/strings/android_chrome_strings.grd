@@ -208,9 +208,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_COOKIE_CONTROLS_IPH_MESSAGE" desc="In-context Product Help - Appears right under the page info icon to highlight the Cookie Controls entrypoint.">
         Site not working? Third-party cookies are blocked
       </message>
-      <message name="IDS_COOKIE_CONTROLS_REMINDER_IPH_MESSAGE" desc="In-context Product Help - Appears right under the page info icon to highlight the Cookie Controls entrypoint. This message is a reminder.">
-        Site not working? Try temporarily allowing third-party cookies
-      </message>
 
       <!-- Main Preferences -->
       <message name="IDS_PREFS_SECTION_BASICS" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>

@@ -682,118 +682,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void iphReminder3pcd_trackingProtectionsEnabled_cookieBlockingEnabled() {
-        setupCookieControlsTest();
-
-        mMediator.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-
-        mMediator.onPageLoadStopped();
-        // Cookie controls icon should be shown.
-        Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-        mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
-
-        // IPH should be shown.
-        verify(mPageInfoIPHController, times(1)).showCookieControlsReminderIPH(anyInt(), anyInt());
-    }
-
-    @Test
-    @SmallTest
-    public void iphReminder3pcd_withNoSecureConnection() {
-        setupCookieControlsTest();
-
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.NONE, false, false);
-
-        mMediator.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-
-        mMediator.onPageLoadStopped();
-
-        // Cookie controls icon should NOT be shown.
-        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-
-        // IPH should NOT be shown.
-        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
-    }
-
-    @Test
-    @SmallTest
-    public void iphReminder3pcd_onboardingNoticeNotYetAcked() {
-        setupCookieControlsTest();
-
-        // No interaction with the Tracking Protection onboarding Notice yet.
-        doReturn(0).when(mPrefs).getInteger(Pref.TRACKING_PROTECTION_ONBOARDING_ACK_ACTION);
-
-        mMediator.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-
-        mMediator.onPageLoadStopped();
-
-        // Cookie controls icon should NOT be shown.
-        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-
-        // IPH should NOT be shown.
-        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
-    }
-
-    @Test
-    @SmallTest
-    public void iphReminder3pcd_trackingProtectionsEnabled_cookieBlockingDisabled() {
-        setupCookieControlsTest();
-
-        mMediator.onStatusChanged(
-                /* controls_visible= */ false,
-                /* protections_on= */ false,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-
-        mMediator.onPageLoadStopped();
-
-        // Cookie controls icon should NOT be shown.
-        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-
-        // IPH should NOT be shown.
-        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
-    }
-
-    @Test
-    @SmallTest
-    public void iphReminder3pcd_trackingProtectionsDisabled_cookieBlockingEnabled() {
-        setupCookieControlsTest();
-
-        mMediator.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.NOT_IN3PCD,
-                /* expiration= */ 0);
-        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-
-        mMediator.onPageLoadStopped();
-
-        // Cookie controls icon should NOT be shown.
-        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-        // IPH should NOT be shown.
-        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
-    }
-
-    @Test
-    @SmallTest
     public void cookieControlsIcon_doesNotAnimateIfWebContentsNull() {
         setupCookieControlsTest();
 
@@ -812,7 +700,7 @@ public final class StatusMediatorUnitTest {
         // Cookie controls icon should NOT be shown.
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
         // IPH should NOT be shown.
-        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
+        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
     }
 
     @Test

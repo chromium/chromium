@@ -530,25 +530,6 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void
-            testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingEnabled_displaysReminderIPH() {
-        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
-
-        mLocationBar.onHighlightCookieControl(true);
-        mLocationBar.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-
-        // Should show only the reminder IPH.
-        mLocationBar.onPageLoadStopped();
-        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, times(1)).showCookieControlsReminderIPH(anyInt(), anyInt());
-    }
-
-    @Test
-    public void
             testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingDisabled_doesNotDisplayIPH() {
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
@@ -563,7 +544,6 @@ public class CustomTabToolbarUnitTest {
         // None of the IPHs should be shown.
         mLocationBar.onPageLoadStopped();
         verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     @Test
@@ -582,7 +562,6 @@ public class CustomTabToolbarUnitTest {
         // Should show only the Cookie controls IPH.
         mLocationBar.onPageLoadStopped();
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

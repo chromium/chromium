@@ -1442,9 +1442,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
             if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
                 if (!mCookieControlsVisible || !mThirdPartyCookiesBlocked) return;
-                mPageInfoIPHController.showCookieControlsReminderIPH(
-                        COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT,
-                        R.string.cookie_controls_reminder_iph_message);
+                // TODO(b/332761678): Add reminder IPH here.
             } else if (mShouldHighlightCookieControlsIcon) {
                 mPageInfoIPHController.showCookieControlsIPH(
                         COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT, R.string.cookie_controls_iph_message);
