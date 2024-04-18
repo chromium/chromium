@@ -10640,9 +10640,9 @@
                         "lcpp_histogram_sliding_window_size": "1000",
                         "lcpp_image_load_priority": "medium",
                         "lcpp_max_element_locator_length": "1024",
+                        "lcpp_max_histogram_buckets": "10",
                         "lcpp_max_hosts_to_track": "100",
-                        "lcpp_recorded_lcp_element_types": "image_only",
-                        "max_lcpp_histogram_buckets": "10"
+                        "lcpp_recorded_lcp_element_types": "image_only"
                     },
                     "enable_features": [
                         "LCPCriticalPathPredictor"
