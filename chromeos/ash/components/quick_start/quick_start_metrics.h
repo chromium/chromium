@@ -77,10 +77,11 @@ class QuickStartMetrics {
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
-  enum class AdvertisingMethod {
-    kQrCode = 0,
-    kPin = 1,
-    kMaxValue = kPin,
+  enum class AuthenticationMethod {
+    kPin = 0,
+    kQRCode = 1,
+    kResumeAfterUpdate = 2,
+    kMaxValue = kResumeAfterUpdate,
   };
 
   // This enum is tied directly to a UMA enum defined in
@@ -241,6 +242,8 @@ class QuickStartMetrics {
 
   static void RecordEntryPoint(EntryPoint entry_point);
 
+  static void RecordAuthenticationMethod(AuthenticationMethod auth_method);
+
   QuickStartMetrics();
   QuickStartMetrics(const QuickStartMetrics&) = delete;
   const QuickStartMetrics& operator=(const QuickStartMetrics&) = delete;
@@ -273,22 +276,19 @@ class QuickStartMetrics {
   void RecordGaiaAuthenticationRequestEnded(
       const GaiaAuthenticationResult& result);
 
-  void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method);
+  void RecordFastPairAdvertisementStarted();
 
   void RecordFastPairAdvertisementEnded(
       bool succeeded,
       std::optional<FastPairAdvertisingErrorCode> error_code);
 
-  void RecordNearbyConnectionsAdvertisementStarted(
-      int32_t session_id,
-      AdvertisingMethod advertising_method);
+  void RecordNearbyConnectionsAdvertisementStarted();
 
   void RecordNearbyConnectionsAdvertisementEnded(
       bool succeeded,
       std::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
 
-  // TODO(b/308200138): Change the wording here to make this less confusing.
-  void RecordHandshakeStarted(bool handshake_started);
+  void RecordHandshakeStarted();
 
   void RecordHandshakeResult(bool succeeded,
                              std::optional<HandshakeErrorCode> error_code);
@@ -306,7 +306,6 @@ class QuickStartMetrics {
   // constructed when advertising starts and destroyed when advertising
   // finishes.
   std::unique_ptr<base::ElapsedTimer> fast_pair_advertising_timer_;
-  std::optional<AdvertisingMethod> fast_pair_advertising_method_;
 
   std::unique_ptr<base::ElapsedTimer> screen_opened_view_duration_timer_;
 

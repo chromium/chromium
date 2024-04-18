@@ -93,7 +93,7 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
 
 void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
     const std::string& source_device_id,
-    Connection::AuthenticationMethod auth_method) {
+    QuickStartMetrics::AuthenticationMethod auth_method) {
   connection_->MarkConnectionAuthenticated(auth_method);
 }
 

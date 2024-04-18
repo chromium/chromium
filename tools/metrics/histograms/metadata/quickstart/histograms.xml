@@ -60,6 +60,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.AuthenticationMethod"
+    enum="QuickStartAuthenticationMethod" expires_after="2024-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The method used to authenticate connection with source device. Recorded when
+    the connection is marked authenticated.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.ChallengeBytes.FailureReason"
     enum="GoogleServiceAuthError" expires_after="2024-12-01">
   <owner>sinhak@chromium.org</owner>
@@ -95,18 +106,6 @@ chromium-metrics-reviews@google.com.
     from Gaia. These challenge bytes are later used to generate a FIDO assertion
     and a Remote Attestation certificate. Recorded when we get a response from
     Gaia (or the request times out).
-  </summary>
-</histogram>
-
-<histogram name="QuickStart.FastPairAdvertisementEnded.AdvertisingMethod"
-    enum="QuickStartAdvertisingMethod" expires_after="2024-12-01">
-  <owner>bhartmire@google.com</owner>
-  <owner>joeantonetti@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    The authentication method used for the Quick Start flow. Recorded when
-    unregistering the advertisement or when there's an error attempting to
-    register the advertisement.
   </summary>
 </histogram>
 
@@ -147,14 +146,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="QuickStart.FastPairAdvertisementStarted.AdvertisingMethod"
-    enum="QuickStartAdvertisingMethod" expires_after="2024-12-01">
+<histogram name="QuickStart.FastPairAdvertisementStarted"
+    enum="BooleanAttempted" expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    The authentication method used for the Quick Start flow. Recorded before
-    attempting to register advertisement.
+    Whether Fast Pair advertising is started. Recorded before attempting to
+    register advertisement.
   </summary>
 </histogram>
 

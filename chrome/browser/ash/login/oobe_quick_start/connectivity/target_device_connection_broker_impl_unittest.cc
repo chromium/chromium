@@ -167,8 +167,7 @@ class FakeFastPairAdvertiser : public FastPairAdvertiser {
 
   void StartAdvertising(base::OnceCallback<void()> callback,
                         base::OnceCallback<void()> error_callback,
-                        const AdvertisingId& advertising_id,
-                        bool use_pin_authentication) override {
+                        const AdvertisingId& advertising_id) override {
     ++start_advertising_call_count_;
     if (should_succeed_on_start_) {
       std::move(callback).Run();

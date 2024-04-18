@@ -26,15 +26,16 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="QuickStartAdvertisingMethod">
-  <int value="0" label="QR Code"/>
-  <int value="1" label="Pin"/>
-</enum>
-
 <enum name="QuickStartAttestationCertificateFetchFailureReason">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Bad request"/>
   <int value="2" label="Device does not support attestation"/>
+</enum>
+
+<enum name="QuickStartAuthenticationMethod">
+  <int value="0" label="PIN"/>
+  <int value="1" label="QR Code"/>
+  <int value="2" label="Automatic Resume After Update"/>
 </enum>
 
 <enum name="QuickStartFastPairAdvertisingEndedErrorCode">

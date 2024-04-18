@@ -120,14 +120,10 @@ void FastPairAdvertiser::AdvertisementReleased(
 void FastPairAdvertiser::StartAdvertising(
     base::OnceCallback<void()> callback,
     base::OnceCallback<void()> error_callback,
-    const AdvertisingId& advertising_id,
-    bool use_pin_authentication) {
+    const AdvertisingId& advertising_id) {
   DCHECK(adapter_->IsPresent() && adapter_->IsPowered());
   DCHECK(!advertisement_);
-  QuickStartMetrics::AdvertisingMethod advertising_method =
-      use_pin_authentication ? QuickStartMetrics::AdvertisingMethod::kPin
-                             : QuickStartMetrics::AdvertisingMethod::kQrCode;
-  quick_start_metrics_.RecordFastPairAdvertisementStarted(advertising_method);
+  quick_start_metrics_.RecordFastPairAdvertisementStarted();
   RegisterAdvertisement(std::move(callback), std::move(error_callback),
                         advertising_id);
 }

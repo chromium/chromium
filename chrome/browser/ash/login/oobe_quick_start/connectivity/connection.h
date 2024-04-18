@@ -55,12 +55,6 @@ class Connection
     kClosed    // The connection is closed
   };
 
-  enum class AuthenticationMethod {
-    kQR,
-    kPin,
-    kResumeAfterUpdate,
-  };
-
   class Factory {
    public:
     Factory() = default;
@@ -96,7 +90,8 @@ class Connection
   // Changes the connection state to authenticated and invokes the
   // ConnectionAuthenticatedCallback. The caller must ensure that the connection
   // is authenticated before calling this function.
-  void MarkConnectionAuthenticated(AuthenticationMethod auth_method);
+  void MarkConnectionAuthenticated(
+      QuickStartMetrics::AuthenticationMethod auth_method);
 
   // Sends a cryptographic challenge to the source device. If the source device
   // can prove that it posesses the shared secret, then the connection is

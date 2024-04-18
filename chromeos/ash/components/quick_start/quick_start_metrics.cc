@@ -32,18 +32,16 @@ constexpr const char kWifiTransferResultHistogramName[] =
     "QuickStart.WifiTransferResult";
 constexpr const char kWifiTransferResultFailureReasonHistogramName[] =
     "QuickStart.WifiTransferResult.FailureReason";
-constexpr const char
-    kFastPairAdvertisementEndedAdvertisingMethodHistogramName[] =
-        "QuickStart.FastPairAdvertisementEnded.AdvertisingMethod";
 constexpr const char kFastPairAdvertisementEndedSucceededHistogramName[] =
     "QuickStart.FastPairAdvertisementEnded.Succeeded";
 constexpr const char kFastPairAdvertisementEndedDurationHistogramName[] =
     "QuickStart.FastPairAdvertisementEnded.Duration";
 constexpr const char kFastPairAdvertisementEndedErrorCodeHistogramName[] =
     "QuickStart.FastPairAdvertisementEnded.ErrorCode";
-constexpr const char
-    kFastPairAdvertisementStartedAdvertisingMethodHistogramName[] =
-        "QuickStart.FastPairAdvertisementStarted.AdvertisingMethod";
+constexpr const char kFastPairAdvertisementStartedHistogramName[] =
+    "QuickStart.FastPairAdvertisementStarted";
+constexpr const char kAuthenticationMethodHistogramName[] =
+    "QuickStart.AuthenticationMethod";
 constexpr const char kMessageReceivedWifiCredentials[] =
     "QuickStart.MessageReceived.WifiCredentials";
 constexpr const char kMessageReceivedBootstrapConfigurations[] =
@@ -359,27 +357,28 @@ void QuickStartMetrics::RecordEntryPoint(EntryPoint entry_point) {
   // TODO(b/280306867): Add metric for entry point.
 }
 
+// static
+void QuickStartMetrics::RecordAuthenticationMethod(
+    AuthenticationMethod auth_method) {
+  base::UmaHistogramEnumeration(kAuthenticationMethodHistogramName,
+                                auth_method);
+}
+
 QuickStartMetrics::QuickStartMetrics() = default;
 
 QuickStartMetrics::~QuickStartMetrics() = default;
 
-void QuickStartMetrics::RecordFastPairAdvertisementStarted(
-    AdvertisingMethod advertising_method) {
+void QuickStartMetrics::RecordFastPairAdvertisementStarted() {
   CHECK(!fast_pair_advertising_timer_);
-  CHECK(!fast_pair_advertising_method_);
 
   fast_pair_advertising_timer_ = std::make_unique<base::ElapsedTimer>();
-  fast_pair_advertising_method_ = advertising_method;
-  base::UmaHistogramEnumeration(
-      kFastPairAdvertisementStartedAdvertisingMethodHistogramName,
-      advertising_method);
+  base::UmaHistogramBoolean(kFastPairAdvertisementStartedHistogramName, true);
 }
 
 void QuickStartMetrics::RecordFastPairAdvertisementEnded(
     bool succeeded,
     std::optional<FastPairAdvertisingErrorCode> error_code) {
   CHECK(fast_pair_advertising_timer_);
-  CHECK(fast_pair_advertising_method_.has_value());
 
   base::TimeDelta duration = fast_pair_advertising_timer_->Elapsed();
 
@@ -394,17 +393,11 @@ void QuickStartMetrics::RecordFastPairAdvertisementEnded(
                             succeeded);
   base::UmaHistogramTimes(kFastPairAdvertisementEndedDurationHistogramName,
                           duration);
-  base::UmaHistogramEnumeration(
-      kFastPairAdvertisementEndedAdvertisingMethodHistogramName,
-      fast_pair_advertising_method_.value());
 
-  fast_pair_advertising_method_ = std::nullopt;
   fast_pair_advertising_timer_.reset();
 }
 
-void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted(
-    int32_t session_id,
-    AdvertisingMethod advertising_method) {
+void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted() {
   // TODO(b/279614071): Add advertising metrics.
 }
 
@@ -414,13 +407,10 @@ void QuickStartMetrics::RecordNearbyConnectionsAdvertisementEnded(
   // TODO(b/279614071): Add advertising metrics.
 }
 
-void QuickStartMetrics::RecordHandshakeStarted(bool handshake_started) {
-  base::UmaHistogramBoolean(kHandshakeStartedName, handshake_started);
+void QuickStartMetrics::RecordHandshakeStarted() {
+  base::UmaHistogramBoolean(kHandshakeStartedName, true);
   CHECK(!handshake_elapsed_timer_);
-
-  if (handshake_started) {
-    handshake_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
-  }
+  handshake_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void QuickStartMetrics::RecordHandshakeResult(

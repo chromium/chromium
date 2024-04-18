@@ -163,7 +163,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
         /*success=*/true);
     fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
     fake_target_device_connection_broker_->AuthenticateConnection(
-        kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+        kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
     ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   }
@@ -402,7 +402,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   // Set phone instance ID.
   std::vector<uint8_t> phone_instance_id = {0x01, 0x02, 0x03};
@@ -465,7 +465,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
@@ -501,7 +501,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
       mojom::UserVerificationResponse(
@@ -522,7 +522,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionFailsIfUserNotVerified) {
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
@@ -545,7 +545,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
@@ -566,7 +566,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   bootstrap_controller_->RequestGoogleAccountInfo();
 
@@ -592,7 +592,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes_);
   bootstrap_controller_->AttemptGoogleAccountTransfer();
@@ -614,7 +614,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   // Set up generic error as response
   auth_broker_->SetupChallengeBytesResponse(base::unexpected(
@@ -636,7 +636,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   // Objects that will be used for verifying the data flow between the
   // components.
@@ -697,7 +697,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes_);
   bootstrap_controller_->AttemptGoogleAccountTransfer();
@@ -733,7 +733,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionDropped) {
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kQR);
+      kSourceDeviceId, QuickStartMetrics::AuthenticationMethod::kQRCode);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
@@ -802,7 +802,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId, Connection::AuthenticationMethod::kResumeAfterUpdate);
+      kSourceDeviceId,
+      QuickStartMetrics::AuthenticationMethod::kResumeAfterUpdate);
   EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
 }
 

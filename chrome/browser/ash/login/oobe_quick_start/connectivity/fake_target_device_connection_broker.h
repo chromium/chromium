@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 
 class FakeNearbyConnection;
 
@@ -76,8 +77,9 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
 
   void InitiateConnection(const std::string& source_device_id);
-  void AuthenticateConnection(const std::string& source_device_id,
-                              Connection::AuthenticationMethod auth_method);
+  void AuthenticateConnection(
+      const std::string& source_device_id,
+      QuickStartMetrics::AuthenticationMethod auth_method);
   void RejectConnection();
   void CloseConnection(ConnectionClosedReason reason);
 

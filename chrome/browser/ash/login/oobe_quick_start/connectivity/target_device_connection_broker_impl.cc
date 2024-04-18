@@ -234,7 +234,7 @@ void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,
           weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)),
-      session_context_->advertising_id(), use_pin_authentication_);
+      session_context_->advertising_id());
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingSuccess(
@@ -438,7 +438,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
   if (use_pin_authentication_ && !session_context_->is_resume_after_update()) {
     QS_LOG(INFO) << "Pin authentication completed!";
     connection_->MarkConnectionAuthenticated(
-        Connection::AuthenticationMethod::kPin);
+        QuickStartMetrics::AuthenticationMethod::kPin);
   } else {
     QS_LOG(INFO) << "Initiating cryptographic handshake.";
     std::optional<std::string> auth_token =
@@ -463,8 +463,8 @@ void TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted(bool success) {
   QS_LOG(INFO) << "Handshake succeeded!";
   connection_->MarkConnectionAuthenticated(
       session_context_->is_resume_after_update()
-          ? Connection::AuthenticationMethod::kResumeAfterUpdate
-          : Connection::AuthenticationMethod::kQR);
+          ? QuickStartMetrics::AuthenticationMethod::kResumeAfterUpdate
+          : QuickStartMetrics::AuthenticationMethod::kQRCode);
 }
 
 void TargetDeviceConnectionBrokerImpl::

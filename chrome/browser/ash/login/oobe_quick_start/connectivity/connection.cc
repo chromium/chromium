@@ -85,14 +85,13 @@ Connection::Connection(
 
 Connection::~Connection() = default;
 
-void Connection::MarkConnectionAuthenticated(AuthenticationMethod auth_method) {
+void Connection::MarkConnectionAuthenticated(
+    QuickStartMetrics::AuthenticationMethod auth_method) {
   authenticated_ = true;
   if (on_connection_authenticated_) {
     std::move(on_connection_authenticated_).Run(weak_ptr_factory_.GetWeakPtr());
   }
-  if (auth_method == AuthenticationMethod::kPin) {
-    quick_start_metrics_.RecordHandshakeStarted(/*handshake_started=*/false);
-  }
+  QuickStartMetrics::RecordAuthenticationMethod(auth_method);
 }
 
 Connection::State Connection::GetState() {
@@ -355,7 +354,7 @@ void Connection::InitiateHandshake(const std::string& authentication_token,
       base::BindOnce(&Connection::OnHandshakeResponse,
                      weak_ptr_factory_.GetWeakPtr(), authentication_token,
                      std::move(callback)));
-  quick_start_metrics_.RecordHandshakeStarted(/*handshake_started=*/true);
+  quick_start_metrics_.RecordHandshakeStarted();
 }
 
 void Connection::OnHandshakeResponse(

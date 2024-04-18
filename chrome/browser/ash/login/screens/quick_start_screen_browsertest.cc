@@ -73,7 +73,8 @@ constexpr char kScreenClosedChooseChromebookSetup[] =
     "QuickStart.ScreenClosed.ChooseChromebookSetup";
 constexpr char kScreenClosedNetworkScreen[] =
     "QuickStart.ScreenClosed.NetworkScreen";
-
+constexpr char kAuthenticationMethodHistogram[] =
+    "QuickStart.AuthenticationMethod";
 constexpr test::UIPath kQuickStartEntryPointPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartEntryPoint};
 constexpr test::UIPath kQuickStartButtonPath = {
@@ -249,7 +250,8 @@ class QuickStartBrowserTest : public OobeBaseTest {
     connection_broker()->on_start_advertising_callback().Run(true);
     connection_broker()->InitiateConnection("fake_device_id");
     connection_broker()->AuthenticateConnection(
-        "fake_device_id", quick_start::Connection::AuthenticationMethod::kQR);
+        "fake_device_id",
+        quick_start::QuickStartMetrics::AuthenticationMethod::kQRCode);
   }
 
   void AbortFlowFromPhoneSide() {
@@ -616,6 +618,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
   histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSSelectGoogleAccount, 0);
+  histogram_tester_.ExpectBucketCount(
+      kAuthenticationMethodHistogram,
+      quick_start::QuickStartMetrics::AuthenticationMethod::kQRCode, 0);
 
   EnterQuickStartFlowFromWelcomeScreen();
 
@@ -633,6 +638,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
   histogram_tester_.ExpectBucketCount(
       std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
       quick_start::QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAuthenticationMethodHistogram,
+      quick_start::QuickStartMetrics::AuthenticationMethod::kQRCode, 1);
   histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSConnectingToWifi, 1);

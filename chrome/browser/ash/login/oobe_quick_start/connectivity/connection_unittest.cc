@@ -180,12 +180,16 @@ class ConnectionTest : public testing::Test {
   }
 
   void MarkConnectionAuthenticated(
-      Connection::AuthenticationMethod auth_method =
-          Connection::AuthenticationMethod::kQR) {
+      QuickStartMetrics::AuthenticationMethod auth_method =
+          QuickStartMetrics::AuthenticationMethod::kQRCode) {
+    histogram_tester_.ExpectBucketCount("QuickStart.AuthenticationMethod",
+                                        auth_method, 0);
     ASSERT_FALSE(ran_connection_authenticated_callback_);
     connection_->MarkConnectionAuthenticated(auth_method);
     ASSERT_TRUE(ran_connection_authenticated_callback_);
     ASSERT_TRUE(authenticated_connection_);
+    histogram_tester_.ExpectBucketCount("QuickStart.AuthenticationMethod",
+                                        auth_method, 1);
   }
 
   void VerifyAssertionInfo(std::optional<FidoAssertionInfo> assertion_info) {

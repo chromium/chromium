@@ -52,8 +52,7 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
   // Begin broadcasting Fast Pair advertisement.
   virtual void StartAdvertising(base::OnceClosure callback,
                                 base::OnceClosure error_callback,
-                                const AdvertisingId& advertising_id,
-                                bool use_pin_authentication);
+                                const AdvertisingId& advertising_id);
 
   // Stop broadcasting Fast Pair advertisement.
   virtual void StopAdvertising(base::OnceClosure callback);

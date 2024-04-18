@@ -200,18 +200,12 @@ class FastPairAdvertiserTest : public testing::Test {
       bool should_succeed,
       std::optional<device::BluetoothAdvertisement::ErrorCode> error_code) {
     expected_total_count_++;
-    QuickStartMetrics::AdvertisingMethod advertising_method =
-        use_pin_authentication_ ? QuickStartMetrics::AdvertisingMethod::kPin
-                                : QuickStartMetrics::AdvertisingMethod::kQrCode;
     histograms_.ExpectTotalCount(
         "QuickStart.FastPairAdvertisementEnded.Duration",
         expected_total_count_);
-    histograms_.ExpectBucketCount(
-        "QuickStart.FastPairAdvertisementEnded.AdvertisingMethod",
-        advertising_method, expected_total_count_);
-    histograms_.ExpectBucketCount(
-        "QuickStart.FastPairAdvertisementStarted.AdvertisingMethod",
-        advertising_method, expected_total_count_);
+    histograms_.ExpectTotalCount("QuickStart.FastPairAdvertisementStarted",
+                                 expected_total_count_);
+
     if (should_succeed) {
       expected_success_count_++;
       histograms_.ExpectBucketCount(
@@ -240,7 +234,7 @@ class FastPairAdvertiserTest : public testing::Test {
                        base::Unretained(this)),
         base::BindOnce(&FastPairAdvertiserTest::OnStartAdvertisingError,
                        base::Unretained(this)),
-        AdvertisingId(), use_pin_authentication_);
+        AdvertisingId());
     auto service_uuid_list =
         std::make_unique<device::BluetoothAdvertisement::UUIDList>();
     service_uuid_list->push_back(kFastPairServiceUuid);
@@ -285,7 +279,6 @@ class FastPairAdvertiserTest : public testing::Test {
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
   std::unique_ptr<RegisterAdvertisementArgs> register_args_;
   base::HistogramTester histograms_;
-  bool use_pin_authentication_ = false;
   bool called_on_start_advertising_ = false;
   bool called_on_start_advertising_error_ = false;
   bool called_on_stop_advertising_ = false;
@@ -424,7 +417,7 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_DeleteInErrorCallback) {
   fast_pair_advertiser_->StartAdvertising(
       base::DoNothing(),
       base::BindLambdaForTesting([&]() { fast_pair_advertiser_.reset(); }),
-      AdvertisingId(), /*use_pin_authentication=*/false);
+      AdvertisingId());
 
   std::move(register_args_->error_callback)
       .Run(device::BluetoothAdvertisement::ErrorCode::
@@ -432,12 +425,6 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_DeleteInErrorCallback) {
 
   EXPECT_FALSE(fast_pair_advertiser_);
   expected_failure_count_++;
-  histograms_.ExpectBucketCount(
-      "QuickStart.FastPairAdvertisementStarted.AdvertisingMethod",
-      QuickStartMetrics::AdvertisingMethod::kQrCode, expected_failure_count_);
-  histograms_.ExpectBucketCount(
-      "QuickStart.FastPairAdvertisementEnded.AdvertisingMethod",
-      QuickStartMetrics::AdvertisingMethod::kQrCode, expected_failure_count_);
   histograms_.ExpectBucketCount(
       "QuickStart.FastPairAdvertisementEnded.Succeeded", false,
       expected_failure_count_);
