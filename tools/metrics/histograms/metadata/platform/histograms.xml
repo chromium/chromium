@@ -1895,6 +1895,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Ti50.ARVCount{CountType}" units="GSC resets"
+    expires_after="2024-09-01">
+  <owner>jettrink@google.com</owner>
+  <owner>cros-hwsec+uma@google.com</owner>
+  <summary>
+    The count of potential GSC resets for AP RO Verification due to system
+    event.
+  </summary>
+  <token key="CountType">
+    <variant name="Combined"/>
+    <variant name="ExternalWp"/>
+    <variant name="InternalWp"/>
+    <variant name="SettingsChange"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.TPM.ApRoVerificationTime" units="ms"
     expires_after="2024-09-01">
   <owner>granaghan@google.com</owner>
