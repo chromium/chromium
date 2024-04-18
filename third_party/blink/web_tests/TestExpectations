@@ -7206,7 +7206,6 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 [ Mac14 ] webexposed/global-interface-listing.html [ Skip Timeout ]
 
 # 2024-04-18 Flaky Suppressor on ci/mac-osxbeta-rel
-[ Mac14 ] http/tests/inspector-protocol/tracing/animation.js [ Failure Pass ]
 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/reduction.https.any.html [ Timeout Pass ]
 
 # Branch Gardener 2024-03-20
