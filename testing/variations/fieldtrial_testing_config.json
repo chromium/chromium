@@ -9921,16 +9921,19 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_proxy_a_ip_protection_phase_02_16_2024",
+                    "name": "enabled_proxy_a_ip_protection_phase_04_18_2024",
                     "params": {
                         "IpPrivacyAuthTokenCacheBatchSize": "1",
                         "IpPrivacyAuthTokenCacheLowWaterMark": "1",
-                        "IpPrivacyDirectOnly": "true",
+                        "IpPrivacyBsaEnablePrivacyPass": "true",
+                        "IpPrivacyDirectOnly": "false",
+                        "IpPrivacyIncludeOAuthTokenInGetProxyConfig": "true",
                         "IpPrivacyTokenServer": "https://phosphor-pa.googleapis.com",
-                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/darklaunch/getInitialData",
+                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/getInitialData",
                         "IpPrivacyTokenServerGetProxyConfigPath": "/v1/ipblinding/getProxyConfig",
-                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/darklaunch/auth",
-                        "MaskedDomainListExperimentalVersion": "3c"
+                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/auth",
+                        "IpPrivacyUseProxyChains": "true",
+                        "MaskedDomainListExperimentalVersion": "rc0"
                     },
                     "enable_features": [
                         "EnableIpPrivacyProxy",
