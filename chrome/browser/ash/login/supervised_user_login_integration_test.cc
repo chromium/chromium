@@ -73,7 +73,9 @@ class SupervisedUserLoginIntegrationTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest, TestUnicornLogin) {
+// Flaky: b/334993995
+IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest,
+                       DISABLED_TestUnicornLogin) {
   SetupContextWidget();
 
   login_mixin().Login();
@@ -83,7 +85,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest, TestUnicornLogin) {
   VerifyPolicies();
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest, TestGellerLogin) {
+// Flaky: b/334993995
+IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest,
+                       DISABLED_TestGellerLogin) {
   SetupContextWidget();
 
   delegate_.set_user_type(
@@ -95,7 +99,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest, TestGellerLogin) {
   VerifyPolicies();
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest, TestGriffinLogin) {
+// Flaky: b/334993995
+IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest,
+                       DISABLED_TestGriffinLogin) {
   SetupContextWidget();
 
   delegate_.set_user_type(
