@@ -47,10 +47,8 @@ namespace {
 
 // Returns the margin on the left and right of the row.
 int GetHorizontalMargin() {
-  return ShouldApplyNewAutofillPopupStyle()
-             ? ChromeLayoutProvider::Get()->GetDistanceMetric(
-                   DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)
-             : 0;
+  return ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
 }
 
 // Utility event handler for mouse enter/exit and tap events.

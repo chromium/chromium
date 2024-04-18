@@ -168,20 +168,11 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 // either to the main or the footer section.
 bool IsFooterPopupItemId(PopupItemId popup_item_id);
 
-// Return whether the suggestion with this `popup_item_id` can have child
+// Returns whether the suggestion with this `popup_item_id` can have child
 // suggestions.
 bool IsExpandablePopupItemId(PopupItemId popup_item_id);
 
-// Returns whether the Autofill popup will have new styles features applied to
-// it. This should be the case for features launched after M117.
-// TODO(crbug.com/1459990): Remove once feature is rolled out. Both the granular
-// filling feature and the autocomplete delete apply the new styles. Therefore
-// we can remove this method once any is launched.
-// TODO(crbug.com/40283949): Remove once feature is rolled out.
-bool ShouldApplyNewAutofillPopupStyle();
-
-// Depending on the current style (see `ShouldApplyNewAutofillPopupStyle()`),
-// return styles for primary and secondary texts.
+// Returns styles for primary and secondary texts.
 views::style::TextStyle GetPrimaryTextStyle();
 views::style::TextStyle GetSecondaryTextStyle();
 

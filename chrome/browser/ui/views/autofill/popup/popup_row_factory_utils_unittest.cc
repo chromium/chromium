@@ -101,11 +101,6 @@ class AutocompleteRowWithDeleteButtonTest
 
  private:
   raw_ptr<PopupRowWithButtonView> view_ = nullptr;
-
-  // All current Autocomplete tests assume that the deletion button feature is
-  // enabled.
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillShowAutocompleteDeleteButton};
 };
 
 TEST_F(AutocompleteRowWithDeleteButtonTest,

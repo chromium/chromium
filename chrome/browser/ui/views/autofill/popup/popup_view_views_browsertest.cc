@@ -35,9 +35,66 @@ using ::testing::Return;
 using CellIndex = PopupViewViews::CellIndex;
 using CellType = PopupRowView::CellType;
 
+// Creates the typical structure of a Autofill address profile children
+// suggestions. This is not suppose to represent perfectly all the suggestions
+// added to the submenu. but the goal is to be close enough.
+std::vector<Suggestion> CreateTypicalAutofillProfileChildSuggestions() {
+  std::vector<Suggestion> suggestions;
+
+  // Fill name fields child suggestions
+  Suggestion fill_full_name(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED),
+      PopupItemId::kFillFullName);
+  fill_full_name.main_text.is_primary = Suggestion::Text::IsPrimary(false);
+  suggestions.push_back(std::move(fill_full_name));
+  suggestions.emplace_back(u"Charles",
+                           PopupItemId::kAddressFieldByFieldFilling);
+  suggestions.emplace_back(u"Stewart",
+                           PopupItemId::kAddressFieldByFieldFilling);
+  suggestions.emplace_back(PopupItemId::kSeparator);
+
+  // Fill address fields child suggestions
+  Suggestion fill_full_address(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED),
+      PopupItemId::kFillFullAddress);
+  fill_full_address.main_text.is_primary = Suggestion::Text::IsPrimary(false);
+  suggestions.push_back(std::move(fill_full_address));
+  // Also add another child suggestions layer.
+  Suggestion street_address(u"123 Apple St.",
+                            PopupItemId::kAddressFieldByFieldFilling);
+  Suggestion street_name(u"Apple St.",
+                         PopupItemId::kAddressFieldByFieldFilling);
+  street_name.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}};
+  street_address.children = {std::move(street_name)};
+
+  suggestions.push_back(std::move(street_address));
+  suggestions.emplace_back(u"Munich", PopupItemId::kAddressFieldByFieldFilling);
+  suggestions.emplace_back(u"8951", PopupItemId::kAddressFieldByFieldFilling);
+  suggestions.emplace_back(PopupItemId::kSeparator);
+
+  Suggestion edit_profile_suggestion(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED),
+      PopupItemId::kDeleteAddressProfile);
+  edit_profile_suggestion.icon = Suggestion::Icon::kDelete;
+  suggestions.push_back(std::move(edit_profile_suggestion));
+
+  Suggestion delete_profile_suggestion(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED),
+      PopupItemId::kDeleteAddressProfile);
+  delete_profile_suggestion.icon = Suggestion::Icon::kDelete;
+  suggestions.push_back(std::move(delete_profile_suggestion));
+
+  return suggestions;
+}
+
 std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back("123 Apple St.", "Charles",
+  suggestions.emplace_back("123 Apple St.", "Charles Stewart",
                            Suggestion::Icon::kAccount,
                            PopupItemId::kAddressEntry);
   suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis",
@@ -163,10 +220,6 @@ class PopupViewViewsBrowsertestBase
 
 class PopupViewViewsBrowsertest : public PopupViewViewsBrowsertestBase {
  public:
-  PopupViewViewsBrowsertest() {
-    feature_list_.InitAndDisableFeature(
-        features::kAutofillShowAutocompleteDeleteButton);
-  }
   ~PopupViewViewsBrowsertest() override = default;
 
  private:
@@ -207,6 +260,13 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 
   PrepareSuggestions(std::move(suggestions));
   PrepareSelectedCell(CellIndex{0, CellType::kControl});
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_AutofillProfile_ChildSuggestions) {
+  PrepareSuggestions(CreateTypicalAutofillProfileChildSuggestions());
+  PrepareSelectedCell(CellIndex{0, CellType::kContent});
   ShowAndVerifyUi();
 }
 
@@ -349,9 +409,7 @@ class PopupViewViewsBrowsertestShowAutocompleteDeleteButton
     : public PopupViewViewsBrowsertestBase {
  public:
   PopupViewViewsBrowsertestShowAutocompleteDeleteButton() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillShowAutocompleteDeleteButton},
-        /*disabled_features=*/{features::kAutofillMoreProminentPopup});
+    feature_list_.InitAndDisableFeature(features::kAutofillMoreProminentPopup);
   }
   ~PopupViewViewsBrowsertestShowAutocompleteDeleteButton() override = default;
 

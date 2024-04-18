@@ -34,9 +34,9 @@ namespace autofill::popup_cell_utils {
 //
 // For content cells that make up the entire Autofill popup row (i.e. there is
 // no control element), the following reasoning applies:
-// * If `kAutofillShowAutocompleteDeleteButton` is on, then there is padding
-//   with distance `DISTANCE_CONTENT_LIST_VERTICAL_SINGLE` between the edge of
-//   the Autofill popup row and the start of the content cell.
+// * There is padding with distance `DISTANCE_CONTENT_LIST_VERTICAL_SINGLE`
+//   between the edge of  the Autofill popup row and the start of the content
+//   cell.
 // * In addition, there is also padding inside the content cell. Together, these
 //   two paddings need to add up to `PopupBaseView::GetHorizontalMargin`, since
 //   to ensure that the content inside the content cell is aligned with the

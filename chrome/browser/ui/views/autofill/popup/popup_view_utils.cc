@@ -637,23 +637,12 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
   }
 }
 
-bool ShouldApplyNewAutofillPopupStyle() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillShowAutocompleteDeleteButton) ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillGranularFillingAvailable);
-}
-
 views::style::TextStyle GetPrimaryTextStyle() {
-  return ShouldApplyNewAutofillPopupStyle()
-             ? views::style::TextStyle::STYLE_BODY_3_MEDIUM
-             : views::style::TextStyle::STYLE_PRIMARY;
+  return views::style::TextStyle::STYLE_BODY_3_MEDIUM;
 }
 
 views::style::TextStyle GetSecondaryTextStyle() {
-  return ShouldApplyNewAutofillPopupStyle()
-             ? views::style::TextStyle::STYLE_BODY_4
-             : views::style::TextStyle::STYLE_SECONDARY;
+  return views::style::TextStyle::STYLE_BODY_4;
 }
 
 }  // namespace autofill

@@ -10,11 +10,9 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
@@ -34,7 +32,6 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -590,9 +587,6 @@ TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandledWithoutControl) {
 }
 
 TEST_F(PopupViewViewsTest, CursorLeftRightDownForAutocompleteEntries) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillShowAutocompleteDeleteButton};
-
   // Set up the popup.
   CreateAndShowView(
       {PopupItemId::kAutocompleteEntry, PopupItemId::kAutocompleteEntry});

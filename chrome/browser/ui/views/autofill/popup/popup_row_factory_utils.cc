@@ -110,12 +110,8 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
 
   std::unique_ptr<views::Label> main_text_label =
       popup_cell_utils::CreateMainTextLabel(
-          suggestion, ShouldApplyNewAutofillPopupStyle()
-                          ? views::style::TextStyle::STYLE_BODY_3
-                          : views::style::TextStyle::STYLE_SECONDARY);
-  if (ShouldApplyNewAutofillPopupStyle()) {
-    main_text_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-  }
+          suggestion, views::style::TextStyle::STYLE_BODY_3);
+  main_text_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   main_text_label->SetEnabled(!suggestion.is_loading);
   view->TrackLabel(view->AddChildView(std::move(main_text_label)));
 
@@ -315,9 +311,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
   PopupItemId popup_item_id = suggestion.popup_item_id;
   FillingProduct main_filling_product = controller->GetMainFillingProduct();
 
-  if (popup_item_id == PopupItemId::kAutocompleteEntry &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillShowAutocompleteDeleteButton)) {
+  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
     return CreateAutocompleteRowWithDeleteButton(
         controller, a11y_selection_delegate, selection_delegate, line_number);
   }

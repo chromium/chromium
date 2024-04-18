@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/user_education/common/new_badge_controller.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -174,8 +173,6 @@ class CreatePopupRowViewTest
   NiceMock<MockAutofillPopupController> controller_;
   NiceMock<MockAccessibilitySelectionDelegate> mock_a11y_selection_delegate_;
   NiceMock<MockSelectionDelegate> mock_selection_delegate_;
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillShowAutocompleteDeleteButton};
   user_education::NewBadgeController::TestLock disable_new_badges_ =
       user_education::NewBadgeController::DisableNewBadgesForTesting();
 };

@@ -61,8 +61,7 @@ constexpr int kAutofillSuggestionMaxWidth = 192;
 constexpr int kAutofillPopupAddressProfileGranularFillingEnabledMaxWidth = 320;
 
 // The additional height of the row in case it has two lines of text.
-constexpr int kAutofillPopupAdditionalDoubleRowHeight = 22;
-constexpr int kAutofillPopupAdditionalDoubleRowHeightNewStyle = 16;
+constexpr int kAutofillPopupAdditionalDoubleRowHeight = 16;
 
 // The additional padding of the row in case it has three lines of text.
 constexpr int kAutofillPopupAdditionalVerticalPadding = 16;
@@ -171,12 +170,8 @@ std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
     case Suggestion::Icon::kCode:
       return ImageViewFromVectorIcon(vector_icons::kCodeIcon, kIconSize);
     case Suggestion::Icon::kLocation:
-      return ShouldApplyNewAutofillPopupStyle()
-                 ? ImageViewFromVectorIcon(
-                       vector_icons::kLocationOnChromeRefreshIcon,
-                       kChromeRefreshIconSize)
-                 : ImageViewFromVectorIcon(vector_icons::kLocationOnIcon,
-                                           kIconSize);
+      return ImageViewFromVectorIcon(vector_icons::kLocationOnChromeRefreshIcon,
+                                     kChromeRefreshIconSize);
     case Suggestion::Icon::kDelete:
       return ImageViewFromVectorIcon(kTrashCanRefreshIcon,
                                      kChromeRefreshIconSize);
@@ -287,21 +282,17 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
 // `PopupBaseView::GetHorizontalMargin()` that makes things even more
 // complicated.
 gfx::Insets GetMarginsForContentCell(bool has_control_element) {
-  int left_margin = PopupBaseView::GetHorizontalMargin();
-  int right_margin = left_margin;
-  if (ShouldApplyNewAutofillPopupStyle()) {
-    // If the feature is enabled, then the row already adds some extra
-    // horizontal margin on the left - deduct that.
-    left_margin = std::max(
-        0, left_margin - ChromeLayoutProvider::Get()->GetDistanceMetric(
-                             DISTANCE_CONTENT_LIST_VERTICAL_SINGLE));
+  // The row already adds some extra horizontal margin on the left - deduct
+  // that.
+  const int left_margin =
+      std::max(0, PopupBaseView::GetHorizontalMargin() -
+                      ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_CONTENT_LIST_VERTICAL_SINGLE));
+  // If there is no control element, then this is the only cell and the same
+  // correction needs to be made on the right side, too.
+  const int right_margin =
+      has_control_element ? PopupBaseView::GetHorizontalMargin() : left_margin;
 
-    // If there is no control element, then this is the only cell and the same
-    // correction needs to be made on the right side, too.
-    if (!has_control_element) {
-      right_margin = left_margin;
-    }
-  }
   return gfx::Insets::TLBR(0, left_margin, 0, right_margin);
 }
 
@@ -317,7 +308,7 @@ std::unique_ptr<views::ImageView> GetIconImageView(
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
-  if (icon_image_view && ShouldApplyNewAutofillPopupStyle()) {
+  if (icon_image_view) {
     // It is possible to have icons of different sizes (kChromeRefreshIconSize
     // and kIconSize) on the same popup. Setting the icon view width to
     // the largest value ensures that the icon occupies consistent horizontal
@@ -452,9 +443,7 @@ void AddSuggestionContentToView(
   // Adjust the row height based on the number of subtexts (lines of text).
   int row_height = views::MenuConfig::instance().touchable_menu_height;
   if (!subtext_views.empty()) {
-    row_height += ShouldApplyNewAutofillPopupStyle()
-                      ? kAutofillPopupAdditionalDoubleRowHeightNewStyle
-                      : kAutofillPopupAdditionalDoubleRowHeight;
+    row_height += kAutofillPopupAdditionalDoubleRowHeight;
   }
   layout.set_minimum_cross_axis_size(row_height);
 
@@ -537,15 +526,13 @@ void FormatLabel(views::Label& label,
 // Creates a label for the suggestion's main text.
 std::unique_ptr<views::Label> CreateMainTextLabel(const Suggestion& suggestion,
                                                   int primary_text_style) {
-  int non_primary_text_style = ShouldApplyNewAutofillPopupStyle()
-                                   ? views::style::TextStyle::STYLE_BODY_3
-                                   : views::style::TextStyle::STYLE_PRIMARY;
+  int non_primary_text_style = views::style::TextStyle::STYLE_BODY_3;
   auto label = std::make_unique<views::Label>(
       suggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       suggestion.main_text.is_primary ? primary_text_style
                                       : non_primary_text_style);
 
-  if (!suggestion.main_text.is_primary && ShouldApplyNewAutofillPopupStyle()) {
+  if (!suggestion.main_text.is_primary) {
     label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   }
   if (suggestion.apply_deactivated_style) {
@@ -564,9 +551,7 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
   auto label = std::make_unique<views::Label>(
       suggestion.minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       GetSecondaryTextStyle());
-  if (ShouldApplyNewAutofillPopupStyle()) {
-    label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-  }
+  label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   if (suggestion.apply_deactivated_style) {
     ApplyDeactivatedStyle(*label);
   }
@@ -612,9 +597,7 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
               label_text.value,
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
               text_style ? *text_style : GetSecondaryTextStyle()));
-      if (ShouldApplyNewAutofillPopupStyle()) {
-        label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-      }
+      label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
       content_view.TrackLabel(label);
       // TODO(crbug.com/1459990): Remove feature check as part of the clean up.
       if (!base::FeatureList::IsEnabled(

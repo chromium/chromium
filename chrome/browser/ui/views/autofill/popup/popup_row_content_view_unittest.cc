@@ -108,20 +108,6 @@ TEST_F(PopupRowContentViewTest, SetSelectedUpdatesTrackedLabels) {
   EXPECT_EQ(
       untracked_label->GetEnabledColor(),
       get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
-
-  // The label styles don't get changed with selection for the new style.
-  if (!ShouldApplyNewAutofillPopupStyle()) {
-    // On select updates only the tracked label's style.
-    view().UpdateStyle(/*selected=*/true);
-    EXPECT_NE(
-        tracked_label->GetEnabledColor(),
-        get_expected_color(*tracked_label, untracked_label->GetTextStyle()));
-    EXPECT_EQ(tracked_label->GetEnabledColor(),
-              get_expected_color(*tracked_label, views::style::STYLE_SELECTED));
-    EXPECT_EQ(
-        untracked_label->GetEnabledColor(),
-        get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
-  }
 }
 
 }  // namespace autofill

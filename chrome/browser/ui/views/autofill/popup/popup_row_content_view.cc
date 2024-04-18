@@ -28,37 +28,12 @@ void PopupRowContentView::TrackLabel(views::Label* label) {
 }
 
 void PopupRowContentView::UpdateStyle(bool selected) {
-  if (selected) {
-    if (ShouldApplyNewAutofillPopupStyle()) {
-      SetBackground(views::CreateThemedRoundedRectBackground(
-          ui::kColorDropdownBackgroundSelected,
-          ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-              views::Emphasis::kMedium)));
-    } else {
-      SetBackground(views::CreateThemedSolidBackground(
-          ui::kColorDropdownBackgroundSelected));
-    }
-  } else {
-    SetBackground(nullptr);
-  }
-
-  if (!ShouldApplyNewAutofillPopupStyle()) {
-    // Set style for each label in this cell depending on its current selection
-    // state.
-    for (views::Label* label : tracked_labels_) {
-      label->SetAutoColorReadabilityEnabled(false);
-
-      // If the current suggestion is selected or the label is disabled,
-      // override the style. Otherwise, use the color that corresponds to the
-      // actual style of the label.
-      int style = label->GetEnabled() ? (selected ? views::style::STYLE_SELECTED
-                                                  : label->GetTextStyle())
-                                      : views::style::STYLE_DISABLED;
-      label->SetEnabledColorId(views::TypographyProvider::Get().GetColorId(
-          label->GetTextContext(), style));
-    }
-  }
-
+  SetBackground(selected
+                    ? views::CreateThemedRoundedRectBackground(
+                          ui::kColorDropdownBackgroundSelected,
+                          ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+                              views::Emphasis::kMedium))
+                    : nullptr);
   SchedulePaint();
 }
 
