@@ -274,6 +274,66 @@ INSTANTIATE_TEST_SUITE_P(
         }))),
     [](const auto& info) { return CreateTestSuffixFromParam(info); });
 
+// Tests interaction between supervised users and extensions after the optional
+// supervision is added to an the account.
+class UserGellerizationExtensionTest : public SupervisionExtensionTestBase {
+ public:
+  UserGellerizationExtensionTest() = default;
+};
+
+IN_PROC_BROWSER_TEST_P(UserGellerizationExtensionTest,
+                       PRE_UserGellerizationDisablesExistingExtensions) {
+  ASSERT_FALSE(profile()->IsChild());
+  base::FilePath path = test_data_dir_.AppendASCII("good.crx");
+  EXPECT_TRUE(LoadExtension(path) != nullptr);
+  const Extension* extension =
+      extension_registry()->GetInstalledExtension(kGoodCrxId);
+  EXPECT_TRUE(extension);
+
+  // The extension is installed and enabled.
+  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(kGoodCrxId));
+}
+
+IN_PROC_BROWSER_TEST_P(UserGellerizationExtensionTest,
+                       UserGellerizationDisablesExistingExtensions) {
+  ASSERT_TRUE(profile()->IsChild());
+
+  // The extension should still be installed since we are sharing the same data
+  // directory as the PRE test.
+  const Extension* extension =
+      extension_registry()->GetInstalledExtension(kGoodCrxId);
+  EXPECT_TRUE(extension);
+
+  // The extension should be disabled, pending parent approval.
+  EXPECT_EQ(ApplyParentalControlsOnExtensions(),
+            extension_registry()->disabled_extensions().Contains(kGoodCrxId));
+  EXPECT_EQ(ApplyParentalControlsOnExtensions(),
+            IsDisabledForCustodianApproval(kGoodCrxId));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UserGellerizationExtensionTest,
+    testing::Combine(
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+        testing::Values(ExtensionsParentalControlState::kDisabled,
+                        ExtensionsParentalControlState::kEnabled),
+#else
+        // Extensions parental controls always enabled on ChromeOS.
+        testing::Values(ExtensionsParentalControlState::kEnabled),
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+        testing::Values(ExtensionManagementSwitch::kManagedByExtensions,
+                        ExtensionManagementSwitch::kManagedByPermissions),
+        testing::Values(base::BindRepeating([]() {
+          //  Pre-test should start with a regular
+          //  profile, main test with a supervised profile.
+          return content::IsPreTest()
+                     ? supervised_user::SupervisionMixin::SignInMode::kRegular
+                     : supervised_user::SupervisionMixin::SignInMode::
+                           kSupervised;
+        }))),
+    [](const auto& info) { return CreateTestSuffixFromParam(info); });
+
 // Tests the parental controls applied on extensions for supervised users
 // under different values of the Family Link Extensions Switch
 // ("Allow to add extensions without asking for permission").
