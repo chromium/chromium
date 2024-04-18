@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 37
+// Next MinVersion: 38
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -769,7 +769,7 @@ struct PasspointApprovalResponse {
   bool allowed;
 };
 
-// Next Method ID: 26
+// Next Method ID: 27
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 // Mojo interface exposed by the Chrome browser process for
 // networking/WiFi/VPN, ARC is the client.
@@ -841,7 +841,13 @@ interface NetHost {
 
   // Inform ChromeOS that an Android VPN is disconnected, reconnecting, or
   // reconnected.
-  [MinVersion=7] AndroidVpnStateChanged@12(ConnectionStateType state);
+  // DEPRECATED: Replaced by `AndroidVpnDisconnected`
+  // TODO(b/329529872): Remove method once M126 hits stable
+  [MinVersion=7] DEPRECATED_AndroidVpnStateChanged@12(
+      ConnectionStateType state);
+
+  // Inform ChromeOS that an Android VPN has disconnected.
+  [MinVersion=37] AndroidVpnDisconnected@26();
 
   // Tells Chrome OS that network traffic should go through a certain VPN
   // connection. |vpnPackage| is the package name of the Android VPN app. If

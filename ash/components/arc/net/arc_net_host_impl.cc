@@ -333,7 +333,7 @@ void ArcNetHostImpl::SetUpFlags() {
 void ArcNetHostImpl::OnConnectionClosed() {
   // Make sure shill doesn't leave an ARC VPN connected after Android
   // goes down.
-  AndroidVpnStateChanged(arc::mojom::ConnectionStateType::NOT_CONNECTED);
+  AndroidVpnDisconnected();
 
   if (!observing_network_state_)
     return;
@@ -822,9 +822,13 @@ void ArcNetHostImpl::AndroidVpnUpdated(mojom::AndroidVpnConfigurationPtr cfg) {
       base::BindOnce(&ArcVpnErrorCallback, "updating ARC VPN " + service_path));
 }
 
-void ArcNetHostImpl::AndroidVpnStateChanged(mojom::ConnectionStateType state) {
-  if (state != arc::mojom::ConnectionStateType::NOT_CONNECTED ||
-      arc_vpn_service_path_.empty()) {
+void ArcNetHostImpl::DEPRECATED_AndroidVpnStateChanged(
+    mojom::ConnectionStateType state) {
+  AndroidVpnDisconnected();
+}
+
+void ArcNetHostImpl::AndroidVpnDisconnected() {
+  if (arc_vpn_service_path_.empty()) {
     return;
   }
 

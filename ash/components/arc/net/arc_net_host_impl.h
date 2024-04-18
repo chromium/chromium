@@ -85,7 +85,9 @@ class ArcNetHostImpl : public KeyedService,
                        StartDisconnectCallback callback) override;
   void AndroidVpnConnected(mojom::AndroidVpnConfigurationPtr cfg) override;
   void AndroidVpnUpdated(mojom::AndroidVpnConfigurationPtr cfg) override;
-  void AndroidVpnStateChanged(mojom::ConnectionStateType state) override;
+  void DEPRECATED_AndroidVpnStateChanged(
+      mojom::ConnectionStateType state) override;
+  void AndroidVpnDisconnected() override;
   void AddPasspointCredentials(
       mojom::PasspointCredentialsPtr credentials) override;
   void RemovePasspointCredentials(
