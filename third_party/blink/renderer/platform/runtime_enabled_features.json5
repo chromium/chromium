@@ -337,10 +337,6 @@
       status: "test",
     },
     {
-      name: "AtomicMoveOverride",
-      // No "status" field, so that this is not enabled on WPTs by default.
-    },
-    {
       name: "AttributionReporting",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,

@@ -1089,8 +1089,8 @@ extern const char kGoogleOneOfferFilesBannerDescription[];
 extern const char kObservableAPIName[];
 extern const char kObservableAPIDescription[];
 
-extern const char kAtomicMoveOverrideName[];
-extern const char kAtomicMoveOverrideDescription[];
+extern const char kAtomicMoveAPIName[];
+extern const char kAtomicMoveAPIDescription[];
 
 extern const char kCastStreamingAv1Name[];
 extern const char kCastStreamingAv1Description[];

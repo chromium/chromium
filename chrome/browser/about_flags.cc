@@ -10590,9 +10590,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kObservableAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kObservableAPI)},
 
-    {"atomic-move-override", flag_descriptions::kAtomicMoveOverrideName,
-     flag_descriptions::kAtomicMoveOverrideDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAtomicMoveOverride)},
+    {"atomic-move", flag_descriptions::kAtomicMoveAPIName,
+     flag_descriptions::kAtomicMoveAPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kAtomicMoveAPI)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-hub", flag_descriptions::kAndroidHubName,

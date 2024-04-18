@@ -17164,7 +17164,6 @@ from previous Chrome versions.
       label="DownloadNotificationServiceUnifiedAPI:enabled"/>
   <int value="-1788763369" label="PrintingPpdChannel:disabled"/>
   <int value="-1787333474" label="FedCmError:disabled"/>
-  <int value="-1786864976" label="AtomicMoveOverride:enabled"/>
   <int value="-1786020274" label="AppSpecificHistory:enabled"/>
   <int value="-1784831690" label="Bento:disabled"/>
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
@@ -23024,6 +23023,7 @@ from previous Chrome versions.
       label="ConsolidateMetricsServiceInitialLogLogic:enabled"/>
   <int value="820650704" label="disable-ntp-popular-sites"/>
   <int value="821192723" label="show-fps-counter"/>
+  <int value="821610512" label="AtomicMoveAPI:enabled"/>
   <int value="822352138" label="GameDashboard:enabled"/>
   <int value="823505300" label="LensOnQuickActionSearchWidget:disabled"/>
   <int value="824022134" label="ShelfGesturesWithVirtualKeyboard:disabled"/>
@@ -23329,7 +23329,6 @@ from previous Chrome versions.
   <int value="966626581" label="NewInstanceFromDraggedLink:disabled"/>
   <int value="966958557"
       label="CryptAuthV2DedupDeviceLastActivityTime:enabled"/>
-  <int value="967037536" label="AtomicMoveOverride:disabled"/>
   <int value="967706865" label="ForceEnablePasswordDomainCapabilities:enabled"/>
   <int value="968355926" label="ExportTaggedPDF:enabled"/>
   <int value="968715406"
@@ -24414,6 +24413,7 @@ from previous Chrome versions.
   <int value="1451065780" label="MediaFoundationClearRendering:enabled"/>
   <int value="1451146739"
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
+  <int value="1451778280" label="AtomicMoveAPI:disabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>
   <int value="1453393588" label="DiscoverFeedMultiColumn:disabled"/>
   <int value="1453448177"
