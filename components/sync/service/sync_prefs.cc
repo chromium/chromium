@@ -571,20 +571,6 @@ void SyncPrefs::ClearCachedPassphraseType() {
   pref_service_->ClearPref(prefs::internal::kSyncCachedPassphraseType);
 }
 
-std::string SyncPrefs::GetEncryptionBootstrapToken() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This is deprecated, it's only called in SyncPrefsMigrationTest.
-  return pref_service_->GetString(
-      prefs::internal::kSyncEncryptionBootstrapToken);
-}
-
-void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This is deprecated, it's only called in SyncPrefsMigrationTest.
-  pref_service_->SetString(prefs::internal::kSyncEncryptionBootstrapToken,
-                           token);
-}
-
 void SyncPrefs::ClearAllEncryptionBootstrapTokens() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::internal::kSyncEncryptionBootstrapToken);

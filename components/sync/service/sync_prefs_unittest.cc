@@ -1001,20 +1001,27 @@ TEST_F(SyncPrefsMigrationTest, LeavesPasswordsAloneIfDisabledByPolicy) {
 TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
   SyncPrefs prefs(&pref_service_);
   // Passphrase is not set.
-  ASSERT_TRUE(prefs.GetEncryptionBootstrapToken().empty());
+  ASSERT_TRUE(
+      pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken)
+          .empty());
 
   auto gaia_id_hash_empty = signin::GaiaIdHash::FromGaiaId("");
   prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_empty);
-  EXPECT_TRUE(prefs.GetEncryptionBootstrapToken().empty());
+  EXPECT_TRUE(
+      pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken)
+          .empty());
   EXPECT_TRUE(
       prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_empty).empty());
 }
 
 TEST_F(SyncPrefsMigrationTest, PassphraseMigrationDone) {
   SyncPrefs prefs(&pref_service_);
-  prefs.SetEncryptionBootstrapToken("token");
+  pref_service_.SetString(prefs::internal::kSyncEncryptionBootstrapToken,
+                          "token");
   prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
-  EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token");
+  EXPECT_EQ(
+      pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
+      "token");
   EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
             "token");
   signin::GaiaIdHash gaia_id_hash_2 =
@@ -1025,17 +1032,23 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationDone) {
 
 TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnce) {
   SyncPrefs prefs(&pref_service_);
-  prefs.SetEncryptionBootstrapToken("token");
+  pref_service_.SetString(prefs::internal::kSyncEncryptionBootstrapToken,
+                          "token");
   prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
-  EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token");
+  EXPECT_EQ(
+      pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
+      "token");
   EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
             "token");
 
   // Force old pref to change for testing purposes.
-  prefs.SetEncryptionBootstrapToken("token2");
+  pref_service_.SetString(prefs::internal::kSyncEncryptionBootstrapToken,
+                          "token2");
   prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
   // The migration should not run again.
-  EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token2");
+  EXPECT_EQ(
+      pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
+      "token2");
   EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
             "token");
 }
@@ -1043,13 +1056,17 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnce) {
 TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnceWithBrowserRestart) {
   {
     SyncPrefs prefs(&pref_service_);
-    prefs.SetEncryptionBootstrapToken("token");
+    pref_service_.SetString(prefs::internal::kSyncEncryptionBootstrapToken,
+                            "token");
     prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
-    EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token");
+    EXPECT_EQ(
+        pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
+        "token");
     EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
               "token");
     // Force old pref to change for testing purposes.
-    prefs.SetEncryptionBootstrapToken("token2");
+    pref_service_.SetString(prefs::internal::kSyncEncryptionBootstrapToken,
+                            "token2");
   }
 
   // The browser is restarted.
@@ -1057,7 +1074,9 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnceWithBrowserRestart) {
     SyncPrefs prefs(&pref_service_);
     prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
     // No migration should run.
-    EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token2");
+    EXPECT_EQ(
+        pref_service_.GetString(prefs::internal::kSyncEncryptionBootstrapToken),
+        "token2");
     EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
               "token");
   }
