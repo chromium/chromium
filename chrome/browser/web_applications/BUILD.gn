@@ -712,7 +712,6 @@ source_set("web_applications_test_support") {
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
-    "//ui/gfx:test_support",
     "//ui/webui",
   ]
   if (is_chromeos_ash) {

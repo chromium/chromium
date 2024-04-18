@@ -3508,10 +3508,7 @@ if (!is_android) {
         "../browser/lifetime/application_lifetime_browsertest.cc",
         "../browser/ui/views/enable_link_capturing_infobar_browsertest.cc",
       ]
-      deps += [
-        "//chrome/browser/apps/link_capturing",
-        "//chrome/browser/shortcuts:browser_tests",
-      ]
+      deps += [ "//chrome/browser/apps/link_capturing" ]
     }
 
     if (is_win || is_chromeos || is_mac) {
