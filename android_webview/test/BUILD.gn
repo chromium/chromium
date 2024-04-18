@@ -192,6 +192,7 @@ android_assets("webview_instrumentation_apk_assets") {
 
   sources = [
     "../javatests/assets/empty_file.js",
+    "../javatests/assets/hello.html",
     "../javatests/assets/print_hello.js",
     "../javatests/assets/wrong_js.txt",
     "shell/assets/asset_file.html",

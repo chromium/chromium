@@ -110,14 +110,31 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
         }
 
         final AwSettings awSettings = AwSettings.fromWebContents(mWebContents);
-        // TODO(crbug.com/330151742): This does not produce the base URL's origin when loading a
-        // page with loadDataWithBaseURL (as getLastCommittedURL and getLastCommittedOrigin do not
-        // agree in that case). Change this to using Origin, which does the right thing.
-        final String sourceOriginString = getOriginStringFromRenderFrame(mRenderFrameHost);
-        if (awSettings == null || sourceOriginString == null) {
+        if (awSettings == null) {
             callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
             return;
         }
+
+        // The GURL-based, string-based, and android.net.Uri-based origin representations are
+        // lossy. They are only used for the API-status check. Prefer using Origin-based origins in
+        // all other cases.
+        final GURL sourceGurl = mRenderFrameHost.getLastCommittedURL();
+        if (sourceGurl == null) {
+            callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
+            return;
+        }
+        final GURL sourceOriginGurl = sourceGurl.getOrigin();
+        final String sourceOriginString = sourceOriginGurl.getValidSpecOrEmpty();
+        if (!Objects.equals(sourceOrigin.getScheme(), sourceOriginGurl.getScheme())
+                || "".equals(sourceOriginString)) {
+            // Note that sourceOrigin and sourceOriginGurl (getLastCommittedOrigin and
+            // getLastCommittedURL) may not agree on the origin in certain situations, including
+            // non-standard URIs and pages loaded via loadDataWithBaseURL. For now, we do not
+            // support these or loadDataWithBaseURL.
+            callback.call(WebViewMediaIntegrityErrorCode.NON_RECOVERABLE_ERROR);
+            return;
+        }
+
         @MediaIntegrityApiStatus
         final int apiStatus = getMediaIntegrityApiStatus(sourceOriginString, awSettings);
         if (apiStatus == MediaIntegrityApiStatus.DISABLED) {
@@ -187,28 +204,18 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
 
     private @MediaIntegrityApiStatus int getMediaIntegrityApiStatus(
             @NonNull String sourceOriginString, @NonNull AwSettings awSettings) {
-        @MediaIntegrityApiStatus int apiStatus;
-        if ("".equals(sourceOriginString)) {
-            // An empty origin will be produced for many (but not all) non-http/non-https schemes.
-            apiStatus = awSettings.getWebViewIntegrityApiDefaultStatus();
-        } else {
-            apiStatus =
-                    awSettings.getWebViewIntegrityApiStatusForUri(Uri.parse(sourceOriginString));
-        }
+        // An empty origin will be produced for many (but not all) non-http/non-https schemes.
+        // We disallow this in the caller.
+        assert !"".equals(sourceOriginString);
+
+        @MediaIntegrityApiStatus
+        int apiStatus =
+                awSettings.getWebViewIntegrityApiStatusForUri(Uri.parse(sourceOriginString));
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.MediaIntegrity.ApiStatusV2",
                 apiStatus,
                 MediaIntegrityApiStatus.COUNT);
         return apiStatus;
-    }
-
-    @Nullable
-    private String getOriginStringFromRenderFrame(RenderFrameHost host) {
-        final GURL sourceGurl = host.getLastCommittedURL();
-        if (sourceGurl == null) {
-            return null;
-        }
-        return sourceGurl.getOrigin().getValidSpecOrEmpty();
     }
 
     @Lifetime.WebView

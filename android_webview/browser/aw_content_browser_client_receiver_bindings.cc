@@ -27,6 +27,7 @@
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -150,6 +151,25 @@ void ForwardToJavaFrame(content::RenderFrameHost* render_frame_host,
   render_frame_host->GetJavaInterfaces()->GetInterface(std::move(receiver));
 }
 
+void BindMediaIntegrityServiceReceiver(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::WebViewMediaIntegrityService>
+        receiver) {
+  const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
+  // Note that this particular check respects the origin of the base URL
+  // supplied by loadDataWithBaseURL.
+  if ((origin.scheme() != url::kHttpScheme &&
+       origin.scheme() != url::kHttpsScheme) ||
+      !network::IsOriginPotentiallyTrustworthy(origin)) {
+    mojo::ReportBadMessage(
+        "Attempted to access WebView Media Integrity service for a "
+        "non-trustworthy or non-HTTP/HTTPS origin.");
+    return;
+  };
+  ForwardToJavaFrame<blink::mojom::WebViewMediaIntegrityService>(
+      render_frame_host, std::move(receiver));
+}
+
 }  // anonymous namespace
 
 void AwContentBrowserClient::BindMediaServiceReceiver(
@@ -259,8 +279,8 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   if (base::FeatureList::IsEnabled(
           features::kWebViewMediaIntegrityApiBlinkExtension) &&
       !base::FeatureList::IsEnabled(features::kWebViewMediaIntegrityApi)) {
-    map->Add<blink::mojom::WebViewMediaIntegrityService>(base::BindRepeating(
-        &ForwardToJavaFrame<blink::mojom::WebViewMediaIntegrityService>));
+    map->Add<blink::mojom::WebViewMediaIntegrityService>(
+        base::BindRepeating(&BindMediaIntegrityServiceReceiver));
   }
 }
 

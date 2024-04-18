@@ -77,6 +77,18 @@ WebView::getExperimentalMediaIntegrityTokenProvider(
     return ScriptPromise<MediaIntegrityTokenProvider>();
   }
 
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  const SecurityOrigin* origin = execution_context->GetSecurityOrigin();
+  if ((origin->Protocol() != url::kHttpScheme &&
+       origin->Protocol() != url::kHttpsScheme) ||
+      !origin->IsPotentiallyTrustworthy()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "getExperimentalMediaIntegrityTokenProvider: "
+        "can only be used from trustworthy http/https origins");
+    return ScriptPromise<MediaIntegrityTokenProvider>();
+  }
+
   ScriptPromiseResolver<MediaIntegrityTokenProvider>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<MediaIntegrityTokenProvider>>(
           script_state, exception_state.GetContext());
@@ -100,7 +112,6 @@ WebView::getExperimentalMediaIntegrityTokenProvider(
     return promise;
   }
 
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   EnsureServiceConnection(execution_context);
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       execution_context->GetTaskRunner(TaskType::kInternalDefault);

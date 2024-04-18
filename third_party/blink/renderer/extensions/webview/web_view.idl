@@ -20,5 +20,5 @@ dictionary GetMediaIntegrityTokenProviderParams {
     // time to resolve (> 1s).
     //
     // The promise may reject as a MediaIntegrityError.
-    [NewObject, CallWith=ScriptState, HighEntropy, RaisesException, RuntimeEnabled=BlinkExtensionWebViewMediaIntegrity] Promise<MediaIntegrityTokenProvider> getExperimentalMediaIntegrityTokenProvider(GetMediaIntegrityTokenProviderParams params);
+    [NewObject, CallWith=ScriptState, HighEntropy, RaisesException, RuntimeEnabled=BlinkExtensionWebViewMediaIntegrity, SecureContext] Promise<MediaIntegrityTokenProvider> getExperimentalMediaIntegrityTokenProvider(GetMediaIntegrityTokenProviderParams params);
 };

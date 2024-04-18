@@ -36,6 +36,7 @@ import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,6 +63,10 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     private static final long CLOUD_PROJECT_NUMBER = 123;
     private static final String CONTENT_BINDING_HASH = "content_binding";
+    private static final String UNTRUSTWORTHY_OR_NON_HTTP_HTTPS_ERROR_MESSAGE =
+            "NotSupportedError: Failed to execute 'getExperimentalMediaIntegrityTokenProvider' on"
+                + " 'WebView': getExperimentalMediaIntegrityTokenProvider: can only be used from"
+                + " trustworthy http/https origins";
 
     @Rule public AwActivityTestRule mRule;
 
@@ -136,6 +141,142 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
     })
     public void testApiSurfaceNotExposedWhenFeatureDisabled() throws Exception {
         assertJsTruthy("!('android' in window)");
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
+    })
+    public void testProviderGetterNotExposedForDataUris() throws Throwable {
+        mRule.loadDataSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), "", "text/html", false);
+        assertNotExposed();
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
+    })
+    public void testProviderGetterExposedButRejectedForDataUrisWithHttpsBaseUrls()
+            throws Throwable {
+        // An HTTPS base URL has a secure context, unlike a plain data URL. This exposes the API,
+        // but we deliberately reject the data URL in the implementation.
+        mRule.loadDataWithBaseUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                "",
+                "text/html",
+                false,
+                "https://example.com/",
+                null);
+        final String testScript =
+                getTestScript(CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH));
+        Assert.assertEquals(
+                getExpectedErrorMessage(MediaIntegrityErrorCode.NON_RECOVERABLE_ERROR),
+                runTestScriptAndWaitForResult(testScript));
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
+    })
+    public void testProviderGetterNotExposedForAboutBlank() throws Throwable {
+        mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
+        assertNotExposed();
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
+    })
+    public void testProviderGetterNotExposedForPlaintextHttp() throws Throwable {
+        mRule.loadDataWithBaseUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                "",
+                "text/html",
+                false,
+                "http://example.com/",
+                null);
+        assertNotExposed();
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
+    })
+    public void testProviderGetterUseableForLocalhostHttp() throws Throwable {
+        try (TestWebServer server = TestWebServer.start()) {
+            String url = server.setEmptyResponse("");
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        }
+        String mockToken = "abc123def456";
+        MockTokenProvider mockTokenProvider = new MockTokenProvider();
+        mockTokenProvider.addRequestToken(CONTENT_BINDING_HASH, mockToken);
+
+        mPlatformBridge.addProviderResponse(
+                CLOUD_PROJECT_NUMBER, MediaIntegrityApiStatus.ENABLED, mockTokenProvider);
+
+        String actualToken =
+                runTestScriptAndWaitForResult(
+                        getTestScript(
+                                CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH)));
+        Assert.assertEquals(mockToken, actualToken);
+
+        // Assert that the token manager was instantiated with the correct cloud project number
+        Assert.assertEquals(1, mPlatformBridge.getTotalProviderCallCount());
+        Assert.assertEquals(
+                1,
+                mPlatformBridge.getProviderCallCount(
+                        CLOUD_PROJECT_NUMBER, MediaIntegrityApiStatus.ENABLED));
+
+        // Assert that the content binding hash was passed to the TokenProvider
+        Assert.assertEquals(1, mockTokenProvider.getTotalCallCount());
+        Assert.assertEquals(1, mockTokenProvider.getCallCount(CONTENT_BINDING_HASH));
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
+    })
+    public void testProviderGetterExposedButRejectedForFileUris() throws Throwable {
+        mRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                "file:///android_asset/hello.html");
+        final String testScript =
+                getTestScript(CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH));
+        Assert.assertEquals(
+                UNTRUSTWORTHY_OR_NON_HTTP_HTTPS_ERROR_MESSAGE,
+                runTestScriptAndWaitForResult(testScript));
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
+    })
+    public void testProviderGetterExposedButRejectedForContentUris() throws Throwable {
+        final String testHtmlContentPath = "hello.html";
+        final String testHtmlContent =
+                "<!DOCTYPE html><html><body>Hello. I'm from a content-provider.</body></html>";
+        TestContentProvider.register(
+                testHtmlContentPath, "text/html", testHtmlContent.getBytes(StandardCharsets.UTF_8));
+        mRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                TestContentProvider.createContentUrl(testHtmlContentPath));
+        final String testScript =
+                getTestScript(CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH));
+        Assert.assertEquals(
+                UNTRUSTWORTHY_OR_NON_HTTP_HTTPS_ERROR_MESSAGE,
+                runTestScriptAndWaitForResult(testScript));
     }
 
     @Test
@@ -812,6 +953,13 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                 yield "";
             }
         };
+    }
+
+    private void assertNotExposed() throws Throwable {
+        // Only the getExperimentalMediaIntegrityTokenProvider part of the API gets hidden or not.
+        assertJsTruthy(
+                "typeof(android.webview.getExperimentalMediaIntegrityTokenProvider) ==="
+                        + " 'undefined'");
     }
 
     /** WebMessageListener that allows us to get async JS responses back for verification. */
