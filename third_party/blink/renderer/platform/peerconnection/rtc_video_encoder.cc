@@ -336,6 +336,13 @@ BASE_FEATURE(kVideoEncoderLimitsFramesInEncoder,
              "VideoEncoderLimitsFramesInEncoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the encoder instance is preserved on Release() call.
+// Reinitialization of the encoder will reuse the instance with the new
+// resolution. See b/1466102 for details.
+BASE_FEATURE(kKeepEncoderInstanceOnRelease,
+             "KeepEncoderInstanceOnRelease",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace {
@@ -652,6 +659,13 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // reported by NotifyErrorStatus().
   void Enqueue(FrameChunk frame_chunk);
 
+  // Request encoding parameter change for the underlying encoder with
+  // additional size change. Requires the encoder to be in flushed state.
+  void RequestEncodingParametersChangeWithSizeChange(
+      const webrtc::VideoEncoder::RateControlParameters& parameters,
+      const gfx::Size& input_visible_size,
+      SignaledValue event);
+
   // Request encoding parameter change for the underlying encoder.
   void RequestEncodingParametersChange(
       const webrtc::VideoEncoder::RateControlParameters& parameters);
@@ -674,8 +688,40 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   void SetH265ParameterSetsTrackerForTesting(
       std::unique_ptr<H265ParameterSetsTracker> tracker);
 #endif
+  void Suspend(SignaledValue event);
+
+  void Drain(SignaledValue event);
+  void DrainCompleted(bool success);
 
  private:
+  // proxy to pass weak reference to webrtc which could be invalidated when
+  // frame size changes and new output buffers are allocated.
+  class EncodedBufferReferenceHolder {
+   public:
+    explicit EncodedBufferReferenceHolder(base::WeakPtr<Impl> impl)
+        : impl_(impl) {
+      weak_this_ = weak_this_factory_.GetWeakPtr();
+    }
+    ~EncodedBufferReferenceHolder() = default;
+    base::WeakPtr<EncodedBufferReferenceHolder> GetWeakPtr() {
+      return weak_this_;
+    }
+    void BitstreamBufferAvailable(int bitstream_buffer_id) {
+      if (Impl* impl = impl_.get()) {
+        impl->BitstreamBufferAvailable(bitstream_buffer_id);
+      }
+    }
+
+   private:
+    base::WeakPtr<Impl> impl_;
+    base::WeakPtr<EncodedBufferReferenceHolder> weak_this_;
+    base::WeakPtrFactory<EncodedBufferReferenceHolder> weak_this_factory_{this};
+  };
+
+  void RequestEncodingParametersChangeInternal(
+      const webrtc::VideoEncoder::RateControlParameters& parameters,
+      const std::optional<gfx::Size>& input_visible_size);
+
   enum {
     kInputBufferExtraCount = 1,  // The number of input buffers allocated, more
                                  // than what is requested by
@@ -783,6 +829,11 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // encoder holds them.
   size_t output_buffers_in_encoder_count_{0};
 
+  // proxy to pass weak reference to webrtc which could be invalidated when
+  // frame size changes and new output buffers are allocated.
+  std::unique_ptr<EncodedBufferReferenceHolder>
+      encoded_buffer_reference_holder_;
+
   // The buffer ids that are not sent to a hardware video encoder and this holds
   // them. UseOutputBitstreamBuffer() is called for them on the next Encode().
   Vector<int32_t> pending_output_buffers_;
@@ -872,6 +923,8 @@ RTCVideoEncoder::Impl::Impl(
   CHECK(encoder_metrics_provider_factory_);
   preferred_pixel_formats_ = {webrtc::VideoFrameBuffer::Type::kI420};
   weak_this_ = weak_this_factory_.GetWeakPtr();
+  encoded_buffer_reference_holder_ =
+      std::make_unique<EncodedBufferReferenceHolder>(weak_this_);
   weak_this_for_client = weak_this_;
 }
 
@@ -1004,6 +1057,40 @@ void RTCVideoEncoder::Impl::BitstreamBufferAvailable(
   UseOutputBitstreamBuffer(bitstream_buffer_id);
 }
 
+void RTCVideoEncoder::Impl::Suspend(SignaledValue event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ == WEBRTC_VIDEO_CODEC_OK) {
+    status_ = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
+  }
+  event.Set(status_);
+  event.Signal();
+}
+
+void RTCVideoEncoder::Impl::Drain(SignaledValue event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ == WEBRTC_VIDEO_CODEC_OK ||
+      status_ == WEBRTC_VIDEO_CODEC_UNINITIALIZED) {
+    async_init_event_ = ScopedSignaledValue(std::move(event));
+    video_encoder_->Flush(base::BindOnce(&RTCVideoEncoder::Impl::DrainCompleted,
+                                         base::Unretained(this)));
+  } else {
+    event.Set(status_);
+    event.Signal();
+  }
+}
+
+void RTCVideoEncoder::Impl::DrainCompleted(bool success) {
+  DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (success) {
+    status_ = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
+    async_init_event_.SetAndReset(WEBRTC_VIDEO_CODEC_UNINITIALIZED);
+  } else {
+    NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderInitializationError,
+                       "Failed to flush VideoEncodeAccelerator"});
+  }
+}
+
 void RTCVideoEncoder::Impl::UseOutputBitstreamBuffer(
     int32_t bitstream_buffer_id) {
   TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::UseOutputBitstreamBuffer");
@@ -1027,6 +1114,12 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChange(
   if (status_ != WEBRTC_VIDEO_CODEC_OK)
     return;
 
+  RequestEncodingParametersChangeInternal(parameters, std::nullopt);
+}
+
+void RTCVideoEncoder::Impl::RequestEncodingParametersChangeInternal(
+    const webrtc::VideoEncoder::RateControlParameters& parameters,
+    const std::optional<gfx::Size>& input_visible_size) {
   // NotfiyError() has been called. Don't proceed the change request.
   if (!video_encoder_)
     return;
@@ -1067,7 +1160,36 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChange(
   }
   DCHECK_EQ(allocation.GetSumBps(), parameters.bitrate.get_sum_bps());
   video_encoder_->RequestEncodingParametersChange(allocation, framerate,
-                                                  std::nullopt);
+                                                  input_visible_size);
+}
+
+void RTCVideoEncoder::Impl::RequestEncodingParametersChangeWithSizeChange(
+    const webrtc::VideoEncoder::RateControlParameters& parameters,
+    const gfx::Size& input_visible_size,
+    SignaledValue event) {
+  DVLOG(3) << __func__ << " bitrate=" << parameters.bitrate.ToString()
+           << ", framerate=" << parameters.framerate_fps
+           << ", resolution=" << input_visible_size.ToString();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK_EQ(status_, WEBRTC_VIDEO_CODEC_UNINITIALIZED);
+
+  std::optional<gfx::Size> new_size;
+  if (input_visible_size != input_visible_size_) {
+    DVLOG(3) << __func__ << " expecting new buffers, old size "
+             << input_visible_size_.ToString();
+    new_size = input_visible_size;
+  }
+  async_init_event_ = ScopedSignaledValue(std::move(event));
+
+  RequestEncodingParametersChangeInternal(parameters, new_size);
+
+  input_visible_size_ = input_visible_size;
+
+  if (!new_size.has_value()) {
+    status_ = WEBRTC_VIDEO_CODEC_OK;
+    async_init_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
+  }
 }
 
 void RTCVideoEncoder::Impl::RecordTimestampMatchUMA() const {
@@ -1109,6 +1231,7 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
     }
   }
 
+  output_buffers_.clear();
   for (int i = 0; i < kOutputBufferCount; ++i) {
     base::UnsafeSharedMemoryRegion region =
         gpu_factories_->CreateSharedMemoryRegion(output_buffer_size);
@@ -1123,6 +1246,8 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
         base::MakeRefCounted<RefCountedWritableSharedMemoryMapping>(
             std::move(mapping))));
   }
+  encoded_buffer_reference_holder_ =
+      std::make_unique<EncodedBufferReferenceHolder>(weak_this_);
 
   // Immediately provide all output buffers to the VEA.
   for (wtf_size_t i = 0; i < output_buffers_.size(); ++i) {
@@ -1168,6 +1293,12 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   if (metadata.spatial_idx().value_or(0) == 0) {
     CHECK_NE(0u, frames_in_encoder_count_);
     frames_in_encoder_count_--;
+  }
+
+  if (status_ == WEBRTC_VIDEO_CODEC_UNINITIALIZED) {
+    // The encoder has been suspended, drain remaining frames.
+    BitstreamBufferAvailable(bitstream_buffer_id);
+    return;
   }
 
   // An encoder drops a frame.
@@ -1276,9 +1407,10 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   if (!fixed_bitstream) {
     image.SetEncodedData(rtc::make_ref_counted<EncodedDataWrapper>(
         std::move(output_mapping), metadata.payload_size_bytes,
-        base::BindPostTaskToCurrentDefault(
-            base::BindOnce(&RTCVideoEncoder::Impl::BitstreamBufferAvailable,
-                           weak_this_, bitstream_buffer_id))));
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &EncodedBufferReferenceHolder::BitstreamBufferAvailable,
+            encoded_buffer_reference_holder_->GetWeakPtr(),
+            bitstream_buffer_id))));
   }
 
   auto encoded_size = metadata.encoded_size.value_or(input_visible_size_);
@@ -1496,6 +1628,9 @@ void RTCVideoEncoder::Impl::NotifyErrorStatus(
   if (status_ != WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE) {
     RecordEncoderStatusUMA(status, video_codec_type_);
   }
+
+  input_visible_size_ = gfx::Size();
+
   video_encoder_.reset();
   status_ = WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
 
@@ -1515,6 +1650,8 @@ RTCVideoEncoder::Impl::~Impl() {
   }
 
   async_init_event_.reset();
+
+  encoded_buffer_reference_holder_.reset();
 
   // weak_this_ must be invalidated in |gpu_task_runner_|.
   weak_this_factory_.InvalidateWeakPtrs();
@@ -1848,6 +1985,7 @@ RTCVideoEncoder::RTCVideoEncoder(
   encoder_info_.preferred_pixel_formats = {
       webrtc::VideoFrameBuffer::Type::kI420};
 
+  impl_initialized_ = false;
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
@@ -1858,7 +1996,8 @@ RTCVideoEncoder::~RTCVideoEncoder() {
   // |weak_this_| must be invalidated on |webrtc_sequence_checker_|.
   weak_this_factory_.InvalidateWeakPtrs();
 
-  Release();
+  ReleaseImpl();
+
   DCHECK(!impl_);
 
   // |encoder_metrics_provider_factory_| needs to be destroyed on the same
@@ -1866,6 +2005,49 @@ RTCVideoEncoder::~RTCVideoEncoder() {
   // it. It is gpu task runner in this case.
   gpu_task_runner_->ReleaseSoon(FROM_HERE,
                                 std::move(encoder_metrics_provider_factory_));
+}
+
+int32_t RTCVideoEncoder::DrainEncoderAndUpdateFrameSize(
+    const gfx::Size& input_visible_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
+
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+  base::WaitableEvent initialization_waiter(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  int32_t initialization_retval = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
+  {
+    int32_t drain_result;
+    base::WaitableEvent drain_waiter(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    PostCrossThreadTask(
+        *gpu_task_runner_.get(), FROM_HERE,
+        CrossThreadBindOnce(&RTCVideoEncoder::Impl::Drain, weak_impl_,
+                            SignaledValue(&drain_waiter, &drain_result)));
+    drain_waiter.Wait();
+    DVLOG(3) << __func__ << " Drain complete, status " << drain_result;
+
+    if (drain_result != WEBRTC_VIDEO_CODEC_OK &&
+        drain_result != WEBRTC_VIDEO_CODEC_UNINITIALIZED) {
+      return drain_result;
+    }
+  }
+
+  webrtc::VideoEncoder::RateControlParameters params;
+  if (pending_rate_params_.has_value()) {
+    params = pending_rate_params_.value();
+    pending_rate_params_.reset();
+  }
+  DVLOG(3) << __func__ << ": updating frame size on existing instance";
+  PostCrossThreadTask(
+      *gpu_task_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(
+          &RTCVideoEncoder::Impl::RequestEncodingParametersChangeWithSizeChange,
+          weak_impl_, params, input_visible_size,
+          SignaledValue(&initialization_waiter, &initialization_retval)));
+  initialization_waiter.Wait();
+  return initialization_retval;
 }
 
 bool RTCVideoEncoder::IsCodecInitializationPending() const {
@@ -1887,20 +2069,48 @@ int32_t RTCVideoEncoder::InitializeEncoder(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   int32_t initialization_retval = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
-  PostCrossThreadTask(
-      *gpu_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          &RTCVideoEncoder::Impl::CreateAndInitializeVEA, weak_impl_,
-          vea_config,
-          SignaledValue(&initialization_waiter, &initialization_retval)));
-  // webrtc::VideoEncoder expects this call to be synchronous.
-  initialization_waiter.Wait();
-  if (initialization_retval == WEBRTC_VIDEO_CODEC_OK) {
-    UMA_HISTOGRAM_TIMES("Media.RTCVideoEncoder.Initialize",
-                        base::TimeTicks::Now() - init_start);
+
+  if (!impl_initialized_) {
+    DVLOG(3) << __func__ << ": CreateAndInitializeVEA";
+    PostCrossThreadTask(
+        *gpu_task_runner_.get(), FROM_HERE,
+        CrossThreadBindOnce(
+            &RTCVideoEncoder::Impl::CreateAndInitializeVEA, weak_impl_,
+            vea_config,
+            SignaledValue(&initialization_waiter, &initialization_retval)));
+    // webrtc::VideoEncoder expects this call to be synchronous.
+    initialization_waiter.Wait();
+    if (initialization_retval == WEBRTC_VIDEO_CODEC_OK) {
+      UMA_HISTOGRAM_TIMES("WebRTC.RTCVideoEncoder.Initialize",
+                          base::TimeTicks::Now() - init_start);
+      impl_initialized_ = true;
+    }
+    RecordInitEncodeUMA(initialization_retval, profile_);
+  } else {
+    DCHECK(frame_size_change_supported_);
+    initialization_retval =
+        DrainEncoderAndUpdateFrameSize(vea_config.input_visible_size);
   }
-  RecordInitEncodeUMA(initialization_retval, profile_);
   return initialization_retval;
+}
+
+bool RTCVideoEncoder::CodecSettingsUsableForFrameSizeChange(
+    const webrtc::VideoCodec& codec_settings) const {
+  if (codec_settings.GetScalabilityMode() !=
+          codec_settings_.GetScalabilityMode() ||
+      codec_settings.GetFrameDropEnabled() !=
+          codec_settings_.GetFrameDropEnabled() ||
+      codec_settings.mode != codec_settings_.mode) {
+    return false;
+  }
+  if (codec_settings.codecType == webrtc::kVideoCodecVP9 &&
+      (codec_settings.VP9().numberOfTemporalLayers !=
+           codec_settings_.VP9().numberOfTemporalLayers ||
+       codec_settings.VP9().numberOfSpatialLayers !=
+           codec_settings_.VP9().numberOfSpatialLayers)) {
+    return false;
+  }
+  return true;
 }
 
 int32_t RTCVideoEncoder::InitEncode(
@@ -1914,8 +2124,14 @@ int32_t RTCVideoEncoder::InitEncode(
            << ", startBitrate=" << codec_settings->startBitrate;
 
   if (impl_) {
-    Release();
+    if (!impl_initialized_ || has_error_ || !frame_size_change_supported_ ||
+        !CodecSettingsUsableForFrameSizeChange(*codec_settings)) {
+      DVLOG(3) << __func__ << " ReleaseImpl";
+      ReleaseImpl();
+    }
   }
+
+  codec_settings_ = *codec_settings;
 
   // Several HW encoders are known to yield worse quality compared to SW
   // encoders for smaller resolutions such as 180p. (270p should also be a
@@ -2026,21 +2242,23 @@ int32_t RTCVideoEncoder::InitEncode(
         media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
   }
 
-  // base::Unretained(this) is safe because |impl_| is synchronously destroyed
-  // in Release() so that |impl_| does not call UpdateEncoderInfo() after this
-  // is destructed.
-  Impl::UpdateEncoderInfoCallback update_encoder_info_callback =
-      base::BindRepeating(&RTCVideoEncoder::UpdateEncoderInfo,
-                          base::Unretained(this));
-  base::RepeatingClosure execute_software_fallback =
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &RTCVideoEncoder::SetError, weak_this_, ++impl_id_));
+  if (!impl_) {
+    // base::Unretained(this) is safe because |impl_| is synchronously destroyed
+    // in Release() so that |impl_| does not call UpdateEncoderInfo() after this
+    // is destructed.
+    Impl::UpdateEncoderInfoCallback update_encoder_info_callback =
+        base::BindRepeating(&RTCVideoEncoder::UpdateEncoderInfo,
+                            base::Unretained(this));
+    base::RepeatingClosure execute_software_fallback =
+        base::BindPostTaskToCurrentDefault(base::BindRepeating(
+            &RTCVideoEncoder::SetError, weak_this_, ++impl_id_));
 
-  impl_ = std::make_unique<Impl>(
-      gpu_factories_, encoder_metrics_provider_factory_,
-      ProfileToWebRtcVideoCodecType(profile_),
-      codec_settings->GetScalabilityMode(), webrtc_content_type,
-      update_encoder_info_callback, execute_software_fallback, weak_impl_);
+    impl_ = std::make_unique<Impl>(
+        gpu_factories_, encoder_metrics_provider_factory_,
+        ProfileToWebRtcVideoCodecType(profile_),
+        codec_settings->GetScalabilityMode(), webrtc_content_type,
+        update_encoder_info_callback, execute_software_fallback, weak_impl_);
+  }
 
   media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
   auto storage_type =
@@ -2075,7 +2293,7 @@ int32_t RTCVideoEncoder::InitEncode(
     int32_t initialization_ret = InitializeEncoder(*vea_config_);
     vea_config_.reset();
     if (initialization_ret != WEBRTC_VIDEO_CODEC_OK) {
-      Release();
+      ReleaseImpl();
       CHECK(!impl_);
     }
     return initialization_ret;
@@ -2119,7 +2337,7 @@ int32_t RTCVideoEncoder::Encode(
     vea_config_.reset();
     if (initialization_val != WEBRTC_VIDEO_CODEC_OK) {
       SetError(impl_id_);
-      Release();
+      ReleaseImpl();
       CHECK(!impl_);
       pending_rate_params_.reset();
       return initialization_val;
@@ -2170,6 +2388,33 @@ int32_t RTCVideoEncoder::Release() {
   if (!impl_)
     return WEBRTC_VIDEO_CODEC_OK;
 
+  if (!frame_size_change_supported_ || !impl_initialized_ || has_error_) {
+    DVLOG(3) << __func__ << " ReleaseImpl";
+    ReleaseImpl();
+  } else {
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    int32_t suspend_result;
+    base::WaitableEvent suspend_waiter(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    PostCrossThreadTask(
+        *gpu_task_runner_.get(), FROM_HERE,
+        CrossThreadBindOnce(&RTCVideoEncoder::Impl::Suspend, weak_impl_,
+                            SignaledValue(&suspend_waiter, &suspend_result)));
+    suspend_waiter.Wait();
+    if (suspend_result != WEBRTC_VIDEO_CODEC_UNINITIALIZED) {
+      ReleaseImpl();
+    }
+  }
+
+  return WEBRTC_VIDEO_CODEC_OK;
+}
+
+void RTCVideoEncoder::ReleaseImpl() {
+  if (!impl_) {
+    return;
+  }
+
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   base::WaitableEvent release_waiter(
       base::WaitableEvent::ResetPolicy::MANUAL,
@@ -2189,8 +2434,7 @@ int32_t RTCVideoEncoder::Release() {
   // Calling reset() is optional, but it's good to invalidate the value of
   // |weak_impl_| too
   weak_impl_.reset();
-
-  return WEBRTC_VIDEO_CODEC_OK;
+  impl_initialized_ = false;
 }
 
 void RTCVideoEncoder::SetRates(
@@ -2265,6 +2509,9 @@ void RTCVideoEncoder::UpdateEncoderInfo(
   DCHECK(gpu_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock auto_lock(lock_);
 
+  frame_size_change_supported_ =
+      base::FeatureList::IsEnabled(features::kKeepEncoderInstanceOnRelease) &&
+      media_enc_info.supports_frame_size_change;
   encoder_info_.implementation_name = media_enc_info.implementation_name;
   encoder_info_.supports_native_handle = media_enc_info.supports_native_handle;
   encoder_info_.has_trusted_rate_controller =
@@ -2304,6 +2551,7 @@ void RTCVideoEncoder::SetError(uint32_t impl_id) {
   //  current impl_id_, which means it's requested by a released impl_.
   if (impl_id == impl_id_) {
     has_error_ = true;
+    impl_initialized_ = false;
   }
 
   if (error_callback_for_testing_)

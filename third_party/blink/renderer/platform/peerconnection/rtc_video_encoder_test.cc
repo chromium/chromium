@@ -45,6 +45,7 @@
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AtLeast;
+using ::testing::ByMove;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -521,6 +522,14 @@ class RTCVideoEncoderTest {
     client_->BitstreamBufferReady(
         0, media::BitstreamBufferMetadata(kDefaultEncodedPayloadSize,
                                           force_keyframe, frame->timestamp()));
+  }
+
+  void FlushComplete(media::VideoEncodeAccelerator::FlushCallback callback) {
+    std::move(callback).Run(true);
+  }
+
+  void FlushFailure(media::VideoEncodeAccelerator::FlushCallback callback) {
+    std::move(callback).Run(false);
   }
 
   void ReturnSVCLayerFrameWithVp9Metadata(
@@ -2482,6 +2491,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
   const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
   CreateEncoder(codec_type);
   webrtc::VideoCodec codec = GetDefaultCodec();
+
   if (!InitializeOnFirstFrameEnabled()) {
     ExpectCreateInitAndDestroyVEA();
   }
@@ -2717,6 +2727,423 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
 }
 #endif
 
+class RTCVideoEncoderFrameSizeChangeTest : public RTCVideoEncoderEncodeTest {
+ public:
+  RTCVideoEncoderFrameSizeChangeTest() {
+    frame_size_change_feature_list_.InitAndEnableFeature(
+        features::kKeepEncoderInstanceOnRelease);
+  }
+
+  void ExpectFrameSizeChange(const gfx::Size& expected_size) {
+    // potentially validate bitrate and framerate
+    EXPECT_CALL(*mock_vea_, RequestEncodingParametersChange(
+                                _, _, std::optional<gfx::Size>(expected_size)))
+        .WillOnce(Invoke([this, expected_size](
+                             const media::Bitrate& bitrate, uint32_t framerate,
+                             const std::optional<gfx::Size>& size) {
+          EXPECT_EQ(size, expected_size);
+          client_->RequireBitstreamBuffers(3, expected_size,
+                                           expected_size.GetArea());
+        }));
+    EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer).Times(AtLeast(3));
+  }
+
+  void SetUpEncodingWithFrameSizeChangeSupport(
+      const webrtc::VideoCodec& codec) {
+    if (!InitializeOnFirstFrameEnabled()) {
+      ExpectCreateInitAndDestroyVEA();
+    }
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+    if (!InitializeOnFirstFrameEnabled()) {
+      EXPECT_CALL(*mock_vea_, RequestEncodingParametersChange(
+                                  _, _, std::optional<gfx::Size>()));
+    }
+    webrtc::VideoBitrateAllocation bitrate_allocation;
+    bitrate_allocation.SetBitrate(1, 0, 500000);
+    rtc_encoder_->SetRates(webrtc::VideoEncoder::RateControlParameters(
+        bitrate_allocation, codec.maxFramerate));
+
+    if (!InitializeOnFirstFrameEnabled()) {
+      // report frame size change support
+      media::VideoEncoderInfo info;
+      info.supports_frame_size_change = true;
+      encoder_thread_.task_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &media::VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
+              base::Unretained(client_), info));
+    }
+    if (InitializeOnFirstFrameEnabled()) {
+      ExpectCreateInitAndDestroyVEA();
+      EXPECT_CALL(*mock_vea_, RequestEncodingParametersChange(
+                                  _, _, std::optional<gfx::Size>()));
+    }
+
+    for (int i = 0; i < kFramesToEncodeBeforeFrameSizeChange; i++) {
+      const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+          webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+      FillFrameBuffer(buffer);
+      std::vector<webrtc::VideoFrameType> frame_types;
+      frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+
+      webrtc::VideoFrame rtc_frame = webrtc::VideoFrame::Builder()
+                                         .set_video_frame_buffer(buffer)
+                                         .set_rtp_timestamp(i)
+                                         .set_timestamp_us(i)
+                                         .set_rotation(webrtc::kVideoRotation_0)
+                                         .build();
+      base::WaitableEvent event;
+      EXPECT_CALL(*mock_vea_, Encode)
+          .WillOnce(
+              Invoke([this, &event](scoped_refptr<media::VideoFrame> frame,
+                                    bool force_keyframe) {
+                client_->BitstreamBufferReady(
+                    0, media::BitstreamBufferMetadata(0, force_keyframe,
+                                                      frame->timestamp()));
+                event.Signal();
+              }));
+
+      EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+                rtc_encoder_->Encode(rtc_frame, &frame_types));
+      if (i == 0) {
+        if (InitializeOnFirstFrameEnabled()) {
+          // report frame size change support
+          media::VideoEncoderInfo info;
+          info.supports_frame_size_change = true;
+          encoder_thread_.task_runner()->PostTask(
+              FROM_HERE, base::BindOnce(&media::VideoEncodeAccelerator::Client::
+                                            NotifyEncoderInfoChange,
+                                        base::Unretained(client_), info));
+        }
+      }
+      event.Wait();
+    }
+  }
+
+  ~RTCVideoEncoderFrameSizeChangeTest() override = default;
+
+ protected:
+  const int kFramesToEncodeBeforeFrameSizeChange = 3;
+
+ private:
+  base::test::ScopedFeatureList frame_size_change_feature_list_;
+};
+
+TEST_P(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeSupported) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+  SetUpEncodingWithFrameSizeChangeSupport(codec);
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
+
+  codec.width *= 2;
+  codec.height *= 2;
+
+  if (!InitializeOnFirstFrameEnabled()) {
+    ExpectFrameSizeChange(gfx::Size(codec.width, codec.height));
+  }
+
+  EXPECT_CALL(*mock_vea_, Flush)
+      .WillOnce(Invoke(this, &RTCVideoEncoderTest::FlushComplete));
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  if (!InitializeOnFirstFrameEnabled()) {
+    EXPECT_CALL(*mock_vea_, RequestEncodingParametersChange(
+                                _, _, std::optional<gfx::Size>()));
+  }
+
+  webrtc::VideoBitrateAllocation bitrate_allocation;
+  bitrate_allocation.SetBitrate(1, 0, 500000);
+  rtc_encoder_->SetRates(webrtc::VideoEncoder::RateControlParameters(
+      bitrate_allocation, codec.maxFramerate));
+
+  if (InitializeOnFirstFrameEnabled()) {
+    ExpectFrameSizeChange(gfx::Size(codec.width, codec.height));
+  }
+
+  EXPECT_CALL(*mock_vea_, Encode)
+      .WillRepeatedly(Invoke(
+          [this](scoped_refptr<media::VideoFrame> frame, bool force_keyframe) {
+            client_->BitstreamBufferReady(
+                0, media::BitstreamBufferMetadata(0, force_keyframe,
+                                                  frame->timestamp()));
+          }));
+
+  for (int i = 0; i < 2; i++) {
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(codec.width, codec.height);
+    FillFrameBuffer(buffer);
+    std::vector<webrtc::VideoFrameType> frame_types;
+    if (i == 0) {
+      frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+    }
+
+    webrtc::VideoFrame rtc_frame = webrtc::VideoFrame::Builder()
+                                       .set_video_frame_buffer(buffer)
+                                       .set_rtp_timestamp(i + 3)
+                                       .set_timestamp_us(i + 3)
+                                       .set_rotation(webrtc::kVideoRotation_0)
+                                       .build();
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->Encode(rtc_frame, &frame_types));
+  }
+  RunUntilIdle();
+}
+
+TEST_P(RTCVideoEncoderFrameSizeChangeTest,
+       FrameSizeChangeSameSizeAfterSoftwareFallback) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+  SetUpEncodingWithFrameSizeChangeSupport(codec);
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
+
+  codec.width -= 1;
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  codec.width += 1;
+
+  if (!InitializeOnFirstFrameEnabled()) {
+    EXPECT_CALL(*mock_vea_, Flush)
+        .WillOnce(Invoke(this, &RTCVideoEncoderTest::FlushComplete));
+    EXPECT_CALL(*mock_vea_, RequestEncodingParametersChange(
+                                _, _, std::optional<gfx::Size>()))
+        .Times(AtLeast(1));
+  }
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  webrtc::VideoBitrateAllocation bitrate_allocation;
+  bitrate_allocation.SetBitrate(1, 0, 500000);
+  rtc_encoder_->SetRates(webrtc::VideoEncoder::RateControlParameters(
+      bitrate_allocation, codec.maxFramerate));
+
+  if (InitializeOnFirstFrameEnabled()) {
+    EXPECT_CALL(*mock_vea_, Flush)
+        .WillOnce(Invoke(this, &RTCVideoEncoderTest::FlushComplete));
+    EXPECT_CALL(*mock_vea_, RequestEncodingParametersChange(
+                                _, _, std::optional<gfx::Size>()))
+        .Times(AtLeast(1));
+  }
+
+  EXPECT_CALL(*mock_vea_, Encode)
+      .WillRepeatedly(Invoke(
+          [this](scoped_refptr<media::VideoFrame> frame, bool force_keyframe) {
+            client_->BitstreamBufferReady(
+                0, media::BitstreamBufferMetadata(0, force_keyframe,
+                                                  frame->timestamp()));
+          }));
+
+  for (int i = 0; i < 2; i++) {
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(codec.width, codec.height);
+    FillFrameBuffer(buffer);
+    std::vector<webrtc::VideoFrameType> frame_types;
+    if (i == 0) {
+      frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+    }
+
+    webrtc::VideoFrame rtc_frame =
+        webrtc::VideoFrame::Builder()
+            .set_video_frame_buffer(buffer)
+            .set_rtp_timestamp(i + kFramesToEncodeBeforeFrameSizeChange)
+            .set_timestamp_us(i + kFramesToEncodeBeforeFrameSizeChange)
+            .set_rotation(webrtc::kVideoRotation_0)
+            .build();
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->Encode(rtc_frame, &frame_types));
+  }
+
+  RunUntilIdle();
+}
+
+TEST_P(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeFlushFailure) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+  SetUpEncodingWithFrameSizeChangeSupport(codec);
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
+
+  if (!InitializeOnFirstFrameEnabled()) {
+    std::vector<webrtc::VideoFrameType> frame_types;
+    base::WaitableEvent error_waiter(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    rtc_encoder_->SetErrorWaiter(&error_waiter);
+
+    EXPECT_CALL(*mock_vea_, Flush)
+        .WillOnce(Invoke(this, &RTCVideoEncoderTest::FlushFailure));
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+              rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+    error_waiter.Wait();
+
+    auto encoder_metrics_provider =
+        std::make_unique<media::MockVideoEncoderMetricsProvider>();
+    EXPECT_CALL(*mock_encoder_metrics_provider_factory_,
+                CreateVideoEncoderMetricsProvider())
+        .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
+    SetUpEncodingWithFrameSizeChangeSupport(codec);
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
+
+  } else {
+    std::vector<webrtc::VideoFrameType> frame_types;
+    base::WaitableEvent error_waiter(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    rtc_encoder_->SetErrorWaiter(&error_waiter);
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+    EXPECT_CALL(*mock_vea_, Flush)
+        .WillOnce(Invoke(this, &RTCVideoEncoderTest::FlushFailure));
+
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+    FillFrameBuffer(buffer);
+
+    EXPECT_EQ(
+        WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+        rtc_encoder_->Encode(
+            webrtc::VideoFrame::Builder()
+                .set_video_frame_buffer(buffer)
+                .set_rtp_timestamp(kFramesToEncodeBeforeFrameSizeChange + 1)
+                .set_timestamp_us(kFramesToEncodeBeforeFrameSizeChange + 1)
+                .set_rotation(webrtc::kVideoRotation_0)
+                .build(),
+            &frame_types));
+    error_waiter.Wait();
+
+    auto encoder_metrics_provider =
+        std::make_unique<media::MockVideoEncoderMetricsProvider>();
+    EXPECT_CALL(*mock_encoder_metrics_provider_factory_,
+                CreateVideoEncoderMetricsProvider())
+        .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
+    SetUpEncodingWithFrameSizeChangeSupport(codec);
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
+  }
+
+  RunUntilIdle();
+}
+
+TEST_P(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeFailure) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+  SetUpEncodingWithFrameSizeChangeSupport(codec);
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
+
+  codec.width *= 2;
+  codec.height *= 2;
+
+  if (!InitializeOnFirstFrameEnabled()) {
+    std::vector<webrtc::VideoFrameType> frame_types;
+    base::WaitableEvent error_waiter(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    rtc_encoder_->SetErrorWaiter(&error_waiter);
+
+    EXPECT_CALL(*mock_vea_, Flush)
+        .WillOnce(Invoke(this, &RTCVideoEncoderTest::FlushComplete));
+    EXPECT_CALL(
+        *mock_vea_,
+        RequestEncodingParametersChange(
+            _, _,
+            std::optional<gfx::Size>(gfx::Size(codec.width, codec.height))))
+        .WillOnce(Invoke([this](const media::Bitrate&, uint32_t,
+                                const std::optional<gfx::Size>&) {
+          encoder_thread_.task_runner()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &media::VideoEncodeAccelerator::Client::NotifyErrorStatus,
+                  base::Unretained(client_),
+                  media::EncoderStatus::Codes::kSystemAPICallError));
+        }));
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+              rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+    error_waiter.Wait();
+
+    auto encoder_metrics_provider =
+        std::make_unique<media::MockVideoEncoderMetricsProvider>();
+    EXPECT_CALL(*mock_encoder_metrics_provider_factory_,
+                CreateVideoEncoderMetricsProvider())
+        .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
+    SetUpEncodingWithFrameSizeChangeSupport(codec);
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
+
+  } else {
+    std::vector<webrtc::VideoFrameType> frame_types;
+    base::WaitableEvent error_waiter(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    rtc_encoder_->SetErrorWaiter(&error_waiter);
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+    EXPECT_CALL(*mock_vea_, Flush)
+        .WillOnce(Invoke(this, &RTCVideoEncoderTest::FlushComplete));
+    EXPECT_CALL(
+        *mock_vea_,
+        RequestEncodingParametersChange(
+            _, _,
+            std::optional<gfx::Size>(gfx::Size(codec.width, codec.height))))
+        .WillOnce(Invoke([this](const media::Bitrate&, uint32_t,
+                                const std::optional<gfx::Size>&) {
+          encoder_thread_.task_runner()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &media::VideoEncodeAccelerator::Client::NotifyErrorStatus,
+                  base::Unretained(client_),
+                  media::EncoderStatus::Codes::kSystemAPICallError));
+        }));
+
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+    FillFrameBuffer(buffer);
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+              rtc_encoder_->Encode(
+                  webrtc::VideoFrame::Builder()
+                      .set_video_frame_buffer(buffer)
+                      .set_rtp_timestamp(kFramesToEncodeBeforeFrameSizeChange)
+                      .set_timestamp_us(kFramesToEncodeBeforeFrameSizeChange)
+                      .set_rotation(webrtc::kVideoRotation_0)
+                      .build(),
+                  &frame_types));
+    error_waiter.Wait();
+
+    auto encoder_metrics_provider =
+        std::make_unique<media::MockVideoEncoderMetricsProvider>();
+    EXPECT_CALL(*mock_encoder_metrics_provider_factory_,
+                CreateVideoEncoderMetricsProvider())
+        .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
+    SetUpEncodingWithFrameSizeChangeSupport(codec);
+
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
+  }
+}
+
 const RTCVideoEncoderEncodeTestParam kEncodeTestCases[] = {
     {false},
     {true},
@@ -2724,6 +3151,10 @@ const RTCVideoEncoderEncodeTestParam kEncodeTestCases[] = {
 
 INSTANTIATE_TEST_SUITE_P(InitTimingAndSyncAndAsynEncoding,
                          RTCVideoEncoderEncodeTest,
+                         ValuesIn(kEncodeTestCases));
+
+INSTANTIATE_TEST_SUITE_P(InitTimingAndSyncAndAsynEncoding,
+                         RTCVideoEncoderFrameSizeChangeTest,
                          ValuesIn(kEncodeTestCases));
 
 }  // namespace blink

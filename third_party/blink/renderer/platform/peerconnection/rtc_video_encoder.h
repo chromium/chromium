@@ -45,6 +45,7 @@ namespace blink {
 namespace features {
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kWebRtcScreenshareSwEncoding);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kForcingSoftwareIncludes360);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kKeepEncoderInstanceOnRelease);
 }
 
 // RTCVideoEncoder uses a media::VideoEncodeAccelerator to implement a
@@ -103,10 +104,18 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
       media::VideoEncoderInfo encoder_info,
       std::vector<webrtc::VideoFrameBuffer::Type> preferred_pixel_formats);
   void SetError(uint32_t impl_id);
+  void ReleaseImpl();
+
+  bool CodecSettingsUsableForFrameSizeChange(
+      const webrtc::VideoCodec& codec_settings) const;
+
+  int32_t DrainEncoderAndUpdateFrameSize(const gfx::Size& frame_size);
 
   const media::VideoCodecProfile profile_;
 
   const bool is_constrained_h264_;
+
+  webrtc::VideoCodec codec_settings_;
 
   // Factory for creating VEAs, shared memory buffers, etc.
   const raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
@@ -152,6 +161,9 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
 
   // This weak pointer is bound to |gpu_task_runner_|.
   base::WeakPtr<Impl> weak_impl_;
+
+  bool impl_initialized_;
+  bool frame_size_change_supported_{false};
 
   // |weak_this_| is bound to |webrtc_sequence_checker_|.
   base::WeakPtr<RTCVideoEncoder> weak_this_;
