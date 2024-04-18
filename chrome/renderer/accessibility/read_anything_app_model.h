@@ -103,6 +103,20 @@ class ReadAnythingAppModel {
     // TypeScript also store the node ids as a vector for easier retrieval.
     std::vector<ui::AXNodeID> node_ids;
 
+    // Map of text start and end indices of text to a specific AXNodeID.
+    // The text for a given segment may span multiple AXNodes, such as
+    // Node 1: This is a
+    // Node 2: link
+    // Node 3: in a separate node.
+    // which is presented as a single segment when using sentence granularity.
+    // However, when we get word callbacks, we get them in terms of the text
+    // index across the entire segment of text, not by node. Therefore, this
+    // mapping helps us better parse callbacks for different types of
+    // granularity highlighting.
+    // TODO(b/40927698): Investigate using this to replace
+    // highlightedNodeToOffsetInParent in app.ts
+    std::map<std::pair<int, int>, ui::AXNodeID> index_map;
+
     // The human readable text represented by this segment of node ids. This
     // is stored separately for easier retrieval for non-sentence granularity
     // highlighting.
@@ -278,6 +292,17 @@ class ReadAnythingAppModel {
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).
   int GetNextSentence(const std::u16string& text);
+
+  // Given a text index for the current granularity, return the AXNodeID for
+  // that part of the text.
+  // For example, if a current granularity segment has text:
+  // "Hello darkness, my old friend."
+  // Composed of nodes:
+  // Node: {id: 113, text: "Hello darkness, "}
+  // Node: {id: 207, text: "my old friend."}
+  // Then GetNodeIdForCurrentSegmentIndex for index=0-16 will return "113"
+  // and for index=17-29 will return "207"
+  ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index) const;
 
   // PDF handling.
   void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }

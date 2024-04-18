@@ -1347,8 +1347,12 @@ ReadAnythingAppModel::GetNextNodes() {
         segment.text_start = 0;
         segment.text_end = index_in_new_node;
         current_granularity.AddSegment(segment);
+        int current_text_length = current_granularity.text.length();
         current_granularity.text +=
             anchor_node->GetTextContentUTF16().substr(0, index_in_new_node);
+        current_granularity.index_map.insert(
+            {{current_text_length, current_granularity.text.length()},
+             segment.id});
         current_text_index_ = index_in_new_node;
         if (current_text_index_ != (int)base_text.length()) {
           // If we're in the middle of the node, there's no need to attempt
@@ -1386,8 +1390,11 @@ ReadAnythingAppModel::GetNextNodes() {
     segment.text_start = start_index;
     segment.text_end = new_current_text_index;
     current_granularity.AddSegment(segment);
+    int current_text_length = current_granularity.text.length();
     current_granularity.text += anchor_node->GetTextContentUTF16().substr(
         start_index, current_text_index_ - start_index);
+    current_granularity.index_map.insert(
+        {{current_text_length, current_granularity.text.length()}, segment.id});
 
     // After adding the most recent granularity segment, if we're not at the
     //  end of the node, the current nodes can be returned, as we know there's
@@ -1606,4 +1613,28 @@ bool ReadAnythingAppModel::ArePositionsEqual(
   return position->GetAnchor() && other->GetAnchor() &&
          (position->CompareTo(*other).value_or(-1) == 0) &&
          (position->text_offset() == other->text_offset());
+}
+
+ui::AXNodeID ReadAnythingAppModel::GetNodeIdForCurrentSegmentIndex(
+    int index) const {
+  // If the granularity index isn't valid, return an invalid id.
+  if (processed_granularity_index_ >=
+      processed_granularities_on_current_page_.size()) {
+    return ui::kInvalidAXNodeID;
+  }
+
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+      processed_granularities_on_current_page_[processed_granularity_index_];
+  std::map<std::pair<int, int>, ui::AXNodeID> index_map =
+      current_granularity.index_map;
+  for (const auto& [range, id] : index_map) {
+    if (range.first <= index && range.second >= index) {
+      // If the given index is within a range, return the associated node id.
+      return id;
+    }
+  }
+
+  // If the index isn't part of the current granularity's ranges, return an
+  // invalid id.
+  return ui::kInvalidAXNodeID;
 }

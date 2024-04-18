@@ -244,6 +244,23 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     return model_->GetNextSentence(text);
   }
 
+  ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index) {
+    ui::AXNodeID id = model_->GetNodeIdForCurrentSegmentIndex(index);
+    return id;
+  }
+
+  std::vector<ui::AXNodeID> GetCurrentText() {
+    return model_->GetCurrentText();
+  }
+
+  void MovePositionToNextGranularity() {
+    return model_->MovePositionToNextGranularity();
+  }
+
+  void MovePositionToPreviousGranularity() {
+    return model_->MovePositionToPreviousGranularity();
+  }
+
   int GetCurrentTextStartIndex(ui::AXNodeID id) {
     return model_->GetCurrentTextStartIndex(id);
   }
@@ -1738,4 +1755,204 @@ TEST_F(
   // should correctly return the next node in the tree.
   new_position = GetNextNodePosition(current_granularity);
   EXPECT_EQ(new_position->anchor_id(), static_text2.id);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetNodeIdForCurrentSegmentIndex_ReturnsCorrectNodes) {
+  std::u16string sentence1 = u"Never feel heavy ";
+  std::u16string sentence2 = u"or earthbound, ";
+  std::u16string sentence3 = u"no worries or doubts interfere.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities,
+  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(1), ui::kInvalidAXNodeID);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 3);
+
+  // Spot check that indices 0->sentence1.length() map to the first node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
+            static_text1.id);
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() + 1),
+            static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(26), static_text2.id);
+  EXPECT_EQ(
+      GetNodeIdForCurrentSegmentIndex(sentence1.length() + sentence2.length()),
+      static_text2.id);
+
+  // Spot check that indices in sentence 3 map to the third node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
+                                            sentence2.length() + 1),
+            static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(40), static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(
+                sentence1.length() + sentence2.length() + sentence3.length()),
+            static_text3.id);
+
+  // Out-of-bounds nodes return invalid.
+  EXPECT_EQ(
+      GetNodeIdForCurrentSegmentIndex(sentence1.length() + sentence2.length() +
+                                      sentence3.length() + 1),
+      ui::kInvalidAXNodeID);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(535), ui::kInvalidAXNodeID);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(-10), ui::kInvalidAXNodeID);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetNodeIdForCurrentSegmentIndex_AfterNext_ReturnsCorrectNodes) {
+  std::u16string sentence1 = u"Never feel heavy or earthbound. ";
+  std::u16string sentence2 = u"No worries or doubts ";
+  std::u16string sentence3 = u"interfere.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities,
+  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(1), ui::kInvalidAXNodeID);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Spot check that indices 0->sentence1.length() map to the first node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
+            static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() + 1),
+            ui::kInvalidAXNodeID);
+
+  // Move to the next granularity.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 2);
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length()),
+            static_text2.id);
+
+  // Spot check that indices in sentence 3 map to the third node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() + 1),
+            static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(27), static_text3.id);
+  EXPECT_EQ(
+      GetNodeIdForCurrentSegmentIndex(sentence2.length() + sentence3.length()),
+      static_text3.id);
+
+  // Out-of-bounds nodes return invalid.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() +
+                                            sentence3.length() + 1),
+            ui::kInvalidAXNodeID);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetNodeIdForCurrentSegmentIndex_AfterPrevious_ReturnsCorrectNodes) {
+  std::u16string sentence1 = u"There's nothing but you ";
+  std::u16string sentence2 = u"looking down on the view from up here. ";
+  std::u16string sentence3 = u"Stretch out with the wind behind you.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities,
+  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(1), ui::kInvalidAXNodeID);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 2);
+
+  // Move forward.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Spot check that indices 0->sentence3.length() map to the third node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence3.length()),
+            static_text3.id);
+
+  // Move backwards.
+  MovePositionToPreviousGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 2);
+
+  // Spot check that indices in sentence 1 map to the first node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(6), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
+            static_text1.id);
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() + 1),
+            static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(27), static_text2.id);
+  EXPECT_EQ(
+      GetNodeIdForCurrentSegmentIndex(sentence1.length() + sentence2.length()),
+      static_text2.id);
+
+  // Out-of-bounds nodes return invalid.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
+                                            sentence2.length() + 1),
+            ui::kInvalidAXNodeID);
 }
