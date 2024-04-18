@@ -149,7 +149,7 @@ class SyncWaiter : public WaitableEvent::Waiter {
 
  private:
   bool fired_;
-  WaitableEvent* signaling_event_;  // The WaitableEvent which woke us
+  WaitableEvent* signaling_event_ = nullptr;  // The WaitableEvent which woke us
   base::Lock lock_;
   base::ConditionVariable cv_;
 };

@@ -31,7 +31,7 @@ struct WorkQueueAndTaskOrder {
   WorkQueueAndTaskOrder(WorkQueue& work_queue, const TaskOrder& task_order)
       : queue(&work_queue), order(task_order) {}
 
-  WorkQueue* queue;
+  WorkQueue* queue = nullptr;
   TaskOrder order;
 };
 

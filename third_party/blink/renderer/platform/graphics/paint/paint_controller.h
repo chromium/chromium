@@ -62,7 +62,7 @@ struct FrameFirstPaint {
         text_painted(false),
         image_painted(false) {}
 
-  const void* frame;
+  const void* frame = nullptr;
   bool first_painted : 1;
   bool text_painted : 1;
   bool image_painted : 1;
