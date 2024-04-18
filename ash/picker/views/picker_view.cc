@@ -208,6 +208,15 @@ void PickerView::RemovedFromWidget() {
   performance_metrics_.StopRecording();
 }
 
+void PickerView::SelectZeroStateCategory(PickerCategory category) {
+  SelectCategory(category);
+}
+
+void PickerView::SelectSuggestedZeroStateResult(
+    const PickerSearchResult& result) {
+  SelectSearchResult(result);
+}
+
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                       PickerLayoutType layout_type) {
   return GetPickerViewBounds(anchor_bounds, layout_type, size(),
@@ -345,16 +354,13 @@ void PickerView::AddContentsView(PickerLayoutType layout_type) {
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
 
-  // `base::Unretained` is safe here because this class owns
-  // `zero_state_view_`, `category_view_` and `search_results_view`_.
   zero_state_view_ =
       contents_view_->AddPage(std::make_unique<PickerZeroStateView>(
-          delegate_->GetAvailableCategories(),
-          delegate_->ShouldShowSuggestedResults(), kPickerSize.width(),
-          base::BindRepeating(&PickerView::SelectCategory,
-                              base::Unretained(this)),
-          base::BindRepeating(&PickerView::SelectSearchResult,
-                              base::Unretained(this))));
+          this, delegate_->GetAvailableCategories(),
+          delegate_->ShouldShowSuggestedResults(), kPickerSize.width()));
+
+  // `base::Unretained` is safe here because this class owns
+  // `zero_state_view_`, `category_view_` and `search_results_view`_.
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
       kPickerSize.width(),
       base::BindOnce(&PickerView::SelectSearchResult, base::Unretained(this)),

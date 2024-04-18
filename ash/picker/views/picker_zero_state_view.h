@@ -29,25 +29,17 @@ class PickerClipboardProvider;
 class PickerSearchResult;
 class PickerSectionListView;
 class PickerSectionView;
+class PickerZeroStateViewDelegate;
 
 class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   METADATA_HEADER(PickerZeroStateView, PickerPageView)
 
  public:
-  // Indicates the user has selected a category.
-  using SelectCategoryCallback =
-      base::RepeatingCallback<void(PickerCategory category)>;
-
-  // Indicates the user has selected a result.
-  using SelectSearchResultCallback =
-      base::RepeatingCallback<void(const PickerSearchResult& result)>;
-
   explicit PickerZeroStateView(
+      PickerZeroStateViewDelegate* delegate,
       base::span<const PickerCategory> available_categories,
       bool show_suggested_results,
-      int picker_view_width,
-      SelectCategoryCallback select_category_callback,
-      SelectSearchResultCallback select_result_callback);
+      int picker_view_width);
   PickerZeroStateView(const PickerZeroStateView&) = delete;
   PickerZeroStateView& operator=(const PickerZeroStateView&) = delete;
   ~PickerZeroStateView() override;
@@ -70,6 +62,9 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   }
 
  private:
+  void OnCategorySelected(PickerCategory category);
+  void OnSuggestedResultSelected(const PickerSearchResult& result);
+
   // Gets or creates the section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
 
@@ -79,7 +74,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   void OnFetchSuggestedResults(std::vector<PickerSearchResult> result);
 
-  SelectSearchResultCallback select_result_callback_;
+  raw_ptr<PickerZeroStateViewDelegate> delegate_;
 
   // The section list view, contains the section views.
   raw_ptr<PickerSectionListView> section_list_view_ = nullptr;

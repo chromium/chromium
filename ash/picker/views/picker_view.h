@@ -12,6 +12,7 @@
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/picker/views/picker_zero_state_view_delegate.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "base/memory/weak_ptr.h"
@@ -39,7 +40,8 @@ class PickerCategoryView;
 class SystemShadow;
 
 // View for the Picker widget.
-class ASH_EXPORT PickerView : public views::WidgetDelegateView {
+class ASH_EXPORT PickerView : public views::WidgetDelegateView,
+                              public PickerZeroStateViewDelegate {
   METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
  public:
@@ -62,6 +64,11 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
       views::Widget* widget) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+
+  // PickerZeroStateViewDelegate:
+  void SelectZeroStateCategory(PickerCategory category) override;
+  void SelectSuggestedZeroStateResult(
+      const PickerSearchResult& result) override;
 
   // Returns the target bounds for this Picker view. The target bounds try to
   // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`

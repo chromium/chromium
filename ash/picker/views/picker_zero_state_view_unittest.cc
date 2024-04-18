@@ -13,6 +13,7 @@
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_zero_state_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/style/ash_color_provider.h"
@@ -30,13 +31,16 @@
 namespace ash {
 namespace {
 
+using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Key;
 using ::testing::Not;
 using ::testing::Property;
+using ::testing::VariantWith;
 
 constexpr int kPickerWidth = 320;
 
@@ -51,14 +55,23 @@ constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
     PickerCategory::kUnitsMaths,
 }};
 
+class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
+ public:
+  MOCK_METHOD(void, SelectZeroStateCategory, (PickerCategory), (override));
+  MOCK_METHOD(void,
+              SelectSuggestedZeroStateResult,
+              (const PickerSearchResult&),
+              (override));
+};
+
 class PickerZeroStateViewTest : public views::ViewsTestBase {
  private:
   AshColorProvider ash_color_provider_;
 };
 
 TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
-  PickerZeroStateView view(kAllCategories, true, kPickerWidth,
-                           base::DoNothing(), base::DoNothing());
+  MockZeroStateViewDelegate mock_delegate;
+  PickerZeroStateView view(&mock_delegate, kAllCategories, true, kPickerWidth);
 
   EXPECT_THAT(view.section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kEditors),
@@ -70,10 +83,10 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
 TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   widget->SetFullscreen(true);
-  base::test::TestFuture<PickerCategory> future;
+  MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      std::vector<PickerCategory>{PickerCategory::kExpressions}, false,
-      kPickerWidth, future.GetRepeatingCallback(), base::DoNothing()));
+      &mock_delegate, std::vector<PickerCategory>{PickerCategory::kExpressions},
+      false, kPickerWidth));
   widget->Show();
   ASSERT_THAT(view->section_views_for_testing(),
               Contains(Key(PickerCategoryType::kGeneral)));
@@ -82,13 +95,15 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
                   ->second->item_views_for_testing(),
               Not(IsEmpty()));
 
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateCategory(PickerCategory::kExpressions))
+      .Times(1);
+
   PickerItemView* category_view = view->section_views_for_testing()
                                       .find(PickerCategoryType::kGeneral)
                                       ->second->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(category_view);
   LeftClickOn(*category_view);
-
-  EXPECT_EQ(future.Get(), PickerCategory::kExpressions);
 }
 
 TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
@@ -110,23 +125,31 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   widget->SetFullscreen(true);
   base::test::TestFuture<const PickerSearchResult&> future;
+  MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kAllCategories, true, kPickerWidth, base::DoNothing(),
-      future.GetRepeatingCallback()));
+      &mock_delegate, kAllCategories, true, kPickerWidth));
   widget->Show();
 
-  EXPECT_THAT(view->SuggestedSectionForTesting(), Not(IsNull()));
+  EXPECT_CALL(
+      mock_delegate,
+      SelectSuggestedZeroStateResult(Property(
+          "data", &ash::PickerSearchResult::data,
+          VariantWith<ash::PickerSearchResult::ClipboardData>(AllOf(
+              Field("item_id", &ash::PickerSearchResult::ClipboardData::item_id,
+                    item_id),
+              Field("display_format",
+                    &ash::PickerSearchResult::ClipboardData::display_format,
+                    PickerSearchResult::ClipboardData::DisplayFormat::kText),
+              Field("display_text",
+                    &ash::PickerSearchResult::ClipboardData::display_text,
+                    u"test"))))))
+      .Times(1);
+
+  ASSERT_THAT(view->SuggestedSectionForTesting(), Not(IsNull()));
   PickerItemView* item_view =
       view->SuggestedSectionForTesting()->item_views_for_testing()[0];
-
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
-
-  EXPECT_EQ(
-      future.Get(),
-      PickerSearchResult::Clipboard(
-          item_id, PickerSearchResult::ClipboardData::DisplayFormat::kText,
-          u"test", /*display_image=*/{}));
 }
 
 TEST_F(PickerZeroStateViewTest, HidesSuggestedSectionWhenNoItemsToDisplay) {
@@ -139,9 +162,9 @@ TEST_F(PickerZeroStateViewTest, HidesSuggestedSectionWhenNoItemsToDisplay) {
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   widget->SetFullscreen(true);
+  MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kAllCategories, true, kPickerWidth, base::DoNothing(),
-      base::DoNothing()));
+      &mock_delegate, kAllCategories, true, kPickerWidth));
   widget->Show();
 
   EXPECT_THAT(view->SuggestedSectionForTesting(), IsNull());
@@ -150,9 +173,9 @@ TEST_F(PickerZeroStateViewTest, HidesSuggestedSectionWhenNoItemsToDisplay) {
 TEST_F(PickerZeroStateViewTest, DoesntShowClipboardItems) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   widget->SetFullscreen(true);
+  MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kAllCategories, false, kPickerWidth, base::DoNothing(),
-      base::DoNothing()));
+      &mock_delegate, kAllCategories, false, kPickerWidth));
   widget->Show();
 
   EXPECT_THAT(view->SuggestedSectionForTesting(), IsNull());
