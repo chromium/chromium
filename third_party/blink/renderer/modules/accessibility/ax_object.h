@@ -267,7 +267,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 #if DCHECK_IS_ON()
   bool is_initializing_ = false;
   bool is_computing_role_ = false;
-  mutable bool is_updating_cached_values_ = false;
+  bool is_updating_cached_values_ = false;
 #endif
 #if !defined(NDEBUG)
   // Keep track of what the object used to be, to make it easier to debug
@@ -306,8 +306,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // AXObjectCacheImpl::UpdateTreeIfNeeded. It does not directly indicate
   // whether children, parent or other pointers are actually out of date; there
   // are other dirty bits such as children_dirty_ for that.
-  void SetAncestorsHaveDirtyDescendants() const;
-  void SetHasDirtyDescendants(bool dirty) const;
+  void SetAncestorsHaveDirtyDescendants();
+  void SetHasDirtyDescendants(bool dirty);
   bool HasDirtyDescendants() const { return has_dirty_descendants_; }
 
   // When the corresponding WebCore object that this AXObject
@@ -322,7 +322,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // tree status changes. Use |notify_parent_of_ignored_changes = false| to
   // prevent this.
   void UpdateCachedAttributeValuesIfNeeded(
-      bool notify_parent_of_ignored_changes = true) const;
+      bool notify_parent_of_ignored_changes = true);
 
   // Invalidates cached_* members on this object only by resetting the
   // modification count.
@@ -500,16 +500,20 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool CanSetValueAttribute() const;
 
   // Is the element focusable?
-  bool CanSetFocusAttribute() const;
+  bool CanSetFocusAttribute() const { return cached_can_set_focus_attribute_; }
+  bool CanSetFocusAttribute();
   // Is the element in the tab order?
   bool IsKeyboardFocusable() const;
 
   // Whether objects are ignored, i.e. hidden from the AT.
-  bool AccessibilityIsIgnored() const;
+  bool AccessibilityIsIgnored() const { return cached_is_ignored_; }
+  bool AccessibilityIsIgnored();
   // Whether objects are ignored but included in the tree.
   bool AccessibilityIsIgnoredButIncludedInTree() const;
+  bool AccessibilityIsIgnoredButIncludedInTree();
   // Is visibility:hidden or display:none being used to hide this element.
-  bool IsHiddenViaStyle() const;
+  bool IsHiddenViaStyle() const { return cached_is_hidden_via_style_; }
+  bool IsHiddenViaStyle();
   // Whether this is part of the label or description for another element.
   // This is used to ensure hidden objects are included in the tree, and the
   // implementation currently only ensures that an element's ancestor was part
@@ -517,10 +521,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // the relation cache does not bother clear old aria-labelledby/describedby
   // ids. However, for purposes of preventing too many hidden objects from being
   // serialized, it works well.
-  bool IsUsedForLabelOrDescription() const;
-  bool CachedIsUsedForLabelOrDescription() const {
+  bool IsUsedForLabelOrDescription() const {
     return cached_is_used_for_label_or_description_;
   }
+  bool IsUsedForLabelOrDescription();
 
   // Whether objects are included in the tree. Nodes that are included in the
   // tree are serialized, even if they are ignored. This allows browser-side
@@ -531,22 +535,28 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   typedef HeapVector<IgnoredReason> IgnoredReasons;
   virtual bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const;
   bool ShouldIgnoreForHiddenOrInert(IgnoredReasons* = nullptr) const;
-  bool IsInert() const;
-  bool IsAriaHidden() const;
-  bool IsHiddenByChildTree() const;
-  bool CachedIsAriaHidden() { return cached_is_aria_hidden_; }
+  bool IsInert() const { return cached_is_inert_; }
+  bool IsInert();
+  bool IsAriaHidden() const { return cached_is_aria_hidden_; }
+  bool IsAriaHidden();
+  bool IsHiddenByChildTree() const { return cached_is_hidden_by_child_tree_; }
+  bool IsHiddenByChildTree();
   const AXObject* AriaHiddenRoot() const;
   bool ComputeIsInert(IgnoredReasons* = nullptr) const;
   bool ComputeIsAriaHidden(IgnoredReasons* = nullptr) const;
   // Determines if the object is hidden because a child tree has been stitched
   // into one of its ancestor objects.
-  bool ComputeIsHiddenByChildTree(IgnoredReasons* = nullptr) const;
+  bool ComputeIsHiddenByChildTree(IgnoredReasons* = nullptr);
   bool IsBlockedByAriaModalDialog(IgnoredReasons* = nullptr) const;
-  bool IsDescendantOfDisabledNode() const;
-  bool ComputeAccessibilityIsIgnoredButIncludedInTree() const;
+  bool IsDescendantOfDisabledNode() const {
+    return cached_is_descendant_of_disabled_node_;
+  }
+  bool IsDescendantOfDisabledNode();
+  bool ComputeAccessibilityIsIgnoredButIncludedInTree();
   const AXObject* GetAtomicTextFieldAncestor(int max_levels_to_check = 3) const;
   const AXObject* DatetimeAncestor() const;
-  bool ComputeIsDescendantOfDisabledNode() const;
+  bool ComputeIsDescendantOfDisabledNode();
+  // TODO(accessibility): Remove these.
   bool LastKnownIsIgnoredValue() const;
   bool LastKnownIsIgnoredButIncludedInTreeValue() const;
   bool LastKnownIsIncludedInTreeValue() const;
@@ -967,7 +977,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // ARIA live-region features.
   bool IsLiveRegionRoot() const;  // Any live region, including polite="off".
   bool IsActiveLiveRegionRoot() const;  // Live region that is not polite="off".
-  AXObject* LiveRegionRoot() const;  // Container that controls live politeness.
+  // Containing element that controls aria-live properties.
+  AXObject* LiveRegionRoot() const { return cached_live_region_root_; }
+  AXObject* LiveRegionRoot();
   virtual const AtomicString& LiveRegionStatus() const;
   virtual const AtomicString& LiveRegionRelevant() const;
   bool LiveRegionAtomic() const;
@@ -1184,7 +1196,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Sets the parent AXObject directly. If the parent of this object is known,
   // this can be faster than using ComputeParent().
-  void SetParent(AXObject* new_parent) const;
+  void SetParent(AXObject* new_parent);
 
   // If parent was not initialized during AddChildren() it can be computed by
   // walking the DOM (or layout for nodeless aka anonymous layout object).
@@ -1294,8 +1306,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool CanHaveChildren() const { return true; }
   void UpdateChildrenIfNecessary();
   bool NeedsToUpdateChildren() const;
-  virtual void SetNeedsToUpdateChildren(bool update = true) const;
-  virtual void ClearChildren() const;
+  virtual void SetNeedsToUpdateChildren(bool update = true);
+  virtual void ClearChildren();
   void DetachFromParent();
   virtual void SelectedOptions(AXObjectVector&) const {}
 
@@ -1458,10 +1470,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
  protected:
   AXID id_;
   // Any parent, regardless of whether it's ignored or not included in the tree.
-  mutable Member<AXObject> parent_;
+  Member<AXObject> parent_;
   // Only children that are included in tree, maybe rename to children_in_tree_.
-  mutable AXObjectVector children_;
-  mutable bool has_dirty_descendants_ = false;
+  AXObjectVector children_;
+  bool has_dirty_descendants_ = false;
 
   // The final role, taking into account the ARIA role and native role.
   ax::mojom::blink::Role role_;
@@ -1552,17 +1564,17 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
       ui::AXNodeData* node_data) const;
 
  private:
-  bool ComputeCanSetFocusAttribute() const;
+  bool ComputeCanSetFocusAttribute();
   String KeyboardShortcut() const;
   void UpdateStyleAndLayoutTreeForNode(Node& node);
-  void OnInheritedCachedValuesChanged() const;
+  void OnInheritedCachedValuesChanged();
 
-  mutable bool children_dirty_ : 1 = false;
+  bool children_dirty_ : 1 = false;
 
   // Do the rest of the cached_* member variables need to be recomputed?
-  mutable bool cached_values_need_update_ : 1 = true;
+  bool cached_values_need_update_ : 1 = true;
   // Do children need to recompute their cached values?
-  mutable bool child_cached_values_need_update_ : 1 = false;
+  bool child_cached_values_need_update_ : 1 = false;
 
   // The following cached attribute values (the ones starting with cached_**)
   // are only valid if cached_values_need_update_ is false.
@@ -1570,18 +1582,18 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // not included in the tree), so that if object becomes included in Init()
   // or in a future page update, the included node count will be incremented via
   // AXObjectCacheImpl::UpdateIncludedNodeCount().
-  mutable bool cached_is_ignored_ : 1 = true;
-  mutable bool cached_is_ignored_but_included_in_tree_ : 1 = false;
-  mutable bool cached_is_inert_ : 1 = false;
-  mutable bool cached_is_aria_hidden_ : 1 = false;
-  mutable bool cached_is_hidden_by_child_tree_ : 1 = false;
-  mutable bool cached_is_hidden_via_style_ : 1 = false;
-  mutable bool cached_is_used_for_label_or_description_ : 1;
-  mutable bool cached_is_descendant_of_disabled_node_ : 1 = false;
-  mutable bool cached_can_set_focus_attribute_ : 1 = false;
+  bool cached_is_ignored_ : 1 = true;
+  bool cached_is_ignored_but_included_in_tree_ : 1 = false;
+  bool cached_is_inert_ : 1 = false;
+  bool cached_is_aria_hidden_ : 1 = false;
+  bool cached_is_hidden_by_child_tree_ : 1 = false;
+  bool cached_is_hidden_via_style_ : 1 = false;
+  bool cached_is_used_for_label_or_description_ : 1;
+  bool cached_is_descendant_of_disabled_node_ : 1 = false;
+  bool cached_can_set_focus_attribute_ : 1 = false;
 
-  mutable Member<AXObject> cached_live_region_root_;
-  mutable gfx::RectF cached_local_bounding_box_rect_for_accessibility_;
+  Member<AXObject> cached_live_region_root_;
+  gfx::RectF cached_local_bounding_box_rect_for_accessibility_;
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 
@@ -1593,8 +1605,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   unsigned ComputeAriaColumnIndex() const;
   unsigned ComputeAriaRowIndex() const;
   const ComputedStyle* GetComputedStyle() const;
-  bool ComputeIsHiddenViaStyle(const ComputedStyle*) const;
-  bool ComputeIsUsedForLabelOrDescription() const;
+  bool ComputeIsHiddenViaStyle(const ComputedStyle*);
+  bool ComputeIsUsedForLabelOrDescription();
   bool ComputeIsInertViaStyle(const ComputedStyle*,
                               IgnoredReasons* = nullptr) const;
 

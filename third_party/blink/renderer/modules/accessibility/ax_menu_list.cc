@@ -109,7 +109,7 @@ void AXMenuList::ChildrenChangedWithCleanLayout() {
   AXNodeObject::ChildrenChangedWithCleanLayout();
 }
 
-void AXMenuList::SetNeedsToUpdateChildren(bool update) const {
+void AXMenuList::SetNeedsToUpdateChildren(bool update) {
   if (!update) {
     AXNodeObject::SetNeedsToUpdateChildren(false);
     return;
@@ -125,7 +125,7 @@ void AXMenuList::SetNeedsToUpdateChildren(bool update) const {
   AXNodeObject::SetNeedsToUpdateChildren();
 }
 
-void AXMenuList::ClearChildren() const {
+void AXMenuList::ClearChildren() {
   if (popup_) {
     popup_->ClearChildren();
   }

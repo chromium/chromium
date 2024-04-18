@@ -72,7 +72,7 @@ class AXInlineTextBox final : public AXObject {
     NOTREACHED();
     return ax::mojom::blink::Role::kInlineTextBox;
   }
-  void ClearChildren() const override;
+  void ClearChildren() override;
   AbstractInlineTextBox* GetInlineTextBox() const override;
 
  protected:

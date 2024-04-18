@@ -1051,7 +1051,7 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
           ContainerListMarkerIncludingIgnored();
       if (list_marker_object &&
           (list_marker_object->GetLayoutObject()->IsListMarkerForSummary() ||
-           !list_marker_object->AccessibilityIsIgnored())) {
+           !list_marker_object->LastKnownIsIgnoredValue())) {
         if (ignored_reasons) {
           ignored_reasons->push_back(IgnoredReason(kAXPresentational));
         }
@@ -1064,8 +1064,8 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
     // This means that other interesting objects inside the <label> will
     // cause the text to be unignored.
     if (IsUsedForLabelOrDescription()) {
-      AXObject* ancestor = ParentObject();
-      while (ancestor && ancestor->AccessibilityIsIgnored()) {
+      const AXObject* ancestor = ParentObject();
+      while (ancestor && ancestor->LastKnownIsIgnoredValue()) {
         if (ancestor->RoleValue() == ax::mojom::blink::Role::kLabelText) {
           if (ignored_reasons) {
             ignored_reasons->push_back(IgnoredReason(kAXPresentational));
@@ -4816,10 +4816,7 @@ String AXNodeObject::TextFromDescendants(
   ax::mojom::blink::NameFrom last_used_name_from =
       ax::mojom::blink::NameFrom::kNone;
 
-  // Ensure that if this node needs to invalidate its children (e.g. due to
-  // included in tree status change), that we do it now, rather than while
-  // traversing the children.
-  UpdateCachedAttributeValuesIfNeeded();
+  CHECK(!NeedsToUpdateCachedValues());
 
   const AXObjectVector& children = ChildrenIncludingIgnored();
 #if defined(AX_FAIL_FAST_BUILD)

@@ -46,8 +46,8 @@ class AXMenuList final : public AXNodeObject {
   AccessibilityExpanded IsExpanded() const final;
   bool OnNativeClickAction() override;
   void ChildrenChangedWithCleanLayout() override;
-  void SetNeedsToUpdateChildren(bool update = true) const override;
-  void ClearChildren() const override;
+  void SetNeedsToUpdateChildren(bool update = true) override;
+  void ClearChildren() override;
   void Detach() override;
 
   void DidUpdateActiveOption();

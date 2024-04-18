@@ -1661,32 +1661,6 @@ TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
       GetAXObjectByElementId("a-hidden-inert")->CanSetFocusAttribute());
 }
 
-TEST_F(AccessibilityTest, GetParentNodeForComputeParent) {
-  SetBodyInnerHTML(
-      R"HTML(<img usemap="#map"><map name="map"><area id="area"
-      shape="rect" coords="0,0,5,5" href="about:blank" alt="Area">)HTML");
-
-  AXObjectCacheImpl& cache = GetAXObjectCache();
-
-  // The parent of the area isn't the DOM parent, but the image because that
-  // mirrors the structure of the ax tree.
-  Element* area = GetElementById("area");
-  AXObject* parent = AXObject::ComputeNonARIAParent(cache, area);
-  EXPECT_TRUE(IsA<HTMLImageElement>(parent->GetNode()));
-
-  parent = AXObject::ComputeNonARIAParent(cache, parent->GetNode());
-  EXPECT_TRUE(IsA<HTMLBodyElement>(parent->GetNode()));
-
-  parent = AXObject::ComputeNonARIAParent(cache, parent->GetNode());
-  EXPECT_TRUE(IsA<HTMLHtmlElement>(parent->GetNode()));
-
-  parent = AXObject::ComputeNonARIAParent(cache, parent->GetNode());
-  EXPECT_TRUE(IsA<Document>(parent->GetNode()));
-
-  parent = AXObject::ComputeNonARIAParent(cache, parent->GetNode());
-  EXPECT_EQ(parent, nullptr);
-}
-
 TEST_F(AccessibilityTest, CanComputeAsNaturalParent) {
   SetBodyInnerHTML(R"HTML(M<img usemap="#map"><map name="map"><hr><progress>
     <div><input type="range">M)HTML");

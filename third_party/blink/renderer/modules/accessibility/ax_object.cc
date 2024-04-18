@@ -609,14 +609,14 @@ AXObject::~AXObject() {
   --number_of_live_ax_objects_;
 }
 
-void AXObject::SetHasDirtyDescendants(bool dirty) const {
+void AXObject::SetHasDirtyDescendants(bool dirty) {
   CHECK(!dirty || LastKnownIsIncludedInTreeValue())
       << "Only included nodes can be marked as having dirty descendants: "
       << this;
   has_dirty_descendants_ = dirty;
 }
 
-void AXObject::SetAncestorsHaveDirtyDescendants() const {
+void AXObject::SetAncestorsHaveDirtyDescendants() {
   CHECK(!IsDetached());
   CHECK(!AXObjectCache().HasBeenDisposed());
   if (AXObjectCache().IsFrozen()) {
@@ -653,7 +653,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
     return;
   }
 
-  const AXObject* ancestor = this;
+  AXObject* ancestor = this;
 
   while (true) {
     ancestor = ancestor->CachedParentObject();
@@ -804,7 +804,8 @@ bool AXObject::IsRoot() const {
   return GetNode() && GetNode() == &AXObjectCache().GetDocument();
 }
 
-void AXObject::SetParent(AXObject* new_parent) const {
+void AXObject::SetParent(AXObject* new_parent) {
+  CHECK(!AXObjectCache().IsFrozen());
 #if DCHECK_IS_ON()
   if (!new_parent && !IsRoot()) {
     std::ostringstream message;
@@ -1353,15 +1354,15 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   PreSerializationConsistencyCheck();
 
   // Serialize a few things that we need even for ignored nodes.
-  bool is_focusable = CanSetFocusAttribute();
-  if (is_focusable)
+  if (CanSetFocusAttribute()) {
     node_data->AddState(ax::mojom::blink::State::kFocusable);
+  }
 
   bool is_visible = IsVisible();
   if (!is_visible)
     node_data->AddState(ax::mojom::blink::State::kInvisible);
 
-  if (is_visible || is_focusable) {
+  if (is_visible || CanSetFocusAttribute()) {
     // If the author applied the ARIA "textbox" role on something that is not
     // (currently) editable, this may be a read-only rich-text object. Or it
     // might just be bad authoring. Either way, we want to expose its
@@ -1405,10 +1406,10 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable
   // verbalizations can be made if they actually receive focus.
-  if (AccessibilityIsIgnored()) {
+  if (LastKnownIsIgnoredValue()) {
     node_data->AddState(ax::mojom::blink::State::kIgnored);
     // Early return for ignored, unfocusable nodes, avoiding unnecessary work.
-    if (!is_focusable) {
+    if (!CanSetFocusAttribute()) {
       // The name is important for exposing the selection around ignored nodes.
       // TODO(accessibility) Remove this and still pass this
       // content_browsertest:
@@ -1446,7 +1447,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable
   // verbalizations can be made if they actually receive focus.
-  if (AccessibilityIsIgnored() &&
+  if (LastKnownIsIgnoredValue() &&
       !node_data->HasState(ax::mojom::blink::State::kFocusable)) {
     return;
   }
@@ -3083,7 +3084,7 @@ bool AXObject::IsVisited() const {
   return false;
 }
 
-bool AXObject::AccessibilityIsIgnored() const {
+bool AXObject::AccessibilityIsIgnored() {
   CheckCanAccessCachedValues();
   UpdateCachedAttributeValuesIfNeeded();
 #if defined(AX_FAIL_FAST_BUILD)
@@ -3102,6 +3103,10 @@ bool AXObject::AccessibilityIsIgnored() const {
 }
 
 bool AXObject::AccessibilityIsIgnoredButIncludedInTree() const {
+  return cached_is_ignored_but_included_in_tree_;
+}
+
+bool AXObject::AccessibilityIsIgnoredButIncludedInTree() {
   CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
@@ -3134,7 +3139,7 @@ void AXObject::InvalidateCachedValues() {
 }
 
 void AXObject::UpdateCachedAttributeValuesIfNeeded(
-    bool notify_parent_of_ignored_changes) const {
+    bool notify_parent_of_ignored_changes) {
   if (IsDetached()) {
     cached_is_ignored_ = true;
     cached_is_ignored_but_included_in_tree_ = false;
@@ -3304,8 +3309,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
         // Must defer it, otherwise it can cause reentry into
         // UpdateCachedAttributeValuesIfNeeded() on |this|.
         // ParentObjectUnignored()->SetNeedsToUpdateChildren();
-        AXObjectCache().ChildrenChangedOnAncestorOf(
-            const_cast<AXObject*>(this));
+        AXObjectCache().ChildrenChangedOnAncestorOf(this);
       }
     } else if (included_in_tree_changed && AXObjectCache().UpdatingTree()) {
       // In some cases changes to inherited properties can cause an object
@@ -3324,7 +3328,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   // Compute live region root, which can be from any ARIA live value, including
   // "off", or from an automatic ARIA live value, e.g. from role="status".
-  // TODO(dmazzoni): remove this const_cast.
   AXObject* previous_live_region_root = cached_live_region_root_;
   if (GetNode() && IsA<Document>(GetNode())) {
     // The document root is never a live region root.
@@ -3334,8 +3337,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_live_region_root_ = nullptr;
   } else if (parent_) {
     // Is a live region root if this or an ancestor is a live region.
-    cached_live_region_root_ = IsLiveRegionRoot() ? const_cast<AXObject*>(this)
-                                                  : parent_->LiveRegionRoot();
+    cached_live_region_root_ =
+        IsLiveRegionRoot() ? this : parent_->LiveRegionRoot();
   }
   if (cached_live_region_root_ != previous_live_region_root) {
     is_changing_inherited_values = true;
@@ -3360,7 +3363,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 #endif
 }
 
-void AXObject::OnInheritedCachedValuesChanged() const {
+void AXObject::OnInheritedCachedValuesChanged() {
   // When a cached value that can inherit its value changes, it means that
   // all descendants need to recompute its value. We do this by ensuring
   // that UpdateTreeIfNeeded() will visit all descendants and recompute
@@ -3397,7 +3400,7 @@ void AXObject::OnInheritedCachedValuesChanged() const {
     if (!AccessibilityIsIncludedInTree()) {
       // Make sure that, starting at an included node, children will
       // recursively be updated until we reach |this|.
-      AXObjectCache().ChildrenChangedOnAncestorOf(const_cast<AXObject*>(this));
+      AXObjectCache().ChildrenChangedOnAncestorOf(this);
     }
   }
 }
@@ -3409,9 +3412,6 @@ bool AXObject::ComputeAccessibilityIsIgnored(
 
 bool AXObject::ShouldIgnoreForHiddenOrInert(
     IgnoredReasons* ignored_reasons) const {
-  // TODO(crbug.com/1522716): Figure out how this can happen:
-  // "Check failed: !cached_values_need_update_. Tried to compute ignored value
-  // without up-to-date hidden/inert values on SELECT".
   DUMP_WILL_BE_CHECK(!cached_values_need_update_)
       << "Tried to compute ignored value without up-to-date hidden/inert "
          "values on "
@@ -3471,7 +3471,7 @@ bool AXObject::ShouldIgnoreForHiddenOrInert(
 // Note: do not rely on the value of this inside of display:none.
 // In practice, it does not matter because nodes in display:none subtrees are
 // marked ignored either way.
-bool AXObject::IsInert() const {
+bool AXObject::IsInert() {
   CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
@@ -3573,7 +3573,7 @@ bool AXObject::ComputeIsInert(IgnoredReasons* ignored_reasons) const {
   return ComputeIsInertViaStyle(GetComputedStyle(), ignored_reasons);
 }
 
-bool AXObject::IsAriaHidden() const {
+bool AXObject::IsAriaHidden() {
   CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
@@ -3612,14 +3612,13 @@ bool AXObject::ComputeIsAriaHidden(IgnoredReasons* ignored_reasons) const {
   return false;
 }
 
-bool AXObject::IsHiddenByChildTree() const {
+bool AXObject::IsHiddenByChildTree() {
   CheckCanAccessCachedValues();
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_hidden_by_child_tree_;
 }
 
-bool AXObject::ComputeIsHiddenByChildTree(
-    IgnoredReasons* ignored_reasons) const {
+bool AXObject::ComputeIsHiddenByChildTree(IgnoredReasons* ignored_reasons) {
   const AXObject* parent = ParentObject();
   if (!parent) {
     return false;
@@ -3796,14 +3795,14 @@ bool AXObject::DispatchEventToAOMEventListeners(Event& event) {
   return false;
 }
 
-bool AXObject::IsDescendantOfDisabledNode() const {
+bool AXObject::IsDescendantOfDisabledNode() {
   CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_descendant_of_disabled_node_;
 }
 
-bool AXObject::ComputeIsDescendantOfDisabledNode() const {
+bool AXObject::ComputeIsDescendantOfDisabledNode() {
   if (IsA<Document>(GetNode()))
     return false;
 
@@ -3884,7 +3883,7 @@ bool AXObject::IsExcludedByFormControlsFilter() const {
   return true;
 }
 
-bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
+bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() {
   // If an inline text box is ignored, it is never included in the tree.
   if (IsAXInlineTextBox()) {
     return false;
@@ -4223,7 +4222,7 @@ bool AXObject::CanSetValueAttribute() const {
   }
 }
 
-bool AXObject::CanSetFocusAttribute() const {
+bool AXObject::CanSetFocusAttribute() {
   CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
@@ -4235,7 +4234,7 @@ bool AXObject::CanSetFocusAttribute() const {
 // returning early if IsHiddenViaStyle() is true, we can call
 // Element::IsKeyboardFocusable(), which would otherwise recalculate style at an
 // awkward time.
-bool AXObject::ComputeCanSetFocusAttribute() const {
+bool AXObject::ComputeCanSetFocusAttribute() {
   DCHECK(!IsDetached());
   DCHECK(GetDocument());
 
@@ -4535,7 +4534,7 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
 //   work, but don't destroy the work that was already there"
 // * "content-visibility: auto" is "paint when it's scrolled into the viewport,
 //   but its layout information is not updated when it isn't"
-bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) const {
+bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
   // The the parent element of text is hidden, then the text is hidden too.
   // This helps provide more consistent results in edge cases, e.g. text inside
   // of a <canvas> or display:none content.
@@ -4583,7 +4582,7 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) const {
   return node->IsElementNode();
 }
 
-bool AXObject::IsHiddenViaStyle() const {
+bool AXObject::IsHiddenViaStyle() {
   CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
@@ -4662,12 +4661,12 @@ bool AXObject::IsHiddenForTextAlternativeCalculation(
   return IsHiddenViaStyle();
 }
 
-bool AXObject::IsUsedForLabelOrDescription() const {
+bool AXObject::IsUsedForLabelOrDescription() {
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_used_for_label_or_description_;
 }
 
-bool AXObject::ComputeIsUsedForLabelOrDescription() const {
+bool AXObject::ComputeIsUsedForLabelOrDescription() {
   if (GetElement()) {
     // Return true if a <label> or the target of a naming/description
     // relation (<aria-labelledby or aria-describedby).
@@ -5484,11 +5483,11 @@ bool AXObject::IsRichlyEditable() const {
   return node->IsRichlyEditableForAccessibility();
 }
 
-AXObject* AXObject::LiveRegionRoot() const {
+AXObject* AXObject::LiveRegionRoot() {
   CheckCanAccessCachedValues();
 
   UpdateCachedAttributeValuesIfNeeded();
-  return cached_live_region_root_.Get();
+  return cached_live_region_root_;
 }
 
 bool AXObject::LiveRegionAtomic() const {
@@ -5503,34 +5502,22 @@ bool AXObject::LiveRegionAtomic() const {
 }
 
 const AtomicString& AXObject::ContainerLiveRegionStatus() const {
-  CheckCanAccessCachedValues();
-
-  UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_ ? cached_live_region_root_->LiveRegionStatus()
                                   : g_null_atom;
 }
 
 const AtomicString& AXObject::ContainerLiveRegionRelevant() const {
-  CheckCanAccessCachedValues();
-
-  UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_
              ? cached_live_region_root_->LiveRegionRelevant()
              : g_null_atom;
 }
 
 bool AXObject::ContainerLiveRegionAtomic() const {
-  CheckCanAccessCachedValues();
-
-  UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_ &&
          cached_live_region_root_->LiveRegionAtomic();
 }
 
 bool AXObject::ContainerLiveRegionBusy() const {
-  CheckCanAccessCachedValues();
-
-  UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_ &&
          cached_live_region_root_->AOMPropertyOrARIAAttributeIsTrue(
              AOMBooleanProperty::kBusy);
@@ -5574,7 +5561,7 @@ AXObject* AXObject::ChildAtIncludingIgnored(int index) const {
 
 const AXObject::AXObjectVector& AXObject::ChildrenIncludingIgnored() const {
   DCHECK(!IsDetached());
-  return const_cast<AXObject*>(this)->ChildrenIncludingIgnored();
+  return children_;
 }
 
 const AXObject::AXObjectVector& AXObject::ChildrenIncludingIgnored() {
@@ -5925,13 +5912,9 @@ AXObject* AXObject::UnignoredPreviousInPreOrder() const {
 }
 
 AXObject* AXObject::ParentObject() const {
-  if (IsDetached()) {
-    return nullptr;
-  }
-
+  DUMP_WILL_BE_CHECK(!IsDetached());
   DUMP_WILL_BE_CHECK(!IsMissingParent()) << "Missing parent: " << this;
-
-  return parent_.Get();
+  return parent_;
 }
 
 AXObject* AXObject::ParentObjectUnignored() const {
@@ -6104,7 +6087,7 @@ void AXObject::CheckIncludedObjectConnectedToRoot() const {
 }
 #endif
 
-void AXObject::SetNeedsToUpdateChildren(bool update) const {
+void AXObject::SetNeedsToUpdateChildren(bool update) {
   CHECK(!IsDetached()) << "Cannot update children on a detached node: " << this;
   CHECK(!AXObjectCache().IsFrozen());
   CHECK(!AXObjectCache().HasBeenDisposed());
@@ -6213,7 +6196,7 @@ void AXObject::SetChildTree(const ui::AXTreeID& child_tree_id) {
   AXObjectCache().UpdateAXForAllDocuments();
 }
 
-void AXObject::ClearChildren() const {
+void AXObject::ClearChildren() {
   CHECK(!IsDetached());
   CHECK(!AXObjectCache().IsFrozen())
       << "Do not clear children while tree is frozen: " << this;

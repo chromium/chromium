@@ -416,7 +416,7 @@ int AXInlineTextBox::TextLength() const {
   return static_cast<int>(inline_text_box_->Len());
 }
 
-void AXInlineTextBox::ClearChildren() const {
+void AXInlineTextBox::ClearChildren() {
   // An AXInlineTextBox has no children to clear.
 }
 
