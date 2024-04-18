@@ -10961,7 +10961,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Dismiss
       </message>
       <message name="IDS_TAB_ORGANIZATION_NEW_TABS" desc="The label for the new badge divider in the tab organization results state">
-        NEW TABS
+        New Tabs
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE" desc="The header text for the not started state in the tab organization UI">
         Check if tabs can be organized
