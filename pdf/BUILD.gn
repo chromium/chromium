@@ -280,6 +280,10 @@ if (enable_pdf) {
       "//ui/gfx/range",
       "//v8",
     ]
+
+    if (enable_pdf_ink2) {
+      deps += [ "//pdf/ink" ]
+    }
   }
 
   source_set("pdf_test_utils") {

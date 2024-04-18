@@ -1,0 +1,5 @@
+include_rules = [
+  # This particular directory cannot depend on //base, as //base code conflicts
+  # with Ink code.
+  "-base",
+]

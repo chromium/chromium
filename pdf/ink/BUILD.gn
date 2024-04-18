@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//pdf/features.gni")
+
+assert(enable_pdf_ink2)
+
+group("ink") {
+  visibility = [ "//pdf/*" ]
+
+  public_deps = [ ":interface" ]
+}
+
+source_set("interface") {
+  visibility = [ "//pdf/*" ]
+
+  sources = [
+    "ink_brush.cc",
+    "ink_brush.h",
+    "ink_brush_behavior.h",
+    "ink_brush_family.cc",
+    "ink_brush_family.h",
+    "ink_brush_paint.cc",
+    "ink_brush_paint.h",
+    "ink_brush_tip.cc",
+    "ink_brush_tip.h",
+    "ink_in_progress_stroke.h",
+    "ink_skia_renderer.h",
+    "ink_stroke.h",
+    "ink_stroke_input.h",
+    "ink_stroke_input_batch.h",
+  ]
+
+  configs += [ "//pdf:strict" ]
+
+  public_deps = [ "//skia" ]
+}
