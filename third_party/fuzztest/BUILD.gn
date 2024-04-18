@@ -302,6 +302,9 @@ source_set("fuzztest_internal") {
     # into every fuzztest target, but this is the approach used in other
     # fuzztest contexts so we'll do the same
     "//third_party/re2",
+
+    # For protobuf mutators
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   public_configs = [ ":fuzztest_internal_config" ]
