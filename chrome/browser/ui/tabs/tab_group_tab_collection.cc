@@ -55,7 +55,7 @@ bool TabGroupTabCollection::ContainsCollection(
 }
 
 std::optional<size_t> TabGroupTabCollection::GetIndexOfTabRecursive(
-    TabModel* tab_model) const {
+    const TabModel* tab_model) const {
   return impl_->GetIndexOfTab(tab_model);
 }
 

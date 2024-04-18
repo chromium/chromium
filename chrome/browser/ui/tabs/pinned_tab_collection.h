@@ -51,7 +51,7 @@ class PinnedTabCollection : public TabCollection {
   // This is non-recursive for pinned tab collection as it does not contain
   // another collection.
   std::optional<size_t> GetIndexOfTabRecursive(
-      TabModel* tab_model) const override;
+      const TabModel* tab_model) const override;
 
   // This is nullopt as pinned tab collection does not contain another
   // collection.

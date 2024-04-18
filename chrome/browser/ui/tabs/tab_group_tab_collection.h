@@ -59,7 +59,7 @@ class TabGroupTabCollection : public TabCollection {
   // This is non-recursive for grouped tab collection as it does not contain
   // another collection.
   std::optional<size_t> GetIndexOfTabRecursive(
-      TabModel* tab_model) const override;
+      const TabModel* tab_model) const override;
 
   // This is nullopt as grouped tab collection does not contain another
   // collection.

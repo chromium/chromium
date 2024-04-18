@@ -776,6 +776,23 @@ class TabStripModel : public TabGroupController {
                              int to_position,
                              bool select_after_move);
 
+  // Implementation of moving a webcontent when the `contents_data` is a tab
+  // collection.
+  void MoveWebContentsAtImplWithCollection(int index,
+                                           int to_position,
+                                           bool select_after_move);
+
+  // Implementation of moving a webcontent when the `contents_data` is a vector.
+  void MoveWebContentsAtImplWithVector(int index,
+                                       int to_position,
+                                       bool select_after_move);
+
+  // Sends a move notification to the tabstrip model observers for a webcontent.
+  void SendMoveNotificationForWebContents(int index,
+                                          int to_position,
+                                          bool select_after_move,
+                                          content::WebContents* web_contents);
+
   // Implementation of MoveSelectedTabsTo. Moves |length| of the selected tabs
   // starting at |start| to |index|. See MoveSelectedTabsTo for more details.
   void MoveSelectedTabsToImpl(int index, size_t start, size_t length);
@@ -826,6 +843,10 @@ class TabStripModel : public TabGroupController {
   // Changes the pinned state of the tab at `index`, moving it in the process if
   // necessary. Returns the new index of the tab.
   int SetTabPinnedImpl(int index, bool pinned);
+
+  // Updates the pinned state of the tab model and moves the tab within
+  // `contents_data`. This is a helper method called by `SetTabPinnedImpl()`.
+  int UpdatePinAndMoveWebContents(int index, bool pinned);
 
   // Changes the pinned state of all tabs at `indices`, moving them in the
   // process if necessary. Returns the new locations of all of those tabs.

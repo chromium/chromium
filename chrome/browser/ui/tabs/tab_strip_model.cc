@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
@@ -55,6 +57,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_notes/user_notes_controller.h"
@@ -326,6 +329,12 @@ int TabStripModel::GetIndexOfTab(tabs::TabHandle tab_handle) const {
   const tabs::TabModel* tab_model = tab_handle.Get();
   if (tab_model == nullptr) {
     return kNoTab;
+  }
+
+  if (!IsContentsDataVector()) {
+    std::optional<size_t> index_of_tab =
+        GetContentsDataAsCollection()->GetIndexOfTabRecursive(tab_model);
+    return index_of_tab.value_or(kNoTab);
   }
 
   const auto is_same_tab =
@@ -652,11 +661,14 @@ int TabStripModel::MoveWebContentsAt(int index,
 
   to_position = ConstrainMoveIndex(to_position, IsTabPinned(index));
 
-  if (index == to_position)
+  if (index == to_position) {
     return to_position;
+  }
 
   MoveWebContentsAtImpl(index, to_position, select_after_move);
-  EnsureGroupContiguity(to_position);
+  if (IsContentsDataVector()) {
+    EnsureGroupContiguity(to_position);
+  }
 
   return to_position;
 }
@@ -1912,7 +1924,10 @@ void TabStripModel::ForgetOpener(WebContents* contents) {
 void TabStripModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("active_index", active_index());
-  dict.Add("tabs", GetContentsDataAsVector());
+  // TODO(b/335438706): Add tracing for collection infrastructure.
+  if (IsContentsDataVector()) {
+    dict.Add("tabs", GetContentsDataAsVector());
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2259,7 +2274,7 @@ void TabStripModel::SelectRelativeTab(TabRelativeDirection direction,
                                       TabStripUserGestureDetails detail) {
   // This may happen during automated testing or if a user somehow buffers
   // many key accelerators.
-  if (GetContentsDataAsVector().empty()) {
+  if (empty()) {
     return;
   }
 
@@ -2335,14 +2350,55 @@ void TabStripModel::MoveWebContentsAtImpl(int index,
 
   TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
 
-  CHECK_LT(index, static_cast<int>(GetContentsDataAsVector().size()));
-  CHECK_LT(to_position, static_cast<int>(GetContentsDataAsVector().size()));
+  CHECK_LT(index, count());
+  CHECK_LT(to_position, count());
+
+  if (IsContentsDataVector()) {
+    MoveWebContentsAtImplWithVector(index, to_position, select_after_move);
+  } else {
+    MoveWebContentsAtImplWithCollection(index, to_position, select_after_move);
+  }
+}
+
+void TabStripModel::MoveWebContentsAtImplWithVector(int index,
+                                                    int to_position,
+                                                    bool select_after_move) {
+  CHECK(IsContentsDataVector());
   std::unique_ptr<tabs::TabModel> moved_data =
       std::move(GetContentsDataAsVector()[index]);
-  WebContents* web_contents = moved_data->contents();
+  WebContents* const web_contents = moved_data->contents();
+
   GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() + index);
   GetContentsDataAsVector().insert(
       GetContentsDataAsVector().begin() + to_position, std::move(moved_data));
+  SendMoveNotificationForWebContents(index, to_position, select_after_move,
+                                     web_contents);
+}
+
+void TabStripModel::MoveWebContentsAtImplWithCollection(
+    int index,
+    int to_position,
+    bool select_after_move) {
+  CHECK(!IsContentsDataVector());
+  const bool is_tab_pinned = IsTabPinned(to_position);
+
+  std::unique_ptr<tabs::TabModel> moved_data =
+      GetContentsDataAsCollection()->RemoveTabAtIndexRecursive(index);
+  WebContents* const web_contents = moved_data->contents();
+
+  GetContentsDataAsCollection()->AddTabRecursive(
+      std::move(moved_data), to_position, std::nullopt, is_tab_pinned);
+
+  SendMoveNotificationForWebContents(index, to_position, select_after_move,
+                                     web_contents);
+}
+
+void TabStripModel::SendMoveNotificationForWebContents(
+    int index,
+    int to_position,
+    bool select_after_move,
+    WebContents* web_contents) {
+  TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
 
   selection_model_.Move(index, to_position, 1);
   if (!selection_model_.IsSelected(to_position) && select_after_move) {
@@ -2658,22 +2714,54 @@ int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
   }
 
   // The tab's position may have to change as the pinned tab state is changing.
-  int non_pinned_tab_index = IndexOfFirstNonPinnedTab();
-  tab_model->set_pinned(pinned);
-  if (pinned && index != non_pinned_tab_index) {
-    MoveWebContentsAtImpl(index, non_pinned_tab_index, false);
-    index = non_pinned_tab_index;
-  } else if (!pinned && index + 1 != non_pinned_tab_index) {
-    MoveWebContentsAtImpl(index, non_pinned_tab_index - 1, false);
-    index = non_pinned_tab_index - 1;
-  }
-
-  CHECK_EQ(GetTabAtIndex(index), tab_model);
+  const int index_after_pin_state_update =
+      UpdatePinAndMoveWebContents(index, pinned);
+  CHECK_EQ(GetTabAtIndex(index_after_pin_state_update), tab_model);
   for (auto& observer : observers_) {
-    observer.TabPinnedStateChanged(this, tab_model->contents(), index);
+    observer.TabPinnedStateChanged(this, tab_model->contents(),
+                                   index_after_pin_state_update);
   }
 
-  return index;
+  return index_after_pin_state_update;
+}
+
+int TabStripModel::UpdatePinAndMoveWebContents(int index, bool pinned) {
+  tabs::TabModel* const tab_model = GetTabAtIndex(index);
+  const int non_pinned_tab_index = IndexOfFirstNonPinnedTab();
+
+  if (IsContentsDataVector()) {
+    tab_model->set_pinned(pinned);
+    if (pinned && index != non_pinned_tab_index) {
+      MoveWebContentsAtImpl(index, non_pinned_tab_index, false);
+      return non_pinned_tab_index;
+    } else if (!pinned && index + 1 != non_pinned_tab_index) {
+      MoveWebContentsAtImpl(index, non_pinned_tab_index - 1, false);
+      return non_pinned_tab_index - 1;
+    }
+    return index;
+  } else {
+    if (pinned) {
+      std::unique_ptr<tabs::TabModel> tab_to_pin =
+          GetContentsDataAsCollection()->RemoveTabAtIndexRecursive(index);
+      GetContentsDataAsCollection()->GetPinnedCollection()->AppendTab(
+          std::move(tab_to_pin));
+    } else {
+      std::unique_ptr<tabs::TabModel> tab_to_unpin =
+          GetContentsDataAsCollection()->RemoveTabAtIndexRecursive(index);
+      GetContentsDataAsCollection()->GetUnpinnedCollection()->AddTab(
+          std::move(tab_to_unpin), 0);
+    }
+
+    const int index_after_updating_pinned_state =
+        pinned ? non_pinned_tab_index : non_pinned_tab_index - 1;
+
+    if (index_after_updating_pinned_state != index) {
+      SendMoveNotificationForWebContents(index,
+                                         index_after_updating_pinned_state,
+                                         false, tab_model->contents());
+    }
+    return index_after_updating_pinned_state;
+  }
 }
 
 std::vector<int> TabStripModel::SetTabsPinned(const std::vector<int>& indices,

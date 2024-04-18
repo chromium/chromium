@@ -64,7 +64,7 @@ class TabStripCollection : public TabCollection {
   // unpinned collection.
   bool ContainsCollection(TabCollection* collection) const override;
   std::optional<size_t> GetIndexOfTabRecursive(
-      TabModel* tab_model) const override;
+      const TabModel* tab_model) const override;
   std::optional<size_t> GetIndexOfCollection(
       TabCollection* collection) const override;
   // Tabs and Collections are not allowed to be removed from TabStripCollection.

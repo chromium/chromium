@@ -78,7 +78,7 @@ class TabCollectionStorage {
 
   // Returns the index of the `tab_model` in `children_`. It returns a nullopt
   // if the `tab_model` is not present in the `children_`.
-  std::optional<size_t> GetIndexOfTab(TabModel* tab_model) const;
+  std::optional<size_t> GetIndexOfTab(const TabModel* tab_model) const;
 
   // Returns the tab at a direct index if the child at the direct index is a
   // tab.

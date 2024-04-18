@@ -114,7 +114,7 @@ void TabCollectionStorage::CloseCollection(TabCollection* collection) {
 }
 
 std::optional<size_t> TabCollectionStorage::GetIndexOfTab(
-    TabModel* tab_model) const {
+    const TabModel* const tab_model) const {
   const auto it = std::find_if(
       children_.begin(), children_.end(), [tab_model](const auto& child) {
         return std::holds_alternative<std::unique_ptr<TabModel>>(child) &&

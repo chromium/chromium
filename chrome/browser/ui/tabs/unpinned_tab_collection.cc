@@ -117,6 +117,22 @@ void UnpinnedTabCollection::CloseTab(TabModel* tab_model) {
   impl_->CloseTab(tab_model);
 }
 
+std::optional<size_t>
+UnpinnedTabCollection::GetDirectChildIndexOfCollectionContainingTab(
+    TabModel* tab_model) const {
+  if (tab_model->GetParentCollection(GetPassKey()) == this) {
+    return GetIndexOfTab(tab_model).value();
+  } else {
+    TabCollection* parent_collection =
+        tab_model->GetParentCollection(GetPassKey());
+    while (parent_collection && !ContainsCollection(parent_collection)) {
+      parent_collection = parent_collection->GetParentCollection();
+    }
+
+    return GetIndexOfCollection(parent_collection);
+  }
+}
+
 bool UnpinnedTabCollection::ContainsTab(TabModel* tab_model) const {
   return impl_->ContainsTab(tab_model);
 }
@@ -131,7 +147,7 @@ bool UnpinnedTabCollection::ContainsCollection(
 }
 
 std::optional<size_t> UnpinnedTabCollection::GetIndexOfTabRecursive(
-    TabModel* tab_model) const {
+    const TabModel* tab_model) const {
   size_t current_index = 0;
 
   // If the child is a `tab_model` check if it is the the desired tab, otherwise
@@ -178,6 +194,11 @@ std::unique_ptr<TabModel> UnpinnedTabCollection::MaybeRemoveTab(
   std::unique_ptr<TabModel> removed_tab_model = impl_->RemoveTab(tab_model);
   removed_tab_model->OnReparented(nullptr, GetPassKey());
   return removed_tab_model;
+}
+
+std::optional<size_t> UnpinnedTabCollection::GetIndexOfTab(
+    TabModel* tab_model) const {
+  return impl_->GetIndexOfTab(tab_model);
 }
 
 size_t UnpinnedTabCollection::ChildCount() const {

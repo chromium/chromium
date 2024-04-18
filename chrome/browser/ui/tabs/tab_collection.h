@@ -40,7 +40,7 @@ class TabCollection {
 
   // Recursively get the index of the tab_model among all the leaf tab_models.
   virtual std::optional<size_t> GetIndexOfTabRecursive(
-      TabModel* tab_model) const = 0;
+      const TabModel* tab_model) const = 0;
 
   // Non-recursively get the index of a collection.
   virtual std::optional<size_t> GetIndexOfCollection(
@@ -75,7 +75,7 @@ class TabCollection {
  protected:
   // Returns the pass key to be used by derived classes as operations such as
   // setting the parent of a tab can only be performed by a `TabCollection`.
-  base::PassKey<TabCollection> GetPassKey() {
+  base::PassKey<TabCollection> GetPassKey() const {
     return base::PassKey<TabCollection>();
   }
 

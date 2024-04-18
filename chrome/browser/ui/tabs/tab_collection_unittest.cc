@@ -334,6 +334,13 @@ class UnpinnedTabCollectionTest : public TabCollectionBaseTest {
 
     EXPECT_EQ(GetCollection()->ChildCount(), 5ul);
     EXPECT_EQ(GetCollection()->TabCountRecursive(), 6ul);
+
+    EXPECT_EQ(GetCollection()->GetDirectChildIndexOfCollectionContainingTab(
+                  GetCollection()->GetTabAtIndexRecursive(1)),
+              1ul);
+    EXPECT_EQ(GetCollection()->GetDirectChildIndexOfCollectionContainingTab(
+                  GetCollection()->GetTabAtIndexRecursive(3)),
+              2ul);
   }
 
  private:

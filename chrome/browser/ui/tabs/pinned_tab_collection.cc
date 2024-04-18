@@ -54,7 +54,7 @@ bool PinnedTabCollection::ContainsCollection(TabCollection* collection) const {
 }
 
 std::optional<size_t> PinnedTabCollection::GetIndexOfTabRecursive(
-    TabModel* tab_model) const {
+    const TabModel* tab_model) const {
   return impl_->GetIndexOfTab(tab_model);
 }
 

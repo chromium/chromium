@@ -72,7 +72,7 @@ bool TabStripCollection::ContainsCollection(TabCollection* collection) const {
 }
 
 std::optional<size_t> TabStripCollection::GetIndexOfTabRecursive(
-    TabModel* tab_model) const {
+    const TabModel* tab_model) const {
   // Check if the tab is present in the pinned collection first and return the
   // index if it is present.
   std::optional<size_t> pinned_index =
