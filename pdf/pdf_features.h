@@ -9,9 +9,11 @@
 #define PDF_PDF_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "pdf/buildflags.h"
 
-namespace chrome_pdf {
-namespace features {
+static_assert(BUILDFLAG(ENABLE_PDF), "ENABLE_PDF not set to true");
+
+namespace chrome_pdf::features {
 
 BASE_DECLARE_FEATURE(kAccessiblePDFForm);
 BASE_DECLARE_FEATURE(kPdfIncrementalLoading);
@@ -21,7 +23,6 @@ BASE_DECLARE_FEATURE(kPdfPortfolio);
 BASE_DECLARE_FEATURE(kPdfUseSkiaRenderer);
 BASE_DECLARE_FEATURE(kPdfXfaSupport);
 
-}  // namespace features
-}  // namespace chrome_pdf
+}  // namespace chrome_pdf::features
 
 #endif  // PDF_PDF_FEATURES_H_

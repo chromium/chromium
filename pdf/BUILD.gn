@@ -57,6 +57,8 @@ if (enable_pdf) {
 
     public = [ "pdf_features.h" ]
 
+    public_deps = [ ":buildflags" ]
+
     deps = [
       "//base",
       "//build:chromeos_buildflags",

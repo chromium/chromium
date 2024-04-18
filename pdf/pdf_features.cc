@@ -4,8 +4,9 @@
 
 #include "pdf/pdf_features.h"
 
-namespace chrome_pdf {
-namespace features {
+#include "base/feature_list.h"
+
+namespace chrome_pdf::features {
 
 BASE_FEATURE(kAccessiblePDFForm,
              "AccessiblePDFForm",
@@ -36,5 +37,4 @@ BASE_FEATURE(kPdfXfaSupport,
              "PdfXfaSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace features
-}  // namespace chrome_pdf
+}  // namespace chrome_pdf::features
