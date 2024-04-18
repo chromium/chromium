@@ -51,7 +51,7 @@ def main():
   env = os.environ
   env['ASAN_OPTIONS'] = 'detect_odr_violation=0'
   process_result = subprocess.run(
-      [args.executable, '--list_fuzz_tests'],
+      [args.executable, '--list_fuzz_tests=1'],
       env=env, stdout=subprocess.PIPE, check=False
   )
 
