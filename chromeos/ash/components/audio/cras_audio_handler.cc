@@ -303,7 +303,8 @@ void CrasAudioHandler::OnVideoCaptureStoppedOnMainThread(
 
   // Switch to front mic properly.
   DeviceActivateType activated_by =
-      HasExternalDevice(true) ? ACTIVATE_BY_USER : ACTIVATE_BY_PRIORITY;
+      HasExternalDevice(true) ? DeviceActivateType::kActivateByUser
+                              : DeviceActivateType::kActivateByPriority;
   SwitchToDevice(*GetDeviceByType(AudioDeviceType::kFrontMic), true,
                  activated_by);
 }
@@ -780,7 +781,7 @@ void CrasAudioHandler::AddActiveNode(uint64_t node_id, bool notify) {
   // If there is no primary active device, set |node_id| to primary active node.
   if ((device->is_input && !active_input_node_id_) ||
       (!device->is_input && !active_output_node_id_)) {
-    SwitchToDevice(*device, notify, ACTIVATE_BY_USER);
+    SwitchToDevice(*device, notify, DeviceActivateType::kActivateByUser);
     return;
   }
 
@@ -852,7 +853,8 @@ void CrasAudioHandler::SetActiveDevices(const AudioDeviceList& devices,
       is_input ? active_input_node_id_ : active_output_node_id_;
   if (!new_active_ids.count(primary_active) && !devices.empty()) {
     active_devices_changed = true;
-    SwitchToDevice(devices[0], false /* notify */, ACTIVATE_BY_USER);
+    SwitchToDevice(devices[0], false /* notify */,
+                   DeviceActivateType::kActivateByUser);
   }
 
   AudioDeviceList existing_devices;
@@ -1107,7 +1109,7 @@ void CrasAudioHandler::SetInputMuteLockedBySecurityCurtain(bool mute_on) {
 void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
                                        bool notify,
                                        DeviceActivateType activate_by) {
-  if (activate_by == ACTIVATE_BY_USER) {
+  if (activate_by == DeviceActivateType::kActivateByUser) {
     audio_device_metrics_handler_.RecordUserSwitchAudioDevice(
         active_device.is_input);
   } else {
@@ -1122,10 +1124,10 @@ void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
   // Including to unset it when selected by priority or by camera.
   if (active_device.is_input) {
     audio_device_metrics_handler_.set_input_device_selected_by_user(
-        activate_by == ACTIVATE_BY_USER);
+        activate_by == DeviceActivateType::kActivateByUser);
   } else {
     audio_device_metrics_handler_.set_output_device_selected_by_user(
-        activate_by == ACTIVATE_BY_USER);
+        activate_by == DeviceActivateType::kActivateByUser);
   }
 
   if (active_device.is_input) {
@@ -1166,10 +1168,10 @@ void CrasAudioHandler::SaveDeviceState(const AudioDevice& device,
     audio_pref_handler_->SetDeviceActive(device, false, false);
   } else {
     switch (activate_by) {
-      case ACTIVATE_BY_USER:
+      case DeviceActivateType::kActivateByUser:
         audio_pref_handler_->SetDeviceActive(device, true, true);
         break;
-      case ACTIVATE_BY_PRIORITY:
+      case DeviceActivateType::kActivateByPriority:
         audio_pref_handler_->SetDeviceActive(device, true, false);
         break;
       default:
@@ -1817,7 +1819,7 @@ void CrasAudioHandler::SwitchToDevice(const AudioDevice& device,
                                       DeviceActivateType activate_by) {
   if (!ChangeActiveDevice(device)) {
     // Record the decision of system not switching active device.
-    if (activate_by != ACTIVATE_BY_USER) {
+    if (activate_by != DeviceActivateType::kActivateByUser) {
       audio_device_metrics_handler_.MaybeRecordSystemSwitchDecisionAndContext(
           device.is_input,
           device.is_input ? has_alternative_input_ : has_alternative_output_,
@@ -2126,7 +2128,8 @@ void CrasAudioHandler::HandleHotPlugDeviceByUserPriority(
   }
 
   if (ShouldSwitchToHotPlugDevice(hotplug_device)) {
-    SwitchToDevice(hotplug_device, true, ACTIVATE_BY_PRIORITY);
+    SwitchToDevice(hotplug_device, true,
+                   DeviceActivateType::kActivateByPriority);
     return;
   } else {
     // Record the decision of system not switching active device.
@@ -2161,7 +2164,7 @@ void CrasAudioHandler::SwitchToTopPriorityDevice(
     return;
   }
 
-  SwitchToDevice(top_device, true, ACTIVATE_BY_PRIORITY);
+  SwitchToDevice(top_device, true, DeviceActivateType::kActivateByPriority);
 }
 
 void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(
@@ -2172,7 +2175,7 @@ void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(
     DCHECK(previous_active_device.is_for_simple_usage());
     // Switch to previous active device stored in user prefs.
     SwitchToDevice(previous_active_device, true,
-                   ACTIVATE_BY_RESTORE_PREVIOUS_STATE);
+                   DeviceActivateType::kActivateByRestorePreviousState);
   } else {
     // No previous active device, switch to the top priority device.
     SwitchToTopPriorityDevice(devices);
@@ -2278,7 +2281,9 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
             : std::nullopt,
         active_output_device
             ? std::make_optional(active_output_device->display_name)
-            : std::nullopt);
+            : std::nullopt,
+        base::BindRepeating(&CrasAudioHandler::SwitchToDevice,
+                            weak_ptr_factory_.GetWeakPtr()));
 
     // Reset show notification flag.
     should_show_notification_ = false;
@@ -2500,7 +2505,7 @@ void CrasAudioHandler::ActivateMicForCamera(
     return;
   }
 
-  SwitchToDevice(*mic, true, ACTIVATE_BY_CAMERA);
+  SwitchToDevice(*mic, true, DeviceActivateType::kActivateByCamera);
 }
 
 void CrasAudioHandler::ActivateInternalMicForActiveCamera() {
@@ -2525,7 +2530,7 @@ void CrasAudioHandler::SwitchToFrontOrRearMic() {
     ActivateInternalMicForActiveCamera();
   } else {
     SwitchToDevice(*GetDeviceByType(AudioDeviceType::kFrontMic), true,
-                   ACTIVATE_BY_USER);
+                   DeviceActivateType::kActivateByUser);
   }
 }
 
@@ -2848,7 +2853,8 @@ void CrasAudioHandler::HandleHotPlugDeviceWithNotification(
   // kAudioSelectionImprovement flag is on.
   CHECK(features::IsAudioSelectionImprovementEnabled());
   if (hotplug_device.has_privilege()) {
-    SwitchToDevice(hotplug_device, /*notify=*/true, ACTIVATE_BY_PRIORITY);
+    SwitchToDevice(hotplug_device, /*notify=*/true,
+                   DeviceActivateType::kActivateByPriority);
 
     // Record audio selection exception rule #1.
     audio_device_metrics_handler_.RecordExceptionRulesMet(
@@ -2871,7 +2877,8 @@ void CrasAudioHandler::HandleHotPlugDeviceWithNotification(
   // activated.
   if (preferred_device.has_value() &&
       preferred_device->stable_device_id == hotplug_device.stable_device_id) {
-    SwitchToDevice(hotplug_device, /*notify=*/true, ACTIVATE_BY_PRIORITY);
+    SwitchToDevice(hotplug_device, /*notify=*/true,
+                   DeviceActivateType::kActivateByPriority);
     return;
   }
 

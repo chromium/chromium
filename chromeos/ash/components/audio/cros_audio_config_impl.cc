@@ -323,9 +323,8 @@ void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
       audio_handler->IsFrontOrRearMic(*next_active_device)) {
     audio_handler->SwitchToFrontOrRearMic();
   } else {
-    audio_handler->SwitchToDevice(
-        *next_active_device, /*notify=*/true,
-        CrasAudioHandler::DeviceActivateType::ACTIVATE_BY_USER);
+    audio_handler->SwitchToDevice(*next_active_device, /*notify=*/true,
+                                  DeviceActivateType::kActivateByUser);
   }
 
   // Record if it was an output or input device that changed.

@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
+#include "chromeos/ash/components/audio/audio_selection_notification_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/base/video_facing.h"
@@ -846,7 +847,7 @@ TEST_P(CrasAudioHandlerTest, SwitchActiveOutputDevice) {
   // Switch the active output to internal speaker.
   AudioDevice internal_speaker(GenerateAudioNode(kInternalSpeaker));
   cras_audio_handler_->SwitchToDevice(internal_speaker, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker, and the
   // ActiveOutputNodeChanged event is fired.
@@ -871,7 +872,7 @@ TEST_P(CrasAudioHandlerTest, SwitchActiveInputDevice) {
   // Switch the active input to internal mic.
   AudioDevice internal_mic(GenerateAudioNode(kInternalMic));
   cras_audio_handler_->SwitchToDevice(internal_mic, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker, and the active
   // ActiveInputNodeChanged event is fired.
@@ -1576,7 +1577,7 @@ TEST_P(CrasAudioHandlerTest, UnplugUSBHeadphonesWithActiveSpeaker) {
   // Select the speaker to be the active output device.
   AudioDevice internal_speaker(GenerateAudioNode(kInternalSpeaker));
   cras_audio_handler_->SwitchToDevice(internal_speaker, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker, and the
   // ActiveOutputNodeChanged event is fired.
@@ -1932,7 +1933,7 @@ TEST_P(CrasAudioHandlerTest, PlugUSBMicNotAffectActiveOutput) {
   // Switch the active output to internal speaker.
   AudioDevice internal_speaker(GenerateAudioNode(kInternalSpeaker));
   cras_audio_handler_->SwitchToDevice(internal_speaker, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker, and the
   // ActiveOutputNodeChanged event is fired.
@@ -1995,7 +1996,7 @@ TEST_P(CrasAudioHandlerTest,
   // Switch the active output to internal speaker.
   AudioDevice internal_speaker(GenerateAudioNode(kInternalSpeaker));
   cras_audio_handler_->SwitchToDevice(internal_speaker, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker, and the
   // ActiveOutputNodeChanged event is fired.
@@ -3253,7 +3254,7 @@ TEST_P(CrasAudioHandlerTest, ActiveDeviceSelectionWithStableDeviceId) {
   // higher preference priority than USB headphone.
   AudioDevice speaker(GenerateAudioNode(kInternalSpeaker));
   cras_audio_handler_->SwitchToDevice(speaker, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   EXPECT_NE(kUSBHeadphone1->id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
 
@@ -3343,7 +3344,7 @@ TEST_P(
   // higher preference priority than USB headphone.
   AudioDevice speaker(GenerateAudioNode(kInternalSpeaker));
   cras_audio_handler_->SwitchToDevice(speaker, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   EXPECT_NE(kUSBHeadphone1->id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
 
@@ -3381,7 +3382,7 @@ TEST_P(
   // device has higher preference priority.
   AudioDevice usb_headset2_device(GenerateAudioNode(kUSBHeadphone2));
   cras_audio_handler_->SwitchToDevice(usb_headset2_device, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   EXPECT_EQ(kUSBHeadphone2->id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
 
@@ -3592,7 +3593,7 @@ TEST_P(CrasAudioHandlerTest, UnplugHeadphoneLostActiveInternalSpeakerByCras) {
   // Switch the active output to internal speaker.
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalSpeaker)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
+      DeviceActivateType::kActivateByUser);
 
   // Verify internal speaker has been made active.
   AudioDeviceList audio_devices;
@@ -3627,7 +3628,7 @@ TEST_P(CrasAudioHandlerTest, RemoveNonActiveDevice) {
   // Switch the active output to internal speaker.
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalSpeaker)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
+      DeviceActivateType::kActivateByUser);
 
   // Verify internal speaker has been made active.
   AudioDeviceList audio_devices;
@@ -4509,11 +4510,11 @@ TEST_P(CrasAudioHandlerTest, HotPlug35mmHeadphoneAndMic) {
   // Manually select internal speaker as active output.
   AudioDevice internal_output(internal_speaker);
   cras_audio_handler_->SwitchToDevice(internal_output, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   // Manually select internal mic as active input.
   AudioDevice internal_input(internal_mic);
   cras_audio_handler_->SwitchToDevice(internal_input, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker.
   EXPECT_EQ(internal_speaker.id,
@@ -4626,11 +4627,11 @@ TEST_P(CrasAudioHandlerTest,
   // Manually select internal speaker as active output.
   AudioDevice internal_output(internal_speaker);
   cras_audio_handler_->SwitchToDevice(internal_output, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   // Manually select internal mic as active input.
   AudioDevice internal_input(internal_mic);
   cras_audio_handler_->SwitchToDevice(internal_input, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker.
   EXPECT_EQ(internal_speaker.id,
@@ -4747,11 +4748,11 @@ TEST_P(CrasAudioHandlerTest,
   // Manually select internal speaker as active output.
   AudioDevice internal_output(internal_speaker);
   cras_audio_handler_->SwitchToDevice(internal_output, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   // Manually select internal mic as active input.
   AudioDevice internal_input(internal_mic);
   cras_audio_handler_->SwitchToDevice(internal_input, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker.
   EXPECT_EQ(internal_speaker.id,
@@ -4936,7 +4937,7 @@ TEST_P(CrasAudioHandlerTest, HotPlugHDMIChangeActiveOutput) {
   // Manually set the active output to internal speaker.
   AudioDevice internal_output(GenerateAudioNode(kInternalSpeaker));
   cras_audio_handler_->SwitchToDevice(internal_output, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker.
   EXPECT_EQ(internal_speaker.id,
@@ -4985,7 +4986,7 @@ TEST_P(CrasAudioHandlerTest,
   // Manually set the active output to internal speaker.
   AudioDevice internal_output(GenerateAudioNode(kInternalSpeaker));
   cras_audio_handler_->SwitchToDevice(internal_output, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // Verify the active output is switched to internal speaker.
   EXPECT_EQ(internal_speaker.id,
@@ -5060,7 +5061,7 @@ TEST_P(CrasAudioHandlerTest, HDMIRemainInactiveAfterSuspendResume) {
   // Manually set the active output to internal speaker.
   AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
   cras_audio_handler_->SwitchToDevice(AudioDevice(internal_speaker), true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   EXPECT_EQ(internal_speaker.id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
 
@@ -6291,7 +6292,7 @@ TEST_P(
   // Now USB is the preferred device among USB, internal and HDMI device.
   AudioDevice usb_output_device(usb_output);
   cras_audio_handler_->SwitchToDevice(usb_output_device, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   EXPECT_EQ(1, test_observer_->active_output_node_changed_count());
   EXPECT_TRUE(
@@ -6312,7 +6313,7 @@ TEST_P(
   // Activate internal speaker. Expect active device is the internal speaker.
   AudioDevice internal_speaker_device(internal_speaker);
   cras_audio_handler_->SwitchToDevice(internal_speaker_device, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   EXPECT_EQ(3, test_observer_->active_output_node_changed_count());
   EXPECT_TRUE(
@@ -6554,7 +6555,7 @@ TEST_P(CrasAudioHandlerTest,
   // Activate HDMI output device, expect HDMI output device becomes active.
   AudioDevice hdmi_output_device(hdmi_output);
   cras_audio_handler_->SwitchToDevice(hdmi_output_device, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   EXPECT_TRUE(
       cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
@@ -6645,7 +6646,7 @@ TEST_P(CrasAudioHandlerTest,
   // Activate USB input1 device, expect USB input1 device becomes active.
   AudioDevice usb_input1_device(usb_input1);
   cras_audio_handler_->SwitchToDevice(usb_input1_device, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   EXPECT_TRUE(cras_audio_handler_->GetPrimaryActiveInputDevice(&active_input));
   EXPECT_EQ(kUSBMic1->id, active_input.id);

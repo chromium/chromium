@@ -8,12 +8,21 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_id.h"
+#include "chromeos/ash/components/audio/device_activate_type.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
+
+// A callback of CrasAudioHandler::SwitchToDevice function, used to handle the
+// switch button on audio selection notification being clicked.
+using SwitchToDeviceCallback =
+    base::RepeatingCallback<void(const AudioDevice& device,
+                                 bool notify,
+                                 DeviceActivateType activate_by)>;
 
 // AudioSelectionNotificationHandler handles the creation and display of the
 // audio selection notification.
@@ -76,16 +85,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const AudioDeviceList& hotplug_input_devices,
       const AudioDeviceList& hotplug_output_devices,
       const std::optional<std::string>& active_input_device_name,
-      const std::optional<std::string>& active_output_device_name);
+      const std::optional<std::string>& active_output_device_name,
+      SwitchToDeviceCallback switch_to_device_callback);
 
  private:
   // Grant friend access for comprehensive testing of private/protected members.
   friend class AudioSelectionNotificationHandlerTest;
 
-  // Handles when the notification button is clicked.
-  void HandleNotificationClicked(bool is_settings_button,
-                                 const AudioDeviceList& devices_to_activate,
-                                 std::optional<int> button_index);
+  // Handles when the switch button is clicked.
+  void HandleSwitchButtonClicked(
+      const AudioDeviceList& devices_to_activate,
+      SwitchToDeviceCallback switch_to_device_callback,
+      std::optional<int> button_index);
 
   // Checks if one audio input device and one audio output device belong to the
   // same physical audio device.

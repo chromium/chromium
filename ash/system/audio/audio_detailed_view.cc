@@ -901,7 +901,7 @@ void AudioDetailedView::HandleViewClicked(views::View* view) {
     audio_handler->SwitchToFrontOrRearMic();
   } else {
     audio_handler->SwitchToDevice(device, true,
-                                  CrasAudioHandler::ACTIVATE_BY_USER);
+                                  DeviceActivateType::kActivateByUser);
   }
 }
 

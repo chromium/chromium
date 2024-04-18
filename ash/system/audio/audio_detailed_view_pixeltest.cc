@@ -47,9 +47,9 @@ TEST_F(AudioDetailedViewPixelTest, Basics) {
   AudioDevice output_device(FakeCrasAudioClient::Get()->node_list()[1]);
   AudioDevice input_device(FakeCrasAudioClient::Get()->node_list()[5]);
   audio_handler->SwitchToDevice(output_device, true,
-                                CrasAudioHandler::ACTIVATE_BY_USER);
+                                DeviceActivateType::kActivateByUser);
   audio_handler->SwitchToDevice(input_device, true,
-                                CrasAudioHandler::ACTIVATE_BY_USER);
+                                DeviceActivateType::kActivateByUser);
 
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
   system_tray->ShowBubble();
@@ -84,7 +84,7 @@ TEST_F(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
   client->SetNoiseCancellationSupported(true);
   audio_handler->RequestNoiseCancellationSupported(base::DoNothing());
   audio_handler->SwitchToDevice(AudioDevice(internal_mic_node), true,
-                                CrasAudioHandler::ACTIVATE_BY_USER);
+                                DeviceActivateType::kActivateByUser);
 
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
   system_tray->ShowBubble();

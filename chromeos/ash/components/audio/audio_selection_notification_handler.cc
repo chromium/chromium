@@ -93,7 +93,8 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
     const AudioDeviceList& hotplug_input_devices,
     const AudioDeviceList& hotplug_output_devices,
     const std::optional<std::string>& active_input_device_name,
-    const std::optional<std::string>& active_output_device_name) {
+    const std::optional<std::string>& active_output_device_name,
+    SwitchToDeviceCallback switch_to_device_callback) {
   // At least input or output has hotplug device.
   CHECK(!hotplug_input_devices.empty() || !hotplug_output_devices.empty());
 
@@ -177,9 +178,9 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              &AudioSelectionNotificationHandler::HandleNotificationClicked,
-              weak_ptr_factory_.GetWeakPtr(),
-              /*is_settings_button=*/false, devices_to_activate))};
+              &AudioSelectionNotificationHandler::HandleSwitchButtonClicked,
+              weak_ptr_factory_.GetWeakPtr(), devices_to_activate,
+              switch_to_device_callback))};
   auto* message_center = message_center::MessageCenter::Get();
   message_center->RemoveNotification(notification.id(),
                                      /*by_user=*/false);
@@ -189,12 +190,28 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
   // TODO(zhangwenyu): Add metrics to record notification is displayed.
 }
 
-void AudioSelectionNotificationHandler::HandleNotificationClicked(
-    bool is_settings_button,
+void AudioSelectionNotificationHandler::HandleSwitchButtonClicked(
     const AudioDeviceList& devices_to_activate,
+    SwitchToDeviceCallback switch_to_device_callback,
     std::optional<int> button_index) {
+  if (!button_index.has_value()) {
+    // Do not do anything when notification body is clicked. If the button is
+    // clicked, the button_index will have a value.
+    return;
+  }
+
   // TODO(zhangwenyu): Add metrics to record notification button clicked.
-  // TODO(zhangwenyu): Activate the devices when switch button is clicked.
+
+  // Activate audio devices.
+  for (const AudioDevice& device : devices_to_activate) {
+    switch_to_device_callback.Run(device, /*notify=*/true,
+                                  DeviceActivateType::kActivateByUser);
+  }
+
+  // Remove notification.
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->RemoveNotification(kAudioSelectionNotificationId,
+                                     /*by_user=*/true);
 }
 
 AudioSelectionNotificationHandler::NotificationTemplate

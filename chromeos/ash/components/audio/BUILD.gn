@@ -47,6 +47,7 @@ component("audio") {
     "cros_audio_config.h",
     "cros_audio_config_impl.cc",
     "cros_audio_config_impl.h",
+    "device_activate_type.h",
     "sounds.h",
   ]
 }

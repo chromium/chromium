@@ -62,13 +62,15 @@ void ShellAudioController::ActivateDevices() {
     const AudioDevice* device = GetDevice(devices, best_input);
     DCHECK(device);
     VLOG(1) << "Activating input device: " << device->ToString();
-    handler->SwitchToDevice(*device, true, CrasAudioHandler::ACTIVATE_BY_USER);
+    handler->SwitchToDevice(*device, true,
+                            ash::DeviceActivateType::kActivateByUser);
   }
   if (best_output && best_output != handler->GetPrimaryActiveOutputNode()) {
     const AudioDevice* device = GetDevice(devices, best_output);
     DCHECK(device);
     VLOG(1) << "Activating output device: " << device->ToString();
-    handler->SwitchToDevice(*device, true, CrasAudioHandler::ACTIVATE_BY_USER);
+    handler->SwitchToDevice(*device, true,
+                            ash::DeviceActivateType::kActivateByUser);
   }
 }
 

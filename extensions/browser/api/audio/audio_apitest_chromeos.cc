@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/device_activate_type.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/shell/test/shell_apitest.h"
@@ -201,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnInputMuteChanged) {
   // Set the jabra mic to be the active input device.
   AudioDevice jabra_mic(CreateAudioNode(kJabraMic1, 2));
   audio_handler()->SwitchToDevice(jabra_mic, true,
-                                  CrasAudioHandler::ACTIVATE_BY_USER);
+                                  ash::DeviceActivateType::kActivateByUser);
   EXPECT_EQ(kJabraMic1.id, audio_handler()->GetPrimaryActiveInputNode());
 
   // Un-mute the input.

@@ -222,9 +222,8 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
       const AudioDevice* audio_device =
           audio_handler()->GetDeviceFromId(device_id);
       DCHECK(audio_device);
-      audio_handler()->SwitchToDevice(
-          *audio_device, /*notify=*/true,
-          CrasAudioHandler::DeviceActivateType::ACTIVATE_BY_USER);
+      audio_handler()->SwitchToDevice(*audio_device, /*notify=*/true,
+                                      DeviceActivateType::kActivateByUser);
       if (audio_device->is_input) {
         MaybeWaitForInputDevice(device_id);
       } else {

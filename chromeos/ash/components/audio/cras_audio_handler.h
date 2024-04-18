@@ -239,13 +239,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     virtual ~AudioObserver();
   };
 
-  enum DeviceActivateType {
-    ACTIVATE_BY_PRIORITY = 0,
-    ACTIVATE_BY_USER,
-    ACTIVATE_BY_RESTORE_PREVIOUS_STATE,
-    ACTIVATE_BY_CAMERA
-  };
-
   enum class ClientType {
     CHROME = 0,
     ARC,
