@@ -1,29 +1,22 @@
-<style>
-  :host-context([dir='rtl']) #updateStatusButton {
-    /* Prevent checkmark from flipping in RTL. */
-    transform: none;
-  }
-</style>
-
 <cr-url-list-item id="crUrlListItem"
-    title="[[data.title]]"
-    description="[[data.displayUrl]]"
+    title="${this.data.title}"
+    description="${this.data.displayUrl}"
     reverse-elide-description
-    description-meta="[[data.displayTimeSinceUpdate]]"
-    url="[[data.url.url]]">
+    description-meta="${this.data.displayTimeSinceUpdate}"
+    url="${this.data.url.url}">
   <cr-icon-button slot="suffix" id="updateStatusButton" disable-ripple
-      aria-label="[[getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
-          '$i18n{tooltipMarkAsRead}', data.read)]]"
-      iron-icon="[[getUpdateStatusButtonIcon_('cr:check-circle',
-          'read-later:check-circle-outline', data.read)]]"
-      noink="[[!buttonRipples]]" no-ripple-on-focus
-      on-click="onUpdateStatusClick_"
-      title="[[getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
-          '$i18n{tooltipMarkAsRead}', data.read)]]">
+      aria-label="${this.getUpdateStatusButtonTooltip_(
+          '$i18n{tooltipMarkAsUnread}', '$i18n{tooltipMarkAsRead}')}"
+      iron-icon="${this.getUpdateStatusButtonIcon_('cr:check-circle',
+          'read-later:check-circle-outline')}"
+      ?noink="${!this.buttonRipples}" no-ripple-on-focus
+      @click="${this.onUpdateStatusClick_}"
+      title="${this.getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
+          '$i18n{tooltipMarkAsRead}')}">
   </cr-icon-button>
   <cr-icon-button slot="suffix" id="deleteButton"
       aria-label="$i18n{tooltipDelete}"
-      iron-icon="cr:close" noink="[[!buttonRipples]]" no-ripple-on-focus
-      on-click="onItemDeleteClick_" title="$i18n{tooltipDelete}">
+      iron-icon="cr:close" ?noink="${!this.buttonRipples}" no-ripple-on-focus
+      @click="${this.onItemDeleteClick_}" title="$i18n{tooltipDelete}">
   </cr-icon-button>
 </cr-url-list-item>

@@ -6,8 +6,12 @@ const path = require('node:path');
 
 const POLYMER_IMPORT =
     `import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';`;
+const POLYMER_IMPORT_WITH_SCHEME =
+    `import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';`;
 const LIT_IMPORT =
     `import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';`;
+const LIT_IMPORT_WITH_SCHEME =
+    `import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';`;
 
 const OLD_GET_TEMPLATE = `static get template() {
     return getTemplate();
@@ -38,6 +42,7 @@ module.exports = function transformer(file, api) {
 
   // Step 1: Replace PolymerElement import.
   source = source.replace(POLYMER_IMPORT, LIT_IMPORT);
+  source = source.replace(POLYMER_IMPORT_WITH_SCHEME, LIT_IMPORT_WITH_SCHEME);
 
   // Step 2: Replace getTemplate import.
   const basename = path.basename(file.path, '.ts');
