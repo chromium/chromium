@@ -741,6 +741,10 @@ using base::UserMetricsAction;
 
   // Dismiss any inline autocomplete. The user expectation is to not have it.
   [self.textField clearAutocompleteText];
+
+  if (IsRichAutocompletionEnabled() && _textChangeDelegate) {
+    _textChangeDelegate->OnRemoveAdditionalText();
+  }
 }
 
 @end
