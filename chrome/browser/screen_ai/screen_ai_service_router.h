@@ -34,6 +34,9 @@ class ScreenAIServiceRouter : public KeyedService,
     kOCR,
   };
 
+  // TODO(crbug.com/330716441): Make the constructor private and only available
+  // to ScreenAIServiceRouterFactory to ensure all clients are using the service
+  // which is created for their profile.
   ScreenAIServiceRouter();
   ScreenAIServiceRouter(const ScreenAIServiceRouter&) = delete;
   ScreenAIServiceRouter& operator=(const ScreenAIServiceRouter&) = delete;

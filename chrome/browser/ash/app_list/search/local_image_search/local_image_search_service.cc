@@ -50,6 +50,7 @@ LocalImageSearchService::LocalImageSearchService(Profile* profile)
           std::make_unique<ImageAnnotationWorker>(
               file_manager::util::GetMyFilesFolderForProfile(profile),
               GetTrashPaths(profile),
+              profile,
               /*use_file_watchers=*/true,
               search_features::IsLauncherImageSearchOcrEnabled(),
               search_features::IsLauncherImageSearchIcaEnabled())) {

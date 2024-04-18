@@ -1,0 +1,139 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/screen_ai/optical_character_recognizer.h"
+
+#include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
+#include "content/public/browser/browser_thread.h"
+
+namespace {
+
+class SequenceBoundReceiver {
+ public:
+  SequenceBoundReceiver() = default;
+  ~SequenceBoundReceiver() = default;
+
+  void OnReceivedOCR(
+      base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)> callback,
+      screen_ai::mojom::VisualAnnotationPtr visual_annotation) {
+    std::move(callback).Run(std::move(visual_annotation));
+  }
+};
+
+}  // namespace
+
+namespace screen_ai {
+
+OpticalCharacterRecognizer::OpticalCharacterRecognizer(Profile* profile)
+    : RefCountedDeleteOnSequence<OpticalCharacterRecognizer>(
+          content::GetUIThreadTaskRunner()),
+      profile_(profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  ScreenAIServiceRouter* router =
+      ScreenAIServiceRouterFactory::GetForBrowserContext(profile);
+
+  // Trigger service initialization to get a feedback when it's ready.
+  scoped_refptr<OpticalCharacterRecognizer> ref_ptr(this);
+  router->GetServiceStateAsync(
+      ScreenAIServiceRouter::Service::kOCR,
+      base::BindOnce(&OpticalCharacterRecognizer::OnOCRInitializationCallback,
+                     ref_ptr));
+  profile_observer_.Observe(profile_);
+}
+
+void OpticalCharacterRecognizer::OnOCRInitializationCallback(bool successful) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If the profile is already destroyed, stop here.
+  if (!profile_) {
+    ready_ = false;
+    return;
+  }
+
+  // This should be called only once.
+  DCHECK(!screen_ai_annotator_);
+  ready_ = successful;
+
+  if (successful) {
+    screen_ai_annotator_ =
+        std::make_unique<mojo::Remote<mojom::ScreenAIAnnotator>>();
+
+    ScreenAIServiceRouter* router =
+        ScreenAIServiceRouterFactory::GetForBrowserContext(profile_);
+
+    router->BindScreenAIAnnotator(
+        screen_ai_annotator_->BindNewPipeAndPassReceiver());
+    screen_ai_annotator_->reset_on_disconnect();
+  }
+
+  // Profile is not needed any more.
+  profile_ = nullptr;
+  profile_observer_.Reset();
+}
+
+void OpticalCharacterRecognizer::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (screen_ai_annotator_) {
+    screen_ai_annotator_.reset();
+  }
+  profile_ = nullptr;
+  ready_ = false;
+  profile_observer_.Reset();
+}
+
+OpticalCharacterRecognizer::~OpticalCharacterRecognizer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void OpticalCharacterRecognizer::PerformOCR(
+    const ::SkBitmap& image,
+    base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)> callback) {
+  if (!screen_ai_annotator_) {
+    VLOG(0)
+        << "PerformOCR called before the service is ready, returning empty.";
+    std::move(callback).Run(mojom::VisualAnnotation::New());
+    return;
+  }
+
+  if (::content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    (*screen_ai_annotator_)
+        ->PerformOcrAndReturnAnnotation(image, std::move(callback));
+    return;
+  }
+
+  // This function can be called on a different sequence, but only on one
+  // sequence other than the UI thread.
+  if (!sequence_bound_receiver_) {
+    sequence_bound_receiver_ =
+        std::make_unique<base::SequenceBound<SequenceBoundReceiver>>(
+            base::SequencedTaskRunner::GetCurrentDefault());
+  }
+
+  scoped_refptr<OpticalCharacterRecognizer> ref_ptr(this);
+  content::GetUIThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::BindOnce(
+          [](scoped_refptr<OpticalCharacterRecognizer> ocr,
+             const SkBitmap& image,
+             base::OnceCallback<void(mojom::VisualAnnotationPtr)> callback) {
+            (*ocr->screen_ai_annotator_)
+                ->PerformOcrAndReturnAnnotation(image, std::move(callback));
+          },
+          ref_ptr, std::move(image),
+          base::BindOnce(
+              [](scoped_refptr<OpticalCharacterRecognizer> ocr,
+                 base::OnceCallback<void(mojom::VisualAnnotationPtr)> callback,
+                 screen_ai::mojom::VisualAnnotationPtr visual_annotation) {
+                ocr->sequence_bound_receiver_
+                    ->AsyncCall(&SequenceBoundReceiver::OnReceivedOCR)
+                    .WithArgs(std::move(callback),
+                              std::move(visual_annotation));
+              },
+              ref_ptr, std::move(callback)))));
+}
+
+}  // namespace screen_ai

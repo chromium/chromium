@@ -61,7 +61,9 @@ class ImageAnnotationWorkerTest : public testing::Test {
     std::vector<base::FilePath> excluded_paths = {
         test_directory_.AppendASCII("TrashBin")};
     annotation_worker_ = std::make_unique<ImageAnnotationWorker>(
-        test_directory_, std::move(excluded_paths), /*use_file_watchers=*/false,
+        test_directory_, std::move(excluded_paths),
+        /*profile=*/nullptr,
+        /*use_file_watchers=*/false,
         /*use_ocr=*/false,
         /*use_ica=*/false);
     bar_image_path_ = test_directory_.AppendASCII("bar.jpg");
@@ -327,7 +329,8 @@ TEST_F(ImageAnnotationWorkerTest, IgnoreWhenLimitReachedTest) {
   std::vector<base::FilePath> excluded_paths = {
       test_directory_.AppendASCII("TrashBin")};
   annotation_worker_ = std::make_unique<ImageAnnotationWorker>(
-      test_directory_, std::move(excluded_paths), /*use_file_watchers=*/false,
+      test_directory_, std::move(excluded_paths), /*profile=*/nullptr,
+      /*use_file_watchers=*/false,
       /*use_ocr=*/false,
       /*use_ica=*/false);
 

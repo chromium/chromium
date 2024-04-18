@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace app_list {
@@ -192,6 +193,7 @@ bool IsPathExcluded(const base::FilePath& path,
 ImageAnnotationWorker::ImageAnnotationWorker(
     const base::FilePath& root_path,
     const std::vector<base::FilePath>& excluded_paths,
+    Profile* profile,
     bool use_file_watchers,
     bool use_ocr,
     bool use_ica)
@@ -208,6 +210,13 @@ ImageAnnotationWorker::ImageAnnotationWorker(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  if (use_ocr_) {
+    CHECK(profile);
+    // `OpticalCharacterRecognizer` should be created on the UI thread.
+    optical_character_recognizer_ =
+        base::MakeRefCounted<screen_ai::OpticalCharacterRecognizer>(profile);
+  }
 }
 
 ImageAnnotationWorker::~ImageAnnotationWorker() = default;
@@ -219,11 +228,6 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 
   on_file_change_callback_ = base::BindRepeating(
       &ImageAnnotationWorker::OnFileChange, weak_ptr_factory_.GetWeakPtr());
-
-  if (use_ocr_) {
-    DVLOG(1) << "Initializing OCR DLC.";
-    optical_character_recognizer_.InitializeComponent();
-  }
 
   if (use_ica_) {
     DVLOG(1) << "Initializing ICA DLC.";
@@ -239,7 +243,8 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 
 void ImageAnnotationWorker::OnDlcInstalled() {
   bool is_ica_dlc_installed = image_content_annotator_.IsDlcInitialized();
-  bool is_ocr_dlc_installed = optical_character_recognizer_.IsServiceReady();
+  bool is_ocr_dlc_installed = optical_character_recognizer_ &&
+                              optical_character_recognizer_->is_ready();
 
   if ((use_ocr_ && !is_ocr_dlc_installed) ||
       (use_ica_ && !is_ica_dlc_installed)) {
@@ -320,7 +325,6 @@ void ImageAnnotationWorker::ProcessNextItem() {
         "QueueProcessingTime",
         base::TimeTicks::Now() - queue_processing_start_time_);
     image_content_annotator_.DisconnectAnnotator();
-    optical_character_recognizer_.DisconnectAnnotator();
     return;
   }
 
@@ -455,7 +459,7 @@ void ImageAnnotationWorker::OnDecodeImageFile(
   if (use_ocr_ && use_ica_) {
     LogIndexingUma(IndexingStatus::kOcrStart);
     LogIndexingUma(IndexingStatus::kIcaStart);
-    optical_character_recognizer_.ReadImage(
+    optical_character_recognizer_->PerformOCR(
         *image_skia.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
                        weak_ptr_factory_.GetWeakPtr(), image_info)
@@ -470,7 +474,7 @@ void ImageAnnotationWorker::OnDecodeImageFile(
 
   if (use_ocr_) {
     LogIndexingUma(IndexingStatus::kOcrStart);
-    optical_character_recognizer_.ReadImage(
+    optical_character_recognizer_->PerformOCR(
         *image_skia.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
                        weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
