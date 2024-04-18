@@ -235,7 +235,7 @@ BASE_FEATURE(kDMServerOAuthForChildUser,
 
 BASE_FEATURE(kEnableWatermarkView,
              "EnableWatermarkView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Whether to allow installed-by-default web apps to be installed or not.
