@@ -2274,6 +2274,15 @@
     "expires": "Jul 1, 2024"
   },
   {
+    "prefix": "fedcm-register",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/credential-management/fedcm-register/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=FedCmIdPregistration"],
+    "owners": ["cbiesinger@chromium.org", "goto@chromium.org"],
+    "expires": "May 1, 2025"
+  },
+  {
     "prefix": "scoped-custom-element-registry-disabled",
     "owners": ["masonf@chromium.org", "dizhangg@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],

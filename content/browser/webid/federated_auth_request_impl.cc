@@ -674,6 +674,14 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
+  bool intercept = false;
+  bool should_complete_request_immediately = false;
+  devtools_instrumentation::WillSendFedCmRequest(
+      render_frame_host(), &intercept, &should_complete_request_immediately);
+  should_complete_request_immediately =
+      (intercept && should_complete_request_immediately) ||
+      api_permission_delegate_->ShouldCompleteRequestImmediately();
+
   MaybeCreateFedCmMetrics();
   fedcm_metrics_->SetNewSessionID(webid::GetNewSessionID());
   // Expand the providers list with registered providers.
@@ -681,6 +689,23 @@ void FederatedAuthRequestImpl::RequestToken(
     for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
       std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers =
           MaybeAddRegisteredProviders(idp_get_params_ptr->providers);
+      if (providers.empty()) {
+        render_frame_host().AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kError,
+            "No identity providers are registered.");
+        base::TimeDelta delay;
+        if (!should_complete_request_immediately) {
+          delay = GetRandomRejectionTime();
+        }
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), RequestTokenStatus::kError,
+                           std::nullopt, "",
+                           /*error=*/nullptr,
+                           /*is_auto_selected=*/false),
+            delay);
+        return;
+      }
       idp_get_params_ptr->providers = std::move(providers);
     }
   }
@@ -793,14 +818,7 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   }
 
-  bool intercept = false;
-  bool should_complete_request_immediately = false;
-  devtools_instrumentation::WillSendFedCmRequest(
-      render_frame_host(), &intercept, &should_complete_request_immediately);
-  should_complete_request_immediately_ =
-      (intercept && should_complete_request_immediately) ||
-      api_permission_delegate_->ShouldCompleteRequestImmediately();
-
+  should_complete_request_immediately_ = should_complete_request_immediately;
   mediation_requirement_ = requirement;
   auth_request_token_callback_ = std::move(callback);
   webid::GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(this);
