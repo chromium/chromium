@@ -197,6 +197,26 @@ TEST_F(AutofillPopupControllerImplTest,
                   .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
 }
 
+// Tests that if the popup is shown in the *main frame*, changing the zoom hides
+// the popup.
+TEST_F(AutofillPopupControllerImplTest, HideInMainFrameOnZoomChange) {
+  zoom::ZoomController::CreateForWebContents(web_contents());
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  // Triggered by OnZoomChanged().
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kContentAreaMoved));
+  // Override the default ON_CALL behavior to do nothing to avoid destroying the
+  // hide helper. We want to test ZoomObserver events explicitly.
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kWidgetChanged))
+      .WillOnce(Return());
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());
+  zoom_controller->SetZoomLevel(zoom_controller->GetZoomLevel() + 1.0);
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 

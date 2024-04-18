@@ -44,9 +44,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -55,7 +53,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -602,200 +599,6 @@ TEST_F(AutofillSuggestionControllerTest, CheckBoundsOverlapWithPictureInPicture)
   picture_in_picture_window_manager->NotifyObserversOnEnterPictureInPicture();
 }
 
-// TODO(crbug.com/333316034): Move these tests into their own separate test file
-// for `AutofillKeyboardAccessoryAdapterImpl`.
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(AutofillSuggestionControllerTest,
-       GetRemovalConfirmationText_UnrelatedPopupItemId) {
-  std::u16string title;
-  std::u16string body;
-  ShowSuggestions(
-      manager(),
-      {Suggestion(u"Entry", PopupItemId::kAddressFieldByFieldFilling)});
-
-  EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body));
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       GetRemovalConfirmationText_InvalidUniqueId) {
-  std::u16string title;
-  std::u16string body;
-  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
-                                 PopupItemId::kAddressFieldByFieldFilling,
-                                 u"Entry", Suggestion::Guid("1111"))});
-
-  EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body));
-}
-
-TEST_F(AutofillSuggestionControllerTest, GetRemovalConfirmationText_Autocomplete) {
-  std::u16string title;
-  std::u16string body;
-  ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
-                                         PopupItemId::kAutocompleteEntry)});
-
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body));
-  EXPECT_EQ(title, u"Autocomplete entry");
-  EXPECT_EQ(body,
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       GetRemovalConfirmationText_LocalCreditCard) {
-  CreditCard local_card = test::GetCreditCard();
-  personal_data().AddCreditCard(local_card);
-
-  std::u16string title;
-  std::u16string body;
-  ShowSuggestions(manager(),
-                  {test::CreateAutofillSuggestion(
-                      PopupItemId::kCreditCardEntry, u"Local credit card",
-                      Suggestion::Guid(local_card.guid()))});
-
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body));
-  EXPECT_EQ(title, local_card.CardNameAndLastFourDigits());
-  EXPECT_EQ(body,
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       GetRemovalConfirmationText_ServerCreditCard) {
-  CreditCard server_card = test::GetMaskedServerCard();
-  personal_data().AddServerCreditCard(server_card);
-
-  std::u16string title;
-  std::u16string body;
-  ShowSuggestions(manager(),
-                  {test::CreateAutofillSuggestion(
-                      PopupItemId::kCreditCardEntry, u"Server credit card",
-                      Suggestion::Guid(server_card.guid()))});
-
-  EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body));
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       GetRemovalConfirmationText_CompleteAutofillProfile) {
-  AutofillProfile complete_profile = test::GetFullProfile();
-  personal_data().AddProfile(complete_profile);
-
-  std::u16string title;
-  std::u16string body;
-  ShowSuggestions(manager(),
-                  {test::CreateAutofillSuggestion(
-                      PopupItemId::kAddressEntry, u"Complete autofill profile",
-                      Suggestion::Guid(complete_profile.guid()))});
-
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body));
-  EXPECT_EQ(title, complete_profile.GetRawInfo(ADDRESS_HOME_CITY));
-  EXPECT_EQ(body,
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       GetRemovalConfirmationText_AutofillProfile_EmptyCity) {
-  AutofillProfile profile = test::GetFullProfile();
-  profile.ClearFields({ADDRESS_HOME_CITY});
-  personal_data().AddProfile(profile);
-
-  std::u16string title;
-  std::u16string body;
-  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
-                                 PopupItemId::kAddressEntry,
-                                 u"Autofill profile without city",
-                                 Suggestion::Guid(profile.guid()))});
-
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body));
-  EXPECT_EQ(title, u"Autofill profile without city");
-  EXPECT_EQ(body,
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-}
-
-TEST_F(AutofillSuggestionControllerTest, AcceptPwdSuggestionInvokesWarningAndroid) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
-  EXPECT_CALL(client().show_pwd_migration_warning_callback(),
-              Run(_, _,
-                  password_manager::metrics_util::
-                      PasswordMigrationWarningTriggers::kKeyboardAcessoryBar));
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       AcceptUsernameSuggestionInvokesWarningAndroid) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
-  EXPECT_CALL(client().show_pwd_migration_warning_callback(), Run);
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       AcceptPwdSuggestionNoWarningIfDisabledAndroid) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
-  EXPECT_CALL(client().show_pwd_migration_warning_callback(), Run).Times(0);
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-TEST_F(AutofillSuggestionControllerTest, AcceptAddressNoPwdWarningAndroid) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
-  EXPECT_CALL(client().show_pwd_migration_warning_callback(), Run).Times(0);
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-// When a suggestion is accepted, the popup is hidden inside
-// `delegate->DidAcceptSuggestion()`. On Android, some code is still being
-// executed after hiding. This test makes sure no use-after-free, null pointer
-// dereferencing or other memory violations occur.
-TEST_F(AutofillSuggestionControllerTest, AcceptSuggestionIsMemorySafe) {
-  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion)
-      .WillOnce([this]() {
-        client().popup_controller(manager()).Hide(
-            PopupHidingReason::kAcceptSuggestion);
-      });
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
-}
-
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Tests that a change to a text field does not hide a popup with an
 // Autocomplete suggestion.
 TEST_F(AutofillSuggestionControllerTest,
@@ -930,27 +733,5 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
               Hide(PopupHidingReason::kRendererEvent));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-// Tests that if the popup is shown in the *main frame*, changing the zoom hides
-// the popup.
-TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInMainFrameOnZoomChange) {
-  zoom::ZoomController::CreateForWebContents(web_contents());
-  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  // Triggered by OnZoomChanged().
-  EXPECT_CALL(client().popup_controller(manager()),
-              Hide(PopupHidingReason::kContentAreaMoved));
-  // Override the default ON_CALL behavior to do nothing to avoid destroying the
-  // hide helper. We want to test ZoomObserver events explicitly.
-  EXPECT_CALL(client().popup_controller(manager()),
-              Hide(PopupHidingReason::kWidgetChanged))
-      .WillOnce(Return());
-  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());
-  zoom_controller->SetZoomLevel(zoom_controller->GetZoomLevel() + 1.0);
-  // Verify and clear before TearDown() closes the popup.
-  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
