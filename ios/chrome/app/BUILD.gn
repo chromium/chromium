@@ -246,6 +246,8 @@ source_set("app_metrics_app_state_agent") {
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
 }

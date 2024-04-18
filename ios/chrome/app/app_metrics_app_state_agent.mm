@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
 
 namespace {
@@ -60,8 +62,8 @@ NSString* const kDeferredInitializationBlocksComplete =
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (previousInitStage == InitStageSafeMode) {
-    // Log session start if the app is already foreground
+  if (appState.initStage == InitStageBrowserObjectsForBackgroundHandlers) {
+    // Log session start if the app is already foreground.
     if (self.appState.foregroundScenes.count > 0) {
       [self handleSessionStart];
     }
@@ -76,11 +78,13 @@ NSString* const kDeferredInitializationBlocksComplete =
     self.appState.startupInformation.firstSceneConnectionTime =
         base::TimeTicks::Now();
     self.firstSceneHasConnected = YES;
-    if (self.appState.initStage > InitStageSafeMode)
+    if (self.appState.initStage >=
+        InitStageBrowserObjectsForBackgroundHandlers) {
       [MetricsMediator createStartupTrackingTask];
+    }
   }
 
-  if (self.appState.initStage <= InitStageSafeMode) {
+  if (self.appState.initStage < InitStageBrowserObjectsForBackgroundHandlers) {
     return;
   }
 
@@ -129,9 +133,17 @@ NSString* const kDeferredInitializationBlocksComplete =
 - (void)handleSessionStart {
   self.appState.lastTimeInForeground = base::TimeTicks::Now();
 
-  IOSProfileSessionDurationsService* psdService = [self psdService];
-  if (psdService) {
-    psdService->OnSessionStarted(self.appState.lastTimeInForeground);
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    IOSProfileSessionDurationsService* psdService =
+        IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
+            browserState);
+    if (psdService) {
+      psdService->OnSessionStarted(self.appState.lastTimeInForeground);
+    }
   }
 }
 
@@ -145,23 +157,20 @@ NSString* const kDeferredInitializationBlocksComplete =
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
                              base::Milliseconds(1), base::Hours(24), 50);
 
-  IOSProfileSessionDurationsService* psdService = [self psdService];
-  if (psdService) {
-    psdService->OnSessionEnded(duration);
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    IOSProfileSessionDurationsService* psdService =
+        IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
+            browserState);
+    if (psdService) {
+      psdService->OnSessionEnded(duration);
+    }
+
+    self.appState.lastTimeInForeground = base::TimeTicks();
   }
-
-  self.appState.lastTimeInForeground = base::TimeTicks();
-}
-
-// TODO(b/326183375): Avoid using appState.mainBrowserState. Evaluate if this
-// should be run for multiple browser states.
-- (IOSProfileSessionDurationsService*)psdService {
-  if (!self.appState.mainBrowserState) {
-    return nil;
-  }
-
-  return IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
-      self.appState.mainBrowserState);
 }
 
 @end
