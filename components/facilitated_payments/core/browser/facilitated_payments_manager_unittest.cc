@@ -229,6 +229,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList features_;
   optimization_guide::OptimizationGuideDecision allowlist_result_;
   mojom::PixCodeDetectionResult pix_code_detection_result_;
   std::unique_ptr<MockOptimizationGuideDecider> optimization_guide_decider_;
@@ -818,6 +819,42 @@ TEST_F(FacilitatedPaymentsManagerTest,
                                      /*selected_instrument_id=*/-1);
 }
 
+TEST_F(FacilitatedPaymentsManagerTest,
+       TriggerPixDetectionOnDomContentLoadedExpDisabled_Ukm) {
+  features_.InitAndDisableFeature(kEnablePixDetectionOnDomContentLoaded);
+
+  manager_->ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
+      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
+           kDetectionTriggeredOnDomContentLoadedName});
+
+  // Verify that the UKM metrics are logged.
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("DetectionTriggeredOnDomContentLoaded"),
+            false);
+}
+
+TEST_F(FacilitatedPaymentsManagerTest,
+       TriggerPixDetectionOnDomContentLoadedExpEnabled_Ukm) {
+  features_.InitAndEnableFeature(kEnablePixDetectionOnDomContentLoaded);
+
+  manager_->ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
+      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
+           kDetectionTriggeredOnDomContentLoadedName});
+
+  // Verify that the UKM metrics are logged.
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("DetectionTriggeredOnDomContentLoaded"),
+            true);
+}
+
 // A test fixture for the facilitated payment manager with the
 // kEnablePixPayments feature flag disabled.
 class FacilitatedPaymentsManagerWithPixPaymentsDisabledTest
@@ -828,9 +865,6 @@ class FacilitatedPaymentsManagerWithPixPaymentsDisabledTest
   }
 
   ~FacilitatedPaymentsManagerWithPixPaymentsDisabledTest() override = default;
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 // If the kEnablePixPayments flag is disabled when a valid PIX code is detected,
@@ -853,9 +887,6 @@ class FacilitatedPaymentsManagerWithPixPaymentsEnabledTest
   }
 
   ~FacilitatedPaymentsManagerWithPixPaymentsEnabledTest() override = default;
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 // If the kEnablePixPayments flag is enabled when a valid PIX code is detected,

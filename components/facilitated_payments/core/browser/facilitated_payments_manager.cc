@@ -131,6 +131,8 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
       .SetResult(static_cast<uint8_t>(result))
       .SetLatencyInMillis(GetPixCodeDetectionLatencyInMillis())
       .SetAttempts(pix_code_detection_attempt_count_)
+      .SetDetectionTriggeredOnDomContentLoaded(
+          base::FeatureList::IsEnabled(kEnablePixDetectionOnDomContentLoaded))
       .Record(ukm::UkmRecorder::Get());
 
   if (result == mojom::PixCodeDetectionResult::kValidPixCodeFound &&

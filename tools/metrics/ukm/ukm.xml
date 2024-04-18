@@ -9979,6 +9979,19 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="DetectionTriggeredOnDomContentLoaded" enum="Boolean">
+    <summary>
+      Whether PIX code detection was triggered on DOMContentLoaded instead of
+      DidFinishLoad.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="LatencyInMillis">
     <summary>
       The duration (in milliseconds) for how long it took to scan the document
