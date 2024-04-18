@@ -115,21 +115,20 @@ chromium-metrics-reviews@google.com.
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Time elapsed from attempting to start Fast Pair Advertising to it ending or
-    an error occurring. Recorded when unregistering the advertisement or when
-    there's an error attempting to register the advertisement.
+    Time elapsed from attempting to start Fast Pair Advertising to it ending.
+    Recorded after unregistering the advertisement. It is not recorded when an
+    error occurs attempting to register/unregister the advertisement.
   </summary>
 </histogram>
 
 <histogram name="QuickStart.FastPairAdvertisementEnded.ErrorCode"
-    enum="QuickStartFastPairAdvertisingEndedErrorCode"
-    expires_after="2024-12-01">
+    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Reason a Fast Pair BLE advertisment failed to register. Recorded whenever a
-    Bluetooth Advertisement error occurs after attempting to register the
+    Reason a Fast Pair BLE advertisment failed to unregister. Recorded whenever
+    a Bluetooth Advertisement error occurs after attempting to unregister the
     advertisement.
   </summary>
 </histogram>
@@ -140,20 +139,33 @@ chromium-metrics-reviews@google.com.
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Whether Fast Pair advertising was successful. Recorded when unregistering
-    the advertisement or when there's an error attempting to register the
-    advertisement.
+    Whether unregistering the Fast Pair advertisement was successful. Recorded
+    after unregistering the advertisement or when there's an error attempting to
+    unregister the advertisement.
   </summary>
 </histogram>
 
-<histogram name="QuickStart.FastPairAdvertisementStarted"
-    enum="BooleanAttempted" expires_after="2024-12-01">
+<histogram name="QuickStart.FastPairAdvertisementStarted.ErrorCode"
+    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Whether Fast Pair advertising is started. Recorded before attempting to
-    register advertisement.
+    Reason a Fast Pair BLE advertisment failed to register. Recorded whenever a
+    Bluetooth Advertisement error occurs after attempting to register the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementStarted.Succeeded"
+    enum="BooleanSuccess" expires_after="2024-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether Fast Pair advertising is started successfully. Recorded after the
+    advertisement is succesfully registered or when there's an error attempting
+    to register the advertisement.
   </summary>
 </histogram>
 
@@ -342,6 +354,68 @@ chromium-metrics-reviews@google.com.
   <summary>
     The message type sent to the remote device. Recorded before writing stream
     of bytes.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.NearbyConnectionsAdvertisementEnded.Duration"
+    units="ms" expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Time elapsed during Nearby Connections advertisement. Recorded after
+    successfully stopping the advertisement. It is not recorded when an error
+    occurs attempting to start/stop the advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.NearbyConnectionsAdvertisementEnded.ErrorCode"
+    enum="QuickStartNearbyConnectionsAdvertisingErrorCode"
+    expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Reason a Nearby Connections advertisement failed to stop. Recorded whenever
+    a Nearby Connections error occurs after attempting to stop the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.NearbyConnectionsAdvertisementEnded.Succeeded"
+    enum="BooleanSuccess" expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether the Nearby Connections advertisement was successfully stopped.
+    Recorded after the advertisement succesfully stops or an error occurs after
+    attempting to stop the advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.NearbyConnectionsAdvertisementStarted.ErrorCode"
+    enum="QuickStartNearbyConnectionsAdvertisingErrorCode"
+    expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Reason a Nearby Connections advertisement failed to start. Recorded whenever
+    a Nearby Connections error occurs after attempting to start the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.NearbyConnectionsAdvertisementStarted.Succeeded"
+    enum="BooleanSuccess" expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether Nearby Connections advertising is started successfully. Recorded
+    when advertising successfully starts or when an error occurs after
+    attempting to start.
   </summary>
 </histogram>
 

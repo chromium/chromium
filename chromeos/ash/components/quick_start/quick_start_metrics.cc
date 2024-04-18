@@ -38,8 +38,25 @@ constexpr const char kFastPairAdvertisementEndedDurationHistogramName[] =
     "QuickStart.FastPairAdvertisementEnded.Duration";
 constexpr const char kFastPairAdvertisementEndedErrorCodeHistogramName[] =
     "QuickStart.FastPairAdvertisementEnded.ErrorCode";
-constexpr const char kFastPairAdvertisementStartedHistogramName[] =
-    "QuickStart.FastPairAdvertisementStarted";
+constexpr const char kFastPairAdvertisementStartedSucceededHistogramName[] =
+    "QuickStart.FastPairAdvertisementStarted.Succeeded";
+constexpr const char kFastPairAdvertisementStartedErrorCodeHistogramName[] =
+    "QuickStart.FastPairAdvertisementStarted.ErrorCode";
+constexpr const char
+    kNearbyConnectionsAdvertisementEndedSucceededHistogramName[] =
+        "QuickStart.NearbyConnectionsAdvertisementEnded.Succeeded";
+constexpr const char
+    kNearbyConnectionsAdvertisementEndedDurationHistogramName[] =
+        "QuickStart.NearbyConnectionsAdvertisementEnded.Duration";
+constexpr const char
+    kNearbyConnectionsAdvertisementEndedErrorCodeHistogramName[] =
+        "QuickStart.NearbyConnectionsAdvertisementEnded.ErrorCode";
+constexpr const char
+    kNearbyConnectionsAdvertisementStartedSucceededHistogramName[] =
+        "QuickStart.NearbyConnectionsAdvertisementStarted.Succeeded";
+constexpr const char
+    kNearbyConnectionsAdvertisementStartedErrorCodeHistogramName[] =
+        "QuickStart.NearbyConnectionsAdvertisementStarted.ErrorCode";
 constexpr const char kAuthenticationMethodHistogramName[] =
     "QuickStart.AuthenticationMethod";
 constexpr const char kMessageReceivedWifiCredentials[] =
@@ -368,11 +385,22 @@ QuickStartMetrics::QuickStartMetrics() = default;
 
 QuickStartMetrics::~QuickStartMetrics() = default;
 
-void QuickStartMetrics::RecordFastPairAdvertisementStarted() {
+void QuickStartMetrics::RecordFastPairAdvertisementStarted(
+    bool succeeded,
+    std::optional<FastPairAdvertisingErrorCode> error_code) {
   CHECK(!fast_pair_advertising_timer_);
 
-  fast_pair_advertising_timer_ = std::make_unique<base::ElapsedTimer>();
-  base::UmaHistogramBoolean(kFastPairAdvertisementStartedHistogramName, true);
+  if (succeeded) {
+    CHECK(!error_code.has_value());
+    fast_pair_advertising_timer_ = std::make_unique<base::ElapsedTimer>();
+  } else {
+    CHECK(error_code.has_value());
+    base::UmaHistogramEnumeration(
+        kFastPairAdvertisementStartedErrorCodeHistogramName,
+        error_code.value());
+  }
+  base::UmaHistogramBoolean(kFastPairAdvertisementStartedSucceededHistogramName,
+                            succeeded);
 }
 
 void QuickStartMetrics::RecordFastPairAdvertisementEnded(
@@ -384,6 +412,8 @@ void QuickStartMetrics::RecordFastPairAdvertisementEnded(
 
   if (succeeded) {
     CHECK(!error_code.has_value());
+    base::UmaHistogramTimes(kFastPairAdvertisementEndedDurationHistogramName,
+                            duration);
   } else {
     CHECK(error_code.has_value());
     base::UmaHistogramEnumeration(
@@ -391,20 +421,51 @@ void QuickStartMetrics::RecordFastPairAdvertisementEnded(
   }
   base::UmaHistogramBoolean(kFastPairAdvertisementEndedSucceededHistogramName,
                             succeeded);
-  base::UmaHistogramTimes(kFastPairAdvertisementEndedDurationHistogramName,
-                          duration);
 
   fast_pair_advertising_timer_.reset();
 }
 
-void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted() {
-  // TODO(b/279614071): Add advertising metrics.
+void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted(
+    bool succeeded,
+    std::optional<NearbyConnectionsAdvertisingErrorCode> error_code) {
+  CHECK(!nearby_connections_advertising_timer_);
+
+  if (succeeded) {
+    CHECK(!error_code.has_value());
+    nearby_connections_advertising_timer_ =
+        std::make_unique<base::ElapsedTimer>();
+  } else {
+    CHECK(error_code.has_value());
+    base::UmaHistogramEnumeration(
+        kNearbyConnectionsAdvertisementStartedErrorCodeHistogramName,
+        error_code.value());
+  }
+
+  base::UmaHistogramBoolean(
+      kNearbyConnectionsAdvertisementStartedSucceededHistogramName, succeeded);
 }
 
 void QuickStartMetrics::RecordNearbyConnectionsAdvertisementEnded(
     bool succeeded,
     std::optional<NearbyConnectionsAdvertisingErrorCode> error_code) {
-  // TODO(b/279614071): Add advertising metrics.
+  CHECK(nearby_connections_advertising_timer_);
+
+  base::TimeDelta duration = nearby_connections_advertising_timer_->Elapsed();
+
+  if (succeeded) {
+    CHECK(!error_code.has_value());
+    base::UmaHistogramTimes(
+        kNearbyConnectionsAdvertisementEndedDurationHistogramName, duration);
+  } else {
+    CHECK(error_code.has_value());
+    base::UmaHistogramEnumeration(
+        kNearbyConnectionsAdvertisementEndedErrorCodeHistogramName,
+        error_code.value());
+  }
+  base::UmaHistogramBoolean(
+      kNearbyConnectionsAdvertisementEndedSucceededHistogramName, succeeded);
+
+  nearby_connections_advertising_timer_.reset();
 }
 
 void QuickStartMetrics::RecordHandshakeStarted() {

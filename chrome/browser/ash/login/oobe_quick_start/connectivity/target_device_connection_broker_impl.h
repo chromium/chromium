@@ -120,6 +120,7 @@ class TargetDeviceConnectionBrokerImpl
   raw_ptr<QuickStartConnectivityService> quick_start_connectivity_service_;
   std::unique_ptr<Connection::Factory> connection_factory_;
   std::unique_ptr<Connection> connection_;
+  std::unique_ptr<QuickStartMetrics> quick_start_metrics_;
 
   base::OneShotTimer
       nearby_connections_advertisement_after_update_timeout_timer_;

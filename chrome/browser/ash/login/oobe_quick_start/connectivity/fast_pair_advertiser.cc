@@ -106,6 +106,7 @@ FastPairAdvertiser::FastPairAdvertiser(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   DCHECK(adapter && adapter->IsPresent() && adapter->IsPowered());
   adapter_ = adapter;
+  quick_start_metrics_ = std::make_unique<QuickStartMetrics>();
 }
 
 FastPairAdvertiser::~FastPairAdvertiser() {
@@ -123,7 +124,6 @@ void FastPairAdvertiser::StartAdvertising(
     const AdvertisingId& advertising_id) {
   DCHECK(adapter_->IsPresent() && adapter_->IsPowered());
   DCHECK(!advertisement_);
-  quick_start_metrics_.RecordFastPairAdvertisementStarted();
   RegisterAdvertisement(std::move(callback), std::move(error_callback),
                         advertising_id);
 }
@@ -174,6 +174,9 @@ void FastPairAdvertiser::RegisterAdvertisement(
 void FastPairAdvertiser::OnRegisterAdvertisement(
     base::OnceClosure callback,
     scoped_refptr<device::BluetoothAdvertisement> advertisement) {
+  quick_start_metrics_->RecordFastPairAdvertisementStarted(
+      /*succeeded=*/true,
+      /*error_code=*/std::nullopt);
   advertisement_ = advertisement;
   advertisement_->AddObserver(this);
   std::move(callback).Run();
@@ -183,11 +186,9 @@ void FastPairAdvertiser::OnRegisterAdvertisementError(
     base::OnceClosure error_callback,
     device::BluetoothAdvertisement::ErrorCode error_code) {
   LOG(ERROR) << __func__ << " failed with error code = " << error_code;
-  QuickStartMetrics::FastPairAdvertisingErrorCode uma_error_code_enum =
-      MapBluetoothAdvertisementErrorCode(error_code);
-  quick_start_metrics_.RecordFastPairAdvertisementEnded(
+  quick_start_metrics_->RecordFastPairAdvertisementStarted(
       /*succeeded=*/false,
-      /*error_code=*/uma_error_code_enum);
+      /*error_code=*/MapBluetoothAdvertisementErrorCode(error_code));
   std::move(error_callback).Run();
   // |this| might be destroyed here, do not access local fields.
 }
@@ -204,7 +205,7 @@ void FastPairAdvertiser::UnregisterAdvertisement(base::OnceClosure callback) {
 
 void FastPairAdvertiser::OnUnregisterAdvertisement() {
   advertisement_.reset();
-  quick_start_metrics_.RecordFastPairAdvertisementEnded(
+  quick_start_metrics_->RecordFastPairAdvertisementEnded(
       /*succeeded=*/true,
       /*error_code=*/std::nullopt);
 
@@ -216,7 +217,9 @@ void FastPairAdvertiser::OnUnregisterAdvertisementError(
     device::BluetoothAdvertisement::ErrorCode error_code) {
   LOG(WARNING) << __func__ << " failed with error code = " << error_code;
   advertisement_.reset();
-
+  quick_start_metrics_->RecordFastPairAdvertisementEnded(
+      /*succeeded=*/false,
+      /*error_code=*/MapBluetoothAdvertisementErrorCode(error_code));
   std::move(stop_callback_).Run();
   // |this| might be destroyed here, do not access local fields.
 }

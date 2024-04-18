@@ -86,9 +86,10 @@ class QuickStartMetrics {
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml and should always
-  // reflect it. The UMA enum cannot use
-  // |device::BluetoothAdvertisement::ErrorCode| directly, because it is missing
-  // the required |kMaxValue| field.
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible. The UMA enum cannot
+  // use |device::BluetoothAdvertisement::ErrorCode| directly, because it is
+  // missing the required |kMaxValue| field.
   enum class FastPairAdvertisingErrorCode {
     kUnsupportedPlatform = 0,
     kAdvertisementAlreadyExists = 1,
@@ -102,8 +103,21 @@ class QuickStartMetrics {
     kMaxValue = kInvalidAdvertisementErrorCode,
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class NearbyConnectionsAdvertisingErrorCode {
-    kFailedToStart,
+    kError = 0,
+    kOutOfOrderApiCall = 1,
+    kAlreadyHaveActiveStrategy = 2,
+    kAlreadyAdvertising = 3,
+    kBluetoothError = 4,
+    kBleError = 5,
+    kUnknown = 6,
+    kTimeout = 7,
+    kOther = 8,
+    kMaxValue = kOther,
   };
 
   // This enum is tied directly to a UMA enum defined in
@@ -276,13 +290,17 @@ class QuickStartMetrics {
   void RecordGaiaAuthenticationRequestEnded(
       const GaiaAuthenticationResult& result);
 
-  void RecordFastPairAdvertisementStarted();
+  void RecordFastPairAdvertisementStarted(
+      bool succeeded,
+      std::optional<FastPairAdvertisingErrorCode> error_code);
 
   void RecordFastPairAdvertisementEnded(
       bool succeeded,
       std::optional<FastPairAdvertisingErrorCode> error_code);
 
-  void RecordNearbyConnectionsAdvertisementStarted();
+  void RecordNearbyConnectionsAdvertisementStarted(
+      bool succeeded,
+      std::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
 
   void RecordNearbyConnectionsAdvertisementEnded(
       bool succeeded,
@@ -307,6 +325,14 @@ class QuickStartMetrics {
   // finishes.
   std::unique_ptr<base::ElapsedTimer> fast_pair_advertising_timer_;
 
+  // Timer to keep track of Nearby Connections advertising duration. Should be
+  // constructed when advertising starts and destroyed when advertising
+  // finishes.
+  std::unique_ptr<base::ElapsedTimer> nearby_connections_advertising_timer_;
+
+  // Timer to keep track of duration spent viewing a screen. Should be
+  // constructed when a screen is opened and destroyed when that screen is
+  // closed.
   std::unique_ptr<base::ElapsedTimer> screen_opened_view_duration_timer_;
 
   // Timer to keep track of handshake duration. Should be constructed when

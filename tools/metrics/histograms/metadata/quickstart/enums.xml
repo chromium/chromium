@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Automatic Resume After Update"/>
 </enum>
 
-<enum name="QuickStartFastPairAdvertisingEndedErrorCode">
+<enum name="QuickStartFastPairAdvertisingErrorCode">
   <int value="0" label="Error: Unsupported platform"/>
   <int value="1" label="Error: Advertisement already exists"/>
   <int value="2" label="Error: Advertisement does not exist"/>
@@ -104,6 +104,18 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Fido Assertion"/>
   <int value="6" label="Bootstrap State Cancel"/>
   <int value="7" label="Bootstrap State Complete"/>
+</enum>
+
+<enum name="QuickStartNearbyConnectionsAdvertisingErrorCode">
+  <int value="0" label="Error occurred without any more information"/>
+  <int value="1" label="Out of order API call"/>
+  <int value="2" label="Already active with another Strategy"/>
+  <int value="3" label="Already advertising"/>
+  <int value="4" label="Bluetooth error"/>
+  <int value="5" label="BLE error"/>
+  <int value="6" label="Unknown failure"/>
+  <int value="7" label="Connection timed out"/>
+  <int value="8" label="Another unexpected error occurred"/>
 </enum>
 
 <enum name="QuickStartScreenName">

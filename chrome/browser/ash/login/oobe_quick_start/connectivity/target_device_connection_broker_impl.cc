@@ -103,6 +103,60 @@ std::vector<uint8_t> Base64EncodeOmitPadding(
   return std::vector<uint8_t>(output.begin(), output.end());
 }
 
+std::optional<QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode>
+MapConnectionsStatusToErrorCode(
+    NearbyConnectionsManager::ConnectionsStatus status) {
+  switch (status) {
+    case NearbyConnectionsManager::ConnectionsStatus::kSuccess:
+      return std::nullopt;
+    case NearbyConnectionsManager::ConnectionsStatus::kError:
+      return QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode::kError;
+    case NearbyConnectionsManager::ConnectionsStatus::kOutOfOrderApiCall:
+      return QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode::
+          kOutOfOrderApiCall;
+    case NearbyConnectionsManager::ConnectionsStatus::
+        kAlreadyHaveActiveStrategy:
+      return QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode::
+          kAlreadyHaveActiveStrategy;
+    case NearbyConnectionsManager::ConnectionsStatus::kAlreadyAdvertising:
+      return QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode::
+          kAlreadyAdvertising;
+    case NearbyConnectionsManager::ConnectionsStatus::kBluetoothError:
+      return QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode::
+          kBluetoothError;
+    case NearbyConnectionsManager::ConnectionsStatus::kBleError:
+      return QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode::
+          kBleError;
+    case NearbyConnectionsManager::ConnectionsStatus::kTimeout:
+      return QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode::kTimeout;
+    case NearbyConnectionsManager::ConnectionsStatus::kUnknown:
+      return QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode::kUnknown;
+    case NearbyConnectionsManager::ConnectionsStatus::kAlreadyDiscovering:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::kEndpointIOError:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::kEndpointUnknown:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::kConnectionRejected:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::
+        kAlreadyConnectedToEndpoint:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::kNotConnectedToEndpoint:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::kWifiLanError:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::kPayloadUnknown:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::kAlreadyListening:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::kReset:
+      [[fallthrough]];
+    case NearbyConnectionsManager::ConnectionsStatus::kNextValue:
+      return QuickStartMetrics::NearbyConnectionsAdvertisingErrorCode::kOther;
+  }
+}
+
 }  // namespace
 
 void TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper::
@@ -134,6 +188,7 @@ TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
       quick_start_connectivity_service_(quick_start_connectivity_service),
       connection_factory_(std::move(connection_factory)) {
   GetBluetoothAdapter();
+  quick_start_metrics_ = std::make_unique<QuickStartMetrics>();
 }
 
 TargetDeviceConnectionBrokerImpl::~TargetDeviceConnectionBrokerImpl() {}
@@ -371,6 +426,9 @@ void TargetDeviceConnectionBrokerImpl::OnStartNearbyConnectionsAdvertising(
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  quick_start_metrics_->RecordNearbyConnectionsAdvertisementStarted(
+      success, MapConnectionsStatusToErrorCode(status));
+
   std::move(callback).Run(success);
 }
 
@@ -379,9 +437,16 @@ void TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising(
     NearbyConnectionsManager::ConnectionsStatus status) {
   QS_LOG(INFO) << "Nearby Connections Advertising stopped with status "
                << status;
-  if (status != NearbyConnectionsManager::ConnectionsStatus::kSuccess) {
+  bool success =
+      status == NearbyConnectionsManager::ConnectionsStatus::kSuccess;
+
+  if (!success) {
     QS_LOG(WARNING) << "Failed to stop Nearby Connections advertising";
   }
+
+  quick_start_metrics_->RecordNearbyConnectionsAdvertisementEnded(
+      success, MapConnectionsStatusToErrorCode(status));
+
   std::move(callback).Run();
 }
 
