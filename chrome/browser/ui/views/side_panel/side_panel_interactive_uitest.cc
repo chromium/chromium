@@ -517,3 +517,26 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       PressButton(kSidePanelCloseButtonElementId),
       WaitForHide(kSidePanelElementId));
 }
+
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
+                       ToolbarButtonDisappearsOnEntryDeregister) {
+  constexpr char kBookmarksButton[] = "bookmarks_button";
+  RunTestSequence(
+      // Ensure the side panel isn't open
+      EnsureNotPresent(kSidePanelElementId),
+      EnsureNotPresent(kPinnedActionToolbarButtonElementId),
+      // Open bookmarks sidepanel
+      OpenBookmarksSidePanel(), WaitForShow(kSidePanelElementId), FlushEvents(),
+      WaitForShow(kPinnedToolbarActionsContainerElementId), FlushEvents(),
+      WaitForShow(kPinnedActionToolbarButtonElementId),
+      NameChildViewByType<PinnedActionToolbarButton>(
+          kPinnedToolbarActionsContainerElementId, kBookmarksButton),
+      WaitForShow(kBookmarksButton), FlushEvents(),
+      // Deregister the entry and verify the side panel and ephemeral toolbar
+      // button are hidden.
+      Do([this]() {
+        SidePanelCoordinator::GetGlobalSidePanelRegistry(browser())->Deregister(
+            SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+      }),
+      WaitForHide(kSidePanelElementId), WaitForHide(kBookmarksButton));
+}
