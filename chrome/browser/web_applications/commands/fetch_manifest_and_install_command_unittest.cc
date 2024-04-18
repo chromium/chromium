@@ -56,6 +56,7 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/test/sk_gmock_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
@@ -70,54 +71,6 @@
 
 namespace web_app {
 namespace {
-
-MATCHER_P(EqualsBitmap, expected_bmp, "") {
-  // Number of pixels with an error
-  int error_pixels_count = 0;
-
-  gfx::Rect error_bounding_rect = gfx::Rect();
-
-  // Check that bitmaps have identical dimensions.
-  if (arg.width() != expected_bmp.width()) {
-    *result_listener << "where widths do not match, actual: " << arg.width()
-                     << ", expected: " << expected_bmp.width();
-    return false;
-  }
-  if (arg.height() != expected_bmp.height()) {
-    *result_listener << "where heights do not match, actual: " << arg.height()
-                     << ", expected: " << expected_bmp.height();
-    return false;
-  }
-
-  for (int x = 0; x < arg.width(); ++x) {
-    for (int y = 0; y < arg.height(); ++y) {
-      SkColor actual_color = arg.getColor(x, y);
-      SkColor expected_color = expected_bmp.getColor(x, y);
-      if (actual_color != expected_color) {
-        ++error_pixels_count;
-        error_bounding_rect.Union(gfx::Rect(x, y, 1, 1));
-      }
-    }
-  }
-
-  if (error_pixels_count != 0) {
-    *result_listener << "Number of pixel with an error: " << error_pixels_count
-                     << "\nError Bounding Box : "
-                     << error_bounding_rect.ToString() << "\n";
-    int sample_x = expected_bmp.width() / 2;
-    int sample_y = expected_bmp.height() / 2;
-    std::string expected_color = color_utils::SkColorToRgbaString(
-        expected_bmp.getColor(sample_x, sample_y));
-    std::string actual_color =
-        color_utils::SkColorToRgbaString(arg.getColor(sample_x, sample_y));
-    *result_listener << "Sample pixel comparison at " << sample_x << "x"
-                     << sample_y << ": Expected " << expected_color
-                     << ", actual " << actual_color;
-    return false;
-  }
-
-  return true;
-}
 
 class FetchManifestAndInstallCommandTest : public WebAppTest {
  public:
@@ -1044,7 +997,7 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
   ASSERT_TRUE(icons_future.Wait());
   std::map<SquareSizePx, SkBitmap> bitmaps = icons_future.Get();
   EXPECT_THAT(bitmaps[icon_size::k256],
-              EqualsBitmap(GenerateExpected256Icon()));
+              gfx::test::EqualsBitmap(GenerateExpected256Icon()));
 
   EXPECT_EQ(IsDiyApp(), provider()->registrar_unsafe().IsDiyApp(app_id));
 
