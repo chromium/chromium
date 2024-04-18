@@ -1905,6 +1905,15 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   SnapPositionData snap = data.FindSnapPositionWithViewportAdjustment(
       *snap_strategy_, snapport_height_adjustment);
   if (snap.type == SnapPositionData::Type::kNone) {
+    // Ensure we retain the ids of any element we were previously snapped to and
+    // are still snapped to in case of scrolls in an axis where no snapping
+    // happens.
+    if (reason == SnapReason::kScrollOffsetAnimationFinished) {
+      scroll_animating_snap_target_ids_ = snap.target_element_ids;
+    } else if (data.SetTargetSnapAreaElementIds(snap.target_element_ids)) {
+      updated_snapped_elements_[scroll_node->element_id] =
+          snap.target_element_ids;
+    }
     return false;
   }
 
