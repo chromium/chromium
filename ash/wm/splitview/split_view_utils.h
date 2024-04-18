@@ -302,6 +302,11 @@ int GetWindowComponentForResize(aura::Window* window);
 // `UpdateSnappedBounds()` directly.
 bool ShouldConsiderDivider(aura::Window* window);
 
+// Returns true if the minimum size of `window1` and `window2` and the divider
+// width can fit in the work area. The windows should belong to the same root
+// window.
+bool CanWindowsFitInWorkArea(aura::Window* window1, aura::Window* window2);
+
 // Builds the full histogram that records whether the window layout completes on
 // `SplitViewOverviewSession` exit. The full histogram is shown in the example
 // below:

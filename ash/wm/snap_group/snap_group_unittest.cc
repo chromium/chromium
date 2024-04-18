@@ -2478,8 +2478,81 @@ TEST_F(SnapGroupTest, EndSplitView) {
 
   // Activate `w1`. Test we don't create a snap group.
   wm::ActivateWindow(w1.get());
-  EXPECT_FALSE(
-      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
+// Tests that when the auto-snapped window has minimum size that doesn't fit the
+// work area, we adjust the divider and window bounds.
+TEST_F(SnapGroupTest, AutoSnapWindowWithMinimumSize) {
+  // Test with both the bottom and side shelf.
+  for (const auto& shelf_alignment :
+       {ShelfAlignment::kBottom, ShelfAlignment::kLeft}) {
+    SCOPED_TRACE(base::StringPrintf("Shelf alignment = %d",
+                                    static_cast<int>(shelf_alignment)));
+    GetPrimaryShelf()->SetAlignment(shelf_alignment);
+    // Create `w2` so it doesn't fit on the other side of `w1`.
+    std::unique_ptr<aura::Window> w1(CreateAppWindow());
+    aura::test::TestWindowDelegate delegate2;
+    std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
+        &delegate2, /*id=*/0, gfx::Rect(800, 600)));
+    const gfx::Rect work_area(work_area_bounds());
+    delegate2.set_minimum_size(
+        gfx::Size(work_area.width() * 0.4f, work_area.height()));
+
+    // Snap `w1` to start partial overview.
+    SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                      chromeos::kTwoThirdSnapRatio);
+    EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+
+    // Select `w2` to be auto-snapped.
+    ClickOverviewItem(GetEventGenerator(), w2.get());
+    EXPECT_TRUE(
+        SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+    auto* snap_group =
+        SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get());
+
+    // Expect `w2` is snapped at its minimum width and `w1` and the divider are
+    // adjusted to fit.
+    EXPECT_NEAR(work_area.width() * 0.4f, w2->GetBoundsInScreen().width(), 1);
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
+                                     snap_group->snap_group_divider());
+  }
+}
+
+// Tests that when both windows have minimum sizes, we don't create a snap
+// group.
+TEST_F(SnapGroupTest, AutoSnapBothWindowsWithMinimumSizes) {
+  // Test with both the bottom and side shelf.
+  for (const auto& shelf_alignment :
+       {ShelfAlignment::kBottom, ShelfAlignment::kLeft}) {
+    SCOPED_TRACE(base::StringPrintf("Shelf alignment = %d",
+                                    static_cast<int>(shelf_alignment)));
+    GetPrimaryShelf()->SetAlignment(shelf_alignment);
+    // Create `w1` and `w2` both with minimum size 0.6f.
+    aura::test::TestWindowDelegate delegate1;
+    aura::test::TestWindowDelegate delegate2;
+    std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
+        &delegate1, /*id=*/-1, gfx::Rect(800, 600)));
+    std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
+        &delegate2, /*id=*/0, gfx::Rect(800, 600)));
+    const gfx::Rect work_area(work_area_bounds());
+    const int min_width = work_area.width() * 0.6f;
+    delegate1.set_minimum_size(gfx::Size(min_width, work_area.height()));
+    delegate2.set_minimum_size(gfx::Size(min_width, work_area.height()));
+
+    // Snap `w1` to 2/3.
+    SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                      chromeos::kTwoThirdSnapRatio);
+    const gfx::Rect w1_bounds = w1->GetBoundsInScreen();
+    EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+
+    // Select `w2` to be auto-snapped. Since it tries to snap to 0.6f, but `w1`
+    // can't fit in the other side, we don't create a group.
+    ClickOverviewItem(GetEventGenerator(), w2.get());
+    EXPECT_NEAR(min_width, w2->GetBoundsInScreen().width(), 1);
+    EXPECT_EQ(w1_bounds.width(), w1->GetBoundsInScreen().width());
+    EXPECT_FALSE(
+        SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  }
 }
 
 // -----------------------------------------------------------------------------

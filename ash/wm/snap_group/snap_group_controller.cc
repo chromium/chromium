@@ -79,6 +79,11 @@ SnapGroup* SnapGroupController::AddSnapGroup(aura::Window* window1,
     return nullptr;
   }
 
+  // We only allow snap group to be created if the windows fit the work area.
+  if (!CanWindowsFitInWorkArea(window1, window2)) {
+    return nullptr;
+  }
+
   if (base::Contains(window_to_snap_group_map_, window1) ||
       base::Contains(window_to_snap_group_map_, window2)) {
     return nullptr;

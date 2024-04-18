@@ -979,6 +979,21 @@ bool ShouldConsiderDivider(aura::Window* window) {
          split_view_controller->split_view_divider()->divider_widget();
 }
 
+bool CanWindowsFitInWorkArea(aura::Window* window1, aura::Window* window2) {
+  DCHECK_EQ(window1->GetRootWindow(), window2->GetRootWindow());
+  aura::Window* root_window = window1->GetRootWindow();
+  const bool horizontal = IsLayoutHorizontal(root_window);
+  const gfx::Rect work_area = display::Screen::GetScreen()
+                                  ->GetDisplayNearestWindow(root_window)
+                                  .work_area();
+  const int work_area_length =
+      horizontal ? work_area.width() : work_area.height();
+  return GetMinimumWindowLength(window1, horizontal) +
+             GetMinimumWindowLength(window2, horizontal) +
+             kSplitviewDividerShortSideLength <=
+         work_area_length;
+}
+
 ASH_EXPORT std::string BuildWindowLayoutCompleteOnSessionExitHistogram() {
   std::string histogram_name(kHistogramPrefix);
   histogram_name.append(kWindowLayoutCompleteOnSessionExitRootWord);
