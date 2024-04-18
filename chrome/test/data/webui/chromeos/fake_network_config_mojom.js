@@ -121,6 +121,7 @@ export class FakeNetworkConfig {
 
     this.globalPolicy_ =
         /** @type {!GlobalPolicy} */ ({
+          allowApnModification: true,
           allow_cellular_sim_lock: true,
           allow_only_policy_cellular_networks: false,
           allow_only_policy_networks_to_autoconnect: false,
@@ -679,7 +680,7 @@ export class FakeNetworkConfig {
     });
   }
 
-  /** @param {!GlobalPolicy} globalPolicy */
+  /** @param {!GlobalPolicy|undefined} globalPolicy */
   setGlobalPolicy(globalPolicy) {
     this.globalPolicy_ = globalPolicy;
     this.onPoliciesApplied(/*userhash=*/ '');

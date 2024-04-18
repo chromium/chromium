@@ -1153,6 +1153,41 @@ suite('<settings-internet-page>', () => {
         assertNull(getDiscoverMoreApnsTooltip());
       });
 
+  [true, false].forEach(isApnPoliciesEnabled => {
+    test(
+        `Managed APN icon visibility when isApnPoliciesEnabled is ${
+            isApnPoliciesEnabled}`,
+        async () => {
+          loadTimeData.overrideValues({
+            isApnRevampEnabled: true,
+            isApnPoliciesEnabled: isApnPoliciesEnabled,
+          });
+          await navigateToApnSubpage();
+
+          mojoApi.setGlobalPolicy(undefined);
+          await flushTasks();
+
+          // Check for APN policies managed icon.
+          const getApnManagedIcon = () =>
+              internetPage.shadowRoot!.querySelector('#apnManagedIcon');
+          assertFalse(!!getApnManagedIcon());
+
+          let globalPolicy = {
+            allowApnModification: true,
+          } as GlobalPolicy;
+          mojoApi.setGlobalPolicy(globalPolicy);
+          await flushTasks();
+          assertFalse(!!getApnManagedIcon());
+
+          globalPolicy = {
+            allowApnModification: false,
+          } as GlobalPolicy;
+          mojoApi.setGlobalPolicy(globalPolicy);
+          await flushTasks();
+          assertEquals(isApnPoliciesEnabled, !!getApnManagedIcon());
+        });
+  });
+
   test('Navigate to Passpoint detail page', async () => {
     const subId = 'a_passpoint_id';
     const sub = {

@@ -31,6 +31,11 @@
     position: relative;
     top: -22px;
   }
+
+  #apnSubpageTitleExtra {
+    display: flex;
+    align-items: center;
+  }
 </style>
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
@@ -132,7 +137,15 @@
 
   <template is="dom-if" route-path="/apn" restamp>
     <os-settings-subpage page-title="$i18n{internetApnPageTitle}">
-      <div slot="subpage-title-extra">
+      <div id="apnSubpageTitleExtra" slot="subpage-title-extra">
+        <template is="dom-if" if="[[isApnManaged_(globalPolicy_)]]">
+          <!-- TODO(b/335486874): Fix tooltip in RTL. -->
+          <cr-tooltip-icon id="apnManagedIcon"
+              tooltip-text="$i18n{controlledSettingPolicy}"
+              icon-class="cr20:domain"
+              tooltip-position="left">
+          </cr-tooltip-icon>
+        </template>
         <cr-icon-button id="apnActionMenuButton" class="icon-more-vert"
             on-click="onApnMenuButtonClicked_"
             focus-row-control focus-type="menu"

@@ -15,6 +15,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '/shared/settings/prefs/prefs.js';
@@ -349,6 +350,14 @@ export class SettingsInternetPageElement extends
         },
       },
 
+      isApnPoliciesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isApnPoliciesEnabled') &&
+              loadTimeData.getBoolean('isApnPoliciesEnabled');
+        },
+      },
+
       /**
        * Whether the 'Add custom APN' button is disabled.
        */
@@ -384,6 +393,7 @@ export class SettingsInternetPageElement extends
   private isNumCustomApnsLimitReached_: boolean;
   private isInstantHotspotRebrandEnabled_: boolean;
   private isHotspotFeatureEnabled_: boolean;
+  private isApnPoliciesEnabled_: boolean;
   private isAddingBuiltInVpnProhibited_: boolean;
   private knownNetworksType_: NetworkType;
   private networkConfig_: CrosNetworkConfigInterface;
@@ -1059,6 +1069,16 @@ export class SettingsInternetPageElement extends
     const apnSubpage = castExists(
         this.shadowRoot!.querySelector<ApnSubpageElement>('#apnSubpage'));
     apnSubpage.openApnSelectionDialog();
+  }
+
+  private isApnManaged_(globalPolicy: GlobalPolicy|undefined): boolean {
+    if (!this.isApnRevampEnabled_ || !this.isApnPoliciesEnabled_) {
+      return false;
+    }
+    if (!globalPolicy) {
+      return false;
+    }
+    return !globalPolicy.allowApnModification;
   }
 
   private onShowPasspointDetails_(event: CustomEvent<PasspointSubscription>):
