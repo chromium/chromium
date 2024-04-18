@@ -216,6 +216,19 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHSignoutWebInterceptFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->trigger = EventConfig("iph_signout_web_intercept_triggered",
+                                  Comparator(ANY, 0), 0, 0);
+    config->used =
+        EventConfig("iph_signout_web_intercept_used", Comparator(ANY, 0), 0, 0);
+    return config;
+  }
+
   if (kIPHGMCCastStartStopFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

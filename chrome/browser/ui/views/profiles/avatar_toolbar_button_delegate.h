@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/models/image_model.h"
 
 class Browser;
@@ -43,7 +44,7 @@ enum class ButtonState;
 // - Explicit modifications override: such as displaying specific text when
 //   intercept bubbles are displayed.
 // - Sync paused/error state.
-class AvatarToolbarButtonDelegate {
+class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
  public:
   AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Browser* browser);
 
@@ -51,7 +52,7 @@ class AvatarToolbarButtonDelegate {
   AvatarToolbarButtonDelegate& operator=(const AvatarToolbarButtonDelegate&) =
       delete;
 
-  ~AvatarToolbarButtonDelegate();
+  ~AvatarToolbarButtonDelegate() override;
 
   // Expected to be called once the avatar button view is properly added to the
   // widget. Expected to be called once to initialize the StateManager. Using
@@ -89,12 +90,24 @@ class AvatarToolbarButtonDelegate {
   int GetWindowCount() const;
   gfx::Image GetGaiaAccountImage() const;
 
+  // signin::IdentityManager::Observer:
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
+
   const raw_ptr<AvatarToolbarButton> avatar_toolbar_button_;
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Initialized in `InitializeStates()`.
   std::unique_ptr<internal::StateManager> state_manager_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
 };

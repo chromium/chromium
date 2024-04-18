@@ -48,6 +48,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -1013,7 +1014,12 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
     Browser* browser)
     : avatar_toolbar_button_(button),
       browser_(browser),
-      profile_(browser->profile()) {
+      profile_(browser->profile()),
+      identity_manager_(
+          IdentityManagerFactory::GetForProfile(browser->profile())) {
+  if (identity_manager_) {
+    identity_manager_observation_.Observe(identity_manager_);
+  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On CrOS this button should only show as badging for Incognito, Guest and
   // captivie portal signin. It's only enabled for non captive portal Incognito
@@ -1395,6 +1401,25 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
     case ButtonState::kSigninPaused:
     case ButtonState::kSyncError:
       return false;
+  }
+}
+
+// signin::IdentityManager::Observer:
+void AvatarToolbarButtonDelegate::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull) &&
+      account_info == identity_manager_->GetPrimaryAccountInfo(
+                          signin::ConsentLevel::kSignin) &&
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+      profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin) &&
+      error.state() ==
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS &&
+      token_operation_source == signin_metrics::SourceForRefreshTokenOperation::
+                                    kDiceResponseHandler_Signout) {
+    avatar_toolbar_button_->MaybeShowWebSignoutIPH(account_info.gaia);
   }
 }
 

@@ -187,6 +187,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSidePanelGenericPinnableFeature,
     &kIPHSideSearchAutoTriggeringFeature,
     &kIPHSideSearchPageActionLabelFeature,
+    &kIPHSignoutWebInterceptFeature,
     &kIPHTabOrganizationSuccessFeature,
     &kIPHTabSearchFeature,
     &kIPHTrackingProtectionOffboardingFeature,

@@ -42583,6 +42583,7 @@ should be able to be added at any place in this file.
       label="For side search feature automatic triggering."/>
   <suffix name="SideSearchPageActionLabel"
       label="For side search feature page action label triggering."/>
+  <suffix name="SignoutWebIntercept" label="For web signout IPH feature."/>
   <suffix name="TabAudioMuting" label="For TabAudioMuting feature."/>
   <suffix name="TabGroupsDragAndDrop" label="For drop-to-merge in tab group."/>
   <suffix name="TabGroupsQuicklyComparePages"

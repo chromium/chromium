@@ -81,6 +81,9 @@ class AvatarToolbarButton : public ToolbarButton {
   // Attempts showing the In-Produce-Help for profile Switching.
   void MaybeShowProfileSwitchIPH();
 
+  // Attempts showing the In-Produce-Help for web sign out.
+  void MaybeShowWebSignoutIPH(const std::string& gaia_id);
+
   // Returns true if a text is set and is visible.
   bool IsLabelPresentAndVisible() const;
 

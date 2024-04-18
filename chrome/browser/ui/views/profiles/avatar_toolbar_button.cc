@@ -42,6 +42,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/common/url_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -317,6 +318,13 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
     browser_->window()->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature);
   }
+}
+
+void AvatarToolbarButton::MaybeShowWebSignoutIPH(const std::string& gaia_id) {
+  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+      switches::ExplicitBrowserSigninPhase::kFull));
+  browser_->window()->MaybeShowFeaturePromo(user_education::FeaturePromoParams(
+      feature_engagement::kIPHSignoutWebInterceptFeature, gaia_id));
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
