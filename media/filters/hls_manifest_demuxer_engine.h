@@ -165,11 +165,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                   std::string role,
                   ManifestDemuxer::DelayCallback cb,
                   base::TimeDelta delay_time);
-
-  // Posted by `::UpdateRenditionManifestUri`
-  void UpdateRenditionManifestUriAction(std::string role,
-                                        GURL uri,
-                                        base::OnceCallback<void(bool)> cb);
   void UpdateMediaPlaylistForRole(
       std::string role,
       GURL uri,
