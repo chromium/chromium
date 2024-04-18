@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
@@ -90,10 +91,12 @@ bool CheckPrivateAggregationConfig(
     const SharedStorageRunOperationMethodOptions& options,
     ScriptState& script_state,
     ScriptPromiseResolverBase& resolver,
-    WTF::String& out_context_id,
-    scoped_refptr<SecurityOrigin>& out_aggregation_coordinator_origin) {
-  out_context_id = WTF::String();
-  out_aggregation_coordinator_origin.reset();
+    mojom::blink::PrivateAggregationConfigPtr& out_private_aggregation_config) {
+  out_private_aggregation_config = mojom::blink::PrivateAggregationConfig::New();
+
+  WTF::String& out_context_id = out_private_aggregation_config->context_id;
+  scoped_refptr<const SecurityOrigin>& out_aggregation_coordinator_origin =
+      out_private_aggregation_config->aggregation_coordinator_origin;
 
   if (!options.hasPrivateAggregationConfig()) {
     return true;

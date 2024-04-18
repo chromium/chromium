@@ -306,9 +306,9 @@ void SharedStorageWorkletHost::SelectURL(
         urls_with_metadata,
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
-    const std::optional<std::string>& context_id,
-    const std::optional<url::Origin>& aggregation_coordinator_origin,
+    blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
     SelectURLCallback callback) {
+  CHECK(private_aggregation_config);
   // `page_` can be null. See test
   // MainFrameDocumentAssociatedDataChangesOnSameSiteNavigation in
   // SitePerProcessBrowserTest.
@@ -375,8 +375,9 @@ void SharedStorageWorkletHost::SelectURL(
                                 std::move(reporting_metadata));
   }
 
-  if (context_id.has_value() &&
-      !blink::IsValidPrivateAggregationContextId(context_id.value())) {
+  if (private_aggregation_config->context_id.has_value() &&
+      !blink::IsValidPrivateAggregationContextId(
+          private_aggregation_config->context_id.value())) {
     receiver_.ReportBadMessage("Invalid context_id.");
     LogSharedStorageWorkletError(
         blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
@@ -473,8 +474,7 @@ void SharedStorageWorkletHost::SelectURL(
 
   GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
       name, urls, std::move(serialized_data),
-      MaybeBindPrivateAggregationHost(context_id,
-                                      aggregation_coordinator_origin),
+      MaybeBindPrivateAggregationHost(private_aggregation_config),
       base::BindOnce(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
@@ -485,9 +485,9 @@ void SharedStorageWorkletHost::Run(
     const std::string& name,
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
-    const std::optional<std::string>& context_id,
-    const std::optional<url::Origin>& aggregation_coordinator_origin,
+    blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
     RunCallback callback) {
+  CHECK(private_aggregation_config);
   // `page_` can be null. See test
   // MainFrameDocumentAssociatedDataChangesOnSameSiteNavigation in
   // SitePerProcessBrowserTest.
@@ -506,8 +506,9 @@ void SharedStorageWorkletHost::Run(
     return;
   }
 
-  if (context_id.has_value() &&
-      !blink::IsValidPrivateAggregationContextId(context_id.value())) {
+  if (private_aggregation_config->context_id.has_value() &&
+      !blink::IsValidPrivateAggregationContextId(
+          private_aggregation_config->context_id.value())) {
     receiver_.ReportBadMessage("Invalid context_id.");
     LogSharedStorageWorkletError(
         blink::SharedStorageWorkletErrorType::kRunNonWebVisible);
@@ -545,8 +546,7 @@ void SharedStorageWorkletHost::Run(
 
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
       name, std::move(serialized_data),
-      MaybeBindPrivateAggregationHost(context_id,
-                                      aggregation_coordinator_origin),
+      MaybeBindPrivateAggregationHost(private_aggregation_config),
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
@@ -1195,9 +1195,10 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
 mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
 SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
-    const std::optional<std::string>& context_id,
-    const std::optional<url::Origin>& aggregation_coordinator_origin) {
+    const blink::mojom::PrivateAggregationConfigPtr&
+        private_aggregation_config) {
   CHECK(browser_context_, base::NotFatalUntil::M128);
+  CHECK(private_aggregation_config);
 
   if (!blink::ShouldDefinePrivateAggregationInSharedStorage()) {
     return mojo::PendingRemote<blink::mojom::PrivateAggregationHost>();
@@ -1212,14 +1213,15 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
 
   std::optional<base::TimeDelta> timeout =
       (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118) &&
-       context_id)
+       private_aggregation_config->context_id)
           ? std::optional<base::TimeDelta>(base::Seconds(5))
           : std::nullopt;
 
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
-      PrivateAggregationBudgetKey::Api::kSharedStorage, context_id,
-      std::move(timeout), aggregation_coordinator_origin,
+      PrivateAggregationBudgetKey::Api::kSharedStorage,
+      private_aggregation_config->context_id, std::move(timeout),
+      private_aggregation_config->aggregation_coordinator_origin,
       pending_pa_host_remote.InitWithNewPipeAndPassReceiver());
   CHECK(success);
 

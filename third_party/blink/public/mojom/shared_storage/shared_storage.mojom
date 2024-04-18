@@ -40,6 +40,13 @@ enum SharedStorageGetStatus {
   kError,
 };
 
+// Bundles information passed to the worklet via the `privateAggregationConfig`
+// parameter on `sharedStorage.run()` or `sharedStorage.selectURL()`.
+struct PrivateAggregationConfig {
+  string? context_id;
+  url.mojom.Origin? aggregation_coordinator_origin;
+};
+
 // Implemented by the browser and exposed to the renderer process on a
 // per-worklet basis, to allow initiating worklet operations, etc. Note that
 // currently each frame can initialize at most one worklet.
@@ -58,15 +65,14 @@ interface SharedStorageWorkletHost {
   // `serialized_data` at the browser process as the data will be only consumed
   // in an environment (i.e. the worklet) in control by the same origin.
   // `keep_alive_after_operation` indicates whether or not the worklet should be
-  // kept alive after this operation finishes. `context_id` and
-  // `aggregation_coordinator_origin` are optional parameters that are passed to
-  // Private Aggregation (if enabled).
+  // kept alive after this operation finishes. `private_aggregation_config`
+  // contains (optional) parameters that are passed to Private Aggregation (if
+  // enabled).
   SelectURL(string name,
             array<SharedStorageUrlWithMetadata> urls_with_metadata,
             CloneableMessage serialized_data,
             bool keep_alive_after_operation,
-            string? context_id,
-            url.mojom.Origin? aggregation_coordinator_origin)
+            PrivateAggregationConfig private_aggregation_config)
       => (bool success,
           string error_message,
           FencedFrameConfig? config);
@@ -83,13 +89,12 @@ interface SharedStorageWorkletHost {
   // the API is disabled or if the worklet has expired because the context
   // previously initiated either a `run()` or `selectURL()` call without
   // including the option `keepAlive: true`; other errors are suppressed and
-  // reported as success. `context_id` and `aggregation_coordinator_origin` are
-  // optional parameters that are passed to Private Aggregation (if enabled).
+  // reported as success.`private_aggregation_config` contains (optional)
+  // parameters that are passed to Private Aggregation (if enabled).
   Run(string name,
       CloneableMessage serialized_data,
       bool keep_alive_after_operation,
-      string? context_id,
-      url.mojom.Origin? aggregation_coordinator_origin)
+      PrivateAggregationConfig private_aggregation_config)
       => (bool success,
           string error_message);
 };
