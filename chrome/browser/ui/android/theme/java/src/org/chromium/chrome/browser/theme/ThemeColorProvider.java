@@ -12,10 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** An abstract class that provides the current theme color. */
@@ -80,8 +80,8 @@ public abstract class ThemeColorProvider implements TopResumedActivityChangedObs
      */
     protected boolean mIsTopResumedActivity;
 
-    /** A boolean supplier to determine whether the current activity is in a desktop window. */
-    protected ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
+    /** Provider to determine whether the current activity is in a desktop window. */
+    protected DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     /**
      * @param context The {@link Context} that is used to retrieve color related resources.
@@ -111,19 +111,19 @@ public abstract class ThemeColorProvider implements TopResumedActivityChangedObs
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
-        if (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier)) return;
+        if (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) return;
         mIsTopResumedActivity = isTopResumedActivity;
     }
 
     /**
-     * Sets an {@link ObservableSupplier} to observe desktop windowing mode changes.
+     * Sets an {@link DesktopWindowStateProvider} to observe desktop windowing mode changes.
      *
-     * @param desktopWindowModeSupplier The {@link ObservableSupplier} to observe desktop windowing
-     *     mode changes.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} to observe desktop
+     *     windowing mode changes.
      */
-    public void setDesktopWindowModeSupplier(
-            ObservableSupplier<Boolean> desktopWindowModeSupplier) {
-        mDesktopWindowModeSupplier = desktopWindowModeSupplier;
+    // TODO(crbug.com/332784708): Make this class an AppHeaderStateObserver.
+    public void setAppHeaderStateProvider(DesktopWindowStateProvider desktopWindowStateProvider) {
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
     }
 
     /**
@@ -213,7 +213,7 @@ public abstract class ThemeColorProvider implements TopResumedActivityChangedObs
             Context context, @BrandedColorScheme int brandedColorScheme) {
         var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
         return mActivityLifecycleDispatcher == null
-                        || (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier))
+                        || (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider))
                 ? iconTint
                 : ThemeUtils.getThemedToolbarIconTintForActivityState(
                         context, brandedColorScheme, mIsTopResumedActivity);

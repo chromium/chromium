@@ -44,13 +44,12 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Browser test for {@link AppHeaderCoordinator} */
@@ -60,6 +59,9 @@ import org.chromium.ui.test.util.UiRestriction;
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AppHeaderCoordinatorBrowserTest {
+    private static final int APP_HEADER_LEFT_PADDING = 10;
+    private static final int APP_HEADER_RIGHT_PADDING = 20;
+    private static final int APP_HEADER_HEIGHT_PX = 100;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -88,16 +90,7 @@ public class AppHeaderCoordinatorBrowserTest {
     @EnableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
     public void testTabStripHeightChangeForTabStripLayoutOptimization() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-
-        // Configure mock InsetsRectProvider.
-        activity.getWindow().getDecorView().getGlobalVisibleRect(mWindowRect);
-
-        int topPadding = 5;
-        int leftPadding = 10;
-        int rightPadding = 20;
-        int tabStripHeight =
-                activity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
-        mWidestUnoccludedRect.set(leftPadding, 0, rightPadding, topPadding + tabStripHeight);
+        setupAppHeaderRects(true);
 
         // Invoke observer to trigger browser controls transition.
         verify(mInsetsRectProvider, atLeastOnce()).addObserver(mInsetsRectObserverCaptor.capture());
@@ -108,20 +101,18 @@ public class AppHeaderCoordinatorBrowserTest {
                     }
                 });
 
-        int newTabStripHeight = tabStripHeight + topPadding;
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(activity.getToolbarManager(), Matchers.notNullValue());
                     Criteria.checkThat(
                             "Tab strip height is different",
                             activity.getToolbarManager().getTabStripHeightSupplier().get(),
-                            Matchers.equalTo(newTabStripHeight));
+                            Matchers.equalTo(APP_HEADER_HEIGHT_PX));
                 });
     }
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testOnTopResumedActivityChanged_UnfocusedInDesktopWindow() {
         // TODO (crbug/330213938): Also test other scenarios for different values of desktop
         // windowing mode / activity focus states; tests for other input combinations are currently
@@ -149,16 +140,12 @@ public class AppHeaderCoordinatorBrowserTest {
                         .getTabSwitcherForTesting()
                         .getController()
                         .getTabSwitcherContainer();
-        float stripHeightPx =
-                ViewUtils.dpToPx(
-                        activity.getApplicationContext(),
-                        activity.getLayoutManager().getStripLayoutHelperManager().getHeight());
         assertTrue(
                 "Tab switcher container view y-offset should be non-zero.",
                 tabSwitcherContainerView.getY() != 0);
         assertEquals(
-                "Tab switcher container view y-offset should match the tab strip height.",
-                stripHeightPx,
+                "Tab switcher container view y-offset should match the app header height.",
+                APP_HEADER_HEIGHT_PX,
                 tabSwitcherContainerView.getY(),
                 0f);
 
@@ -199,16 +186,12 @@ public class AppHeaderCoordinatorBrowserTest {
         // Enter desktop windowing mode while the tab switcher is visible.
         triggerDesktopWindowingModeChange(true);
 
-        float stripHeightPx =
-                ViewUtils.dpToPx(
-                        activity.getApplicationContext(),
-                        activity.getLayoutManager().getStripLayoutHelperManager().getHeight());
         assertTrue(
                 "Tab switcher container view y-offset should be non-zero.",
                 tabSwitcherContainerView.getY() != 0);
         assertEquals(
-                "Tab switcher container view y-offset should match the tab strip height.",
-                stripHeightPx,
+                "Tab switcher container view y-offset should match the app header height.",
+                APP_HEADER_HEIGHT_PX,
                 tabSwitcherContainerView.getY(),
                 0f);
 
@@ -240,21 +223,14 @@ public class AppHeaderCoordinatorBrowserTest {
                 () -> {
                     var appHeaderCoordinator =
                             activity.getRootUiCoordinatorForTesting()
-                                    .getAppHeaderCoordinatorSupplier()
-                                    .get();
+                                    .getDesktopWindowStateProvider();
                     Criteria.checkThat(appHeaderCoordinator, Matchers.notNullValue());
                 });
 
         // Assume that the current activity lost focus in desktop windowing mode.
+        triggerDesktopWindowingModeChange(true);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var appHeaderCoordinator =
-                            activity.getRootUiCoordinatorForTesting()
-                                    .getAppHeaderCoordinatorSupplier()
-                                    .get();
-                    appHeaderCoordinator.set(isInDesktopWindow);
-                    activity.onTopResumedActivityChanged(isActivityFocused);
-                });
+                () -> activity.onTopResumedActivityChanged(isActivityFocused));
 
         // Verify the toolbar icon tints.
         CriteriaHelper.pollUiThread(
@@ -285,13 +261,27 @@ public class AppHeaderCoordinatorBrowserTest {
     private void triggerDesktopWindowingModeChange(boolean isInDesktopWindow) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    var desktopWindowModeSupplier =
+                    var appHeaderStateProvider =
                             mActivityTestRule
                                     .getActivity()
                                     .getRootUiCoordinatorForTesting()
-                                    .getAppHeaderCoordinatorSupplier()
-                                    .get();
-                    desktopWindowModeSupplier.set(isInDesktopWindow);
+                                    .getDesktopWindowStateProvider();
+                    setupAppHeaderRects(isInDesktopWindow);
+                    var appHeaderState = new AppHeaderState(mWindowRect, mWidestUnoccludedRect);
+                    ((AppHeaderCoordinator) appHeaderStateProvider)
+                            .setStateForTesting(isInDesktopWindow, appHeaderState);
                 });
+    }
+
+    private void setupAppHeaderRects(boolean isInDesktopWindow) {
+        // Configure mock InsetsRectProvider.
+        var activity = mActivityTestRule.getActivity();
+        activity.getWindow().getDecorView().getGlobalVisibleRect(mWindowRect);
+        if (isInDesktopWindow) {
+            mWidestUnoccludedRect.set(
+                    APP_HEADER_LEFT_PADDING, 0, APP_HEADER_RIGHT_PADDING, APP_HEADER_HEIGHT_PX);
+        } else {
+            mWidestUnoccludedRect.setEmpty();
+        }
     }
 }

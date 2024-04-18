@@ -125,7 +125,9 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -199,7 +201,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplierImpl<TabStripTransitionCoordinator>
             mTabStripTransitionCoordinatorSupplier = new OneshotSupplierImpl<>();
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
-    private Callback<Boolean> mDesktopWindowModeSupplierCallback;
+    private DesktopWindowStateProvider.AppHeaderObserver mAppHeaderObserver;
     private Destroyable mTabGroupCreationDialogManager;
 
     // Activity tab observer that updates the current tab used by various UI components.
@@ -420,7 +422,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusBarColorController.setAllowToolbarColorOnTablets(
                 ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim());
         mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
-        mDesktopWindowModeSupplierCallback = desktopWindowModeSupplier::set;
+        // TODO(crbug.com/332784708): Replace desktopWindowModeSupplier with AppHeaderCoordinator.
+        mAppHeaderObserver =
+                new DesktopWindowStateProvider.AppHeaderObserver() {
+                    @Override
+                    public void onAppHeaderStateChanged(AppHeaderState newState) {}
+
+                    @Override
+                    public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
+                        desktopWindowModeSupplier.set(isInDesktopWindow);
+                    }
+                };
         initAppHeaderCoordinator();
     }
 
@@ -506,7 +518,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.R) {
-            mAppHeaderCoordinator.removeObserver(mDesktopWindowModeSupplierCallback);
+            mAppHeaderCoordinator.removeObserver(mAppHeaderObserver);
             mAppHeaderCoordinator.destroy();
             mAppHeaderCoordinator = null;
         }
@@ -1229,8 +1241,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mInsetObserverViewSupplier.get(),
                         mAppHeaderDelegateSupplier,
                         mTabStripTransitionCoordinatorSupplier);
-        mAppHeaderCoordinatorSupplier.set(mAppHeaderCoordinator);
-        mAppHeaderCoordinator.addObserver(mDesktopWindowModeSupplierCallback);
+        mAppHeaderCoordinator.addObserver(mAppHeaderObserver);
+    }
+
+    @Override
+    public DesktopWindowStateProvider getDesktopWindowStateProvider() {
+        return mAppHeaderCoordinator;
     }
 
     @Override

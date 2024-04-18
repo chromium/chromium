@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -14,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.Activit
 @RunWith(BaseRobolectricTestRunner.class)
 public class AppHeaderUtilsUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     @Before
     public void setup() {
@@ -78,19 +79,18 @@ public class AppHeaderUtilsUnitTest {
         // Assume that the supplier is not initialized.
         assertFalse(
                 "Desktop windowing mode status is incorrect.",
-                AppHeaderUtils.isAppInDesktopWindow(/* desktopWindowModeSupplier= */ null));
+                AppHeaderUtils.isAppInDesktopWindow(/* appHeaderStateProvider= */ null));
 
         // Assume entry into desktop windowing mode.
-        ObservableSupplierImpl<Boolean> mDesktopWindowModeSupplier = new ObservableSupplierImpl<>();
-        mDesktopWindowModeSupplier.set(true);
+        doReturn(true).when(mDesktopWindowStateProvider).isInDesktopWindow();
         assertTrue(
                 "Desktop windowing mode status is incorrect.",
-                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier));
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider));
 
         // Assume exit from desktop windowing mode.
-        mDesktopWindowModeSupplier.set(false);
+        doReturn(false).when(mDesktopWindowStateProvider).isInDesktopWindow();
         assertFalse(
                 "Desktop windowing mode status is incorrect.",
-                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier));
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider));
     }
 }

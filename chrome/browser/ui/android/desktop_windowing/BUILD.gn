@@ -5,7 +5,11 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtils.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderState.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/DesktopWindowStateProvider.java",
+  ]
   deps = [
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
@@ -14,7 +18,10 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtilsUnitTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderStateUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtilsUnitTest.java",
+  ]
 
   deps = [
     ":java",

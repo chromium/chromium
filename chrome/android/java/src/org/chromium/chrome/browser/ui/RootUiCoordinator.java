@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelection;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
-import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
@@ -149,6 +148,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -342,8 +342,6 @@ public class RootUiCoordinator
     private @Nullable BoardingPassController mBoardingPassController;
     private @Nullable ObservableSupplier<Integer> mOverviewColorSupplier;
     private @Nullable View mBaseChromeLayout;
-    protected OneshotSupplierImpl<AppHeaderCoordinator> mAppHeaderCoordinatorSupplier =
-            new OneshotSupplierImpl<>();
     private TabGroupSyncController mTabGroupSyncController;
 
     /**
@@ -541,10 +539,7 @@ public class RootUiCoordinator
                         ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)
                                 ? mActivityLifecycleDispatcher
                                 : null);
-        mAppHeaderCoordinatorSupplier.onAvailable(
-                appHeaderCoordinator ->
-                        mTopUiThemeColorProvider.setDesktopWindowModeSupplier(
-                                appHeaderCoordinator));
+        mTopUiThemeColorProvider.setAppHeaderStateProvider(getDesktopWindowStateProvider());
 
         mStatusBarColorController =
                 new StatusBarColorController(
@@ -612,11 +607,10 @@ public class RootUiCoordinator
     }
 
     /**
-     * @return Supplier for the {@link AppHeaderCoordinator} instance associated with the current
-     *     activity.
+     * @return The {@link DesktopWindowStateProvider} instance associated with the current activity.
      */
-    public OneshotSupplier<AppHeaderCoordinator> getAppHeaderCoordinatorSupplier() {
-        return mAppHeaderCoordinatorSupplier;
+    public @Nullable DesktopWindowStateProvider getDesktopWindowStateProvider() {
+        return null;
     }
 
     public void onAttachFragment(Fragment fragment) {
@@ -1496,7 +1490,7 @@ public class RootUiCoordinator
                             mOverviewColorSupplier,
                             mBaseChromeLayout,
                             mReadAloudControllerSupplier,
-                            mAppHeaderCoordinatorSupplier);
+                            getDesktopWindowStateProvider());
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 
@@ -32,14 +31,11 @@ public class AppHeaderUtils {
     }
 
     /**
-     * @param desktopWindowModeSupplier Supplier to determine whether the current activity is in a
-     *     desktop window.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
      * @return {@code true} if the current activity is in a desktop window, {@code false} otherwise.
      */
     public static boolean isAppInDesktopWindow(
-            @Nullable Supplier<Boolean> desktopWindowModeSupplier) {
-        // TODO (crbug/332784708): Assert that the supplier is an instance of AppHeaderCoordinator.
-        return desktopWindowModeSupplier != null
-                && Boolean.TRUE.equals(desktopWindowModeSupplier.get());
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+        return desktopWindowStateProvider != null && desktopWindowStateProvider.isInDesktopWindow();
     }
 }

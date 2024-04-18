@@ -88,6 +88,7 @@ public class MultiInstanceManager
 
     protected TabModelSelectorTabModelObserver mTabModelObserver;
 
+    // TODO(crbug.com/332784708): Make this class an AppHeaderStateObserver.
     protected ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
 
     private int mActivityTaskId;

@@ -21,11 +21,13 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.ui.util.ColorUtils;
@@ -36,7 +38,7 @@ import org.chromium.ui.util.TokenHolder;
  * from listening the window insets updates, and pushing updates to the tab strip.
  */
 @RequiresApi(api = Build.VERSION_CODES.R)
-public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
+public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     private static final String TAG = "AppHeader";
     // TODO(crbug/328446763): Use values from Android V and remove SuppressWarnings.
     private static final int APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND = 1 << 7;
@@ -69,12 +71,12 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
     private final OneshotSupplier<AppHeaderDelegate> mAppHeaderDelegateSupplier;
     private final OneshotSupplier<TabStripTransitionCoordinator>
             mTabStripTransitionCoordinatorSupplier;
+    private final ObserverList<AppHeaderObserver> mObservers = new ObserverList<>();
 
     // Internal states
-    private boolean mDesktopWindowingEnabled;
+    private boolean mIsInDesktopWindow;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
-
-    private Rect mWidestUnoccludedRect;
+    private @Nullable AppHeaderState mAppHeaderState;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -120,53 +122,76 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
         }
 
         mAppHeaderDelegateSupplier.runSyncOrOnAvailable(
-                (delegate) -> maybeUpdateAppHeaderPaddings(mDesktopWindowingEnabled));
+                (delegate) -> maybeUpdateAppHeaderPaddings(mIsInDesktopWindow));
         mTabStripTransitionCoordinatorSupplier.runSyncOrOnAvailable(
                 (tabStripTransitionCoordinator) ->
                         tabStripTransitionCoordinator.setInsetRectProvider(mInsetsRectProvider));
-        set(mDesktopWindowingEnabled);
     }
 
     /** Destroy the instances and remove all the dependencies. */
     public void destroy() {
         mActivity = null;
         mInsetsRectProvider.destroy();
+        mObservers.clear();
         if (mTabStripTransitionCoordinatorSupplier.get() != null) {
             mTabStripTransitionCoordinatorSupplier.get().setInsetRectProvider(null);
         }
     }
 
-    /**
-     * Returns whether the window this instance is associated with to is in desktop windowing mode.
-     */
-    public boolean isDesktopWindowingEnabled() {
-        return mDesktopWindowingEnabled;
+    @Override
+    public AppHeaderState getAppHeaderState() {
+        return mAppHeaderState;
+    }
+
+    @Override
+    public boolean isInDesktopWindow() {
+        return mIsInDesktopWindow;
+    }
+
+    @Override
+    public boolean addObserver(AppHeaderObserver observer) {
+        return mObservers.addObserver(observer);
+    }
+
+    @Override
+    public boolean removeObserver(AppHeaderObserver observer) {
+        return mObservers.removeObserver(observer);
     }
 
     private void onInsetsRectsUpdated(@NonNull Rect widestUnoccludedRect) {
-        if (widestUnoccludedRect.equals(mWidestUnoccludedRect)) return;
+        var appHeaderState =
+                new AppHeaderState(
+                        mInsetsRectProvider.getWindowRect(),
+                        mInsetsRectProvider.getWidestUnoccludedRect());
+        if (appHeaderState.equals(mAppHeaderState)) return;
 
-        mWidestUnoccludedRect = widestUnoccludedRect;
-        boolean desktopWindowingEnabled = isDesktopWindowingModeEnabled();
+        mAppHeaderState = appHeaderState;
+        for (var observer : mObservers) {
+            observer.onAppHeaderStateChanged(mAppHeaderState);
+        }
+
+        boolean isInDesktopWindow = checkIsInDesktopWindow();
 
         // Regardless the current state, we'll update the side padding for StripLayoutHelper, as
         // bounding rect can have updates without entering / exiting desktop windowing mode.
-        maybeUpdateAppHeaderPaddings(desktopWindowingEnabled);
+        maybeUpdateAppHeaderPaddings(isInDesktopWindow);
 
         // If whether we are in DW mode does not change, we can end this method now.
-        if (desktopWindowingEnabled == mDesktopWindowingEnabled) return;
-        mDesktopWindowingEnabled = desktopWindowingEnabled;
-        set(mDesktopWindowingEnabled);
+        if (isInDesktopWindow == mIsInDesktopWindow) return;
+        mIsInDesktopWindow = isInDesktopWindow;
+        for (var observer : mObservers) {
+            observer.onDesktopWindowingModeChanged(mIsInDesktopWindow);
+        }
 
         // 1. Enter E2E if we are in desktop windowing mode.
-        WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), !mDesktopWindowingEnabled);
+        WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), !mIsInDesktopWindow);
 
         // 2. Set the captionBar background appropriately to draw into the region.
-        updateCaptionBarBackground(mDesktopWindowingEnabled);
+        updateCaptionBarBackground(mIsInDesktopWindow);
         updateIconColorForCaptionBars();
 
         // 3. Lock the browser controls when we are in DW mode.
-        if (mDesktopWindowingEnabled) {
+        if (mIsInDesktopWindow) {
             mBrowserControlsToken =
                     mBrowserControlsVisibilityDelegate.showControlsPersistentAndClearOldToken(
                             mBrowserControlsToken);
@@ -178,16 +203,14 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
     private void maybeUpdateAppHeaderPaddings(boolean isDesktopWindowingEnabled) {
         if (mAppHeaderDelegateSupplier.get() == null
                 || mInsetsRectProvider.getWindowRect().isEmpty()
-                || mWidestUnoccludedRect == null) return;
+                || mAppHeaderState == null) return;
 
         if (isDesktopWindowingEnabled) {
             mAppHeaderDelegateSupplier
                     .get()
                     .updateHorizontalPaddings(
-                            mWidestUnoccludedRect.left,
-                            mInsetsRectProvider.getWindowRect().width()
-                                    - mWidestUnoccludedRect.right);
-        } else if (mDesktopWindowingEnabled) {
+                            mAppHeaderState.getLeftPadding(), mAppHeaderState.getRightPadding());
+        } else if (mIsInDesktopWindow) {
             // Only reset when we are exiting desktop windowing mode.
             mAppHeaderDelegateSupplier.get().updateHorizontalPaddings(0, 0);
         }
@@ -200,7 +223,7 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
      */
     // TODO(crbug/328446763): Add metrics to record the failure reason.
     // TODO(crbug/330213938): Add more criteria checks.
-    private boolean isDesktopWindowingModeEnabled() {
+    private boolean checkIsInDesktopWindow() {
         if (!mActivity.isInMultiWindowMode()) return false;
 
         int numOfBoundingRects = mInsetsRectProvider.getBoundingRects().size();
@@ -245,5 +268,16 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
     public static void setInsetsRectProviderForTesting(InsetsRectProvider providerForTesting) {
         sInsetsRectProviderForTesting = providerForTesting;
         ResettersForTesting.register(() -> sInsetsRectProviderForTesting = null);
+    }
+
+    /** Set states for testing. */
+    public void setStateForTesting(boolean isInDesktopWindow, AppHeaderState appHeaderState) {
+        mIsInDesktopWindow = isInDesktopWindow;
+        mAppHeaderState = appHeaderState;
+
+        for (var observer : mObservers) {
+            observer.onAppHeaderStateChanged(mAppHeaderState);
+            observer.onDesktopWindowingModeChanged(mIsInDesktopWindow);
+        }
     }
 }

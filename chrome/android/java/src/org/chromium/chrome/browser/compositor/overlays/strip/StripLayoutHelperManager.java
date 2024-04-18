@@ -27,7 +27,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -73,6 +72,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -196,7 +196,7 @@ public class StripLayoutHelperManager
 
     // Desktop windowing mode constants.
     private boolean mIsTopResumedActivity;
-    private ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
+    private DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     // 3-dots menu button with tab strip end padding
     private float mStripEndPadding;
@@ -358,7 +358,7 @@ public class StripLayoutHelperManager
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param browserControlsStateProvider @{@link BrowserControlsStateProvider} for drag drop.
      * @param toolbarManager The {@link ToolbarManager} instance.
-     * @param appHeaderCoordinatorSupplier Supplier of the {@link AppHeaderCoordinator} instance.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the app header.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -378,7 +378,7 @@ public class StripLayoutHelperManager
             // TODO(crbug.com/40939440): Avoid passing the ToolbarManager instance. Potentially
             // implement an interface to manage strip transition states.
             @NonNull ToolbarManager toolbarManager,
-            OneshotSupplier<AppHeaderCoordinator> appHeaderCoordinatorSupplier) {
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         Resources res = context.getResources();
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
@@ -539,8 +539,7 @@ public class StripLayoutHelperManager
                 });
 
         mIsTopResumedActivity = AppHeaderUtils.isActivityFocusedAtStartup(lifecycleDispatcher);
-        appHeaderCoordinatorSupplier.onAvailable(
-                appHeaderCoordinator -> mDesktopWindowModeSupplier = appHeaderCoordinator);
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
 
         onContextChanged(context);
     }
@@ -821,7 +820,7 @@ public class StripLayoutHelperManager
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
         if (!mIsLayoutOptimizationsEnabled
-                && !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier)) return;
+                && !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) return;
         mIsTopResumedActivity = isTopResumedActivity;
         mUpdateHost.requestUpdate();
     }
@@ -1243,7 +1242,7 @@ public class StripLayoutHelperManager
     public @ColorInt int getBackgroundColor() {
         // In desktop windowing mode, consider the activity focus state when determining the tab
         // strip background color.
-        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier)) {
+        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) {
             return TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
                     mContext, mIsIncognito, mIsTopResumedActivity);
         }
@@ -1366,10 +1365,5 @@ public class StripLayoutHelperManager
 
     public void setIsIncognitoForTesting(boolean isIncognito) {
         mIsIncognito = isIncognito;
-    }
-
-    public void setDesktopWindowModeSupplierForTesting(
-            ObservableSupplier<Boolean> desktopWindowModeSupplier) {
-        mDesktopWindowModeSupplier = desktopWindowModeSupplier;
     }
 }

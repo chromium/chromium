@@ -9,17 +9,15 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
-import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -33,9 +31,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -49,6 +48,8 @@ import java.util.concurrent.Callable;
 public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     // Tab Strip
     private StripLayoutHelperManager mTabStripLayoutHelperManager;
+    private @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private @Nullable DesktopWindowStateProvider.AppHeaderObserver mAppHeaderStateObserver;
 
     // Internal State
     /** A {@link LayerTitleCache} instance that stores all title/favicon bitmaps as CC resources. */
@@ -59,9 +60,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
 
     protected ObservableSupplierImpl<LayerTitleCache> mLayerTitleCacheSupplier =
             new ObservableSupplierImpl<>();
-
-    private ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
-    private Callback<Boolean> mDesktopWindowModeSupplierCallback;
 
     /**
      * Creates an instance of a {@link LayoutManagerChromePhone}.
@@ -91,7 +89,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     drag and drop.
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
      * @param toolbarManager The {@link ToolbarManager} instance.
-     * @param appHeaderCoordinatorSupplier Supplier for the {@link AppHeaderCoordinator} instance.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the app header.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -113,7 +111,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             @NonNull ViewStub tabHoverCardViewStub,
             @NonNull WindowAndroid windowAndroid,
             @NonNull ToolbarManager toolbarManager,
-            OneshotSupplier<AppHeaderCoordinator> appHeaderCoordinatorSupplier) {
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         super(
                 host,
                 contentContainer,
@@ -143,25 +141,27 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         browserControlsStateProvider,
                         windowAndroid,
                         toolbarManager,
-                        appHeaderCoordinatorSupplier);
+                        desktopWindowStateProvider);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
 
         mAppHeaderHeightSupplier = new ObservableSupplierImpl<>();
-        appHeaderCoordinatorSupplier.onAvailable(
-                appHeaderCoordinator -> {
-                    mDesktopWindowModeSupplier = appHeaderCoordinator;
-                    mDesktopWindowModeSupplierCallback =
-                            isInDesktopWindow -> {
-                                var tabStripHeight =
-                                        ViewUtils.dpToPx(
-                                                mHost.getContext(),
-                                                mTabStripLayoutHelperManager.getHeight());
-                                var appHeaderHeight = isInDesktopWindow ? tabStripHeight : 0f;
-                                mAppHeaderHeightSupplier.set(appHeaderHeight);
-                            };
-                    mDesktopWindowModeSupplier.addObserver(mDesktopWindowModeSupplierCallback);
-                });
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        // TODO(crbug.com/332784708): Pass AppHeaderStateProvider directly instead of this supplier.
+        if (mDesktopWindowStateProvider != null) {
+            mAppHeaderStateObserver =
+                    new DesktopWindowStateProvider.AppHeaderObserver() {
+                        @Override
+                        public void onAppHeaderStateChanged(AppHeaderState newState) {
+                            mAppHeaderHeightSupplier.set((float) newState.getAppHeaderHeight());
+                        }
+                    };
+            mDesktopWindowStateProvider.addObserver(mAppHeaderStateObserver);
+            if (mDesktopWindowStateProvider.getAppHeaderState() != null) {
+                mAppHeaderStateObserver.onAppHeaderStateChanged(
+                        mDesktopWindowStateProvider.getAppHeaderState());
+            }
+        }
 
         setNextLayout(null, true);
     }
@@ -181,8 +181,10 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             mTabStripLayoutHelperManager = null;
         }
 
-        if (mDesktopWindowModeSupplier != null) {
-            mDesktopWindowModeSupplier.removeObserver(mDesktopWindowModeSupplierCallback);
+        if (mDesktopWindowStateProvider != null && mAppHeaderStateObserver != null) {
+            mDesktopWindowStateProvider.removeObserver(mAppHeaderStateObserver);
+            mDesktopWindowStateProvider = null;
+            mAppHeaderStateObserver = null;
         }
     }
 

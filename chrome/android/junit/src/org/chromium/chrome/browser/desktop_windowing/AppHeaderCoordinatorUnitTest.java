@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.desktop_windowing;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -42,6 +44,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.AppHeaderDelegate;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.ui.base.TestActivity;
@@ -58,6 +62,9 @@ public class AppHeaderCoordinatorUnitTest {
     private static final Rect WINDOW_RECT = new Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     private static final int LEFT_BLOCK = 10;
     private static final int RIGHT_BLOCK = 20;
+    private static final int HEADER_HEIGHT = 30;
+    private static final Rect WIDEST_UNOCCLUDED_RECT =
+            new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, HEADER_HEIGHT);
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -70,6 +77,7 @@ public class AppHeaderCoordinatorUnitTest {
     @Mock private InsetObserver mInsetObserver;
     @Mock private InsetsRectProvider mInsetsRectProvider;
     @Mock private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
+    @Mock private DesktopWindowStateProvider.AppHeaderObserver mObserver;
     @Captor private ArgumentCaptor<InsetsRectProvider.Observer> mInsetRectObserverCaptor;
 
     private AppHeaderCoordinator mAppHeaderCoordinator;
@@ -109,7 +117,7 @@ public class AppHeaderCoordinatorUnitTest {
 
         assertFalse(
                 "Desktop Windowing not enabled for bottom insets.",
-                mAppHeaderCoordinator.isDesktopWindowingEnabled());
+                mAppHeaderCoordinator.isInDesktopWindow());
     }
 
     @Test
@@ -127,7 +135,7 @@ public class AppHeaderCoordinatorUnitTest {
         assertFalse(
                 "Desktop Windowing enabled for widestUnOccludedRect with less height "
                         + " than the insets.",
-                mAppHeaderCoordinator.isDesktopWindowingEnabled());
+                mAppHeaderCoordinator.isInDesktopWindow());
     }
 
     @Test
@@ -141,7 +149,7 @@ public class AppHeaderCoordinatorUnitTest {
 
         assertFalse(
                 "Desktop Windowing enabled with only one bounding rect.",
-                mAppHeaderCoordinator.isDesktopWindowingEnabled());
+                mAppHeaderCoordinator.isInDesktopWindow());
     }
 
     @Test
@@ -159,7 +167,7 @@ public class AppHeaderCoordinatorUnitTest {
 
         assertFalse(
                 "Desktop Windowing enabled with more than two bounding rects.",
-                mAppHeaderCoordinator.isDesktopWindowingEnabled());
+                mAppHeaderCoordinator.isInDesktopWindow());
     }
 
     @Test
@@ -170,7 +178,7 @@ public class AppHeaderCoordinatorUnitTest {
 
         assertFalse(
                 "Desktop Windowing does not enable when not in multi window mode.",
-                mAppHeaderCoordinator.isDesktopWindowingEnabled());
+                mAppHeaderCoordinator.isInDesktopWindow());
     }
 
     @Test
@@ -181,6 +189,13 @@ public class AppHeaderCoordinatorUnitTest {
 
         verifyDesktopWindowingEnabled();
         verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
+
+        var expectedState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT);
+        assertEquals(
+                "AppHeaderState is different.",
+                expectedState,
+                mAppHeaderCoordinator.getAppHeaderState());
+        verify(mObserver).onAppHeaderStateChanged(eq(expectedState));
     }
 
     @Test
@@ -191,21 +206,29 @@ public class AppHeaderCoordinatorUnitTest {
 
         // Assume the window size changed.
         // Top insets with height of 30.
-        Insets insets = Insets.of(0, 30, 0, 0);
+        Insets insets = Insets.of(0, HEADER_HEIGHT, 0, 0);
         int newWindowWidth = 1000;
         Rect windowRect = new Rect(0, 0, newWindowWidth, WINDOW_HEIGHT);
         // Left block: 10, right block: 20
         List<Rect> blockedRects =
                 List.of(
-                        new Rect(0, 0, LEFT_BLOCK, 30),
-                        new Rect(newWindowWidth - RIGHT_BLOCK, 0, newWindowWidth, 30));
-        Rect widestUnoccludedRect = new Rect(LEFT_BLOCK, 0, newWindowWidth - RIGHT_BLOCK, 30);
+                        new Rect(0, 0, LEFT_BLOCK, HEADER_HEIGHT),
+                        new Rect(newWindowWidth - RIGHT_BLOCK, 0, newWindowWidth, HEADER_HEIGHT));
+        Rect widestUnoccludedRect =
+                new Rect(LEFT_BLOCK, 0, newWindowWidth - RIGHT_BLOCK, HEADER_HEIGHT);
         setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, windowRect);
         notifyInsetsRectObserver();
 
         verifyDesktopWindowingEnabled();
         verify(mAppHeaderDelegate, times(2))
                 .updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
+
+        var expectedState = new AppHeaderState(windowRect, widestUnoccludedRect);
+        assertEquals(
+                "AppHeaderState is different.",
+                expectedState,
+                mAppHeaderCoordinator.getAppHeaderState());
+        verify(mObserver).onAppHeaderStateChanged(eq(expectedState));
     }
 
     @Test
@@ -216,13 +239,26 @@ public class AppHeaderCoordinatorUnitTest {
         verifyDesktopWindowingEnabled();
         verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
 
+        var expectedState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT);
+        assertEquals(
+                "AppHeaderState is different.",
+                expectedState,
+                mAppHeaderCoordinator.getAppHeaderState());
+
         setupWithNoInsets();
         notifyInsetsRectObserver();
         assertFalse(
                 "DesktopWindowing should exit when no insets is supplied.",
-                mAppHeaderCoordinator.isDesktopWindowingEnabled());
+                mAppHeaderCoordinator.isInDesktopWindow());
         verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(0), eq(0));
         verify(mBrowserControlsVisDelegate).releasePersistentShowingToken(anyInt());
+
+        expectedState = new AppHeaderState(WINDOW_RECT, new Rect());
+        assertEquals(
+                "AppHeaderState is different.",
+                expectedState,
+                mAppHeaderCoordinator.getAppHeaderState());
+        verify(mObserver).onAppHeaderStateChanged(any());
     }
 
     @Test
@@ -244,6 +280,7 @@ public class AppHeaderCoordinatorUnitTest {
                         mInsetObserver,
                         mAppHeaderDelegateSupplier,
                         mTabStripTransitionCoordinatorSupplier);
+        mAppHeaderCoordinator.addObserver(mObserver);
     }
 
     private void initPostNative() {
@@ -258,13 +295,14 @@ public class AppHeaderCoordinatorUnitTest {
 
     private void setupWithLeftAndRightBoundingRect() {
         // Top insets with height of 30.
-        Insets insets = Insets.of(0, 30, 0, 0);
+        Insets insets = Insets.of(0, HEADER_HEIGHT, 0, 0);
         // Left block: 10, right block: 20
         List<Rect> blockedRects =
                 List.of(
-                        new Rect(0, 0, LEFT_BLOCK, 30),
-                        new Rect(WINDOW_WIDTH - RIGHT_BLOCK, 0, WINDOW_WIDTH, 30));
-        Rect widestUnoccludedRect = new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, 30);
+                        new Rect(0, 0, LEFT_BLOCK, HEADER_HEIGHT),
+                        new Rect(WINDOW_WIDTH - RIGHT_BLOCK, 0, WINDOW_WIDTH, HEADER_HEIGHT));
+        Rect widestUnoccludedRect =
+                new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, HEADER_HEIGHT);
         setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
     }
 
@@ -284,9 +322,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     private void verifyDesktopWindowingEnabled() {
-        assertTrue(
-                "Desktop windowing not enabled.",
-                mAppHeaderCoordinator.isDesktopWindowingEnabled());
+        assertTrue("Desktop windowing not enabled.", mAppHeaderCoordinator.isInDesktopWindow());
         verify(mBrowserControlsVisDelegate, atLeastOnce())
                 .showControlsPersistentAndClearOldToken(anyInt());
     }
