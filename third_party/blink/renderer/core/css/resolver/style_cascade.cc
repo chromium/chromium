@@ -996,7 +996,7 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
     return ResolveRevertLayer(property, priority, origin, resolver);
   }
   if (const auto* v = DynamicTo<CSSFlipRevertValue>(result)) {
-    return ResolveFlipRevert(*v, priority, origin, resolver);
+    return ResolveFlipRevert(property, *v, priority, origin, resolver);
   }
   if (auto* auto_base_select_pair =
           DynamicTo<CSSAppearanceAutoBaseSelectValuePair>(value)) {
@@ -1244,7 +1244,8 @@ const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
                  origin, resolver);
 }
 
-const CSSValue* StyleCascade::ResolveFlipRevert(const CSSFlipRevertValue& value,
+const CSSValue* StyleCascade::ResolveFlipRevert(const CSSProperty& property,
+                                                const CSSFlipRevertValue& value,
                                                 CascadePriority priority,
                                                 CascadeOrigin& origin,
                                                 CascadeResolver& resolver) {
@@ -1256,7 +1257,7 @@ const CSSValue* StyleCascade::ResolveFlipRevert(const CSSFlipRevertValue& value,
   const CSSValue* flipped = TryValueFlips::FlipValue(
       /* from_property */ to_property.PropertyID(), unflipped,
       value.Transform(), state_.StyleBuilder().GetWritingDirection());
-  return flipped;
+  return Resolve(property, *flipped, priority, origin, resolver);
 }
 
 // Math functions can become invalid at computed-value time. Currently, this
