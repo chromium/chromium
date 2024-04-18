@@ -441,12 +441,12 @@ using base::SysNSStringToUTF8;
         base::UserMetricsAction("ManualFallback_CreditCard_SelectCardNumber"));
   }
 
-  if (!number.length) {
-    [self.navigationDelegate requestFullCreditCard:self.card];
-  } else {
+  if (self.card.canFillDirectly) {
     [self.contentInjector userDidPickContent:number
                                passwordField:NO
                                requiresHTTPS:YES];
+  } else {
+    [self.navigationDelegate requestFullCreditCard:self.card];
   }
 }
 
