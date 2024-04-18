@@ -71,6 +71,8 @@ constexpr CGFloat kOriginScale = 0.1;
   UILabel* _titleView;
   // Dot view.
   UIView* _coloredDotView;
+  // Whether the `Back` button or the `Esc` key has been tapped.
+  BOOL _backButtonTapped;
 }
 
 #pragma mark - Public
@@ -140,6 +142,11 @@ constexpr CGFloat kOriginScale = 0.1;
 }
 
 - (void)animateDismissal {
+  if (_backButtonTapped) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridTabGroupDismissed"));
+  }
+
   CGPoint center = [_gridViewController.view convertPoint:self.view.center
                                                  fromView:self.view];
   [_gridViewController centerVisibleCellsToPoint:center
@@ -196,6 +203,8 @@ constexpr CGFloat kOriginScale = 0.1;
 }
 
 - (void)didTapPlusButton {
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridTabGroupCreateNewTab"));
   [self openNewTab];
 }
 
@@ -203,12 +212,14 @@ constexpr CGFloat kOriginScale = 0.1;
 
 - (BOOL)navigationBar:(UINavigationBar*)navigationBar
         shouldPopItem:(UINavigationItem*)item {
+  _backButtonTapped = YES;
   [_handler hideTabGroup];
   return NO;
 }
 
 - (void)navigationBar:(UINavigationBar*)navigationBar
            didPopItem:(UINavigationItem*)item {
+  _backButtonTapped = YES;
   [_handler hideTabGroup];
 }
 
@@ -435,6 +446,7 @@ constexpr CGFloat kOriginScale = 0.1;
 }
 
 - (void)keyCommand_close {
+  _backButtonTapped = YES;
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
   [_handler hideTabGroup];
 }

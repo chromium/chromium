@@ -24521,6 +24521,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridTabGroupCreateNewTab">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    On the iOS tab grid, with a tab group open, the user pressed the
+    &quot;Plus&quot; icon to open a new tab in the group.
+  </description>
+</action>
+
+<action name="MobileTabGridTabGroupDismissed">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    On the iOS tab grid, with a tab group open, the user pressed the
+    &quot;Back&quot; button or the `Esc` key to dismiss the tab group.
+  </description>
+</action>
+
 <action name="MobileTabGridUndoCloseAllRegularTabs">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
