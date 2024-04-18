@@ -25,6 +25,12 @@ class ContentCache {
  public:
   virtual ~ContentCache() = default;
 
+  // Sets the maximum size of the cache. No new items will be inserted once the
+  // capacity is reached.
+  // TODO(b/328679426): Evict items if the new max size is less than the number
+  // of items already in the cache.
+  virtual void SetMaxCacheSize(size_t max_cache_size) = 0;
+
   // Start reading bytes defined by `file` from the content cache. Returns true
   // when the bytes exist in the content cache and can be read (the actual bytes
   // will be stored in the `buffer` and `callback` invoked on finish) and false

@@ -16,13 +16,17 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 
 namespace ash::file_system_provider {
+namespace {
+constexpr size_t kMaxCacheSize = 500;
+}  // namespace
 
 // The content cache for every mounted FSP. This will serve as the single point
 // of orchestration between the LRU cache and the disk persistence layer.
 class ContentCacheImpl : public ContentCache {
  public:
   ContentCacheImpl(const base::FilePath& root_dir,
-                   BoundContextDatabase context_db);
+                   BoundContextDatabase context_db,
+                   size_t max_cache_size);
 
   ContentCacheImpl(const ContentCacheImpl&) = delete;
   ContentCacheImpl& operator=(const ContentCacheImpl&) = delete;
@@ -30,8 +34,12 @@ class ContentCacheImpl : public ContentCache {
   ~ContentCacheImpl() override;
 
   // Creates a `ContentCache` with the concrete implementation.
-  static std::unique_ptr<ContentCache> Create(const base::FilePath& root_dir,
-                                              BoundContextDatabase context_db);
+  static std::unique_ptr<ContentCache> Create(
+      const base::FilePath& root_dir,
+      BoundContextDatabase context_db,
+      size_t max_cache_size = kMaxCacheSize);
+
+  void SetMaxCacheSize(size_t max_cache_size) override;
 
   bool StartReadBytes(
       const OpenedCloudFile& file,
@@ -77,6 +85,7 @@ class ContentCacheImpl : public ContentCache {
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   BoundContextDatabase context_db_;
+  size_t max_cache_size_;
 
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};
 };

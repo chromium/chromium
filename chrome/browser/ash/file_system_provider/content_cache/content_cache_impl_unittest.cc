@@ -46,7 +46,7 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
     EXPECT_TRUE(future.Get());
 
     content_cache_ =
-        std::make_unique<ContentCacheImpl>(temp_dir_.GetPath(), std::move(db));
+        ContentCacheImpl::Create(temp_dir_.GetPath(), std::move(db));
   }
 
   void TearDown() override { content_cache_.reset(); }
@@ -152,6 +152,37 @@ TEST_F(FileSystemProviderContentCacheImplTest,
       /*offset=*/512, kDefaultChunkSize, base::DoNothing()));
 
   // Initial file write should succeed.
+  EXPECT_EQ(future.Get(), base::File::FILE_OK);
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
+       StartWriteBytesForNewFileShouldFailIfCacheFull) {
+  content_cache_->SetMaxCacheSize(2);
+
+  // Inserts file into cache. 1 space left.
+  WriteFileToCache(base::FilePath("random-path1"), /*version_tag=*/"versionA");
+  // Inserts another file into cache. 0 spaces left.
+  WriteFileToCache(base::FilePath("random-path2"), /*version_tag=*/"versionA");
+
+  // Expect third insertion to fail.
+  OpenedCloudFile file3(base::FilePath("random-path3"),
+                        OpenFileMode::OPEN_FILE_MODE_READ,
+                        /*version_tag=*/"versionA");
+  EXPECT_FALSE(content_cache_->StartWriteBytes(file3, /*buffer=*/nullptr,
+                                               /*offset=*/0, kDefaultChunkSize,
+                                               base::DoNothing()));
+
+  // Should still be able to write to existing files in the cache.
+  OpenedCloudFile file1(base::FilePath("random-path1"),
+                        OpenFileMode::OPEN_FILE_MODE_READ,
+                        /*version_tag=*/"versionA");
+  TestFuture<base::File::Error> future;
+  scoped_refptr<net::IOBufferWithSize> buffer =
+      InitializeBufferWithRandBytes(kDefaultChunkSize);
+  EXPECT_TRUE(content_cache_->StartWriteBytes(file1, buffer.get(),
+                                              /*offset=*/512, kDefaultChunkSize,
+                                              future.GetCallback()));
+  // Contiguous file write should succeed.
   EXPECT_EQ(future.Get(), base::File::FILE_OK);
 }
 

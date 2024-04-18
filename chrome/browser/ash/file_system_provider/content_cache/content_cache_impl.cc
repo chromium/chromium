@@ -55,12 +55,14 @@ FileErrorOrBytesRead ReadBytesBlocking(const base::FilePath& path,
 }  // namespace
 
 ContentCacheImpl::ContentCacheImpl(const base::FilePath& root_dir,
-                                   BoundContextDatabase context_db)
+                                   BoundContextDatabase context_db,
+                                   size_t max_cache_size)
     : root_dir_(root_dir),
       io_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      context_db_(std::move(context_db)) {}
+      context_db_(std::move(context_db)),
+      max_cache_size_(max_cache_size) {}
 
 ContentCacheImpl::~ContentCacheImpl() {
   context_db_.Reset();
@@ -68,8 +70,16 @@ ContentCacheImpl::~ContentCacheImpl() {
 
 std::unique_ptr<ContentCache> ContentCacheImpl::Create(
     const base::FilePath& root_dir,
-    BoundContextDatabase context_db) {
-  return std::make_unique<ContentCacheImpl>(root_dir, std::move(context_db));
+    BoundContextDatabase context_db,
+    size_t max_cache_size) {
+  return std::make_unique<ContentCacheImpl>(root_dir, std::move(context_db),
+                                            max_cache_size);
+}
+
+void ContentCacheImpl::SetMaxCacheSize(size_t max_cache_size) {
+  // TODO(b/328679426): Evict items if the new max size is less than the number
+  // of items already in the cache.
+  max_cache_size_ = max_cache_size;
 }
 
 bool ContentCacheImpl::StartReadBytes(
@@ -163,8 +173,16 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
 
   ContentLRUCache::iterator it = lru_cache_.Get(file.file_path);
   if (it == lru_cache_.end()) {
-    // No `CacheFileContext` as this is the first write to the cache, let's
-    // create it with the supplied version_tag.
+    // The file doesn't exist in the cache yet.
+
+    if (lru_cache_.size() >= max_cache_size_) {
+      // TODO(b/328679426): Evict files instead of preventing all new
+      // insertions.
+      VLOG(1) << "Cache is already at capacity";
+      return false;
+    }
+
+    // Let's create `CacheFileContext` with the supplied version_tag.
     it = lru_cache_.Put(
         PathContextPair(file.file_path, CacheFileContext(file.version_tag)));
   }

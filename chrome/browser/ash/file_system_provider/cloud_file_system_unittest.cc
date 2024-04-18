@@ -65,6 +65,7 @@ class MockCacheManager : public CacheManager {
 
 class MockContentCache : public ContentCache {
  public:
+  MOCK_METHOD(void, SetMaxCacheSize, (size_t max_cache_size), (override));
   MOCK_METHOD(bool,
               StartReadBytes,
               (const OpenedCloudFile& file,
