@@ -12418,6 +12418,7 @@ regressions. -->
     <variant name="RestoreTab"/>
     <variant name="SavePage"/>
     <variant name="SendToDevices"/>
+    <variant name="SetBrowserAsDefault"/>
     <variant name="Settings"/>
     <variant name="ShowAddresses"/>
     <variant name="ShowBookmarkBar"/>
