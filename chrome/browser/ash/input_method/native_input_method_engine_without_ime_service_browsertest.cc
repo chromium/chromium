@@ -102,8 +102,7 @@ class NativeInputMethodEngineWithoutImeServiceTest
  public:
   NativeInputMethodEngineWithoutImeServiceTest() : input_method_(this) {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kMultilingualTyping,
-                              features::kOnDeviceGrammarCheck},
+        /*enabled_features=*/{features::kOnDeviceGrammarCheck},
         /*disabled_features=*/{});
   }
 

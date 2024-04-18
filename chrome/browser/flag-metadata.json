@@ -2641,11 +2641,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-cros-multilingual-typing",
-    "owners": [ "tranbaoduy@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "enable-cros-on-device-grammar-check",
     "owners": [ "jiwan@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 116

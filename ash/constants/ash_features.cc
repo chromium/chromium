@@ -1937,11 +1937,6 @@ BASE_FEATURE(kMultiZoneRgbKeyboard,
              "MultiZoneRgbKeyboard",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables support for multilingual assistive typing on ChromeOS.
-BASE_FEATURE(kMultilingualTyping,
-             "MultilingualTyping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Nearby Connections to specificy KeepAlive interval and timeout while
 // also making the Nearby Connections WebRTC defaults longer.
 BASE_FEATURE(kNearbyKeepAliveFix,

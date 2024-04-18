@@ -4028,9 +4028,6 @@ extern const char kMultiCalendarSupportDescription[];
 extern const char kMultiZoneRgbKeyboardName[];
 extern const char kMultiZoneRgbKeyboardDescription[];
 
-extern const char kMultilingualTypingName[];
-extern const char kMultilingualTypingDescription[];
-
 extern const char kNearbySharingSelfShareName[];
 extern const char kNearbySharingSelfShareDescription[];
 

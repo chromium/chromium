@@ -526,9 +526,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
                           base::FeatureList::IsEnabled(
                               ash::features::kSystemJapanesePhysicalTyping)));
   features.Append(GenerateFeatureFlag(
-      "multilingualtyping",
-      base::FeatureList::IsEnabled(ash::features::kMultilingualTyping)));
-  features.Append(GenerateFeatureFlag(
       "autocorrectparamstuning",
       base::FeatureList::IsEnabled(ash::features::kAutocorrectParamsTuning)));
   features.Append(

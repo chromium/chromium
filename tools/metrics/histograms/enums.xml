@@ -21306,7 +21306,6 @@ from previous Chrome versions.
   <int value="59964519" label="OmniboxEnableClipboardProvider:disabled"/>
   <int value="59992411" label="ChangePasswordAffiliationInfo:enabled"/>
   <int value="60023885" label="AutofillNoLocalSaveOnUnmaskSuccess:disabled"/>
-  <int value="60442188" label="MultilingualTyping:enabled"/>
   <int value="60461879" label="AppListBubble:enabled"/>
   <int value="61130490" label="WebViewBrotliSupport:enabled"/>
   <int value="61141457" label="DecodeScriptSourceOffThread:enabled"/>
@@ -25525,7 +25524,6 @@ from previous Chrome versions.
   <int value="1936308950" label="ExoConsumedByImeByFlag:disabled"/>
   <int value="1936774335" label="EcheSWASendStartSignaling:enabled"/>
   <int value="1936810062" label="WebVrVsyncAlign:enabled"/>
-  <int value="1937357350" label="MultilingualTyping:disabled"/>
   <int value="1937435913"
       label="CryptAuthV2DedupDeviceLastActivityTime:disabled"/>
   <int value="1937905990" label="AutofillCenterAlignedSuggestions:enabled"/>

@@ -6932,10 +6932,6 @@ const char kMultiZoneRgbKeyboardName[] =
 const char kMultiZoneRgbKeyboardDescription[] =
     "Enable multi-zone RGB keyboard customization on supported devices.";
 
-const char kMultilingualTypingName[] = "Multilingual typing on CrOS";
-const char kMultilingualTypingDescription[] =
-    "Enables support for multilingual assistive typing on ChromeOS.";
-
 const char kNearbySharingSelfShareName[] = "Nearby Sharing Self Share";
 const char kNearbySharingSelfShareDescription[] =
     "Enables Self Share auto-accept and UI features to allow seamless sharing "
