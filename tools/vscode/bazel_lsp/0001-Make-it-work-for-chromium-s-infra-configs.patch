@@ -1,4 +1,4 @@
-From 11fe4f082e7e68b5bb53c4bb6d03f33acd6ba62d Mon Sep 17 00:00:00 2001
+From 7d6b126a63d76f85b49909b52838eef413eb2ba0 Mon Sep 17 00:00:00 2001
 From: Peter Wen <wnwen@google.com>
 Date: Mon, 11 Mar 2024 15:09:25 -0400
 Subject: [PATCH] Make it work for chromium's infra configs
@@ -20,14 +20,14 @@ Subject: [PATCH] Make it work for chromium's infra configs
   --lucicfg_stdlib_path arg.
 ---
  src/bazel.rs | 64 +++++++++++++++++++++++++++++++++++++++++++++++++++-
- src/main.rs  |  8 ++++++-
- 2 files changed, 70 insertions(+), 2 deletions(-)
+ src/main.rs  |  6 +++++
+ 2 files changed, 69 insertions(+), 1 deletion(-)
 
 diff --git a/src/bazel.rs b/src/bazel.rs
-index 3b52db1..069ae23 100644
+index 5455c33..ba0edf9 100644
 --- a/src/bazel.rs
 +++ b/src/bazel.rs
-@@ -137,6 +137,7 @@ struct FilesystemCompletionOptions {
+@@ -139,6 +139,7 @@ struct FilesystemCompletionOptions {
  pub(crate) struct BazelContext<Client> {
      workspaces: RefCell<HashMap<PathBuf, Rc<BazelWorkspace>>>,
      query_output_base: Option<PathBuf>,
@@ -35,7 +35,7 @@ index 3b52db1..069ae23 100644
      pub(crate) mode: ContextMode,
      pub(crate) print_non_none: bool,
      pub(crate) prelude: Vec<FrozenModule>,
-@@ -157,6 +158,7 @@ impl<Client: BazelClient> BazelContext<Client> {
+@@ -156,6 +157,7 @@ impl<Client: BazelClient> BazelContext<Client> {
          prelude: &[PathBuf],
          module: bool,
          query_output_base: Option<PathBuf>,
@@ -43,7 +43,7 @@ index 3b52db1..069ae23 100644
      ) -> anyhow::Result<Self> {
          let globals = globals();
          let prelude: Vec<_> = prelude
-@@ -194,6 +196,7 @@ impl<Client: BazelClient> BazelContext<Client> {
+@@ -193,6 +195,7 @@ impl<Client: BazelClient> BazelContext<Client> {
          Ok(Self {
              workspaces: RefCell::new(HashMap::new()),
              query_output_base,
@@ -51,7 +51,7 @@ index 3b52db1..069ae23 100644
              mode,
              print_non_none,
              prelude,
-@@ -617,6 +620,41 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
+@@ -642,6 +645,41 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
          current_file: &LspUrl,
          workspace_root: Option<&Path>,
      ) -> anyhow::Result<LspUrl> {
@@ -93,8 +93,8 @@ index 3b52db1..069ae23 100644
          let label = Label::parse(path)?;
          let workspace = self.workspace(workspace_root, current_file)?;
  
-@@ -787,12 +825,36 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
-         }
+@@ -775,12 +813,36 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
+         self.try_get_environment(uri).unwrap_or_default()
      }
  
 +
@@ -132,10 +132,10 @@ index 3b52db1..069ae23 100644
  
      fn get_string_completion_options(
 diff --git a/src/main.rs b/src/main.rs
-index 543a0ec..a31e68d 100644
+index d3e7400..cc8fab9 100644
 --- a/src/main.rs
 +++ b/src/main.rs
-@@ -34,6 +34,11 @@ struct Args {
+@@ -35,6 +35,11 @@ struct Args {
      /// temp directory.
      #[arg(long)]
      query_output_base: Option<PathBuf>,
@@ -147,16 +147,14 @@ index 543a0ec..a31e68d 100644
  }
  
  fn main() -> anyhow::Result<()> {
-@@ -51,7 +56,8 @@ fn main() -> anyhow::Result<()> {
-         true,
+@@ -56,6 +61,7 @@ fn main() -> anyhow::Result<()> {
          &[],
          true,
--        query_output_base
-+        query_output_base,
+         query_output_base,
 +        args.lucicfg_stdlib_path,
      )?;
  
      starlark_lsp::server::stdio_server(ctx)?;
 -- 
-2.44.0.291.gc1ea87d7ee-goog
+2.44.0.683.g7961c838ac-goog
 
