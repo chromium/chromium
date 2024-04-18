@@ -129,7 +129,7 @@ void MediaItemUIFooterView::OnMediaItemUIDeviceSelectorUpdated(
         AddChildView(std::make_unique<DeviceEntryButton>(
             base::BindRepeating(&MediaItemUIFooterView::OnDeviceSelected,
                                 base::Unretained(this), tag),
-            device_entry->icon(),
+            &device_entry->icon(),
             base::UTF8ToUTF16(device_entry->device_name())));
     device_entry_button->set_tag(tag);
     device_entry_button->SetProperty(

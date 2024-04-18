@@ -56,15 +56,15 @@ void ChangeEntryColor(views::ImageView* image_view,
 
 // foreground_color_id is only set for CastDeviceEntryViewAsh.
 std::unique_ptr<views::ImageView> CreateIconView(
-    const gfx::VectorIcon* icon,
+    const gfx::VectorIcon& icon,
     std::optional<ui::ColorId> foreground_color_id = std::nullopt) {
   auto icon_view = std::make_unique<views::ImageView>();
   if (foreground_color_id.has_value()) {
     icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-        *icon, foreground_color_id.value(), kDeviceIconSize));
+        icon, foreground_color_id.value(), kDeviceIconSize));
   } else {
     icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-        *icon, gfx::kPlaceholderColor, kDeviceIconSize));
+        icon, gfx::kPlaceholderColor, kDeviceIconSize));
   }
   icon_view->SetBorder(views::CreateEmptyBorder(kDeviceIconBorder));
   return icon_view;
@@ -77,18 +77,18 @@ std::unique_ptr<views::View> CreateIconView(
   if (icon == global_media_controls::mojom::IconType::kThrobber) {
     return media_router::CreateThrobber();
   }
-  return CreateIconView(&GetVectorIcon(icon), foreground_color_id);
+  return CreateIconView(GetVectorIcon(icon), foreground_color_id);
 }
 
 std::unique_ptr<views::ImageView> GetAudioDeviceIcon() {
-  return CreateIconView(&vector_icons::kHeadsetIcon);
+  return CreateIconView(vector_icons::kHeadsetIcon);
 }
 
 }  // namespace
 
 DeviceEntryUI::DeviceEntryUI(const std::string& raw_device_id,
                              const std::string& device_name,
-                             const gfx::VectorIcon* icon,
+                             const gfx::VectorIcon& icon,
                              const std::string& subtext)
     : raw_device_id_(raw_device_id), device_name_(device_name), icon_(icon) {}
 
@@ -100,12 +100,12 @@ AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
                                            SkColor background_color,
                                            const std::string& raw_device_id,
                                            const std::string& device_name)
-    : DeviceEntryUI(raw_device_id, device_name, &vector_icons::kHeadsetIcon),
+    : DeviceEntryUI(raw_device_id, device_name, vector_icons::kHeadsetIcon),
       HoverButton(std::move(callback),
                   GetAudioDeviceIcon(),
                   base::UTF8ToUTF16(device_name)) {
   ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                   subtitle(), icon_, foreground_color, background_color);
+                   subtitle(), &icon(), foreground_color, background_color);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -141,7 +141,7 @@ void AudioDeviceEntryView::OnColorsChanged(SkColor foreground_color,
   views::InkDrop::Get(this)->SetBaseColor(foreground_color);
 
   ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                   subtitle(), icon_, foreground_color, background_color);
+                   subtitle(), &icon(), foreground_color, background_color);
 
   // Reapply highlight formatting as some effects rely on these colors.
   SetHighlighted(is_highlighted_);
@@ -159,7 +159,7 @@ CastDeviceEntryView::CastDeviceEntryView(
     SkColor foreground_color,
     SkColor background_color,
     const global_media_controls::mojom::DevicePtr& device)
-    : DeviceEntryUI(device->id, device->name, &GetVectorIcon(device->icon)),
+    : DeviceEntryUI(device->id, device->name, GetVectorIcon(device->icon)),
       HoverButton(std::move(callback),
                   CreateIconView(device->icon),
                   base::UTF8ToUTF16(device->name),
@@ -195,7 +195,7 @@ void CastDeviceEntryView::ChangeCastEntryColor(SkColor foreground_color,
                      background_color);
   } else {
     ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                     subtitle(), icon_, foreground_color, background_color);
+                     subtitle(), &icon(), foreground_color, background_color);
   }
 }
 
@@ -211,7 +211,7 @@ CastDeviceEntryViewAsh::CastDeviceEntryViewAsh(
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     const global_media_controls::mojom::DevicePtr& device)
-    : DeviceEntryUI(device->id, device->name, &GetVectorIcon(device->icon)),
+    : DeviceEntryUI(device->id, device->name, GetVectorIcon(device->icon)),
       HoverButton(std::move(callback),
                   CreateIconView(device->icon, foreground_color_id),
                   base::UTF8ToUTF16(device->name)),

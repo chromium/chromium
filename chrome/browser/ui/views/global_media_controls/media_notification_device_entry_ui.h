@@ -21,14 +21,14 @@ class DeviceEntryUI {
  public:
   DeviceEntryUI(const std::string& raw_device_id,
                 const std::string& device_name,
-                const gfx::VectorIcon* icon_,
+                const gfx::VectorIcon& icon,
                 const std::string& subtext = "");
 
   DeviceEntryUI(const DeviceEntryUI&) = delete;
   DeviceEntryUI& operator=(const DeviceEntryUI&) = delete;
   virtual ~DeviceEntryUI() = default;
 
-  const gfx::VectorIcon* icon() const { return icon_; }
+  const gfx::VectorIcon& icon() const { return *icon_; }
   const std::string& raw_device_id() const { return raw_device_id_; }
   const std::string& device_name() const { return device_name_; }
 
@@ -42,7 +42,7 @@ class DeviceEntryUI {
   const std::string raw_device_id_;
   const std::string device_name_;
   bool is_highlighted_ = false;
-  const raw_ptr<const gfx::VectorIcon> icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
 };
 
 class AudioDeviceEntryView : public DeviceEntryUI, public HoverButton {
