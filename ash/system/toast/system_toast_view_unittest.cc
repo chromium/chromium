@@ -4,10 +4,12 @@
 
 #include "ash/system/toast/system_toast_view.h"
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/button/label_button.h"
@@ -104,6 +106,33 @@ TEST_F(SystemToastViewTest, WithButton) {
   EXPECT_TRUE(GetToastButton(system_toast_view));
   EXPECT_EQ(toast_data.dismiss_text,
             GetToastButton(system_toast_view)->GetText());
+}
+
+// Tests that the dismiss button can be directly a11y focused by calling
+// `ToggleButtonA11yFocus`.
+TEST_F(SystemToastViewTest, ToggleA11yFocus) {
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  auto* contents_view =
+      widget->SetContentsView(std::make_unique<views::View>());
+
+  // Set up base toast data and add a button.
+  auto toast_data = CreateBaseToastData();
+  toast_data.dismiss_text = u"Button";
+
+  auto* system_toast_view = contents_view->AddChildView(
+      std::make_unique<SystemToastView>(toast_data));
+
+  // Focus ring should not be visible initially.
+  auto* focus_ring = views::FocusRing::Get(GetToastButton(system_toast_view));
+  EXPECT_FALSE(focus_ring->GetVisible());
+
+  // Toggle a11y focus and test the button's focus ring visiblity.
+  system_toast_view->ToggleButtonA11yFocus();
+  EXPECT_TRUE(focus_ring->GetVisible());
+
+  system_toast_view->ToggleButtonA11yFocus();
+  EXPECT_FALSE(focus_ring->GetVisible());
 }
 
 }  // namespace ash

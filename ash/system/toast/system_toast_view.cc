@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
@@ -41,10 +42,13 @@ constexpr gfx::Insets kMultilineToastWithButtonInteriorMargin =
 constexpr int kToastLabelMaxWidth = 512;
 constexpr int kToastLeadingIconSize = 20;
 constexpr int kToastLeadingIconPaddingWidth = 14;
+constexpr int kDismissButtonFocusRingHaloInset = 1;
 
 }  // namespace
 
-SystemToastView::SystemToastView(const ToastData& toast_data) {
+SystemToastView::SystemToastView(const ToastData& toast_data)
+    : scoped_a11y_overrider_(
+          std::make_unique<ScopedA11yOverrideWindowSetter>()) {
   // Paint to layer so the background can be transparent.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -88,13 +92,27 @@ SystemToastView::SystemToastView(const ToastData& toast_data) {
   if (has_button) {
     AddChildView(
         views::Builder<PillButton>()
+            .CopyAddressTo(&dismiss_button_)
             .SetID(VIEW_ID_TOAST_BUTTON)
             .SetCallback(std::move(toast_data.dismiss_callback))
             .SetText(toast_data.dismiss_text)
             .SetTooltipText(toast_data.dismiss_text)
             .SetPillButtonType(PillButton::Type::kAccentFloatingWithoutIcon)
-            .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
+            .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
             .Build());
+
+    // The button's focus ring predicate is overridden since it's not directly
+    // focus accessible by tab traversal. The `is_dismiss_button_highlighted_`
+    // member variable is set through `ToggleButtonA11yFocus`.
+    auto* button_focus_ring = views::FocusRing::Get(dismiss_button_);
+    button_focus_ring->SetHaloInset(kDismissButtonFocusRingHaloInset);
+    button_focus_ring->SetOutsetFocusRingDisabled(true);
+    button_focus_ring->SetHasFocusPredicate(base::BindRepeating(
+        [](const SystemToastView* toast_view, const views::View* view) {
+          return toast_view->is_dismiss_button_highlighted_;
+        },
+        base::Unretained(this)));
+    button_focus_ring->SetVisible(false);
   }
 
   label->SetMaximumWidth(kToastLabelMaxWidth);
@@ -119,6 +137,25 @@ SystemToastView::SystemToastView(const ToastData& toast_data) {
 }
 
 SystemToastView::~SystemToastView() = default;
+
+void SystemToastView::ToggleButtonA11yFocus() {
+  if (!dismiss_button_) {
+    return;
+  }
+
+  // `is_dismiss_button_highlighted_` indicates the desired focus state.
+  is_dismiss_button_highlighted_ = !is_dismiss_button_highlighted_;
+  if (is_dismiss_button_highlighted_) {
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+        dismiss_button_->GetWidget()->GetNativeWindow());
+    dismiss_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
+                                              true);
+  }
+
+  auto* button_focus_ring = views::FocusRing::Get(dismiss_button_);
+  button_focus_ring->SetVisible(is_dismiss_button_highlighted_);
+  button_focus_ring->SchedulePaint();
+}
 
 void SystemToastView::AddedToWidget() {
   shadow_->ObserveColorProviderSource(GetWidget());
