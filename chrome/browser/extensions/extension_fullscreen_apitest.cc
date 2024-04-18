@@ -53,15 +53,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
   ASSERT_TRUE(browser()->window()->IsFullscreen());
 }
 
-#if BUILDFLAG(IS_MAC)
-// Fails flakily on Mac: http://crbug.com/308041
-#define MAYBE_UpdateWindowSizeExitsFullscreen \
-    DISABLED_UpdateWindowSizeExitsFullscreen
-#else
-#define MAYBE_UpdateWindowSizeExitsFullscreen UpdateWindowSizeExitsFullscreen
-#endif  // BUILDFLAG(IS_MAC)
+// Fails flakily: crbug.com/335640705.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
-                       MAYBE_UpdateWindowSizeExitsFullscreen) {
+                       DISABLED_UpdateWindowSizeExitsFullscreen) {
   browser()->exclusive_access_manager()->context()->EnterFullscreen(
       GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
       display::kInvalidDisplayId);
