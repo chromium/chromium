@@ -313,18 +313,6 @@ void CollectCharIndex(void* context,
   index_list->push_back(char_index);
 }
 
-float ComputeWordWidth(const ShapeResult& shape_result,
-                       wtf_size_t start_offset,
-                       wtf_size_t end_offset) {
-  const wtf_size_t offset_adjust = shape_result.StartIndex();
-  const float start_position =
-      shape_result.CachedPositionForOffset(start_offset - offset_adjust);
-  const float end_position =
-      shape_result.CachedPositionForOffset(end_offset - offset_adjust);
-  return IsLtr(shape_result.Direction()) ? end_position - start_position
-                                         : start_position - end_position;
-}
-
 inline LayoutTextCombine* MayBeTextCombine(const InlineItem* item) {
   if (!item)
     return nullptr;
@@ -1733,8 +1721,9 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
             context.HyphenInlineSize(*item_result);
         LayoutUnit max_part_width;
         for (const wtf_size_t location : locations) {
-          LayoutUnit part_width = LayoutUnit::FromFloatCeil(ComputeWordWidth(
-              shape_result, start_offset + location, start_offset + word_len));
+          LayoutUnit part_width =
+              LayoutUnit::FromFloatCeil(shape_result.CachedWidth(
+                  start_offset + location, start_offset + word_len));
           if (has_hyphen)
             part_width += hyphen_inline_size;
           max_part_width = std::max(part_width, max_part_width);
@@ -1744,7 +1733,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
         min_width = std::max(max_part_width.ToFloat(), min_width);
       } else {
         float word_width =
-            ComputeWordWidth(shape_result, start_offset, non_hangable_run_end);
+            shape_result.CachedWidth(start_offset, non_hangable_run_end);
 
         // Append hyphen-width to `word_width` if the word is hyphenated.
         if (has_hyphen) {

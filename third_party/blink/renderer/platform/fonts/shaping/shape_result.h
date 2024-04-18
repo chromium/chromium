@@ -276,6 +276,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // does not take partial glyphs into account.
   unsigned CachedOffsetForPosition(float x) const;
   float CachedPositionForOffset(unsigned offset) const;
+  float CachedWidth(unsigned start_offset, unsigned end_offset) const;
 
   // Returns the next or previous offsets respectively at which it is safe to
   // break without reshaping. Operates on a cache (that needs to be pre-computed

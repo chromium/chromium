@@ -2112,6 +2112,17 @@ float ShapeResult::CachedPositionForOffset(unsigned offset) const {
   return width_;
 }
 
+float ShapeResult::CachedWidth(unsigned start_offset,
+                               unsigned end_offset) const {
+  const unsigned offset_adjust = StartIndex();
+  const float start_position =
+      CachedPositionForOffset(start_offset - offset_adjust);
+  const float end_position =
+      CachedPositionForOffset(end_offset - offset_adjust);
+  return IsLtr() ? end_position - start_position
+                 : start_position - end_position;
+}
+
 unsigned ShapeResult::CachedNextSafeToBreakOffset(unsigned offset) const {
   if (IsRtl()) {
     return NextSafeToBreakOffset(offset);
