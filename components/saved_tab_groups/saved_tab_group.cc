@@ -307,7 +307,11 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::MergeGroup(
     SetTitle(base::UTF8ToUTF16(sync_specific.group().title()));
     SetColor(SyncColorToTabGroupColor(sync_specific.group().color()));
     if (IsTabGroupsSaveUIUpdateEnabled()) {
-      SetPosition(sync_specific.group().pinned_position());
+      if (sync_specific.group().has_pinned_position()) {
+        SetPosition(sync_specific.group().pinned_position());
+      } else {
+        SetPinned(false);
+      }
     } else {
       SetPosition(sync_specific.group().position());
     }

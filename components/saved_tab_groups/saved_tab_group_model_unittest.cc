@@ -24,6 +24,7 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -189,15 +190,19 @@ class SavedTabGroupModelTest : public ::testing::Test,
       return;
     }
     // Copy ids so we do not remove elements while we are accessing the data.
+    std::vector<base::Uuid> saved_tab_group_ids = GetSavedTabGroupIds();
+    for (const auto& id : saved_tab_group_ids) {
+      saved_tab_group_model_->Remove(id);
+    }
+  }
+
+  std::vector<base::Uuid> GetSavedTabGroupIds() {
     std::vector<base::Uuid> saved_tab_group_ids;
     for (const SavedTabGroup& saved_group :
          saved_tab_group_model_->saved_tab_groups()) {
       saved_tab_group_ids.emplace_back(saved_group.saved_guid());
     }
-
-    for (const auto& id : saved_tab_group_ids) {
-      saved_tab_group_model_->Remove(id);
-    }
+    return saved_tab_group_ids;
   }
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
@@ -523,6 +528,91 @@ TEST_P(SavedTabGroupModelTest, MergeGroupsFromModel) {
             merged_group.creation_time_windows_epoch_micros());
   EXPECT_EQ(group2.update_time_windows_epoch_micros(),
             merged_group.update_time_windows_epoch_micros());
+}
+
+TEST_P(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
+  auto guid1 = base::Uuid::GenerateRandomV4();
+  auto guid2 = base::Uuid::GenerateRandomV4();
+
+  // Add group 1 at position 0.
+  saved_tab_group_model_->Add(SavedTabGroup(
+      u"Title 1", tab_groups::TabGroupColorId::kPink, {}, 0, guid1));
+
+  // Add group 2 at position 0.
+  saved_tab_group_model_->Add(SavedTabGroup(
+      u"Title", tab_groups::TabGroupColorId::kPink, {}, 0, guid2));
+  const SavedTabGroup* group2 = saved_tab_group_model_->Get(guid2);
+  EXPECT_EQ(0, group2->position());
+
+  // Verify group 2 should be the 1st one in the list.
+  if (IsV2UIEnabled()) {
+    ASSERT_THAT(GetSavedTabGroupIds(),
+                testing::ElementsAre(guid2, guid1, id_3_, id_2_, id_1_));
+  } else {
+    ASSERT_THAT(GetSavedTabGroupIds(),
+                testing::ElementsAre(guid2, guid1, id_1_, id_2_, id_3_));
+    ;
+  }
+
+  // Change group 2 position from 0 to 1.
+  SavedTabGroup updated_group2 =
+      SavedTabGroup::FromSpecifics(*group2->ToSpecifics());
+  EXPECT_EQ(0, updated_group2.position());
+  updated_group2.SetPosition(1);
+  EXPECT_EQ(1, updated_group2.position());
+
+  // Merge the updated group 2 and verify the position is set to 1.
+  SavedTabGroup merged_group = SavedTabGroup::FromSpecifics(
+      *saved_tab_group_model_->MergeGroup(*updated_group2.ToSpecifics()));
+  EXPECT_EQ(1, merged_group.position());
+
+  // Verify group 2 should be the 2nd one in the list.
+  if (IsV2UIEnabled()) {
+    ASSERT_THAT(GetSavedTabGroupIds(),
+                testing::ElementsAre(guid1, guid2, id_3_, id_2_, id_1_));
+  } else {
+    ASSERT_THAT(GetSavedTabGroupIds(),
+                testing::ElementsAre(guid1, guid2, id_1_, id_2_, id_3_));
+  }
+}
+
+TEST_P(SavedTabGroupModelTest, MergeUnpinnedGroupRetainUnpinned) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  auto guid1 = base::Uuid::GenerateRandomV4();
+  auto guid2 = base::Uuid::GenerateRandomV4();
+
+  // Add group 1 at position 0.
+  saved_tab_group_model_->Add(SavedTabGroup(
+      u"Title 1", tab_groups::TabGroupColorId::kPink, {}, 0, guid1));
+
+  // Add group 2 at position 0.
+  saved_tab_group_model_->Add(SavedTabGroup(
+      u"Title", tab_groups::TabGroupColorId::kPink, {}, 0, guid2));
+  const SavedTabGroup* group2 = saved_tab_group_model_->Get(guid2);
+  EXPECT_EQ(0, group2->position());
+
+  // Verify group 2 should be the 1st one in the list.
+  ASSERT_THAT(GetSavedTabGroupIds(),
+              testing::ElementsAre(guid2, guid1, id_3_, id_2_, id_1_));
+
+  // Unpin group 2.
+  SavedTabGroup updated_group2 =
+      SavedTabGroup::FromSpecifics(*group2->ToSpecifics());
+  EXPECT_EQ(0, updated_group2.position());
+  updated_group2.SetPinned(false);
+  EXPECT_EQ(std::nullopt, updated_group2.position());
+
+  // Merge the updated group 2 and verify it's unpinned.
+  SavedTabGroup merged_group = SavedTabGroup::FromSpecifics(
+      *saved_tab_group_model_->MergeGroup(*updated_group2.ToSpecifics()));
+  EXPECT_EQ(std::nullopt, merged_group.position());
+
+  // Verify group 2 should place behind group 1.
+  ASSERT_THAT(GetSavedTabGroupIds(),
+              testing::ElementsAre(guid1, guid2, id_3_, id_2_, id_1_));
 }
 
 // Tests that merging a tab with the same tab_id changes the state of the object
