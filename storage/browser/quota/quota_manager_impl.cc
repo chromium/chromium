@@ -24,6 +24,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/concurrent_callbacks.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -192,37 +194,38 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     // Gather info before computing an answer:
     // settings, host_usage, storage_key_quota and device_storage_capacity if
     // unlimited.
-    int callback_count = is_unlimited_ ? 3 : 2;
-    base::RepeatingClosure barrier = base::BarrierClosure(
-        callback_count,
-        base::BindOnce(&UsageAndQuotaInfoGatherer::OnBarrierComplete,
-                       weak_factory_.GetWeakPtr()));
-
+    base::ConcurrentClosures concurrent;
     manager()->GetQuotaSettings(
         base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotSettings,
-                       weak_factory_.GetWeakPtr(), barrier));
+                       weak_factory_.GetWeakPtr(), concurrent.CreateClosure()));
 
     if (bucket_info_) {
       manager()->GetBucketUsageWithBreakdown(
           bucket_info_->ToBucketLocator(),
           base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotUsage,
-                         weak_factory_.GetWeakPtr(), barrier));
+                         weak_factory_.GetWeakPtr(),
+                         concurrent.CreateClosure()));
     } else {
       manager()->GetStorageKeyUsageWithBreakdown(
           storage_key_, type_,
           base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotUsage,
-                         weak_factory_.GetWeakPtr(), barrier));
+                         weak_factory_.GetWeakPtr(),
+                         concurrent.CreateClosure()));
     }
 
     // Determine storage_key_quota differently depending on type.
     if (is_unlimited_) {
       SetDesiredStorageKeyQuota(kNoLimit);
-      manager()->GetStorageCapacity(
-          base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotCapacity,
-                         weak_factory_.GetWeakPtr(), barrier));
+      manager()->GetStorageCapacity(base::BindOnce(
+          &UsageAndQuotaInfoGatherer::OnGotCapacity, weak_factory_.GetWeakPtr(),
+          concurrent.CreateClosure()));
     } else {
       // For limited storage,  OnGotSettings will set the host quota.
     }
+
+    std::move(concurrent)
+        .Done(base::BindOnce(&UsageAndQuotaInfoGatherer::CallCompleted,
+                             weak_factory_.GetWeakPtr()));
   }
 
   void Aborted() override {
@@ -286,10 +289,10 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     return static_cast<QuotaManagerImpl*>(observer());
   }
 
-  void OnGotSettings(base::RepeatingClosure barrier_closure,
+  void OnGotSettings(base::OnceClosure callback,
                      const QuotaSettings& settings) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(barrier_closure);
+    DCHECK(callback);
 
     settings_ = settings;
     const int64_t quota =
@@ -298,27 +301,27 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
       SetDesiredStorageKeyQuota(quota);
     }
 
-    barrier_closure.Run();
+    std::move(callback).Run();
   }
 
-  void OnGotCapacity(base::OnceClosure barrier_closure,
+  void OnGotCapacity(base::OnceClosure callback,
                      int64_t total_space,
                      int64_t available_space) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(barrier_closure);
+    DCHECK(callback);
     DCHECK_GE(total_space, 0);
     DCHECK_GE(available_space, 0);
 
     total_space_ = total_space;
     available_space_ = available_space;
-    std::move(barrier_closure).Run();
+    std::move(callback).Run();
   }
 
-  void OnGotUsage(base::OnceClosure barrier_closure,
+  void OnGotUsage(base::OnceClosure callback,
                   int64_t usage,
                   blink::mojom::UsageBreakdownPtr usage_breakdown) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(barrier_closure);
+    DCHECK(callback);
     DCHECK_GE(usage, -1);
     DCHECK(usage_breakdown);
     DCHECK_GE(usage_breakdown->backgroundFetch, 0);
@@ -330,7 +333,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
 
     usage_ = usage;
     usage_breakdown_ = std::move(usage_breakdown);
-    std::move(barrier_closure).Run();
+    std::move(callback).Run();
   }
 
   void SetDesiredStorageKeyQuota(int64_t quota) {
@@ -339,8 +342,6 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
 
     desired_storage_key_quota_ = quota;
   }
-
-  void OnBarrierComplete() { CallCompleted(); }
 
   // These fields are passed at construction time.
   const StorageKey storage_key_;
@@ -551,49 +552,39 @@ class QuotaManagerImpl::StorageKeyGathererTask {
     run_called_ = true;
 #endif  // DCHECK_IS_ON()
 
-    size_t client_call_count = 0;
-    for (const auto& client_and_type : manager_->client_types_) {
-      client_call_count += client_and_type.second.size();
-    }
-
-    // Registered clients can be empty in tests.
-    if (!client_call_count) {
-      Completed();
-      return;
-    }
-
-    base::RepeatingClosure barrier = base::BarrierClosure(
-        client_call_count,
-        base::BindOnce(&QuotaManagerImpl::StorageKeyGathererTask::Completed,
-                       weak_factory_.GetWeakPtr()));
-
-    GetStorageKeysForType(StorageType::kTemporary, barrier);
-    GetStorageKeysForType(StorageType::kSyncable, barrier);
+    base::ConcurrentClosures concurrent;
+    GetStorageKeysForType(StorageType::kTemporary, concurrent);
+    GetStorageKeysForType(StorageType::kSyncable, concurrent);
+    std::move(concurrent)
+        .Done(
+            base::BindOnce(&QuotaManagerImpl::StorageKeyGathererTask::Completed,
+                           weak_factory_.GetWeakPtr()));
   }
 
  private:
-  void GetStorageKeysForType(StorageType type, base::RepeatingClosure barrier) {
+  void GetStorageKeysForType(StorageType type,
+                             base::ConcurrentClosures& concurrent) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     auto client_map_it = manager_->client_types_.find(type);
     DCHECK(client_map_it != manager_->client_types_.end());
-    DCHECK(barrier);
 
     for (const auto& client_and_type : client_map_it->second) {
       client_and_type.first->GetStorageKeysForType(
           type, base::BindOnce(&StorageKeyGathererTask::DidGetStorageKeys,
-                               weak_factory_.GetWeakPtr(), type, barrier));
+                               weak_factory_.GetWeakPtr(), type,
+                               concurrent.CreateClosure()));
     }
   }
 
   void DidGetStorageKeys(StorageType type,
-                         base::OnceClosure barrier,
+                         base::OnceClosure callback,
                          const std::vector<StorageKey>& storage_keys) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(barrier);
+    DCHECK(callback);
 
     storage_keys_by_type_[type].insert(storage_keys.begin(),
                                        storage_keys.end());
-    std::move(barrier).Run();
+    std::move(callback).Run();
   }
 
   void Completed() {
@@ -918,22 +909,18 @@ class QuotaManagerImpl::StorageCleanupHelper : public QuotaTask {
  protected:
   void Run() override {
     DCHECK(manager()->client_types_.contains(type_));
-    base::RepeatingClosure barrier = base::BarrierClosure(
-        manager()->client_types_[type_].size(),
-        base::BindOnce(&StorageCleanupHelper::CallCompleted,
-                       weak_factory_.GetWeakPtr()));
 
-    // This may synchronously trigger |callback_| at the end of the for loop,
-    // make sure we do nothing after this block.
+    base::ConcurrentClosures concurrent;
     for (const auto& client_and_type : manager()->client_types_[type_]) {
       mojom::QuotaClient* client = client_and_type.first;
       QuotaClientType client_type = client_and_type.second;
       if (quota_client_types_.contains(client_type)) {
-        client->PerformStorageCleanup(type_, barrier);
-      } else {
-        barrier.Run();
+        client->PerformStorageCleanup(type_, concurrent.CreateClosure());
       }
     }
+    std::move(concurrent)
+        .Done(base::BindOnce(&StorageCleanupHelper::CallCompleted,
+                             weak_factory_.GetWeakPtr()));
   }
 
   void Aborted() override {
@@ -1367,10 +1354,10 @@ void QuotaManagerImpl::GetBucketSpaceRemaining(
     base::OnceCallback<void(QuotaErrorOr<int64_t>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // This barrier is run once with each space restriction --- the StorageKey
-  // usage/quota and the bucket's usage/quota (if it exists). The final value is
-  // the more restrictive of the two.
-  auto barrier_aggregator = base::BindOnce(
+  // ConcurrentCallbacks is run once with each space restriction --- the
+  // StorageKey usage/quota and the bucket's usage/quota (if it exists). The
+  // final value is the more restrictive of the two.
+  auto aggregator = base::BindOnce(
       [](base::OnceCallback<void(QuotaErrorOr<int64_t>)> final_space_remaining,
          std::vector<int64_t> space_checks) {
         int64_t space_left =
@@ -1383,13 +1370,11 @@ void QuotaManagerImpl::GetBucketSpaceRemaining(
         }
       },
       std::move(callback));
-  auto barrier = base::BarrierCallback<int64_t>(
-      /*num_callbacks=*/bucket.is_default ? 1 : 2,
-      std::move(barrier_aggregator));
+  base::ConcurrentCallbacks<int64_t> concurrent;
 
-  // Translates a UsageAndQuota result into a single number for the barrier.
-  auto on_got_usage = base::BindRepeating(
-      [](base::RepeatingCallback<void(int64_t)> report_space_remaining,
+  // Translates a UsageAndQuota result into a single number for the aggregator.
+  auto on_got_usage =
+      [](base::OnceCallback<void(int64_t)> report_space_remaining,
          blink::mojom::QuotaStatusCode code, int64_t usage, int64_t quota) {
         // Report the amount of allocated space remaining, or min() for an
         // error, or max() if there's no limit.
@@ -1402,17 +1387,19 @@ void QuotaManagerImpl::GetBucketSpaceRemaining(
           leftover_space = quota - usage;
         }
         std::move(report_space_remaining).Run(leftover_space);
-      },
-      barrier);
+      };
 
   // Check the usage for the whole StorageKey.
-  GetUsageAndQuota(bucket.storage_key, bucket.type, on_got_usage);
+  GetUsageAndQuota(bucket.storage_key, bucket.type,
+                   base::BindOnce(on_got_usage, concurrent.CreateCallback()));
 
   // If this is the default bucket, we're done. Otherwise, additionally check
   // the usage of the specific bucket against its quota.
   if (!bucket.is_default) {
-    GetBucketUsageAndQuota(bucket.id, on_got_usage);
+    GetBucketUsageAndQuota(
+        bucket.id, base::BindOnce(on_got_usage, concurrent.CreateCallback()));
   }
+  std::move(concurrent).Done(std::move(aggregator));
 }
 
 void QuotaManagerImpl::OnClientWriteFailed(const StorageKey& storage_key) {
@@ -2092,9 +2079,7 @@ void QuotaManagerImpl::RetrieveBucketUsageForBucketTable(
     BucketTableEntries entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::RepeatingCallback<void(mojom::BucketTableEntryPtr)> barrier =
-      base::BarrierCallback<mojom::BucketTableEntryPtr>(entries.size(),
-                                                        std::move(callback));
+  base::ConcurrentCallbacks<mojom::BucketTableEntryPtr> concurrent;
 
   for (auto& entry : entries) {
     StorageType type = static_cast<StorageType>(entry->type);
@@ -2120,20 +2105,22 @@ void QuotaManagerImpl::RetrieveBucketUsageForBucketTable(
     GetBucketUsageWithBreakdown(
         bucket_locator,
         base::BindOnce(&QuotaManagerImpl::AddBucketTableEntry,
-                       weak_factory_.GetWeakPtr(), std::move(entry), barrier));
+                       weak_factory_.GetWeakPtr(), std::move(entry),
+                       concurrent.CreateCallback()));
   }
+  std::move(concurrent).Done(std::move(callback));
 }
 
 void QuotaManagerImpl::AddBucketTableEntry(
     mojom::BucketTableEntryPtr entry,
-    base::OnceCallback<void(mojom::BucketTableEntryPtr)> barrier_callback,
+    base::OnceCallback<void(mojom::BucketTableEntryPtr)> callback,
     int64_t usage,
     blink::mojom::UsageBreakdownPtr bucket_usage_breakdown) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   entry->usage = usage;
 
-  std::move(barrier_callback).Run(std::move(entry));
+  std::move(callback).Run(std::move(entry));
 }
 
 void QuotaManagerImpl::OnDbError(int error_code) {
@@ -3043,12 +3030,9 @@ void QuotaManagerImpl::DidGetBucketsCheckExpiration(
       base::BarrierClosure(buckets_to_delete.size(),
                            base::BindOnce(std::move(callback), kept_buckets));
   for (const BucketInfo& bucket : buckets_to_delete) {
-    auto on_delete_done = base::BindOnce(
-        [](base::RepeatingClosure barrier,
-           QuotaErrorOr<mojom::BucketTableEntryPtr>) { barrier.Run(); },
-        barrier);
-    DeleteBucketDataInternal(bucket.ToBucketLocator(), AllQuotaClientTypes(),
-                             std::move(on_delete_done));
+    DeleteBucketDataInternal(
+        bucket.ToBucketLocator(), AllQuotaClientTypes(),
+        base::IgnoreArgs<QuotaErrorOr<mojom::BucketTableEntryPtr>>(barrier));
   }
 }
 
