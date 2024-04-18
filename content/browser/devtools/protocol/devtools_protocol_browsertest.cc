@@ -2537,6 +2537,62 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       ReturnsCookiesOnlyForAttachableUrls) {
+  SetNotAttachableHosts({"b.test"});
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  std::string cookies_to_set = "/set-cookie?foo=bar";
+
+  GURL url = embedded_test_server()->GetURL("b.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  url = embedded_test_server()->GetURL("c.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  url = embedded_test_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(b.test(),c.test())");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  Attach();
+  const base::Value::List* storage_cookies =
+      SendCommandSync("Storage.getCookies")->FindList("cookies");
+  ASSERT_EQ(1ul, storage_cookies->size());
+  EXPECT_EQ("foo", *storage_cookies->front().GetDict().FindString("name"));
+  EXPECT_EQ("c.test", *storage_cookies->front().GetDict().FindString("domain"));
+
+  const base::Value::List* network_all_cookies =
+      SendCommandSync("Network.getAllCookies")->FindList("cookies");
+  ASSERT_EQ(1ul, network_all_cookies->size());
+  EXPECT_EQ("foo", *network_all_cookies->front().GetDict().FindString("name"));
+  EXPECT_EQ("c.test",
+            *network_all_cookies->front().GetDict().FindString("domain"));
+
+  const base::Value::List* network_cookies_no_param =
+      SendCommandSync("Network.getCookies")->FindList("cookies");
+  ASSERT_EQ(1ul, network_cookies_no_param->size());
+  EXPECT_EQ("foo",
+            *network_cookies_no_param->front().GetDict().FindString("name"));
+  EXPECT_EQ("c.test",
+            *network_cookies_no_param->front().GetDict().FindString("domain"));
+
+  base::Value::List urls;
+  urls.Append(embedded_test_server()
+                  ->GetURL("b.com", "/cross_site_iframe_factory.html?b.test()")
+                  .spec());
+  urls.Append(embedded_test_server()
+                  ->GetURL("c.com", "/cross_site_iframe_factory.html?c.test()")
+                  .spec());
+  base::Value::Dict params;
+  params.Set("urls", std::move(urls));
+  const base::Value::List* network_cookies_with_param =
+      SendCommandSync("Network.getAllCookies", std::move(params))
+          ->FindList("cookies");
+  ASSERT_EQ(1ul, network_cookies_with_param->size());
+  EXPECT_EQ("foo",
+            *network_cookies_with_param->front().GetDict().FindString("name"));
+  EXPECT_EQ("c.test", *network_cookies_with_param->front().GetDict().FindString(
+                          "domain"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        AutoAttachToOOPIFAfterNavigationStarted) {
   ASSERT_TRUE(embedded_test_server()->Start());
   IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),

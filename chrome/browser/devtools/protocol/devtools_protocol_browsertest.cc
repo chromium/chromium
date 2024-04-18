@@ -874,7 +874,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
-  std::unique_ptr<base::Value::Dict> params(new base::Value::Dict());
   SetIsTrusted(false);
   Attach();
   EXPECT_FALSE(SendCommandSync("HeapProfiler.enable"));  // Implemented in V8
@@ -882,8 +881,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
   EXPECT_FALSE(SendCommandSync(
       "Memory.prepareForLeakDetection"));        // Implemented in content
   EXPECT_FALSE(SendCommandSync("Cast.enable"));  // Implemented in content
-  EXPECT_FALSE(SendCommandSync("Storage.getCookies"));
-  EXPECT_FALSE(SendCommandSync("Network.getAllCookies"));
   EXPECT_TRUE(SendCommandSync("Accessibility.enable"));
 }
 

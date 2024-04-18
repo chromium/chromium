@@ -362,8 +362,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       base::BindRepeating(
           &RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories,
           base::Unretained(this)),
-      session->GetClient()->MayReadLocalFiles(),
-      session->GetClient()->IsTrusted());
+      session->GetClient());
   session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(), base::BindRepeating(
                           [](RenderFrameDevToolsAgentHost* self,
@@ -376,8 +375,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
   const bool may_attach_to_brower = session->GetClient()->IsTrusted();
   session->CreateAndAddHandler<protocol::ServiceWorkerHandler>(
       /* allow_inspect_worker= */ may_attach_to_brower);
-  session->CreateAndAddHandler<protocol::StorageHandler>(
-      session->GetClient()->IsTrusted());
+  session->CreateAndAddHandler<protocol::StorageHandler>(session->GetClient());
   session->CreateAndAddHandler<protocol::SystemInfoHandler>(
       /* is_browser_session= */ false);
   auto* target_handler = session->CreateAndAddHandler<protocol::TargetHandler>(

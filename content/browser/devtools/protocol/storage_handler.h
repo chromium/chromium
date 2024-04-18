@@ -39,7 +39,7 @@ class StorageHandler
       public content::InterestGroupManagerImpl::InterestGroupObserver,
       public AttributionObserver {
  public:
-  explicit StorageHandler(bool client_is_trusted);
+  explicit StorageHandler(DevToolsAgentHostClient* client);
 
   StorageHandler(const StorageHandler&) = delete;
   StorageHandler& operator=(const StorageHandler&) = delete;
@@ -238,6 +238,9 @@ class StorageHandler
   // have to work on `storage_partition_`, unlike the public version.
   Response SetInterestGroupTrackingInternal(StoragePartition* storage_partition,
                                             bool enable);
+  void GotAllCookies(
+      std::unique_ptr<Storage::Backend::GetCookiesCallback> callback,
+      const std::vector<net::CanonicalCookie>& cookies);
 
   std::unique_ptr<Storage::Frontend> frontend_;
   raw_ptr<StoragePartition> storage_partition_{nullptr};
@@ -249,7 +252,7 @@ class StorageHandler
 
   // Exposes the API for managing storage quota overrides.
   std::unique_ptr<storage::QuotaOverrideHandle> quota_override_handle_;
-  bool client_is_trusted_;
+  raw_ptr<DevToolsAgentHostClient> client_;
 
   bool interest_group_tracking_enabled_ = false;
   bool interest_group_auction_tracking_enabled_ = false;

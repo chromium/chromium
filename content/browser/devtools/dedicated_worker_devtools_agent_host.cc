@@ -62,8 +62,7 @@ bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
       auto_attacher_.get(), session);
   session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(), devtools_worker_token(), GetIOContext(), base::DoNothing(),
-      session->GetClient()->MayReadLocalFiles(),
-      session->GetClient()->IsTrusted());
+      session->GetClient());
   return true;
 }
 

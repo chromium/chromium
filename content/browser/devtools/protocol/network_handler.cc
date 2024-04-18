@@ -116,7 +116,6 @@ using ClearBrowserCookiesCallback =
     Network::Backend::ClearBrowserCookiesCallback;
 
 static constexpr char kInvalidCookieFields[] = "Invalid cookie fields";
-static constexpr char kNotAllowedError[] = "Not allowed";
 
 Network::CertificateTransparencyCompliance SerializeCTPolicyCompliance(
     net::ct::CTPolicyCompliance ct_compliance) {
@@ -1139,14 +1138,12 @@ NetworkHandler::NetworkHandler(
     const base::UnguessableToken& devtools_token,
     DevToolsIOContext* io_context,
     base::RepeatingClosure update_loader_factories_callback,
-    bool allow_file_access,
-    bool client_is_trusted)
+    DevToolsAgentHostClient* client)
     : DevToolsDomainHandler(Network::Metainfo::domainName),
       host_id_(host_id),
       devtools_token_(devtools_token),
       io_context_(io_context),
-      allow_file_access_(allow_file_access),
-      client_is_trusted_(client_is_trusted),
+      client_(client),
       browser_context_(nullptr),
       storage_partition_(nullptr),
       host_(nullptr),
@@ -1611,6 +1608,13 @@ void NetworkHandler::GetCookies(Maybe<Array<String>> protocol_urls,
     return;
   }
   std::vector<GURL> urls = ComputeCookieURLs(host_, protocol_urls);
+  bool is_webui = host_ && host_->web_ui();
+
+  urls.erase(std::remove_if(urls.begin(), urls.end(),
+                            [=](const GURL& url) {
+                              return !client_->MayAttachToURL(url, is_webui);
+                            }),
+             urls.end());
 
   CookieRetrieverNetworkService::Retrieve(
       storage_partition_->GetCookieManagerForBrowserProcess(), urls,
@@ -1620,20 +1624,33 @@ void NetworkHandler::GetCookies(Maybe<Array<String>> protocol_urls,
 
 void NetworkHandler::GetAllCookies(
     std::unique_ptr<GetAllCookiesCallback> callback) {
-  if (!client_is_trusted_) {
-    callback->sendFailure(Response::ServerError(kNotAllowedError));
-  }
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
     return;
   }
   storage_partition_->GetCookieManagerForBrowserProcess()->GetAllCookies(
-      base::BindOnce(
-          [](std::unique_ptr<GetAllCookiesCallback> callback,
-             const std::vector<net::CanonicalCookie>& cookies) {
-            callback->sendSuccess(NetworkHandler::BuildCookieArray(cookies));
-          },
-          std::move(callback)));
+      base::BindOnce(&NetworkHandler::GotAllCookies, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void NetworkHandler::GotAllCookies(
+    std::unique_ptr<GetAllCookiesCallback> callback,
+    const std::vector<net::CanonicalCookie>& cookies) {
+  bool is_webui = host_ && host_->web_ui();
+  std::vector<net::CanonicalCookie> filtered_cookies;
+  for (const auto& cookie : cookies) {
+    if (client_->MayAttachToURL(
+            GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
+                               cookie.DomainWithoutDot()})),
+            is_webui) &&
+        client_->MayAttachToURL(
+            GURL(base::StrCat({url::kHttpScheme, url::kStandardSchemeSeparator,
+                               cookie.DomainWithoutDot()})),
+            is_webui)) {
+      filtered_cookies.emplace_back(std::move(cookie));
+    }
+  }
+  callback->sendSuccess(NetworkHandler::BuildCookieArray(filtered_cookies));
 }
 
 void NetworkHandler::SetCookie(const std::string& name,
@@ -3376,7 +3393,7 @@ void NetworkHandler::LoadNetworkResource(
     return;
   }
 
-  if (gurl.SchemeIs(url::kFileScheme) && !allow_file_access_) {
+  if (gurl.SchemeIs(url::kFileScheme) && !client_->MayReadLocalFiles()) {
     callback->sendFailure(Response::InvalidParams("Unsupported URL scheme"));
     return;
   }

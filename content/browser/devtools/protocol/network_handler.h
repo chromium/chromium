@@ -73,8 +73,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                  const base::UnguessableToken& devtools_token,
                  DevToolsIOContext* io_context,
                  base::RepeatingClosure update_loader_factories_callback,
-                 bool allow_file_access,
-                 bool client_is_trusted);
+                 DevToolsAgentHostClient* client);
 
   NetworkHandler(const NetworkHandler&) = delete;
   NetworkHandler& operator=(const NetworkHandler&) = delete;
@@ -360,13 +359,15 @@ class NetworkHandler : public DevToolsDomainHandler,
       mojo::ScopedDataPipeConsumerHandle pipe,
       const std::string& mime_type);
 
+  void GotAllCookies(std::unique_ptr<GetAllCookiesCallback> callback,
+                     const std::vector<net::CanonicalCookie>& cookies);
+
   // TODO(dgozman): Remove this.
   const std::string host_id_;
 
   const base::UnguessableToken devtools_token_;
   const raw_ptr<DevToolsIOContext> io_context_;
-  const bool allow_file_access_;
-  const bool client_is_trusted_;
+  raw_ptr<DevToolsAgentHostClient> client_;
 
   std::unique_ptr<Network::Frontend> frontend_;
   raw_ptr<BrowserContext> browser_context_;

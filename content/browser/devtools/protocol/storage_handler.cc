@@ -443,9 +443,8 @@ class StorageHandler::QuotaManagerObserver
   mojo::Receiver<storage::mojom::QuotaManagerObserver> receiver_{this};
 };
 
-StorageHandler::StorageHandler(bool client_is_trusted)
-    : DevToolsDomainHandler(Storage::Metainfo::domainName),
-      client_is_trusted_(client_is_trusted) {}
+StorageHandler::StorageHandler(DevToolsAgentHostClient* client)
+    : DevToolsDomainHandler(Storage::Metainfo::domainName), client_(client) {}
 
 StorageHandler::~StorageHandler() {
   DCHECK(!cache_storage_observer_);
@@ -491,9 +490,6 @@ Response StorageHandler::Disable() {
 
 void StorageHandler::GetCookies(Maybe<std::string> browser_context_id,
                                 std::unique_ptr<GetCookiesCallback> callback) {
-  if (!client_is_trusted_) {
-    callback->sendFailure(Response::ServerError("Permission denied"));
-  }
   StoragePartition* storage_partition = nullptr;
   Response response = StorageHandler::FindStoragePartition(browser_context_id,
                                                            &storage_partition);
@@ -503,12 +499,28 @@ void StorageHandler::GetCookies(Maybe<std::string> browser_context_id,
   }
 
   storage_partition->GetCookieManagerForBrowserProcess()->GetAllCookies(
-      base::BindOnce(
-          [](std::unique_ptr<GetCookiesCallback> callback,
-             const std::vector<net::CanonicalCookie>& cookies) {
-            callback->sendSuccess(NetworkHandler::BuildCookieArray(cookies));
-          },
-          std::move(callback)));
+      base::BindOnce(&StorageHandler::GotAllCookies,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void StorageHandler::GotAllCookies(
+    std::unique_ptr<GetCookiesCallback> callback,
+    const std::vector<net::CanonicalCookie>& cookies) {
+  bool is_webui = frame_host_ && frame_host_->web_ui();
+  std::vector<net::CanonicalCookie> filtered_cookies;
+  for (const auto& cookie : cookies) {
+    if (client_->MayAttachToURL(
+            GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
+                               cookie.DomainWithoutDot()})),
+            is_webui) &&
+        client_->MayAttachToURL(
+            GURL(base::StrCat({url::kHttpScheme, url::kStandardSchemeSeparator,
+                               cookie.DomainWithoutDot()})),
+            is_webui)) {
+      filtered_cookies.emplace_back(std::move(cookie));
+    }
+  }
+  callback->sendSuccess(NetworkHandler::BuildCookieArray(filtered_cookies));
 }
 
 void StorageHandler::SetCookies(

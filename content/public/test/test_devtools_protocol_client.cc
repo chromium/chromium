@@ -202,6 +202,11 @@ bool TestDevToolsProtocolClient::MayWriteLocalFiles() {
   return may_write_local_files_;
 }
 
+bool TestDevToolsProtocolClient::MayAttachToURL(const GURL& url,
+                                                bool is_webui) {
+  return not_attachable_hosts_.find(url.host()) == not_attachable_hosts_.end();
+}
+
 std::optional<url::Origin>
 TestDevToolsProtocolClient::GetNavigationInitiatorOrigin() {
   return navigation_initiator_origin_;
