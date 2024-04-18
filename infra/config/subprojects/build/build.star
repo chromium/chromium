@@ -7,7 +7,7 @@
 
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_url.star", "linkify_builder")
-load("//lib/builders.star", "cpu", "os", "reclient", "siso")
+load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -101,7 +101,6 @@ def cq_build_perf_builder(description_html, **kwargs):
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
         reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-        siso_project = siso.project.DEFAULT_UNTRUSTED,
         use_clang_coverage = True,
         **kwargs
     )
@@ -488,7 +487,6 @@ def developer_build_perf_builder(description_html, **kwargs):
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         executable = "recipe:chrome_build/build_perf_developer",
         reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-        siso_project = siso.project.DEFAULT_UNTRUSTED,
         siso_configs = ["remote-library-link", "remote-exec-link"],
         shadow_reclient_instance = None,
         **kwargs

@@ -365,7 +365,6 @@ defaults = args.defaults(
     reclient_disable_bq_upload = None,
     siso_enabled = None,
     siso_configs = ["builder"],
-    siso_project = None,
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
     siso_experiments = [],
@@ -443,7 +442,6 @@ def builder(
         reclient_disable_bq_upload = None,
         siso_enabled = args.DEFAULT,
         siso_configs = args.DEFAULT,
-        siso_project = args.DEFAULT,
         siso_enable_cloud_profiler = args.DEFAULT,
         siso_enable_cloud_trace = args.DEFAULT,
         siso_experiments = args.DEFAULT,
@@ -647,10 +645,6 @@ def builder(
             be used at compile step.
         siso_configs: a list of siso configs to enable. available values are defined in
             //build/config/siso/config.star.
-        siso_project: a string indicating the GCP project hosting the RBE
-            instance and other Cloud services. e.g. logging, trace etc.
-            When it's not set, reclient_instance is used.
-            TODO: b/335361392 - Converge siso_project/reclient_instance into rbe_project.
         siso_enable_cloud_profiler: If True, enable cloud profiler in siso.
         siso_enable_cloud_trace: If True, enable cloud trace in siso.
         siso_experiments: a list of experiment flags for siso.
@@ -839,6 +833,7 @@ def builder(
         ensure_verified = reclient_ensure_verified,
         disable_bq_upload = reclient_disable_bq_upload,
     )
+    rbe_project = None
     if reclient != None:
         properties["$build/reclient"] = reclient
         shadow_reclient_instance = defaults.get_value("shadow_reclient_instance", shadow_reclient_instance)
@@ -857,18 +852,15 @@ def builder(
         )
         if shadow_reclient:
             shadow_properties["$build/reclient"] = shadow_reclient
-
-    siso_project = defaults.get_value("siso_project", siso_project)
-    if not siso_project and reclient:
-        siso_project = reclient["instance"]
-    use_siso = defaults.get_value("siso_enabled", siso_enabled) and siso_project
+        rbe_project = reclient["instance"]
+    use_siso = defaults.get_value("siso_enabled", siso_enabled) and rbe_project
     if use_siso:
         siso = {
             "configs": defaults.get_value("siso_configs", siso_configs),
             "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
             "enable_cloud_trace": defaults.get_value("siso_enable_cloud_trace", siso_enable_cloud_trace),
             "experiments": defaults.get_value("siso_experiments", siso_experiments),
-            "project": siso_project,
+            "project": rbe_project,
         }
         remote_jobs = defaults.get_value("siso_remote_jobs", siso_remote_jobs)
         if remote_jobs:

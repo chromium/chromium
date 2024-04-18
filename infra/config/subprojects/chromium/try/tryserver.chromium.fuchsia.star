@@ -6,7 +6,7 @@
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_url.star", "linkify_builder")
-load("//lib/builders.star", "builders", "os", "reclient", "siso")
+load("//lib/builders.star", "builders", "os", "reclient")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
@@ -26,7 +26,6 @@ try_.defaults.set(
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 consoles.list_view(

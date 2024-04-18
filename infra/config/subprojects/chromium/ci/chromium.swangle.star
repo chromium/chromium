@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.swangle builder group."""
 
-load("//lib/builders.star", "reclient", "sheriff_rotations", "siso")
+load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/ci.star", "ci")
@@ -23,7 +23,6 @@ ci.defaults.set(
     service_account = ci.gpu.SERVICE_ACCOUNT,
     shadow_service_account = ci.gpu.SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = reclient.jobs.DEFAULT,
 )
 

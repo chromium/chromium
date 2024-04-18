@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builder_url.star", "linkify_builder")
-load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations", "siso")
+load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -150,7 +150,6 @@ ci.builder(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
     siso_enabled = True,
-    siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = reclient.jobs.DEFAULT,
 )
 

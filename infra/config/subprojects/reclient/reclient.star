@@ -752,5 +752,4 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
     siso_enabled = True,
-    siso_project = reclient.instance.TEST_UNTRUSTED,
 )
