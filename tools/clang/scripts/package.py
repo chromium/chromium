@@ -700,6 +700,23 @@ def main():
   PackageInArchive(libclang_dir, libclang_dir)
   MaybeUpload(args.upload, args.bucket, libclang_dir + '.t*z', gcs_platform)
 
+  # Zip up Android x64 ASAN runtime support
+  if sys.platform.startswith('linux'):
+    x64_android_asan_dir = 'x64_android_asan' + stamp
+    shutil.rmtree(x64_android_asan_dir, ignore_errors=True)
+    subdir = os.path.join('lib', 'clang', RELEASE_VERSION, 'lib', 'linux')
+    dst_dir = os.path.join(x64_android_asan_dir, subdir)
+    os.makedirs(dst_dir)
+    shutil.copy(
+        os.path.join(LLVM_RELEASE_DIR, subdir,
+                     'libclang_rt.asan-x86_64-android.so'), dst_dir)
+    shutil.copy(
+        os.path.join(LLVM_RELEASE_DIR, subdir,
+                     'libclang_rt.asan_static-x86_64-android.a'), dst_dir)
+    PackageInArchive(x64_android_asan_dir, x64_android_asan_dir)
+    MaybeUpload(args.upload, args.bucket, x64_android_asan_dir + '.t*z',
+                gcs_platform)
+
   if sys.platform == 'win32' and args.upload:
     binaries = [f for f in want if f.endswith('.exe') or f.endswith('.dll')]
     assert 'bin/clang-cl.exe' in binaries
