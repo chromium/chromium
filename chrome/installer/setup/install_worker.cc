@@ -617,7 +617,7 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
   }
 
   bool is_cbcm_enrolled =
-      !InstallUtil::GetCloudManagementEnrollmentToken().empty() &&
+      !InstallUtil::GetCloudManagementEnrollmentToken().empty() ||
       has_valid_dm_token;
   std::wstring cbcm_brand =
       TransformCloudManagementBrandCode(brand, /*to_cbcm=*/is_cbcm_enrolled);
