@@ -193,6 +193,7 @@ class LensOverlayController : public LensSearchboxClient,
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
       lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager);
 
@@ -274,6 +275,9 @@ class LensOverlayController : public LensSearchboxClient,
   void HandleInteractionDataResponse(
       lens::proto::LensOverlayInteractionResponse response);
 
+  // Handles the creation of a new thumbnail based on the user selection.
+  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
+
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
 
@@ -302,6 +306,10 @@ class LensOverlayController : public LensSearchboxClient,
   // A pending text query to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.
   std::optional<std::string> pending_text_query_ = std::nullopt;
+
+  // A pending thumbnail URI to be loaded in the side panel. Needed when the
+  // side panel is not bound at the time of a region request.
+  std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
 
   // The last search box text, used in conjunction with the current region
   // to construct Lens requests.

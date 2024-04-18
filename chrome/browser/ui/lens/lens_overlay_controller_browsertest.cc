@@ -52,7 +52,7 @@ constexpr char kRequestNotificationsScript[] = R"(
       })
       )";
 
-constexpr char kCheckSidePanelLoadedScript[] =
+constexpr char kCheckSidePanelResultsLoadedScript[] =
     "(function() {const root = "
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot; "
     "const iframeSrcLoaded = "
@@ -60,6 +60,14 @@ constexpr char kCheckSidePanelLoadedScript[] =
     "const searchboxInputLoaded = "
     "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && searchboxInputLoaded;})();";
+
+constexpr char kCheckSidePanelThumbnailLoadedScript[] =
+    "(function() {const appRoot = "
+    "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
+    "const realboxRoot = appRoot.getElementById('realbox').shadowRoot;"
+    "const thumbnailRoot = realboxRoot.getElementById('thumbnail').shadowRoot;"
+    "const imageSrc = thumbnailRoot.getElementById('image').src;"
+    "return imageSrc.startsWith('data:image/jpeg');})();";
 
 constexpr char kTestSuggestSignals[] = "suggest_signals";
 
@@ -108,11 +116,13 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
       lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
+                                   thumbnail_created_callback,
                                    variations_client,
                                    identity_manager) {}
 
@@ -146,11 +156,12 @@ class LensOverlayControllerFake : public LensOverlayController {
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
       lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager) override {
     return std::make_unique<LensOverlayQueryControllerFake>(
         full_image_callback, url_callback, interaction_data_callback,
-        variations_client, identity_manager);
+        thumbnail_created_callback, variations_client, identity_manager);
   }
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
@@ -419,6 +430,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
+
+  // Verify that the side panel searchbox displays a thumbnail.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return true ==
+           content::EvalJs(
+               controller->GetSidePanelWebContentsForTesting(),
+               content::JsReplace(kCheckSidePanelThumbnailLoadedScript));
+  }));
 }
 
 // TODO(b/335028577): Test flaky on Mac.
@@ -461,9 +480,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify that the side panel displays our query.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return true ==
-           content::EvalJs(
-               controller->GetSidePanelWebContentsForTesting(),
-               content::JsReplace(kCheckSidePanelLoadedScript, text_query));
+           content::EvalJs(controller->GetSidePanelWebContentsForTesting(),
+                           content::JsReplace(
+                               kCheckSidePanelResultsLoadedScript, text_query));
   }));
 }
 

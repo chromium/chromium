@@ -41,6 +41,9 @@ using LensOverlayUrlResponseCallback =
 // Callback type alias for the lens overlay interaction data response.
 using LensOverlayInteractionResponseCallback =
     base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>;
+// Callback type alias for the thumbnail image creation.
+using LensOverlayThumbnailCreatedCallback =
+    base::RepeatingCallback<void(const std::string&)>;
 // Manages queries on behalf of a Lens overlay.
 class LensOverlayQueryController {
  public:
@@ -48,6 +51,7 @@ class LensOverlayQueryController {
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
       LensOverlayInteractionResponseCallback interaction_data_callback,
+      LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager);
   virtual ~LensOverlayQueryController();
@@ -97,6 +101,9 @@ class LensOverlayQueryController {
   // Interaction data callback for an interaction.
   LensOverlayInteractionResponseCallback interaction_data_callback_;
 
+  // Callback for when a thumbnail image is created from a region selection.
+  LensOverlayThumbnailCreatedCallback thumbnail_created_callback_;
+
  private:
   enum class QueryControllerState {
     // StartQueryFlow has not been called and the query controller is inactive.
@@ -141,6 +148,8 @@ class LensOverlayQueryController {
   // Helper to gate interaction fetches on whether or not the cluster
   // info has been received. If it has not been received, this function
   // sets the cluster info received callback to fetch the interaction.
+  // Additionally, invokes `thumbnail_created_callback_` and passes the data in
+  // `image_crop`.
   void FetchInteractionRequestAndGenerateUrlIfClusterInfoReady(
       int request_index,
       lens::mojom::CenterRotatedBoxPtr region,

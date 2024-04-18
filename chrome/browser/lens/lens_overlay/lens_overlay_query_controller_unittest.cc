@@ -64,11 +64,14 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
           url_callback,
       base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
           interaction_data_callback,
+      base::RepeatingCallback<void(const std::string&)>
+          thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
+                                   thumbnail_created_callback,
                                    variations_client,
                                    identity_manager) {}
   ~LensOverlayQueryControllerMock() override = default;
@@ -139,7 +142,8 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       full_image_response_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      base::NullCallback(), profile()->GetVariationsClient(),
+      base::NullCallback(), base::NullCallback(),
+      profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()));
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(bitmap);
@@ -171,10 +175,12 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future;
   base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
       interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()));
   query_controller.fake_objects_response_.mutable_cluster_info()
@@ -258,10 +264,12 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future;
   base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
       interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()));
   query_controller.fake_objects_response_.mutable_cluster_info()
@@ -348,10 +356,12 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future;
   base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
       interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()));
   query_controller.fake_objects_response_.mutable_cluster_info()
@@ -417,10 +427,12 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future;
   base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
       interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()));
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);

@@ -183,6 +183,8 @@ void LensOverlayController::ShowUI() {
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleInteractionDataResponse,
                           weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
+                          weak_factory_.GetWeakPtr()),
       variations_client_, identity_manager_);
 
   state_ = State::kScreenshot;
@@ -246,6 +248,9 @@ void LensOverlayController::CloseUI() {
   scoped_tab_modal_ui_.reset();
   latest_interaction_response_.Clear();
   selected_region_.reset();
+  pending_side_panel_url_.reset();
+  pending_text_query_.reset();
+  pending_thumbnail_uri_.reset();
   last_search_box_text_.reset();
   additional_search_query_params_.clear();
   // In the future we may want a hibernate state. In this case we would stop
@@ -375,11 +380,13 @@ LensOverlayController::CreateLensQueryController(
     lens::LensOverlayFullImageResponseCallback full_image_callback,
     lens::LensOverlayUrlResponseCallback url_callback,
     lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+    lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager) {
   return std::make_unique<lens::LensOverlayQueryController>(
       std::move(full_image_callback), std::move(url_callback),
-      std::move(interaction_data_callback), variations_client,
+      std::move(interaction_data_callback),
+      std::move(thumbnail_created_callback), variations_client,
       identity_manager);
 }
 
@@ -576,16 +583,21 @@ void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
 }
 
 void LensOverlayController::OnPageBound() {
-  // If ths side panel closes before the remote gets bound, searchbox_handler_
+  // If the side panel closes before the remote gets bound, searchbox_handler_
   // could become unset. Verify it is set before sending to the side panel.
-  if (!pending_text_query_.has_value() || !searchbox_handler_ ||
-      !searchbox_handler_->IsRemoteBound()) {
+  if (!searchbox_handler_ || !searchbox_handler_->IsRemoteBound()) {
     return;
   }
-  // TODO(b/333425452): Pass thumbnail to searchbox.
+
   // Send any pending inputs for the searchbox.
-  searchbox_handler_->SetInputText(*pending_text_query_);
-  pending_text_query_.reset();
+  if (pending_text_query_.has_value()) {
+    searchbox_handler_->SetInputText(*pending_text_query_);
+    pending_text_query_.reset();
+  }
+  if (pending_thumbnail_uri_.has_value()) {
+    searchbox_handler_->SetThumbnail(*pending_thumbnail_uri_);
+    pending_thumbnail_uri_.reset();
+  }
 }
 
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {}
@@ -658,7 +670,7 @@ void LensOverlayController::IssueTextSelectionRequest(
     searchbox_handler_->SetInputText(query);
   } else {
     // If the side panel was not bound at the time of request, we store the
-    // query as pending to load results on bind.
+    // query as pending to send it to the searchbox on bind.
     pending_text_query_ = query;
   }
 
@@ -713,4 +725,18 @@ void LensOverlayController::HandleInteractionURLResponse(
 void LensOverlayController::HandleInteractionDataResponse(
     lens::proto::LensOverlayInteractionResponse response) {
   latest_interaction_response_ = response;
+}
+
+void LensOverlayController::HandleThumbnailCreated(
+    const std::string& thumbnail_bytes) {
+  const std::string data_uri = webui::MakeDataURIForImage(
+      base::as_bytes(base::make_span(thumbnail_bytes)), "jpeg");
+
+  if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
+    searchbox_handler_->SetThumbnail(data_uri);
+  } else {
+    // If the side panel was not bound at the time of request, we store the
+    // thumbnail as pending to send it to the searchbox on bind.
+    pending_thumbnail_uri_ = data_uri;
+  }
 }

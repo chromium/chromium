@@ -111,10 +111,12 @@ LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayFullImageResponseCallback full_image_callback,
     LensOverlayUrlResponseCallback url_callback,
     LensOverlayInteractionResponseCallback interaction_data_callback,
+    LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager)
     : full_image_callback_(std::move(full_image_callback)),
       interaction_data_callback_(std::move(interaction_data_callback)),
+      thumbnail_created_callback_(std::move(thumbnail_created_callback)),
       request_id_generator_(
           std::make_unique<lens::LensOverlayRequestIdGenerator>()),
       url_callback_(std::move(url_callback)),
@@ -313,6 +315,10 @@ void LensOverlayQueryController::
           FetchInteractionRequestAndGenerateLensSearchUrl,
       weak_ptr_factory_.GetWeakPtr(), request_index, std::move(region),
       query_text, object_id, additional_search_query_params, image_crop);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(thumbnail_created_callback_,
+                                image_crop->image().image_content()));
 }
 
 lens::LensOverlayServerRequest
