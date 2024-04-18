@@ -13,7 +13,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -65,11 +64,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height);
 
         mInitialSpacing =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                        ? OmniboxResourceProvider.getHeaderStartPadding(context)
-                                - context.getResources()
-                                        .getDimensionPixelSize(R.dimen.tile_view_padding)
-                        : OmniboxResourceProvider.getSideSpacing(context);
+                OmniboxResourceProvider.getHeaderStartPadding(context)
+                        - context.getResources().getDimensionPixelSize(R.dimen.tile_view_padding);
         mElementSpacing =
                 context.getResources()
                         .getDimensionPixelSize(
