@@ -63,7 +63,7 @@ std::unique_ptr<DecryptConfig> DecryptConfig::Clone() const {
 
 std::unique_ptr<DecryptConfig> DecryptConfig::CopyNewSubsamplesIV(
     const std::vector<SubsampleEntry>& subsamples,
-    const std::string& iv) {
+    const std::string& iv) const {
   return std::make_unique<DecryptConfig>(encryption_scheme_, key_id_, iv,
                                          subsamples, encryption_pattern_);
 }

@@ -190,7 +190,7 @@ std::unique_ptr<DecryptConfig> SplitSubsamples(
     uint32_t frame_size,
     size_t* current_subsample_index,
     size_t* extra_clear_subsample_bytes,
-    DecryptConfig* base_decrypt_config,
+    const DecryptConfig* base_decrypt_config,
     const std::vector<SubsampleEntry>& subsamples,
     std::string* iv) {
   // We copy iv so that we can use the starting value in our
@@ -666,42 +666,50 @@ std::string Vp9Parser::IncrementIVForTesting(const std::string& iv,
   return IncrementIV(iv, by);
 }
 
-// Annex B Superframes
-base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSuperframe() {
-  const uint8_t* stream = stream_;
-  off_t bytes_left = bytes_left_;
-
-  // Make sure we don't parse stream_ more than once.
-  stream_ = nullptr;
-  bytes_left_ = 0;
-
-  base::circular_deque<FrameInfo> frames;
-
-  if (bytes_left < 1) {
-    return frames;
+// static
+bool Vp9Parser::IsSuperframe(const uint8_t* stream,
+                             off_t stream_size,
+                             const DecryptConfig* decrypt_config) {
+  if (!stream || stream_size < 1) {
+    return false;
   }
 
   // The marker byte might be encrypted, in which case we should treat
   // the stream as a single frame.
-  off_t marker_offset = bytes_left - 1;
-  if (stream_decrypt_config_) {
-    if (IsByteNEncrypted(marker_offset, stream_decrypt_config_->subsamples())) {
-      frames.push_back(FrameInfo(stream, bytes_left));
-      frames[0].decrypt_config = stream_decrypt_config_->Clone();
-      return frames;
-    }
+  off_t marker_offset = stream_size - 1;
+  if (decrypt_config &&
+      IsByteNEncrypted(marker_offset, decrypt_config->subsamples())) {
+    return false;
   }
 
   // If this is a superframe, the last byte in the stream will contain the
   // superframe marker. If not, the whole buffer contains a single frame.
   uint8_t marker = *(stream + marker_offset);
-  if ((marker & 0xe0) != 0xc0) {
+  return ((marker & 0xe0) == 0xc0);
+}
+
+// static
+base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ExtractFrames(
+    const uint8_t* stream,
+    off_t stream_size,
+    const DecryptConfig* decrypt_config) {
+  base::circular_deque<FrameInfo> frames;
+  off_t bytes_left = stream_size;
+
+  if (!stream || bytes_left < 1) {
+    return frames;
+  }
+
+  if (!IsSuperframe(stream, bytes_left, decrypt_config)) {
     frames.push_back(FrameInfo(stream, bytes_left));
-    if (stream_decrypt_config_) {
-      frames[0].decrypt_config = stream_decrypt_config_->Clone();
+    if (decrypt_config) {
+      frames[0].decrypt_config = decrypt_config->Clone();
     }
     return frames;
   }
+
+  off_t marker_offset = stream_size - 1;
+  uint8_t marker = *(stream + marker_offset);
 
   DVLOG(1) << "Parsing a superframe";
 
@@ -732,9 +740,9 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSuperframe() {
   std::vector<SubsampleEntry> subsamples;
   size_t current_subsample = 0;
   size_t extra_clear_subsample_bytes = 0;
-  if (stream_decrypt_config_) {
-    iv = stream_decrypt_config_->iv();
-    subsamples = stream_decrypt_config_->subsamples();
+  if (decrypt_config) {
+    iv = decrypt_config->iv();
+    subsamples = decrypt_config->subsamples();
   }
 
   for (size_t i = 0; i < num_frames; ++i) {
@@ -755,7 +763,7 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSuperframe() {
     if (subsamples.size()) {
       std::unique_ptr<DecryptConfig> frame_dc = SplitSubsamples(
           size, &current_subsample, &extra_clear_subsample_bytes,
-          stream_decrypt_config_.get(), subsamples, &iv);
+          decrypt_config, subsamples, &iv);
       if (!frame_dc) {
         DVLOG(1) << "Failed to calculate decrypt config for frame " << i;
         frames.clear();
@@ -773,6 +781,18 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSuperframe() {
   }
 
   return frames;
+}
+
+// Annex B Superframes
+base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSuperframe() {
+  const uint8_t* stream = stream_;
+  off_t bytes_left = bytes_left_;
+
+  // Make sure we don't parse stream_ more than once.
+  stream_ = nullptr;
+  bytes_left_ = 0;
+
+  return ExtractFrames(stream, bytes_left, stream_decrypt_config_.get());
 }
 
 base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSVCFrame() {

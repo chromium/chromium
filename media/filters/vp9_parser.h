@@ -318,6 +318,30 @@ class MEDIA_EXPORT Vp9Parser {
     ReferenceSlot ref_slots_[kVp9NumRefFrames];
   };
 
+  // Stores start pointer and size of each frame within the current superframe.
+  struct FrameInfo {
+    FrameInfo();
+    FrameInfo(const FrameInfo& copy_from);
+    FrameInfo(const uint8_t* ptr, off_t size);
+    ~FrameInfo();
+
+    FrameInfo& operator=(const FrameInfo& copy_from);
+    bool IsValid() const { return ptr != nullptr; }
+    void Reset() { ptr = nullptr; }
+
+    // Starting address of the frame.
+    const uint8_t* ptr = nullptr;
+
+    // Size of the frame in bytes.
+    off_t size = 0;
+
+    // Necessary height and width to decode the frame.
+    // This is filled only if the stream is SVC.
+    gfx::Size allocate_size;
+
+    std::unique_ptr<DecryptConfig> decrypt_config;
+  };
+
   // See homonymous member variable for information on the parameter.
   explicit Vp9Parser(bool parsing_compressed_header);
 
@@ -369,31 +393,20 @@ class MEDIA_EXPORT Vp9Parser {
   // Clear parser state and return to an initialized state.
   void Reset();
 
+  // Determines if the passed in VP9 frame data contains a superframe or not.
+  static bool IsSuperframe(const uint8_t* stream,
+                           off_t stream_size,
+                           const DecryptConfig* decrypt_config);
+
+  // Extracts the frame information for a frame, if this is a superframe then
+  // the returned list will contain each of the frames in decode order. An empty
+  // list will be returned in the error case.
+  static base::circular_deque<FrameInfo> ExtractFrames(
+      const uint8_t* stream,
+      off_t stream_size,
+      const DecryptConfig* decrypt_config);
+
  private:
-  // Stores start pointer and size of each frame within the current superframe.
-  struct FrameInfo {
-    FrameInfo();
-    FrameInfo(const FrameInfo& copy_from);
-    FrameInfo(const uint8_t* ptr, off_t size);
-    ~FrameInfo();
-
-    FrameInfo& operator=(const FrameInfo& copy_from);
-    bool IsValid() const { return ptr != nullptr; }
-    void Reset() { ptr = nullptr; }
-
-    // Starting address of the frame.
-    const uint8_t* ptr = nullptr;
-
-    // Size of the frame in bytes.
-    off_t size = 0;
-
-    // Necessary height and width to decode the frame.
-    // This is filled only if the stream is SVC.
-    gfx::Size allocate_size;
-
-    std::unique_ptr<DecryptConfig> decrypt_config;
-  };
-
   base::circular_deque<FrameInfo> ParseSuperframe();
   // Parses a frame in SVC stream with |spatial_layer_frame_size_|.
   base::circular_deque<FrameInfo> ParseSVCFrame();

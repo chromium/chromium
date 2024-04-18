@@ -72,7 +72,7 @@ class MEDIA_EXPORT DecryptConfig {
   // while providing a new vector of subsamples and initialization vector.
   std::unique_ptr<DecryptConfig> CopyNewSubsamplesIV(
       const std::vector<SubsampleEntry>& subsamples,
-      const std::string& iv);
+      const std::string& iv) const;
 
   // Returns whether this config has EncryptionPattern set or not.
   bool HasPattern() const;
