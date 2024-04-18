@@ -649,24 +649,25 @@ void V4L2StatelessVideoDecoder::DequeueBuffers(bool success) {
   DCHECK(!surfaces_queued_.empty());
   DVLOGF(4);
 
-  auto surface = std::move(surfaces_queued_.front());
-  surfaces_queued_.pop();
-
   // |output_queue_| is responsible for tracking which buffers correspond to
   // which frames. The queue needs to know that the buffer is done, ready for
   // display, and should not be queued.
   auto output_buffer = output_queue_->DequeueBuffer();
 
-  // TODO(frkoenig): Handle |output_buffer| being a std::nullopt
-  last_frame_id_dequeued_ = output_buffer->GetTimeAsFrameID();
+  if (output_buffer) {
+    auto surface = std::move(surfaces_queued_.front());
+    surfaces_queued_.pop();
 
-  DCHECK_EQ(surface->FrameID(), last_frame_id_dequeued_)
-      << "The surfaces are queued as the buffer is submitted. They are "
-         "expected to be dequeued in order.";
+    last_frame_id_dequeued_ = output_buffer->GetTimeAsFrameID();
 
-  // References that this frame holds can be removed once the frame is done
-  // decoding.
-  surface->ClearReferenceSurfaces();
+    DCHECK_EQ(surface->FrameID(), last_frame_id_dequeued_)
+        << "The surfaces are queued as the buffer is submitted. They are "
+           "expected to be dequeued in order.";
+
+    // References that this frame holds can be removed once the frame is done
+    // decoding.
+    surface->ClearReferenceSurfaces();
+  }
 
   // Put the just dequeued buffer into the list of available input buffers.
   input_queue_->DequeueBuffer();
