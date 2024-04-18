@@ -6669,7 +6669,7 @@
   {
     "name": "password-sharing",
     "owners": ["mamir@chromium.org", "rgod@google.com", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "password-suggestion-bottom-sheet-v2",
