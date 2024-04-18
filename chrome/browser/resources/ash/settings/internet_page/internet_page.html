@@ -150,7 +150,8 @@
             on-click="onApnMenuButtonClicked_"
             focus-row-control focus-type="menu"
             deep-link-focus-id$="[[Setting.kCellularAddApn]]"
-            title="$i18n{moreActions}">
+            title="$i18n{moreActions}"
+            disabled="[[isApnManaged_(globalPolicy_)]]">
         </cr-icon-button>
       </div>
       <apn-subpage id="apnSubpage"

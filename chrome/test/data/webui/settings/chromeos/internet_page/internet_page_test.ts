@@ -15,6 +15,7 @@ import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hots
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ApnProperties, DeviceStateProperties, GlobalPolicy, InhibitReason, MAX_NUM_CUSTOM_APNS, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -1155,7 +1156,7 @@ suite('<settings-internet-page>', () => {
 
   [true, false].forEach(isApnPoliciesEnabled => {
     test(
-        `Managed APN icon visibility when isApnPoliciesEnabled is ${
+        `Managed APN UI states when isApnPoliciesEnabled is ${
             isApnPoliciesEnabled}`,
         async () => {
           loadTimeData.overrideValues({
@@ -1170,7 +1171,12 @@ suite('<settings-internet-page>', () => {
           // Check for APN policies managed icon.
           const getApnManagedIcon = () =>
               internetPage.shadowRoot!.querySelector('#apnManagedIcon');
+          const apnActionMenuButton =
+              internetPage.shadowRoot!.querySelector<HTMLButtonElement>(
+                  '#apnActionMenuButton');
           assertFalse(!!getApnManagedIcon());
+          assert(apnActionMenuButton);
+          assertFalse(apnActionMenuButton.disabled);
 
           let globalPolicy = {
             allowApnModification: true,
@@ -1178,6 +1184,7 @@ suite('<settings-internet-page>', () => {
           mojoApi.setGlobalPolicy(globalPolicy);
           await flushTasks();
           assertFalse(!!getApnManagedIcon());
+          assertFalse(apnActionMenuButton.disabled);
 
           globalPolicy = {
             allowApnModification: false,
@@ -1185,6 +1192,7 @@ suite('<settings-internet-page>', () => {
           mojoApi.setGlobalPolicy(globalPolicy);
           await flushTasks();
           assertEquals(isApnPoliciesEnabled, !!getApnManagedIcon());
+          assertEquals(isApnPoliciesEnabled, apnActionMenuButton.disabled);
         });
   });
 
