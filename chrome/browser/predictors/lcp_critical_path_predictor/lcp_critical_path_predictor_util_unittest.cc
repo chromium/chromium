@@ -358,8 +358,8 @@ TEST(PredictFetchedFontUrls, Empty) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kLCPPFontURLPredictor, {}}}, {});
-  LcppData lcpp_data;
-  EXPECT_EQ(std::vector<GURL>(), PredictFetchedFontUrls(lcpp_data));
+  LcppStat lcpp_stat;
+  EXPECT_EQ(std::vector<GURL>(), PredictFetchedFontUrls(lcpp_stat));
 }
 
 TEST(PredictFetchedFontUrls, Simple) {
@@ -369,14 +369,12 @@ TEST(PredictFetchedFontUrls, Simple) {
         {{blink::features::kLCPPFontURLPredictorFrequencyThreshold.name, "0.5"},
          {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "10"}}}},
       {});
-  LcppData lcpp_data;
-  lcpp_data.mutable_lcpp_stat()
-      ->mutable_fetched_font_url_stat()
-      ->mutable_main_buckets()
-      ->insert({"https://example.com/a.woff", 0.9});
+  LcppStat lcpp_stat;
+  lcpp_stat.mutable_fetched_font_url_stat()->mutable_main_buckets()->insert(
+      {"https://example.com/a.woff", 0.9});
   std::vector<GURL> expected;
   expected.emplace_back("https://example.com/a.woff");
-  EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+  EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_stat));
 }
 
 TEST(PredictFetchedFontUrls, BrokenFontNames) {
@@ -386,10 +384,9 @@ TEST(PredictFetchedFontUrls, BrokenFontNames) {
         {{blink::features::kLCPPFontURLPredictorFrequencyThreshold.name, "0.5"},
          {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "10"}}}},
       {});
-  LcppData lcpp_data;
-  auto* main_buckets = lcpp_data.mutable_lcpp_stat()
-                           ->mutable_fetched_font_url_stat()
-                           ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* main_buckets =
+      lcpp_stat.mutable_fetched_font_url_stat()->mutable_main_buckets();
   // Duplicated.
   main_buckets->insert({"https://example.com/a.woff", 0.9});
   main_buckets->insert({"https://example.com/a.woff", 0.8});
@@ -399,7 +396,7 @@ TEST(PredictFetchedFontUrls, BrokenFontNames) {
   main_buckets->insert({"wss://example.com/", 0.9});
   std::vector<GURL> expected;
   expected.emplace_back("https://example.com/a.woff");
-  EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+  EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_stat));
 }
 
 TEST(PredictFetchedFontUrls, Threshold) {
@@ -409,15 +406,14 @@ TEST(PredictFetchedFontUrls, Threshold) {
         {{blink::features::kLCPPFontURLPredictorFrequencyThreshold.name, "0.5"},
          {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "10"}}}},
       {});
-  LcppData lcpp_data;
-  auto* main_buckets = lcpp_data.mutable_lcpp_stat()
-                           ->mutable_fetched_font_url_stat()
-                           ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* main_buckets =
+      lcpp_stat.mutable_fetched_font_url_stat()->mutable_main_buckets();
   main_buckets->insert({"https://example.com/a.woff", 0.9});
   main_buckets->insert({"https://example.com/b.woff", 0.1});
   std::vector<GURL> expected;
   expected.emplace_back("https://example.com/a.woff");
-  EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+  EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_stat));
 }
 
 TEST(PredictFetchedFontUrls, MaxUrls) {
@@ -429,15 +425,14 @@ TEST(PredictFetchedFontUrls, MaxUrls) {
             "0.5"},
            {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "1"}}}},
         {});
-    LcppData lcpp_data;
-    auto* main_buckets = lcpp_data.mutable_lcpp_stat()
-                             ->mutable_fetched_font_url_stat()
-                             ->mutable_main_buckets();
+    LcppStat lcpp_stat;
+    auto* main_buckets =
+        lcpp_stat.mutable_fetched_font_url_stat()->mutable_main_buckets();
     main_buckets->insert({"https://example.com/a.woff", 0.9});
     main_buckets->insert({"https://example.com/b.woff", 0.8});
     std::vector<GURL> expected;
     expected.emplace_back("https://example.com/a.woff");
-    EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+    EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_stat));
   }
   {  // Use MaxUrls as a kill switch.
     base::test::ScopedFeatureList feature_list;
@@ -447,14 +442,13 @@ TEST(PredictFetchedFontUrls, MaxUrls) {
             "0.5"},
            {blink::features::kLCPPFontURLPredictorMaxPreloadCount.name, "0"}}}},
         {});
-    LcppData lcpp_data;
-    auto* main_buckets = lcpp_data.mutable_lcpp_stat()
-                             ->mutable_fetched_font_url_stat()
-                             ->mutable_main_buckets();
+    LcppStat lcpp_stat;
+    auto* main_buckets =
+        lcpp_stat.mutable_fetched_font_url_stat()->mutable_main_buckets();
     main_buckets->insert({"https://example.com/a.woff", 0.9});
     main_buckets->insert({"https://example.com/b.woff", 0.8});
     std::vector<GURL> expected;
-    EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_data));
+    EXPECT_EQ(expected, PredictFetchedFontUrls(lcpp_stat));
   }
 }
 
@@ -463,34 +457,31 @@ TEST(PredictFetchedSubresourceUrls, Empty) {
 }
 
 TEST(PredictFetchedSubresourceUrls, SingleEntry) {
-  LcppData lcpp_data;
-  lcpp_data.mutable_lcpp_stat()
-      ->mutable_fetched_subresource_url_stat()
+  LcppStat lcpp_stat;
+  lcpp_stat.mutable_fetched_subresource_url_stat()
       ->mutable_main_buckets()
       ->insert({"https://example.com/a.jpeg", 0.9});
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
-            PredictFetchedSubresourceUrls(lcpp_data));
+            PredictFetchedSubresourceUrls(lcpp_stat));
 }
 
 TEST(PredictFetchedSubresourceUrls, SortedByFrequencyInDescendingOrder) {
-  LcppData lcpp_data;
-  auto* buckets = lcpp_data.mutable_lcpp_stat()
-                      ->mutable_fetched_subresource_url_stat()
-                      ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* buckets =
+      lcpp_stat.mutable_fetched_subresource_url_stat()->mutable_main_buckets();
   buckets->insert({"https://example.com/c.jpeg", 0.1});
   buckets->insert({"https://example.com/a.jpeg", 0.3});
   buckets->insert({"https://example.com/b.jpeg", 0.2});
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg"),
                                GURL("https://example.com/b.jpeg"),
                                GURL("https://example.com/c.jpeg")}),
-            PredictFetchedSubresourceUrls(lcpp_data));
+            PredictFetchedSubresourceUrls(lcpp_stat));
 }
 
 TEST(PredictFetchedSubresourceUrls, FilterUrls) {
-  LcppData lcpp_data;
-  auto* buckets = lcpp_data.mutable_lcpp_stat()
-                      ->mutable_fetched_subresource_url_stat()
-                      ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* buckets =
+      lcpp_stat.mutable_fetched_subresource_url_stat()->mutable_main_buckets();
   buckets->insert({"https://example.com/a.jpeg", 0.1});
   buckets->insert({"https://example.com/b.jpeg", 0.2});
   // Not an HTTP/HTTPS.
@@ -500,15 +491,15 @@ TEST(PredictFetchedSubresourceUrls, FilterUrls) {
   EXPECT_EQ(4U, buckets->size());
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/b.jpeg"),
                                GURL("https://example.com/a.jpeg")}),
-            PredictFetchedSubresourceUrls(lcpp_data));
+            PredictFetchedSubresourceUrls(lcpp_stat));
 }
 
 TEST(PredictPreconnectableOrigins, Empty) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kLCPPAutoPreconnectLcpOrigin, {}}}, {});
-  LcppData lcpp_data;
-  EXPECT_EQ(std::vector<GURL>(), PredictPreconnectableOrigins(lcpp_data));
+  LcppStat lcpp_stat;
+  EXPECT_EQ(std::vector<GURL>(), PredictPreconnectableOrigins(lcpp_stat));
 }
 
 TEST(PredictPreconnectableOrigins, Simple) {
@@ -519,14 +510,12 @@ TEST(PredictPreconnectableOrigins, Simple) {
          {blink::features::kkLCPPAutoPreconnectMaxPreconnectOriginsCount.name,
           "10"}}}},
       {});
-  LcppData lcpp_data;
-  lcpp_data.mutable_lcpp_stat()
-      ->mutable_preconnect_origin_stat()
-      ->mutable_main_buckets()
-      ->insert({"https://example.com", 0.9});
+  LcppStat lcpp_stat;
+  lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets()->insert(
+      {"https://example.com", 0.9});
   std::vector<GURL> expected;
   expected.emplace_back("https://example.com");
-  EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_data));
+  EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_stat));
 }
 
 TEST(PredictPreconnectableOrigins, SortedByFrequencyInDescendingOrder) {
@@ -537,17 +526,16 @@ TEST(PredictPreconnectableOrigins, SortedByFrequencyInDescendingOrder) {
          {blink::features::kkLCPPAutoPreconnectMaxPreconnectOriginsCount.name,
           "10"}}}},
       {});
-  LcppData lcpp_data;
-  auto* buckets = lcpp_data.mutable_lcpp_stat()
-                      ->mutable_preconnect_origin_stat()
-                      ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* buckets =
+      lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets();
   buckets->insert({"https://example.com", 0.1});
   buckets->insert({"https://example2.com", 0.3});
   buckets->insert({"https://example3.com", 0.2});
   EXPECT_EQ(std::vector<GURL>({GURL("https://example2.com"),
                                GURL("https://example3.com"),
                                GURL("https://example.com")}),
-            PredictPreconnectableOrigins(lcpp_data));
+            PredictPreconnectableOrigins(lcpp_stat));
 }
 
 TEST(PredictPreconnectableOrigins, Threshold) {
@@ -558,15 +546,14 @@ TEST(PredictPreconnectableOrigins, Threshold) {
          {blink::features::kkLCPPAutoPreconnectMaxPreconnectOriginsCount.name,
           "10"}}}},
       {});
-  LcppData lcpp_data;
-  auto* main_buckets = lcpp_data.mutable_lcpp_stat()
-                           ->mutable_preconnect_origin_stat()
-                           ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* main_buckets =
+      lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets();
   main_buckets->insert({"https://example1.com", 0.9});
   main_buckets->insert({"https://example2.com", 0.1});
   std::vector<GURL> expected;
   expected.emplace_back("https://example1.com");
-  EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_data));
+  EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_stat));
 }
 
 TEST(PredictPreconnectableOrigins, MaxUrls) {
@@ -578,15 +565,14 @@ TEST(PredictPreconnectableOrigins, MaxUrls) {
            {blink::features::kkLCPPAutoPreconnectMaxPreconnectOriginsCount.name,
             "1"}}}},
         {});
-    LcppData lcpp_data;
-    auto* main_buckets = lcpp_data.mutable_lcpp_stat()
-                             ->mutable_preconnect_origin_stat()
-                             ->mutable_main_buckets();
+    LcppStat lcpp_stat;
+    auto* main_buckets =
+        lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets();
     main_buckets->insert({"https://example.com", 0.9});
     main_buckets->insert({"https://example1.com", 0.8});
     std::vector<GURL> expected;
     expected.emplace_back("https://example.com");
-    EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_data));
+    EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_stat));
   }
   {  // Use MaxUrls as a kill switch.
     base::test::ScopedFeatureList feature_list;
@@ -596,14 +582,13 @@ TEST(PredictPreconnectableOrigins, MaxUrls) {
            {blink::features::kkLCPPAutoPreconnectMaxPreconnectOriginsCount.name,
             "0"}}}},
         {});
-    LcppData lcpp_data;
-    auto* main_buckets = lcpp_data.mutable_lcpp_stat()
-                             ->mutable_preconnect_origin_stat()
-                             ->mutable_main_buckets();
+    LcppStat lcpp_stat;
+    auto* main_buckets =
+        lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets();
     main_buckets->insert({"https://example1.com", 0.9});
     main_buckets->insert({"https://example2.com", 0.8});
     std::vector<GURL> expected;
-    EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_data));
+    EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_stat));
   }
 }
 
@@ -615,10 +600,9 @@ TEST(PredictPreconnectableOrigins, FilterUrls) {
          {blink::features::kkLCPPAutoPreconnectMaxPreconnectOriginsCount.name,
           "10"}}}},
       {});
-  LcppData lcpp_data;
-  auto* buckets = lcpp_data.mutable_lcpp_stat()
-                      ->mutable_preconnect_origin_stat()
-                      ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* buckets =
+      lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets();
   buckets->insert({"https://example1.com", 0.9});
   buckets->insert({"https://example2.com", 0.8});
   // Not an HTTP/HTTPS.
@@ -628,7 +612,7 @@ TEST(PredictPreconnectableOrigins, FilterUrls) {
   EXPECT_EQ(4U, buckets->size());
   EXPECT_EQ(std::vector<GURL>(
                 {GURL("https://example1.com"), GURL("https://example2.com")}),
-            PredictPreconnectableOrigins(lcpp_data));
+            PredictPreconnectableOrigins(lcpp_stat));
 }
 
 TEST(PredictUnusedPreloads, Empty) {
@@ -650,13 +634,11 @@ TEST(PredictUnusedPreloads, SingleEntry) {
           "0.5"}}}},
       {});
 
-  LcppData lcpp_data;
-  lcpp_data.mutable_lcpp_stat()
-      ->mutable_unused_preload_stat()
-      ->mutable_main_buckets()
-      ->insert({"https://example.com/a.jpeg", 0.9});
+  LcppStat lcpp_stat;
+  lcpp_stat.mutable_unused_preload_stat()->mutable_main_buckets()->insert(
+      {"https://example.com/a.jpeg", 0.9});
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
-            PredictUnusedPreloads(lcpp_data));
+            PredictUnusedPreloads(lcpp_stat));
 }
 
 TEST(PredictUnusedPreloads, SortedByFrequencyInDescendingOrder) {
@@ -667,17 +649,16 @@ TEST(PredictUnusedPreloads, SortedByFrequencyInDescendingOrder) {
           "0"}}}},
       {});
 
-  LcppData lcpp_data;
-  auto* buckets = lcpp_data.mutable_lcpp_stat()
-                      ->mutable_unused_preload_stat()
-                      ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* buckets =
+      lcpp_stat.mutable_unused_preload_stat()->mutable_main_buckets();
   buckets->insert({"https://example.com/c.jpeg", 0.1});
   buckets->insert({"https://example.com/a.jpeg", 0.3});
   buckets->insert({"https://example.com/b.jpeg", 0.2});
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg"),
                                GURL("https://example.com/b.jpeg"),
                                GURL("https://example.com/c.jpeg")}),
-            PredictUnusedPreloads(lcpp_data));
+            PredictUnusedPreloads(lcpp_stat));
 }
 
 TEST(PredictUnusedPreloads, FilterUrls) {
@@ -688,10 +669,9 @@ TEST(PredictUnusedPreloads, FilterUrls) {
           "0"}}}},
       {});
 
-  LcppData lcpp_data;
-  auto* buckets = lcpp_data.mutable_lcpp_stat()
-                      ->mutable_unused_preload_stat()
-                      ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* buckets =
+      lcpp_stat.mutable_unused_preload_stat()->mutable_main_buckets();
   buckets->insert({"https://example.com/a.jpeg", 0.1});
   buckets->insert({"https://example.com/b.jpeg", 0.2});
   // Not an HTTP/HTTPS.
@@ -701,7 +681,7 @@ TEST(PredictUnusedPreloads, FilterUrls) {
   EXPECT_EQ(4U, buckets->size());
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/b.jpeg"),
                                GURL("https://example.com/a.jpeg")}),
-            PredictUnusedPreloads(lcpp_data));
+            PredictUnusedPreloads(lcpp_stat));
 }
 
 TEST(PredictUnusedPreloads, Threshold) {
@@ -712,14 +692,13 @@ TEST(PredictUnusedPreloads, Threshold) {
           "0.5"}}}},
       {});
 
-  LcppData lcpp_data;
-  auto* buckets = lcpp_data.mutable_lcpp_stat()
-                      ->mutable_unused_preload_stat()
-                      ->mutable_main_buckets();
+  LcppStat lcpp_stat;
+  auto* buckets =
+      lcpp_stat.mutable_unused_preload_stat()->mutable_main_buckets();
   buckets->insert({"https://example.com/a.jpeg", 0.9});
   buckets->insert({"https://example.com/b.jpeg", 0.1});
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
-            PredictUnusedPreloads(lcpp_data));
+            PredictUnusedPreloads(lcpp_stat));
 }
 
 TEST(LcppKeyTest, InvalidURLs) {

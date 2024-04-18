@@ -125,9 +125,9 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(
             Profile::FromBrowserContext(browser_context()));
-    std::optional<predictors::LcppData> lcpp_data =
-        loading_predictor->resource_prefetch_predictor()->GetLcppData(url);
-    EXPECT_EQ(learn_lcpp, lcpp_data.has_value()) << location.ToString();
+    std::optional<predictors::LcppStat> lcpp_stat =
+        loading_predictor->resource_prefetch_predictor()->GetLcppStat(url);
+    EXPECT_EQ(learn_lcpp, lcpp_stat.has_value()) << location.ToString();
 
     base::Histogram::Count expected_count = record_uma ? 1 : 0;
     tester()->histogram_tester().ExpectTotalCount(

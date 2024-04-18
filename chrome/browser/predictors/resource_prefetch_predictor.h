@@ -207,8 +207,8 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   // Deletes all URLs from the predictor database and caches.
   void DeleteAllUrls();
 
-  // Returns LcppData for the `url`, or std::nullopt on failure.
-  std::optional<LcppData> GetLcppData(const GURL& url) const;
+  // Returns LcppStat for the `url`, or std::nullopt on failure.
+  std::optional<LcppStat> GetLcppStat(const GURL& url) const;
 
  private:
   friend class LoadingPredictor;

@@ -218,15 +218,15 @@ bool LoadingPredictor::PrepareForPageLoad(
   // without optimization guide.
   if (base::FeatureList::IsEnabled(
           blink::features::kLCPPAutoPreconnectLcpOrigin)) {
-    std::optional<LcppData> lcpp_data =
-        resource_prefetch_predictor()->GetLcppData(url);
-    if (lcpp_data) {
+    std::optional<LcppStat> lcpp_stat =
+        resource_prefetch_predictor()->GetLcppStat(url);
+    if (lcpp_stat) {
       auto network_anonymization_key =
           net::NetworkAnonymizationKey::CreateSameSite(
               net::SchemefulSite(url::Origin::Create(url)));
       size_t count = 0;
       for (const GURL& preconnect_origin :
-           PredictPreconnectableOrigins(*lcpp_data)) {
+           PredictPreconnectableOrigins(*lcpp_stat)) {
         prediction.requests.emplace_back(url::Origin::Create(preconnect_origin),
                                          1, network_anonymization_key);
         ++count;
@@ -244,14 +244,14 @@ bool LoadingPredictor::PrepareForPageLoad(
       base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) &&
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
           features::PrefetchSubresourceType::kAll) {
-    std::optional<LcppData> lcpp_data =
-        resource_prefetch_predictor()->GetLcppData(url);
-    if (lcpp_data) {
+    std::optional<LcppStat> lcpp_stat =
+        resource_prefetch_predictor()->GetLcppStat(url);
+    if (lcpp_stat) {
       auto network_anonymization_key =
           net::NetworkAnonymizationKey::CreateSameSite(
               net::SchemefulSite(url::Origin::Create(url)));
       size_t count = 0;
-      for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_data)) {
+      for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_stat)) {
         prediction.prefetch_requests.emplace_back(
             font_url, network_anonymization_key,
             network::mojom::RequestDestination::kFont);
@@ -556,10 +556,10 @@ void LoadingPredictor::MaybePrewarmResources(
     return;
   }
 
-  std::optional<LcppData> lcpp_data =
-      resource_prefetch_predictor()->GetLcppData(top_frame_main_resource_url);
+  std::optional<LcppStat> lcpp_stat =
+      resource_prefetch_predictor()->GetLcppStat(top_frame_main_resource_url);
 
-  if (!lcpp_data || !IsValidLcppStat(lcpp_data->lcpp_stat())) {
+  if (!lcpp_stat || !IsValidLcppStat(*lcpp_stat)) {
     return;
   }
 
@@ -571,7 +571,7 @@ void LoadingPredictor::MaybePrewarmResources(
   }
 
   prewarm_http_disk_cache_manager_->MaybePrewarmResources(
-      top_frame_main_resource_url, PredictFetchedSubresourceUrls(*lcpp_data));
+      top_frame_main_resource_url, PredictFetchedSubresourceUrls(*lcpp_stat));
 }
 
 }  // namespace predictors

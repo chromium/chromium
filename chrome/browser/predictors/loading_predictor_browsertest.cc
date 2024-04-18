@@ -913,13 +913,13 @@ class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
       const base::Location& from_here,
       const GURL& url,
       size_t expected_locator_count) {
-    auto lcpp_data =
-        loading_predictor()->resource_prefetch_predictor()->GetLcppData(url);
+    auto lcpp_stat =
+        loading_predictor()->resource_prefetch_predictor()->GetLcppStat(url);
     std::vector<std::string> locators;
-    if (lcpp_data) {
+    if (lcpp_stat) {
       std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
-          hint = ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
-              *lcpp_data);
+          hint = ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
+              *lcpp_stat);
       if (hint) {
         locators = hint->lcp_element_locators;
       }

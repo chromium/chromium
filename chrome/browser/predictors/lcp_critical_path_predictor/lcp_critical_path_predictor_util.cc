@@ -50,17 +50,17 @@ bool IsValidUrlInLcppStringFrequencyStatData(const std::string& url) {
   return true;
 }
 
-// Returns LCP element locators in the past loads for a given `data`.  The
+// Returns LCP element locators in the past loads for a given `stat`.  The
 // returned LCP element locators are ordered by descending frequency (the
 // most frequent one comes first). If there is no data, it returns an empty
 // vector.
-std::vector<std::string> PredictLcpElementLocators(const LcppData& data) {
+std::vector<std::string> PredictLcpElementLocators(const LcppStat& stat) {
   // We do not use `ConvertToFrequencyStringPair` for the following code
   // because the core part of the code is converting `std::map` to
   // `std::vector<std::pair<double, std::string>>`, which we need the different
   // logic due to the `bytes` protobuf type.
   const auto& buckets =
-      data.lcpp_stat().lcp_element_locator_stat().lcp_element_locator_buckets();
+      stat.lcp_element_locator_stat().lcp_element_locator_buckets();
   std::vector<std::pair<double, std::string>>
       lcp_element_locators_with_frequency;
   lcp_element_locators_with_frequency.reserve(buckets.size());
@@ -81,13 +81,13 @@ std::vector<std::string> PredictLcpElementLocators(const LcppData& data) {
   return lcp_element_locators;
 }
 
-// Returns LCP influencer scripts from past loads for a given `data`.
+// Returns LCP influencer scripts from past loads for a given `stat`.
 // The returned script urls are ordered by descending frequency (the most
 // frequent one comes first). If there is no data, it returns an empty
 // vector.
-std::vector<GURL> PredictLcpInfluencerScripts(const LcppData& data) {
+std::vector<GURL> PredictLcpInfluencerScripts(const LcppStat& stat) {
   std::vector<std::pair<double, std::string>> lcp_script_urls_with_frequency =
-      ConvertToFrequencyStringPair(data.lcpp_stat().lcp_script_url_stat());
+      ConvertToFrequencyStringPair(stat.lcp_script_url_stat());
 
   std::vector<GURL> lcp_script_urls;
   lcp_script_urls.reserve(lcp_script_urls_with_frequency.size());
@@ -556,16 +556,16 @@ size_t GetLCPPMultipleKeyMaxPathLength() {
 }  // namespace
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
-ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
-    const LcppData& lcpp_data) {
+ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
+    const LcppStat& lcpp_stat) {
   std::vector<std::string> lcp_element_locators =
-      PredictLcpElementLocators(lcpp_data);
+      PredictLcpElementLocators(lcpp_stat);
   std::vector<GURL> lcp_influencer_scripts =
-      PredictLcpInfluencerScripts(lcpp_data);
-  std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_data);
+      PredictLcpInfluencerScripts(lcpp_stat);
+  std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_stat);
   std::vector<GURL> preconnect_origins =
-      PredictPreconnectableOrigins(lcpp_data);
-  std::vector<GURL> unused_preloads = PredictUnusedPreloads(lcpp_data);
+      PredictPreconnectableOrigins(lcpp_stat);
+  std::vector<GURL> unused_preloads = PredictUnusedPreloads(lcpp_stat);
 
   if (!lcp_element_locators.empty() || !lcp_influencer_scripts.empty() ||
       !fetched_fonts.empty() || !preconnect_origins.empty() ||
@@ -578,12 +578,12 @@ ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
   return std::nullopt;
 }
 
-std::vector<GURL> PredictFetchedFontUrls(const LcppData& data) {
+std::vector<GURL> PredictFetchedFontUrls(const LcppStat& stat) {
   if (!base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor)) {
     return std::vector<GURL>();
   }
   std::vector<std::pair<double, std::string>> font_urls_with_frequency =
-      ConvertToFrequencyStringPair(data.lcpp_stat().fetched_font_url_stat());
+      ConvertToFrequencyStringPair(stat.fetched_font_url_stat());
 
   const double threshold =
       blink::features::kLCPPFontURLPredictorFrequencyThreshold.Get();
@@ -639,10 +639,10 @@ std::vector<GURL> PredictFetchedFontUrls(const LcppData& data) {
   return font_urls;
 }
 
-std::vector<GURL> PredictPreconnectableOrigins(const LcppData& data) {
+std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat) {
   std::vector<std::pair<double, std::string>>
-      preconnect_origins_with_frequency = ConvertToFrequencyStringPair(
-          data.lcpp_stat().preconnect_origin_stat());
+      preconnect_origins_with_frequency =
+          ConvertToFrequencyStringPair(stat.preconnect_origin_stat());
 
   const double frequency_threshold =
       blink::features::kLCPPAutoPreconnectFrequencyThreshold.Get();
@@ -673,10 +673,10 @@ std::vector<GURL> PredictPreconnectableOrigins(const LcppData& data) {
   return preconnect_origins;
 }
 
-std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data) {
+std::vector<GURL> PredictFetchedSubresourceUrls(const LcppStat& stat) {
   std::vector<GURL> subresource_urls;
-  for (const auto& [frequency, subresource_url] : ConvertToFrequencyStringPair(
-           data.lcpp_stat().fetched_subresource_url_stat())) {
+  for (const auto& [frequency, subresource_url] :
+       ConvertToFrequencyStringPair(stat.fetched_subresource_url_stat())) {
     GURL parsed_url(subresource_url);
     if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
       continue;
@@ -686,7 +686,7 @@ std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data) {
   return subresource_urls;
 }
 
-std::vector<GURL> PredictUnusedPreloads(const LcppData& data) {
+std::vector<GURL> PredictUnusedPreloads(const LcppStat& stat) {
   const double frequency_threshold =
       blink::features::kLCPPDeferUnusedPreloadFrequencyThreshold.Get();
   std::vector<GURL> unused_preloads;
@@ -695,7 +695,7 @@ std::vector<GURL> PredictUnusedPreloads(const LcppData& data) {
   }
 
   for (const auto& [frequency, url] :
-       ConvertToFrequencyStringPair(data.lcpp_stat().unused_preload_stat())) {
+       ConvertToFrequencyStringPair(stat.unused_preload_stat())) {
     // The frequencies are reverse sorted by `ConvertToFrequencyStringPair`.
     if (frequency < frequency_threshold) {
       break;

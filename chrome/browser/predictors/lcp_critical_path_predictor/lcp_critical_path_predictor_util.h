@@ -13,35 +13,35 @@
 
 namespace predictors {
 
-// Converts LcppData to LCPCriticalPathPredictorNavigationTimeHint
+// Converts LcppStat to LCPCriticalPathPredictorNavigationTimeHint
 // so that it can be passed to the renderer via the navigation handle.
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
-ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
-    const LcppData& data);
+ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
+    const LcppStat& data);
 
-// Returns possible fonts from past loads for a given `data`.
+// Returns possible fonts from past loads for a given `stat`.
 // The returned urls are ordered by descending frequency (the most
 // frequent one comes first). If there is no data, it returns an empty
 // vector.
-std::vector<GURL> PredictFetchedFontUrls(const LcppData& data);
+std::vector<GURL> PredictFetchedFontUrls(const LcppStat& stat);
 
-// Returns possible preconnects based on past loads for a given `data`.
+// Returns possible preconnects based on past loads for a given `stat`.
 // The returned origins are ordered by descending frequency (the most
 // frequent one comes first). If there is no data, it returns an empty
 // vector.
-std::vector<GURL> PredictPreconnectableOrigins(const LcppData& data);
+std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat);
 
-// Returns possible subresource URLs from past loads for a given `data`.
+// Returns possible subresource URLs from past loads for a given `stat`.
 // The returned URLs are ordered by descending frequency (the most
 // frequent one comes first). If there is no data, it returns an empty
 // vector.
-std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data);
+std::vector<GURL> PredictFetchedSubresourceUrls(const LcppStat& stat);
 
-// Returns possible unused preload URLs from past loads for a given `data`.
+// Returns possible unused preload URLs from past loads for a given `stat`.
 // The returned URLs are ordered by descending frequency (the most
 // frequent one comes first). If there is no data, it returns an empty
 // vector.
-std::vector<GURL> PredictUnusedPreloads(const LcppData& data);
+std::vector<GURL> PredictUnusedPreloads(const LcppStat& stat);
 
 // An input to update LcppData.
 struct LcppDataInputs {

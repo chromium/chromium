@@ -181,22 +181,22 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
   if (!navigation_url.is_valid() || !navigation_url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
-  std::optional<LcppData> lcpp_data =
-      predictor.resource_prefetch_predictor()->GetLcppData(navigation_url);
-  if (!lcpp_data) {
+  std::optional<LcppStat> lcpp_stat =
+      predictor.resource_prefetch_predictor()->GetLcppStat(navigation_url);
+  if (!lcpp_stat) {
     base::UmaHistogramEnumeration(
         "LoadingPredictor.SetLCPPNavigationHint.Status",
         LcppHintStatus::kNoLcppData);
     return;
   }
-  if (!IsValidLcppStat(lcpp_data->lcpp_stat())) {
+  if (!IsValidLcppStat(*lcpp_stat)) {
     base::UmaHistogramEnumeration(
         "LoadingPredictor.SetLCPPNavigationHint.Status",
         LcppHintStatus::kInvalidLcppStat);
     return;
   }
   std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint> hint =
-      ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(*lcpp_data);
+      ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(*lcpp_stat);
   if (hint) {
     navigation_handle.SetLCPPNavigationHint(*hint);
     base::UmaHistogramEnumeration(

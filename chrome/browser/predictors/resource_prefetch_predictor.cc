@@ -395,7 +395,7 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
   return has_any_prediction;
 }
 
-std::optional<LcppData> ResourcePrefetchPredictor::GetLcppData(
+std::optional<LcppStat> ResourcePrefetchPredictor::GetLcppStat(
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The `initialization_state_` can be not `INITIALIZED` in the very first
@@ -414,7 +414,7 @@ std::optional<LcppData> ResourcePrefetchPredictor::GetLcppData(
   if (!lcpp_data_->TryGetData(key, &data)) {
     return std::nullopt;
   }
-  return data;
+  return data.lcpp_stat();
 }
 
 void ResourcePrefetchPredictor::CreateCaches(

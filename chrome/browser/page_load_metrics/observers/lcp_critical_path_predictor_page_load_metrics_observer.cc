@@ -158,8 +158,8 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   }
   // Take the learned LCPP here so that we can report it after overwriting it
   // with the new data below.
-  std::optional<predictors::LcppData> lcpp_data_prelearn =
-      predictor ? predictor->GetLcppData(*commit_url_) : std::nullopt;
+  std::optional<predictors::LcppStat> lcpp_stat_prelearn =
+      predictor ? predictor->GetLcppStat(*commit_url_) : std::nullopt;
 
   // TODO(crbug.com/40517495): kSpeculativePreconnectFeature flag can also
   // affect this. Unflag the feature.
@@ -184,7 +184,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
             GetDelegate(), largest_contentful_paint.Time().value());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramLCPPLargestContentfulPaint,
                         corrected);
-    ReportUMAForTimingPredictor(std::move(lcpp_data_prelearn));
+    ReportUMAForTimingPredictor(std::move(lcpp_stat_prelearn));
   }
 }
 
@@ -285,14 +285,14 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::SetUnusedPreloads(
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::
     ReportUMAForTimingPredictor(
-        std::optional<predictors::LcppData> lcpp_data_prelearn) {
-  if (!lcpp_data_inputs_.has_value() || !commit_url_ || !lcpp_data_prelearn ||
-      !IsValidLcppStat(lcpp_data_prelearn->lcpp_stat())) {
+        std::optional<predictors::LcppStat> lcpp_stat_prelearn) {
+  if (!lcpp_data_inputs_.has_value() || !commit_url_ || !lcpp_stat_prelearn ||
+      !IsValidLcppStat(*lcpp_stat_prelearn)) {
     return;
   }
   std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint> hint =
-      ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
-          *lcpp_data_prelearn);
+      ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
+          *lcpp_stat_prelearn);
   if (!hint || !hint->lcp_element_locators.size()) {
     return;
   }
