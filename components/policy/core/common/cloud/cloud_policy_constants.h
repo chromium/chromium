@@ -62,7 +62,7 @@ extern const char kValueRequestCertBasedRegister[];
 extern const char kValueRequestActiveDirectoryEnrollPlayUser[];
 extern const char kValueRequestActiveDirectoryPlayActivity[];
 extern const char kValueRequestAppInstallReport[];
-extern const char kValueRequestTokenEnrollment[];
+extern const char kValueRequestRegisterBrowser[];
 extern const char kValueRequestChromeDesktopReport[];
 extern const char kValueRequestInitialEnrollmentStateRetrieval[];
 extern const char kValueRequestUploadPolicyValidationReport[];

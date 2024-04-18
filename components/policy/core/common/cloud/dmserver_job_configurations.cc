@@ -66,8 +66,8 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::
         TYPE_ACTIVE_DIRECTORY_PLAY_ACTIVITY:
       return dm_protocol::kValueRequestActiveDirectoryPlayActivity;
-    case DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT:
-      return dm_protocol::kValueRequestTokenEnrollment;
+    case DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION:
+      return dm_protocol::kValueRequestRegisterBrowser;
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_DESKTOP_REPORT:
       return dm_protocol::kValueRequestChromeDesktopReport;
     case DeviceManagementService::JobConfiguration::

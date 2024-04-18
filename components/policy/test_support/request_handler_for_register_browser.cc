@@ -28,7 +28,7 @@ RequestHandlerForRegisterBrowser::RequestHandlerForRegisterBrowser(
 RequestHandlerForRegisterBrowser::~RequestHandlerForRegisterBrowser() = default;
 
 std::string RequestHandlerForRegisterBrowser::RequestType() {
-  return dm_protocol::kValueRequestTokenEnrollment;
+  return dm_protocol::kValueRequestRegisterBrowser;
 }
 
 std::unique_ptr<HttpResponse> RequestHandlerForRegisterBrowser::HandleRequest(

@@ -33,7 +33,7 @@ class RequestHandlerForRegisterBrowserTest
   void SetUp() override {
     EmbeddedPolicyTestServerTestBase::SetUp();
 
-    SetRequestTypeParam(dm_protocol::kValueRequestTokenEnrollment);
+    SetRequestTypeParam(dm_protocol::kValueRequestRegisterBrowser);
     SetAppType(dm_protocol::kValueAppType);
     SetDeviceIdParam(kDeviceId);
     SetDeviceType(dm_protocol::kValueDeviceType);

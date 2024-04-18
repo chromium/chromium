@@ -127,12 +127,12 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithEnrollmentToken(
     bool is_mandatory,
     base::OnceClosure callback) {
   DVLOG_POLICY(1, POLICY_AUTH)
-      << "Starting device registration with enrollment token = " << token;
+      << "Starting browser registration with enrollment token = " << token;
   DCHECK(!client_->is_registered());
   callback_ = std::move(callback);
   client_->AddObserver(this);
-  client_->RegisterWithToken(token, client_id, client_data_delegate,
-                             is_mandatory);
+  client_->RegisterBrowserWithEnrollmentToken(
+      token, client_id, client_data_delegate, is_mandatory);
 }
 
 void CloudPolicyClientRegistrationHelper::StartRegistrationWithOidcTokens(

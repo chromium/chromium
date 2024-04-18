@@ -276,7 +276,7 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
     }
 
     auto params = DMServerJobConfiguration::CreateParams::WithoutClient(
-        DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
+        DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION,
         service_.get(), kClientID,
         g_browser_process->system_network_context_manager()
             ->GetSharedURLLoaderFactory());

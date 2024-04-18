@@ -797,7 +797,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
+TEST_F(CloudPolicyClientTest, BrowserRegistrationWithTokenAndPolicyFetch) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   ExpectAndCaptureJob(GetRegistrationResponse());
@@ -807,11 +807,13 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
                   /*user_affiliation_ids=*/std::vector<std::string>()))
       .WillOnce(Return(kDeviceDMToken));
   FakeClientDataDelegate client_data_delegate;
-  client_->RegisterWithToken(kEnrollmentToken, "device_id",
-                             client_data_delegate, /*is_mandatory=*/true);
+  client_->RegisterBrowserWithEnrollmentToken(kEnrollmentToken, "device_id",
+                                              client_data_delegate,
+                                              /*is_mandatory=*/true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
-            job_type_);
+  EXPECT_EQ(
+      DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION,
+      job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetEnrollmentRequest().SerializePartialAsString());
   EXPECT_TRUE(client_->is_registered());
@@ -832,7 +834,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
   CheckPolicyResponse(policy_response);
 }
 
-TEST_F(CloudPolicyClientTest, RegistrationWithTokenTestTimeout) {
+TEST_F(CloudPolicyClientTest, BrowserRegistrationWithTokenTestTimeout) {
   ExpectAndCaptureJob(GetRegistrationResponse());
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   EXPECT_CALL(device_dmtoken_callback_observer_,
@@ -840,8 +842,9 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenTestTimeout) {
                   /*user_affiliation_ids=*/std::vector<std::string>()))
       .WillOnce(Return(kDeviceDMToken));
   FakeClientDataDelegate client_data_delegate;
-  client_->RegisterWithToken(kEnrollmentToken, "device_id",
-                             client_data_delegate, /*is_mandatory=*/false);
+  client_->RegisterBrowserWithEnrollmentToken(kEnrollmentToken, "device_id",
+                                              client_data_delegate,
+                                              /*is_mandatory=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::Seconds(30), timeout_);
 }
@@ -1118,7 +1121,7 @@ TEST_F(CloudPolicyClientTest, RegistrationParametersPassedThrough) {
   EXPECT_EQ(kClientID, client_id_);
 }
 
-TEST_F(CloudPolicyClientTest, RegistrationNoToken) {
+TEST_F(CloudPolicyClientTest, RegistrationNoDMTokenInResponse) {
   em::DeviceManagementResponse registration_response =
       GetRegistrationResponse();
   registration_response.mutable_register_response()

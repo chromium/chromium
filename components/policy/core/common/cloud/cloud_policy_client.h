@@ -258,16 +258,18 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& sub_organization,
       std::unique_ptr<SigningService> signing_service);
 
-  // Attempts to enroll with the device management service using an enrollment
-  // token. Results in a registration change or error notification.
-  // This method is used to register browser (e.g. for machine-level policies).
+  // Attempts to enroll a browser with the device management service using an
+  // enrollment token. Results in a registration change or error notification.
+  // To emphasize, this method is used to register browser (e.g. for
+  // machine-level policies).
   // Device registration with enrollment token should be performed using
   // RegisterWithCertificate method, and this request will timeout after 30
   // seconds if the enrollment is not mandatory.
-  virtual void RegisterWithToken(const std::string& token,
-                                 const std::string& client_id,
-                                 const ClientDataDelegate& client_data_delegate,
-                                 bool is_mandatory);
+  virtual void RegisterBrowserWithEnrollmentToken(
+      const std::string& token,
+      const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate,
+      bool is_mandatory);
 
   // Attempts to register the profile with the device management service using a
   // OIDC response from a third party IdP's authentication. Results in a

@@ -420,7 +420,7 @@ void CloudPolicyClient::RegisterWithCertificate(
                      std::move(signing_service)));
 }
 
-void CloudPolicyClient::RegisterWithToken(
+void CloudPolicyClient::RegisterBrowserWithEnrollmentToken(
     const std::string& token,
     const std::string& client_id,
     const ClientDataDelegate& client_data_delegate,
@@ -434,7 +434,8 @@ void CloudPolicyClient::RegisterWithToken(
   SetClientId(client_id);
 
   auto params = DMServerJobConfiguration::CreateParams::WithClient(
-      DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT, this);
+      DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION,
+      this);
   params.auth_data = DMAuth::FromEnrollmentToken(token);
   params.callback = base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
                                    weak_ptr_factory_.GetWeakPtr());
