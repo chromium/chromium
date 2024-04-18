@@ -210,9 +210,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
     OutputRecord();
     OutputRecord(OutputRecord&&);
     ~OutputRecord();
-    EGLImageKHR egl_image;  // EGLImageKHR for the output buffer.
     int32_t picture_id;     // picture buffer id as returned to PictureReady().
-    GLuint texture_id;
     bool cleared;           // Whether the texture is cleared and safe to render
                             // from. See TextureManager for details.
     // Output frame. Used only when OutputMode is IMPORT.
@@ -266,25 +264,6 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   void ImportBufferForPictureForImportTask(int32_t picture_buffer_id,
                                            VideoPixelFormat pixel_format,
                                            gfx::NativePixmapHandle handle);
-
-  // Create an EGLImage on |egl_device| for the buffer associated with V4L2
-  // |buffer_index| and |picture_buffer_id|, backed by |handle|.
-  // The buffer should be bound to |texture_id| and is of format described by
-  // |fourcc|. |visible_size| is the size in pixels that the EGL device will be
-  // able to see.
-  void CreateEGLImageFor(scoped_refptr<V4L2Device> egl_device,
-                         size_t buffer_index,
-                         int32_t picture_buffer_id,
-                         gfx::NativePixmapHandle handle,
-                         GLuint texture_id,
-                         const gfx::Size& visible_size,
-                         const Fourcc fourcc);
-
-  // Take the EGLImage |egl_image|, created for |picture_buffer_id|, and use it
-  // for OutputRecord at |buffer_index|.
-  void AssignEGLImage(size_t buffer_index,
-                      int32_t picture_buffer_id,
-                      EGLImageKHR egl_image);
 
   // Service I/O on the V4L2 devices.  This task should only be scheduled from
   // DevicePollTask().  If |event_pending| is true, one or more events

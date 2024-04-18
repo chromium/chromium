@@ -466,8 +466,7 @@ void VdVideoDecodeAccelerator::RequestFrames(
   // |pending_coded_size_|.
   pending_coded_size_ = coded_size;
   client_->ProvidePictureBuffersWithVisibleRect(
-      max_num_frames, fourcc.ToVideoPixelFormat(), coded_size, visible_rect,
-      GL_TEXTURE_EXTERNAL_OES);
+      max_num_frames, fourcc.ToVideoPixelFormat(), coded_size, visible_rect);
 }
 
 VideoFrame::StorageType VdVideoDecodeAccelerator::GetFrameStorageType() const {

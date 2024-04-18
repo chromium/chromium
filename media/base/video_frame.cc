@@ -413,31 +413,6 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForNativeTexturesInternal(
 }
 
 // static
-scoped_refptr<VideoFrame> VideoFrame::WrapLegacyMailbox(
-    VideoPixelFormat format,
-    const gpu::MailboxHolder mailbox_holder,
-    ReleaseMailboxCB mailbox_holder_release_cb,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    base::TimeDelta timestamp) {
-  scoped_refptr<VideoFrame> frame = CreateFrameForNativeTexturesInternal(
-      format, coded_size, visible_rect, natural_size, timestamp);
-  if (!frame) {
-    return nullptr;
-  }
-
-  frame->mailbox_holders_[0] = mailbox_holder;
-  frame->mailbox_holders_and_gmb_release_cb_ =
-      WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
-
-  DCHECK(frame->HasTextures());
-  DCHECK_EQ(frame->NumTextures(), 1u);
-
-  return frame;
-}
-
-// static
 scoped_refptr<VideoFrame> VideoFrame::WrapNativeTextures(
     VideoPixelFormat format,
     const gpu::MailboxHolder (&mailbox_holders)[kMaxPlanes],

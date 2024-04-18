@@ -146,8 +146,7 @@ GpuArcVideoDecodeAccelerator::~GpuArcVideoDecodeAccelerator() {
 void GpuArcVideoDecodeAccelerator::ProvidePictureBuffers(
     uint32_t requested_num_of_buffers,
     media::VideoPixelFormat format,
-    const gfx::Size& dimensions,
-    uint32_t texture_target) {
+    const gfx::Size& dimensions) {
   NOTIMPLEMENTED() << "VDA must call ProvidePictureBuffersWithVisibleRect() "
                    << "for ARC++ video decoding";
 }
@@ -156,8 +155,7 @@ void GpuArcVideoDecodeAccelerator::ProvidePictureBuffersWithVisibleRect(
     uint32_t requested_num_of_buffers,
     media::VideoPixelFormat format,
     const gfx::Size& dimensions,
-    const gfx::Rect& visible_rect,
-    uint32_t texture_target) {
+    const gfx::Rect& visible_rect) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

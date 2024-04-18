@@ -70,24 +70,12 @@ class PictureBufferManager
   // |pixel_format|: Describes the arrangement of image data in the picture's
   //     textures and is surfaced by VideoFrames.
   // |texture_size|: Size of textures to create.
-  // |texture_target|: Type of textures to create.
-  // |mode|: Whether to allocate GL textures. The returned PictureBuffers will
-  // have non-empty client_texture_ids() and service_texture_ids() iff
-  // `kAllocateTextures` is passed. Note: Allocating GL textures is not
-  // supported on Apple platforms.
   //
   // Must be called on the GPU thread.
-  //
-  // TODO(sandersd): Surface control over allocation for GL_TEXTURE_2D. Right
-  // now such textures are allocated as RGBA textures. (Other texture targets
-  // are not automatically allocated.)
-  // TODO(sandersd): The current implementation makes the context current.
-  // Consider requiring that the context is already current.
   virtual std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
   CreatePictureBuffers(uint32_t count,
                        VideoPixelFormat pixel_format,
-                       gfx::Size texture_size,
-                       uint32_t texture_target) = 0;
+                       gfx::Size texture_size) = 0;
 
   // Dismisses a picture buffer from the pool.
   //

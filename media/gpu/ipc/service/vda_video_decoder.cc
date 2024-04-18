@@ -536,43 +536,30 @@ void VdaVideoDecoder::NotifyInitializationComplete(DecoderStatus status) {
 
 void VdaVideoDecoder::ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                                             VideoPixelFormat format,
-                                            const gfx::Size& dimensions,
-                                            uint32_t texture_target) {
+                                            const gfx::Size& dimensions) {
   DVLOG(2) << __func__ << "(" << requested_num_of_buffers << ", " << format
-           << ", " << dimensions.ToString() << ", " << texture_target << ")";
+           << ", " << dimensions.ToString() << ")";
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   DCHECK(vda_initialized_);
 
   gpu_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VdaVideoDecoder::ProvidePictureBuffersAsync,
                                 gpu_weak_this_, requested_num_of_buffers,
-                                format, dimensions, texture_target));
+                                format, dimensions));
 }
 
 void VdaVideoDecoder::ProvidePictureBuffersWithVisibleRect(
     uint32_t requested_num_of_buffers,
     VideoPixelFormat format,
     const gfx::Size& dimensions,
-    const gfx::Rect& visible_rect,
-    uint32_t texture_target) {
-  if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kImport) {
-    // In IMPORT mode, we (as the client of the underlying VDA) are responsible
-    // for buffer allocation with no textures (i.e., |texture_target| is
-    // irrelevant). Therefore, the logic in the base version of
-    // ProvidePictureBuffersWithVisibleRect() is not applicable.
-    ProvidePictureBuffers(requested_num_of_buffers, format, dimensions,
-                          texture_target);
-    return;
-  }
-  VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
-      requested_num_of_buffers, format, dimensions, visible_rect,
-      texture_target);
+    const gfx::Rect& visible_rect) {
+  CHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::kImport);
+  ProvidePictureBuffers(requested_num_of_buffers, format, dimensions);
 }
 
 void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
                                                  VideoPixelFormat pixel_format,
-                                                 gfx::Size texture_size,
-                                                 GLenum texture_target) {
+                                                 gfx::Size texture_size) {
   DVLOG(2) << __func__;
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   DCHECK_GT(count, 0U);
@@ -586,7 +573,7 @@ void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
 
   std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
       picture_buffers_and_gmbs = picture_buffer_manager_->CreatePictureBuffers(
-          count, pixel_format, texture_size, texture_target);
+          count, pixel_format, texture_size);
   if (picture_buffers_and_gmbs.empty()) {
     parent_task_runner_->PostTask(
         FROM_HERE,

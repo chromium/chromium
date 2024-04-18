@@ -47,7 +47,7 @@ class PictureBufferManagerImplTest : public testing::Test {
   std::vector<PictureBuffer> CreateARGBPictureBuffers(uint32_t count) {
     std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
         picture_buffers_and_gmbs = pbm_->CreatePictureBuffers(
-            count, PIXEL_FORMAT_ARGB, gfx::Size(320, 240), GL_TEXTURE_2D);
+            count, PIXEL_FORMAT_ARGB, gfx::Size(320, 240));
     std::vector<PictureBuffer> picture_buffers;
     for (const auto& picture_buffer_and_gmb : picture_buffers_and_gmbs) {
       picture_buffers.push_back(picture_buffer_and_gmb.first);
@@ -107,7 +107,6 @@ TEST_F(PictureBufferManagerImplTest, Initialize) {
 TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer_SharedImage) {
   Initialize();
   PictureBuffer pb1 = CreateARGBPictureBuffer();
-  EXPECT_EQ(pb1.service_texture_id(), 0u);
 }
 
 TEST_F(PictureBufferManagerImplTest, ReusePictureBuffer) {

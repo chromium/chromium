@@ -164,7 +164,7 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
         FROM_HERE,
         base::BindOnce(&VideoDecodeAccelerator::Client::ProvidePictureBuffers,
                        base::Unretained(client_), 1, PIXEL_FORMAT_XRGB,
-                       gfx::Size(1920, 1088), GL_TEXTURE_2D));
+                       gfx::Size(1920, 1088)));
     RunUntilIdle();
     DCHECK_EQ(picture_buffers.size(), 1U);
     return picture_buffers[0].id();

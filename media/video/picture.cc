@@ -14,13 +14,9 @@ PictureBuffer::PictureBuffer(int32_t id, const gfx::Size& size)
 
 PictureBuffer::PictureBuffer(int32_t id,
                              const gfx::Size& size,
-                             uint32_t service_texture_id,
-                             uint32_t texture_target,
                              VideoPixelFormat pixel_format)
     : id_(id),
       size_(size),
-      service_texture_id_(service_texture_id),
-      texture_target_(texture_target),
       pixel_format_(pixel_format) {}
 
 PictureBuffer::PictureBuffer(const PictureBuffer& other) = default;

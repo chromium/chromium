@@ -211,20 +211,15 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // this transparently.
     virtual void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                                        VideoPixelFormat format,
-                                       const gfx::Size& dimensions,
-                                       uint32_t texture_target) = 0;
+                                       const gfx::Size& dimensions) = 0;
 
     // This is the same as ProvidePictureBuffers() except that |visible_rect| is
-    // also included. The default implementation calls ProvidePictureBuffers()
-    // setting |dimensions| = GetRectSizeFromOrigin(|visible_rect|) when
-    // |texture_target| is GL_TEXTURE_EXTERNAL_OES; otherwise, it passes along
-    // all parameters to ProvidePictureBuffers() as they are.
+    // also included.
     virtual void ProvidePictureBuffersWithVisibleRect(
         uint32_t requested_num_of_buffers,
         VideoPixelFormat format,
         const gfx::Size& dimensions,
-        const gfx::Rect& visible_rect,
-        uint32_t texture_target);
+        const gfx::Rect& visible_rect) = 0;
 
     // Callback to dismiss picture buffer that was assigned earlier.
     virtual void DismissPictureBuffer(int32_t picture_buffer_id) = 0;
@@ -304,7 +299,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   virtual void Decode(scoped_refptr<DecoderBuffer> buffer,
                       int32_t bitstream_id);
 
-  // Assigns a set of texture-backed picture buffers to the video decoder.
+  // Assigns a set of picture buffers to the video decoder.
   //
   // Ownership of each picture buffer remains with the client, but the client
   // is not allowed to deallocate the buffer before the DismissPictureBuffer

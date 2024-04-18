@@ -1975,11 +1975,6 @@ void VTVideoDecodeAccelerator::AssignPictureBuffers(
     assigned_picture_ids_.insert(picture.id());
     available_picture_ids_.push_back(picture.id());
 
-    // PictureBufferManager::CreatePictureBuffers() never creates
-    // PictureBuffer instances with texture IDs on Apple platforms: it does so
-    // only when requested to allocate GL textures, which is neither supported
-    // nor ever requested on these platforms.
-    CHECK_EQ(picture.service_texture_id(), 0u);
     picture_info_map_.insert(
         std::make_pair(picture.id(), std::make_unique<PictureInfo>()));
   }
@@ -2215,14 +2210,9 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
 
     DVLOG(3) << "ProvidePictureBuffers(" << kNumPictureBuffers
              << frame.image_size.ToString() << ")";
-#if BUILDFLAG(IS_MAC)
-    const GLenum texture_target =
-        gpu::GetMacOSSpecificTextureTargetForCurrentGLImplementation();
-#else
-    const GLenum texture_target = GL_TEXTURE_2D;
-#endif
+
     client_->ProvidePictureBuffers(kNumPictureBuffers, picture_format_,
-                                   frame.image_size, texture_target);
+                                   frame.image_size);
     return false;
   }
   return SendFrame(frame);

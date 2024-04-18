@@ -85,8 +85,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
   std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
   CreatePictureBuffers(uint32_t count,
                        VideoPixelFormat pixel_format,
-                       gfx::Size texture_size,
-                       uint32_t texture_target) override {
+                       gfx::Size texture_size) override {
     DVLOG(2) << __func__;
     DCHECK(gpu_task_runner_);
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
@@ -151,14 +150,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         picture_buffers_[picture_buffer_id] = picture_data;
       }
 
-      // Since our textures have no client IDs, we reuse the service IDs as
-      // convenient unique identifiers.
-      //
-      // TODO(sandersd): Refactor the bind image callback to use service IDs so
-      // that we can get rid of the client IDs altogether.
       picture_buffers_and_gmbs.emplace_back(
-          PictureBuffer{picture_buffer_id, texture_size, 0, texture_target,
-                        pixel_format},
+          PictureBuffer{picture_buffer_id, texture_size, pixel_format},
           std::move(gmb_handle));
     }
     return picture_buffers_and_gmbs;
@@ -260,34 +253,24 @@ class PictureBufferManagerImpl : public PictureBufferManager {
           base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed, this,
                          picture_buffer_id, gpu::SyncToken()));
     } else {
-      if (picture_buffer_data.scoped_shared_images[0]) {
-        gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
+      gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
 
-        for (int i = 0; i < VideoFrame::kMaxPlanes; i++) {
-          const auto& image = picture_buffer_data.scoped_shared_images[i];
-          if (image) {
-            mailbox_holders[i] = image->GetMailboxHolder();
-            CHECK(mailbox_holders[i].mailbox.IsSharedImage());
-          }
+      CHECK(picture_buffer_data.scoped_shared_images[0]);
+
+      for (int i = 0; i < VideoFrame::kMaxPlanes; i++) {
+        const auto& image = picture_buffer_data.scoped_shared_images[i];
+        if (image) {
+          mailbox_holders[i] = image->GetMailboxHolder();
+          CHECK(mailbox_holders[i].mailbox.IsSharedImage());
         }
-
-        frame = VideoFrame::WrapNativeTextures(
-            picture_buffer_data.pixel_format, mailbox_holders,
-            base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed,
-                           this, picture_buffer_id),
-            picture_buffer_data.texture_size, visible_rect, natural_size,
-            timestamp);
-      } else {
-        CHECK(
-            !picture_buffer_data.legacy_mailbox_holder.mailbox.IsSharedImage());
-        frame = VideoFrame::WrapLegacyMailbox(
-            picture_buffer_data.pixel_format,
-            picture_buffer_data.legacy_mailbox_holder,
-            base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed,
-                           this, picture_buffer_id),
-            picture_buffer_data.texture_size, visible_rect, natural_size,
-            timestamp);
       }
+
+      frame = VideoFrame::WrapNativeTextures(
+          picture_buffer_data.pixel_format, mailbox_holders,
+          base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed, this,
+                         picture_buffer_id),
+          picture_buffer_data.texture_size, visible_rect, natural_size,
+          timestamp);
 
       if (!frame) {
         DLOG(ERROR) << "Failed to create VideoFrame for picture.";

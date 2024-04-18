@@ -145,25 +145,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // for the current platform.
   bool CanCreateEGLImageFrom(const Fourcc fourcc) const;
 
-  // Create an EGLImage from provided |handle|, taking full ownership of it.
-  // Some implementations may also require the V4L2 |buffer_index| of the buffer
-  // for which |handle| has been exported.
-  // Return EGL_NO_IMAGE_KHR on failure.
-  EGLImageKHR CreateEGLImage(EGLDisplay egl_display,
-                             EGLContext egl_context,
-                             GLuint texture_id,
-                             const gfx::Size& size,
-                             unsigned int buffer_index,
-                             const Fourcc fourcc,
-                             gfx::NativePixmapHandle handle) const;
-
-  // Destroys the EGLImageKHR.
-  EGLBoolean DestroyEGLImage(EGLDisplay egl_display,
-                             EGLImageKHR egl_image) const;
-
-  // Returns the supported texture target for the V4L2Device.
-  GLenum GetTextureTarget() const;
-
   // Returns the preferred V4L2 input formats for |type| or empty if none.
   std::vector<uint32_t> PreferredInputFormat(Type type) const;
 

@@ -21,15 +21,13 @@
 
 namespace media {
 
-// A picture buffer that is composed of one or more GLES2 textures.
-// This is the media-namespace equivalent of PP_PictureBuffer_Dev.
+// A PictureBuffer carries metadata about a particular buffer tracked by the
+// client of a VideoDecodeAccelerator.
 class MEDIA_EXPORT PictureBuffer {
  public:
   PictureBuffer(int32_t id, const gfx::Size& size);
   PictureBuffer(int32_t id,
                 const gfx::Size& size,
-                uint32_t service_texture_id,
-                uint32_t texture_target,
                 VideoPixelFormat pixel_format);
   PictureBuffer(const PictureBuffer& other);
   ~PictureBuffer();
@@ -42,17 +40,10 @@ class MEDIA_EXPORT PictureBuffer {
 
   void set_size(const gfx::Size& size) { size_ = size; }
 
-  // The service texture id, i.e., the real platform id.
-  uint32_t service_texture_id() const { return service_texture_id_; }
-
-  uint32_t texture_target() const { return texture_target_; }
-
   VideoPixelFormat pixel_format() const { return pixel_format_; }
  private:
   int32_t id_;
   gfx::Size size_;
-  uint32_t service_texture_id_ = 0;
-  uint32_t texture_target_ = 0;
   VideoPixelFormat pixel_format_ = PIXEL_FORMAT_UNKNOWN;
 };
 
