@@ -9,11 +9,13 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/global_media_controls/media_view_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -25,7 +27,8 @@
 namespace global_media_controls {
 
 namespace {
-constexpr auto kItemCornerRadius = gfx::RoundedCornersF(12);
+constexpr auto kItemCornerRadius = gfx::RoundedCornersF(kArtworkCornerRadius);
+constexpr gfx::Size kImageSize(64, 40);
 
 // A `HighlightPathGenerator` that uses caller-supplied rounded rect corners.
 class RoundedCornerHighlightPathGenerator
@@ -57,8 +60,7 @@ ChapterItemView::ChapterItemView(
     const media_message_center::MediaColorTheme& theme,
     base::RepeatingCallback<void(const base::TimeDelta time)>
         on_chapter_pressed)
-    : title_(chapter.title()),
-      start_time_(chapter.startTime()),
+    : chapter_(chapter),
       theme_(theme),
       on_chapter_pressed_callback_(std::move(on_chapter_pressed)) {
   SetCallback(base::BindRepeating(&ChapterItemView::PerformAction,
@@ -78,12 +80,13 @@ ChapterItemView::ChapterItemView(
               .AddChildren(
                   views::Builder<views::ImageView>()
                       .CopyAddressTo(&artwork_view_)
-                      .SetPreferredSize(gfx::Size(64, 40)),
+                      .SetPreferredSize(kImageSize),
                   views::Builder<views::BoxLayoutView>()
                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
                       .AddChildren(
                           views::Builder<views::Label>()
-                              .SetText(title_)
+                              .SetText(chapter.title())
+                              .SetID(kChapterItemViewTitleId)
                               .SetFontList(gfx::FontList(
                                   {"Google Sans"}, gfx::Font::NORMAL, 13,
                                   gfx::Font::Weight::NORMAL))
@@ -91,8 +94,9 @@ ChapterItemView::ChapterItemView(
                               .SetEnabledColorId(
                                   theme_.primary_foreground_color_id),
                           views::Builder<views::Label>()
-                              .SetText(base::ASCIIToUTF16(base::NumberToString(
-                                  (start_time_.InSeconds()))))
+                              .SetText(
+                                  GetFormattedDuration(chapter.startTime()))
+                              .SetID(kChapterItemViewStartTimeId)
                               .SetFontList(gfx::FontList(
                                   {"Google Sans"}, gfx::Font::NORMAL, 12,
                                   gfx::Font::Weight::NORMAL))
@@ -109,12 +113,27 @@ ChapterItemView::ChapterItemView(
 ChapterItemView::~ChapterItemView() = default;
 
 void ChapterItemView::UpdateArtwork(const gfx::ImageSkia& image) {
-  artwork_view_->SetVisible(true);
+  if (image.isNull()) {
+    // Hide the image so the other contents will adjust to fill the container.
+    artwork_view_->SetVisible(false);
+  }
+
+  // Rescales the image.
+  artwork_view_->SetImageSize(
+      ScaleImageSizeToFitView(image.size(), kImageSize));
   artwork_view_->SetImage(ui::ImageModel::FromImageSkia(image));
+
+  // Draws the image with rounded corners.
+  auto path = SkPath().addRoundRect(
+      RectToSkRect(gfx::Rect(kImageSize.width(), kImageSize.height())),
+      kArtworkCornerRadius, kArtworkCornerRadius);
+  artwork_view_->SetClipPath(path);
+
+  artwork_view_->SetVisible(true);
 }
 
 void ChapterItemView::PerformAction(const ui::Event& event) {
-  on_chapter_pressed_callback_.Run(start_time_);
+  on_chapter_pressed_callback_.Run(chapter_.startTime());
 }
 
 void ChapterItemView::SetUpFocusHighlight(

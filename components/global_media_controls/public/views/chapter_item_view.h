@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_CHAPTER_ITEM_VIEW_H_
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_CHAPTER_ITEM_VIEW_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/cpp/chapter_information.h"
@@ -33,9 +31,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) ChapterItemView
   // Updates the image of this chapter item view.
   void UpdateArtwork(const gfx::ImageSkia& image);
 
-  // For testing:
-  std::u16string get_title_for_testing() const { return title_; }
-  base::TimeDelta get_start_time_for_testing() const { return start_time_; }
+  // Gets the chapter information.
+  media_session::ChapterInformation chapter() { return chapter_; }
 
  private:
   // Jumps to the `start_time_` to play this chapter.
@@ -46,8 +43,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) ChapterItemView
   // same corner rounding as the view.
   void SetUpFocusHighlight(const gfx::RoundedCornersF& item_corner_radius);
 
-  const std::u16string title_;
-  const base::TimeDelta start_time_;
+  // The passed in chapter information.
+  const media_session::ChapterInformation chapter_;
 
   // The color theme for all the colors in this view.
   const media_message_center::MediaColorTheme theme_;

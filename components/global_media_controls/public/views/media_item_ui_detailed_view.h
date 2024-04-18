@@ -164,6 +164,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   // Update the display states of UI elements for casting devices.
   void UpdateCastingState();
 
+  // Updates the chapter list view's chapter items with the new `metadata`.
+  void UpdateChapterListViewWithMetadata(
+      const media_session::MediaMetadata& metadata);
+
   // Raw pointer to the container holding this view. The |container_| should
   // never be nullptr.
   const raw_ptr<media_message_center::MediaNotificationContainer> container_;

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "components/global_media_controls/media_view_utils.h"
 #include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_container.h"
@@ -49,7 +50,6 @@ constexpr gfx::Insets kDeviceSelectorSeparatorLineInsets =
     gfx::Insets::VH(1, 1);
 
 constexpr int kBackgroundCornerRadius = 16;
-constexpr int kArtworkCornerRadius = 12;
 constexpr int kSourceTextLineHeight = 18;
 constexpr int kTextLineHeight = 20;
 constexpr int kFontSize = 12;
@@ -105,16 +105,6 @@ class MediaLabelButton : public views::Button {
 
 BEGIN_METADATA(MediaLabelButton)
 END_METADATA
-
-// If the image does not fit the square view, scale the image to fill the view
-// even if part of the image is cropped.
-gfx::Size ScaleImageSizeToFitView(const gfx::Size& image_size,
-                                  const gfx::Size& view_size) {
-  const float scale =
-      std::max(view_size.width() / static_cast<float>(image_size.width()),
-               view_size.height() / static_cast<float>(image_size.height()));
-  return gfx::ScaleToFlooredSize(image_size, scale);
-}
 
 }  // namespace
 
@@ -396,42 +386,8 @@ void MediaItemUIDetailedView::UpdateWithMediaMetadata(
   title_label_->SetText(metadata.title);
   artist_label_->SetText(metadata.artist);
 
+  UpdateChapterListViewWithMetadata(metadata);
   container_->OnMediaSessionMetadataChanged(metadata);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(media::kBackgroundListening)) {
-    return;
-  }
-
-  if (!chapter_list_view_ && metadata.chapters.empty()) {
-    return;
-  }
-
-  if (metadata.chapters.empty()) {
-    chapter_list_view_->RemoveAllChildViews();
-    return;
-  }
-
-  if (!chapter_list_view_) {
-    chapter_list_view_ = AddChildView(
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            .SetInsideBorderInsets(gfx::Insets::TLBR(16, 8, 8, 8))
-            .Build());
-  } else {
-    chapter_list_view_->RemoveAllChildViews();
-  }
-
-  for (int index = 0; index < static_cast<int>(metadata.chapters.size());
-       index++) {
-    chapters_[index] =
-        chapter_list_view_->AddChildView(std::make_unique<ChapterItemView>(
-            metadata.chapters[index], theme_,
-            /*on_chapter_pressed=*/
-            base::BindRepeating(&MediaItemUIDetailedView::SeekToTimestamp,
-                                weak_factory_.GetWeakPtr())));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void MediaItemUIDetailedView::UpdateWithMediaActions(
@@ -700,6 +656,67 @@ void MediaItemUIDetailedView::UpdateCastingState() {
   }
 
   container_->OnDeviceSelectorViewSizeChanged();
+}
+
+void MediaItemUIDetailedView::UpdateChapterListViewWithMetadata(
+    const media_session::MediaMetadata& metadata) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(media::kBackgroundListening)) {
+    return;
+  }
+
+  if (!chapter_list_view_ && metadata.chapters.empty()) {
+    return;
+  }
+
+  if (metadata.chapters.empty()) {
+    chapter_list_view_->RemoveAllChildViews();
+    chapters_.clear();
+    return;
+  }
+
+  // Ensures the chapter list view exists and is up-to-date:
+  //  1) Creates the chapter list view if it doesn't exist.
+  //  2) Compares existing chapter item views to new metadata:
+  //     a) If chapters match, no updates are needed.
+  //     b) If chapters differ, the list is cleared and updated with the new
+  // chapters.
+  if (!chapter_list_view_) {
+    chapter_list_view_ = AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetInsideBorderInsets(gfx::Insets::TLBR(16, 8, 8, 8))
+            .Build());
+  } else {
+    bool chapters_not_changed = metadata.chapters.size() == chapters_.size();
+    // Further checks if every chapter is the same.
+    if (chapters_not_changed) {
+      for (int index = 0; index < static_cast<int>(metadata.chapters.size());
+           index++) {
+        if (!chapters_[index] ||
+            chapters_[index]->chapter() != metadata.chapters[index]) {
+          chapters_not_changed = false;
+          break;
+        }
+      }
+    }
+    if (chapters_not_changed) {
+      return;
+    }
+    chapter_list_view_->RemoveAllChildViews();
+  }
+
+  chapters_.clear();
+  for (int index = 0; index < static_cast<int>(metadata.chapters.size());
+       index++) {
+    chapters_[index] =
+        chapter_list_view_->AddChildView(std::make_unique<ChapterItemView>(
+            metadata.chapters[index], theme_,
+            /*on_chapter_pressed=*/
+            base::BindRepeating(&MediaItemUIDetailedView::SeekToTimestamp,
+                                weak_factory_.GetWeakPtr())));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Helper functions for testing:

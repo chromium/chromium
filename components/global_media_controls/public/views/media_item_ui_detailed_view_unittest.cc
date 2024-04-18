@@ -481,22 +481,22 @@ TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
 
   EXPECT_EQ(view()->GetTitleLabelForTesting()->GetText(), metadata.title);
   EXPECT_EQ(view()->GetChapterListViewForTesting()->children().size(), 2u);
-  EXPECT_EQ(
-      view()->GetChaptersForTesting().find(0)->second->get_title_for_testing(),
-      u"chapter1");
-  EXPECT_EQ(
-      view()->GetChaptersForTesting().find(1)->second->get_title_for_testing(),
-      u"chapter2");
+  EXPECT_EQ(view()->GetChaptersForTesting().find(0)->second->chapter().title(),
+            u"chapter1");
+  EXPECT_EQ(view()->GetChaptersForTesting().find(1)->second->chapter().title(),
+            u"chapter2");
   EXPECT_EQ(view()
                 ->GetChaptersForTesting()
                 .find(0)
-                ->second->get_start_time_for_testing()
+                ->second->chapter()
+                .startTime()
                 .InSeconds(),
             10);
   EXPECT_EQ(view()
                 ->GetChaptersForTesting()
                 .find(1)
-                ->second->get_start_time_for_testing()
+                ->second->chapter()
+                .startTime()
                 .InSeconds(),
             20);
 
