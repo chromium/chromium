@@ -15,7 +15,9 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
@@ -32,7 +34,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #endif
 
 namespace mahi {
@@ -75,11 +76,13 @@ MahiContentExtractionDelegate::MahiContentExtractionDelegate(
   EnsureServiceIsConnected();
 
   // Builds connection with screen ai service.
-  screen_ai_service_router_.GetServiceStateAsync(
-      screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
-      base::BindOnce(
-          &MahiContentExtractionDelegate::OnScreenAIServiceInitialized,
-          weak_pointer_factory_.GetWeakPtr()));
+  screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
+      ProfileManager::GetActiveUserProfile())
+      ->GetServiceStateAsync(
+          screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
+          base::BindOnce(
+              &MahiContentExtractionDelegate::OnScreenAIServiceInitialized,
+              weak_pointer_factory_.GetWeakPtr()));
 }
 
 MahiContentExtractionDelegate::~MahiContentExtractionDelegate() = default;
@@ -222,8 +225,9 @@ void MahiContentExtractionDelegate::OnScreenAIServiceInitialized(
       screen_ai_receiver;
   auto screen_ai_remote = screen_ai_receiver.InitWithNewPipeAndPassRemote();
 
-  screen_ai_service_router_.BindMainContentExtractor(
-      std::move(screen_ai_receiver));
+  screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
+      ProfileManager::GetActiveUserProfile())
+      ->BindMainContentExtractor(std::move(screen_ai_receiver));
   remote_content_extraction_service_factory_->OnScreen2xReady(
       std::move(screen_ai_remote));
 }

@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -73,10 +72,6 @@ class MahiContentExtractionDelegate {
       remote_content_extraction_service_factory_;
   mojo::Remote<mojom::ContentExtractionService>
       remote_content_extraction_service_;
-
-  // Router for the screen ai models. We need it to get the content extraction
-  // model.
-  screen_ai::ScreenAIServiceRouter screen_ai_service_router_;
 
   // This is the callback function to notifies the `MahiWebContentManager` with
   // the distillability check result.
