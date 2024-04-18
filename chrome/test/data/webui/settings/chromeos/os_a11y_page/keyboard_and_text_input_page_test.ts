@@ -5,14 +5,15 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsKeyboardAndTextInputPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, CrSettingsPrefs, Router, routes, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('<settings-keyboard-and-text-input-page>', () => {
@@ -221,22 +222,44 @@ suite('<settings-keyboard-and-text-input-page>', () => {
     assert(caretBlinkIntervalRow);
     assertTrue(isVisible(caretBlinkIntervalRow));
 
-    const caretBlinkIntervalMenu =
-        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
-            '#caretBlinkIntervalMenu');
-    assert(caretBlinkIntervalMenu);
-    assertTrue(isVisible(caretBlinkIntervalMenu));
+    const caretBlinkIntervalSlider =
+        page.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#caretBlinkIntervalSlider');
+    assert(caretBlinkIntervalSlider);
+    assertTrue(isVisible(caretBlinkIntervalSlider));
 
-    // Check the default value is what is expected.
-    const selectElement =
-        caretBlinkIntervalMenu.shadowRoot!.querySelector('select');
-    assert(selectElement);
-    assertEquals(String(500), selectElement.value);
-    selectElement.value = String(0);
-    selectElement.dispatchEvent(new CustomEvent('change'));
+    // Check the default synthetic pref value is what is expected.
+    assertEquals(100, caretBlinkIntervalSlider.pref.value);
+    // Check the actual default interval is what is expected.
+    assertEquals(500, page.prefs.settings.a11y.caret.blink_interval.value);
 
-    const newInterval = page.prefs.settings.a11y.caret.blink_interval.value;
-    assertEquals(newInterval, 0);
+    const slider =
+        caretBlinkIntervalSlider.shadowRoot!.querySelector('cr-slider');
+    assert(slider);
+
+    // Make the repeat interval shorter (increase the slider value).
+    pressAndReleaseKeyOn(slider, 39, [], 'ArrowRight');
+    await flushTasks();
+
+    assertEquals(110, caretBlinkIntervalSlider.pref.value);
+    assertEquals(455, page.prefs.settings.a11y.caret.blink_interval.value);
+
+    pressAndReleaseKeyOn(slider, 39, [], 'ArrowRight');
+    await flushTasks();
+
+    assertEquals(120, caretBlinkIntervalSlider.pref.value);
+    assertEquals(417, page.prefs.settings.a11y.caret.blink_interval.value);
+
+    // Now use the left arrow to get the minimum value, which should be "don't
+    // blink", aka 0.
+
+    while (caretBlinkIntervalSlider.pref.value > 40) {
+      pressAndReleaseKeyOn(slider, 37, [], 'ArrowLeft');
+      await flushTasks();
+    }
+
+    assertEquals(40, caretBlinkIntervalSlider.pref.value);
+    assertEquals(0, page.prefs.settings.a11y.caret.blink_interval.value);
   });
 
   const selectorRouteList = [

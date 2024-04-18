@@ -902,8 +902,6 @@ void AccessibilitySection::AddLoadTimeData(
       {"caretBlinkIntervalDescription",
        IDS_SETTINGS_CARET_BLINK_INTERVAL_DESCRIPTION},
       {"caretBlinkIntervalOff", IDS_SETTINGS_CARET_BLINK_INTERVAL_OFF},
-      {"caretBlinkIntervalNormal", IDS_SETTINGS_CARET_BLINK_INTERVAL_NORMAL},
-      {"caretBlinkIntervalSlow", IDS_SETTINGS_CARET_BLINK_INTERVAL_SLOW},
       {"caretBlinkIntervalFast", IDS_SETTINGS_CARET_BLINK_INTERVAL_FAST},
       {"faceGazeCursorAccelerationLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_LABEL},

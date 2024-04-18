@@ -20,6 +20,7 @@ import '../settings_shared.css.js';
 import './change_dictation_locale_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -69,29 +70,10 @@ export class SettingsKeyboardAndTextInputPageElement extends
         },
       },
 
-      caretBlinkIntervalMenuOptions_: {
-        type: Array,
-        value() {
-          return [
-            // TODO(b:259374492): Pick values based on UX, except for 500, which
-            // is the current default and should always be available and 0,
-            // which is the value meaning hold the cursor steady and do not
-            // blink.
-            {value: 0, name: loadTimeData.getString('caretBlinkIntervalOff')},
-            {
-              value: 800,
-              name: loadTimeData.getString('caretBlinkIntervalSlow'),
-            },
-            {
-              value: loadTimeData.getInteger('defaultCaretBlinkIntervalMs'),
-              name: loadTimeData.getString('caretBlinkIntervalNormal'),
-            },
-            {
-              value: 350,
-              name: loadTimeData.getString('caretBlinkIntervalFast'),
-            },
-          ];
-        },
+      caretBlinkIntervalVirtualPref_: {
+        type: Object,
+        computed: 'computeCaretBlinkIntervalVirtualPref_(' +
+            'prefs.settings.a11y.caret.blink_interval.value)',
       },
 
       dictationLocaleMenuSubtitle_: {
@@ -170,6 +152,13 @@ export class SettingsKeyboardAndTextInputPageElement extends
     };
   }
 
+  static get observers() {
+    return [
+      'updateCaretBlinkIntervalFromVirtualPref_(' +
+          'caretBlinkIntervalVirtualPref_.*)',
+    ];
+  }
+
   private dictationLearnMoreUrl_: string;
   private dictationLocaleMenuSubtitle_: string;
   private dictationLocaleOptions_: LocaleInfo[];
@@ -181,9 +170,14 @@ export class SettingsKeyboardAndTextInputPageElement extends
       chrome.settingsPrivate.PrefObject<boolean>;
   private keyboardAndTextInputBrowserProxy_:
       KeyboardAndTextInputPageBrowserProxy;
-  private stickyKeysEnabledPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  private stickyKeysEnabledVirtualPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
   private showDictationLocaleMenu_: boolean;
   private useDictationLocaleSubtitleOverride_: boolean;
+  private caretBlinkIntervalVirtualPref_:
+      chrome.settingsPrivate.PrefObject<number>;
+  private defaultCaretBlinkRateMs_: number;
+  private caretBlinkIntervalOffSliderValue_ = 40;
 
   constructor() {
     super();
@@ -197,6 +191,9 @@ export class SettingsKeyboardAndTextInputPageElement extends
     this.dictationLocaleSubtitleOverride_ = '';
 
     this.useDictationLocaleSubtitleOverride_ = false;
+
+    this.defaultCaretBlinkRateMs_ =
+        loadTimeData.getInteger('defaultCaretBlinkIntervalMs');
   }
 
   override ready(): void {
@@ -337,6 +334,62 @@ export class SettingsKeyboardAndTextInputPageElement extends
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       key: '',
     };
+  }
+
+  private computeCaretBlinkIntervalVirtualPref_():
+      chrome.settingsPrivate.PrefObject<number> {
+    if (!this.isAccessibilityCaretBlinkIntervalSettingEnabled_ || !this.prefs) {
+      return {
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: this.defaultCaretBlinkRateMs_,
+        key: 'caret_blink_interval_virtual_pref',
+      };
+    }
+    const blinkIntervalMs =
+        this.getPref<number>('settings.a11y.caret.blink_interval').value;
+    let value = this.caretBlinkIntervalOffSliderValue_;
+    if (blinkIntervalMs > 0) {
+      value = Math.round(this.defaultCaretBlinkRateMs_ / blinkIntervalMs * 100);
+    }
+    return {
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value,
+      key: 'caret_blink_interval_virtual_pref',
+    };
+  }
+
+  private updateCaretBlinkIntervalFromVirtualPref_(): void {
+    if (!this.isAccessibilityCaretBlinkIntervalSettingEnabled_) {
+      return;
+    }
+    const percentage = this.caretBlinkIntervalVirtualPref_.value;
+    // Default: do not blink.
+    let delayMs = 0;
+    if (percentage > this.caretBlinkIntervalOffSliderValue_) {
+      delayMs = Math.round(this.defaultCaretBlinkRateMs_ / (percentage / 100));
+    }
+    this.setPrefValue('settings.a11y.caret.blink_interval', delayMs);
+  }
+
+  private computeCaretBlinkIntervalTicks_(): SliderTick[] {
+    const ticks = [
+      {
+        value: this.caretBlinkIntervalOffSliderValue_,
+        ariaValue: 0,
+        label: this.i18n('caretBlinkIntervalOff'),
+      },
+    ];
+    for (let i = this.caretBlinkIntervalOffSliderValue_ + 10; i <= 150;
+         i += 10) {
+      const label = i === 100 ? this.i18n('defaultPercentage', i) :
+                                this.i18n('percentage', i);
+      ticks.push({
+        value: i,
+        ariaValue: i,
+        label,
+      });
+    }
+    return ticks;
   }
 
   private updateFocusHighlightEnabledVirtualPref_(): void {
