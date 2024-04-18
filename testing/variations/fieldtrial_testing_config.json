@@ -11805,7 +11805,7 @@
         {
             "platforms": [
                 "android",
-                "ios",
+                "android_webview",
                 "linux",
                 "mac",
                 "windows"
