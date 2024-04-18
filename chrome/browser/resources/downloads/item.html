@@ -600,15 +600,18 @@
       </div>
     </div>
   </div>
-  <template is="dom-if" if="[[showEsbPromotion]]">
-    <!-- TODO(crbug.com/333734490): Replace icon with branded gshield icon. -->
-    <cr-link-row
-        id="esb-download-row-promo"
-        start-icon="downloads:shield"
-        external
-        on-click="onEsbPromotionClick_"
-        button-aria-description="$i18n{esbDownloadRowPromoA11y}"
-        label="$i18n{esbDownloadRowPromoString}">
-    </cr-link-row>
-  </template>
+  <if expr="_google_chrome">
+    <template is="dom-if" if="[[showEsbPromotion]]">
+      <!-- TODO(crbug.com/333734490): Replace icon with branded gshield icon.
+      -->
+      <cr-link-row
+          id="esb-download-row-promo"
+          start-icon="downloads:shield"
+          external
+          on-click="onEsbPromotionClick_"
+          button-aria-description="$i18n{esbDownloadRowPromoA11y}"
+          label="$i18n{esbDownloadRowPromoString}">
+      </cr-link-row>
+    </template>
+  </if>
 </div>

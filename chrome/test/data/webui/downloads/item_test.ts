@@ -632,6 +632,7 @@ suite('item tests', function() {
     assertFalse(item.getMoreActionsMenu().open);
   });
 
+  // <if expr="_google_chrome">
   test('ESBDownloadRowPromoShownAndClicked', async () => {
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -671,4 +672,5 @@ suite('item tests', function() {
     const esbPromo = item.shadowRoot!.querySelector('#esb-download-row-promo');
     assertFalse(isVisible(esbPromo));
   });
+  // </if>
 });

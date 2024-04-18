@@ -93,6 +93,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         value: '',
       },
 
+      // <if expr="_google_chrome">
       firstDangerousItemId_: {
         type: String,
         value: '',
@@ -107,6 +108,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('esbDownloadRowPromo'),
       },
+      // </if>
 
       lastFocused_: Object,
 
@@ -124,9 +126,11 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private inSearchMode_: boolean;
   private spinnerActive_: boolean;
   private bypassDialogItemId_: string;
+  // <if expr="_google_chrome">
   private firstDangerousItemId_: string;
   private esbDownloadRowPromo_: boolean;
   private isEligibleForEsbPromo_: boolean;
+  // </if>
 
   private announcerDebouncer_: Debouncer|null = null;
   private mojoHandler_: PageHandlerInterface;
@@ -187,9 +191,11 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     toastManager.shadowRoot!.querySelector<HTMLElement>('#toast')!.onclick =
         e => this.onToastClicked_(e);
 
+    // <if expr="_google_chrome">
     this.mojoHandler_!.isEligibleForEsbPromo().then((result) => {
       this.isEligibleForEsbPromo_ = result.result;
     });
+    // </if>
   }
 
   override disconnectedCallback() {
@@ -210,6 +216,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     }
   }
 
+  // <if expr="_google_chrome">
   // Evaluates user eligbility for an esb promotion on the most recent dangerous
   // download. It does this by traversing the array of downloads and the first
   // dangerous download it comes across will have the promotion (guarantees the
@@ -223,6 +230,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     }
     return this.firstDangerousItemId_ === item.id;
   }
+  // </if>
 
   private shouldShowBypassWarningDialog_(): boolean {
     return this.bypassDialogItemId_ !== '';

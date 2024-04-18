@@ -349,6 +349,7 @@ suite('manager tests', function() {
         assertFalse(isVisible(dialog));
       });
 
+  // <if expr="_google_chrome">
   test(
       'shouldShowEsbPromotion returns true on first dangerous download',
       async () => {
@@ -401,4 +402,5 @@ suite('manager tests', function() {
         assertTrue(itemList[0]!.showEsbPromotion);
         assertFalse(itemList[1]!.showEsbPromotion);
       });
+  // </if>
 });
