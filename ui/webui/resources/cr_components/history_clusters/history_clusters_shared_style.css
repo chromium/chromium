@@ -22,13 +22,9 @@
   border: 1px solid var(--border-color);
   border-radius: calc(var(--pill-height) / 2);
   box-sizing: border-box;
-  font-size: 0.875rem;  /* 14px */
+  font-size: 0.75rem; /* 12px */
   height: var(--pill-height);
   line-height: 1.5;  /* 21px */
-}
-
-:host-context([chrome-refresh-2023]) .pill {
-  font-size: 0.75rem; /* 12px */
 }
 
 .pill-icon-start {
@@ -37,10 +33,6 @@
 }
 
 .pill-icon-start .icon {
-  margin-inline-end: 8px;
-}
-
-:host-context([chrome-refresh-2023]) .pill-icon-start .icon {
   margin-inline-end: 4px;
 }
 

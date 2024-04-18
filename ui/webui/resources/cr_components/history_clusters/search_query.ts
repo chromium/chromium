@@ -63,10 +63,8 @@ export class SearchQueryElement extends SearchQueryElementBase {
   //============================================================================
 
   override firstUpdated() {
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
-      this.addEventListener('pointercancel', this.onPointerCancel_.bind(this));
-    }
+    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
+    this.addEventListener('pointercancel', this.onPointerCancel_.bind(this));
   }
 
   protected onAuxClick_() {

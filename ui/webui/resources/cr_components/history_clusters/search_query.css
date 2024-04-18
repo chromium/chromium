@@ -10,11 +10,6 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: block;
-  min-width: 0;
-}
-
-:host-context([chrome-refresh-2023]):host {
   --border-color: var(--color-suggestion-chip-border,
       var(--cr-fallback-color-tonal-outline));
   --icon-color: var(--color-suggestion-chip-icon,
@@ -22,6 +17,8 @@
   --pill-padding-text: 12px;
   --pill-padding-icon: 8px;
   --pill-height: 28px;
+  display: block;
+  min-width: 0;
 }
 
 a {
@@ -30,34 +27,15 @@ a {
   display: flex;
   outline: none;
   text-decoration: none;
-}
-
-:host-context([chrome-refresh-2023]) a {
   overflow: hidden;
   position: relative;
-}
-
-:host(:hover) a {
-  background-color: var(--cr-hover-background-color);
-}
-
-:host(:active) a {
-  background-color: var(--cr-active-background-color);
-}
-
-:host-context([chrome-refresh-2023]):host(:hover) a {
-  background-color: transparent;
-}
-
-:host-context([chrome-refresh-2023]):host(:active) a {
-  background-color: transparent;
 }
 
 :host-context(.focus-outline-visible) a:focus {
   box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
 }
 
-:host-context([chrome-refresh-2023].focus-outline-visible) a:focus {
+:host-context(.focus-outline-visible) a:focus {
   --pill-padding-icon: 9px;
   --pill-padding-text: 13px;
   border: none;
@@ -66,7 +44,7 @@ a {
   outline-offset: 0;
 }
 
-:host-context([chrome-refresh-2023]) span {
+span {
   position: relative;
   z-index: 1;
 }
@@ -76,19 +54,11 @@ a {
   --cr-icon-color: var(--icon-color);
   --cr-icon-image: url(chrome://resources/images/icon_search.svg);
   --cr-icon-ripple-margin: 0;
-  --cr-icon-ripple-size: 20px;
-}
-
-:host-context([chrome-refresh-2023]) .icon {
   --cr-icon-ripple-size: 16px;
   --cr-icon-size: 16px;
 }
 
 cr-ripple {
-  display: none;
-}
-
-:host-context([chrome-refresh-2023]) cr-ripple {
   --paper-ripple-opacity: 1;
   color: var(--cr-active-background-color);
   display: block;
@@ -98,7 +68,7 @@ cr-ripple {
   display: none;
 }
 
-:host-context([chrome-refresh-2023]):host(:hover) #hover-layer {
+:host(:hover) #hover-layer {
   background: var(--cr-hover-background-color);
   content: '';
   display: block;

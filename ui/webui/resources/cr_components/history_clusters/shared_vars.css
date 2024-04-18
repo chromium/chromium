@@ -16,7 +16,6 @@ html {
   --entity-image-background-color: var(--google-grey-50);
   --icon-color: var(--google-grey-600);
   --url-color: var(--google-blue-600);
-  --side-panel-url-color: var(--google-grey-700);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,7 +26,6 @@ html {
   --entity-image-background-color: var(--google-grey-800);
   --icon-color: white;
   --url-color: var(--google-blue-300);
-  --side-panel-url-color: var(--google-grey-500);
 }
 }
 

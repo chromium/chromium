@@ -17,8 +17,6 @@ suite('HorizontalCarouselTest', () => {
   });
 
   test('CarouselResizeUpdatesButtons', async () => {
-    document.documentElement.setAttribute('chrome-refresh-2023', 'true');
-
     const carousel = carouselElement!.$.carouselContainer;
     assertTrue(!!carousel);
     carousel.style.width = '600px';

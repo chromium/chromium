@@ -6,7 +6,7 @@
     min-height: 64px;
   }
 
-  :host-context([chrome-refresh-2023]):host([in-side-panel_]) {
+  :host([in-side-panel_]) {
     min-height: 48px;
   }
 
@@ -76,7 +76,7 @@
     margin-inline-end: 0;
   }
 
-  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #icon {
+  :host([in-side-panel_]) #icon {
     background-color: var(--color-list-item-url-favicon-background,
       var(--cr-fallback-color-neutral-container));
     height: 40px;
@@ -121,12 +121,8 @@
   }
 
   :host([in-side-panel_]) #title {
-    font-size: .8125rem;  /* 13px */
-    line-height: calc(20/13);  /* 20px */
-  }
-
-  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #title {
     font-size: .75rem; /* 12px */
+    line-height: calc(20/13);  /* 20px */
     font-weight: 500;
   }
 
@@ -136,14 +132,9 @@
   }
 
   :host([in-side-panel_]) #url {
-    color: var(--side-panel-url-color);
-    font-size: .75rem;  /* 12px */
-    line-height: calc(5/3);  /* 20px */
-  }
-
-  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #url {
     color: var(--color-history-clusters-side-panel-card-secondary-foreground);
     font-size: .6875rem; /* 11px */
+    line-height: calc(5/3);  /* 20px */
   }
 
   #debug-info {

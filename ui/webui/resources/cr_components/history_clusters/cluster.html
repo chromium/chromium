@@ -7,17 +7,14 @@
     padding-bottom: var(--cluster-padding-vertical);
   }
 
-  :host-context([chrome-refresh-2023]):host([in-side-panel]) {
-    --search-query-margin: 4px;
-  }
-
   :host([in-side-panel]) {
     --cr-icon-button-margin-start: 8px;
+    --search-query-margin: 4px;
     padding-bottom: 0;
     padding-top: 8px;
   }
 
-  :host-context([chrome-refresh-2023]):host([in-side-panel]) #container {
+  :host([in-side-panel]) #container {
     background: var(--color-side-panel-card-background);
     border-radius: 12px;
     overflow: hidden;
@@ -78,12 +75,8 @@
   }
 
   :host([in-side-panel]) .timestamp {
-    font-size: .75rem;  /* 12px */
-    line-height: calc(5/3); /* 20px */
-  }
-
-  :host-context([chrome-refresh-2023]):host([in-side-panel_]) .timestamp {
     font-size: .6875rem; /* 11px */
+    line-height: calc(5/3); /* 20px */
   }
 
   .debug-info {
@@ -94,27 +87,18 @@
     display: none;
   }
 
-  :host-context([chrome-refresh-2023]):host([in-side-panel]) #related-searches-divider {
+  :host([in-side-panel]) #related-searches-divider {
     display: block;
     background-color: var(--color-history-clusters-side-panel-divider);
     height: 1px;
     margin: 8px 16px;
   }
 
-  :host-context(html:not([chrome-refresh-2023])) #related-searches {
-    /* Top is a special 8px value. */
-    margin: 0 var(--cluster-padding-horizontal) 0;
-  }
-
-  :host-context(html:not([chrome-refresh-2023])):host([in-side-panel]) #related-searches {
-    margin: -8px 16px var(--cluster-padding-vertical);
-  }
-
-  :host-context([chrome-refresh-2023]) #related-searches {
+  #related-searches {
     margin: 16px var(--cluster-padding-horizontal) 0px;
   }
 
-  :host-context([chrome-refresh-2023]):host([in-side-panel]) #related-searches {
+  :host([in-side-panel]) #related-searches {
     /* 2px left and right margin so related searches don't overlap container
      * focus indicator. */
     margin: 16px 2px;
@@ -122,7 +106,7 @@
 
   /*TODO(mfacey): Figure out appropriate non side panel color to show carousel
       buttons. */
-  :host-context([chrome-refresh-2023]):host([in-side-panel]) search-query {
+  :host([in-side-panel]) search-query {
     flex-shrink: 0;
     margin-top: 0;
   }
@@ -131,12 +115,8 @@
     margin-inline-end: var(--search-query-margin);
   }
 
-  :host-context([chrome-refresh-2023]):host([in-side-panel]) search-query:first-of-type {
+  :host([in-side-panel]) search-query:first-of-type {
     margin-inline-start: 16px;
-  }
-
-  :host-context(html:not([chrome-refresh-2023])) search-query {
-    margin-top: 8px;
   }
 </style>
 <div id="container" on-visit-clicked="onVisitClicked_"
