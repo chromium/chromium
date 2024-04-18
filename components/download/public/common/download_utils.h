@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_UTILS_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_UTILS_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 
@@ -153,7 +155,7 @@ COMPONENTS_DOWNLOAD_EXPORT base::TimeDelta GetExpiredDownloadDeleteTime();
 COMPONENTS_DOWNLOAD_EXPORT base::TimeDelta GetOverwrittenDownloadDeleteTime();
 
 // Returns the size of the file buffer that reads data from the data pipe.
-COMPONENTS_DOWNLOAD_EXPORT int GetDownloadFileBufferSize();
+COMPONENTS_DOWNLOAD_EXPORT size_t GetDownloadFileBufferSize();
 
 // Utility function to determine whether an interrupted download should be
 // auto-resumable.

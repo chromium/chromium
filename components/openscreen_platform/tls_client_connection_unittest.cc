@@ -76,7 +76,7 @@ class FakeSocketStreams {
 
   // Writes data into the inbound data pipe, which should ultimately result in a
   // TlsClientConnection::Client's OnRead() method being called.
-  void SimulateSocketReceive(const void* data, uint32_t num_bytes) {
+  void SimulateSocketReceive(const void* data, size_t num_bytes) {
     const MojoResult result = inbound_stream_->WriteData(
         data, &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     ASSERT_EQ(result, MOJO_RESULT_OK);
@@ -104,11 +104,11 @@ class FakeSocketStreams {
     }
     ASSERT_EQ(result, MOJO_RESULT_OK);
 
-    uint32_t num_bytes = 0;
+    size_t num_bytes = 0;
     result = outbound_stream_->ReadData(nullptr, &num_bytes,
                                         MOJO_READ_DATA_FLAG_QUERY);
     ASSERT_EQ(result, MOJO_RESULT_OK);
-    auto old_end_index = outbound_data_.size();
+    size_t old_end_index = outbound_data_.size();
     outbound_data_.resize(old_end_index + num_bytes);
     result = outbound_stream_->ReadData(outbound_data_.data() + old_end_index,
                                         &num_bytes, MOJO_READ_DATA_FLAG_NONE);

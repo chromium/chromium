@@ -17,7 +17,7 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
                           std::string* result,
                           base::OnceClosure quit_closure) {
   while (true) {
-    uint32_t num_bytes;
+    size_t num_bytes;
     const void* buffer = nullptr;
     MojoResult rv =
         handle.BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);

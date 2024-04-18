@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/common/decoder_buffer_factory.h"
 #include "components/cast_streaming/common/public/features.h"
@@ -110,7 +111,7 @@ void StreamConsumer::OnPipeWritable(MojoResult result) {
   }
 
   base::span<uint8_t> span = data_wrapper_.Get();
-  uint32_t bytes_written = span.size();
+  size_t bytes_written = span.size();
   result = data_pipe_->WriteData(span.data(), &bytes_written,
                                  MOJO_WRITE_DATA_FLAG_NONE);
   if (result != MOJO_RESULT_OK) {
@@ -118,7 +119,7 @@ void StreamConsumer::OnPipeWritable(MojoResult result) {
     return;
   }
 
-  data_wrapper_.Consume(bytes_written);
+  data_wrapper_.Consume(base::checked_cast<uint32_t>(bytes_written));
   if (!data_wrapper_.empty()) {
     pipe_watcher_.ArmOrNotify();
     return;
@@ -195,7 +196,7 @@ void StreamConsumer::MaybeSendNextFrame() {
 
   // Write the frame's data to Mojo.
   span = data_wrapper_.Get();
-  uint32_t bytes_written = span.size();
+  size_t bytes_written = span.size();
   auto result = data_pipe_->WriteData(span.data(), &bytes_written,
                                       MOJO_WRITE_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -205,7 +206,7 @@ void StreamConsumer::MaybeSendNextFrame() {
     CloseDataPipeOnError();
     return;
   }
-  data_wrapper_.Consume(bytes_written);
+  data_wrapper_.Consume(base::checked_cast<uint32_t>(bytes_written));
 
   // Return the frame.
   is_read_pending_ = false;

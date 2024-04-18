@@ -59,7 +59,7 @@ bool TlsClientConnection::Send(const void* data, size_t len) {
     return false;
   }
 
-  uint32_t num_bytes = base::checked_cast<uint32_t>(len);
+  size_t num_bytes = len;
   const MojoResult result = send_stream_->WriteData(
       data, &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
   mojo::HandleSignalsState state = send_stream_->QuerySignalsState();
@@ -84,7 +84,7 @@ void TlsClientConnection::ReceiveMore(MojoResult result,
   }
 
   if (result == MOJO_RESULT_OK) {
-    uint32_t num_bytes = 0;
+    size_t num_bytes = 0;
     result = receive_stream_->ReadData(nullptr, &num_bytes,
                                        MOJO_READ_DATA_FLAG_QUERY);
     if (result == MOJO_RESULT_OK) {
@@ -134,6 +134,6 @@ Error::Code TlsClientConnection::ProcessMojoResult(
 }
 
 // static
-constexpr uint32_t TlsClientConnection::kMaxBytesPerRead;
+constexpr size_t TlsClientConnection::kMaxBytesPerRead;
 
 }  // namespace openscreen_platform

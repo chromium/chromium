@@ -11,6 +11,7 @@
 #include "base/format_macros.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -30,7 +31,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
-
 #include "url/origin.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
@@ -766,10 +766,10 @@ base::TimeDelta GetOverwrittenDownloadDeleteTime() {
   return base::Days(expired_days);
 }
 
-int GetDownloadFileBufferSize() {
-  return base::GetFieldTrialParamByFeatureAsInt(
+size_t GetDownloadFileBufferSize() {
+  return base::checked_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
       features::kAllowFileBufferSizeControl, kDownloadFileBufferSizeFinchKey,
-      kDefaultDownloadFileBufferSize);
+      kDefaultDownloadFileBufferSize));
 }
 
 void DetermineLocalPath(DownloadItem* download,

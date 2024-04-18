@@ -46,8 +46,8 @@ void UpstreamLoader::SendData() {
     return;
 
   // Since kMaxUploadWrite is a uint32_t, no overflow occurs in this downcast.
-  uint32_t write_bytes = std::min(upload_body_.length() - upload_position_,
-                                  static_cast<size_t>(kMaxUploadWrite));
+  size_t write_bytes =
+      std::min(upload_body_.length() - upload_position_, kMaxUploadWrite);
   MojoResult result =
       upload_pipe_->WriteData(upload_body_.data() + upload_position_,
                               &write_bytes, MOJO_WRITE_DATA_FLAG_NONE);
