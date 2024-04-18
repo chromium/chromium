@@ -5142,46 +5142,6 @@ TEST_P(WallpaperControllerAutoScheduleTest,
   EXPECT_TRUE(wallpaper_has_color(kSunsetImageColor));
 }
 
-// TODO(b/309020135): Remove this test after
-// `kTimeOfDayWallpaperForcedAutoSchedule` is launched.
-TEST_P(WallpaperControllerAutoScheduleTest,
-       DoesNotUpdateTimeOfDayWallpaperWithAutoColorModeOff) {
-  if (!IsTimeOfDayEnabled()) {
-    return;
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {features::kTimeOfDayWallpaperForcedAutoSchedule});
-  const auto backdrop_image_data = TimeOfDayImageSet();
-  client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
-                        backdrop_image_data);
-
-  SimulateUserLogin(kAccountId1);
-  Shell::Get()->dark_light_mode_controller()->SetAutoScheduleEnabled(false);
-
-  OnlineWallpaperParams params(
-      kAccountId1, wallpaper_constants::kTimeOfDayWallpaperCollectionId,
-      WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false, /*from_user=*/true,
-      /*daily_refresh_enabled=*/false,
-      wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId, /*variants=*/{});
-  for (const backdrop::Image& backdrop_image : backdrop_image_data) {
-    params.variants.emplace_back(backdrop_image.asset_id(),
-                                 GURL(backdrop_image.image_url()),
-                                 backdrop_image.image_type());
-  }
-
-  base::test::TestFuture<bool> future;
-  controller_->SetOnlineWallpaper(params, future.GetCallback());
-  ASSERT_TRUE(future.Get());
-
-  TestWallpaperControllerObserver observer(controller_);
-  // 7 P.M.
-  task_environment()->FastForwardBy(base::Hours(17));
-  EXPECT_EQ(observer.wallpaper_changed_count(), 0);
-}
-
 TEST_P(WallpaperControllerTest,
        UpdateWallpaperOnScheduleCheckpointChanged_WithReplacedAsset) {
   SimulateUserLogin(kAccountId1);
