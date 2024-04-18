@@ -2334,9 +2334,6 @@ extern const char kClearLoginDatabaseForUPMUsersName[];
 extern const char kTabStateFlatBufferName[];
 extern const char kTabStateFlatBufferDescription[];
 
-extern const char kContextMenuPopupForAllScreenSizesName[];
-extern const char kContextMenuPopupForAllScreenSizesDescription[];
-
 extern const char kContextualSearchSuppressShortViewName[];
 extern const char kContextualSearchSuppressShortViewDescription[];
 

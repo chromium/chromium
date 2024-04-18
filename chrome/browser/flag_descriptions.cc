@@ -3956,14 +3956,6 @@ const char kTabStateFlatBufferDescription[] =
     "Migrates TabState from a pickle based schema to a FlatBuffer based "
     "schema.";
 
-const char kContextMenuPopupForAllScreenSizesName[] =
-    "Context menu popup for all screen sizes";
-const char kContextMenuPopupForAllScreenSizesDescription[] =
-    "When disabled, context menu will be shown as pop-up window only for "
-    "devices in tablet mode, while shown as a fullscreen dialog for mobile "
-    "devices; when enabled, context menu will be shown as a pop-up window "
-    "for all form factors regardless of the screen sizes.";
-
 const char kContextualSearchSuppressShortViewName[] =
     "Contextual Search suppress short view";
 const char kContextualSearchSuppressShortViewDescription[] =

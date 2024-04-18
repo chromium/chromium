@@ -35,6 +35,7 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuGroup;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -66,10 +68,7 @@ import java.util.List;
 
 /** Unit tests for the context menu. Use density=mdpi so the screen density is 1. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-    ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES
-})
+@DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
 @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SYS_UI_MATCHES_ACTIVITY})
 public class ContextMenuCoordinatorTest {
     private static final int TOP_CONTENT_OFFSET_PX = 17;
@@ -302,13 +301,11 @@ public class ContextMenuCoordinatorTest {
 
     @Test
     @DisabledTest(message = "crbug.com/1444964")
-    @EnableFeatures({
-        ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-        ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES
-    })
+    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(
             shadows = {ShadowContextMenuDialog.class},
             qualifiers = "mdpi")
+    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testCreateContextMenuDialog_PopupStyle() {
         ContextMenuDialog dialog = createContextMenuDialogForTest(/* isPopup= */ true);
         ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
@@ -406,10 +403,7 @@ public class ContextMenuCoordinatorTest {
 
     @Test
     @DisabledTest(message = "crbug.com/1444964")
-    @EnableFeatures({
-        ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-        ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES
-    })
+    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(
             shadows = {
                 ShadowContextMenuDialog.class,
@@ -417,6 +411,7 @@ public class ContextMenuCoordinatorTest {
                 ShadowProfile.class
             },
             qualifiers = "mdpi")
+    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testDisplayMenu_DragEnabled() {
         final int shadowImgWidth = 50;
         final int shadowImgHeight = 40;

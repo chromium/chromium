@@ -17,16 +17,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -62,8 +62,6 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     private View mView;
     private View mFrame;
 
-    private FeatureList.TestValues mTestValues;
-
     public ContextMenuRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
@@ -72,11 +70,6 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-
-        mTestValues = new TestValues();
-        mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES, false);
-        FeatureList.setTestValues(mTestValues);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -130,9 +123,8 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testContextMenuViewWithLink_Popup() throws IOException {
-        mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES, true);
         doTestContextMenuViewWithLink("context_menu_with_link_popup");
     }
 
@@ -146,9 +138,8 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testContextMenuViewWithImageLink_Popup() throws IOException {
-        mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES, true);
         doTestContextMenuViewWithImageLink("context_menu_with_image_link_popup");
     }
 

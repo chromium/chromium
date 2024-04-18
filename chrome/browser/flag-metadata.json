@@ -1487,11 +1487,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "context-menu-popup-for-all-screen-sizes",
-    "owners": ["wenyufu@chromium.org", "clank-large-form-factors@google.com"],
-    "expiry_milestone": 112
-  },
-  {
     "name": "contextual-nudges",
     "owners": [ "yulunwu@chromium.org" ],
     "expiry_milestone": 83
