@@ -68,8 +68,10 @@ struct QueryClustersFilterParams {
   // Whether to exclude visits that have interaction state equal to hidden.
   bool filter_hidden_visits = false;
 
-  // Whether to include synced visits.
-  bool include_synced_visits = false;
+  // Whether to include synced visits. Defaults to true because Full History
+  // Sync launched in early 2024. But NTP quests is still flag guarding this,
+  // so this boolean needs to still exist.
+  bool include_synced_visits = true;
 
   // Whether to return merged clusters that are similar based on content.
   bool group_clusters_by_content = false;

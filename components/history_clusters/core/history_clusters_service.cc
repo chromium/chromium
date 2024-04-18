@@ -479,12 +479,6 @@ void HistoryClustersService::PopulateClusterKeywordCache(
       // simple first-pass technique to avoid overtriggering the omnibox action.
       continue;
     }
-    if (!GetConfig().include_synced_visits &&
-        !cluster.originator_cache_guid.empty()) {
-      // Skip over remote clusters if remote visits do not intend to get
-      // incorporated.
-      continue;
-    }
     // Lowercase the keywords for case insensitive matching while adding to the
     // accumulator.
     // Keep the keyword data with the highest score if found in multiple

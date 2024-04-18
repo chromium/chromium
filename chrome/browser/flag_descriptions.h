@@ -1241,9 +1241,6 @@ extern const char kJourneysDescription[];
 extern const char kJourneysShowAllClustersName[];
 extern const char kJourneysShowAllClustersDescription[];
 
-extern const char kJourneysIncludeSyncedVisitsName[];
-extern const char kJourneysIncludeSyncedVisitsDescription[];
-
 extern const char kJourneysZeroStateFilteringName[];
 extern const char kJourneysZeroStateFilteringDescription[];
 

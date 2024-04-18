@@ -31,7 +31,8 @@ namespace {
 
 QueryClustersFilterParams GetFilterParamsFromFlags(const std::string& query) {
   QueryClustersFilterParams filter_params;
-  filter_params.include_synced_visits = GetConfig().include_synced_visits;
+  // Journeys launched Synced visits by default in early 2024.
+  filter_params.include_synced_visits = true;
   filter_params.group_clusters_by_content = false;
 
   // If there is a query, we do not want to apply any filtering.

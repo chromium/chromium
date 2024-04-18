@@ -63,9 +63,6 @@ BASE_DECLARE_FEATURE(kHistoryClustersKeywordFiltering);
 // Enables experimentation for how to dedupe visits in clusters.
 BASE_DECLARE_FEATURE(kHistoryClustersVisitDeduping);
 
-// Enables visits from other synced devices to be included in clusters.
-BASE_DECLARE_FEATURE(kJourneysIncludeSyncedVisits);
-
 // Persist keyword caches via pref service.
 BASE_DECLARE_FEATURE(kJourneysPersistCachesToPrefs);
 

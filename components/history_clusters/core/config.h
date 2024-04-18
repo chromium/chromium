@@ -300,9 +300,6 @@ struct Config {
   bool should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
       false;
 
-  // Whether to include synced visits in clusters.
-  bool include_synced_visits = false;
-
   // Whether keyword caches should be written to and read from prefs.
   bool persist_caches_to_prefs = true;
 

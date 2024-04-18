@@ -170,10 +170,7 @@ bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
       continue;
     }
 
-    if ((visit.source != history::SOURCE_SYNCED) ||
-        GetConfig().include_synced_visits) {
-      annotated_visits_.push_back(std::move(visit));
-    }
+    annotated_visits_.push_back(std::move(visit));
   }
 
   return limited_by_max_count;

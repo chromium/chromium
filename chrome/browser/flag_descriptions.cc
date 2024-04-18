@@ -2174,11 +2174,6 @@ const char kJourneysShowAllClustersName[] =
 const char kJourneysShowAllClustersDescription[] =
     "Enables all Journeys clusters to be shown on prominent UI surfaces";
 
-const char kJourneysIncludeSyncedVisitsName[] =
-    "History Journeys Include SyncedVisits";
-const char kJourneysIncludeSyncedVisitsDescription[] =
-    "Enabled synced visits to be included in History Journeys clusters.";
-
 const char kJourneysZeroStateFilteringName[] =
     "History Journeys Zero-State Filtering";
 const char kJourneysZeroStateFilteringDescription[] =

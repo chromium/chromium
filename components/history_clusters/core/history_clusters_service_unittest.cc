@@ -132,9 +132,9 @@ class TestClusteringBackend : public ClusteringBackend {
   std::vector<history::Cluster> last_clustered_clusters_;
 };
 
-class HistoryClustersServiceTestBase : public testing::Test {
+class HistoryClustersServiceTest : public testing::Test {
  public:
-  HistoryClustersServiceTestBase()
+  HistoryClustersServiceTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {
     Config config;
@@ -164,10 +164,9 @@ class HistoryClustersServiceTestBase : public testing::Test {
     history_service_.reset();
   }
 
-  HistoryClustersServiceTestBase(const HistoryClustersServiceTestBase&) =
+  HistoryClustersServiceTest(const HistoryClustersServiceTest&) = delete;
+  HistoryClustersServiceTest& operator=(const HistoryClustersServiceTest&) =
       delete;
-  HistoryClustersServiceTestBase& operator=(
-      const HistoryClustersServiceTestBase&) = delete;
 
   void ResetHistoryClustersServiceWithLocale(const std::string& locale) {
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
@@ -287,14 +286,14 @@ class HistoryClustersServiceTestBase : public testing::Test {
   }
 
   // Verifies that the hardcoded visits were passed to the clustering backend.
-  void AwaitAndVerifyTestClusteringBackendRequest(bool expect_synced_visits) {
+  void AwaitAndVerifyTestClusteringBackendRequest() {
     test_clustering_backend_->WaitForGetClustersCall();
 
     std::vector<history::AnnotatedVisit> visits =
         test_clustering_backend_->LastClusteredVisits();
 
     // Visits 2, 3, and 5 are 1-day-old; visit 3 is a synced visit.
-    ASSERT_EQ(visits.size(), expect_synced_visits ? 3u : 2u);
+    ASSERT_EQ(visits.size(), 3u);
 
     auto& visit = visits[0];
     EXPECT_EQ(visit.visit_row.visit_id, 5);
@@ -305,16 +304,14 @@ class HistoryClustersServiceTestBase : public testing::Test {
     EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
 
     visit = visits[1];
-    if (expect_synced_visits) {
-      EXPECT_EQ(visit.visit_row.visit_id, 3);
-      EXPECT_EQ(visit.visit_row.visit_time,
-                GetHardcodedTestVisits()[2].visit_row.visit_time);
-      EXPECT_EQ(visit.visit_row.visit_duration, base::Seconds(20));
-      EXPECT_EQ(visit.url_row.url(), "https://synched-visit.com/");
-      EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
+    EXPECT_EQ(visit.visit_row.visit_id, 3);
+    EXPECT_EQ(visit.visit_row.visit_time,
+              GetHardcodedTestVisits()[2].visit_row.visit_time);
+    EXPECT_EQ(visit.visit_row.visit_duration, base::Seconds(20));
+    EXPECT_EQ(visit.url_row.url(), "https://synched-visit.com/");
+    EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
 
-      visit = visits[2];
-    }
+    visit = visits[2];
     EXPECT_EQ(visit.visit_row.visit_id, 2);
     EXPECT_EQ(visit.visit_row.visit_time,
               GetHardcodedTestVisits()[1].visit_row.visit_time);
@@ -336,7 +333,8 @@ class HistoryClustersServiceTestBase : public testing::Test {
     std::vector<history::Cluster> clusters;
     base::RunLoop loop;
     QueryClustersFilterParams filter_params;
-    filter_params.include_synced_visits = GetConfig().include_synced_visits;
+    // Including synced visits launched in early 2024.
+    filter_params.include_synced_visits = true;
     const auto task = history_clusters_service_->QueryClusters(
         ClusteringRequestSource::kJourneysPage, filter_params,
         /*begin_time=*/base::Time(), continuation_params, /*recluster=*/false,
@@ -440,28 +438,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
   int64_t next_navigation_id_ = 0;
 };
 
-class HistoryClustersServiceTest : public HistoryClustersServiceTestBase,
-                                   public ::testing::WithParamInterface<bool> {
- public:
-  HistoryClustersServiceTest() {
-    scoped_feature_list_.InitAndEnableFeature(internal::kJourneys);
-    Config config;
-    // TODO(b/276488340): Update this test when non context clusterer code gets
-    //   cleaned up.
-    config.use_navigation_context_clusters = false;
-    config.include_synced_visits = ExpectSyncedVisits();
-    SetConfigForTesting(config);
-  }
-
-  // Whether synced visits are expected to be sent to the clustering backend.
-  bool ExpectSyncedVisits() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(IncludeSyncedVisits,
-                         HistoryClustersServiceTest,
-                         ::testing::Bool());
-
-TEST_P(HistoryClustersServiceTest, EligibleAndEnabledHistogramRecorded) {
+TEST_F(HistoryClustersServiceTest, EligibleAndEnabledHistogramRecorded) {
   {
     base::HistogramTester histogram_tester;
     SetJourneysVisible(true);
@@ -487,7 +464,7 @@ TEST_P(HistoryClustersServiceTest, EligibleAndEnabledHistogramRecorded) {
   }
 }
 
-TEST_P(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
+TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   Config config;
   config.is_journeys_enabled_no_locale_check = true;
   config.max_visits_to_cluster = 20;
@@ -540,7 +517,7 @@ TEST_P(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   EXPECT_EQ(test_clustering_backend_->LastClusteredVisits().size(), 20U);
 }
 
-TEST_P(HistoryClustersServiceTest, QueryClusters_IncompleteAndPersistedVisits) {
+TEST_F(HistoryClustersServiceTest, QueryClusters_IncompleteAndPersistedVisits) {
   // Create 5 persisted visits with visit times 2, 1, 1, 60, and 1 days ago.
   AddHardcodedTestDataToHistoryService();
 
@@ -563,11 +540,7 @@ TEST_P(HistoryClustersServiceTest, QueryClusters_IncompleteAndPersistedVisits) {
   {
     const auto [clusters, visits] = NextQueryClusters(continuation_params);
     EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
-    if (ExpectSyncedVisits()) {
-      EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 3, 2, 6));
-    } else {
-      EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 2, 6));
-    }
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 3, 2, 6));
     EXPECT_TRUE(continuation_params.is_continuation);
     EXPECT_FALSE(continuation_params.is_partial_day);
   }
@@ -597,7 +570,7 @@ TEST_P(HistoryClustersServiceTest, QueryClusters_IncompleteAndPersistedVisits) {
   }
 }
 
-TEST_P(HistoryClustersServiceTest,
+TEST_F(HistoryClustersServiceTest,
        QueryClusters_PersistedClusters_NoMixedDays) {
   // Test the case where there are persisted clusters but none on a day also
   // containing unclustered visits.
@@ -664,7 +637,7 @@ TEST_P(HistoryClustersServiceTest,
   }
 }
 
-TEST_P(HistoryClustersServiceTest,
+TEST_F(HistoryClustersServiceTest,
        QueryClusters_PersistedClusters_UseNavigationContextClusters) {
   // Test the case where there are persisted clusters but no unclustered visits.
 
@@ -693,7 +666,6 @@ TEST_P(HistoryClustersServiceTest,
   // Update config so that the new context clusters are used.
   Config new_config;
   new_config.use_navigation_context_clusters = true;
-  new_config.include_synced_visits = ExpectSyncedVisits();
   SetConfigForTesting(new_config);
 
   QueryClustersContinuationParams continuation_params = {};
@@ -701,18 +673,13 @@ TEST_P(HistoryClustersServiceTest,
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, true);
-    std::vector<int64_t> expected_cluster_ids = {1, 2, 3};
-    if (ExpectSyncedVisits()) {
-      expected_cluster_ids.push_back(4);
-    }
+    std::vector<int64_t> expected_cluster_ids = {1, 2, 3, 4};
     ASSERT_THAT(GetClusterIds(clusters),
                 testing::ElementsAreArray(expected_cluster_ids));
     EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(1));
     EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(2));
     EXPECT_THAT(GetVisitIds(clusters[2].visits), testing::ElementsAre(3));
-    if (ExpectSyncedVisits()) {
-      EXPECT_THAT(GetVisitIds(clusters[3].visits), testing::ElementsAre(4));
-    }
+    EXPECT_THAT(GetVisitIds(clusters[3].visits), testing::ElementsAre(4));
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);
@@ -728,7 +695,7 @@ TEST_P(HistoryClustersServiceTest,
   }
 }
 
-TEST_P(HistoryClustersServiceTest, QueryClusters_PersistedClusters_Today) {
+TEST_F(HistoryClustersServiceTest, QueryClusters_PersistedClusters_Today) {
   // Test the case where there is a persisted cluster today. The task rewinds
   // the query bounds when it reaches a clustered visit, and this should be done
   // correctly even if it's at the edge.
@@ -774,7 +741,7 @@ TEST_P(HistoryClustersServiceTest, QueryClusters_PersistedClusters_Today) {
   }
 }
 
-TEST_P(HistoryClustersServiceTest, QueryClusters_PersistedClusters_MixedDay) {
+TEST_F(HistoryClustersServiceTest, QueryClusters_PersistedClusters_MixedDay) {
   // Test the case where there are persisted clusters on a day also containing
   // unclustered visits.
 
@@ -838,7 +805,7 @@ TEST_P(HistoryClustersServiceTest, QueryClusters_PersistedClusters_MixedDay) {
   }
 }
 
-TEST_P(HistoryClustersServiceTest, QueryVisits_OldestFirst) {
+TEST_F(HistoryClustersServiceTest, QueryVisits_OldestFirst) {
   // Create 5 persisted visits with visit times 2, 1, 1, 60, and 1 days ago.
   AddHardcodedTestDataToHistoryService();
 
@@ -871,11 +838,7 @@ TEST_P(HistoryClustersServiceTest, QueryVisits_OldestFirst) {
     // is from sync, and is still included.
     const auto [clusters, visits] = NextVisits(continuation_params, false, 0);
     EXPECT_TRUE(clusters.empty());
-    if (ExpectSyncedVisits()) {
-      EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 3, 2));
-    } else {
-      EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 2));
-    }
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 3, 2));
     EXPECT_TRUE(continuation_params.is_continuation);
     EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);
@@ -890,7 +853,7 @@ TEST_P(HistoryClustersServiceTest, QueryVisits_OldestFirst) {
   }
 }
 
-TEST_P(HistoryClustersServiceTest, QueryClusteredVisits) {
+TEST_F(HistoryClustersServiceTest, QueryClusteredVisits) {
   // Create unclustered visits 1, 2, 3, and 4 days-old.
   AddCompleteVisit(1, DaysAgo(1));
   AddCompleteVisit(2, DaysAgo(2));
@@ -928,7 +891,7 @@ TEST_P(HistoryClustersServiceTest, QueryClusteredVisits) {
   }
 }
 
-TEST_P(HistoryClustersServiceTest, EndToEndWithBackend) {
+TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
   base::HistogramTester histogram_tester;
   AddHardcodedTestDataToHistoryService();
 
@@ -992,7 +955,7 @@ TEST_P(HistoryClustersServiceTest, EndToEndWithBackend) {
         run_loop.Quit();
       }));
 
-  AwaitAndVerifyTestClusteringBackendRequest(ExpectSyncedVisits());
+  AwaitAndVerifyTestClusteringBackendRequest();
 
   std::vector<history::Cluster> clusters;
   clusters.push_back(
@@ -1020,8 +983,7 @@ TEST_P(HistoryClustersServiceTest, EndToEndWithBackend) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.NumClustersReturned", 2, 1);
   histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.NumVisitsToCluster",
-      ExpectSyncedVisits() ? 3 : 2, 1);
+      "History.Clusters.Backend.NumVisitsToCluster", 3, 1);
   histogram_tester.ExpectTotalCount(
       "History.Clusters.Backend.GetMostRecentClusters."
       "ComputeClustersLatency",
@@ -1040,7 +1002,7 @@ TEST_P(HistoryClustersServiceTest, EndToEndWithBackend) {
       0);
 }
 
-TEST_P(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
+TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
   auto test = [&](RecordingStatus status, bool expected_complete) {
     auto& incomplete_visit_context_annotations =
         history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
@@ -1126,7 +1088,7 @@ TEST_P(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
   }
 }
 
-TEST_P(HistoryClustersServiceTest,
+TEST_F(HistoryClustersServiceTest,
        CompleteVisitContextAnnotationsIfReadyWhenFeatureEnabled) {
   // When the feature is enabled, the `IncompleteVisitContextAnnotations`
   // should be removed and added to visits.
@@ -1141,8 +1103,7 @@ TEST_P(HistoryClustersServiceTest,
       history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
 }
 
-class HistoryClustersServiceKeywordTest
-    : public HistoryClustersServiceTestBase {
+class HistoryClustersServiceKeywordTest : public HistoryClustersServiceTest {
  public:
   HistoryClustersServiceKeywordTest() {
     scoped_feature_list_.InitAndEnableFeature(internal::kJourneys);
@@ -1506,7 +1467,7 @@ TEST_F(HistoryClustersServiceKeywordTest,
 }
 
 class HistoryClustersServiceJourneysDisabledTest
-    : public HistoryClustersServiceTestBase {
+    : public HistoryClustersServiceTest {
  public:
   HistoryClustersServiceJourneysDisabledTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -1549,7 +1510,7 @@ TEST_F(HistoryClustersServiceJourneysDisabledTest, QueryClusters) {
   EXPECT_TRUE(clusters.empty());
 }
 
-TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Sparse) {
+TEST_F(HistoryClustersServiceTest, UpdateClusters_Sparse) {
   // Test the case where visits day distribution is wider than
   // `persist_clusters_recluster_window_days`; i.e. no reclustering occurs.
   Config config;
@@ -1621,7 +1582,7 @@ TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Sparse) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
-TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Reclustering) {
+TEST_F(HistoryClustersServiceTest, UpdateClusters_Reclustering) {
   // Test the case where visits day distribution is denser than
   // `persist_clusters_recluster_window_days`; i.e. reclustering occurs.
   Config config;
@@ -1769,8 +1730,7 @@ TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Reclustering) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
-TEST_F(HistoryClustersServiceTestBase,
-       UpdateClusters_ReclusterMultipleClusters) {
+TEST_F(HistoryClustersServiceTest, UpdateClusters_ReclusterMultipleClusters) {
   // Test the case where there are multiple clusters reconsulted in the same
   // batch.
   Config config;
@@ -1838,7 +1798,7 @@ TEST_F(HistoryClustersServiceTestBase,
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
-TEST_F(HistoryClustersServiceTestBase, UpdateClusters_PopularDay) {
+TEST_F(HistoryClustersServiceTest, UpdateClusters_PopularDay) {
   // Test the case there are more visits than `max_visits_to_cluster` in a day.
   Config config;
   // TODO(b/276488340): Update this test when non context clusterer code gets

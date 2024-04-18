@@ -175,7 +175,7 @@ class HistoryClustersService : public base::SupportsUserData,
 
  private:
   friend class HistoryClustersServiceTestApi;
-  friend class HistoryClustersServiceTestBase;
+  friend class HistoryClustersServiceTest;
 
   // Invokes `UpdateClusters()` after a short delay, then again periodically.
   // E.g., might invoke `UpdateClusters()` initially 5 minutes after startup,

@@ -312,9 +312,6 @@ Config::Config() {
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kShouldShowAllClustersOnProminentUiSurfaces);
 
-    include_synced_visits =
-        base::FeatureList::IsEnabled(internal::kJourneysIncludeSyncedVisits);
-
     persist_caches_to_prefs =
         base::FeatureList::IsEnabled(internal::kJourneysPersistCachesToPrefs);
   }
