@@ -97,6 +97,12 @@ class PKIMetadataComponentUpdaterTest
     PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
   }
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Wait for configuration set in `SetUpInProcessBrowserTestFixture` to load.
+    WaitForPKIConfiguration(1);
+  }
+
  protected:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
@@ -181,6 +187,9 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
 
   // Restart the network service.
   SimulateNetworkServiceCrash();
+  // Wait for the restarted network service to load the component update data
+  // that is already on disk.
+  WaitForPKIConfiguration(2);
 
   // Check that the page is still blocked depending on CT enforcement.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -193,13 +202,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
   }
 }
 
-// TODO(crbug.com/331581190): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestCTUpdate DISABLED_TestCTUpdate
-#else
-#define MAYBE_TestCTUpdate TestCTUpdate
-#endif
-IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, MAYBE_TestCTUpdate) {
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   const std::string kLog1OperatorName = "log operator 1";
   std::unique_ptr<crypto::ECPrivateKey> log1_private_key =
       crypto::ECPrivateKey::Create();
@@ -316,7 +319,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, MAYBE_TestCTUpdate) {
   // Should be trusted now.
   PKIMetadataComponentInstallerService::GetInstance()
       ->ReconfigureAfterNetworkRestart();
-  WaitForPKIConfiguration(1);
+  WaitForPKIConfiguration(2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("b.example.com", "/simple.html")));
   EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
@@ -356,7 +359,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, MAYBE_TestCTUpdate) {
   // other has a timestamp after the log retirement state change timestamp.
   PKIMetadataComponentInstallerService::GetInstance()
       ->ReconfigureAfterNetworkRestart();
-  WaitForPKIConfiguration(2);
+  WaitForPKIConfiguration(3);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
   if (GetParam() == CTEnforcement::kEnabled) {
