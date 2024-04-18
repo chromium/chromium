@@ -2189,12 +2189,6 @@ const char kLargeFaviconFromGoogleName[] = "Large favicons from Google";
 const char kLargeFaviconFromGoogleDescription[] =
     "Request large favicons from Google's favicon service";
 
-const char kLegacyTechReportEnableCookieIssueReportsName[] =
-    "Enable reporting of Cookie Issues for legacy technology report";
-const char kLegacyTechReportEnableCookieIssueReportsDescription[] =
-    "When enabled, usage of third-party cookies (on allowlisted pages) is "
-    "uploaded for enterprise users as part of a legacy technology report.";
-
 const char kLegacyTechReportTopLevelUrlName[] =
     "Using top level navigation URL for legacy technology report";
 const char kLegacyTechReportTopLevelUrlDescription[] =

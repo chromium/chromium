@@ -426,10 +426,6 @@ void ReportLegacyTechEvent(
     RenderFrameHostImpl* render_frame_host,
     NavigationRequest* navigation_request,
     const network::mojom::CookieAccessDetailsPtr& cookie_details) {
-  if (!base::FeatureList::IsEnabled(
-          features::kLegacyTechReportEnableCookieIssueReports)) {
-    return;
-  }
   CHECK(render_frame_host);
 
   for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :

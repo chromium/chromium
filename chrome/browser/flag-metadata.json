@@ -5425,11 +5425,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "legacy-tech-report-enable-cookie-issue-reports",
-    "owners": ["sandormajor@google.com", "zmin@chromium.org", "parastoog@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "link-cross-device-internals",
     "owners": [ "chromeos-cross-device-eng@google.com", "dclasson@chromium.org" ],
     "expiry_milestone": 125
