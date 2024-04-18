@@ -2430,9 +2430,6 @@ extern const char kRefreshFeedOnRestartDescription[];
 extern const char kInfoCardAcknowledgementTrackingName[];
 extern const char kInfoCardAcknowledgementTrackingDescription[];
 
-extern const char kInstantStartName[];
-extern const char kInstantStartDescription[];
-
 extern const char kInterestFeedV2Name[];
 extern const char kInterestFeedV2Description[];
 

@@ -3959,7 +3959,6 @@ HSPLorg/chromium/chrome/browser/init/AsyncInitializationActivity;->dispatchOnInf
 HSPLorg/chromium/chrome/browser/init/AsyncInitializationActivity;->finishNativeInitialization()V
 HSPLorg/chromium/chrome/browser/init/AsyncInitializationActivity;->getCurrentSmallestScreenWidth(Landroid/content/Context;)I
 HSPLorg/chromium/chrome/browser/init/AsyncInitializationActivity;->isActivityFinishingOrDestroyed()Z
-HSPLorg/chromium/chrome/browser/init/AsyncInitializationActivity;->isInstantStartEnabled()Z
 HSPLorg/chromium/chrome/browser/init/AsyncInitializationActivity;->maybePreconnect()V
 HSPLorg/chromium/chrome/browser/init/AsyncInitializationActivity;->onAttachedToWindow()V
 HSPLorg/chromium/chrome/browser/init/AsyncInitializationActivity;->onCreate(Landroid/os/Bundle;)V
@@ -6306,7 +6305,6 @@ HSPLorg/chromium/chrome/browser/tasks/tab_management/TabUiFeatureUtilities;->isT
 HSPLorg/chromium/chrome/browser/tasks/tab_management/TabUiFeatureUtilities;->isTabToGtsAnimationEnabled()Z
 HSPLorg/chromium/chrome/browser/tasks/tab_management/TabUiFeatureUtilities;->isTabletGridTabSwitcherEnabled(Landroid/content/Context;)Z
 HSPLorg/chromium/chrome/browser/tasks/tab_management/TabUiFeatureUtilities;->isTabletGridTabSwitcherPolishEnabled(Landroid/content/Context;)Z
-HSPLorg/chromium/chrome/browser/tasks/tab_management/TabUiFeatureUtilities;->supportInstantStart(Landroid/content/Context;Z)Z
 Lorg/chromium/chrome/browser/tasks/tab_management/TabUiThemeProvider;
 HSPLorg/chromium/chrome/browser/tasks/tab_management/TabUiThemeProvider;->getTabGridDialogUngroupBarBackgroundColor(Landroid/content/Context;ZZ)I
 HSPLorg/chromium/chrome/browser/tasks/tab_management/TabUiThemeProvider;->getTabGridDialogUngroupBarTextColor(Landroid/content/Context;ZZ)I

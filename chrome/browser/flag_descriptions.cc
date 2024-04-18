@@ -4108,10 +4108,6 @@ const char kInfoCardAcknowledgementTrackingName[] =
 const char kInfoCardAcknowledgementTrackingDescription[] =
     "Enable acknowledgement tracking for info cards.";
 
-const char kInstantStartName[] = "Instant start";
-const char kInstantStartDescription[] =
-    "Show start surface before native library is loaded.";
-
 const char kInterestFeedV2Name[] = "Interest Feed v2";
 const char kInterestFeedV2Description[] =
     "Show content suggestions on the New Tab Page and Start Surface using the "
