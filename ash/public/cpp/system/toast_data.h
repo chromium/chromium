@@ -17,9 +17,11 @@
 namespace ash {
 
 struct ASH_PUBLIC_EXPORT ToastData {
-  // A `ToastData` with a `kInfiniteDuration` duration will be displayed until
-  // the dismiss button on the toast is clicked.
-  static constexpr base::TimeDelta kInfiniteDuration = base::TimeDelta::Max();
+  // A `ToastData` with a `kInfiniteDuration` duration will be displayed for 30
+  // minutes or until the dismiss button on the toast is clicked. An actual
+  // infinite duration is not used to prevent cases where the toast won't be
+  // dismissable e.g. on kiosk mode that limits user input.
+  static constexpr base::TimeDelta kInfiniteDuration = base::Minutes(30);
 
   // The default duration that a toast will be shown before it is automatically
   // dismissed.

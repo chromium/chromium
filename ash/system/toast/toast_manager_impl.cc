@@ -268,12 +268,10 @@ void ToastManagerImpl::ShowLatest() {
 
   DCHECK(!current_toast_expiration_timer_->IsRunning());
 
-  if (current_toast_data_->duration != ToastData::kInfiniteDuration) {
-    current_toast_expiration_timer_->Start(
-        current_toast_data_->duration,
-        base::BindRepeating(&ToastManagerImpl::CloseAllToastsWithAnimation,
-                            base::Unretained(this)));
-  }
+  current_toast_expiration_timer_->Start(
+      current_toast_data_->duration,
+      base::BindRepeating(&ToastManagerImpl::CloseAllToastsWithAnimation,
+                          base::Unretained(this)));
 
   base::UmaHistogramEnumeration("Ash.NotifierFramework.Toast.ShownCount",
                                 current_toast_data_->catalog_name);
