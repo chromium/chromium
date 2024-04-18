@@ -7,16 +7,19 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/printing/pdf_blob_data_flattener.h"
 #include "chrome/browser/printing/print_job_controller.h"
 #include "chrome/browser/printing/web_api/web_printing_type_converters.h"
+#include "chrome/browser/printing/web_api/web_printing_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/permissions/permission_request_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/print_backend.h"
 #include "printing/metafile_skia.h"
 #include "printing/print_settings.h"
@@ -80,6 +83,30 @@ void UpdatePrintJobTemplateAttributesWithPrinterDefaults(
   }
 }
 
+bool ValidateAdvancedCapability(
+    const PrintSettings& pjt_attributes,
+    const PrinterSemanticCapsAndDefaults& printer_attributes,
+    const std::string& capability_name) {
+  auto* requested_capability =
+      base::FindOrNull(pjt_attributes.advanced_settings(), capability_name);
+  if (!requested_capability) {
+    // If the capability has not been actually requested, we're good.
+    return true;
+  }
+  auto* printer_capability =
+      internal::FindAdvancedCapability(printer_attributes, capability_name);
+  if (!printer_capability) {
+    // If the capability has been requested but the printer doesn't support it,
+    // reject.
+    return false;
+  }
+  // `requested_capability` is guaranteed to be a string -- it's set this way in
+  // StructTraits<>.
+  return base::Contains(printer_capability->values,
+                        requested_capability->GetString(),
+                        &AdvancedCapabilityValue::name);
+}
+
 bool ValidateAttributesAndUpdateIfNecessary(
     PrintSettings& pjt_attributes,
     const PrinterSemanticCapsAndDefaults& printer_attributes) {
@@ -110,6 +137,10 @@ bool ValidateAttributesAndUpdateIfNecessary(
     return false;
   }
   if (!ValidateMediaCol(pjt_attributes, printer_attributes)) {
+    return false;
+  }
+  if (!ValidateAdvancedCapability(pjt_attributes, printer_attributes,
+                                  kIppMediaSource)) {
     return false;
   }
   // Update selected fields to printer defaults if they're not specified.

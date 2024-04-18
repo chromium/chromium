@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "printing/backend/cups_ipp_constants.h"
 #include "printing/mojom/print.mojom-shared.h"
 #include "printing/units.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
@@ -52,6 +53,14 @@ ColorModel PrintColorModeToColorModel(PrintColorMode print_color_mode) {
 bool InferRequestedMedia(
     blink::mojom::WebPrintJobTemplateAttributesDataView data,
     printing::PrintSettings& settings) {
+  std::optional<std::string> media_source;
+  if (!data.ReadMediaSource(&media_source)) {
+    return false;
+  }
+  if (media_source) {
+    settings.advanced_settings().emplace(printing::kIppMediaSource,
+                                         *media_source);
+  }
   blink::mojom::WebPrintingMediaCollectionRequestedDataView media_col;
   data.GetMediaColDataView(&media_col);
   if (media_col.is_null()) {

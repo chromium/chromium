@@ -42,6 +42,7 @@ dictionary WebPrintJobTemplateAttributes {
   unsigned long copies;
 
   WebPrintingMediaCollectionRequested mediaCol;
+  DOMString mediaSource;
   WebPrintingMultipleDocumentHandling multipleDocumentHandling;
   WebPrintingOrientationRequested orientationRequested;
   WebPrintingResolution printerResolution;
@@ -58,6 +59,9 @@ dictionary WebPrinterAttributes {
 
   WebPrintingMediaCollection mediaColDefault;
   sequence<WebPrintingMediaCollection> mediaColDatabase;
+
+  DOMString mediaSourceDefault;
+  sequence<DOMString> mediaSourceSupported;
 
   WebPrintingMimeMediaType documentFormatDefault;
   sequence<WebPrintingMimeMediaType> documentFormatSupported;

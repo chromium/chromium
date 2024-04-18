@@ -72,6 +72,10 @@ struct StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
       const std::unique_ptr<printing::PrintSettings>& ptr) {
     NOTREACHED_NORETURN();
   }
+  static const std::optional<std::string>& media_source(
+      const std::unique_ptr<printing::PrintSettings>& ptr) {
+    NOTREACHED_NORETURN();
+  }
   static const std::optional<blink::mojom::WebPrintingMultipleDocumentHandling>&
   multiple_document_handling(
       const std::unique_ptr<printing::PrintSettings>& ptr) {

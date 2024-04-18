@@ -19,6 +19,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/test/test_extension_dir.h"
+#include "printing/backend/cups_ipp_constants.h"
+#include "printing/backend/print_backend.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/strings/utf_string_conversions.h"
@@ -250,6 +252,12 @@ ConstructPrinterCapabilities() {
   capabilities->papers = {std::move(iso_a4_paper), std::move(na_letter_paper),
                           std::move(custom_paper)};
   capabilities->collate_capable = true;
+  std::vector<printing::AdvancedCapabilityValue> media_source_vals(
+      {{"auto", ""}, {"tray-1", ""}});
+  capabilities->advanced_capabilities.emplace_back(
+      /*name=*/printing::kIppMediaSource, /*localized_name=*/"",
+      printing::AdvancedCapability::Type::kString, /*default_value=*/"auto",
+      /*values=*/std::move(media_source_vals));
   return capabilities;
 }
 

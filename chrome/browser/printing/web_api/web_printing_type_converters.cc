@@ -7,8 +7,11 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
+#include "chrome/browser/printing/web_api/web_printing_utils.h"
 #include "chrome/common/printing/print_media_l10n.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/print_backend.h"
 #include "printing/units.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
@@ -91,6 +94,21 @@ void ProcessMediaCollection(const PrinterSemanticCapsAndDefaults& caps,
       mojo::ConvertTo<MediaCollectionPtr>(caps.default_paper);
   attributes->media_col_database =
       mojo::ConvertTo<std::vector<MediaCollectionPtr>>(caps.papers);
+}
+
+void ProcessMediaSource(const PrinterSemanticCapsAndDefaults& caps,
+                        blink::mojom::WebPrinterAttributes* attributes) {
+  auto* media_source = internal::FindAdvancedCapability(caps, kIppMediaSource);
+  if (!media_source) {
+    return;
+  }
+  if (!media_source->default_value.empty()) {
+    attributes->media_source_default = media_source->default_value;
+  }
+  if (!media_source->values.empty()) {
+    attributes->media_source_supported =
+        base::ToVector(media_source->values, &AdvancedCapabilityValue::name);
+  }
 }
 
 void ProcessMultipleDocumentHandling(
@@ -178,6 +196,7 @@ TypeConverter<blink::mojom::WebPrinterAttributesPtr,
 
   printing::ProcessCopies(capabilities, attributes.get());
   printing::ProcessMediaCollection(capabilities, attributes.get());
+  printing::ProcessMediaSource(capabilities, attributes.get());
   printing::ProcessMultipleDocumentHandling(capabilities, attributes.get());
   printing::ProcessOrientationRequested(capabilities, attributes.get());
   printing::ProcessPrinterResolution(capabilities, attributes.get());

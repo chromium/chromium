@@ -410,6 +410,19 @@ void ProcessMediaCollection(
           new_attributes.media_col_database));
 }
 
+void ProcessMediaSource(
+    const mojom::blink::WebPrinterAttributes& new_attributes,
+    WebPrinterAttributes* current_attributes) {
+  if (new_attributes.media_source_default) {
+    current_attributes->setMediaSourceDefault(
+        new_attributes.media_source_default);
+  }
+  if (!new_attributes.media_source_supported.empty()) {
+    current_attributes->setMediaSourceSupported(
+        new_attributes.media_source_supported);
+  }
+}
+
 void ProcessMultipleDocumentHandling(
     const mojom::blink::WebPrinterAttributes& new_attributes,
     WebPrinterAttributes* current_attributes) {
@@ -481,6 +494,7 @@ TypeConverter<blink::WebPrinterAttributes*,
   blink::ProcessCopies(*printer_attributes, attributes);
   blink::ProcessDocumentFormat(*printer_attributes, attributes);
   blink::ProcessMediaCollection(*printer_attributes, attributes);
+  blink::ProcessMediaSource(*printer_attributes, attributes);
   blink::ProcessMultipleDocumentHandling(*printer_attributes, attributes);
   blink::ProcessOrientationRequested(*printer_attributes, attributes);
   blink::ProcessPrinterResolution(*printer_attributes, attributes);
@@ -507,6 +521,9 @@ TypeConverter<blink::mojom::blink::WebPrintJobTemplateAttributesPtr,
   if (pjt_attributes->hasMediaCol()) {
     attributes->media_col = mojo::ConvertTo<MojomMediaCollectionRequestedPtr>(
         pjt_attributes->mediaCol());
+  }
+  if (pjt_attributes->hasMediaSource()) {
+    attributes->media_source = pjt_attributes->mediaSource();
   }
   if (pjt_attributes->hasMultipleDocumentHandling()) {
     attributes->multiple_document_handling =

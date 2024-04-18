@@ -18,6 +18,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "printing/backend/cups_ipp_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 
@@ -70,6 +71,7 @@ startxref
           yDimension: 29700,
         }
       },
+      mediaSource: "tray-1",
       printColorMode: "color",
       multipleDocumentHandling: "separate-documents-collated-copies",
       printerResolution: {
@@ -95,8 +97,11 @@ using testing::AtMost;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using testing::AllOf;
+using testing::Contains;
 using testing::Eq;
 using testing::Field;
+using testing::Pair;
+using testing::Pointee;
 using testing::Property;
 #endif
 
@@ -141,6 +146,11 @@ auto ValidatePrintSettings() {
       Property(&PrintSettings::requested_media,
                Field(&PrintSettings::RequestedMedia::size_microns,
                      Eq(gfx::Size(210000, 297000)))),
+      // mediaSource:
+      Property(&PrintSettings::advanced_settings,
+               Contains(Pair(Eq(printing::kIppMediaSource),
+                             Property(&base::Value::GetIfString,
+                                      Pointee(Eq("tray-1")))))),
       // printColorMode:
       Property(&PrintSettings::color, Eq(mojom::ColorModel::kColorModeColor)),
       Property(&PrintSettings::title, Eq(u"Title")),
@@ -374,6 +384,8 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
       },
       "mediaSizeName": "om_200000x250000um_200x250mm",
     }],
+    "mediaSourceDefault": "auto",
+    "mediaSourceSupported": [ "auto", "tray-1" ],
     "multipleDocumentHandlingDefault": "separate-documents-uncollated-copies",
     "multipleDocumentHandlingSupported": [
       "separate-documents-uncollated-copies",
