@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
+
 #include <cstddef>
 #include <string>
 
@@ -85,6 +86,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     read_anything::mojom::Colors color,
     double speech_rate,
     base::Value::Dict* voices,
+    base::Value::List* languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity) {
   line_spacing_ = GetLineSpacingValue(line_spacing);
   letter_spacing_ = GetLetterSpacingValue(letter_spacing);
@@ -94,6 +96,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   color_theme_ = static_cast<size_t>(color);
   speech_rate_ = speech_rate;
   voices_ = voices->Clone();
+  languages_enabled_in_pref_ = languages_enabled_in_pref->Clone();
   highlight_granularity_ = static_cast<size_t>(granularity);
 }
 

@@ -56,6 +56,9 @@ export class FakeReadingMode {
   // The base language code that should be used for speech synthesis voices.
   baseLanguageForSpeech: string = '';
 
+  // TTS voice language preferences saved in database
+  savedLanguagePref: Set<string> = new Set<string>();
+
   private maxNodeId: number = 5;
 
   // Returns the stored user voice preference for the current language.
@@ -154,6 +157,16 @@ export class FakeReadingMode {
     this.fontSize = 0;
   }
 
+  // Called when a user toggles a switch in the language menu
+  onLanguagePrefChange(lang: string, enabled: boolean) {
+    if(enabled) {
+      this.savedLanguagePref.add(lang);
+    } else {
+      this.savedLanguagePref.delete(lang);
+    }
+  }
+
+
   // Called when a user toggles links via the webui toolbar.
   onLinksEnabledToggled() {
     this.linksEnabled = !this.linksEnabled;
@@ -218,6 +231,11 @@ export class FakeReadingMode {
   // category.
   getLetterSpacingValue(letterSpacing: number): number {
     return letterSpacing;
+  }
+
+  // Returns the actual enabled languages in preference
+  getLanguagesEnabledInPref(): string[] {
+    return [...this.savedLanguagePref.values()];
   }
 
   // Called when a user makes a selection change. AnchorNodeID and

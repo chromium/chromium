@@ -1344,6 +1344,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.enabledLanguagesInPref = currentlyEnabled ?
         this.enabledLanguagesInPref.filter(lang => lang !== toggledLanguage) :
         [...this.enabledLanguagesInPref, toggledLanguage];
+
+    chrome.readingMode.onLanguagePrefChange(toggledLanguage, !currentlyEnabled);
   }
 
   private resetSpeechPostSettingChange_() {
@@ -1469,8 +1471,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private restoreEnabledLanguagesFromPref_() {
-    // TODO(b/332638963): restore saved preferences, for now empty initially
-    this.enabledLanguagesInPref = [];
+    const storedLanguagesPref = chrome.readingMode.getLanguagesEnabledInPref();
+    this.enabledLanguagesInPref =
+        storedLanguagesPref ? storedLanguagesPref : [];
   }
 
   private selectPreferredVoice_() {

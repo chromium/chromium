@@ -96,8 +96,9 @@
   <div slot="body" class="language-menu-body">
     <!-- TODO(b/333785012): Add initial-counts to the dom-repeats here. -->
     <template is="dom-repeat"
-        items="[[filterSearchLanguages_(availableLanguages_,
-         languageSearchValue_)]]">
+        items="[[computeAvailableLanguages_(availableVoices,
+          localeToDisplayName, languageSearchValue_,
+          enabledLanguagesInPref)]]">
         <div class="language-line dropdown-line">
           <span class="language-name">
             [[item.language]]

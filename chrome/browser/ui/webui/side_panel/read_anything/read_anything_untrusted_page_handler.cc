@@ -274,6 +274,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
         features::IsReadAnythingReadAloudEnabled()
             ? prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone()
             : base::Value::Dict(),
+        features::IsReadAnythingReadAloudEnabled()
+            ? prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
+                  .Clone()
+            : base::Value::List(),
         highlightGranularity);
   }
 
@@ -439,6 +443,21 @@ void ReadAnythingUntrustedPageHandler::OnVoiceChange(const std::string& voice,
     ScopedDictPrefUpdate update(prefs,
                                 prefs::kAccessibilityReadAnythingVoiceName);
     update->Set(lang, voice);
+  }
+}
+
+void ReadAnythingUntrustedPageHandler::OnLanguagePrefChange(
+    const std::string& lang,
+    bool enabled) {
+  if (browser_) {
+    PrefService* prefs = browser_->profile()->GetPrefs();
+    ScopedListPrefUpdate update(
+        prefs, prefs::kAccessibilityReadAnythingLanguagesEnabled);
+    if (enabled) {
+      update->Append(lang);
+    } else {
+      update->EraseValue(base::Value(lang));
+    }
   }
 }
 

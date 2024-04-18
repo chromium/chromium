@@ -76,6 +76,9 @@ declare namespace chrome {
     // Returns the stored user voice preference for the current language
     function getStoredVoice(): string;
 
+    // Returns the stored user preference for enabled languages.
+    function getLanguagesEnabledInPref(): string[];
+
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID. If there is a selection contained
     // in this node, only returns children which are partially or entirely
@@ -162,6 +165,10 @@ declare namespace chrome {
 
     // Called when the voice used for speech is changed via the webui toolbar.
     function onVoiceChange(voice: string, lang: string): void;
+
+    // Called when a language is enabled/disabled for via the webui language
+    // menu.
+    function onLanguagePrefChange(lang: string, enabled: boolean): void;
 
     // Called when the highlight granularity is changed via the webui toolbar.
     function turnedHighlightOn(): void;

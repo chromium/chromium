@@ -124,6 +124,7 @@ class ReadAnythingUntrustedPageHandler
   void OnSpeechRateChange(double rate) override;
   void OnVoiceChange(const std::string& voice,
                      const std::string& lang) override;
+  void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
   void OnHighlightGranularityChanged(
       read_anything::mojom::HighlightGranularity granularity) override;
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,

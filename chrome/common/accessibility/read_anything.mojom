@@ -162,6 +162,9 @@ interface UntrustedPageHandler {
   // speech via the webui toolbar. lang is the language code that voice is for.
   OnVoiceChange(string voice, string lang);
 
+  // Informs the browser controller that the user enabled/disabled a language.
+  OnLanguagePrefChange(string lang, bool enabled);
+
   // Informs the browser controller that the user updated the granularity of
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
@@ -240,6 +243,7 @@ interface UntrustedPage {
                            read_anything.mojom.Colors color,
                            double speech_rate,
                            mojo_base.mojom.DictionaryValue voices,
+                           mojo_base.mojom.ListValue languages_enabled_in_pref,
                            read_anything.mojom.HighlightGranularity granularity);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.

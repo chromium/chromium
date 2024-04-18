@@ -80,6 +80,10 @@ class MockReadAnythingUntrustedPageHandler
               (const std::string& voice, const std::string& lang),
               (override));
   MOCK_METHOD(void,
+              OnLanguagePrefChange,
+              (const std::string& lang, bool enabled),
+              (override));
+  MOCK_METHOD(void,
               OnColorChange,
               (read_anything::mojom::Colors color),
               (override));

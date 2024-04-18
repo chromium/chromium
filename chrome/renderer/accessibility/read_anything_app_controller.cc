@@ -640,11 +640,13 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     read_anything::mojom::Colors color,
     double speech_rate,
     base::Value::Dict voices,
+    base::Value::List languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity) {
   bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
-  model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
-                                     font_size, links_enabled, color,
-                                     speech_rate, &voices, granularity);
+  model_.OnSettingsRestoredFromPrefs(
+      line_spacing, letter_spacing, font, font_size, links_enabled, color,
+      speech_rate, &voices,
+      &languages_enabled_in_pref, granularity);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
@@ -747,6 +749,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnSpeechRateChange)
       .SetMethod("getStoredVoice", &ReadAnythingAppController::GetStoredVoice)
       .SetMethod("onVoiceChange", &ReadAnythingAppController::OnVoiceChange)
+      .SetMethod("onLanguagePrefChange",
+                 &ReadAnythingAppController::OnLanguagePrefChange)
+      .SetMethod("getLanguagesEnabledInPref",
+                 &ReadAnythingAppController::GetLanguagesEnabledInPref)
       .SetMethod("turnedHighlightOn",
                  &ReadAnythingAppController::TurnedHighlightOn)
       .SetMethod("turnedHighlightOff",
@@ -859,6 +865,16 @@ std::string ReadAnythingAppController::GetStoredVoice() const {
   }
 
   return string_constants::kReadAnythingPlaceholderVoiceName;
+}
+
+std::vector<std::string> ReadAnythingAppController::GetLanguagesEnabledInPref()
+    const {
+  std::vector<std::string> languages_enabled_in_pref;
+
+  for (const base::Value& value : model_.languages_enabled_in_pref()) {
+    languages_enabled_in_pref.push_back(value.GetString());
+  }
+  return languages_enabled_in_pref;
 }
 
 int ReadAnythingAppController::HighlightGranularity() const {
@@ -1306,6 +1322,11 @@ void ReadAnythingAppController::OnVoiceChange(const std::string& voice,
   std::string base_lang = std::string(language::ExtractBaseLanguage(lang));
   page_handler_->OnVoiceChange(voice, base_lang);
   model_.setVoice(voice, base_lang);
+}
+
+void ReadAnythingAppController::OnLanguagePrefChange(const std::string& lang,
+                                                     bool enabled) {
+  page_handler_->OnLanguagePrefChange(lang, enabled);
 }
 
 void ReadAnythingAppController::TurnedHighlightOn() {

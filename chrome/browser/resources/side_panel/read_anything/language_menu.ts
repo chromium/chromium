@@ -50,11 +50,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       availableVoices: Array,
       languageSearchValue_: String,
       localeToDisplayName: Object,
-      availableLanguages_: {
-        type: Array,
-        computed: 'computeAvailableLanguages_(availableVoices,' +
-            ' localeToDisplayName, enabledLanguagesInPref)',
-      },
     };
   }
 
@@ -75,39 +70,37 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private computeAvailableLanguages_(
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},
+      languageSearchValue: string|undefined,
       enabledLanguagesInPref: string[]): LanguageDropdownItem[] {
+    if (!availableVoices) {
+      return [];
+    }
     const allLanguages = availableVoices.map(
         voice => (localeToDisplayName && voice.lang in localeToDisplayName) ?
             localeToDisplayName[voice.lang] :
             voice.lang);
-    return [...new Set(allLanguages)].map(
-        lang => ({
-          language: lang,
-          checked: enabledLanguagesInPref
-            && enabledLanguagesInPref.includes(lang),
-          callback: () =>
-              this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
-                bubbles: true,
-                composed: true,
-                detail: {
-                  language: lang,
-                },
-              })),
-        }));
-  }
-
-  private filterSearchLanguages_(
-      availableLanguages: LanguageDropdownItem[],
-      languageSearchValue: string): LanguageDropdownItem[] {
-    if (!languageSearchValue) {
-      return availableLanguages;
-    } else {
-      const languageSearchValueLowerCase = languageSearchValue.toLowerCase();
-      return availableLanguages.filter(
-          languageDropDownItem =>
-              languageDropDownItem.language.toLowerCase().includes(
-                  languageSearchValueLowerCase));
-    }
+    return [...new Set(allLanguages)]
+        .filter(lang => {
+          if (languageSearchValue) {
+            return lang.toLowerCase().includes(
+                languageSearchValue.toLowerCase());
+          } else {
+            return true;
+          }
+        })
+        .map(lang => ({
+               language: lang,
+               checked: enabledLanguagesInPref &&
+                   enabledLanguagesInPref.includes(lang),
+               callback: () =>
+                   this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
+                     bubbles: true,
+                     composed: true,
+                     detail: {
+                       language: lang,
+                     },
+                   })),
+             }));
   }
 
   showDialog() {
