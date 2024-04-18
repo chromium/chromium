@@ -110,6 +110,18 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetProfilePasswordStore,
               (),
               (const override));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD(std::unique_ptr<PasswordCrossDomainConfirmationPopupController>,
+              ShowCrossDomainConfirmationPopup,
+              (const gfx::RectF& element_bounds,
+               base::i18n::TextDirection text_direction,
+               const GURL& domain,
+               const std::u16string& password_origin,
+               base::OnceClosure confirmation_callback),
+              (override));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 };
 
 class MockAffiliationService : public affiliations::FakeAffiliationService {
@@ -819,6 +831,35 @@ TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
       "PasswordManager.PasswordFilling.AuthenticationTime", kMockElapsedTime,
       1);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Tests that the confirmation popup is shown for cross domain filling.
+TEST_F(PasswordManualFallbackFlowTest, CrossDomainConfirmation) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  const gfx::RectF element_bounds{10, 10, 100, 100};
+  const auto text_direction = base::i18n::TextDirection::LEFT_TO_RIGHT;
+  const GURL domain = driver().GetLastCommittedURL();
+  const std::u16string password_origin = u"password_origin";
+
+  flow().RunFlow(MakeFieldRendererId(), element_bounds, text_direction);
+
+  EXPECT_CALL(password_manager_client(),
+              ShowCrossDomainConfirmationPopup(element_bounds, text_direction,
+                                               domain, password_origin, _));
+  EXPECT_CALL(driver(), FillField).Times(0);
+
+  flow().DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          PopupItemId::kFillPassword, u"Fill password",
+          Suggestion::PasswordSuggestionDetails(u"password", password_origin,
+                                                /*is_cross_domain=*/true)),
+      AutofillPopupDelegate::SuggestionPosition{});
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that password value is filled if the authentication succeeds.
 TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {

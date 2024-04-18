@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 
+#include "base/functional/bind.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -107,7 +108,10 @@ void PasswordManualFallbackFlow::RunFlow(
     autofill::FieldRendererId field_id,
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
-  saved_field_id_ = field_id;
+  field_id_ = field_id;
+  bounds_ = bounds;
+  text_direction_ = text_direction;
+
   if (flow_state_ != FlowState::kFlowInitialized) {
     on_all_password_data_ready_ =
         base::BindOnce(&PasswordManualFallbackFlow::RunFlowImpl,
@@ -140,7 +144,7 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
               .password);
       break;
     case autofill::PopupItemId::kPasswordFieldByFieldFilling:
-      password_manager_driver_->PreviewField(saved_field_id_,
+      password_manager_driver_->PreviewField(field_id_,
                                              suggestion.main_text.value);
       break;
     case autofill::PopupItemId::kFillPassword:
@@ -171,16 +175,35 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
               .password));
       break;
     case autofill::PopupItemId::kPasswordFieldByFieldFilling:
-      password_manager_driver_->FillField(saved_field_id_,
+      password_manager_driver_->FillField(field_id_,
                                           suggestion.main_text.value);
       break;
-    case autofill::PopupItemId::kFillPassword:
-      MaybeAuthenticateBeforeFilling(base::BindOnce(
-          &PasswordManagerDriver::FillField,
-          base::Unretained(password_manager_driver_), saved_field_id_,
-          suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>()
-              .password));
+    case autofill::PopupItemId::kFillPassword: {
+      Suggestion::PasswordSuggestionDetails payload =
+          suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>();
+      auto filling_callback = base::BindOnce(
+          &PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&PasswordManagerDriver::FillField,
+                         base::Unretained(password_manager_driver_), field_id_,
+                         payload.password));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+      if (payload.is_cross_domain) {
+        cross_domain_confirmation_popup_controller_ =
+            password_client_->ShowCrossDomainConfirmationPopup(
+                bounds_, text_direction_,
+                password_manager_driver_->GetLastCommittedURL(),
+                payload.display_signon_realm, std::move(filling_callback));
+        break;
+      }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+      std::move(filling_callback).Run();
       break;
+    }
     case autofill::PopupItemId::kViewPasswordDetails:
       // TODO(b/324242001): Trigger password details dialog.
       break;
@@ -226,7 +249,7 @@ void PasswordManualFallbackFlow::RunFlowImpl(
     base::i18n::TextDirection text_direction) {
   IsTriggeredOnPasswordForm on_password_form(
       password_form_cache_->HasPasswordForm(password_manager_driver_,
-                                            saved_field_id_));
+                                            field_id_));
   // TODO(b/331409076): Fetch suggested passwords and pass them to the
   // suggestion generator.
   std::vector<Suggestion> suggestions =

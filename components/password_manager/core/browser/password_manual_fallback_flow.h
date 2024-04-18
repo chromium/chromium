@@ -16,6 +16,12 @@
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 namespace autofill {
 class AutofillClient;
 }  // namespace autofill
@@ -132,7 +138,11 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   // one invocation is delayed.
   base::OnceClosure on_all_password_data_ready_;
 
-  autofill::FieldRendererId saved_field_id_;
+  // The latest `RunFlow()` call arguments.
+  autofill::FieldRendererId field_id_;
+  gfx::RectF bounds_;
+  base::i18n::TextDirection text_direction_;
+
   // Fetches user passwords relevant for the current domain.
   std::unique_ptr<FormFetcherImpl> form_fetcher_;
   // Reads all user passwords from disk.
@@ -145,6 +155,13 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   // to be cleared before the password is filled. Currently only used
   // on Android, Mac and Windows.
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
+      cross_domain_confirmation_popup_controller_;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<PasswordManualFallbackFlow> weak_ptr_factory_{this};
 };
