@@ -156,12 +156,14 @@ HlsManifestDemuxerEngine::~HlsManifestDemuxerEngine() = default;
 HlsManifestDemuxerEngine::HlsManifestDemuxerEngine(
     base::SequenceBound<HlsDataSourceProvider> dsp,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+    bool was_already_tainted,
     GURL root_playlist_uri,
     MediaLog* media_log)
     : data_source_provider_(std::move(dsp)),
       media_task_runner_(std::move(media_task_runner)),
       root_playlist_uri_(std::move(root_playlist_uri)),
-      media_log_(media_log->Clone()) {
+      media_log_(media_log->Clone()),
+      origin_tainted_(was_already_tainted) {
   // This is always created on the main sequence, but used on the media sequence
   DETACH_FROM_SEQUENCE(media_sequence_checker_);
 }
@@ -201,6 +203,18 @@ HlsManifestDemuxerEngine::PlaylistParseInfo::~PlaylistParseInfo() {}
 
 HlsManifestDemuxerEngine::PlaylistParseInfo::PlaylistParseInfo(
     const PlaylistParseInfo& copy) = default;
+
+int64_t HlsManifestDemuxerEngine::GetMemoryUsage() {
+  return total_stream_memory_;
+}
+
+bool HlsManifestDemuxerEngine::WouldTaintOrigin() {
+  return origin_tainted_;
+}
+
+bool HlsManifestDemuxerEngine::IsStreaming() {
+  return !is_seekable_;
+}
 
 std::string HlsManifestDemuxerEngine::GetName() const {
   return "HlsManifestDemuxer";
@@ -513,6 +527,28 @@ void HlsManifestDemuxerEngine::OnStatus(PipelineStatus status) {
   }
 }
 
+void HlsManifestDemuxerEngine::UpdateHlsDataSourceStats(
+    HlsDataSourceProvider::ReadCb cb,
+    HlsDataSourceProvider::ReadStatus::Or<std::unique_ptr<HlsDataSourceStream>>
+        result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (!result.has_value()) {
+    std::move(cb).Run(std::move(result).error().AddHere());
+    return;
+  }
+  auto stream = std::move(result).value();
+  origin_tainted_ |= stream->would_taint_origin();
+  total_stream_memory_ = stream->memory_usage();
+  std::move(cb).Run(std::move(stream));
+}
+
+HlsDataSourceProvider::ReadCb HlsManifestDemuxerEngine::BindStatsUpdate(
+    HlsDataSourceProvider::ReadCb cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  return base::BindOnce(&HlsManifestDemuxerEngine::UpdateHlsDataSourceStats,
+                        weak_factory_.GetWeakPtr(), std::move(cb));
+}
+
 void HlsManifestDemuxerEngine::ReadUntilExhausted(
     HlsDataSourceProvider::ReadCb cb,
     HlsDataSourceProvider::ReadStatus::Or<std::unique_ptr<HlsDataSourceStream>>
@@ -550,10 +586,11 @@ void HlsManifestDemuxerEngine::ReadManifest(const GURL& uri,
                                     "uri", uri);
   data_source_provider_
       .AsyncCall(&HlsDataSourceProvider::ReadFromCombinedUrlQueue)
-      .WithArgs(std::move(queue),
-                base::BindPostTaskToCurrentDefault(base::BindOnce(
-                    &HlsManifestDemuxerEngine::ReadUntilExhausted,
-                    weak_factory_.GetWeakPtr(), std::move(cb))));
+      .WithArgs(
+          std::move(queue),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &HlsManifestDemuxerEngine::ReadUntilExhausted,
+              weak_factory_.GetWeakPtr(), BindStatsUpdate(std::move(cb)))));
 }
 
 void HlsManifestDemuxerEngine::ReadMediaSegment(
@@ -585,8 +622,8 @@ void HlsManifestDemuxerEngine::ReadMediaSegment(
 
   data_source_provider_
       .AsyncCall(&HlsDataSourceProvider::ReadFromCombinedUrlQueue)
-      .WithArgs(std::move(queue),
-                base::BindPostTaskToCurrentDefault(std::move(cb)));
+      .WithArgs(std::move(queue), base::BindPostTaskToCurrentDefault(
+                                      BindStatsUpdate(std::move(cb))));
 }
 
 void HlsManifestDemuxerEngine::ReadStream(
@@ -600,8 +637,8 @@ void HlsManifestDemuxerEngine::ReadStream(
   }
   data_source_provider_
       .AsyncCall(&HlsDataSourceProvider::ReadFromExistingStream)
-      .WithArgs(std::move(stream),
-                base::BindPostTaskToCurrentDefault(std::move(cb)));
+      .WithArgs(std::move(stream), base::BindPostTaskToCurrentDefault(
+                                       BindStatsUpdate(std::move(cb))));
 }
 
 void HlsManifestDemuxerEngine::UpdateNetworkSpeed(uint64_t bps) {

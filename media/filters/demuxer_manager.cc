@@ -388,7 +388,9 @@ PipelineStatus DemuxerManager::CreateDemuxer(
   if (hls_fallback_ == HlsFallbackImplementation::kBuiltinHlsPlayer ||
       (base::FeatureList::IsEnabled(kBuiltInHlsPlayer) &&
        loaded_url_.path_piece().ends_with(".m3u8"))) {
-    SetDemuxer(CreateHlsDemuxer());
+    std::unique_ptr<Demuxer> demuxer;
+    std::tie(data_source_info_, demuxer) = CreateHlsDemuxer();
+    SetDemuxer(std::move(demuxer));
     return std::move(on_demuxer_created)
         .Run(demuxer_.get(), suspended_mode, /*is_streaming=*/false,
              /*is_static=*/false);
@@ -457,6 +459,7 @@ DataSource* DemuxerManager::GetDataSourceForTesting() const {
 
 void DemuxerManager::SetDataSource(std::unique_ptr<DataSource> data_source) {
   data_source_ = std::move(data_source);
+  data_source_info_ = data_source_.get();
 }
 
 void DemuxerManager::OnBufferingHaveEnough(bool enough) {
@@ -478,7 +481,7 @@ void DemuxerManager::StopAndResetClient() {
 }
 
 int64_t DemuxerManager::GetDataSourceMemoryUsage() {
-  return data_source_ ? data_source_->GetMemoryUsage() : 0;
+  return data_source_info_ ? data_source_info_->GetMemoryUsage() : 0;
 }
 
 void DemuxerManager::OnDataSourcePlaybackRateChange(double rate, bool paused) {
@@ -492,18 +495,26 @@ void DemuxerManager::OnDataSourcePlaybackRateChange(double rate, bool paused) {
 }
 
 bool DemuxerManager::WouldTaintOrigin() const {
-  if (hls_fallback_ != HlsFallbackImplementation::kNone) {
-    // HLS manifests might pull segments from a different origin. We can't know
-    // for sure, so we conservatively say yes here.
-    // TODO (crbug/1266991) We will be able to know for sure with the builtin
-    // player, when that's implemented.
-    return true;
+  switch (hls_fallback_) {
+    case HlsFallbackImplementation::kMediaPlayer: {
+      // HLS manifests might pull segments from a different origin. We can't
+      // know for sure, so we conservatively say yes here.
+      return true;
+    }
+    case HlsFallbackImplementation::kBuiltinHlsPlayer: {
+      CHECK(data_source_info_);
+      // TODO(crbug/40057824): return data_source_info_->WouldTaintOrigin();
+      // For now, we should continue to assume that tainting is always true with
+      // HLS content.
+      return true;
+    }
+    case HlsFallbackImplementation::kNone: {
+      // TODO(crbug/1377053): The default |false| value might have to be
+      // re-considered for MediaPlayerRenderer, but for now, leave behavior the
+      // same as it was.
+      return data_source_info_ ? data_source_info_->WouldTaintOrigin() : false;
+    }
   }
-
-  // TODO(crbug/1377053): The default |false| value might have to be
-  // re-considered for MediaPlayerRenderer, but for now, leave behavior the
-  // same as it was.
-  return data_source_ ? data_source_->WouldTaintOrigin() : false;
 }
 
 bool DemuxerManager::HasDataSource() const {
@@ -530,7 +541,7 @@ bool DemuxerManager::DataSourceFullyBuffered() const {
 }
 
 bool DemuxerManager::IsStreaming() const {
-  return (data_source_ && data_source_->IsStreaming()) ||
+  return (data_source_info_ && data_source_info_->IsStreaming()) ||
          (demuxer_ && !demuxer_->IsSeekable());
 }
 
@@ -593,15 +604,20 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-std::unique_ptr<Demuxer> DemuxerManager::CreateHlsDemuxer() {
+std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>
+DemuxerManager::CreateHlsDemuxer() {
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
-      client_->GetHlsDataSourceProvider(), media_task_runner_, loaded_url_,
-      media_log_.get());
-  return std::make_unique<ManifestDemuxer>(
-      media_task_runner_,
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &DemuxerManager::DemuxerRequestsSeek, weak_factory_.GetWeakPtr())),
-      std::move(engine), media_log_.get());
+      client_->GetHlsDataSourceProvider(), media_task_runner_,
+      data_source_info_->WouldTaintOrigin(), loaded_url_, media_log_.get());
+  raw_ptr<DataSourceInfo> datasource_info = engine.get();
+  return std::make_tuple(
+      datasource_info,
+      std::make_unique<ManifestDemuxer>(
+          media_task_runner_,
+          base::BindPostTaskToCurrentDefault(
+              base::BindRepeating(&DemuxerManager::DemuxerRequestsSeek,
+                                  weak_factory_.GetWeakPtr())),
+          std::move(engine), media_log_.get()));
 }
 #endif
 

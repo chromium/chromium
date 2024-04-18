@@ -42,6 +42,8 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
   void AbortPendingReads(base::OnceClosure cb) override;
 
  private:
+  void UpdateStreamMetadata(HlsDataSourceStream::StreamId,
+                            HlsDataSourceStream& stream);
   void OnDataSourceCreated(std::unique_ptr<HlsDataSourceStream> stream,
                            ReadCb callback,
                            std::unique_ptr<DataSource> data_source);
@@ -56,6 +58,8 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
 
   base::flat_map<HlsDataSourceStream::StreamId, std::unique_ptr<DataSource>>
       data_source_map_;
+
+  bool would_taint_origin_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -36,12 +36,16 @@ class MockHlsDataSourceProvider : public HlsDataSourceProvider {
 
 class StringHlsDataSourceStreamFactory {
  public:
-  static std::unique_ptr<HlsDataSourceStream> CreateStream(std::string content);
+  static std::unique_ptr<HlsDataSourceStream> CreateStream(
+      std::string content,
+      bool taint_origin = false);
 };
 
 class FileHlsDataSourceStreamFactory {
  public:
-  static std::unique_ptr<HlsDataSourceStream> CreateStream(std::string file);
+  static std::unique_ptr<HlsDataSourceStream> CreateStream(
+      std::string file,
+      bool taint_origin = false);
 };
 
 class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {

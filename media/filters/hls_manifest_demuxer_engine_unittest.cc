@@ -175,24 +175,28 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
   base::OnceClosure pending_url_fetch_;
 
   template <typename T>
-  void BindUrlToDataSource(std::string url, std::string value) {
+  void BindUrlToDataSource(std::string url,
+                           std::string value,
+                           bool taint_origin = false) {
     EXPECT_CALL(*mock_dsp_, ReadFromCombinedUrlQueue(
                                 SingleSegmentQueue(url, std::nullopt), _))
         .Times(1)
-        .WillOnce(RunOnceCallback<1>(T::CreateStream(value)));
+        .WillOnce(RunOnceCallback<1>(T::CreateStream(value, taint_origin)));
   }
 
   template <typename T>
-  void BindUrlAssignmentThunk(std::string url, std::string value) {
+  void BindUrlAssignmentThunk(std::string url,
+                              std::string value,
+                              bool taint_origin = false) {
     EXPECT_CALL(*mock_dsp_,
                 ReadFromCombinedUrlQueue(
                     SingleSegmentQueue(std::move(url), std::nullopt), _))
         .Times(1)
-        .WillOnce([this, value = std::move(value)](
+        .WillOnce([this, value = std::move(value), taint_origin = taint_origin](
                       HlsDataSourceProvider::SegmentQueue,
                       HlsDataSourceProvider::ReadCb cb) {
-          pending_url_fetch_ =
-              base::BindOnce(std::move(cb), T::CreateStream(std::move(value)));
+          pending_url_fetch_ = base::BindOnce(
+              std::move(cb), T::CreateStream(std::move(value), taint_origin));
         });
   }
 
@@ -316,7 +320,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 
     engine_ = std::make_unique<HlsManifestDemuxerEngine>(
         std::move(dsp), base::SingleThreadTaskRunner::GetCurrentDefault(),
-        GURL("http://media.example.com/manifest.m3u8"), media_log_.get());
+        false, GURL("http://media.example.com/manifest.m3u8"),
+        media_log_.get());
   }
 
   void InitializeEngine() {
@@ -809,6 +814,22 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamPropagatesOnce) {
   engine_->SetEndOfStream(false);
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestOriginTainting) {
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
+  EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist,
+      /*taint_origin=*/true);
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(engine_->WouldTaintOrigin());
 }
 
 }  // namespace media

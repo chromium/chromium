@@ -104,6 +104,18 @@ class MEDIA_EXPORT HlsDataSourceStream {
 
   const uint8_t* raw_data() const { return buffer_.data(); }
 
+  uint64_t memory_usage() const { return memory_usage_; }
+
+  bool would_taint_origin() const { return would_taint_origin_; }
+
+  // Allows the stream creator to update memory usage after the first or after
+  // subsequent reads.
+  void set_total_memory_usage(uint64_t usage) { memory_usage_ = usage; }
+
+  // A stream's origin is considered tainted if any backing data source involved
+  // in this playback is tainted.
+  void set_would_taint_origin() { would_taint_origin_ = true; }
+
   // Often the network data for HLS consists of plain-text manifest files, so
   // this supports accessing the fetched data as a string view.
   std::string_view AsString() const;
@@ -142,6 +154,14 @@ class MEDIA_EXPORT HlsDataSourceStream {
   // TODO(crbug/1266991): Consider swapping out the vector with a more
   // size-flexible data structure to avoid resizing.
   std::vector<uint8_t> buffer_;
+
+  // This is critical to security. Once set to true, it must _never_ be set back
+  // to false.
+  bool would_taint_origin_ = false;
+
+  // The memory usage represents the total memory usage for _all_ streams used
+  // in this playback.
+  uint64_t memory_usage_ = 0;
 
   size_t read_position_ = 0;
 

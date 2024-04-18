@@ -184,7 +184,8 @@ class MEDIA_EXPORT DemuxerManager {
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  std::unique_ptr<Demuxer> CreateHlsDemuxer();
+  std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>
+  CreateHlsDemuxer();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -245,6 +246,13 @@ class MEDIA_EXPORT DemuxerManager {
 
   // Holds whichever demuxer implementation is being used.
   std::unique_ptr<Demuxer> demuxer_;
+
+  // Refers to the owned object that can query information about a data source.
+  // For most playbacks, this is a raw ptr to `data_source_`, and so it is safe,
+  // since this class also owns that object. For HLS playback, this object is
+  // the HlsManifestDemuxerEngine, owned by `demuxer_`, so again, it is safe to
+  // keep a raw ptr here.
+  raw_ptr<DataSourceInfo> data_source_info_ = nullptr;
 
   // Holds an optional demuxer that can be passed in at time of creation,
   // which becomes the default demuxer to use.
