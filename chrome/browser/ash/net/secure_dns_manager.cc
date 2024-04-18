@@ -32,13 +32,6 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
-namespace {
-
-// A wildcard character to allow secure DNS automatic mode on any IP addresses.
-// TODO(b/333757554): Update to Shill D-Bus constant after M-125 branch cut.
-constexpr std::string_view kSecureDNSMatchAnyIPAddress = "*";
-
-}  // namespace
 
 SecureDnsManager::SecureDnsManager(PrefService* pref_service)
     : pref_service_(pref_service) {
@@ -112,8 +105,10 @@ base::Value::Dict SecureDnsManager::GetProviders(const std::string& mode,
   // wildcard character denoting that it matches any IP addresses. In automatic
   // upgrade mode, the corresponding name servers will be populated using the
   // applicable providers.
-  const auto addr =
-      mode == SecureDnsConfig::kModeSecure ? "" : kSecureDNSMatchAnyIPAddress;
+  const std::string_view addr =
+      mode == SecureDnsConfig::kModeSecure
+          ? ""
+          : shill::kDNSProxyDOHProvidersMatchAnyIPAddress;
   for (const auto& doh_template : base::SplitString(
            templates, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     doh_providers.Set(doh_template, addr);
