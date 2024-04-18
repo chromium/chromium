@@ -414,12 +414,6 @@ WebDevToolsAgentImpl* WebDevToolsAgentImpl::CreateForFrame(
   return MakeGarbageCollected<WebDevToolsAgentImpl>(frame, IsMainFrame(frame));
 }
 
-// static
-WebDevToolsAgentImpl* WebDevToolsAgentImpl::CreateForWorker(
-    WebLocalFrameImpl* frame) {
-  return MakeGarbageCollected<WebDevToolsAgentImpl>(frame, true);
-}
-
 WebDevToolsAgentImpl::WebDevToolsAgentImpl(
     WebLocalFrameImpl* web_local_frame_impl,
     bool include_view_agents)

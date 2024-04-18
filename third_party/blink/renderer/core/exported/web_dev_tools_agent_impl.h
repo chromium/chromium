@@ -63,7 +63,6 @@ class CORE_EXPORT WebDevToolsAgentImpl final
       private Thread::TaskObserver {
  public:
   static WebDevToolsAgentImpl* CreateForFrame(WebLocalFrameImpl*);
-  static WebDevToolsAgentImpl* CreateForWorker(WebLocalFrameImpl*);
 
   WebDevToolsAgentImpl(WebLocalFrameImpl*, bool include_view_agents);
   ~WebDevToolsAgentImpl() override;
