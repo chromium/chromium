@@ -231,7 +231,7 @@ class SidePanelContentSwappingContainer : public views::View {
       std::move(callback).Run(entry, std::move(content_view));
     } else {
       entry->CacheView(std::move(content_view));
-      loading_entry_ = entry;
+      loading_entry_ = entry->GetWeakPtr();
       loaded_callback_ = std::move(callback);
       content_proxy->SetAvailableCallback(
           base::BindOnce(&SidePanelContentSwappingContainer::RunLoadedCallback,
@@ -257,23 +257,23 @@ class SidePanelContentSwappingContainer : public views::View {
     show_immediately_for_testing_ = no_delays_for_testing;
   }
 
-  SidePanelEntry* loading_entry() const { return loading_entry_; }
+  SidePanelEntry* loading_entry() const {
+    return loading_entry_ ? loading_entry_.get() : nullptr;
+  }
 
  private:
   void RunLoadedCallback() {
     DCHECK(!loaded_callback_.is_null());
-    SidePanelEntry* entry = loading_entry_;
+    SidePanelEntry* entry = loading_entry_.get();
     loading_entry_ = nullptr;
     std::move(loaded_callback_).Run(entry, std::nullopt);
   }
 
   // When true, don't delay switching panels.
   bool show_immediately_for_testing_;
-  // If the SidePanelEntry is ever discarded by the SidePanelCoordinator then we
-  // are always either immediately switching to a different entry (where this
-  // value would be reset) or closing the side panel (where this would be
-  // destroyed).
-  raw_ptr<SidePanelEntry> loading_entry_ = nullptr;
+  // Use a weak pointer so that loading side panel entry can be reset
+  // automatically if the entry is destroyed.
+  base::WeakPtr<SidePanelEntry> loading_entry_ = nullptr;
   PopulateSidePanelCallback loaded_callback_;
 };
 
