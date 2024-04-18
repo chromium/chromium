@@ -399,7 +399,13 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     const std::vector<ui::AXEvent>& events) {
   // This updates the model, which may require us to start distillation based on
   // the `requires_distillation()` state below.
-  model_.AccessibilityEventReceived(tree_id, updates, events);
+  //
+  // Remove the const-ness of the data here so that subsequent methods can move
+  // the data.
+  model_.AccessibilityEventReceived(
+      tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
+      const_cast<std::vector<ui::AXEvent>&>(events));
+  // From this point onward, `updates` and `events` should not be accessed.
 
   if (tree_id != model_.active_tree_id()) {
     return;

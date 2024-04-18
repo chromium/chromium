@@ -104,7 +104,9 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   void AccessibilityEventReceived(
       const ui::AXTreeID& tree_id,
       const std::vector<ui::AXTreeUpdate>& updates) {
-    model_->AccessibilityEventReceived(tree_id, updates, {});
+    std::vector<ui::AXEvent> events;
+    model_->AccessibilityEventReceived(
+        tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates), events);
   }
 
   void set_active_tree_id(ui::AXTreeID tree_id) {

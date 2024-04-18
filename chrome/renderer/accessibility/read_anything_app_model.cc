@@ -470,11 +470,11 @@ bool ReadAnythingAppModel::IsDocs() const {
 
 void ReadAnythingAppModel::AddPendingUpdates(
     const ui::AXTreeID& tree_id,
-    const std::vector<ui::AXTreeUpdate>& updates) {
-  std::vector<ui::AXTreeUpdate> update = GetOrCreatePendingUpdateAt(tree_id);
-  update.insert(update.end(), std::make_move_iterator(updates.begin()),
-                std::make_move_iterator(updates.end()));
-  pending_updates_map_[tree_id] = update;
+    std::vector<ui::AXTreeUpdate>& updates) {
+  std::vector<ui::AXTreeUpdate>& update = pending_updates_map_[tree_id];
+  for (auto& item : updates) {
+    update.emplace_back(std::move(item));
+  }
 }
 
 void ReadAnythingAppModel::ClearPendingUpdates() {
@@ -496,7 +496,7 @@ void ReadAnythingAppModel::UnserializePendingUpdates(
 }
 
 void ReadAnythingAppModel::UnserializeUpdates(
-    const std::vector<ui::AXTreeUpdate>& updates,
+    std::vector<ui::AXTreeUpdate>& updates,
     const ui::AXTreeID& tree_id) {
   if (updates.empty()) {
     return;
@@ -529,8 +529,8 @@ void ReadAnythingAppModel::UnserializeUpdates(
 
 void ReadAnythingAppModel::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
-    const std::vector<ui::AXTreeUpdate>& updates,
-    const std::vector<ui::AXEvent>& events) {
+    std::vector<ui::AXTreeUpdate>& updates,
+    std::vector<ui::AXEvent>& events) {
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   // Create a new tree if an event is received for a tree that is not yet in
   // the tree list.
@@ -554,10 +554,10 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
       // ones.
       UnserializePendingUpdates(tree_id);
     }
-    UnserializeUpdates(std::move(updates), tree_id);
+    UnserializeUpdates(updates, tree_id);
     ProcessNonGeneratedEvents(events);
   } else {
-    UnserializeUpdates(std::move(updates), tree_id);
+    UnserializeUpdates(updates, tree_id);
   }
 }
 
@@ -677,15 +677,6 @@ bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
 bool ReadAnythingAppModel::NodeIsContentNode(
     const ui::AXNodeID& ax_node_id) const {
   return base::Contains(content_node_ids_, ax_node_id);
-}
-
-const std::vector<ui::AXTreeUpdate>&
-ReadAnythingAppModel::GetOrCreatePendingUpdateAt(const ui::AXTreeID& tree_id) {
-  if (!pending_updates_map_.contains(tree_id)) {
-    pending_updates_map_[tree_id] = std::vector<ui::AXTreeUpdate>();
-  }
-
-  return pending_updates_map_[tree_id];
 }
 
 double ReadAnythingAppModel::GetLetterSpacingValue(
