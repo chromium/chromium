@@ -12,6 +12,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/commerce/core:commerce_types",
+    "//components/commerce/core:shopping_service",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/commerce/model:shopping_service",
@@ -28,7 +29,11 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }
