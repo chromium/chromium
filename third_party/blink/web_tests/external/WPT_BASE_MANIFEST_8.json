@@ -133112,7 +133112,7 @@
        },
        "gap": {
         "masonry-gap-001.html": [
-         "673bbe40e41f6b35df2403330a8c76af625b2fbd",
+         "32265b5f8c1d97e7d781a2d453a5007bbac4fb01",
          [
           null,
           [
@@ -232880,7 +232880,7 @@
       ]
      ],
      "massive-element-below-and-on-top-of-viewport-partially-onscreen-old.html": [
-      "fbc8edadc025ed0fb3daee51b2e437accdf55ba6",
+      "b35222c24a8c06c48ddc9ec6485f689b5616bb7a",
       [
        null,
        [
@@ -232892,11 +232892,7 @@
        {
         "fuzzy": [
          [
-          [
-           "/css/css-view-transitions/massive-element-below-and-on-top-of-viewport-partially-onscreen-old.html",
-           "/css/css-view-transitions/massive-element-below-and-on-top-of-viewport-partially-onscreen-ref.html",
-           "=="
-          ],
+          null,
           [
            [
             0,
@@ -232904,7 +232900,7 @@
            ],
            [
             0,
-            330
+            700
            ]
           ]
          ]
@@ -233012,7 +233008,7 @@
       ]
      ],
      "massive-element-below-viewport-partially-onscreen-old.html": [
-      "c8c3c53082c4f13fa899c73ed5ba7a162cfc2f02",
+      "87b9a207956a2eebea49f37011ab31f8ae6b63f8",
       [
        null,
        [
@@ -233024,11 +233020,7 @@
        {
         "fuzzy": [
          [
-          [
-           "/css/css-view-transitions/massive-element-below-viewport-partially-onscreen-old.html",
-           "/css/css-view-transitions/massive-element-below-viewport-partially-onscreen-ref.html",
-           "=="
-          ],
+          null,
           [
            [
             0,
@@ -233036,7 +233028,7 @@
            ],
            [
             0,
-            445
+            1600
            ]
           ]
          ]
@@ -233342,7 +233334,7 @@
       ]
      ],
      "massive-element-right-and-left-of-viewport-partially-onscreen-old.html": [
-      "e8eeec3f26041a9f3d619ba31a55ad4eada7c3aa",
+      "ea10e2471bb3c574d66ea02cca5a1b2d3884ff04",
       [
        null,
        [
@@ -233354,11 +233346,7 @@
        {
         "fuzzy": [
          [
-          [
-           "/css/css-view-transitions/massive-element-right-and-left-of-viewport-partially-onscreen-old.html",
-           "/css/css-view-transitions/massive-element-right-and-left-of-viewport-partially-onscreen-ref.html",
-           "=="
-          ],
+          null,
           [
            [
             0,
@@ -233366,7 +233354,7 @@
            ],
            [
             0,
-            330
+            700
            ]
           ]
          ]
@@ -233718,7 +233706,7 @@
       ]
      ],
      "new-content-captures-spans.html": [
-      "94bef1d6dd7512b84b334a87baa2fa83f656d623",
+      "5f4807404c7e32a79bc4d6c50cc5cd96332f9af7",
       [
        null,
        [
@@ -233727,7 +233715,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            400
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "new-content-changes-overflow-left.html": [
@@ -234620,6 +234624,19 @@
        {}
       ]
      ],
+     "pseudo-element-preserve-3d.html": [
+      "474f743e1c50ac0dacf15980cc75a08e5bf9303f",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-element-preserve-3d-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "pseudo-rendering-invalidation.html": [
       "e1f17186183dd64c8adc32086ee9a9a655c60cb5",
       [
@@ -234882,7 +234899,7 @@
       ]
      ],
      "root-scrollbar-with-fixed-background.html": [
-      "2fa0132727e7e64ed4189affa9b4043321e2d893",
+      "3c3429412bf309be9181f5f4f2d75019b80a2dbf",
       [
        null,
        [
@@ -234891,7 +234908,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            4500
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "root-style-change-during-animation.html": [
@@ -234947,7 +234980,7 @@
       ]
      ],
      "rotated-cat-off-top-edge.html": [
-      "c7179b7a011ee31e1121df2149de89bc451a89aa",
+      "f61b916caa53c076d843851da6a859d2069889a3",
       [
        null,
        [
@@ -234959,19 +234992,15 @@
        {
         "fuzzy": [
          [
-          [
-           "/css/css-view-transitions/rotated-cat-off-top-edge.html",
-           "/css/css-view-transitions/rotated-cat-off-top-edge-ref.html",
-           "=="
-          ],
+          null,
           [
            [
             0,
-            5
+            70
            ],
            [
             0,
-            1500
+            22000
            ]
           ]
          ]
@@ -320035,7 +320064,7 @@
        },
        "gap": {
         "masonry-gap-001-ref.html": [
-         "031629e926bf103fc3700e01a864c341de8bd44d",
+         "94072de3d6b991824ceafb73c1a9d6fe3cc5ba38",
          []
         ]
        },
@@ -320173,11 +320202,11 @@
          []
         ],
         "masonry-track-sizing-overflow-left-side-ref.html": [
-         "5a31517183244d714a18e48bec3e65d890a5434d",
+         "3e973b7fe712ed41c05a2f6929683c4de31d2a6f",
          []
         ],
         "masonry-track-sizing-overflow-right-side-ref.html": [
-         "51e657e2a4292fa97bd2617114509a6bd0ba48d7",
+         "eb84b2e6bd0406fdb9f4d5c9cbc891f81a042ca2",
          []
         ],
         "masonry-track-sizing-span-row-ref.html": [
@@ -340377,6 +340406,10 @@
      ],
      "old-root-vertical-writing-mode-ref.html": [
       "2927b468d08d452afc6a66267bf9786a6b00498e",
+      []
+     ],
+     "pseudo-element-preserve-3d-ref.html": [
+      "1eefed24b3c0d10b2d073958a6da9963f793f53d",
       []
      ],
      "pseudo-rendering-invalidation-ref.html": [
@@ -476975,7 +477008,7 @@
        ]
       ],
       "offset-rotate-interpolation.html": [
-       "55845108ebf5f3c42a8b0532121199136160d695",
+       "10c337244f5f5d393d5a7f55387114efbcf3209b",
        [
         null,
         {}
@@ -580853,7 +580886,7 @@
        ]
       ],
       "popover-light-dismiss.html": [
-       "e0e006e27c4b8a48c6b69ffed542ff67788ae930",
+       "1317b623c87ce6e13fadd47ea8a9705f94e3c46f",
        [
         null,
         {
@@ -676851,7 +676884,7 @@
       ]
      ],
      "instanceNormalization.https.any.js": [
-      "bdd338588fb7d4c4c660f4a7e0e6346868d35b4f",
+      "4fc26ec5ae65113cd07f08d754c24e527aefb96f",
       [
        "webnn/validation_tests/instanceNormalization.https.any.html",
        {

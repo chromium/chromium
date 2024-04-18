@@ -7206,7 +7206,7 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 [ Mac14 ] webexposed/global-interface-listing.html [ Skip Timeout ]
 
 # 2024-04-18 Flaky Suppressor on ci/mac-osxbeta-rel
-[ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/reduction.https.any.html [ Timeout Pass ]
+[ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/reduction.https.any.html [ Pass Timeout ]
 
 # Branch Gardener 2024-03-20
 crbug.com/330547706 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]

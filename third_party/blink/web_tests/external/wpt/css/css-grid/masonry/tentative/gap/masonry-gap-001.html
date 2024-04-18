@@ -17,7 +17,7 @@ html,body {
 grid {
   display: inline-grid;
   gap: 10px 20px;
-  grid-template-columns:  repeat(4,auto);
+  grid-template-columns: repeat(4,auto);
   grid-template-rows: masonry;
   color: #444;
   border: 1px solid;
@@ -36,10 +36,8 @@ item {
 <body>
 
 <grid>
-  <item>1</item>
-  <item style="padding:0">2</item>
-  <item>3</item>
-  <item>4</item>
-  <item>5</item>
-  <item>6</item>
+  <item style="grid-column: 1;">1</item>
+  <item style="padding:0; grid-column: 2;">2</item>
+  <item style="grid-column: 3;">3</item>
+  <item style="grid-column: 4;">4</item>
 </grid>
