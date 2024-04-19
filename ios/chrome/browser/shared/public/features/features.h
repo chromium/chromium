@@ -607,4 +607,10 @@ BASE_DECLARE_FEATURE(kDisableFullscreenScrolling);
 // The Pinned Tabs feature is fully enabled on iPhone and disabled on iPad.
 bool IsPinnedTabsEnabled();
 
+// Feature flag to prefetch system capabilities on first run.
+BASE_DECLARE_FEATURE(kPrefetchSystemCapabilitiesOnFirstRun);
+
+// Returns true if the system capabilities are prefetched on first run.
+bool IsPrefetchingSystemCapabilitiesOnFirstRun();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

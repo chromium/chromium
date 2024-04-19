@@ -13,12 +13,15 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
@@ -150,6 +153,24 @@
 
 #pragma mark - internal
 
+// Pre-fetches system capabilities so that they can be cached for later usages.
+- (void)prefetchFirstRunCapabilities {
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.mainBrowser->GetBrowserState());
+  NSArray<id<SystemIdentity>>* identities =
+      accountManagerService->GetAllIdentities();
+
+  for (id<SystemIdentity> identity : identities) {
+    GetApplicationContext()
+        ->GetSystemIdentityManager()
+        ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
+            identity, base::BindOnce(^(SystemIdentityCapabilityResult result){
+                          // Ignore the capability result.
+                      }));
+  }
+}
+
 - (void)showFirstRunUI {
   DCHECK(self.appState.initStage == InitStageFirstRun);
 
@@ -161,6 +182,9 @@
   DCHECK(!_firstRunUIBlocker);
   _firstRunUIBlocker =
       std::make_unique<ScopedUIBlocker>(self.presentingSceneState);
+  if (IsPrefetchingSystemCapabilitiesOnFirstRun()) {
+    [self prefetchFirstRunCapabilities];
+  }
 
   FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc]
       initForBrowserState:self.mainBrowser->GetBrowserState()];

@@ -765,3 +765,11 @@ BASE_FEATURE(kDisableFullscreenScrolling,
 bool IsPinnedTabsEnabled() {
   return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }
+
+BASE_FEATURE(kPrefetchSystemCapabilitiesOnFirstRun,
+             "PrefetchSystemCapabilitiesOnFirstRun",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPrefetchingSystemCapabilitiesOnFirstRun() {
+  return base::FeatureList::IsEnabled(kPrefetchSystemCapabilitiesOnFirstRun);
+}
