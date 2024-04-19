@@ -40,3 +40,12 @@ include_rules = [
   # Dependencies outside of //chrome:
   "+ui/message_center",
 ]
+
+specific_include_rules = {
+  ".*multi_capture_notifications_unittest\.cc": [
+    "+chrome/browser/ash/crosapi/crosapi_ash.h",
+    "+chrome/browser/ash/crosapi/multi_capture_service_ash.h",
+    "+chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h",
+    "+chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h",
+  ],
+}

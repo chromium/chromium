@@ -87,7 +87,9 @@ void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
                                     const GURL& url,
                                     base::OnceCallback<void(bool)> callback);
 
-bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context);
+void CheckGetAllScreensMediaAllowedForAnyOrigin(
+    content::BrowserContext* context,
+    base::OnceCallback<void(bool)> callback);
 
 #if !BUILDFLAG(IS_ANDROID)
 bool IsTransientActivationRequiredForGetDisplayMedia(

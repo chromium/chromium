@@ -61,7 +61,7 @@
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -721,6 +721,15 @@ void ManagementUIHandler::RegisterMessages() {
       "initBrowserReportingInfo",
       base::BindRepeating(&ManagementUIHandler::HandleInitBrowserReportingInfo,
                           base::Unretained(this)));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
+      Profile::FromWebUI(web_ui()),
+      base::BindOnce(
+          &ManagementUIHandler::
+              CheckGetAllScreensMediaAllowedForAnyOriginResultReceived,
+          weak_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ManagementUIHandler::OnJavascriptAllowed() {
@@ -1107,12 +1116,12 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
                                   kManagementOnPageVisitedVisibleData, &info);
   }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  if (capture_policy::IsGetAllScreensMediaAllowedForAnySite(profile)) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (is_get_all_screens_media_allowed_for_any_origin_) {
     AddThreatProtectionPermission(kManagementScreenCaptureEvent,
                                   kManagementScreenCaptureData, &info);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const std::string enterprise_manager =
       connectors_service->GetManagementDomain();
@@ -1323,9 +1332,17 @@ void ManagementUIHandler::OnGotDeviceReportSources(
   report_sources_ = std::move(report_sources);
   plugin_vm_data_collection_enabled_ = plugin_vm_data_collection_enabled;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+void ManagementUIHandler::
+    CheckGetAllScreensMediaAllowedForAnyOriginResultReceived(bool is_allowed) {
+  is_get_all_screens_media_allowed_for_any_origin_ = is_allowed;
+  if (IsJavascriptAllowed()) {
+    NotifyThreatProtectionInfoUpdated();
+  }
+}
+
 void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());

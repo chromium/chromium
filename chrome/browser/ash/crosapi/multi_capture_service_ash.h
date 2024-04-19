@@ -36,6 +36,8 @@ class MultiCaptureServiceAsh : public mojom::MultiCaptureService {
   void MultiCaptureStopped(const std::string& label) override;
   void IsMultiCaptureAllowed(const GURL& origin,
                              IsMultiCaptureAllowedCallback callback) override;
+  void IsMultiCaptureAllowedForAnyOriginOnMainProfile(
+      IsMultiCaptureAllowedForAnyOriginOnMainProfileCallback callback) override;
 
  private:
   ash::MultiCaptureServiceClient* GetMultiCaptureClient();

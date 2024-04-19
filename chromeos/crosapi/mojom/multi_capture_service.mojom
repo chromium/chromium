@@ -9,8 +9,8 @@ import "url/mojom/url.mojom";
 // Interacts with the media capture API. Implemented in ash-chrome. This
 // interface is used to show multi capture related usage indicators and
 // notifications.
-// Next version: 3
-// Next method id: 4
+// Next version: 4
+// Next method id: 5
 [Stable, Uuid="6ea59fc6-65e0-11ed-a200-7be727846002"]
 interface MultiCaptureService {
   // Called when a new multi capture (identified by a unique label
@@ -35,5 +35,10 @@ interface MultiCaptureService {
 
   // Checks whether a multi capture call is allowed from a certain origin.
   [MinVersion=2] IsMultiCaptureAllowed@3(url.mojom.Url url)
+    => (bool is_allowed);
+
+  // Checks whether any origin is permitted to perform multi screen capture
+  // for the main profile.
+  [MinVersion=3] IsMultiCaptureAllowedForAnyOriginOnMainProfile@4()
     => (bool is_allowed);
 };

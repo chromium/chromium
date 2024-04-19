@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -58,7 +59,53 @@ namespace {
 crosapi::mojom::MultiCaptureService* g_multi_capture_service_for_testing =
     nullptr;
 
-void IsGetAllScreensMediaAllowedForIwaResultReceived(
+void IsMultiCaptureAllowedForAnyOriginOnMainProfileResultReceived(
+    base::OnceCallback<void(bool)> callback,
+    content::BrowserContext* context,
+    bool is_multi_capture_allowed_for_any_origin_on_main_profile) {
+  // If the new MultiScreenCaptureAllowedForUrls policy permits access, exit
+  // early. If not, check the legacy
+  // GetDisplayMediaSetSelectAllScreensAllowedForUrls policy.
+  if (is_multi_capture_allowed_for_any_origin_on_main_profile) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // TODO(b/329064666): Remove the checks below once the pivot to IWAs is
+  // complete.
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // To ensure that a user is informed at login time that capturing of all
+  // screens can happen (for privacy reasons), this API is only available on
+  // primary profiles.
+  if (!profile->IsMainProfile()) {
+    std::move(callback).Run(false);
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!host_content_settings_map) {
+    std::move(callback).Run(false);
+    return;
+  }
+  ContentSettingsForOneType content_settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::ALL_SCREEN_CAPTURE);
+  std::move(callback).Run(base::ranges::any_of(
+      content_settings, [](const ContentSettingPatternSource& source) {
+        return source.GetContentSetting() ==
+               ContentSetting::CONTENT_SETTING_ALLOW;
+      }));
+}
+
+void CheckAllScreensMediaAllowedForIwaResultReceived(
     base::OnceCallback<void(bool)> callback,
     const GURL& url,
     content::BrowserContext* context,
@@ -124,7 +171,7 @@ struct RestrictedCapturePolicy {
 void SetMultiCaptureServiceForTesting(
     crosapi::mojom::MultiCaptureService* service) {
   CHECK_IS_TEST();
-  CHECK(!g_multi_capture_service_for_testing);
+  CHECK(!service || !g_multi_capture_service_for_testing);
   g_multi_capture_service_for_testing = service;
 }
 
@@ -240,54 +287,25 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
-// TODO(b/40272166): Implement for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::MultiScreenCapturePolicyService* multi_capture_policy_service =
-      policy::MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(
-          context);
-  if (!multi_capture_policy_service) {
-    return false;
-  }
-
-  if (multi_capture_policy_service->GetAllowListSize() > 0u) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// TODO(b/329064666): Remove the checks below once the pivot to IWAs is
-// complete.
+void CheckGetAllScreensMediaAllowedForAnyOrigin(
+    content::BrowserContext* context,
+    base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(IS_CHROMEOS)
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile) {
-    return false;
+  if (crosapi::mojom::MultiCaptureService* multi_capture_service =
+          GetMultiCaptureService()) {
+    multi_capture_service->IsMultiCaptureAllowedForAnyOriginOnMainProfile(
+        base::BindOnce(
+            IsMultiCaptureAllowedForAnyOriginOnMainProfileResultReceived,
+            std::move(callback), context));
+  } else {
+    // If the multi capture service is not available with the required version,
+    // fall back to the original flow using the deprecated policy.
+    IsMultiCaptureAllowedForAnyOriginOnMainProfileResultReceived(
+        std::move(callback), context, /*result=*/false);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // To ensure that a user is informed at login time that capturing of all
-  // screens can happen (for privacy reasons), this API is only available on
-  // primary profiles.
-  if (!profile->IsMainProfile()) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  if (!host_content_settings_map) {
-    return false;
-  }
-  ContentSettingsForOneType content_settings =
-      host_content_settings_map->GetSettingsForOneType(
-          ContentSettingsType::ALL_SCREEN_CAPTURE);
-  return base::ranges::any_of(content_settings,
-                              [](const ContentSettingPatternSource& source) {
-                                return source.GetContentSetting() ==
-                                       ContentSetting::CONTENT_SETTING_ALLOW;
-                              });
 #else
-  return false;
-#endif
+  std::move(callback).Run(false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
@@ -313,12 +331,12 @@ void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
       GetMultiCaptureService();
   if (multi_capture_service) {
     multi_capture_service->IsMultiCaptureAllowed(
-        url, base::BindOnce(&IsGetAllScreensMediaAllowedForIwaResultReceived,
+        url, base::BindOnce(&CheckAllScreensMediaAllowedForIwaResultReceived,
                             std::move(callback), std::move(url), context));
   } else {
     // If the multi capture service is not available with the required version,
     // fall back to the original flow using the deprecated policy.
-    IsGetAllScreensMediaAllowedForIwaResultReceived(
+    CheckAllScreensMediaAllowedForIwaResultReceived(
         std::move(callback), std::move(url), context, /*result=*/false);
   }
 #else

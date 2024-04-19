@@ -52,46 +52,6 @@ constexpr char kNotifierMultiCaptureOnLogin[] = "ash.multi_capture_on_login";
 
 constexpr base::TimeDelta kMinimumNotificationPresenceTime = base::Seconds(6);
 
-std::optional<bool> g_is_multi_capture_allowed_for_testing;
-
-// This function makes sure that on login all data required to check whether a
-// notification is needed is propagated from the policy to the
-// ManagedAccessToGetAllScreensMediaInSessionAllowedForUrls pref.
-void TransferGetAllScreensMediaPolicyValue(
-    content::BrowserContext* browser_context) {
-  DCHECK(browser_context);
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  PrefService* pref_service = profile->GetPrefs();
-  if (!pref_service) {
-    return;
-  }
-  const base::Value::List& allowed_origins = pref_service->GetList(
-      capture_policy::kManagedAccessToGetAllScreensMediaAllowedForUrls);
-  pref_service->SetList(
-      prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls,
-      allowed_origins.Clone());
-}
-
-bool IsMultiCaptureAllowed() {
-  if (g_is_multi_capture_allowed_for_testing) {
-    return *g_is_multi_capture_allowed_for_testing;
-  }
-
-  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
-  if (!active_user) {
-    return false;
-  }
-  content::BrowserContext* browser_context =
-      BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
-  if (!browser_context) {
-    return false;
-  }
-
-  TransferGetAllScreensMediaPolicyValue(browser_context);
-
-  return capture_policy::IsGetAllScreensMediaAllowedForAnySite(browser_context);
-}
-
 void CreateAndShowNotification(
     const std::string& notifier_id,
     const std::string& notification_id,
@@ -129,6 +89,43 @@ void MaybeShowLoginNotification(bool is_multi_capture_allowed) {
       l10n_util::GetStringUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_ON_LOGIN_TITLE),
       l10n_util::GetStringUTF16(
           IDS_MULTI_CAPTURE_NOTIFICATION_ON_LOGIN_MESSAGE));
+}
+
+// This function makes sure that on login all data required to check whether a
+// notification is needed is propagated from the policy to the
+// ManagedAccessToGetAllScreensMediaInSessionAllowedForUrls pref.
+void TransferGetAllScreensMediaPolicyValue(
+    content::BrowserContext* browser_context) {
+  DCHECK(browser_context);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  PrefService* pref_service = profile->GetPrefs();
+  if (!pref_service) {
+    return;
+  }
+  const base::Value::List& allowed_origins = pref_service->GetList(
+      capture_policy::kManagedAccessToGetAllScreensMediaAllowedForUrls);
+  pref_service->SetList(
+      prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls,
+      allowed_origins.Clone());
+}
+
+void ShowLoginNotificationIfMultiCaptureAllowed() {
+  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
+  if (!active_user) {
+    return;
+  }
+
+  content::BrowserContext* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
+  if (!browser_context) {
+    return;
+  }
+
+  // TODO(b/329064666): Remove this function once the pivot to IWAs is complete.
+  TransferGetAllScreensMediaPolicyValue(browser_context);
+
+  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
+      browser_context, base::BindOnce(&MaybeShowLoginNotification));
 }
 
 }  // namespace
@@ -211,8 +208,7 @@ void MultiCaptureNotifications::LoggedInStateChanged() {
     }
 
     active_user->AddProfileCreatedObserver(
-        base::BindOnce(&IsMultiCaptureAllowed)
-            .Then(base::BindOnce(&MaybeShowLoginNotification)));
+        base::BindOnce(&ShowLoginNotificationIfMultiCaptureAllowed));
   }
 }
 
@@ -238,10 +234,6 @@ void MultiCaptureNotifications::MultiCaptureStartedInternal(
       /*notification_message=*/
       l10n_util::GetStringFUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_MESSAGE,
                                  converted_app_name));
-}
-
-void SetIsMultiCaptureAllowedForTesting(bool is_multi_capture_allowed) {
-  g_is_multi_capture_allowed_for_testing = is_multi_capture_allowed;
 }
 
 }  // namespace ash

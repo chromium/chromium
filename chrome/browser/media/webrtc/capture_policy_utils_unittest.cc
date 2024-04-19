@@ -363,8 +363,11 @@ TEST_P(MultiCaptureTest, IsMultiCaptureAllowedBasedOnPolicy) {
 }
 
 TEST_P(MultiCaptureTest, IsMultiCaptureAllowedForAnyUrl) {
-  EXPECT_EQ(ExpectedIsMultiCaptureAllowedForAnyUrl(),
-            capture_policy::IsGetAllScreensMediaAllowedForAnySite(profile()));
+  base::test::TestFuture<bool> future;
+  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
+      profile(), future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(ExpectedIsMultiCaptureAllowedForAnyUrl(), future.Get<bool>());
 }
 
 INSTANTIATE_TEST_SUITE_P(

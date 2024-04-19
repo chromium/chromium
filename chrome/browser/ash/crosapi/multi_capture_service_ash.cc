@@ -81,4 +81,15 @@ void MultiCaptureServiceAsh::IsMultiCaptureAllowed(
       multi_capture_policy_service->IsMultiScreenCaptureAllowed(url));
 }
 
+void MultiCaptureServiceAsh::IsMultiCaptureAllowedForAnyOriginOnMainProfile(
+    IsMultiCaptureAllowedForAnyOriginOnMainProfileCallback callback) {
+  auto* context = ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+      user_manager::UserManager::Get()->GetPrimaryUser());
+  policy::MultiScreenCapturePolicyService* multi_capture_policy_service =
+      policy::MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(
+          context);
+  std::move(callback).Run(multi_capture_policy_service &&
+                          multi_capture_policy_service->GetAllowListSize() > 0);
+}
+
 }  // namespace crosapi

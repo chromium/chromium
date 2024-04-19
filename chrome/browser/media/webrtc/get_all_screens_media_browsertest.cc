@@ -203,6 +203,10 @@ class MockMultiCaptureService : public crosapi::mojom::MultiCaptureService {
               IsMultiCaptureAllowed,
               (const GURL& url, IsMultiCaptureAllowedCallback),
               (override));
+  MOCK_METHOD(void,
+              IsMultiCaptureAllowedForAnyOriginOnMainProfile,
+              (IsMultiCaptureAllowedForAnyOriginOnMainProfileCallback),
+              (override));
 
  private:
   mojo::ReceiverSet<crosapi::mojom::MultiCaptureService> receivers_;
