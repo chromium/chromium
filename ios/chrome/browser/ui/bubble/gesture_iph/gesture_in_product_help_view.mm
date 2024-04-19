@@ -608,11 +608,19 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
           }
           completion:^(BOOL completed) {
             [previousBubbleView removeFromSuperview];
-            [weakSelf setInitialBubbleViewWithDirection:GetOppositeDirection(
-                                                            previousBubbleView
-                                                                .direction)
-                                           boundingSize:weakSelf.frame.size];
-            [weakSelf startAnimation];
+            if (completed) {
+              [weakSelf setInitialBubbleViewWithDirection:GetOppositeDirection(
+                                                              previousBubbleView
+                                                                  .direction)
+                                             boundingSize:weakSelf.frame.size];
+              [weakSelf startAnimation];
+            } else {
+              // This will be most likely caused by that the view has been
+              // dismissed during animation, but in case it's not, dismiss the
+              // view. If the view has already been dismissed, this call does
+              // nothing.
+              [weakSelf dismissWithReason:IPHDismissalReasonType::kUnknown];
+            }
           }];
     } else {
       [self startAnimation];
