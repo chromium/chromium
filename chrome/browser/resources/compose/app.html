@@ -199,7 +199,7 @@
     border-bottom: solid 1px var(--color-compose-dialog-divider);
   }
 
-  :host(:not([enable-ui-refinements])) :host([loading-indicator-shown_]) #body {
+  :host(:not([enable-ui-refinements])[loading-indicator-shown_]) #body {
     /* When loading, the heights of contents within #body are in flux due to
     * animations. Force the entire #body to be visible to prevent scrollbars
     * from flickering, and remove scrollbar width from padding. */
