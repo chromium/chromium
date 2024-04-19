@@ -66,9 +66,6 @@ class COMPOSITOR_EXPORT LayerAnimationDelegate {
   virtual cc::Layer* GetCcLayer() const = 0;
   virtual LayerAnimatorCollection* GetLayerAnimatorCollection() = 0;
   virtual LayerThreadedAnimationDelegate* GetThreadedAnimationDelegate() = 0;
-  // Returns std::nullopt if the frame number is not available, e.g. when
-  // Layer is not attached to a Compositor. Otherwise, returns the frame number.
-  virtual std::optional<int> GetFrameNumber() const = 0;
   virtual float GetRefreshRate() const = 0;
 
  protected:

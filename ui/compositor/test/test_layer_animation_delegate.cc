@@ -51,11 +51,6 @@ void TestLayerAnimationDelegate::ExpectLastPropertyChangeReason(
   last_property_change_reason_is_set_ = false;
 }
 
-void TestLayerAnimationDelegate::SetFrameNumber(
-    std::optional<int> frame_number) {
-  frame_number_ = frame_number;
-}
-
 void TestLayerAnimationDelegate::SetBoundsFromAnimation(
     const gfx::Rect& bounds,
     PropertyChangeReason reason) {
@@ -201,10 +196,6 @@ cc::Layer* TestLayerAnimationDelegate::GetCcLayer() const {
 LayerThreadedAnimationDelegate*
 TestLayerAnimationDelegate::GetThreadedAnimationDelegate() {
   return &threaded_delegate_;
-}
-
-std::optional<int> TestLayerAnimationDelegate::GetFrameNumber() const {
-  return frame_number_;
 }
 
 float TestLayerAnimationDelegate::GetRefreshRate() const {

@@ -17,7 +17,6 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
-#include "ash/public/cpp/fps_counter.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -213,7 +212,6 @@ class SplitViewControllerTest : public AshTestBase {
     // mode.
     base::RunLoop().RunUntilIdle();
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-    FpsCounter::SetForceReportZeroAnimationForTest(true);
     ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         true);
   }
@@ -221,7 +219,6 @@ class SplitViewControllerTest : public AshTestBase {
   void TearDown() override {
     ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
-    FpsCounter::SetForceReportZeroAnimationForTest(false);
     trace_names_.clear();
     AshTestBase::TearDown();
   }
