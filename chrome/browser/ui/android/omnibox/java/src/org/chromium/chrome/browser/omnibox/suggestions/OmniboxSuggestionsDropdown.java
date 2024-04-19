@@ -324,6 +324,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         for (int i = 0; i < childCount; i++) {
             getChildAt(i).setTranslationY(translation);
         }
+        invalidateItemDecorations();
     }
 
     @Override

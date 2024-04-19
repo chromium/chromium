@@ -4,17 +4,13 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.Region.Op;
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -89,21 +85,12 @@ public class SuggestionHorizontalDividerTest {
     @Test
     @SmallTest
     public void testDraw() {
-        MarginLayoutParams layoutParams = new MarginLayoutParams(100, 30);
-        layoutParams.leftMargin = 13;
-        layoutParams.rightMargin = 17;
-        doReturn(new RecyclerView.LayoutParams(layoutParams))
-                .when(mChildViewWithDivider)
-                .getLayoutParams();
-        doAnswer(
-                        (invocation -> {
-                            ((Rect) invocation.getArgument(1)).set(0, 0, 100, 30);
-                            return null;
-                        }))
-                .when(mRecyclerView)
-                .getDecoratedBoundsWithMargins(any(View.class), any(Rect.class));
+        doReturn(8.0f).when(mChildViewWithDivider).getX();
+        doReturn(92).when(mChildViewWithDivider).getWidth();
+        doReturn(10.0f).when(mChildViewWithDivider).getY();
+        doReturn(30).when(mChildViewWithDivider).getHeight();
 
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
-        verify(mCanvas).clipRect(13, 29, 100 - 17, 30, Op.DIFFERENCE);
+        verify(mCanvas).clipRect(8, 40 - 1, 100, 40, Op.DIFFERENCE);
     }
 }
