@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -2633,6 +2634,22 @@ public class StripLayoutHelperTest {
                 expectedEndWidth,
                 groupTitle.getBottomIndicatorWidth(),
                 0.5f);
+    }
+
+    @Test
+    public void testFolioAttached_ReattachAnimationSkipped_TabGroupIndicators() {
+        // Arrange
+        int tabCount = 6;
+        initializeTest(false, false, false, 0, tabCount);
+        groupTabs(0, 2);
+        StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
+
+        // Start and stop reorder mode for tab drop.
+        stripLayoutHelperSpy.startReorderModeForTabDrop(10.f);
+        stripLayoutHelperSpy.stopReorderModeForTesting();
+
+        // Verify: folio reattachment animation does not run for tab drop.
+        verify(stripLayoutHelperSpy, never()).updateTabAttachState(any(), eq(true), notNull());
     }
 
     private float calculateExpectedBottomIndicatorWidth(

@@ -3172,7 +3172,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         return tab == mStripTabsVisuallyOrdered[mStripTabsVisuallyOrdered.length - 1];
     }
 
-    private void updateTabAttachState(
+    @VisibleForTesting
+    void updateTabAttachState(
             StripLayoutTab tab, boolean attached, ArrayList<Animator> animationList) {
         float startValue =
                 attached ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
@@ -3374,7 +3375,12 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // 5. Reattach the folio container to the toolbar.
         if (mInteractingTab != null) {
             mInteractingTab.setIsReordering(false);
-            updateTabAttachState(mInteractingTab, true, animationList);
+
+            // Skip reattachment for tab drop to avoid exposing bottom indicator underneath the tab
+            // container.
+            if (!mReorderingForTabDrop || !mInteractingTab.getFolioAttached()) {
+                updateTabAttachState(mInteractingTab, true, animationList);
+            }
         }
 
         // 6. Reset the tab drop state. Must occur after the rest of the state is reset, since some
@@ -3591,8 +3597,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 .start();
     }
 
-    // TODO(crbug.com/332780745): Remove tab container detachment for tab drop in Tab Group
-    // Indicators.
     private void setBackgroundTabContainerVisible(StripLayoutTab tab, boolean visible) {
         if (mReorderingForTabDrop || tab != mInteractingTab) {
             float opacity = visible ? TAB_OPACITY_VISIBLE_BACKGROUND : TAB_OPACITY_HIDDEN;
