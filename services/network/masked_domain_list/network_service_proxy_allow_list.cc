@@ -69,8 +69,8 @@ bool NetworkServiceProxyAllowList::Matches(
   switch (proxy_bypass_policy_) {
     case network::mojom::IpProtectionProxyBypassPolicy::kNone:
     case network::mojom::IpProtectionProxyBypassPolicy::kExclusionList: {
-      return url_matcher_with_bypass_.Matches(request_url, top_frame_site, true)
-          .matches;
+      return url_matcher_with_bypass_.Matches(request_url, top_frame_site,
+                                              /*skip_bypass_check=*/true);
     }
     case network::mojom::IpProtectionProxyBypassPolicy::
         kFirstPartyToTopLevelFrame: {
@@ -101,11 +101,8 @@ bool NetworkServiceProxyAllowList::Matches(
       // If the NAK is transient (has a nonce and/or top_frame_origin is
       // opaque), we should skip the first party check and match only on the
       // request_url.
-      UrlMatcherWithBypass::MatchResult result =
-          url_matcher_with_bypass_.Matches(
-              request_url, top_frame_site,
-              network_anonymization_key.IsTransient());
-      return result.matches && result.is_third_party;
+      return url_matcher_with_bypass_.Matches(
+          request_url, top_frame_site, network_anonymization_key.IsTransient());
     }
   }
 }

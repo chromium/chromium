@@ -29,26 +29,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
   // match on them. If false, `Matches` will always return false.
   bool IsPopulated();
 
-  // TODO(aakallam): Refactor this to not rely on concept of "third party"
-  struct MatchResult {
-    // Whether a resource URL matches the list.
-    bool matches = false;
-    // Whether a resource is requested in a first or third-party context.
-    bool is_third_party = false;
-
-    bool operator==(const MatchResult& rhs) const {
-      return matches == rhs.matches && is_third_party == rhs.is_third_party;
-    }
-  };
-
   // Determines if the pair of URLs are a match by first trying to match on the
-  // resource_url and then checking if the top_frame_site matches the bypass
-  // match rules. If skip_bypass_check is true, the top_frame_site will not be
-  // used to determine the outcome of the match.
-  // top_frame_site should have a value if skip_bypass_check is false.
-  MatchResult Matches(const GURL& resource_url,
-                      const std::optional<net::SchemefulSite>& top_frame_site,
-                      bool skip_bypass_check = false);
+  // resource_url and then checking if the `top_frame_site` matches the bypass
+  // match rules. If `skip_bypass_check` is true, the `top_frame_site` will not
+  // be used to determine the outcome of the match.
+  // `top_frame_site` should have a value if `skip_bypass_check` is false.
+  bool Matches(const GURL& resource_url,
+               const std::optional<net::SchemefulSite>& top_frame_site,
+               bool skip_bypass_check = false);
 
   // Builds a pair of matcher and bypass rules for the each partition needed for
   // the set of domains. If a ResourceOwner is not provided then no bypass rules

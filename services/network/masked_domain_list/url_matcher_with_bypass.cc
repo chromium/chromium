@@ -145,20 +145,15 @@ bool UrlMatcherWithBypass::IsPopulated() {
   return !match_list_with_bypass_map_.empty();
 }
 
-UrlMatcherWithBypass::MatchResult UrlMatcherWithBypass::Matches(
+bool UrlMatcherWithBypass::Matches(
     const GURL& request_url,
     const std::optional<net::SchemefulSite>& top_frame_site,
     bool skip_bypass_check) {
-  auto dvlog = [&](std::string_view message,
-                   const UrlMatcherWithBypass::MatchResult& match_result) {
-    std::string result_message = base::StrCat(
-        {" - matches: ", match_result.matches ? "true" : "false",
-         ", third-party: ", match_result.is_third_party ? "true" : "false"});
+  auto dvlog = [&](std::string_view message, bool matches) {
     DVLOG(3) << "UrlMatcherWithBypass::Matches(" << request_url << ", "
-             << top_frame_site.value() << ") - " << message << result_message;
+             << top_frame_site.value() << ") - " << message
+             << " - matches: " << (matches ? "true" : "false");
   };
-  // Result defaults to {matches = false, is_third_party = false}.
-  MatchResult result;
 
   if (!skip_bypass_check && !top_frame_site.has_value()) {
     NOTREACHED_NORETURN()
@@ -166,35 +161,35 @@ UrlMatcherWithBypass::MatchResult UrlMatcherWithBypass::Matches(
   }
 
   if (!IsPopulated()) {
-    dvlog("skipped (match list not populated)", result);
-    return result;
+    dvlog("skipped (match list not populated)", false);
+    return false;
   }
 
   net::SchemefulSite request_site(request_url);
-  result.is_third_party = skip_bypass_check || (request_site != top_frame_site);
-
   std::string resource_host_suffix = PartitionMapKey(request_url.host());
 
   if (!match_list_with_bypass_map_.contains(resource_host_suffix)) {
-    dvlog("no suffix match", result);
-    return result;
+    dvlog("no suffix match", false);
+    return false;
   }
 
   for (const auto& [matcher, bypass_matcher] :
        match_list_with_bypass_map_.at(resource_host_suffix)) {
     auto rule_result = matcher.Evaluate(request_url);
     if (rule_result == net::SchemeHostPortMatcherResult::kInclude) {
-      result.matches = true;
-      result.is_third_party =
-          skip_bypass_check ||
-          bypass_matcher.Evaluate(top_frame_site.value().GetURL()) ==
-              net::SchemeHostPortMatcherResult::kNoMatch;
-      break;
+      if (skip_bypass_check) {
+        dvlog("matched with skipped bypass check", true);
+        return true;
+      }
+      bool matches = bypass_matcher.Evaluate(top_frame_site->GetURL()) ==
+                     net::SchemeHostPortMatcherResult::kNoMatch;
+      dvlog("bypass_matcher.Matches", matches);
+      return matches;
     }
   }
 
-  dvlog("success", result);
-  return result;
+  dvlog("no request match", false);
+  return false;
 }
 
 }  // namespace network
