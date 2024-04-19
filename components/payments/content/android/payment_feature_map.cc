@@ -22,7 +22,6 @@ namespace {
 // third_party/blink/public/common/features_generated.h, or the .h file (for
 // Android only features).
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &::blink::features::kAddIdentityInCanMakePaymentEvent,
     &::features::kServiceWorkerPaymentApps,
     &::features::kWebPayments,
     &features::kAppStoreBilling,

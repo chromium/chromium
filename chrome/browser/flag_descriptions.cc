@@ -3600,13 +3600,6 @@ const char kWebPaymentsExperimentalFeaturesName[] =
 const char kWebPaymentsExperimentalFeaturesDescription[] =
     "Enable experimental Web Payments API features";
 
-const char kAddIdentityInCanMakePaymentEventName[] =
-    "Add identity to canmakepayment event";
-const char kAddIdentityInCanMakePaymentEventDescription[] =
-    "Temporarily re-enable the deprecated feature of sharing the merchant and "
-    "user identity with the payment app when the merchant checks whether the "
-    "payment app can make payments.";
-
 const char kAppStoreBillingDebugName[] =
     "Web Payments App Store Billing Debug Mode";
 const char kAppStoreBillingDebugDescription[] =

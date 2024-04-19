@@ -62,11 +62,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "add-identity-in-can-make-payment",
-    "owners": [ "rouslan@chromium.org", "chrome-payments-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "add-printer-via-printscanmgr",
     "owners": [ "pmoy@chromium.org", "project-bolton-eng@google.com" ],
     "expiry_milestone": 126
