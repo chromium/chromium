@@ -998,18 +998,9 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
   if (const auto* v = DynamicTo<CSSFlipRevertValue>(result)) {
     return ResolveFlipRevert(property, *v, priority, origin, resolver);
   }
-  if (auto* auto_base_select_pair =
-          DynamicTo<CSSAppearanceAutoBaseSelectValuePair>(value)) {
-    // The UA stylesheet only uses -internal-auto-base-select() on select
-    // elements, which is currently the only element which supports
-    // appearance:base-select.
-    CHECK(IsA<HTMLSelectElement>(state_.GetElement()));
-
-    if (state_.StyleBuilder().HasBaseSelectAppearance()) {
-      return &auto_base_select_pair->Second();
-    } else {
-      return &auto_base_select_pair->First();
-    }
+  if (const auto* v = DynamicTo<CSSAppearanceAutoBaseSelectValuePair>(result)) {
+    return ResolveAppearanceAutoBaseSelect(property, *v, priority, origin,
+                                           resolver);
   }
   if (const auto* v = DynamicTo<CSSMathFunctionValue>(result)) {
     return ResolveMathFunction(property, *v, priority);
@@ -1258,6 +1249,22 @@ const CSSValue* StyleCascade::ResolveFlipRevert(const CSSProperty& property,
       /* from_property */ to_property.PropertyID(), unflipped,
       value.Transform(), state_.StyleBuilder().GetWritingDirection());
   return Resolve(property, *flipped, priority, origin, resolver);
+}
+
+const CSSValue* StyleCascade::ResolveAppearanceAutoBaseSelect(
+    const CSSProperty& property,
+    const CSSAppearanceAutoBaseSelectValuePair& value,
+    CascadePriority priority,
+    CascadeOrigin& origin,
+    CascadeResolver& resolver) {
+  // The UA stylesheet only uses -internal-appearance-auto-base-select(),
+  // on select elements, which is currently the only element which supports
+  // appearance:base-select.
+  CHECK(IsA<HTMLSelectElement>(state_.GetElement()));
+  const CSSValue& selected = state_.StyleBuilder().HasBaseSelectAppearance()
+                                 ? value.Second()
+                                 : value.First();
+  return Resolve(property, selected, priority, origin, resolver);
 }
 
 // Math functions can become invalid at computed-value time. Currently, this
