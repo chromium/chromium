@@ -129,7 +129,6 @@ def main():
   # If no GRD files were given, default them:
   if len(grd_files) == 0:
     ash_base_dir = os.path.join(src_dir, 'ash')
-    ash_shortcut_viewer_dir = os.path.join(ash_base_dir, 'shortcut_viewer')
     chrome_dir = os.path.join(src_dir, 'chrome')
     chrome_app_dir = os.path.join(chrome_dir, 'app')
     chrome_app_res_dir = os.path.join(chrome_app_dir, 'resources')
@@ -140,7 +139,6 @@ def main():
     ui_chromeos_dir = os.path.join(ui_dir, 'chromeos')
     grd_files = [
         os.path.join(ash_base_dir, 'ash_strings.grd'),
-        os.path.join(ash_shortcut_viewer_dir, 'shortcut_viewer_strings.grd'),
         os.path.join(chrome_app_dir, 'chromium_strings.grd'),
         os.path.join(chrome_app_dir, 'generated_resources.grd'),
         os.path.join(chrome_app_dir, 'google_chrome_strings.grd'),

@@ -291,7 +291,6 @@ after discussions on the right group.
       <annotation id="metrics_report_appkm"/>
       <annotation id="metrics_report_ukm_and_appkm"/>
       <annotation id="search_engine_adapter"/>
-      <annotation id="launcher_manatee"/>
       <annotation id="prewarm_http_disk_cache"/>
       <annotation id="admin_specified_ppd_fetch"/>
       <annotation id="shopping_list_ui_image_fetcher"/>

@@ -249,8 +249,8 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     this.showAppleCommandKey_ = keyboardParams['showAppleCommandKey'];
   }
 
-  private onShowKeyboardShortcutViewerClick_(): void {
-    this.browserProxy_.showKeyboardShortcutViewer();
+  private onShowShortcutCustomizationAppClick_(): void {
+    this.browserProxy_.showShortcutCustomizationApp();
   }
 
   private onShowInputSettingsClick_(): void {

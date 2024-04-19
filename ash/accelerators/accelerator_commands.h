@@ -276,9 +276,6 @@ ASH_EXPORT void ShiftPrimaryDisplay();
 // triggered the emoji picker.
 ASH_EXPORT void ShowEmojiPicker(base::TimeTicks accelerator_timestamp);
 
-// Sees keyboard shortcut helper.
-ASH_EXPORT void ShowKeyboardShortcutViewer();
-
 // Opens Shortcut Customization.
 ASH_EXPORT void ShowShortcutCustomizationApp();
 

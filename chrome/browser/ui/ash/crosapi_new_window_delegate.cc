@@ -234,10 +234,6 @@ void CrosapiNewWindowDelegate::RestoreTab() {
   crosapi::BrowserManager::Get()->RestoreTab();
 }
 
-void CrosapiNewWindowDelegate::ShowKeyboardShortcutViewer() {
-  delegate_->ShowKeyboardShortcutViewer();
-}
-
 void CrosapiNewWindowDelegate::ShowShortcutCustomizationApp() {
   delegate_->ShowShortcutCustomizationApp();
 }

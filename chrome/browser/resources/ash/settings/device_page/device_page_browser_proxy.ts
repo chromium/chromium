@@ -117,8 +117,8 @@ export interface DevicePageBrowserProxy {
   /** Initializes the keyboard update watcher. */
   initializeKeyboardWatcher(): void;
 
-  /** Shows the Ash keyboard shortcut viewer. */
-  showKeyboardShortcutViewer(): void;
+  /** Shows the Ash shortcut customization app. */
+  showShortcutCustomizationApp(): void;
 
   /** Requests an ARC status update. */
   updateAndroidEnabled(): void;
@@ -236,8 +236,8 @@ export class DevicePageBrowserProxyImpl implements DevicePageBrowserProxy {
     chrome.send('initializeKeyboardSettings');
   }
 
-  showKeyboardShortcutViewer(): void {
-    chrome.send('showKeyboardShortcutViewer');
+  showShortcutCustomizationApp(): void {
+    chrome.send('showShortcutCustomizationApp');
   }
 
   initializeKeyboardWatcher(): void {

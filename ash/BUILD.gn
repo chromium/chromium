@@ -4245,7 +4245,6 @@ test("ash_unittests") {
     "//ash/public/mojom:hid_preserving_bluetooth_state_controller",
     "//ash/quick_pair:unit_tests",
     "//ash/resources/vector_icons",
-    "//ash/shortcut_viewer:unit_tests",
     "//ash/strings",
     "//ash/style",
     "//ash/style/mojom:color_scheme_shared_cpp_sources",

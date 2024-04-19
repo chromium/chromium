@@ -26,7 +26,6 @@ template("repack_one_locale_ash") {
   repack(target_name) {
     # Each input pak file should also have a deps line for completeness.
     sources = [
-      "$root_gen_dir/ash/shortcut_viewer/strings/shortcut_viewer_strings_${locale}.pak",
       "$root_gen_dir/ash/strings/ash_strings_${locale}.pak",
       "$root_gen_dir/chromeos/strings/chromeos_strings_${locale}.pak",
       "$root_gen_dir/components/strings/components_strings_${locale}.pak",
@@ -38,7 +37,6 @@ template("repack_one_locale_ash") {
     ]
 
     deps = [
-      "//ash/shortcut_viewer/strings",
       "//ash/strings",
       "//chromeos/strings",
       "//components/strings",

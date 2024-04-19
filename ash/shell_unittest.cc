@@ -236,8 +236,7 @@ TEST_F(ShellTest, CreateWindow) {
 }
 
 // Verifies that a window with a preferred size is created centered on the
-// default display for new windows. Mojo apps like shortcut_viewer rely on this
-// behavior.
+// default display for new windows.
 TEST_F(ShellTest, CreateWindowWithPreferredSize) {
   UpdateDisplay("1024x768,800x600");
 

@@ -4834,12 +4834,6 @@
   </message>
 
   <!-- Launcher Searchable ChromeOS internal apps -->
-  <message name="IDS_INTERNAL_APP_KEYBOARD_SHORTCUT_VIEWER" desc="The name of keyboard shortcut viewer app.">
-    Shortcuts
-  </message>
-  <message name="IDS_LAUNCHER_SEARCHABLE_KEYBOARD_SHORTCUT_VIEWER" desc="The string can be used to search keyboard shortcut viewer app.">
-    Keyboard Shortcut Helper
-  </message>
   <message name="IDS_INTERNAL_APP_SETTINGS" desc="The name of Settings.">
     Settings
   </message>

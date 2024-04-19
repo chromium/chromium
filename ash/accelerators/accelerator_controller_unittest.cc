@@ -278,7 +278,6 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
   MOCK_METHOD(void, OpenCalculator, (), (override));
-  MOCK_METHOD(void, ShowKeyboardShortcutViewer, (), (override));
   MOCK_METHOD(void,
               OpenUrl,
               (const GURL& url, OpenUrlFrom from, Disposition disposition),

@@ -202,15 +202,15 @@ suite('<settings-keyboard>', () => {
 
     // Test keyboard shortcut viewer button.
     const button = keyboardPage.shadowRoot!.querySelector<HTMLButtonElement>(
-        '#keyboardShortcutViewer');
+        '#shortcutCustomizationApp');
     assertTrue(!!button);
     button.click();
-    assertEquals(1, browserProxy.getCallCount('showKeyboardShortcutViewer'));
+    assertEquals(1, browserProxy.getCallCount('showShortcutCustomizationApp'));
   });
 
   test('Deep link to keyboard shortcuts', async () => {
     const element =
-        keyboardPage.shadowRoot!.querySelector('#keyboardShortcutViewer');
+        keyboardPage.shadowRoot!.querySelector('#shortcutCustomizationApp');
     assertTrue(!!element);
     const button = element.shadowRoot!.querySelector('cr-icon-button');
     assertTrue(!!button);

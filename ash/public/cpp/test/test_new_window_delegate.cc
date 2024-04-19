@@ -32,7 +32,6 @@ void TestNewWindowDelegate::OpenCrosh() {}
 void TestNewWindowDelegate::OpenDiagnostics() {}
 void TestNewWindowDelegate::OpenGetHelp() {}
 void TestNewWindowDelegate::RestoreTab() {}
-void TestNewWindowDelegate::ShowKeyboardShortcutViewer() {}
 void TestNewWindowDelegate::ShowShortcutCustomizationApp() {}
 void TestNewWindowDelegate::ShowTaskManager() {}
 void TestNewWindowDelegate::OpenFeedbackPage(

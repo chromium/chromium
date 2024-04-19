@@ -32,8 +32,6 @@ namespace ash {
 //      the notification text. Also found in |ash_strings.grd|.
 //    - {true or false} whether the deprecated accelerator is still enabled (we
 //      don't disable a deprecated accelerator abruptly).
-// 5- Don't forget to update the keyboard_shortcut_viewer_metadata.cc and
-//    shortcut_viewer_strings.grdp.
 const AcceleratorData kDeprecatedAccelerators[] = {
     {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kShowShortcutViewer},

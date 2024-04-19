@@ -4262,9 +4262,6 @@ extern const char kLauncherNudgeSessionResetDescription[];
 extern const char kLauncherSystemInfoAnswerCardsName[];
 extern const char kLauncherSystemInfoAnswerCardsDescription[];
 
-extern const char kLauncherManateeForKeyboardShortcutsName[];
-extern const char kLauncherManateeForKeyboardShortcutsDescription[];
-
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 

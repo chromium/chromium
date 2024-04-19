@@ -142,10 +142,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         os_settings_manager->hierarchy()));
   }
 
-  controller->AddProvider(std::make_unique<KeyboardShortcutProvider>(
-      profile, std::make_unique<ManateeCache>(
-                   profile, profile->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess())));
+  controller->AddProvider(std::make_unique<KeyboardShortcutProvider>(profile));
 
   if (base::FeatureList::IsEnabled(ash::features::kHelpAppLauncherSearch)) {
     controller->AddProvider(std::make_unique<HelpAppProvider>(

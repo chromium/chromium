@@ -113,9 +113,6 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Invoked when the user uses Shift+Ctrl+T to restore the closed tab.
   virtual void RestoreTab() = 0;
 
-  // Show the keyboard shortcut viewer.
-  virtual void ShowKeyboardShortcutViewer() = 0;
-
   // Show the shortcut customization app.
   virtual void ShowShortcutCustomizationApp() = 0;
 

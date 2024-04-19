@@ -55,9 +55,6 @@ BASE_DECLARE_FEATURE(kLauncherImageSearchIndexingLimit);
 
 BASE_DECLARE_FEATURE(kLauncherSystemInfoAnswerCards);
 
-// Enable manatee for keyboard shortcuts
-BASE_DECLARE_FEATURE(kLauncherManateeForKeyboardShortcuts);
-
 bool IsLauncherGameSearchEnabled();
 bool IsLauncherKeywordExtractionScoringEnabled();
 bool IsLauncherQueryFederatedAnalyticsPHHEnabled();
@@ -68,8 +65,6 @@ bool IsLauncherImageSearchIndexingLimitEnabled();
 bool IsLauncherFuzzyMatchAcrossProvidersEnabled();
 bool isLauncherFuzzyMatchForOmniboxEnabled();
 bool isLauncherSystemInfoAnswerCardsEnabled();
-bool isLauncherManateeForKeyboardShortcutsEnabled();
-
 }  // namespace search_features
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_SEARCH_FEATURES_H_

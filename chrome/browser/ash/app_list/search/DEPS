@@ -71,7 +71,6 @@ include_rules = [
   "+ash/accelerators",
   "+ash/assistant/model",
   "+ash/assistant/util",
-  "+ash/shortcut_viewer",
   "+ash/strings/grit",
   "+chromeos/ui/vector_icons",
   "+third_party/omnibox_proto",

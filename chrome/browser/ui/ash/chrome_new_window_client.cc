@@ -12,7 +12,6 @@
 #include "apps/launcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
-#include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -490,10 +489,6 @@ void ChromeNewWindowClient::RestoreTab() {
         std::make_unique<TabRestoreHelper>(this, profile, service);
     service->LoadTabsFromLastSession();
   }
-}
-
-void ChromeNewWindowClient::ShowKeyboardShortcutViewer() {
-  ShowShortcutCustomizationApp();
 }
 
 void ChromeNewWindowClient::ShowShortcutCustomizationApp() {

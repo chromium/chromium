@@ -163,7 +163,6 @@
   X("service_manager")                                                   \
   X("sharing")                                                           \
   X("shell")                                                             \
-  X("shortcut_viewer")                                                   \
   X("shutdown")                                                          \
   X("skia")                                                              \
   X("sql")                                                               \

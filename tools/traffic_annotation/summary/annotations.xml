@@ -436,7 +436,6 @@ Refer to README.md for content description and update process.
  <item id="metrics_report_appkm" added_in_milestone="121" content_hash_code="07bcd252" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="metrics_report_ukm_and_appkm" added_in_milestone="121" content_hash_code="0579d480" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="search_engine_adapter" added_in_milestone="121" content_hash_code="07bed22d" os_list="android" file_path="chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java" />
- <item id="launcher_manatee" added_in_milestone="122" content_hash_code="044566df" os_list="chromeos" file_path="chrome/browser/ash/app_list/search/manatee/manatee_cache.cc" />
  <item id="prewarm_http_disk_cache" added_in_milestone="122" content_hash_code="0797a094" os_list="windows,android,chromeos,linux" file_path="chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.cc" />
  <item id="admin_specified_ppd_fetch" added_in_milestone="122" content_hash_code="009beea1" os_list="chromeos" file_path="chromeos/printing/remote_ppd_fetcher.cc" />
  <item id="shopping_list_ui_image_fetcher" added_in_milestone="107" content_hash_code="068247d7" os_list="windows,chromeos,linux" file_path="chrome/browser/ui/commerce/price_tracking_page_action_controller.cc" />

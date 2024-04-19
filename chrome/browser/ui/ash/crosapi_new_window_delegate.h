@@ -38,7 +38,6 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
   void OpenCrosh() override;
   void OpenGetHelp() override;
   void RestoreTab() override;
-  void ShowKeyboardShortcutViewer() override;
   void ShowShortcutCustomizationApp() override;
   void ShowTaskManager() override;
   void OpenDiagnostics() override;

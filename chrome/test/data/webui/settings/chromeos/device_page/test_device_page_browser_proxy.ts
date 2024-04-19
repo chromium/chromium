@@ -32,7 +32,7 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
       'requestPowerManagementSettings',
       'setPreferredNoteTakingApp',
       'setPreferredNoteTakingAppEnabledOnLockScreen',
-      'showKeyboardShortcutViewer',
+      'showShortcutCustomizationApp',
       'showPlayStore',
       'updatePowerStatus',
     ]);
@@ -78,9 +78,10 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
     webUIListenerCallback('has-hardware-keyboard', this.hasKeyboard_);
   }
 
-  showKeyboardShortcutViewer(): void {
-    this.methodCalled('showKeyboardShortcutViewer');
+  showShortcutCustomizationApp(): void {
+    this.methodCalled('showShortcutCustomizationApp');
   }
+
 
   updateAndroidEnabled(): void {}
 

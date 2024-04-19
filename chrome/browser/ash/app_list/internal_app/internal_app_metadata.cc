@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
-#include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/functional/bind.h"

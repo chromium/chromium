@@ -157,8 +157,8 @@ export class SettingsPerDeviceKeyboardElement extends
     }
   }
 
-  private onShowKeyboardShortcutViewerClick(): void {
-    this.browserProxy.showKeyboardShortcutViewer();
+  private onShowShortcutCustomizationAppClick(): void {
+    this.browserProxy.showShortcutCustomizationApp();
   }
 
   private onShowInputSettingsClick(): void {

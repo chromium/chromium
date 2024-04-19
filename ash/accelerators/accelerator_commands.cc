@@ -1110,10 +1110,6 @@ void ShowEmojiPicker(const base::TimeTicks accelerator_timestamp) {
   ui::ShowEmojiPanel();
 }
 
-void ShowKeyboardShortcutViewer() {
-  ShowShortcutCustomizationApp();
-}
-
 void ShowShortcutCustomizationApp() {
   NewWindowDelegate::GetInstance()->ShowShortcutCustomizationApp();
 }

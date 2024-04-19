@@ -173,9 +173,9 @@ suite('<settings-per-device-keyboard>', () => {
 
   test('Open keyboard shortcut viewer', async () => {
     perDeviceKeyboardPage.shadowRoot!
-        .querySelector<CrLinkRowElement>('#keyboardShortcutViewer')!.click();
+        .querySelector<CrLinkRowElement>('#shortcutCustomizationApp')!.click();
     assertEquals(
-        1, devicePageBrowserProxy.getCallCount('showKeyboardShortcutViewer'));
+        1, devicePageBrowserProxy.getCallCount('showShortcutCustomizationApp'));
   });
 
   test('Navigate to input tab', async () => {

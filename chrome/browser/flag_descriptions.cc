@@ -7345,12 +7345,6 @@ const char kLauncherSystemInfoAnswerCardsDescription[] =
     "Enables System info answer cards in the launcher to provide system "
     "performance metrics";
 
-const char kLauncherManateeForKeyboardShortcutsName[] =
-    "Manatee for keyboard shortcuts";
-const char kLauncherManateeForKeyboardShortcutsDescription[] =
-    "Enables prototype of manatee for keyboard shortcuts"
-    "provider.";
-
 const char kMacAddressRandomizationName[] = "MAC address randomization";
 const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
