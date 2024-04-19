@@ -690,6 +690,11 @@ BASE_FEATURE(kHappinessTrackingSystemArcGames,
 BASE_FEATURE(kHappinessTrackingSystemAudio,
              "HappinessTrackingAudio",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables or disables the Happiness Tracking System for Audio Output
+// Processing.
+BASE_FEATURE(kHappinessTrackingSystemAudioOutputProc,
+             "HappinessTrackingAudioOutputProc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables the Happiness Tracking System for Bluetooth Audio survey.
 BASE_FEATURE(kHappinessTrackingSystemBluetoothAudio,
              "HappinessTrackingBluetoothAudio",

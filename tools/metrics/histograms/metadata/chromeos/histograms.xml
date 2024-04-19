@@ -1481,6 +1481,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
   <token key="Survey">
     <variant name="Audio"/>
+    <variant name="AudioOutputProc"/>
     <variant name="BatteryLife"/>
     <variant name="BluetoothAudio"/>
     <variant name="CameraApp"/>

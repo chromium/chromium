@@ -102,6 +102,14 @@ const HatsConfig kHatsAudioSurvey = {
     prefs::kHatsAudioSurveyCycleEndTs,          // cycle_end_timestamp_pref_name
 };
 
+const HatsConfig kHatsAudioOutputProcSurvey = {
+    ::features::kHappinessTrackingSystemAudioOutputProc,  // feature
+    base::Days(7),                                // new_device_threshold
+    prefs::kHatsAudioOutputProcDeviceIsSelected,  // is_selected_pref_name
+    prefs::
+        kHatsAudioOutputProcSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 // Bluetooth Audio Survey -- shown after the user closed an audio stream
 // sent to a Bluetooth device after listening for more than one minute.
 const HatsConfig kHatsBluetoothAudioSurvey = {
