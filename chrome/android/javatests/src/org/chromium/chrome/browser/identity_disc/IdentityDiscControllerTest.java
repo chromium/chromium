@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -435,7 +436,7 @@ public class IdentityDiscControllerTest {
     }
 
     private @StringRes int getSignedOutAvatarDescription() {
-        return (IdentityDiscController.shouldShowNewSigninFlow())
+        return (SigninUtils.shouldShowNewSigninFlow())
                 ? R.string.accessibility_toolbar_btn_signed_out_identity_disc
                 : R.string.accessibility_toolbar_btn_signed_out_with_sync_identity_disc;
     }

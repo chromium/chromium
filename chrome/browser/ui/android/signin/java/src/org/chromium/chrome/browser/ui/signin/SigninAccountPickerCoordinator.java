@@ -69,6 +69,8 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
      * @param delegate The delegate for this coordinator.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      * @param signinManager The sign-in manager to start the sign-in.
+     * @param bottomSheetStrings The object containing the strings shown by the bottom sheet.
+     * @param accountPickerLaunchMode Indicate the first bottom sheet view shown to the user.
      * @param signinAccessPoint The entry point for the sign-in.
      */
     public SigninAccountPickerCoordinator(
@@ -93,7 +95,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     }
 
     private void initAndShowBottomSheet(
-            AccountPickerBottomSheetStrings bottomSheetStrings,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @AccountPickerLaunchMode int accountPickerLaunchMode) {
         ViewGroup sheetContainer = new FrameLayout(mActivity);
         sheetContainer.setLayoutParams(
@@ -149,6 +151,11 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                         accountPickerLaunchMode,
                         mSigninAccessPoint == SigninAccessPoint.WEB_SIGNIN,
                         mSigninAccessPoint);
+    }
+
+    /** Called when an account is added on the device when there was none previously. */
+    public void onFirstAccountAdded(@NonNull String accountEmail) {
+        mAccountPickerBottomSheetCoordinator.onFirstAccountAdded(accountEmail);
     }
 
     /** Called when the account picker is destroyed after dismissal. */

@@ -13,7 +13,9 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
@@ -203,5 +205,15 @@ public final class SigninUtils {
                 modalDialogManager,
                 listener,
                 signinManager.extractDomainName(coreAccountInfo.getEmail()));
+    }
+
+    /**
+     * Returns whether the new sign-in flow should be shown instead of the usual one (sign-in and
+     * enable sync for instance) for an sign-in access point eligible to the new flow.
+     */
+    public static boolean shouldShowNewSigninFlow() {
+        return ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                && !BuildInfo.getInstance().isAutomotive;
     }
 }

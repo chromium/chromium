@@ -70,6 +70,9 @@ public class SigninAndHistoryOptInCoordinator
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
+        /** Called when the user starts the Google Play Services "add account" flow. */
+        void addAccount();
+
         /** Called when the whole flow finishes. */
         void onFlowComplete();
     }
@@ -192,6 +195,15 @@ public class SigninAndHistoryOptInCoordinator
         // TODO(crbug.com/41493768): Implement the loading state UI.
     }
 
+    /**
+     * Called when an account is added via Google Play Services "add account" flow started at the
+     * activity level.
+     */
+    public void onAccountAdded(@NonNull String accountEmail) {
+        showSigninBottomSheet();
+        mAccountPickerCoordinator.onFirstAccountAdded(accountEmail);
+    }
+
     /** Called when the sign-in successfully finishes. */
     @Override
     public void onSignInComplete() {
@@ -303,7 +315,7 @@ public class SigninAndHistoryOptInCoordinator
                                     showSigninBottomSheet();
                                     break;
                                 case NoAccountSigninMode.ADD_ACCOUNT:
-                                    showAddAccount();
+                                    showAddFirstAccount();
                                     break;
                                 case NoAccountSigninMode.NO_SIGNIN:
                                     // TODO(crbug.com/41493768): Implement the error state UI.
@@ -339,11 +351,12 @@ public class SigninAndHistoryOptInCoordinator
         mDidShowSigninStep = true;
     }
 
-    private void showAddAccount() {
+    // This step skips the bottom sheet and leads directly to the Google Play "add account" flow,
+    // contrary to other bottom sheet based variants. Note that once the account is added, the
+    // signing in bottom sheet will be shown and the account will be signed-in right away.
+    private void showAddFirstAccount() {
         mDidShowSigninStep = true;
-        // TODO(crbug.com/41493767): Implement the no-account sign-in flow.
-        assert false : "Not implemented.";
-        onFlowComplete();
+        mDelegate.addAccount();
     }
 
     private void showHistoryOptInOrFinish() {

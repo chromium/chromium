@@ -72,7 +72,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     private final Promise<Void> mNativeInitializationPromise = new Promise<>();
     // These two coordinators are mutually exclusive: if one is initialized the other should be
     // null.
-    // TODO(b/41493788): Consider making each of these implement a common interface to skip the
+    // TODO(b/326019991): Consider making each of these implement a common interface to skip the
     // redundancy.
     private SigninAndHistoryOptInCoordinator mCoordinator;
     private UpgradePromoCoordinator mUpgradePromoCoordinator;
@@ -274,16 +274,22 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     /** Implements {@link UpgradePromoCoordinator.Delegate} */
     @Override
     public void addAccount() {
+        // TODO(crbug.com/41493767): Handle result in onActivityResult rather than using
+        // IntentCallback to resume the flow when Chrome is killed.
         final WindowAndroid.IntentCallback onAddAccountCompleted =
                 (int resultCode, Intent data) -> {
-                    if (resultCode != Activity.RESULT_OK) {
+                    final String accountEmail =
+                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    if (resultCode != Activity.RESULT_OK || accountEmail == null) {
+                        onFlowComplete();
                         return;
                     }
-                    String accountAddedEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                    // TODO(crbug.com/41493767): Implement new account selection for when the
-                    // SigninAndHistoryOptIn coordinator is shown rather than the Upgrade promo.
-                    if (mUpgradePromoCoordinator != null && accountAddedEmail != null) {
-                        mUpgradePromoCoordinator.onAccountSelected(accountAddedEmail);
+
+                    if (mUpgradePromoCoordinator != null) {
+                        mUpgradePromoCoordinator.onAccountSelected(accountEmail);
+                    } else {
+                        assert mCoordinator != null;
+                        mCoordinator.onAccountAdded(accountEmail);
                     }
                 };
         AccountManagerFacadeProvider.getInstance()

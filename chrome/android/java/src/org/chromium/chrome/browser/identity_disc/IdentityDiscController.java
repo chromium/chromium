@@ -12,14 +12,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -40,6 +38,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -339,7 +338,7 @@ public class IdentityDiscController
 
     private String getContentDescription(@Nullable String email) {
         if (email == null) {
-            if (shouldShowNewSigninFlow()) {
+            if (SigninUtils.shouldShowNewSigninFlow()) {
                 return mContext.getString(
                         R.string.accessibility_toolbar_btn_signed_out_identity_disc);
             } else {
@@ -377,7 +376,7 @@ public class IdentityDiscController
                         .getSigninManager(mProfileSupplier.get().getOriginalProfile());
         if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
             // TODO(crbug.com/1523958): Implement the new sign-in flow for automotive.
-            if (shouldShowNewSigninFlow()) {
+            if (SigninUtils.shouldShowNewSigninFlow()) {
                 AccountPickerBottomSheetStrings bottomSheetStrings =
                         new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome)
                                 .setSubtitleStringId(
@@ -407,12 +406,5 @@ public class IdentityDiscController
     @VisibleForTesting
     boolean isProfileDataCacheEmpty() {
         return mProfileDataCache == null;
-    }
-
-    @VisibleForTesting
-    static boolean shouldShowNewSigninFlow() {
-        return ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && !BuildInfo.getInstance().isAutomotive;
     }
 }

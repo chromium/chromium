@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 import android.view.View;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -123,6 +125,17 @@ public class AccountPickerBottomSheetCoordinator {
         if (mIsWebSignin) {
             SigninPreferencesManager.getInstance()
                     .incrementWebSigninAccountPickerActiveDismissalCount();
+        }
+    }
+
+    /**
+     * Called when an account is added on the device when there was none previously. Will sign the
+     * account in in the UNO sign-in flow and may trigger the bottom sheet and the flow dismissal in
+     * this case.
+     */
+    public void onFirstAccountAdded(@NonNull String accountEmail) {
+        if (SigninUtils.shouldShowNewSigninFlow()) {
+            mAccountPickerBottomSheetMediator.onAccountSelected(accountEmail);
         }
     }
 
