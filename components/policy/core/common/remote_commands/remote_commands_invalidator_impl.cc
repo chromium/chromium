@@ -89,6 +89,12 @@ void RemoteCommandsInvalidatorImpl::DoRemoteCommandsFetch(
   core_->remote_commands_service()->FetchRemoteCommands();
 }
 
+void RemoteCommandsInvalidatorImpl::DoInitialRemoteCommandsFetch() {
+  CHECK(core_->remote_commands_service());
+
+  core_->remote_commands_service()->FetchRemoteCommands();
+}
+
 void RemoteCommandsInvalidatorImpl::OnCoreConnected(CloudPolicyCore* core) {}
 
 void RemoteCommandsInvalidatorImpl::OnRefreshSchedulerStarted(

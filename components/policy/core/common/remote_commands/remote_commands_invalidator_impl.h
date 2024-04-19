@@ -41,6 +41,7 @@ class POLICY_EXPORT RemoteCommandsInvalidatorImpl
   void OnStop() override;
   void DoRemoteCommandsFetch(
       const invalidation::Invalidation& invalidation) override;
+  void DoInitialRemoteCommandsFetch() override;
 
   // CloudPolicyCore::Observer:
   void OnCoreConnected(CloudPolicyCore* core) override;

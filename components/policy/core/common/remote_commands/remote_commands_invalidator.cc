@@ -103,6 +103,22 @@ bool RemoteCommandsInvalidator::IsPublicTopic(
   return IsPublicInvalidationTopic(topic);
 }
 
+void RemoteCommandsInvalidator::OnSuccessfullySubscribed(
+    const invalidation::Topic& invalidation) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  CHECK(invalidation == topic_);
+
+  // The service needs to be started to fetch commands.
+  if (state_ != STARTED) {
+    return;
+  }
+
+  VLOG(2) << "Fetching remote commands after subscribing to invalidations.";
+
+  DoInitialRemoteCommandsFetch();
+}
+
 void RemoteCommandsInvalidator::ReloadPolicyData(
     const enterprise_management::PolicyData* policy) {
   DCHECK(thread_checker_.CalledOnValidThread());

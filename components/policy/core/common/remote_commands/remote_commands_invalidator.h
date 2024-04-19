@@ -67,6 +67,8 @@ class POLICY_EXPORT RemoteCommandsInvalidator
       const invalidation::Invalidation& invalidation) override;
   std::string GetOwnerName() const override;
   bool IsPublicTopic(const invalidation::Topic& topic) const override;
+  void OnSuccessfullySubscribed(
+      const invalidation::Topic& invalidation) override;
 
  protected:
   virtual void OnInitialize() = 0;
@@ -78,6 +80,11 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   // commands fetch.
   virtual void DoRemoteCommandsFetch(
       const invalidation::Invalidation& invalidation) = 0;
+
+  // This function will be called when invalidator successfully subscribed to
+  // the topic to fetch initial remote commands that were triggered before the
+  // device has subscribed.
+  virtual void DoInitialRemoteCommandsFetch() = 0;
 
   // Subclasses must call this function to set the topic for remote command
   // invalidations.
