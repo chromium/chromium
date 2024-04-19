@@ -807,17 +807,19 @@ void GPMEnclaveController::SetFailedPINAttemptCount(int count) {
 
 void GPMEnclaveController::HandlePINValidationResult(
     device::enclave::PINValidationResult result) {
+  using GpmPinError = AuthenticatorRequestDialogModel::GpmPinError;
+
   switch (result) {
     case device::enclave::PINValidationResult::kSuccess:
       SetFailedPINAttemptCount(0);
+      model_->gpm_pin_error = GpmPinError::kNone;
       break;
     case device::enclave::PINValidationResult::kIncorrect: {
       int count = GetFailedPINAttemptCount();
       // TODO(enclave): If the new count is 5, go to the locked PIN UI.
       SetFailedPINAttemptCount(++count);
-      // TODO(enclave): This needs better UI, but for now just pops up PIN
-      // entry again.
-      model_->SetStep(Step::kGPMEnterPin);
+      model_->gpm_pin_error = GpmPinError::kWrongPin;
+      PromptForPin();
       break;
     }
     case device::enclave::PINValidationResult::kLocked:
