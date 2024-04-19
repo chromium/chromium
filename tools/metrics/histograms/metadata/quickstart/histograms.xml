@@ -109,6 +109,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.EntryPoint" enum="QuickStartEntryPoint"
+    expires_after="2025-04-17">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The entry point from which the Quick Start flow is initiated. Recorded when
+    transitioning to the Quick Start screen at the beginning of a session.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.FastPairAdvertisementEnded.Duration" units="ms"
     expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>

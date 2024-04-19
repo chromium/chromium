@@ -143,6 +143,7 @@ constexpr const char kScreenClosedQSFallbackURL[] =
     "QuickStart.ScreenClosed.QSFallbackURL";
 constexpr const char kAbortFlowReasonHistogramName[] =
     "QuickStart.FlowAborted.Reason";
+constexpr const char kEntryPointHistogramName[] = "QuickStart.EntryPoint";
 
 std::string MapMessageTypeToMetric(
     QuickStartMetrics::MessageType message_type) {
@@ -398,7 +399,7 @@ void QuickStartMetrics::RecordGaiaTransferResult(
 
 // static
 void QuickStartMetrics::RecordEntryPoint(EntryPoint entry_point) {
-  // TODO(b/280306867): Add metric for entry point.
+  base::UmaHistogramEnumeration(kEntryPointHistogramName, entry_point);
 }
 
 // static

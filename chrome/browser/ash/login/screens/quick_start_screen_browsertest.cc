@@ -76,6 +76,7 @@ constexpr char kScreenClosedNetworkScreen[] =
 constexpr char kAuthenticationMethodHistogram[] =
     "QuickStart.AuthenticationMethod";
 constexpr char kFlowAbortedReason[] = "QuickStart.FlowAborted.Reason";
+constexpr char kEntryPointHistogram[] = "QuickStart.EntryPoint";
 
 constexpr test::UIPath kQuickStartEntryPointPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartEntryPoint};
@@ -629,12 +630,18 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
   histogram_tester_.ExpectBucketCount(
       kAuthenticationMethodHistogram,
       quick_start::QuickStartMetrics::AuthenticationMethod::kQRCode, 0);
+  histogram_tester_.ExpectBucketCount(
+      kEntryPointHistogram,
+      quick_start::QuickStartMetrics::EntryPoint::WELCOME_SCREEN, 0);
 
   EnterQuickStartFlowFromWelcomeScreen();
 
   histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 1);
+  histogram_tester_.ExpectBucketCount(
+      kEntryPointHistogram,
+      quick_start::QuickStartMetrics::EntryPoint::WELCOME_SCREEN, 1);
 
   SimulatePhoneConnection();
   SimulateUserVerification();

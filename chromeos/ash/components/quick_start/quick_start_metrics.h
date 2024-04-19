@@ -242,10 +242,16 @@ class QuickStartMetrics {
     kMaxValue = ADD_CHILD,
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class EntryPoint {
-    kWelcome,
-    kWifi,
-    kGaia,
+    WELCOME_SCREEN = 0,
+    NETWORK_SCREEN = 1,
+    GAIA_INFO_SCREEN = 2,
+    GAIA_SCREEN = 3,
+    kMaxValue = GAIA_SCREEN,
   };
 
   // Helper function that returns the MessageType equivalent of

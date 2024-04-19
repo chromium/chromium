@@ -36,14 +36,7 @@ class QuickStartController
       public bluetooth_config::mojom::SystemPropertiesObserver {
  public:
   using AbortFlowReason = QuickStartMetrics::AbortFlowReason;
-
-  // QuickStart flow entry point locations.
-  enum class EntryPoint {
-    WELCOME_SCREEN,
-    NETWORK_SCREEN,
-    GAIA_INFO_SCREEN,
-    GAIA_SCREEN,
-  };
+  using EntryPoint = QuickStartMetrics::EntryPoint;
 
   // Main state used by the controller.
   // TODO(b:283965994) - Finalize states.

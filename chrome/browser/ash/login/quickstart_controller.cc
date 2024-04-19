@@ -596,6 +596,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     const auto entry_point = EntryPointFromScreen(previous_screen_.value());
     CHECK(entry_point.has_value()) << "Unknown entry point!";
     exit_point_ = entry_point_ = entry_point;
+    QuickStartMetrics::RecordEntryPoint(entry_point.value());
 
     // Set the QuickStart flow as ongoing for the rest of the system.
     LoginDisplayHost::default_host()

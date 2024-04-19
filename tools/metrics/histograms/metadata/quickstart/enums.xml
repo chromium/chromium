@@ -52,6 +52,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Automatic Resume After Update"/>
 </enum>
 
+<enum name="QuickStartEntryPoint">
+  <int value="0" label="Welcome Screen"/>
+  <int value="1" label="Network Screen"/>
+  <int value="2" label="Gaia Info Screen"/>
+  <int value="3" label="Gaia Screen"/>
+</enum>
+
 <enum name="QuickStartFastPairAdvertisingErrorCode">
   <int value="0" label="Error: Unsupported platform"/>
   <int value="1" label="Error: Advertisement already exists"/>
