@@ -3,11 +3,18 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <utility>
 
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
+#include "base/test/mock_callback.h"
 #include "pdf/pdf.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -143,6 +150,38 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
     ASSERT_TRUE(page_size.has_value());
     EXPECT_EQ(gfx::SizeF(612, 792), page_size.value());
   }
+}
+
+TEST_F(PDFiumEngineExportsTest, Searchify) {
+  base::FilePath pdf_path =
+      pdf_data_dir().Append(FILE_PATH_LITERAL("image_alt_text.pdf"));
+  std::optional<std::vector<uint8_t>> pdf_buffer =
+      base::ReadFileToBytes(pdf_path);
+  ASSERT_TRUE(pdf_buffer.has_value());
+
+  base::MockCallback<base::RepeatingCallback<
+      screen_ai::mojom::VisualAnnotationPtr(const SkBitmap&)>>
+      perform_ocr_callback;
+  EXPECT_CALL(perform_ocr_callback, Run)
+      .Times(3)
+      .WillRepeatedly([](const SkBitmap& bitmap) {
+        auto annotation = screen_ai::mojom::VisualAnnotation::New();
+        auto line_box = screen_ai::mojom::LineBox::New();
+        line_box->baseline_box = gfx::Rect(0, 0, 100, 100);
+        line_box->baseline_box_angle = 0;
+        line_box->bounding_box = gfx::Rect(0, 0, 100, 100);
+        line_box->bounding_box_angle = 0;
+        auto word_box = screen_ai::mojom::WordBox::New();
+        word_box->word = "foo";
+        word_box->bounding_box = gfx::Rect(0, 0, 100, 100);
+        word_box->bounding_box_angle = 0;
+        line_box->words.push_back(std::move(word_box));
+        annotation->lines.push_back(std::move(line_box));
+        return annotation;
+      });
+  std::vector<uint8_t> output_pdf_buffer =
+      Searchify(*pdf_buffer, perform_ocr_callback.Get());
+  ASSERT_GT(output_pdf_buffer.size(), 0U);
 }
 
 }  // namespace chrome_pdf

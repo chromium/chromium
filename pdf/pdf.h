@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "pdf/document_metadata.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "pdf/flatten_pdf_result.h"
@@ -20,6 +21,12 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "base/functional/callback_forward.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace gfx {
 class Rect;
@@ -211,6 +218,25 @@ std::vector<uint8_t> ConvertPdfDocumentToNupPdf(
     size_t pages_per_sheet,
     const gfx::Size& page_size,
     const gfx::Rect& printable_area);
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+// Converts an inaccessible PDF to a searchable PDF.
+// `pdf_buffer` is the buffer of the inaccessible PDF.
+// `searchified_callback` is the callback that is called with the searchified
+//     PDF when the conversion is done.
+// `perform_ocr_callback` is the callback that takes an image and outputs
+//     the OCR result. It may be called multiple times.
+//
+// The conversion is done by performing OCR on each image in the PDF and adding
+// a layer of invisible text to the PDF to make text on images accessible. Each
+// execution should take place in an isolated process, and each process should
+// be terminated upon completion of the conversion. An empty vector is returned
+// on failure.
+std::vector<uint8_t> Searchify(
+    base::span<const uint8_t> pdf_buffer,
+    base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
+        const SkBitmap& bitmap)> perform_ocr_callback);
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf
 

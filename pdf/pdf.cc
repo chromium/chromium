@@ -15,8 +15,15 @@
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "base/functional/callback_forward.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace chrome_pdf {
 
@@ -172,5 +179,16 @@ std::vector<uint8_t> ConvertPdfDocumentToNupPdf(
   return engine_exports->ConvertPdfDocumentToNupPdf(
       input_buffer, pages_per_sheet, page_size, printable_area);
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+std::vector<uint8_t> Searchify(
+    base::span<const uint8_t> pdf_buffer,
+    base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
+        const SkBitmap& bitmap)> perform_ocr_callback) {
+  ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/false);
+  PDFEngineExports* engine_exports = PDFEngineExports::Get();
+  return engine_exports->Searchify(pdf_buffer, std::move(perform_ocr_callback));
+}
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf

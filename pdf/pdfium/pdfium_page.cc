@@ -24,6 +24,7 @@
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "pdf/pdfium/pdfium_ocr.h"
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "pdf/ui/thumbnail.h"
 #include "printing/units.h"
@@ -32,8 +33,7 @@
 #include "third_party/pdfium/public/fpdf_catalog.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/pdfium/public/fpdfview.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -778,58 +778,9 @@ std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo(
 }
 
 SkBitmap PDFiumPage::GetImageForOcr(int page_object_index) {
-  SkBitmap bitmap;
-
   FPDF_PAGE page = GetPage();
-  FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, page_object_index);
-
-  if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_IMAGE) {
-    return bitmap;
-  }
-
-  // OCR needs the image with the highest available quality. To get it, the
-  // image transform matrix is reset to no-scale, the bitmap is extracted,
-  // and then the original matrix is restored.
-  FS_MATRIX original_matrix;
-  if (!FPDFPageObj_GetMatrix(page_object, &original_matrix)) {
-    return bitmap;
-  }
-
-  // Get the actual image size.
-  unsigned int width;
-  unsigned int height;
-  if (!FPDFImageObj_GetImagePixelSize(page_object, &width, &height)) {
-    return bitmap;
-  }
-
-  // Resize the matrix to actual size.
-  FS_MATRIX new_matrix = {static_cast<float>(width),  0, 0,
-                          static_cast<float>(height), 0, 0};
-  if (!FPDFPageObj_SetMatrix(page_object, &new_matrix)) {
-    return bitmap;
-  }
-
-  ScopedFPDFBitmap raw_bitmap(
-      FPDFImageObj_GetRenderedBitmap(engine_->doc(), page, page_object));
-
-  // Restore the original matrix.
-  CHECK(FPDFPageObj_SetMatrix(page_object, &original_matrix));
-
-  if (!raw_bitmap) {
-    return SkBitmap();
-  }
-
-  CHECK_EQ(FPDFBitmap_GetFormat(raw_bitmap.get()), FPDFBitmap_BGRA);
-  SkImageInfo info =
-      SkImageInfo::Make(FPDFBitmap_GetWidth(raw_bitmap.get()),
-                        FPDFBitmap_GetHeight(raw_bitmap.get()),
-                        kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
-  const size_t row_bytes = FPDFBitmap_GetStride(raw_bitmap.get());
-  SkPixmap pixels(info, FPDFBitmap_GetBuffer(raw_bitmap.get()), row_bytes);
-  if (!bitmap.tryAllocPixels(info, row_bytes)) {
-    return bitmap;
-  }
-  bitmap.writePixels(pixels);
+  SkBitmap bitmap =
+      ::chrome_pdf::GetImageForOcr(engine_->doc(), page, page_object_index);
 
   SkBitmapOperations::RotationAmount rotation;
   switch (FPDFPage_GetRotation(page)) {
@@ -846,6 +797,11 @@ SkBitmap PDFiumPage::GetImageForOcr(int page_object_index) {
       break;
   }
 
+  // TODO(crbug/40068467): Currently, `::chrome_pdf::GetImageForOcr` returns the
+  // full image stored in the PDF without applying the transformation matrix. To
+  // ensure the image sent to OCR matches how users view it on the browser,
+  // rotate the bitmap by the page's rotation. We may also need to consider the
+  // transformation of the image.
   return SkBitmapOperations::Rotate(bitmap, rotation);
 }
 

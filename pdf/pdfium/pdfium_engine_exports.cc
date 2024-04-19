@@ -23,6 +23,7 @@
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "printing/nup_parameters.h"
 #include "printing/units.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_attachment.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
@@ -34,6 +35,13 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "base/functional/callback.h"
+#include "pdf/pdfium/pdfium_searchify.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#endif
 
 using printing::ConvertUnitFloat;
 using printing::kPointsPerInch;
@@ -553,5 +561,14 @@ std::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
 
   return gfx::SizeF(size.width, size.height);
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+std::vector<uint8_t> PDFiumEngineExports::Searchify(
+    base::span<const uint8_t> pdf_buffer,
+    base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
+        const SkBitmap& bitmap)> perform_ocr_callback) {
+  return PDFiumSearchify(pdf_buffer, std::move(perform_ocr_callback));
+}
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf
