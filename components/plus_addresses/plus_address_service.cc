@@ -215,6 +215,22 @@ void PlusAddressService::ReservePlusAddress(
                      base::Unretained(this), origin, std::move(on_completed)));
 }
 
+void PlusAddressService::RefreshPlusAddress(
+    const url::Origin& origin,
+    PlusAddressRequestCallback on_completed) {
+  if (!is_enabled()) {
+    return;
+  }
+  plus_address_allocator_->AllocatePlusAddress(
+      origin, PlusAddressAllocator::AllocationMode::kNewPlusAddress,
+      base::BindOnce(&PlusAddressService::HandleCreateOrConfirmResponse,
+                     base::Unretained(this), origin, std::move(on_completed)));
+}
+
+bool PlusAddressService::IsRefreshingSupported(const url::Origin& origin) {
+  return plus_address_allocator_->IsRefreshingSupported(origin);
+}
+
 void PlusAddressService::ConfirmPlusAddress(
     const url::Origin& origin,
     const std::string& plus_address,

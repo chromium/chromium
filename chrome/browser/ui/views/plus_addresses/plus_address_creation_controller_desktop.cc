@@ -3,9 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -29,15 +36,31 @@ PlusAddressCreationControllerDesktop::~PlusAddressCreationControllerDesktop() {
   }
 }
 
+void PlusAddressCreationControllerDesktop::OnRefreshClicked() {
+  PlusAddressService* plus_address_service = GetPlusAddressService();
+  if (!plus_address_service) {
+    return;
+  }
+  plus_address_service->RefreshPlusAddress(
+      relevant_origin_,
+      base::BindOnce(
+          &PlusAddressCreationControllerDesktop::OnPlusAddressReserved,
+          GetWeakPtr()));
+}
+
+PlusAddressService*
+PlusAddressCreationControllerDesktop::GetPlusAddressService() {
+  return PlusAddressServiceFactory::GetForBrowserContext(
+      GetWebContents().GetBrowserContext());
+}
+
 void PlusAddressCreationControllerDesktop::OfferCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {
   if (dialog_delegate_) {
     return;
   }
-  PlusAddressService* plus_address_service =
-      PlusAddressServiceFactory::GetForBrowserContext(
-          GetWebContents().GetBrowserContext());
+  PlusAddressService* plus_address_service = GetPlusAddressService();
   if (!plus_address_service) {
     // TODO(crbug.com/1467623): Verify expected behavior in this case and the
     // missing email case below.
@@ -58,8 +81,12 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
       PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
   modal_shown_time_ = clock_->Now();
   if (!suppress_ui_for_testing_) {
+    const bool offer_refresh =
+        plus_address_service->IsRefreshingSupported(relevant_origin_) &&
+        base::FeatureList::IsEnabled(
+            features::kPlusAddressRefreshUiInDesktopModal);
     dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
-        GetWeakPtr(), &GetWebContents(), maybe_email.value());
+        GetWeakPtr(), &GetWebContents(), maybe_email.value(), offer_refresh);
     constrained_window::ShowWebModalDialogViews(dialog_delegate_.get(),
                                                 &GetWebContents());
   }
@@ -82,10 +109,7 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
     return;
   }
 
-  if (PlusAddressService* plus_address_service =
-          PlusAddressServiceFactory::GetForBrowserContext(
-              GetWebContents().GetBrowserContext());
-      plus_address_service) {
+  if (PlusAddressService* plus_address_service = GetPlusAddressService()) {
     // Note: this call may fail if this modal is confirmed on the same
     // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(
@@ -153,6 +177,10 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
   // Display result on UI only after setting `plus_profile_` to prevent
   // premature confirm without `plus_profile_` value.
   if (dialog_delegate_) {
+    if (PlusAddressService* service = GetPlusAddressService();
+        !service || !service->IsRefreshingSupported(relevant_origin_)) {
+      dialog_delegate_->HideRefreshButton();
+    }
     dialog_delegate_->ShowReserveResult(maybe_plus_profile);
   }
 }

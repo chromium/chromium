@@ -17,6 +17,7 @@ namespace plus_addresses {
 
 class PlusAddressCreationDialogDelegate;
 class PlusAddressCreationView;
+class PlusAddressService;
 
 class PlusAddressCreationControllerDesktop
     : public PlusAddressCreationController,
@@ -28,6 +29,7 @@ class PlusAddressCreationControllerDesktop
   // PlusAddressCreationController implementation:
   void OfferCreation(const url::Origin& main_frame_origin,
                      PlusAddressCallback callback) override;
+  void OnRefreshClicked() override;
   void OnConfirmed() override;
   void OnCanceled() override;
   void OnDialogDestroyed() override;
@@ -51,6 +53,8 @@ class PlusAddressCreationControllerDesktop
       content::WebContents* web_contents);
   friend class content::WebContentsUserData<
       PlusAddressCreationControllerDesktop>;
+
+  PlusAddressService* GetPlusAddressService();
 
   // Populates `plus_profile_` with `maybe_plus_profile` if it's not an error.
   void OnPlusAddressReserved(const PlusProfileOrError& maybe_plus_profile);

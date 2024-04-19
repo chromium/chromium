@@ -120,6 +120,14 @@ class PlusAddressService : public KeyedService,
   virtual void ReservePlusAddress(const url::Origin& origin,
                                   PlusAddressRequestCallback on_completed);
 
+  // Asks the PlusAddressHttpClient to refresh the plus address for `origin` and
+  // calls `on_completed` with the result.
+  void RefreshPlusAddress(const url::Origin& origin,
+                          PlusAddressRequestCallback on_completed);
+
+  // Returns whether refreshing a plus address on `origin` is supported.
+  bool IsRefreshingSupported(const url::Origin& origin);
+
   // Asks the PlusAddressHttpClient to confirm `plus_address` for use on
   // `origin` and returns the plus address via `on_completed`.
   //

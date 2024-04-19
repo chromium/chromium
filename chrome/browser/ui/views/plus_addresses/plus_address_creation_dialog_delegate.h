@@ -17,6 +17,7 @@ class WebContents;
 }  // namespace content
 
 namespace views {
+class ImageButton;
 class Label;
 class MdTextButton;
 class StyledLabel;
@@ -33,7 +34,8 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   PlusAddressCreationDialogDelegate(
       base::WeakPtr<PlusAddressCreationController> controller,
       content::WebContents* web_contents,
-      const std::string& primary_email_address);
+      const std::string& primary_email_address,
+      bool offer_refresh);
   PlusAddressCreationDialogDelegate(const PlusAddressCreationDialogDelegate&) =
       delete;
   PlusAddressCreationDialogDelegate& operator=(
@@ -49,6 +51,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile) override;
   void OpenSettingsLink(content::WebContents* web_contents) override;
   void OpenErrorReportLink(content::WebContents* web_contents) override;
+  void HideRefreshButton() override;
 
   // Calls the respective controller method for `type`.
   void HandleButtonPress(PlusAddressViewButtonType type);
@@ -60,6 +63,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   base::WeakPtr<PlusAddressCreationController> controller_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<views::Label> plus_address_label_ = nullptr;
+  raw_ptr<views::ImageButton> refresh_button_ = nullptr;
   raw_ptr<views::StyledLabel> error_report_label_ = nullptr;
   raw_ptr<views::MdTextButton> confirm_button_ = nullptr;
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;

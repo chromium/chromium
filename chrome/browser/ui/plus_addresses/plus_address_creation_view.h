@@ -36,6 +36,8 @@ class PlusAddressCreationView {
   virtual void OpenSettingsLink(content::WebContents* web_contents) = 0;
   // Navigates to the link shown in error report instructions.
   virtual void OpenErrorReportLink(content::WebContents* web_contents) = 0;
+  // Hides the button for refreshing the plus address.
+  virtual void HideRefreshButton() = 0;
 };
 
 }  // namespace plus_addresses
