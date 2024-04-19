@@ -56,10 +56,10 @@ bool IsRichAutocompletionEnabled(RichAutocompletionImplementation type) {
 
   std::string featureParam = base::GetFieldTrialParamValueByFeature(
       omnibox::kRichAutocompletion, kRichAutocompletionParam);
-  if (type == RichAutocompletionImplementation::kTextField) {
-    return featureParam == kRichAutocompletionParamTextField;
+  if (type == RichAutocompletionImplementation::kLabel) {
+    return featureParam == kRichAutocompletionParamLabel;
   }
 
-  // Label is the default.
+  // TextField is the default.
   return true;
 }
