@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_CHANGE_PIN_CONTROLLER_H_
 #define CHROME_BROWSER_WEBAUTHN_CHANGE_PIN_CONTROLLER_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace content {
@@ -15,6 +16,8 @@ class EnclaveManager;
 
 class ChangePinController {
  public:
+  using SuccessCallback = base::OnceCallback<void(bool)>;
+
   static ChangePinController* ForWebContents(
       content::WebContents* web_contents);
 
@@ -24,8 +27,8 @@ class ChangePinController {
   // possible when the `EnclaveManager` is ready and has a wrapped PIN.
   virtual bool IsChangePinFlowAvailable();
 
-  // Starts the change PIN flow. Returns true if the flow has started.
-  virtual bool StartChangePin();
+  // Starts the change PIN flow. The callback is run once the flow is completed.
+  virtual void StartChangePin(SuccessCallback callback);
 
   static void set_instance_for_testing(ChangePinController* controller) {
     instance_for_testing_ = controller;

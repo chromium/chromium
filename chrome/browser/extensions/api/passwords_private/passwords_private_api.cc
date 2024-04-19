@@ -653,11 +653,20 @@ ResponseAction PasswordsPrivateShowAddShortcutDialogFunction::Run() {
 // PasswordsPrivateChangePasswordManagerPinFunction
 ResponseAction PasswordsPrivateChangePasswordManagerPinFunction::Run() {
   if (auto delegate = GetDelegate(browser_context())) {
-    delegate->ChangePasswordManagerPin(GetSenderWebContents());
-    return RespondNow(NoArguments());
+    delegate->ChangePasswordManagerPin(
+        GetSenderWebContents(),
+        base::BindOnce(&PasswordsPrivateChangePasswordManagerPinFunction::
+                           OnPinChangeCompleted,
+                       this));
+    return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
   return RespondNow(Error(kNoDelegateError));
+}
+
+void PasswordsPrivateChangePasswordManagerPinFunction::OnPinChangeCompleted(
+    bool success) {
+  Respond(WithArguments(success));
 }
 
 ResponseAction PasswordsPrivateIsPasswordManagerPinAvailableFunction::Run() {

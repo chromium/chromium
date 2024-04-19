@@ -473,6 +473,9 @@ class PasswordsPrivateChangePasswordManagerPinFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+ private:
+  void OnPinChangeCompleted(bool success);
 };
 
 class PasswordsPrivateIsPasswordManagerPinAvailableFunction

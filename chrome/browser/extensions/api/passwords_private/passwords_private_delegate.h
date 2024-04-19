@@ -256,7 +256,9 @@ class PasswordsPrivateDelegate
                                        std::string file_path) = 0;
 
   // Starts the flow for changing the password manager PIN.
-  virtual void ChangePasswordManagerPin(content::WebContents* web_contents) = 0;
+  virtual void ChangePasswordManagerPin(
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> success_callback) = 0;
 
   // Returns true if it's allowed to change the password manager PIN, if it
   // exists.

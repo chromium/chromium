@@ -81,7 +81,7 @@ class ChangePinControllerImpl
   bool IsChangePinFlowAvailable() override;
 
   // Starts the change PIN flow. Returns true if the flow has started.
-  bool StartChangePin() override;
+  void StartChangePin(SuccessCallback callback) override;
 
   // AuthenticatorRequestDialogModel::Observer
   void CancelAuthenticatorRequest() override;
@@ -96,8 +96,10 @@ class ChangePinControllerImpl
 
   const bool enclave_enabled_;
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  SuccessCallback notify_pin_change_callback_;
   // EnclaveManager is a KeyedService.
   raw_ptr<EnclaveManager> enclave_manager_ = nullptr;
+  // SyncService is a KeyedService.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
   std::optional<std::string> rapt_ = std::nullopt;
 

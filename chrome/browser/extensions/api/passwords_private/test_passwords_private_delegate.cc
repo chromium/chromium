@@ -434,8 +434,10 @@ void TestPasswordsPrivateDelegate::ShowExportedFileInShell(
 }
 
 void TestPasswordsPrivateDelegate::ChangePasswordManagerPin(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> success_callback) {
   change_password_manager_pin_called_ = true;
+  std::move(success_callback).Run(false);
 }
 
 bool TestPasswordsPrivateDelegate::IsPasswordManagerPinAvailable(

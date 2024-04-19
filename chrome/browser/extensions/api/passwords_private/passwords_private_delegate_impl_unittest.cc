@@ -165,7 +165,10 @@ class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
 class MockChangePinController : public ChangePinController {
  public:
   MOCK_METHOD(bool, IsChangePinFlowAvailable, (), (override));
-  MOCK_METHOD(bool, StartChangePin, (), (override));
+  MOCK_METHOD(void,
+              StartChangePin,
+              (base::OnceCallback<void(bool)>),
+              (override));
 };
 
 class FakePasswordManagerPorter : public PasswordManagerPorterInterface {
@@ -1862,7 +1865,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ShareNonExistentPassword) {
   delegate->SharePassword(/*id=*/100, recipients);
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, ChangePin) {
+TEST_F(PasswordsPrivateDelegateImplTest, IsChangePinFlowAvailable) {
   auto delegate = CreateDelegate();
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
 

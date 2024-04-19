@@ -935,11 +935,12 @@ void PasswordsPrivateDelegateImpl::ShowExportedFileInShell(
 }
 
 void PasswordsPrivateDelegateImpl::ChangePasswordManagerPin(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> success_callback) {
   ChangePinController* controller =
       ChangePinController::ForWebContents(web_contents);
   if (controller) {
-    controller->StartChangePin();
+    controller->StartChangePin(std::move(success_callback));
   }
 }
 

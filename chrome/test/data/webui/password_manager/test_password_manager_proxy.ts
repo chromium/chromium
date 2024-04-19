@@ -25,6 +25,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     isAccountStorageDefault: boolean,
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
     isPasswordManagerPinAvailable: boolean,
+    changePasswordManagerPinSuccesful: boolean|null,
   };
 
   listeners: {
@@ -103,6 +104,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       isAccountStorageDefault: false,
       passwords: [],
       isPasswordManagerPinAvailable: false,
+      changePasswordManagerPinSuccesful: null,
     };
 
     // Holds listeners so they can be called when needed.
@@ -383,6 +385,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   changePasswordManagerPin() {
     this.methodCalled('changePasswordManagerPin');
+    if (this.data.changePasswordManagerPinSuccesful !== null) {
+      return Promise.resolve(this.data.changePasswordManagerPinSuccesful);
+    }
+    return Promise.reject(new Error());
   }
 
   isPasswordManagerPinAvailable(): Promise<boolean> {

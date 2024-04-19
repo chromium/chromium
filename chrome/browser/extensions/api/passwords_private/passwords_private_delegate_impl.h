@@ -132,7 +132,9 @@ class PasswordsPrivateDelegateImpl
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
   void ShowExportedFileInShell(content::WebContents* web_contents,
                                std::string file_path) override;
-  void ChangePasswordManagerPin(content::WebContents* web_contents) override;
+  void ChangePasswordManagerPin(
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> success_callback) override;
   bool IsPasswordManagerPinAvailable(
       content::WebContents* web_contents) override;
 

@@ -382,7 +382,7 @@ export interface PasswordManagerProxy {
   dismissSafetyHubPasswordMenuNotification(): void;
 
   /** Starts the flow for changing Password Manager PIN. */
-  changePasswordManagerPin(): void;
+  changePasswordManagerPin(): Promise<boolean>;
 
   /** Checks whether changing the Password Manager PIN is possible. */
   isPasswordManagerPinAvailable(): Promise<boolean>;
@@ -616,7 +616,7 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   changePasswordManagerPin() {
-    chrome.passwordsPrivate.changePasswordManagerPin();
+    return chrome.passwordsPrivate.changePasswordManagerPin();
   }
 
   isPasswordManagerPinAvailable() {

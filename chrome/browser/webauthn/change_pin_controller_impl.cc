@@ -40,7 +40,11 @@ ChangePinControllerImpl::ChangePinControllerImpl(
   model_observation_.Observe(&model_->observers);
 }
 
-ChangePinControllerImpl::~ChangePinControllerImpl() = default;
+ChangePinControllerImpl::~ChangePinControllerImpl() {
+  if (!notify_pin_change_callback_.is_null()) {
+    std::move(notify_pin_change_callback_).Run(false);
+  }
+}
 
 // static
 ChangePinControllerImpl* ChangePinControllerImpl::ForWebContents(
@@ -68,17 +72,21 @@ bool ChangePinControllerImpl::IsChangePinFlowAvailable() {
   return sync_enabled && enclave_valid;
 }
 
-bool ChangePinControllerImpl::StartChangePin() {
+void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {
   if (!IsChangePinFlowAvailable()) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
+  notify_pin_change_callback_ = std::move(callback);
   // TODO(enclave): use local UV instead of GPM reauth when available.
   model_->SetStep(Step::kGPMReauthAccount);
-  return true;
 }
 
 void ChangePinControllerImpl::CancelAuthenticatorRequest() {
   // User clicked "Cancel" in the GPM dialog.
+  if (!notify_pin_change_callback_.is_null()) {
+    std::move(notify_pin_change_callback_).Run(false);
+  }
   Reset();
 }
 
@@ -89,6 +97,9 @@ void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
 
 void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
   // User closed the reauth window.
+  if (!notify_pin_change_callback_.is_null()) {
+    std::move(notify_pin_change_callback_).Run(false);
+  }
   Reset();
 }
 
@@ -119,6 +130,8 @@ void ChangePinControllerImpl::OnGpmPinChanged(bool success) {
     model_->SetStep(Step::kGPMError);
     return;
   }
-  // TODO(derinel): Display success UI
   Reset();
+  if (!notify_pin_change_callback_.is_null()) {
+    std::move(notify_pin_change_callback_).Run(success);
+  }
 }

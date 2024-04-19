@@ -231,7 +231,7 @@ declare global {
       export function switchBiometricAuthBeforeFillingState(): void;
       export function showAddShortcutDialog(): void;
       export function showExportedFileInShell(filePath: string): void;
-      export function changePasswordManagerPin(): void;
+      export function changePasswordManagerPin(): Promise<boolean>;
       export function isPasswordManagerPinAvailable(): Promise<boolean>;
 
       export const onSavedPasswordsListChanged:

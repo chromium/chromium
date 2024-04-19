@@ -28,9 +28,7 @@ bool ChangePinController::IsChangePinFlowAvailable() {
   return false;
 }
 
-bool ChangePinController::StartChangePin() {
-  return false;
-}
+void ChangePinController::StartChangePin(SuccessCallback callback) {}
 
 // static
 ChangePinController* ChangePinController::ForWebContents(
