@@ -653,8 +653,7 @@ public class CustomTabsConnection {
         if (experimentIds == null) return;
         // When ids are set through cct, they should not override existing ids.
         boolean override = false;
-        UmaSessionStats.registerExternalExperiment(
-                BaseCustomTabActivity.GSA_FALLBACK_STUDY_NAME, experimentIds, override);
+        UmaSessionStats.registerExternalExperiment(experimentIds, override);
     }
 
     private void doMayLaunchUrlOnUiThread(

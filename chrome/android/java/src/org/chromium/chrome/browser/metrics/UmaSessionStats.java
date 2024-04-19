@@ -235,14 +235,13 @@ public class UmaSessionStats {
     public static void registerExternalExperiment(String fallbackStudyName, int[] experimentIds) {
         // TODO(crbug.com/40142802): Remove this method once all callers have moved onto
         // the overload below.
-        registerExternalExperiment(fallbackStudyName, experimentIds, true);
+        registerExternalExperiment(experimentIds, true);
     }
 
     public static void registerExternalExperiment(
-            String fallbackStudyName, int[] experimentIds, boolean overrideExistingIds) {
+            int[] experimentIds, boolean overrideExistingIds) {
         assert isMetricsServiceAvailable();
-        UmaSessionStatsJni.get()
-                .registerExternalExperiment(fallbackStudyName, experimentIds, overrideExistingIds);
+        UmaSessionStatsJni.get().registerExternalExperiment(experimentIds, overrideExistingIds);
     }
 
     public static void registerSyntheticFieldTrial(String trialName, String groupName) {
@@ -297,8 +296,7 @@ public class UmaSessionStats {
 
         void umaEndSession(long nativeUmaSessionStats, UmaSessionStats caller);
 
-        void registerExternalExperiment(
-                String studyName, int[] experimentIds, boolean overrideExistingIds);
+        void registerExternalExperiment(int[] experimentIds, boolean overrideExistingIds);
 
         void registerSyntheticFieldTrial(
                 String trialName,

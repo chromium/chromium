@@ -325,11 +325,8 @@ static void JNI_UmaSessionStats_UpdateMetricsServiceState(
 
 static void JNI_UmaSessionStats_RegisterExternalExperiment(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jfallback_study_name,
     const JavaParamRef<jintArray>& jexperiment_ids,
     jboolean override_existing_ids) {
-  std::string fallback_study_name(
-      ConvertJavaStringToUTF8(env, jfallback_study_name));
   std::vector<int> experiment_ids;
   // A null |jexperiment_ids| is the same as an empty list.
   if (jexperiment_ids) {
@@ -344,8 +341,7 @@ static void JNI_UmaSessionStats_RegisterExternalExperiment(
 
   g_browser_process->metrics_service()
       ->GetSyntheticTrialRegistry()
-      ->RegisterExternalExperiments(fallback_study_name, experiment_ids,
-                                    override_mode);
+      ->RegisterExternalExperiments(experiment_ids, override_mode);
 }
 
 static void JNI_UmaSessionStats_RegisterSyntheticFieldTrial(

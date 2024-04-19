@@ -15,28 +15,23 @@
 namespace variations {
 namespace internal {
 
+// Used to deliver the allowlist via a feature param. If disabled, the
+// allowlist is treated as empty (nothing allowed).
 BASE_FEATURE(kExternalExperimentAllowlist,
              "ExternalExperimentAllowlist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace internal
 
-namespace {
-
-bool IsExternalExperimentAllowlistEnabled() {
-  return base::FeatureList::IsEnabled(internal::kExternalExperimentAllowlist);
-}
-
-}  // namespace
-
 SyntheticTrialRegistry::SyntheticTrialRegistry() = default;
 SyntheticTrialRegistry::~SyntheticTrialRegistry() = default;
 
 void SyntheticTrialRegistry::AddObserver(SyntheticTrialObserver* observer) {
   synthetic_trial_observer_list_.AddObserver(observer);
-  if (!synthetic_trial_groups_.empty())
+  if (!synthetic_trial_groups_.empty()) {
     observer->OnSyntheticTrialsChanged(synthetic_trial_groups_, {},
                                        synthetic_trial_groups_);
+  }
 }
 
 void SyntheticTrialRegistry::RemoveObserver(SyntheticTrialObserver* observer) {
@@ -44,15 +39,13 @@ void SyntheticTrialRegistry::RemoveObserver(SyntheticTrialObserver* observer) {
 }
 
 void SyntheticTrialRegistry::RegisterExternalExperiments(
-    const std::string& fallback_study_name,
     const std::vector<int>& experiment_ids,
     SyntheticTrialRegistry::OverrideMode mode) {
-  DCHECK(!fallback_study_name.empty());
-
   base::FieldTrialParams params;
-  if (IsExternalExperimentAllowlistEnabled() &&
-      !GetFieldTrialParamsByFeature(internal::kExternalExperimentAllowlist,
-                                    &params)) {
+  GetFieldTrialParamsByFeature(internal::kExternalExperimentAllowlist, &params);
+  // If no params (empty allowlist or feature disabled), no external experiments
+  // are allowed.
+  if (params.empty()) {
     return;
   }
 
@@ -76,8 +69,8 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
   const base::TimeTicks start_time = base::TimeTicks::Now();
   for (int experiment_id : experiment_ids) {
     const std::string experiment_id_str = base::NumberToString(experiment_id);
-    const base::StringPiece study_name =
-        GetStudyNameForExpId(fallback_study_name, params, experiment_id_str);
+    const std::string_view study_name =
+        GetStudyNameForExpId(params, experiment_id_str);
     if (study_name.empty())
       continue;
 
@@ -140,17 +133,13 @@ void SyntheticTrialRegistry::RegisterSyntheticFieldTrial(
   NotifySyntheticTrialObservers({trial_group}, {});
 }
 
-base::StringPiece SyntheticTrialRegistry::GetStudyNameForExpId(
-    const std::string& fallback_study_name,
+std::string_view SyntheticTrialRegistry::GetStudyNameForExpId(
     const base::FieldTrialParams& params,
     const std::string& experiment_id) {
-  if (!IsExternalExperimentAllowlistEnabled()) {
-    return fallback_study_name;
-  }
-
   const auto it = params.find(experiment_id);
-  if (it == params.end())
-    return base::StringPiece();
+  if (it == params.end()) {
+    return std::string_view();
+  }
 
   // To support additional parameters being passed, besides the study name,
   // truncate the study name at the first ',' character.
@@ -160,7 +149,7 @@ base::StringPiece SyntheticTrialRegistry::GetStudyNameForExpId(
   const size_t comma_pos = it->second.find(',');
   const size_t truncate_pos =
       (comma_pos == std::string::npos ? it->second.length() : comma_pos);
-  return base::StringPiece(it->second.data(), truncate_pos);
+  return std::string_view(it->second.data(), truncate_pos);
 }
 
 void SyntheticTrialRegistry::NotifySyntheticTrialObservers(
@@ -175,7 +164,7 @@ void SyntheticTrialRegistry::NotifySyntheticTrialObservers(
 void SyntheticTrialRegistry::GetSyntheticFieldTrialsOlderThan(
     base::TimeTicks time,
     std::vector<ActiveGroupId>* synthetic_trials,
-    base::StringPiece suffix) const {
+    std::string_view suffix) const {
   DCHECK(synthetic_trials);
   synthetic_trials->clear();
   base::FieldTrial::ActiveGroups active_groups;

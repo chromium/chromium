@@ -6,6 +6,7 @@
 #define COMPONENTS_VARIATIONS_SYNTHETIC_TRIAL_REGISTRY_H_
 
 #include <vector>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
@@ -63,20 +64,16 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   // Registers a list of experiment ids coming from an external application.
   // The input ids are in the VariationID format.
   //
-  // When |enable_external_experiment_allowlist| is true, the supplied ids must
-  // have corresponding entries in the "ExternalExperimentAllowlist" (coming via
-  // a feature param) to be applied. The allowlist also supplies the
-  // corresponding trial name that should be used for reporting to UMA.
-  //
-  // When |enable_external_experiment_allowlist| is false, |fallback_study_name|
-  // will be used as the trial name for all provided experiment ids.
+  // The supplied ids must have corresponding entries in the
+  // "ExternalExperimentAllowlist" (coming via a feature param) to be applied.
+  // The allowlist also supplies the corresponding trial name that should be
+  // used for reporting to UMA.
   //
   // If |mode| is kOverrideExistingIds, this API clears previously-registered
   // external experiment ids, replacing them with the new list (which may be
   // empty). If |mode| is kDoNotOverrideExistingIds, any new ids that are not
   // already registered will be added, but existing ones will not be replaced.
-  void RegisterExternalExperiments(const std::string& fallback_study_name,
-                                   const std::vector<int>& experiment_ids,
+  void RegisterExternalExperiments(const std::vector<int>& experiment_ids,
                                    OverrideMode mode);
 
  private:
@@ -120,12 +117,10 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   void RegisterSyntheticFieldTrial(const SyntheticTrialGroup& trial_group);
 
   // Returns the study name corresponding to |experiment_id| from the allowlist
-  // contained in |params| if the allowlist is enabled, otherwise returns
-  // |fallback_study_name|. An empty string piece is returned when the
+  // contained in |params|. An empty string view is returned when the
   // experiment is not in the allowlist.
-  base::StringPiece GetStudyNameForExpId(const std::string& fallback_study_name,
-                                         const base::FieldTrialParams& params,
-                                         const std::string& experiment_id);
+  std::string_view GetStudyNameForExpId(const base::FieldTrialParams& params,
+                                        const std::string& experiment_id);
 
   // Returns a list of synthetic field trials that are either (1) older than
   // |time|, or (2) specify |kCurrentLog| as |annotation_mode|. The trial and
@@ -133,7 +128,7 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   void GetSyntheticFieldTrialsOlderThan(
       base::TimeTicks time,
       std::vector<ActiveGroupId>* synthetic_trials,
-      base::StringPiece suffix = "") const;
+      std::string_view suffix = "") const;
 
   // SyntheticTrialSyncer needs to know all current synthetic trial
   // groups after launching new child processes.

@@ -1856,13 +1856,11 @@ public class CustomTabActivityTest {
         CriteriaHelper.pollUiThread(activity::isFinishing);
     }
 
-    // The flags are necessary to ensure the experiment id 101 is honored.
+    // The flag is necessary to ensure the experiment id 101 is honored.
     @Test
     @SmallTest
     @CommandLineFlags.Add({
-        "disable-features=ExternalExperimentAllowlist",
-        "force-fieldtrials=Trial/Group",
-        "force-fieldtrial-params=Trial.Group:101/x"
+        "enable-features=ExternalExperimentAllowlist:101/x",
     })
     public void testExperimentIds() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
@@ -1882,13 +1880,11 @@ public class CustomTabActivityTest {
                 });
     }
 
-    // The flags are necessary to ensure the experiment id 101 is honored.
+    // The flag is necessary to ensure the experiment id 101 is honored.
     @Test
     @SmallTest
     @CommandLineFlags.Add({
-        "disable-features=ExternalExperimentAllowlist",
-        "force-fieldtrials=Trial/Group",
-        "force-fieldtrial-params=Trial.Group:101/x"
+        "enable-features=ExternalExperimentAllowlist:101/x",
     })
     public void testExperimentIdsFromMayLaunchUrl() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
