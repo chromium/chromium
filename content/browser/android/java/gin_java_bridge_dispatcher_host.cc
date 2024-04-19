@@ -555,6 +555,14 @@ void GinJavaBridgeDispatcherHost::GetObject(
   object_receivers_.Add(
       this, std::move(receiver),
       std::make_pair(receivers_.current_context(), object_id));
+
+  // Add a holder reference because the object may become unnamed
+  // yet the renderer can still hold a reference to it. See
+  // crbug.com/333171288.
+  scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
+  if (object.get()) {
+    object->AddHolder(receivers_.current_context());
+  }
 }
 
 void GinJavaBridgeDispatcherHost::ObjectWrapperDeleted(int32_t object_id) {
