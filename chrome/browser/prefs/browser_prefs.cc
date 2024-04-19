@@ -1789,6 +1789,11 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOopPrintDriversAllowedByPolicy, true);
 #endif
 
+#if BUILDFLAG(ENABLE_PDF)
+  registry->RegisterBooleanPref(prefs::kPdfViewerOutOfProcessIframeEnabled,
+                                true);
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(prefs::kChromeForTestingAllowed, true);
 #endif

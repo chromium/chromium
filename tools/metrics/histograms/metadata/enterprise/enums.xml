@@ -2132,6 +2132,7 @@ chromium-metrics-reviews@google.com.
   <int value="1253" label="ChromeDataRegionSetting"/>
   <int value="1254" label="ContextualGoogleIntegrationsEnabled"/>
   <int value="1255" label="ContextualGoogleIntegrationsConfiguration"/>
+  <int value="1256" label="PdfViewerOutOfProcessIframeEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

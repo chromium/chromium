@@ -661,6 +661,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPdfUseSkiaRendererEnabled,
     prefs::kPdfUseSkiaRendererEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kPdfViewerOutOfProcessIframeEnabled,
+    prefs::kPdfViewerOutOfProcessIframeEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(ENABLE_PDF)
   { key::kPolicyRefreshRate,
     policy_prefs::kUserPolicyRefreshRate,

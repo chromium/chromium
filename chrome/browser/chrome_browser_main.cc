@@ -190,6 +190,7 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/http/http_network_layer.h"
 #include "net/http/http_stream_factory.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
@@ -328,6 +329,11 @@
 #include "chrome/browser/printing/oop_features.h"
 #include "chrome/browser/printing/printing_init.h"
 #endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_pref_names.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/plugin_prefs.h"
@@ -1700,6 +1706,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // needs to read prefs that get set after that runs.
   browser_process_->intranet_redirect_detector();
 #endif
+
+#if BUILDFLAG(ENABLE_PDF)
+  chrome_pdf::features::SetIsOopifPdfPolicyEnabled(
+      g_browser_process->local_state()->GetBoolean(
+          prefs::kPdfViewerOutOfProcessIframeEnabled));
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
