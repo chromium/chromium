@@ -467,10 +467,11 @@ void HlsManifestDemuxerEngine::UpdateMediaPlaylistForRole(
 }
 
 void HlsManifestDemuxerEngine::OnRenditionsReselected(
+    hls::AdaptationReason reason,
     const hls::VariantStream* variant,
     const hls::AudioRendition* audio_override_rendition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-
+  stats_reporter_.OnAdaptation(reason);
   ProcessAsyncAction<PipelineStatus>(
       base::BindOnce(&HlsManifestDemuxerEngine::OnStatus,
                      weak_factory_.GetWeakPtr()),
@@ -526,6 +527,7 @@ void HlsManifestDemuxerEngine::UpdateHlsDataSourceStats(
   }
   auto stream = std::move(result).value();
   origin_tainted_ |= stream->would_taint_origin();
+  stats_reporter_.SetWouldTaintOrigin(origin_tainted_);
   total_stream_memory_ = stream->memory_usage();
   std::move(cb).Run(std::move(stream));
 }
@@ -662,6 +664,7 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
       if (!parse_info.allow_multivariant_playlist) {
         return Abort(HlsDemuxerStatus::Codes::kRecursiveMultivariantPlaylists);
       }
+      stats_reporter_.SetIsMultivariantPlaylist(true);
       auto playlist = hls::MultivariantPlaylist::Parse(
           stream->AsString(), parse_info.uri, (*m_info).version);
       if (!playlist.has_value()) {
@@ -671,6 +674,12 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
                                     std::move(playlist).value());
     }
     case hls::Playlist::Kind::kMediaPlaylist: {
+      if (parse_info.allow_multivariant_playlist) {
+        // Only a root playlist is allowed to be multivariant, so if the root
+        // is only a media playlist, then this entire playback is not
+        // multivariant.
+        stats_reporter_.SetIsMultivariantPlaylist(false);
+      }
       auto playlist = ParseMediaPlaylistFromStringSource(
           stream->AsString(), parse_info.uri, (*m_info).version);
       if (!playlist.has_value()) {
@@ -866,6 +875,7 @@ void HlsManifestDemuxerEngine::OnStreamContainerDetermined(
     return;
   }
   is_seekable_ = seekable;
+  stats_reporter_.SetIsLiveContent(!seekable);
   renditions_[parse_info.role] = std::move(rendition);
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "media", "HLS::DetermineStreamContainerAndCodecs", this);

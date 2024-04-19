@@ -97,7 +97,9 @@ class HlsRenditionManagerTest : public testing::Test {
  public:
   MOCK_METHOD(void, VariantSelected, (std::string, std::string), ());
 
-  void _VariantSelected(const VariantStream* vs, const AudioRendition* ar) {
+  void _VariantSelected(AdaptationReason,
+                        const VariantStream* vs,
+                        const AudioRendition* ar) {
     std::string variant_path = "NONE";
     std::string rendition_path = "NONE";
     if (vs) {
@@ -112,6 +114,12 @@ class HlsRenditionManagerTest : public testing::Test {
 
   decltype(auto) GetVariantCb() {
     return base::BindRepeating(&HlsRenditionManagerTest::_VariantSelected,
+                               base::Unretained(this),
+                               AdaptationReason::kUserSelection);
+  }
+
+  decltype(auto) GetVariantWithAdaptation() {
+    return base::BindRepeating(&HlsRenditionManagerTest::_VariantSelected,
                                base::Unretained(this));
   }
 
@@ -121,7 +129,7 @@ class HlsRenditionManagerTest : public testing::Test {
     builder.AppendLine("#EXTM3U");
     ([&] { builder.AppendLine(strings); }(), ...);
     return RenditionManager(builder.Parse(),
-                            base::BindRepeating(GetVariantCb()),
+                            base::BindRepeating(GetVariantWithAdaptation()),
                             base::BindRepeating(&GetCodecSupportType));
   }
 
@@ -135,7 +143,7 @@ class HlsRenditionManagerTest : public testing::Test {
     builder.AppendLine("#EXTM3U");
     ([&] { builder.AppendLine(strings); }(), ...);
     return RenditionManager(builder.Parse(),
-                            base::BindRepeating(GetVariantCb()),
+                            base::BindRepeating(GetVariantWithAdaptation()),
                             std::move(support_cb));
   }
 };

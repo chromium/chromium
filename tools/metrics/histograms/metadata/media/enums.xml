@@ -26,6 +26,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AdaptationReason">
+  <int value="0" label="kUserSelection"/>
+  <int value="1" label="kResolutionChange"/>
+  <int value="2" label="kNetworkUpgrade"/>
+  <int value="3" label="kNetworkDowngrade"/>
+</enum>
+
 <enum name="ApplySubCaptureTargetResult">
   <int value="0" label="Ok"/>
   <int value="1" label="TimedOut"/>

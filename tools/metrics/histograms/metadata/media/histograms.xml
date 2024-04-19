@@ -3900,6 +3900,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.HLS.Adaptation" enum="AdaptationReason"
+    expires_after="2024-09-11">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs what caused HLS stream adaptation. Recorded each time adaptation takes
+    place.
+  </summary>
+</histogram>
+
+<histogram name="Media.HLS.CrossOriginContent" enum="Boolean"
+    expires_after="2024-09-11">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs whether HLS playback uses cross-origin content. Recorded once per
+    player.
+  </summary>
+</histogram>
+
+<histogram name="Media.HLS.LiveContent" enum="Boolean"
+    expires_after="2024-09-11">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs whether HLS playback is for Live content, as opposed to video-on-demand
+    (VOD) content. Recorded once per player.
+  </summary>
+</histogram>
+
+<histogram name="Media.HLS.MultivariantPlaylist" enum="Boolean"
+    expires_after="2024-09-11">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs whether HLS playback uses a multivariant (as opposed to plain media)
+    playlist. Recorded once per player.
+  </summary>
+</histogram>
+
 <histogram name="Media.InitializeRendererTimeout" enum="CallbackTimeoutStatus"
     expires_after="2025-02-27">
   <owner>xhwang@chromium.org</owner>
