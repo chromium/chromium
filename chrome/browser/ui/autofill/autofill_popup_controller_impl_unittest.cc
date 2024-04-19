@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
+#include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +48,8 @@ EqualsSuggestionPosition(AutofillPopupDelegate::SuggestionPosition position) {
 
 }  // namespace
 
-using AutofillPopupControllerImplTest = AutofillSuggestionControllerTestBase<>;
+using AutofillPopupControllerImplTest = AutofillSuggestionControllerTestBase<
+    TestAutofillPopupControllerAutofillClient<>>;
 
 TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
   base::WeakPtr<AutofillSuggestionController> sub_controller =
@@ -379,7 +381,8 @@ class MockAxPlatformNode : public ui::AXPlatformNodeBase {
 
 using AutofillPopupControllerImplTestAccessibilityBase =
     AutofillSuggestionControllerTestBase<
-        NiceMock<AutofillPopupControllerForPopupAxTest>,
+        TestAutofillPopupControllerAutofillClient<
+            NiceMock<AutofillPopupControllerForPopupAxTest>>,
         NiceMock<MockAutofillDriver>>;
 class AutofillPopupControllerImplTestAccessibility
     : public AutofillPopupControllerImplTestAccessibilityBase {

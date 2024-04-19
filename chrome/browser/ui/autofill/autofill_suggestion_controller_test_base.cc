@@ -8,7 +8,26 @@
 #include <optional>
 #include <utility>
 
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+
 namespace autofill {
+
+BrowserAutofillManagerForPopupTest::BrowserAutofillManagerForPopupTest(
+    AutofillDriver* driver)
+    : BrowserAutofillManager(driver, "en-US") {
+  test_api(*this).SetExternalDelegate(
+      std::make_unique<
+          ::testing::NiceMock<AutofillExternalDelegateForPopupTest>>(this));
+}
+
+BrowserAutofillManagerForPopupTest::~BrowserAutofillManagerForPopupTest() =
+    default;
+
+AutofillExternalDelegateForPopupTest&
+BrowserAutofillManagerForPopupTest::external_delegate() {
+  return static_cast<AutofillExternalDelegateForPopupTest&>(
+      *test_api(*this).external_delegate());
+}
 
 AutofillExternalDelegateForPopupTest::AutofillExternalDelegateForPopupTest(
     BrowserAutofillManager* autofill_manager)

@@ -10436,7 +10436,13 @@ static_library("test_support_unit") {
   }
 
   if (is_android) {
+    sources += [ "../browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h" ]
+
     deps += [ "//chrome/browser/keyboard_accessory/test_utils/android" ]
+  } else {
+    sources += [
+      "../browser/ui/autofill/test_autofill_popup_controller_autofill_client.h",
+    ]
   }
 
   if (enable_bound_session_credentials) {

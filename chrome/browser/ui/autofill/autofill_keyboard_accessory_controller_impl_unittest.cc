@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
+#include "chrome/browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,7 +24,8 @@ using ::testing::_;
 using ::testing::ElementsAre;
 
 using AutofillKeyboardAccessoryControllerImplTest =
-    AutofillSuggestionControllerTestBase<>;
+    AutofillSuggestionControllerTestBase<
+        TestAutofillKeyboardAccessoryControllerAutofillClient<>>;
 
 std::vector<Suggestion> CreateSuggestionsWithClearFormEntry(
     size_t clear_form_offset) {

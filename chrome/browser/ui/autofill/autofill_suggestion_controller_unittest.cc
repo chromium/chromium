@@ -20,8 +20,8 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
-#include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -59,6 +59,12 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_utils.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
+#else
+#include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
+#endif
+
 namespace autofill {
 namespace {
 
@@ -72,6 +78,13 @@ using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Optional;
 using ::testing::Return;
+
+using TestAutofillSuggestionControllerAutofillClient =
+#if BUILDFLAG(IS_ANDROID)
+    TestAutofillKeyboardAccessoryControllerAutofillClient<>;
+#else
+    TestAutofillPopupControllerAutofillClient<>;
+#endif
 
 content::RenderFrameHost* CreateAndNavigateChildFrame(
     content::RenderFrameHost* parent,
@@ -124,7 +137,8 @@ content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
 
 }  // namespace
 
-using AutofillSuggestionControllerTest = AutofillSuggestionControllerTestBase<>;
+using AutofillSuggestionControllerTest = AutofillSuggestionControllerTestBase<
+    TestAutofillSuggestionControllerAutofillClient>;
 
 TEST_F(AutofillSuggestionControllerTest, RemoveSuggestion) {
   ShowSuggestions(manager(),
@@ -621,7 +635,7 @@ class AutofillSuggestionControllerTestHidingLogic
                      ->GetWeakDocumentPtr();
   }
 
-  TestManager& sub_manager() { return manager(sub_frame()); }
+  Manager& sub_manager() { return manager(sub_frame()); }
 
   content::RenderFrameHost* sub_frame() {
     return sub_frame_.AsRenderFrameHostIfValid();

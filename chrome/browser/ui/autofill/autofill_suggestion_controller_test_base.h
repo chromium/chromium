@@ -12,9 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -25,10 +23,8 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,27 +35,24 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl.h"
+#else
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 
+class AutofillExternalDelegateForPopupTest;
 class AutofillSuggestionControllerForTest;
 
-namespace internal {
+// A `BrowserAutofillManager` with a modified `AutofillExternalDelegate` that
+// allows verifying interactions with the popup.
+class BrowserAutofillManagerForPopupTest : public BrowserAutofillManager {
+ public:
+  explicit BrowserAutofillManagerForPopupTest(AutofillDriver* driver);
+  ~BrowserAutofillManagerForPopupTest() override;
 
-// Satisfied if `D` is derived from either `B` or a mock wrapper around `B`.
-template <typename D, typename B>
-concept DerivedFromClassOrMock =
-    std::derived_from<D, B> || std::derived_from<D, ::testing::NaggyMock<B>> ||
-    std::derived_from<D, ::testing::NiceMock<B>> ||
-    std::derived_from<D, ::testing::StrictMock<B>>;
-
-template <typename Controller, typename Driver>
-concept ControllerAndDriver =
-    DerivedFromClassOrMock<Controller, AutofillSuggestionControllerForTest> &&
-    DerivedFromClassOrMock<Driver, ContentAutofillDriver>;
-
-}  // namespace internal
+  AutofillExternalDelegateForPopupTest& external_delegate();
+};
 
 // This text fixture is intended for unit tests of the Autofill popup
 // controller, which controls the Autofill popup on Desktop and the Keyboard
@@ -77,10 +70,12 @@ concept ControllerAndDriver =
 // `AutofillClient`, or the `AutofillPopupView`. This test fixture sets these up
 // in a way that allows for controller testing.
 //
-// Once setup, the test fixture should allow writing popup controller unit tests
-// that closely mirror the production setup. Example:
+// Once setup, the test fixture should allow writing suggestion controller unit
+// tests (on both Desktop and Android) that closely mirror the production setup.
+// Example for Desktop:
 //
-// using SampleTest = AutofillSuggestionControllerTestBase<>;
+// using SampleTest = AutofillSuggestionControllerTestBase<
+//     TestAutofillPopupControllerAutofillClient<>>;
 //
 // TEST_F(SampleTest, AcceptSuggestionWorksAfter500Ms) {
 //   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
@@ -88,12 +83,17 @@ concept ControllerAndDriver =
 //   task_environment()->FastForwardBy(base::Milliseconds(500));
 //   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 // }
-template <typename Controller =
-              ::testing::NiceMock<AutofillSuggestionControllerForTest>,
-          typename Driver = ContentAutofillDriver>
-  requires(internal::ControllerAndDriver<Controller, Driver>)
-class AutofillSuggestionControllerTestBase :
-public ChromeRenderViewHostTestHarness {
+//
+// The same test can be run on for the Keyboard Accessory on Android by simply
+// changing the test fixture template parameter:
+//
+// using SampleTest = AutofillSuggestionControllerTestBase<
+//     TestAutofillKeyboardAccessoryControllerAutofillClient<>>;
+template <typename Client, typename Driver = ContentAutofillDriver>
+  requires(std::derived_from<Client, ContentAutofillClient> &&
+           std::derived_from<Driver, ContentAutofillDriver>)
+class AutofillSuggestionControllerTestBase
+    : public ChromeRenderViewHostTestHarness {
  public:
   AutofillSuggestionControllerTestBase()
       : ChromeRenderViewHostTestHarness(
@@ -128,20 +128,19 @@ public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  class TestManager;
-  class TestClient;
+  using Manager = BrowserAutofillManagerForPopupTest;
 
   content::RenderFrameHost* main_frame() {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  TestClient& client() { return *autofill_client_injector_[web_contents()]; }
+  Client& client() { return *autofill_client_injector_[web_contents()]; }
 
   Driver& driver(content::RenderFrameHost* rfh = nullptr) {
     return *autofill_driver_injector_[rfh ? rfh : main_frame()];
   }
 
-  TestManager& manager(content::RenderFrameHost* rfh = nullptr) {
+  Manager& manager(content::RenderFrameHost* rfh = nullptr) {
     return *autofill_manager_injector_[rfh ? rfh : main_frame()];
   }
 
@@ -153,7 +152,7 @@ public ChromeRenderViewHostTestHarness {
   // Shows empty suggestions with the popup_item_id ids passed as
   // `popup_item_ids`.
   void ShowSuggestions(
-      TestManager& manager,
+      Manager& manager,
       const std::vector<PopupItemId>& popup_item_ids,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kFormControlElementClicked) {
@@ -166,7 +165,7 @@ public ChromeRenderViewHostTestHarness {
   }
 
   void ShowSuggestions(
-      TestManager& manager,
+      Manager& manager,
       std::vector<Suggestion> suggestions,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kFormControlElementClicked) {
@@ -190,9 +189,9 @@ public ChromeRenderViewHostTestHarness {
  private:
   ::autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
 
-  TestAutofillClientInjector<TestClient> autofill_client_injector_;
+  TestAutofillClientInjector<Client> autofill_client_injector_;
   TestAutofillDriverInjector<Driver> autofill_driver_injector_;
-  TestAutofillManagerInjector<TestManager> autofill_manager_injector_;
+  TestAutofillManagerInjector<Manager> autofill_manager_injector_;
 
 #if BUILDFLAG(IS_ANDROID)
   ::testing::NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
@@ -226,112 +225,6 @@ class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
               (const Suggestion&),
               (override));
   MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
-};
-
-// A `BrowserAutofillManager` with a modified `AutofillExternalDelegate` that
-// allows verifying interactions with the popup.
-template <typename Controller, typename Driver>
-  requires(internal::ControllerAndDriver<Controller, Driver>)
-class AutofillSuggestionControllerTestBase<Controller, Driver>::TestManager
-    : public BrowserAutofillManager {
- public:
-  explicit TestManager(AutofillDriver* driver)
-      : BrowserAutofillManager(driver, "en-US") {
-    test_api(*this).SetExternalDelegate(
-        std::make_unique<
-            ::testing::NiceMock<AutofillExternalDelegateForPopupTest>>(this));
-  }
-  TestManager(TestManager&) = delete;
-  TestManager& operator=(TestManager&) = delete;
-  ~TestManager() override = default;
-
-  AutofillExternalDelegateForPopupTest& external_delegate() {
-    return static_cast<AutofillExternalDelegateForPopupTest&>(
-        *test_api(*this).external_delegate());
-  }
-};
-
-// A modified `TestContentAutofillClient` that simulates the production behavior
-// of the controller lifetime.
-template <typename Controller, typename Driver>
-  requires(internal::ControllerAndDriver<Controller, Driver>)
-class AutofillSuggestionControllerTestBase<Controller, Driver>::TestClient
-    : public TestContentAutofillClient {
- public:
-  explicit TestClient(content::WebContents* web_contents)
-      : TestContentAutofillClient(web_contents) {
-    ON_CALL(popup_view(), CreateSubPopupView)
-        .WillByDefault(::testing::Return(sub_popup_view().GetWeakPtr()));
-  }
-
-  ~TestClient() override { DoHide(); }
-
-  // Returns the current controller. Controllers are specific to the `manager`'s
-  // AutofillExternalDelegate. Therefore, when there are two consecutive
-  // `popup_controller(x)` and `popup_controller(y)`, the second call hides the
-  // old and creates new controller iff `x` and `y` are distinct.
-  Controller& popup_controller(TestManager& manager) {
-    if (manager_of_last_controller_.get() != &manager) {
-      DoHide();
-      CHECK(!popup_controller_);
-    }
-    if (!popup_controller_) {
-      popup_controller_ =
-          (new Controller(manager.external_delegate().GetWeakPtrForTest(),
-                          &GetWebContents(), gfx::RectF()
-#if BUILDFLAG(IS_ANDROID)
-                                                 ,
-                          show_pwd_migration_warning_callback_.Get()
-#endif
-                              ))
-              ->GetWeakPtr();
-      cast_popup_controller().SetViewForTesting(popup_view_->GetWeakPtr());
-      manager_of_last_controller_ = manager.GetWeakPtr();
-      ON_CALL(cast_popup_controller(), Hide)
-          .WillByDefault([this](PopupHidingReason reason) { DoHide(reason); });
-    }
-    return cast_popup_controller();
-  }
-
-  MockAutofillPopupView& popup_view() { return *popup_view_; }
-
-  MockAutofillPopupView& sub_popup_view() { return *sub_popup_view_; }
-
-#if BUILDFLAG(IS_ANDROID)
-  base::MockCallback<typename Controller::ShowPasswordMigrationWarningCallback>&
-  show_pwd_migration_warning_callback() {
-    return show_pwd_migration_warning_callback_;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
- private:
-  void DoHide(PopupHidingReason reason) {
-    if (popup_controller_) {
-      cast_popup_controller().DoHide(reason);
-    }
-  }
-
-  void DoHide() {
-    if (popup_controller_) {
-      cast_popup_controller().DoHide();
-    }
-  }
-
-  Controller& cast_popup_controller() {
-    return static_cast<Controller&>(*popup_controller_);
-  }
-
-  base::WeakPtr<AutofillSuggestionController> popup_controller_;
-  base::WeakPtr<AutofillManager> manager_of_last_controller_;
-
-  std::unique_ptr<MockAutofillPopupView> popup_view_ =
-      std::make_unique<::testing::NiceMock<MockAutofillPopupView>>();
-  std::unique_ptr<MockAutofillPopupView> sub_popup_view_ =
-      std::make_unique<::testing::NiceMock<MockAutofillPopupView>>();
-#if BUILDFLAG(IS_ANDROID)
-  base::MockCallback<typename Controller::ShowPasswordMigrationWarningCallback>
-      show_pwd_migration_warning_callback_;
-#endif
 };
 
 using AutofillSuggestionControllerForTestBase =
