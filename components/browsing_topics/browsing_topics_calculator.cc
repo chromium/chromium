@@ -70,18 +70,19 @@ base::Time DeriveApiUsageContextDataStartTime(
 void RecordCalculatorResultMetrics(
     const EpochTopics& epoch_topics,
     base::TimeDelta calculation_start_time_since_session_start,
-    bool is_timeout_retry) {
+    int previous_timeout_count) {
   const std::optional<CalculatorResultStatus>& status =
       epoch_topics.calculator_result_status();
   CHECK(status);
 
-  base::UmaHistogramEnumeration(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus2", *status);
-
-  if (is_timeout_retry) {
+  if (previous_timeout_count) {
     base::UmaHistogramEnumeration(
         "BrowsingTopics.EpochTopicsCalculation.TimeoutRetry."
         "CalculatorResultStatus",
+        *status);
+  } else {
+    base::UmaHistogramEnumeration(
+        "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
         *status);
   }
 
@@ -210,7 +211,7 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
     Annotator* annotator,
     const base::circular_deque<EpochTopics>& epochs,
     bool is_manually_triggered,
-    bool is_timeout_retry,
+    int previous_timeout_count,
     base::Time session_start_time,
     CalculateCompletedCallback callback)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
@@ -220,11 +221,16 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
       calculate_completed_callback_(std::move(callback)),
       calculation_time_(base::Time::Now()),
       is_manually_triggered_(is_manually_triggered),
-      is_timeout_retry_(is_timeout_retry),
+      previous_timeout_count_(previous_timeout_count),
       session_start_time_(session_start_time) {
   base::UmaHistogramExactLinear(
       "BrowsingTopics.EpochTopicsCalculation.Started.DaysSinceSessionStart",
       (calculation_time_ - session_start_time_).InDays(),
+      /*exclusive_max=*/30);
+
+  base::UmaHistogramExactLinear(
+      "BrowsingTopics.EpochTopicsCalculation.Started.PreviousTimeoutCount",
+      previous_timeout_count,
       /*exclusive_max=*/30);
 
   history_data_start_time_ = DeriveHistoryDataStartTime(
@@ -239,12 +245,6 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BrowsingTopicsCalculator::CheckCanCalculate,
                                 weak_ptr_factory_.GetWeakPtr()));
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&BrowsingTopicsCalculator::OnCalculationHanging,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::Seconds(30));
 }
 
 BrowsingTopicsCalculator::~BrowsingTopicsCalculator() {
@@ -256,7 +256,7 @@ BrowsingTopicsCalculator::~BrowsingTopicsCalculator() {
 
   RecordCalculatorResultMetrics(
       EpochTopics(calculation_time_, CalculatorResultStatus::kTerminated),
-      calculation_time_ - session_start_time_, is_timeout_retry_);
+      calculation_time_ - session_start_time_, previous_timeout_count_);
 }
 
 uint64_t BrowsingTopicsCalculator::GenerateRandUint64() {
@@ -352,6 +352,12 @@ void BrowsingTopicsCalculator::CheckCanCalculate() {
 
   progress_ = Progress::kApiUsageRequested;
 
+  CHECK(!timeout_timer_.IsRunning());
+  timeout_timer_.Start(
+      FROM_HERE, base::Seconds(30),
+      base::BindOnce(&BrowsingTopicsCalculator::OnCalculationHanging,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // Get the the api usages context map (from the calling context domain to a
   // set of history hosts) so that we can figure out which topics the APIs were
   // called on.
@@ -393,6 +399,9 @@ void BrowsingTopicsCalculator::OnGetRecentBrowsingTopicsApiUsagesCompleted(
 
   progress_ = Progress::kHistoryRequested;
 
+  CHECK(timeout_timer_.IsRunning());
+  timeout_timer_.Reset();
+
   history_service_->QueryHistory(
       std::u16string(), options,
       base::BindOnce(
@@ -430,6 +439,9 @@ void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
 
   progress_ = Progress::kModelRequested;
 
+  CHECK(timeout_timer_.IsRunning());
+  timeout_timer_.Reset();
+
   // When the input is empty, we still want to wait for the model availability
   // status to be known, before querying the model version. Thus we simply
   // always call `NotifyWhenModelAvailable()` first. If the model
@@ -451,6 +463,9 @@ void BrowsingTopicsCalculator::OnRequestModelCompleted(
   }
 
   progress_ = Progress::kAnnotationRequested;
+
+  CHECK(timeout_timer_.IsRunning());
+  timeout_timer_.Reset();
 
   annotator_->BatchAnnotate(
       base::BindOnce(&BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted,
@@ -561,8 +576,9 @@ void BrowsingTopicsCalculator::OnCalculateCompleted(
 
   DCHECK(*status != CalculatorResultStatus::kSuccess || !epoch_topics.empty());
 
-  RecordCalculatorResultMetrics(
-      epoch_topics, calculation_time_ - session_start_time_, is_timeout_retry_);
+  RecordCalculatorResultMetrics(epoch_topics,
+                                calculation_time_ - session_start_time_,
+                                previous_timeout_count_);
 
   std::move(calculate_completed_callback_).Run(std::move(epoch_topics));
 
@@ -570,10 +586,8 @@ void BrowsingTopicsCalculator::OnCalculateCompleted(
 }
 
 void BrowsingTopicsCalculator::OnCalculationHanging() {
-  // Because `OnCalculationHanging` was posted later and given a higher delay,
-  // it must occur after `CheckCanCalculate`. And because `CheckCanCalculate`
-  // updates `progress_` from `kStarted` to `kApiUsageRequested`, by the time
-  // `OnCalculationHanging` runs, `progress_` should never be `kStarted`.
+  // `OnCalculationHanging` was posted after `progress_` switched to
+  // `kApiUsageRequested`.
   CHECK_NE(progress_, Progress::kStarted);
 
   // When the calculation completes, it updates `progress_` to `kCompleted` and

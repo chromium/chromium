@@ -54,7 +54,7 @@ class BrowsingTopicsCalculator {
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       bool is_manually_triggered,
-      bool is_timeout_retry,
+      int previous_timeout_count,
       base::Time session_start_time,
       CalculateCompletedCallback callback);
 
@@ -67,7 +67,7 @@ class BrowsingTopicsCalculator {
 
   bool is_manually_triggered() const { return is_manually_triggered_; }
 
-  bool is_timeout_retry() const { return is_timeout_retry_; }
+  int previous_timeout_count() const { return previous_timeout_count_; }
 
  protected:
   // This method exists for the purposes of overriding in tests.
@@ -142,8 +142,11 @@ class BrowsingTopicsCalculator {
   // than via a scheduled task.
   bool is_manually_triggered_;
 
-  // Whether this calculation is a retry after a previous hanging calculation.
-  bool is_timeout_retry_;
+  // The number of previous hanging calculations.
+  int previous_timeout_count_;
+
+  // The timeout timer for each async operation.
+  base::OneShotTimer timeout_timer_;
 
   base::Time session_start_time_;
 

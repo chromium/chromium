@@ -549,7 +549,7 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(
     get_state_for_webui_callbacks_.push_back(std::move(callback));
     schedule_calculate_timer_.AbandonAndStop();
     CalculateBrowsingTopics(/*is_manually_triggered=*/true,
-                            /*is_timeout_retry=*/false);
+                            /*previous_timeout_count=*/0);
     return;
   }
 
@@ -641,12 +641,12 @@ BrowsingTopicsServiceImpl::CreateCalculator(
     Annotator* annotator,
     const base::circular_deque<EpochTopics>& epochs,
     bool is_manually_triggered,
-    bool is_timeout_retry,
+    int previous_timeout_count,
     base::Time session_start_time,
     BrowsingTopicsCalculator::CalculateCompletedCallback callback) {
   return std::make_unique<BrowsingTopicsCalculator>(
       privacy_sandbox_settings, history_service, site_data_manager, annotator,
-      epochs, is_manually_triggered, is_timeout_retry, session_start_time,
+      epochs, is_manually_triggered, previous_timeout_count, session_start_time,
       std::move(callback));
 }
 
@@ -656,7 +656,7 @@ const BrowsingTopicsState& BrowsingTopicsServiceImpl::browsing_topics_state() {
 
 void BrowsingTopicsServiceImpl::ScheduleBrowsingTopicsCalculation(
     bool is_manually_triggered,
-    bool is_timeout_retry,
+    int previous_timeout_count,
     base::TimeDelta delay) {
   DCHECK(browsing_topics_state_loaded_);
 
@@ -666,12 +666,12 @@ void BrowsingTopicsServiceImpl::ScheduleBrowsingTopicsCalculation(
       FROM_HERE, delay,
       base::BindOnce(&BrowsingTopicsServiceImpl::CalculateBrowsingTopics,
                      base::Unretained(this), is_manually_triggered,
-                     is_timeout_retry));
+                     previous_timeout_count));
 }
 
 void BrowsingTopicsServiceImpl::CalculateBrowsingTopics(
     bool is_manually_triggered,
-    bool is_timeout_retry) {
+    int previous_timeout_count) {
   DCHECK(browsing_topics_state_loaded_);
 
   DCHECK(!topics_calculator_);
@@ -681,7 +681,7 @@ void BrowsingTopicsServiceImpl::CalculateBrowsingTopics(
   topics_calculator_ = CreateCalculator(
       privacy_sandbox_settings_, history_service_, site_data_manager_,
       annotator_.get(), browsing_topics_state_.epochs(), is_manually_triggered,
-      is_timeout_retry, session_start_time_,
+      previous_timeout_count, session_start_time_,
       base::BindOnce(
           &BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted,
           base::Unretained(this)));
@@ -699,7 +699,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
   CHECK_NE(*status, CalculatorResultStatus::kTerminated);
 
   bool is_manually_triggered = topics_calculator_->is_manually_triggered();
-  bool is_timeout_retry = topics_calculator_->is_timeout_retry();
+  int previous_timeout_count = topics_calculator_->previous_timeout_count();
   topics_calculator_.reset();
 
   // If a calculation fails due to hanging, retry it.
@@ -707,15 +707,22 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
     CHECK_LE(blink::features::kBrowsingTopicsFirstTimeoutRetryDelay.Get(),
              blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
 
-    // For the first time a calculation hangs, recalculate shortly. For
-    // subsequent times, recalculate one epoch later.
+    // Retry with exponential backoff for up to 5 times. The delay shouldn't be
+    // greater than an epoch. After 5 retries with exponential backoff, resume
+    // to the epoch cadence.
     base::TimeDelta delay =
-        is_timeout_retry
-            ? blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get()
-            : blink::features::kBrowsingTopicsFirstTimeoutRetryDelay.Get();
+        blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get();
+
+    if (previous_timeout_count < 5) {
+      base::TimeDelta exponential_backoff_delay =
+          blink::features::kBrowsingTopicsFirstTimeoutRetryDelay.Get() *
+          (1LL << previous_timeout_count);
+
+      delay = std::min(delay, exponential_backoff_delay);
+    }
 
     ScheduleBrowsingTopicsCalculation(is_manually_triggered,
-                                      /*is_timeout_retry=*/true, delay);
+                                      previous_timeout_count + 1, delay);
     return;
   }
 
@@ -745,7 +752,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
 
   ScheduleBrowsingTopicsCalculation(
       /*is_manually_triggered=*/false,
-      /*is_timeout_retry=*/false,
+      /*previous_timeout_count=*/0,
       blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
 
   for (auto& callback : get_state_for_webui_callbacks_) {
@@ -784,7 +791,7 @@ void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
 
   ScheduleBrowsingTopicsCalculation(
       /*is_manually_triggered=*/false,
-      /*is_timeout_retry=*/false, decision.next_calculation_delay);
+      /*previous_timeout_count=*/0, decision.next_calculation_delay);
 }
 
 void BrowsingTopicsServiceImpl::Shutdown() {
@@ -809,9 +816,9 @@ void BrowsingTopicsServiceImpl::OnTopicsDataAccessibleSinceUpdated() {
     DCHECK(!schedule_calculate_timer_.IsRunning());
 
     bool is_manually_triggered = topics_calculator_->is_manually_triggered();
-    bool is_timeout_retry = topics_calculator_->is_timeout_retry();
+    int previous_timeout_count = topics_calculator_->previous_timeout_count();
     topics_calculator_.reset();
-    CalculateBrowsingTopics(is_manually_triggered, is_timeout_retry);
+    CalculateBrowsingTopics(is_manually_triggered, previous_timeout_count);
   }
 }
 
@@ -855,9 +862,9 @@ void BrowsingTopicsServiceImpl::OnHistoryDeletions(
     DCHECK(!schedule_calculate_timer_.IsRunning());
 
     bool is_manually_triggered = topics_calculator_->is_manually_triggered();
-    bool is_timeout_retry = topics_calculator_->is_timeout_retry();
+    int previous_timeout_count = topics_calculator_->previous_timeout_count();
     topics_calculator_.reset();
-    CalculateBrowsingTopics(is_manually_triggered, is_timeout_retry);
+    CalculateBrowsingTopics(is_manually_triggered, previous_timeout_count);
   }
 }
 
