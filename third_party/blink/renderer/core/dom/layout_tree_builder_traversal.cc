@@ -377,42 +377,67 @@ int LayoutTreeBuilderTraversal::ComparePreorderTreePosition(const Node& node1,
   if (node1 == node2) {
     return 0;
   }
-  HeapVector<Member<const Node>> ancestors1;
-  HeapVector<Member<const Node>> ancestors2;
-  for (const Node* anc1 = &node1; anc1; anc1 = Parent(*anc1)) {
-    ancestors1.emplace_back(anc1);
+  const Node* anc1 = &node1;
+  const Node* anc2 = &node2;
+  if (Parent(*anc1) != Parent(*anc2)) {
+    wtf_size_t depth1 = 0u;
+    for (; anc1; anc1 = Parent(*anc1)) {
+      if (anc1 == anc2) {
+        // if node2 is ancestor of node1, return 1.
+        return 1;
+      }
+      ++depth1;
+    }
+    wtf_size_t depth2 = 0u;
+    for (; anc2; anc2 = Parent(*anc2)) {
+      if (anc2 == anc1) {
+        // if node1 is ancestor of node2, return -1.
+        return -1;
+      }
+      ++depth2;
+    }
+    // Find LCA.
+    anc1 = &node1;
+    anc2 = &node2;
+    while (depth1 < depth2) {
+      anc2 = Parent(*anc2);
+      --depth2;
+    }
+    while (depth1 > depth2) {
+      anc1 = Parent(*anc1);
+      --depth1;
+    }
+    while (anc1 && anc2) {
+      const Node* parent1 = Parent(*anc1);
+      const Node* parent2 = Parent(*anc2);
+      if (parent1 == parent2) {
+        break;
+      }
+      anc1 = parent1;
+      anc2 = parent2;
+    }
   }
-  for (const Node* anc2 = &node2; anc2; anc2 = Parent(*anc2)) {
-    ancestors2.emplace_back(anc2);
-  }
-  int anc1 = ancestors1.size() - 1;
-  int anc2 = ancestors2.size() - 1;
-  // First let's eliminate the ancestors until we find the first that are
-  // inequal, meaning that we need to perform a linear search in that subtree.
-  while (anc1 >= 0 && anc2 >= 0 && ancestors1[anc1] == ancestors2[anc2]) {
-    --anc1;
-    --anc2;
-  }
-  if (anc1 < 0) {
-    return anc2 < 0 ? 0 : -1;
-  }
-  if (anc2 < 0) {
+  // Do some quick checks.
+  const Node* parent = Parent(*anc1);
+  DCHECK(parent);
+  if (NextSibling(*anc2) == anc1 || FirstChild(*parent) == anc2) {
     return 1;
+  }
+  if (FirstChild(*parent) == anc1 || LastChild(*parent) == anc2) {
+    return -1;
   }
   // Compare the children of the first common ancestor and the current top-most
   // ancestors of the nodes.
-  const Node* parent = Parent(*ancestors1[anc1]);
-  for (const Node* child = FirstChild(*parent); child;
-       child = NextSibling(*child)) {
-    if (child == ancestors1[anc1]) {
+  // Note: starting with anc1 here, as in most use cases of this function we
+  // want to compare two elements that are close to each other with anc1 usually
+  // being previously in pre-order.
+  DCHECK(anc1 && anc2);
+  for (const Node* child = anc1; child; child = NextSibling(*child)) {
+    if (child == anc2) {
       return -1;
     }
-    if (child == ancestors2[anc2]) {
-      return 1;
-    }
   }
-  NOTREACHED();
-  return 0;
+  return 1;
 }
 
 }  // namespace blink
