@@ -11,4 +11,14 @@
 extern NSString* const kAutofillCountrySelectionTableViewId;
 extern NSString* const kAutofillCountrySelectionSearchScrimId;
 
+// Describes the type of the prompt in the save address flow.
+enum class AutofillSaveProfilePromptMode {
+  // The prompt is for saving a new profile.
+  kNewProfile,
+  // The prompt is for updating an existing profile.
+  kUpdateProfile,
+  // The prompt is for migrating a profile to the account.
+  kMigrateProfile
+};
+
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CONSTANTS_H_

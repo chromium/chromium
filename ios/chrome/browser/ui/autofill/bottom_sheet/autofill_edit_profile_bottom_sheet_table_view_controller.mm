@@ -26,21 +26,25 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }  // namespace
 
 @interface AutofillEditProfileBottomSheetTableViewController () <
-    UITextFieldDelegate>
-
-// TODO(crbug.com/1482269): Update via the consumer protocol.
-// Yes, if the edit is done for updating the profile.
-@property(nonatomic, assign) BOOL isEditForUpdate;
-
-// TODO(crbug.com/1482269): Update via the consumer protocol.
-// Yes, if the edit is shown for the migration prompt.
-@property(nonatomic, assign) BOOL migrationPrompt;
+    UITextFieldDelegate> {
+  // Denotes the mode of the address save for the edit profile bottom sheet.
+  AutofillSaveProfilePromptMode _editSheetMode;
+}
 
 @end
 
 @implementation AutofillEditProfileBottomSheetTableViewController
 
 #pragma mark - Initialization
+
+- (instancetype)initWithEditSheetMode:
+    (AutofillSaveProfilePromptMode)editSheetMode {
+  self = [super initWithStyle:UITableViewStylePlain];
+  if (self) {
+    _editSheetMode = editSheetMode;
+  }
+  return self;
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -63,15 +67,21 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
   self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
-  if (self.migrationPrompt) {
-    [self setTitle:
+  switch (_editSheetMode) {
+    case AutofillSaveProfilePromptMode::kNewProfile:
+      [self setTitle:l10n_util::GetNSString(
+                         IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE)];
+      break;
+    case AutofillSaveProfilePromptMode::kUpdateProfile:
+      [self setTitle:l10n_util::GetNSString(
+                         IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE)];
+      break;
+    case AutofillSaveProfilePromptMode::kMigrateProfile:
+      [self
+          setTitle:
               l10n_util::GetNSString(
                   IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE)];
-  } else {
-    [self setTitle:l10n_util::GetNSString(
-                       self.isEditForUpdate
-                           ? IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
-                           : IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE)];
+      break;
   }
 
   self.tableView.allowsSelectionDuringEditing = YES;
@@ -81,10 +91,13 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)loadModel {
   [super loadModel];
-  [self.handler setMigrationPrompt:self.migrationPrompt];
+  [self.handler
+      setMigrationPrompt:(_editSheetMode ==
+                          AutofillSaveProfilePromptMode::kMigrateProfile)];
   [self.handler loadModel];
   [self.handler
-      loadMessageAndButtonForModalIfSaveOrUpdate:self.isEditForUpdate];
+      loadMessageAndButtonForModalIfSaveOrUpdate:
+          (_editSheetMode == AutofillSaveProfilePromptMode::kUpdateProfile)];
 }
 
 - (void)expandBottomSheet {

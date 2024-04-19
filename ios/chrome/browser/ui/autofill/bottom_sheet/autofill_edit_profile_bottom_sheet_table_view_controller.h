@@ -6,11 +6,17 @@
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_AUTOFILL_EDIT_PROFILE_BOTTOM_SHEET_TABLE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
 
 // The Bottom Sheet TableView for an Autofill save/update address edit menu.
 @interface AutofillEditProfileBottomSheetTableViewController
     : LegacyChromeTableViewController
+
+- (instancetype)initWithEditSheetMode:
+    (AutofillSaveProfilePromptMode)editSheetMode NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<AutofillProfileEditHandler> handler;
 

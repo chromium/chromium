@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/infobars/core/infobar.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/ui/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
@@ -60,11 +62,6 @@
         autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
 
     _webState = browser->GetWebStateList()->GetActiveWebState();
-    AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-        AutofillBottomSheetTabHelper::FromWebState(_webState);
-
-    _autofillProfile = bottomSheetTabHelper->address_profile_for_edit();
-    CHECK(_autofillProfile);
   }
   return self;
 }
@@ -72,24 +69,40 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      [self fetchDelegateAndAcceptInfobar:NO];
+
+  _autofillProfile =
+      std::make_unique<autofill::AutofillProfile>(*delegate->GetProfile());
+
+  AutofillSaveProfilePromptMode saveProfilePromptMode =
+      AutofillSaveProfilePromptMode::kNewProfile;
+  if (delegate->IsMigrationToAccount()) {
+    saveProfilePromptMode = AutofillSaveProfilePromptMode::kMigrateProfile;
+  } else if (delegate->GetOriginalProfile() != nullptr) {
+    saveProfilePromptMode = AutofillSaveProfilePromptMode::kUpdateProfile;
+  }
+
   _autofillProfileEditMediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:_personalDataManager
           autofillProfile:_autofillProfile.get()
               countryCode:nil
-        isMigrationPrompt:NO];
+        isMigrationPrompt:delegate->IsMigrationToAccount()];
 
   // Bottom sheet table VC
   AutofillEditProfileBottomSheetTableViewController* editModalViewController =
       [[AutofillEditProfileBottomSheetTableViewController alloc]
-          initWithStyle:UITableViewStylePlain];
+          initWithEditSheetMode:saveProfilePromptMode];
 
   // View controller that lays down the table views for the edit profile view.
   _autofillProfileEditTableViewController =
       [[AutofillProfileEditTableViewController alloc]
           initWithDelegate:_autofillProfileEditMediator
-                 userEmail:@""
-                controller:editModalViewController
+                 userEmail:(delegate->UserAccountEmail()
+                                ? base::SysUTF16ToNSString(
+                                      delegate->UserAccountEmail().value())
+                                : nil)controller:editModalViewController
               settingsView:NO];
   _autofillProfileEditMediator.consumer =
       _autofillProfileEditTableViewController;
@@ -148,6 +161,26 @@
 }
 
 - (void)didSaveProfile {
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      [self fetchDelegateAndAcceptInfobar:YES];
+
+  delegate->SetProfile(_autofillProfile.get());
+  delegate->EditAccepted();
+
+  [self stop];
+}
+
+#pragma mark - AutofillCountrySelectionTableViewControllerDelegate
+
+- (void)didSelectCountry:(CountryItem*)selectedCountry {
+  [_navigationController popViewControllerAnimated:YES];
+  [_autofillProfileEditMediator didSelectCountry:selectedCountry];
+}
+
+#pragma mark - Private
+
+- (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)
+    fetchDelegateAndAcceptInfobar:(BOOL)acceptInfobar {
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(_webState);
   const auto it = base::ranges::find(
       manager->infobars(), InfobarType::kInfobarTypeSaveAutofillAddressProfile,
@@ -162,17 +195,11 @@
           FromInfobarDelegate(infobar->delegate());
   CHECK(delegate);
 
-  delegate->SetProfile(_autofillProfile.get());
-  delegate->EditAccepted();
-  infobar->set_accepted(true);
-  [self stop];
-}
+  if (acceptInfobar) {
+    infobar->set_accepted(acceptInfobar);
+  }
 
-#pragma mark - AutofillCountrySelectionTableViewControllerDelegate
-
-- (void)didSelectCountry:(CountryItem*)selectedCountry {
-  [_navigationController popViewControllerAnimated:YES];
-  [_autofillProfileEditMediator didSelectCountry:selectedCountry];
+  return delegate;
 }
 
 @end

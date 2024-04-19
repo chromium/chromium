@@ -79,15 +79,11 @@ using autofill_address_profile_infobar_overlays::
 - (void)showEditView {
   if (base::FeatureList::IsEnabled(
           kAutofillDynamicallyLoadsFieldsForAddressInput)) {
-    if (!self.config) {
-      return;
-    }
-
     web::WebState* webState =
         self.browser->GetWebStateList()->GetActiveWebState();
     AutofillBottomSheetTabHelper* bottomSheetTabHelper =
         AutofillBottomSheetTabHelper::FromWebState(webState);
-    bottomSheetTabHelper->ShowEditAddressBottomSheet(self.config->GetProfile());
+    bottomSheetTabHelper->ShowEditAddressBottomSheet();
     return;
   }
 

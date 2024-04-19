@@ -44,7 +44,7 @@ class AutofillEditProfileBottomSheetTableViewControllerTest
   LegacyChromeTableViewController* InstantiateController() override {
     AutofillEditProfileBottomSheetTableViewController* viewController =
         [[AutofillEditProfileBottomSheetTableViewController alloc]
-            initWithStyle:UITableViewStylePlain];
+            initWithEditSheetMode:AutofillSaveProfilePromptMode::kNewProfile];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_

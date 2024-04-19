@@ -80,7 +80,9 @@ class AutofillBottomSheetTabHelper
       autofill::VirtualCardEnrollmentCallbacks callbacks);
 
   // Send a command to show the bottom sheet to edit an address.
-  void ShowEditAddressBottomSheet(const autofill::AutofillProfile* profile);
+  // The address to be shown/worked upon in this bottom sheet is fetched via the
+  // `AutofillSaveUpdateAddressProfileDelegateIOS` delegate.
+  void ShowEditAddressBottomSheet();
 
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
@@ -138,10 +140,6 @@ class AutofillBottomSheetTabHelper
   // Used to get the callbacks to be run on completion of the VCN enrollment UI.
   // This value is moved and should only be retrieved once per bottom sheet.
   autofill::VirtualCardEnrollmentCallbacks GetVirtualCardEnrollmentCallbacks();
-
-  std::unique_ptr<autofill::AutofillProfile> address_profile_for_edit() {
-    return std::move(address_profile_for_edit_);
-  }
 
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
@@ -212,9 +210,6 @@ class AutofillBottomSheetTabHelper
   // Callbacks to be run when the virtual card enrollment bottom sheet UI has
   // completed.
   autofill::VirtualCardEnrollmentCallbacks virtual_card_enrollment_callbacks_;
-
-  // Address Profile that is to be/being edited via the bottom sheet.
-  std::unique_ptr<autofill::AutofillProfile> address_profile_for_edit_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
