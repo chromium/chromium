@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "cc/raster/categorized_worker_pool.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom-blink.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
@@ -122,12 +121,6 @@
 
 namespace blink {
 namespace {
-
-// Controls whether media players use base::ThreadPool or (legacy) the
-// CategorizedWorkerPool, which predates the base thread pool.
-BASE_FEATURE(kBlinkMediaPlayerUsesBaseThreadPool,
-             "BlinkMediaPlayerUsesThreadPool",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Serves as a kill switch.
 BASE_FEATURE(kBlinkEnableInnerTextAgent,
@@ -363,10 +356,7 @@ std::unique_ptr<WebMediaPlayer> ModulesInitializer::CreateWebMediaPlayer(
       source, media_player_client, context_impl, &encrypted_media,
       encrypted_media.ContentDecryptionModule(), sink_id,
       frame_widget->GetLayerTreeSettings(),
-      base::FeatureList::IsEnabled(kBlinkMediaPlayerUsesBaseThreadPool)
-          ? base::ThreadPool::CreateTaskRunner(base::TaskTraits{})
-          : cc::CategorizedWorkerPool::GetOrCreate(
-                &BlinkCategorizedWorkerPoolDelegate::Get())));
+          base::ThreadPool::CreateTaskRunner(base::TaskTraits{})));
 }
 
 WebRemotePlaybackClient* ModulesInitializer::CreateWebRemotePlaybackClient(
