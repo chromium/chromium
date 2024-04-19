@@ -129,8 +129,9 @@ public final class TopicsFragmentTest {
 
     private View getTopicsRootView() {
         if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING))
+                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
             return getRootViewSanitized(R.string.settings_topics_page_toggle_sub_label_v2);
+        }
         return getRootViewSanitized(R.string.settings_topics_page_toggle_sub_label);
     }
 
@@ -666,7 +667,9 @@ public final class TopicsFragmentTest {
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, new PrivacySandboxBridgeJni());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    for (var topic : PrivacySandboxBridge.getFirstLevelTopics()) {
+                    PrivacySandboxBridge privacySandboxBridge =
+                            new PrivacySandboxBridge(ProfileManager.getLastUsedRegularProfile());
+                    for (var topic : privacySandboxBridge.getFirstLevelTopics()) {
                         int iconId = TopicsUtils.getIconResourceIdForTopic(activity, topic);
                         assertTrue(
                                 "Topic drawable icon not found for: " + topic.getName(),

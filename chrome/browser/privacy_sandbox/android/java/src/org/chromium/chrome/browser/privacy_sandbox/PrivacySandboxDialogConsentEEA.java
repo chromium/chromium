@@ -25,6 +25,9 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private static final int SPINNER_DURATION_MS = 1500;
     private static final int BACKGROUND_TRANSITION_DURATION_MS = 300;
 
+    private final SettingsLauncher mSettingsLauncher;
+    private final PrivacySandboxBridge mPrivacySandboxBridge;
+
     private View mContentView;
 
     private final CheckableImageView mExpandArrowView;
@@ -37,13 +40,14 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private ScrollView mScrollView;
 
     private boolean mAreAnimationsDisabled;
-    private SettingsLauncher mSettingsLauncher;
 
     public PrivacySandboxDialogConsentEEA(
             Context context,
+            PrivacySandboxBridge privacySandboxBridge,
             @NonNull SettingsLauncher settingsLauncher,
             boolean disableAnimations) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        mPrivacySandboxBridge = privacySandboxBridge;
         mSettingsLauncher = settingsLauncher;
         mAreAnimationsDisabled = disableAnimations;
         mContentView =
@@ -90,7 +94,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     @Override
     public void show() {
-        PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
+        mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
         super.show();
     }
 
@@ -99,13 +103,13 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.no_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.more_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_BUTTON_CLICKED);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_BUTTON_CLICKED);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
                 mScrollView.post(
                         () -> {
@@ -121,7 +125,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             }
         } else if (id == R.id.dropdown_element) {
             if (isDropdownExpanded()) {
-                PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_CLOSED);
+                mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_CLOSED);
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
                 mScrollView.post(
@@ -130,11 +134,9 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                         });
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
-                PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_OPENED);
+                mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_OPENED);
                 LayoutInflater.from(getContext())
-                        .inflate(
-                                R.layout.privacy_sandbox_consent_eea_dropdown,
-                                mDropdownContainer);
+                        .inflate(R.layout.privacy_sandbox_consent_eea_dropdown, mDropdownContainer);
 
                 PrivacySandboxDialogUtils.setBulletTextWithBoldContent(
                         getContext(),
@@ -196,7 +198,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     }
 
     private void showNotice() {
-        PrivacySandboxDialogController.showNoticeEEA(getContext(), mSettingsLauncher);
+        PrivacySandboxDialogController.showNoticeEEA(
+                getContext(), mPrivacySandboxBridge, mSettingsLauncher);
     }
 
     private boolean isDropdownExpanded() {

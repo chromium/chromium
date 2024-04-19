@@ -168,7 +168,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     @Override
     public void onResume() {
         super.onResume();
-        PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(this::populateCurrentSites);
+        getPrivacySandboxBridge().getFledgeJoiningEtldPlusOneForDisplay(this::populateCurrentSites);
         updatePreferenceVisibility();
     }
 
@@ -200,8 +200,8 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (preference instanceof FledgePreference) {
-            PrivacySandboxBridge.setFledgeJoiningAllowed(
-                    ((FledgePreference) preference).getSite(), false);
+            getPrivacySandboxBridge()
+                    .setFledgeJoiningAllowed(((FledgePreference) preference).getSite(), false);
             mCurrentSitesCategory.removePreference(preference);
             updatePreferenceVisibility();
 

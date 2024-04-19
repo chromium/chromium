@@ -104,8 +104,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     return true;
                 });
 
-        if (PrivacySandboxBridge.isPrivacySandboxRestricted()) {
-            if (PrivacySandboxBridge.isRestrictedNoticeEnabled()) {
+        PrivacySandboxBridge privacySandboxBridge = new PrivacySandboxBridge(getProfile());
+        if (privacySandboxBridge.isPrivacySandboxRestricted()) {
+            if (privacySandboxBridge.isRestrictedNoticeEnabled()) {
                 // Update the summary to one that describes only ad measurement if ad-measurement
                 // is available to restricted users.
                 sandboxPreference.setSummary(

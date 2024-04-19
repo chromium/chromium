@@ -28,8 +28,8 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
 
         // This view should not be shown when PS is restricted, unless the
         // isRestrictedNoticeEnabled flag is enabled.
-        assert !PrivacySandboxBridge.isPrivacySandboxRestricted()
-                || PrivacySandboxBridge.isRestrictedNoticeEnabled();
+        assert !getPrivacySandboxBridge().isPrivacySandboxRestricted()
+                || getPrivacySandboxBridge().isRestrictedNoticeEnabled();
 
         // Add all preferences and set the title
         getActivity().setTitle(R.string.ad_privacy_page_title);
@@ -54,7 +54,7 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     }
 
     private boolean showRestrictedView() {
-        return PrivacySandboxBridge.isPrivacySandboxRestricted();
+        return getPrivacySandboxBridge().isPrivacySandboxRestricted();
     }
 
     private void updatePrefDescription() {

@@ -127,7 +127,7 @@ public final class PrivacySandboxDialogTest {
                     PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
                             sActivityTestRule.getActivity(),
                             mSettingsLauncher,
-                            /* isIncognito= */ false);
+                            sActivityTestRule.getProfile(false));
                     mDialog = PrivacySandboxDialogController.getDialogForTesting();
                 });
     }
@@ -174,8 +174,9 @@ public final class PrivacySandboxDialogTest {
                     mDialog =
                             new PrivacySandboxDialogConsentEEA(
                                     sActivityTestRule.getActivity(),
-                                    mSettingsLauncher,
-                                    /* animate= */ false);
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
+                                    /* animate= */ mSettingsLauncher,
+                                    false);
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_consent_dialog");
@@ -189,7 +190,9 @@ public final class PrivacySandboxDialogTest {
                 () -> {
                     mDialog =
                             new PrivacySandboxDialogNoticeEEA(
-                                    sActivityTestRule.getActivity(), mSettingsLauncher);
+                                    sActivityTestRule.getActivity(),
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
+                                    mSettingsLauncher);
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_notice_dialog");
@@ -203,7 +206,9 @@ public final class PrivacySandboxDialogTest {
                 () -> {
                     mDialog =
                             new PrivacySandboxDialogNoticeROW(
-                                    sActivityTestRule.getActivity(), mSettingsLauncher);
+                                    sActivityTestRule.getActivity(),
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
+                                    mSettingsLauncher);
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_row_notice_dialog");
@@ -217,7 +222,9 @@ public final class PrivacySandboxDialogTest {
                 () -> {
                     mDialog =
                             new PrivacySandboxDialogNoticeRestricted(
-                                    sActivityTestRule.getActivity(), mSettingsLauncher);
+                                    sActivityTestRule.getActivity(),
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
+                                    mSettingsLauncher);
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_restricted_notice_dialog");
@@ -231,7 +238,7 @@ public final class PrivacySandboxDialogTest {
                     PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
                             sActivityTestRule.getActivity(),
                             mSettingsLauncher,
-                            /* isIncognito= */ true);
+                            sActivityTestRule.getProfile(true));
                 });
         // Verify that nothing is shown.
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());

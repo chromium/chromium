@@ -58,42 +58,41 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
 
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
-        if (preference instanceof TopicPreference) {
-            Topic topic = ((TopicPreference) preference).getTopic();
-            PrivacySandboxBridge.setTopicAllowed(topic, true);
-            mBlockedTopicsCategory.removePreference(preference);
-            updateBlockedTopicsDescription();
+        if (!(preference instanceof TopicPreference)) return false;
 
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
-                var currentTopics = new HashSet<Topic>(PrivacySandboxBridge.getCurrentTopTopics());
-                if (!currentTopics.contains(topic)) {
-                    showSnackbar(
-                            R.string.settings_unblock_topic_toast_body,
-                            null,
-                            Snackbar.TYPE_ACTION,
-                            Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST,
-                            R.string.settings_unblock_topic_toast_button_text,
-                            /* multiLine= */ true);
-                }
-            } else {
+        Topic topic = ((TopicPreference) preference).getTopic();
+        getPrivacySandboxBridge().setTopicAllowed(topic, true);
+        mBlockedTopicsCategory.removePreference(preference);
+        updateBlockedTopicsDescription();
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
+            var currentTopics = new HashSet<Topic>(getPrivacySandboxBridge().getCurrentTopTopics());
+            if (!currentTopics.contains(topic)) {
                 showSnackbar(
-                        R.string.settings_topics_page_add_topic_snackbar,
+                        R.string.settings_unblock_topic_toast_body,
                         null,
                         Snackbar.TYPE_ACTION,
                         Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST,
-                        /* actionStringResId= */ 0,
+                        R.string.settings_unblock_topic_toast_button_text,
                         /* multiLine= */ true);
             }
-            RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicAdded");
-            return true;
+        } else {
+            showSnackbar(
+                    R.string.settings_topics_page_add_topic_snackbar,
+                    null,
+                    Snackbar.TYPE_ACTION,
+                    Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST,
+                    /* actionStringResId= */ 0,
+                    /* multiLine= */ true);
         }
-        return false;
+        RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicAdded");
+        return true;
     }
 
     private void populateBlockedTopics() {
         mBlockedTopicsCategory.removeAll();
-        List<Topic> blockedTopics = PrivacySandboxBridge.getBlockedTopics();
+        List<Topic> blockedTopics = getPrivacySandboxBridge().getBlockedTopics();
         for (Topic topic : blockedTopics) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
             preference.setImage(
@@ -112,9 +111,10 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
             mBlockedTopicsCategory.setSummary(null);
-            if (mBlockedTopicsCategory.getPreferenceCount() == 0)
+            if (mBlockedTopicsCategory.getPreferenceCount() == 0) {
                 mBlockedTopicsCategory.setSummary(
                         R.string.settings_topics_page_blocked_topics_description_empty_text_v2);
+            }
             return;
         }
         mBlockedTopicsCategory.setSummary(

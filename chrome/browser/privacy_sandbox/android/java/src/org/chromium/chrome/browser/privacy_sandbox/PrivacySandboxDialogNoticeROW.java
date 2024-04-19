@@ -21,7 +21,8 @@ import org.chromium.ui.widget.CheckableImageView;
 /** Dialog in the form of a notice shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogNoticeROW extends ChromeDialog
         implements View.OnClickListener, DialogInterface.OnShowListener {
-    private SettingsLauncher mSettingsLauncher;
+    private final PrivacySandboxBridge mPrivacySandboxBridge;
+    private final SettingsLauncher mSettingsLauncher;
     private View mContentView;
 
     private final CheckableImageView mExpandArrowView;
@@ -32,8 +33,11 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
     private ScrollView mScrollView;
 
     public PrivacySandboxDialogNoticeROW(
-            Context context, @NonNull SettingsLauncher settingsLauncher) {
+            Context context,
+            PrivacySandboxBridge privacySandboxBridge,
+            @NonNull SettingsLauncher settingsLauncher) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        mPrivacySandboxBridge = privacySandboxBridge;
         mSettingsLauncher = settingsLauncher;
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_row, null);
@@ -77,7 +81,7 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
 
     @Override
     public void show() {
-        PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_SHOWN);
+        mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_SHOWN);
         super.show();
     }
 
@@ -86,15 +90,15 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
             dismiss();
         } else if (id == R.id.settings_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
             dismiss();
             PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                     getContext(), mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
         } else if (id == R.id.more_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_BUTTON_CLICKED);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_BUTTON_CLICKED);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
                 mScrollView.post(
                         () -> {
@@ -110,16 +114,14 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
             }
         } else if (id == R.id.dropdown_element) {
             if (isDropdownExpanded()) {
-                PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_CLOSED);
+                mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_CLOSED);
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
-                PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_OPENED);
+                mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_OPENED);
                 LayoutInflater.from(getContext())
-                        .inflate(
-                                R.layout.privacy_sandbox_notice_row_dropdown,
-                                mDropdownContainer);
+                        .inflate(R.layout.privacy_sandbox_notice_row_dropdown, mDropdownContainer);
 
                 PrivacySandboxDialogUtils.setBulletText(
                         getContext(),

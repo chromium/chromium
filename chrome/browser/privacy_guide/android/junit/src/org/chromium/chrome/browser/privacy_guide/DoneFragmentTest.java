@@ -81,8 +81,8 @@ public class DoneFragmentTest {
     }
 
     private void setPrivacySandboxState(boolean isRestricted, boolean isRestrictedNoticeEnabled) {
-        when(mPrivacySandboxBridge.isPrivacySandboxRestricted()).thenReturn(isRestricted);
-        when(mPrivacySandboxBridge.isRestrictedNoticeEnabled())
+        when(mPrivacySandboxBridge.isPrivacySandboxRestricted(mProfile)).thenReturn(isRestricted);
+        when(mPrivacySandboxBridge.isRestrictedNoticeEnabled(mProfile))
                 .thenReturn(isRestrictedNoticeEnabled);
     }
 

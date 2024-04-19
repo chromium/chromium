@@ -63,8 +63,8 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (preference instanceof FledgePreference) {
-            PrivacySandboxBridge.setFledgeJoiningAllowed(
-                    ((FledgePreference) preference).getSite(), true);
+            getPrivacySandboxBridge()
+                    .setFledgeJoiningAllowed(((FledgePreference) preference).getSite(), true);
             mBlockedSitesCategory.removePreference(preference);
             updateBlockedSitesDescription();
 
@@ -89,7 +89,7 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
 
         mBlockedSitesCategory.removeAll();
         List<String> blockedSites =
-                PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay();
+                getPrivacySandboxBridge().getBlockedFledgeJoiningTopFramesForDisplay();
         for (String site : blockedSites) {
             FledgePreference preference =
                     new FledgePreference(getContext(), site, mLargeIconBridge);

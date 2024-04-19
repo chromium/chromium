@@ -191,7 +191,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                             : "Settings.PrivacySandbox.Topics.Disabled");
             setTopicsPrefEnabled(getProfile(), enabled);
             updatePreferenceVisibility();
-            PrivacySandboxBridge.topicsToggleChanged(enabled);
+            getPrivacySandboxBridge().topicsToggleChanged(enabled);
             return true;
         }
 
@@ -201,7 +201,8 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (preference instanceof TopicPreference) {
-            PrivacySandboxBridge.setTopicAllowed(((TopicPreference) preference).getTopic(), false);
+            getPrivacySandboxBridge()
+                    .setTopicAllowed(((TopicPreference) preference).getTopic(), false);
             mCurrentTopicsCategory.removePreference(preference);
             updatePreferenceVisibility();
 
@@ -221,7 +222,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
 
     private void populateCurrentTopics() {
         mCurrentTopicsCategory.removeAll();
-        List<Topic> currentTopics = PrivacySandboxBridge.getCurrentTopTopics();
+        List<Topic> currentTopics = getPrivacySandboxBridge().getCurrentTopTopics();
         for (Topic topic : currentTopics) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
             preference.setImage(

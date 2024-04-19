@@ -20,7 +20,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -45,8 +44,8 @@ public class DoneFragment extends PrivacyGuideBasePage {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (!PrivacySandboxBridge.isPrivacySandboxRestricted()
-                || PrivacySandboxBridge.isRestrictedNoticeEnabled()) {
+        if (!getPrivacySandboxBridge().isPrivacySandboxRestricted()
+                || getPrivacySandboxBridge().isRestrictedNoticeEnabled()) {
             ChromeImageButton psButton = view.findViewById(R.id.ps_button);
             psButton.setOnClickListener(this::onPsButtonClick);
         } else {

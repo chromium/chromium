@@ -66,6 +66,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     private final Context mContext;
     private final Profile mProfile;
+    private final PrivacySandboxBridge mPrivacySandboxBridge;
     private BrowsingDataModel mBrowsingDataModel;
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private PrivacySandboxSnackbarController mPrivacySandboxController;
@@ -74,6 +75,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public ChromeSiteSettingsDelegate(Context context, Profile profile) {
         mContext = context;
         mProfile = profile;
+        mPrivacySandboxBridge = new PrivacySandboxBridge(profile);
     }
 
     @Override
@@ -267,7 +269,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         // Only show the snackbar when Privacy Sandbox APIs are enabled.
         if (!isAnyPrivacySandboxApiEnabledV4()) return;
 
-        if (PrivacySandboxBridge.isPrivacySandboxRestricted()) return;
+        if (mPrivacySandboxBridge.isPrivacySandboxRestricted()) return;
 
         mPrivacySandboxController.showSnackbar();
     }
@@ -288,17 +290,17 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public boolean isFirstPartySetsDataAccessEnabled() {
-        return PrivacySandboxBridge.isFirstPartySetsDataAccessEnabled();
+        return mPrivacySandboxBridge.isFirstPartySetsDataAccessEnabled();
     }
 
     @Override
     public boolean isFirstPartySetsDataAccessManaged() {
-        return PrivacySandboxBridge.isFirstPartySetsDataAccessManaged();
+        return mPrivacySandboxBridge.isFirstPartySetsDataAccessManaged();
     }
 
     @Override
     public boolean isPartOfManagedFirstPartySet(String origin) {
-        return PrivacySandboxBridge.isPartOfManagedFirstPartySet(origin);
+        return mPrivacySandboxBridge.isPartOfManagedFirstPartySet(origin);
     }
 
     @Override
@@ -321,12 +323,12 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void setFirstPartySetsDataAccessEnabled(boolean enabled) {
-        PrivacySandboxBridge.setFirstPartySetsDataAccessEnabled(enabled);
+        mPrivacySandboxBridge.setFirstPartySetsDataAccessEnabled(enabled);
     }
 
     @Override
     public String getFirstPartySetOwner(String memberOrigin) {
-        return PrivacySandboxBridge.getFirstPartySetOwner(memberOrigin);
+        return mPrivacySandboxBridge.getFirstPartySetOwner(memberOrigin);
     }
 
     @Override

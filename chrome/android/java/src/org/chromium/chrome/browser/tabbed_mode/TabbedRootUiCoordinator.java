@@ -942,7 +942,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
                             mActivity,
                             new SettingsLauncherImpl(),
-                            mTabModelSelectorSupplier.get().isIncognitoSelected());
+                            mTabModelSelectorSupplier.get().getCurrentModel().getProfile());
         }
         RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
 

@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -39,7 +41,15 @@ public class PrivacySandboxBridgeTest {
     @ClassRule
     public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
 
+    private PrivacySandboxBridge mPrivacySandboxBridge;
     private UserActionTester mUserActionTester;
+
+    @Before
+    public void setUp() {
+        mPrivacySandboxBridge =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> new PrivacySandboxBridge(ProfileManager.getLastUsedRegularProfile()));
+    }
 
     @Test
     @SmallTest
@@ -52,7 +62,7 @@ public class PrivacySandboxBridgeTest {
                         assertEquals(
                                 "Returned dialog type",
                                 PromptType.NONE,
-                                PrivacySandboxBridge.getRequiredPromptType()));
+                                mPrivacySandboxBridge.getRequiredPromptType()));
     }
 
     @Test
@@ -61,7 +71,7 @@ public class PrivacySandboxBridgeTest {
         // Check that this function returns a valid list. We currently can't control from the Java
         // side what they actually return, so just check that it is not null and there is no crash.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> assertNotNull(PrivacySandboxBridge.getCurrentTopTopics()));
+                () -> assertNotNull(mPrivacySandboxBridge.getCurrentTopTopics()));
     }
 
     @Test
@@ -70,7 +80,7 @@ public class PrivacySandboxBridgeTest {
         // Check that this function returns a valid list. We currently can't control from the Java
         // side what they actually return, so just check that it is not null and there is no crash.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> assertNotNull(PrivacySandboxBridge.getBlockedTopics()));
+                () -> assertNotNull(mPrivacySandboxBridge.getBlockedTopics()));
     }
 
     @Test
@@ -83,19 +93,19 @@ public class PrivacySandboxBridgeTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrivacySandboxBridge.setAllPrivacySandboxAllowedForTesting();
+                    mPrivacySandboxBridge.setAllPrivacySandboxAllowedForTesting();
                     assertThat(
-                            PrivacySandboxBridge.getCurrentTopTopics(), contains(topic2, topic1));
-                    assertThat(PrivacySandboxBridge.getBlockedTopics(), contains(topic3, topic4));
-                    PrivacySandboxBridge.setTopicAllowed(topic1, false);
-                    assertThat(PrivacySandboxBridge.getCurrentTopTopics(), contains(topic2));
+                            mPrivacySandboxBridge.getCurrentTopTopics(), contains(topic2, topic1));
+                    assertThat(mPrivacySandboxBridge.getBlockedTopics(), contains(topic3, topic4));
+                    mPrivacySandboxBridge.setTopicAllowed(topic1, false);
+                    assertThat(mPrivacySandboxBridge.getCurrentTopTopics(), contains(topic2));
                     assertThat(
-                            PrivacySandboxBridge.getBlockedTopics(),
+                            mPrivacySandboxBridge.getBlockedTopics(),
                             contains(topic1, topic3, topic4));
-                    PrivacySandboxBridge.setTopicAllowed(topic4, true);
+                    mPrivacySandboxBridge.setTopicAllowed(topic4, true);
                     assertThat(
-                            PrivacySandboxBridge.getCurrentTopTopics(), contains(topic2, topic4));
-                    assertThat(PrivacySandboxBridge.getBlockedTopics(), contains(topic1, topic3));
+                            mPrivacySandboxBridge.getCurrentTopTopics(), contains(topic2, topic4));
+                    assertThat(mPrivacySandboxBridge.getBlockedTopics(), contains(topic1, topic3));
                 });
     }
 
@@ -104,7 +114,7 @@ public class PrivacySandboxBridgeTest {
         PayloadCallbackHelper<List<String>> callbackHelper = new PayloadCallbackHelper<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(
+                        mPrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(
                                 callbackHelper::notifyCalled));
         return callbackHelper.getOnlyPayloadBlocking();
     }
@@ -125,7 +135,8 @@ public class PrivacySandboxBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         assertNotNull(
-                                PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay()));
+                                mPrivacySandboxBridge
+                                        .getBlockedFledgeJoiningTopFramesForDisplay()));
     }
 
     @Test
@@ -137,20 +148,20 @@ public class PrivacySandboxBridgeTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrivacySandboxBridge.setFledgeJoiningAllowed(site1, false);
+                    mPrivacySandboxBridge.setFledgeJoiningAllowed(site1, false);
                     assertThat(
-                            PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                            mPrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
                             contains(site1));
 
-                    PrivacySandboxBridge.setFledgeJoiningAllowed(site2, false);
-                    PrivacySandboxBridge.setFledgeJoiningAllowed(site3, false);
+                    mPrivacySandboxBridge.setFledgeJoiningAllowed(site2, false);
+                    mPrivacySandboxBridge.setFledgeJoiningAllowed(site3, false);
                     assertThat(
-                            PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                            mPrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
                             contains(site1, site2, site3));
 
-                    PrivacySandboxBridge.setFledgeJoiningAllowed(site2, true);
+                    mPrivacySandboxBridge.setFledgeJoiningAllowed(site2, true);
                     assertThat(
-                            PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                            mPrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
                             contains(site1, site3));
                 });
     }
@@ -162,7 +173,7 @@ public class PrivacySandboxBridgeTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
+                    mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
                     assertTrue(
                             mUserActionTester
                                     .getActions()

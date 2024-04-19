@@ -641,10 +641,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mCallbackController.makeCancelable(
                         (profile) -> {
                             Profile regularProfile = profile.getOriginalProfile();
+                            Profile currentModelProfile =
+                                    mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
+
                             boolean didShowPrompt = false;
                             boolean shouldShowPrivacySandboxDialog =
                                     PrivacySandboxDialogController.shouldShowPrivacySandboxDialog(
-                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
+                                            currentModelProfile);
                             boolean isCustomTab =
                                     mIntentDataProvider.get().getActivityType()
                                                     == ActivityType.CUSTOM_TAB
@@ -677,9 +680,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                     .maybeLaunchPrivacySandboxDialog(
                                                             mActivity,
                                                             new SettingsLauncherImpl(),
-                                                            mTabModelSelectorSupplier
-                                                                    .get()
-                                                                    .isIncognitoSelected());
+                                                            currentModelProfile);
                                 }
                             }
                             if (!didShowPrompt) {

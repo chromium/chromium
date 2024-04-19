@@ -16,7 +16,8 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/strings/grit/components_strings.h"
@@ -31,9 +32,10 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-PrivacySandboxService* GetPrivacySandboxService() {
+PrivacySandboxService* GetPrivacySandboxService(
+    const base::android::JavaRef<jobject>& j_profile) {
   return PrivacySandboxServiceFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile());
+      ProfileAndroid::FromProfileAndroid(j_profile));
 }
 
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaTopicsArray(
@@ -51,48 +53,60 @@ std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaTopicsArray(
 }  // namespace
 
 static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxRestricted(
-    JNIEnv* env) {
-  return GetPrivacySandboxService()->IsPrivacySandboxRestricted();
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return GetPrivacySandboxService(j_profile)->IsPrivacySandboxRestricted();
 }
 
 static jboolean JNI_PrivacySandboxBridge_IsRestrictedNoticeEnabled(
-    JNIEnv* env) {
-  return GetPrivacySandboxService()->IsRestrictedNoticeEnabled();
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return GetPrivacySandboxService(j_profile)->IsRestrictedNoticeEnabled();
 }
 
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
-JNI_PrivacySandboxBridge_GetCurrentTopTopics(JNIEnv* env) {
-  return ToJavaTopicsArray(env,
-                           GetPrivacySandboxService()->GetCurrentTopTopics());
+JNI_PrivacySandboxBridge_GetCurrentTopTopics(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return ToJavaTopicsArray(
+      env, GetPrivacySandboxService(j_profile)->GetCurrentTopTopics());
 }
 
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
-JNI_PrivacySandboxBridge_GetBlockedTopics(JNIEnv* env) {
-  return ToJavaTopicsArray(env, GetPrivacySandboxService()->GetBlockedTopics());
+JNI_PrivacySandboxBridge_GetBlockedTopics(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return ToJavaTopicsArray(
+      env, GetPrivacySandboxService(j_profile)->GetBlockedTopics());
 }
 
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
-JNI_PrivacySandboxBridge_GetFirstLevelTopics(JNIEnv* env) {
-  return ToJavaTopicsArray(env,
-                           GetPrivacySandboxService()->GetFirstLevelTopics());
+JNI_PrivacySandboxBridge_GetFirstLevelTopics(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return ToJavaTopicsArray(
+      env, GetPrivacySandboxService(j_profile)->GetFirstLevelTopics());
 }
 
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
 JNI_PrivacySandboxBridge_GetChildTopicsCurrentlyAssigned(
     JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
     jint topic_id,
     jint taxonomy_version) {
   return ToJavaTopicsArray(
-      env, GetPrivacySandboxService()->GetChildTopicsCurrentlyAssigned(
+      env, GetPrivacySandboxService(j_profile)->GetChildTopicsCurrentlyAssigned(
                privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
                                                taxonomy_version)));
 }
 
-static void JNI_PrivacySandboxBridge_SetTopicAllowed(JNIEnv* env,
-                                                     jint topic_id,
-                                                     jint taxonomy_version,
-                                                     jboolean allowed) {
-  GetPrivacySandboxService()->SetTopicAllowed(
+static void JNI_PrivacySandboxBridge_SetTopicAllowed(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    jint topic_id,
+    jint taxonomy_version,
+    jboolean allowed) {
+  GetPrivacySandboxService(j_profile)->SetTopicAllowed(
       privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
                                       taxonomy_version),
       allowed);
@@ -100,8 +114,9 @@ static void JNI_PrivacySandboxBridge_SetTopicAllowed(JNIEnv* env,
 
 static void JNI_PrivacySandboxBridge_GetFledgeJoiningEtldPlusOneForDisplay(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback) {
-  GetPrivacySandboxService()->GetFledgeJoiningEtldPlusOneForDisplay(
+    const JavaParamRef<jobject>& j_profile,
+    const JavaParamRef<jobject>& j_callback) {
+  GetPrivacySandboxService(j_profile)->GetFledgeJoiningEtldPlusOneForDisplay(
       base::BindOnce(
           [](const base::android::JavaRef<jobject>& j_callback,
              std::vector<std::string> strings) {
@@ -115,61 +130,71 @@ static void JNI_PrivacySandboxBridge_GetFledgeJoiningEtldPlusOneForDisplay(
 
 static base::android::ScopedJavaLocalRef<jobjectArray>
 JNI_PrivacySandboxBridge_GetBlockedFledgeJoiningTopFramesForDisplay(
-    JNIEnv* env) {
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
   return base::android::ToJavaArrayOfStrings(
-      env,
-      GetPrivacySandboxService()->GetBlockedFledgeJoiningTopFramesForDisplay());
+      env, GetPrivacySandboxService(j_profile)
+               ->GetBlockedFledgeJoiningTopFramesForDisplay());
 }
 
 static void JNI_PrivacySandboxBridge_SetFledgeJoiningAllowed(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& top_frame_etld_plus1,
+    const JavaParamRef<jobject>& j_profile,
+    const JavaParamRef<jstring>& top_frame_etld_plus1,
     jboolean allowed) {
-  GetPrivacySandboxService()->SetFledgeJoiningAllowed(
+  GetPrivacySandboxService(j_profile)->SetFledgeJoiningAllowed(
       base::android::ConvertJavaStringToUTF8(top_frame_etld_plus1), allowed);
 }
 
-static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(JNIEnv* env) {
+static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
   // If the FRE is disabled, as it is in tests which must not be interrupted
   // with dialogs, do not attempt to show a dialog.
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch("disable-fre"))
     return static_cast<int>(PrivacySandboxService::PromptType::kNone);
 
-  return static_cast<int>(PrivacySandboxServiceFactory::GetForProfile(
-                              ProfileManager::GetActiveUserProfile())
-                              ->GetRequiredPromptType());
+  return static_cast<int>(
+      GetPrivacySandboxService(j_profile)->GetRequiredPromptType());
 }
 
-static void JNI_PrivacySandboxBridge_PromptActionOccurred(JNIEnv* env,
-                                                          jint action) {
-  PrivacySandboxServiceFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
-      ->PromptActionOccurred(
-          static_cast<PrivacySandboxService::PromptAction>(action));
+static void JNI_PrivacySandboxBridge_PromptActionOccurred(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    jint action) {
+  GetPrivacySandboxService(j_profile)->PromptActionOccurred(
+      static_cast<PrivacySandboxService::PromptAction>(action));
 }
 
 static jboolean JNI_PrivacySandboxBridge_IsFirstPartySetsDataAccessEnabled(
-    JNIEnv* env) {
-  return GetPrivacySandboxService()->IsFirstPartySetsDataAccessEnabled();
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return GetPrivacySandboxService(j_profile)
+      ->IsFirstPartySetsDataAccessEnabled();
 }
 
 static jboolean JNI_PrivacySandboxBridge_IsFirstPartySetsDataAccessManaged(
-    JNIEnv* env) {
-  return GetPrivacySandboxService()->IsFirstPartySetsDataAccessManaged();
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return GetPrivacySandboxService(j_profile)
+      ->IsFirstPartySetsDataAccessManaged();
 }
 
 static void JNI_PrivacySandboxBridge_SetFirstPartySetsDataAccessEnabled(
     JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
     jboolean enabled) {
-  GetPrivacySandboxService()->SetFirstPartySetsDataAccessEnabled(enabled);
+  GetPrivacySandboxService(j_profile)->SetFirstPartySetsDataAccessEnabled(
+      enabled);
 }
 
 static ScopedJavaLocalRef<jstring>
 JNI_PrivacySandboxBridge_GetFirstPartySetOwner(
     JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& memberOrigin) {
-  auto fpsOwner = GetPrivacySandboxService()->GetFirstPartySetOwner(
+  auto fpsOwner = GetPrivacySandboxService(j_profile)->GetFirstPartySetOwner(
       GURL(base::android::ConvertJavaStringToUTF8(env, memberOrigin)));
 
   if (!fpsOwner.has_value()) {
@@ -181,23 +206,27 @@ JNI_PrivacySandboxBridge_GetFirstPartySetOwner(
 
 static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedFirstPartySet(
     JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& origin) {
   auto schemefulSite = net::SchemefulSite(
       GURL(base::android::ConvertJavaStringToUTF8(env, origin)));
 
-  return GetPrivacySandboxService()->IsPartOfManagedFirstPartySet(
+  return GetPrivacySandboxService(j_profile)->IsPartOfManagedFirstPartySet(
       schemefulSite);
 }
 
-static void JNI_PrivacySandboxBridge_TopicsToggleChanged(JNIEnv* env,
-                                                         jboolean new_value) {
-  GetPrivacySandboxService()->TopicsToggleChanged(new_value);
+static void JNI_PrivacySandboxBridge_TopicsToggleChanged(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    jboolean new_value) {
+  GetPrivacySandboxService(j_profile)->TopicsToggleChanged(new_value);
 }
 
 static void
 JNI_PrivacySandboxBridge_SetAllPrivacySandboxAllowedForTesting(  // IN-TEST
-    JNIEnv* env) {
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
   PrivacySandboxSettingsFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
+      ProfileAndroid::FromProfileAndroid(j_profile))
       ->SetAllPrivacySandboxAllowedForTesting();  // IN-TEST
 }

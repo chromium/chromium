@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
@@ -20,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -40,6 +42,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     // entry to the Privacy Sandbox UI.
     public static final String PRIVACY_SANDBOX_REFERRER = "privacy-sandbox-referrer";
 
+    private PrivacySandboxBridge mPrivacySandboxBridge;
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
     private SettingsLauncher mSettingsLauncher;
     private SnackbarManager mSnackbarManager;
@@ -128,8 +131,9 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
             boolean multiLine) {
         var snackbar =
                 Snackbar.make(getResources().getString(stringResId), controller, type, identifier);
-        if (actionStringResId != 0)
+        if (actionStringResId != 0) {
             snackbar.setAction(getResources().getString(actionStringResId), null);
+        }
         if (multiLine) snackbar.setSingleLine(false);
         mSnackbarManager.showSnackbar(snackbar);
     }
@@ -158,6 +162,22 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         if (mSettingsLauncher != null) {
             mSettingsLauncher.launchSettingsActivity(getContext(), fragment);
         }
+    }
+
+    @Override
+    public void setProfile(@NonNull Profile profile) {
+        super.setProfile(profile);
+        mPrivacySandboxBridge = new PrivacySandboxBridge(profile);
+    }
+
+    /**
+     * Return the {@link PrivacySandboxBridge} associated with the value set in {@link
+     * #setProfile(Profile)}.
+     */
+    public PrivacySandboxBridge getPrivacySandboxBridge() {
+        assert mPrivacySandboxBridge != null
+                : "Attempting to use PrivacySandboxBridge prior to setProfile being called.";
+        return mPrivacySandboxBridge;
     }
 
     @Override

@@ -69,8 +69,8 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
     private void populateTopics() {
         mTopicsCategory.removeAll();
-        List<Topic> firstLevelTopics = PrivacySandboxBridge.getFirstLevelTopics();
-        var blockedTopics = new HashSet<Topic>(PrivacySandboxBridge.getBlockedTopics());
+        List<Topic> firstLevelTopics = getPrivacySandboxBridge().getFirstLevelTopics();
+        var blockedTopics = new HashSet<Topic>(getPrivacySandboxBridge().getBlockedTopics());
         for (Topic topic : firstLevelTopics) {
             var preference = new TopicSwitchPreference(getContext(), topic);
             preference.setChecked(!blockedTopics.contains(topic));
@@ -84,7 +84,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
         if (!((boolean) newValue)) {
             return handleBlockTopic(topicPreference);
         }
-        PrivacySandboxBridge.setTopicAllowed(topicPreference.getTopic(), true);
+        getPrivacySandboxBridge().setTopicAllowed(topicPreference.getTopic(), true);
         RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.TopicEnabled");
         return true;
     }
@@ -92,9 +92,9 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     private boolean handleBlockTopic(TopicSwitchPreference preference) {
         Topic topic = preference.getTopic();
         // Check if a child level topic is assigned.
-        List<Topic> childTopics = PrivacySandboxBridge.getChildTopicsCurrentlyAssigned(topic);
+        List<Topic> childTopics = getPrivacySandboxBridge().getChildTopicsCurrentlyAssigned(topic);
         if (childTopics.isEmpty()) {
-            PrivacySandboxBridge.setTopicAllowed(topic, false);
+            getPrivacySandboxBridge().setTopicAllowed(topic, false);
             RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.TopicBlocked");
             return true;
         }
@@ -107,7 +107,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
                         modalDialogManager,
                         dismissalCause -> {
                             if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-                                PrivacySandboxBridge.setTopicAllowed(topic, false);
+                                getPrivacySandboxBridge().setTopicAllowed(topic, false);
                                 RecordUserAction.record(
                                         "Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed");
                             } else {
