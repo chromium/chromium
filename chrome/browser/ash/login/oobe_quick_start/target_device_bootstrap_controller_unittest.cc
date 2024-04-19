@@ -386,7 +386,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
 
   fake_target_device_connection_broker_->CloseConnection(
-      ConnectionClosedReason::kConnectionLost);
+      ConnectionClosedReason::kUnknownError);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   ASSERT_TRUE(
@@ -743,7 +743,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionDropped) {
   fake_target_device_connection_broker_->on_stop_advertising_callback().Run();
 
   fake_target_device_connection_broker_->CloseConnection(
-      ConnectionClosedReason::kConnectionLost);
+      ConnectionClosedReason::kUnknownError);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   ASSERT_TRUE(

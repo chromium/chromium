@@ -802,11 +802,11 @@ TEST_F(ConnectionTest, TestClose) {
   ASSERT_EQ(connection_under_test->GetState(), Connection::State::kOpen);
 
   connection_under_test->Close(
-      TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
 
   ASSERT_TRUE(future.IsReady());
   ASSERT_EQ(future.Get(),
-            TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
+            TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
   ASSERT_EQ(connection_under_test->GetState(), Connection::State::kClosed);
 }
 
@@ -1103,7 +1103,7 @@ TEST_F(ConnectionTest, NoResponseAfterClose) {
   EXPECT_FALSE(future.IsReady());
 
   connection_->Close(
-      TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
   EXPECT_EQ(connection_->GetState(), Connection::State::kClosed);
   EXPECT_FALSE(future.IsReady());
 }

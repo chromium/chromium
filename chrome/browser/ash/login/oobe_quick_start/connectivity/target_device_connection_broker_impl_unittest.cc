@@ -762,12 +762,12 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   ASSERT_TRUE(connection());
 
   connection()->Close(
-      TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost);
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUnknownError);
 
   ASSERT_TRUE(connection_lifecycle_listener_.connection_closed_);
   ASSERT_EQ(
       connection_lifecycle_listener_.connection_closed_reason_,
-      TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost);
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUnknownError);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,

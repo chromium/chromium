@@ -161,8 +161,6 @@ QuickStartMetrics::ScreenClosedReason ScreenClosedReasonFromAbortFlowReason(
       [[fallthrough]];
     case QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT:
       return QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow;
-    case QuickStartController::AbortFlowReason::QUICK_START_FLOW_COMPLETE:
-      return QuickStartMetrics::ScreenClosedReason::kSetupComplete;
     case QuickStartController::AbortFlowReason::ERROR:
       return QuickStartMetrics::ScreenClosedReason::kError;
   }
@@ -188,8 +186,6 @@ ConnectionClosedReasonFromAbortFlowReason(
     case QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT:
       return TargetDeviceBootstrapController::ConnectionClosedReason::
           kUserAborted;
-    case QuickStartController::AbortFlowReason::QUICK_START_FLOW_COMPLETE:
-      return TargetDeviceBootstrapController::ConnectionClosedReason::kComplete;
     case QuickStartController::AbortFlowReason::ERROR:
       return TargetDeviceBootstrapController::ConnectionClosedReason::
           kUnknownError;
@@ -896,9 +892,6 @@ std::ostream& operator<<(
       break;
     case QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT:
       stream << "[enterprise enrollment]";
-      break;
-    case QuickStartController::AbortFlowReason::QUICK_START_FLOW_COMPLETE:
-      stream << "[Quick Start flow complete]";
       break;
     case QuickStartController::AbortFlowReason::ERROR:
       stream << "[error]";

@@ -64,7 +64,6 @@ class QuickStartController
     USER_CLICKED_CANCEL,
     SIGNIN_SCHOOL,
     ENTERPRISE_ENROLLMENT,
-    QUICK_START_FLOW_COMPLETE,
     ERROR,
     // Child accounts are not yet supported.
     ADD_CHILD,

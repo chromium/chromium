@@ -66,21 +66,12 @@ std::ostream& operator<<(
     const TargetDeviceConnectionBroker::ConnectionClosedReason&
         connection_closed_reason) {
   switch (connection_closed_reason) {
-    case TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete:
-      stream << "[complete]";
-      break;
     case TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted:
       stream << "[user aborted]";
       break;
     case TargetDeviceConnectionBroker::ConnectionClosedReason::
         kAuthenticationFailed:
       stream << "[authentication failed]";
-      break;
-    case TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost:
-      stream << "[connection lost]";
-      break;
-    case TargetDeviceConnectionBroker::ConnectionClosedReason::kRequestTimedOut:
-      stream << "[request timeout]";
       break;
     case TargetDeviceConnectionBroker::ConnectionClosedReason::
         kTargetDeviceUpdate:
