@@ -134,6 +134,7 @@ export class SearchEngineChoiceAppElement extends
         document.addEventListener('scroll', this.onPageScroll_.bind(this));
       }
 
+      window.addEventListener('resize', this.onPageResize_.bind(this));
       this.pageHandler_.displayDialog();
     });
   }
@@ -246,10 +247,21 @@ export class SearchEngineChoiceAppElement extends
     this.showSearchEngineSnippet_(parseInt(newPrepopulatedId));
   }
 
-  private onPageScroll_() {
+  private wasPageContentFullyDisplayed_() {
     // The value is checked against `< 1` instead of `=== 0` to keep a margin of
     // error.
-    if (document.body.scrollHeight - window.innerHeight - window.scrollY < 1) {
+    return document.body.scrollHeight - window.innerHeight - window.scrollY < 1;
+  }
+
+  private onPageResize_() {
+    if (this.wasPageContentFullyDisplayed_()) {
+      this.hasUserScrolledToTheBottom_ = true;
+      window.removeEventListener('resize', this.onPageScroll_.bind(this));
+    }
+  }
+
+  private onPageScroll_() {
+    if (this.wasPageContentFullyDisplayed_()) {
       this.hasUserScrolledToTheBottom_ = true;
       document.removeEventListener('scroll', this.onPageScroll_.bind(this));
     }

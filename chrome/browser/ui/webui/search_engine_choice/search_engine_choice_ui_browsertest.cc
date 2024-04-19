@@ -180,7 +180,7 @@ const char kMakeFirstSnippetLargerJsString[] =
     "const marketingSnippet = "
     "app.shadowRoot.querySelectorAll('.marketing-snippet');"
     "marketingSnippet[0].textContent = "
-    "marketingSnippet[0].textContent.repeat(2);"
+    "marketingSnippet[0].textContent.repeat(3);"
     "return true;"
     "})();";
 
@@ -188,6 +188,15 @@ const char kDisplayInfoDialogJsString[] =
     "(() => {"
     "const app = document.querySelector('search-engine-choice-app');"
     "app.shadowRoot.querySelector('#infoLink').click();"
+    "return true;"
+    "})();";
+
+// We remove the hover property to prevent the test from being flaky.
+const char kRemoveHoverPropertyJsString[] =
+    "(() => {"
+    "const app = document.querySelector('search-engine-choice-app');"
+    "const radioButtons = app.shadowRoot.querySelectorAll('cr-radio-button');"
+    "radioButtons.forEach(button => button.classList.remove('hoverable'));"
     "return true;"
     "})();";
 }  // namespace
@@ -260,6 +269,8 @@ class SearchEngineChoiceUIPixelTest
     content::WebContents* web_contents = observer.web_contents();
     CHECK(web_contents);
 
+    EXPECT_EQ(true,
+              content::EvalJs(web_contents, kRemoveHoverPropertyJsString));
     if (GetParam().select_first_search_engine) {
       EXPECT_EQ(true, content::EvalJs(web_contents,
                                       kSelectFirstSearchEngineJsString));
@@ -286,14 +297,7 @@ class SearchEngineChoiceUIPixelTest
   base::CallbackListSubscription create_services_subscription_;
 };
 
-// TODO(crbug.com/333787236): flaky on Window with SkiaGraphite
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-
-IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 

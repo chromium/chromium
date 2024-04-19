@@ -127,13 +127,15 @@
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
   }
-
-  cr-radio-button:hover:not([checked]) {
-    background-color: var(--cr-hover-on-subtle-background-color);
-  }
-
   cr-radio-button[checked] {
     background-color: var(--cr-fallback-color-tonal-container);
+  }
+
+  /* Using a class instead of relying only on the pseudo-class allows
+  disabling this style in screenshot tests, where the inability to
+  control the pointer location causes some flakiness. */
+  .hoverable:hover:not([checked]) {
+    background-color: var(--cr-hover-on-subtle-background-color);
   }
 
   .product-logo {
@@ -285,7 +287,7 @@
       role="list">
     <template is="dom-repeat" items="[[choiceList_]]">
         <cr-radio-button aria-label$="[[item.name]]" role="listitem"
-            class="label-first"
+            class="label-first hoverable"
             name="[[item.prepopulateId]]">
           <div class="choice">
             <div class="choice-icon"
