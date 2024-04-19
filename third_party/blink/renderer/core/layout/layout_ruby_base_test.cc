@@ -17,13 +17,15 @@ TEST_F(LayoutRubyBaseTest, AddChildNoBlockChildren) {
   SetBodyInnerHTML(R"HTML(
       <ruby id="target">abc<span style="display:table-cell"></span></ruby>
       )HTML");
-  auto* run_box = To<LayoutRubyColumn>(
-      GetLayoutObjectByElementId("target")->SlowFirstChild());
-  auto* base_box = run_box->RubyBase();
+  auto* ruby_object = GetLayoutObjectByElementId("target");
+  auto* first_child = ruby_object->SlowFirstChild();
+  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+    first_child = To<LayoutRubyColumn>(first_child)->RubyBase()->FirstChild();
+  }
   // Adding a table-cell should not move the prior Text to an anonymous block.
-  EXPECT_TRUE(base_box->FirstChild()->IsText());
+  EXPECT_TRUE(first_child->IsText());
   EXPECT_EQ(EDisplay::kInlineTable,
-            base_box->FirstChild()->NextSibling()->StyleRef().Display());
+            first_child->NextSibling()->StyleRef().Display());
 }
 
 // crbug.com/1510269
@@ -37,13 +39,15 @@ TEST_F(LayoutRubyBaseTest, AddImageNoBlockChildren) {
   GetElementById("target")->appendChild(caption);
   UpdateAllLifecyclePhasesForTest();
 
-  auto* run_box = To<LayoutRubyColumn>(
-      GetLayoutObjectByElementId("target")->SlowFirstChild());
-  auto* base_box = run_box->RubyBase();
+  auto* first_child = GetLayoutObjectByElementId("target")->SlowFirstChild();
+  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+    auto* run_box = To<LayoutRubyColumn>(first_child);
+    first_child = run_box->RubyBase()->FirstChild();
+  }
   // Adding a LayoutImage with display:table-caption should not move the prior
   // Text to an anonymous block.
-  EXPECT_TRUE(base_box->FirstChild()->IsText());
-  LayoutObject* caption_box = base_box->FirstChild()->NextSibling();
+  EXPECT_TRUE(first_child->IsText());
+  LayoutObject* caption_box = first_child->NextSibling();
   ASSERT_TRUE(caption_box);
   EXPECT_TRUE(caption_box->IsImage());
   EXPECT_EQ(EDisplay::kTableCaption, caption_box->StyleRef().Display());
@@ -60,14 +64,15 @@ TEST_F(LayoutRubyBaseTest, AddSpecialWithTableInternalDisplayNoBlockChildren) {
   GetElementById("target")->appendChild(input);
   UpdateAllLifecyclePhasesForTest();
 
-  auto* base_box = To<LayoutRubyColumn>(
-                       GetLayoutObjectByElementId("target")->SlowFirstChild())
-                       ->RubyBase();
+  auto* first_child = GetLayoutObjectByElementId("target")->SlowFirstChild();
+  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+    first_child = To<LayoutRubyColumn>(first_child)->RubyBase()->FirstChild();
+  }
   // Adding a table-column should not move the prior Text to an anonymous block.
-  EXPECT_TRUE(base_box->FirstChild()->IsText());
+  EXPECT_TRUE(first_child->IsText());
   // The input is not wrapped by an inline-table though it has
   // display:table-column.
-  auto* layout_special = base_box->FirstChild()->NextSibling();
+  auto* layout_special = first_child->NextSibling();
   ASSERT_TRUE(layout_special);
   EXPECT_EQ(EDisplay::kTableColumn, layout_special->StyleRef().Display());
   EXPECT_TRUE(layout_special->IsInline());
@@ -81,11 +86,12 @@ TEST_F(LayoutRubyBaseTest, ChangeToRubyNoBlockChildren) {
                                                    CSSValueID::kRuby);
   UpdateAllLifecyclePhasesForTest();
 
-  auto* base_box = To<LayoutRubyColumn>(
-                       GetLayoutObjectByElementId("target")->SlowFirstChild())
-                       ->RubyBase();
+  auto* first_child = GetLayoutObjectByElementId("target")->SlowFirstChild();
+  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+    first_child = To<LayoutRubyColumn>(first_child)->RubyBase()->FirstChild();
+  }
   // <p> should be inlinified.
-  EXPECT_TRUE(base_box->FirstChild()->IsInline()) << base_box->FirstChild();
+  EXPECT_TRUE(first_child->IsInline()) << first_child;
 }
 
 }  // namespace blink

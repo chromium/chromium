@@ -189,9 +189,11 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithPRE) {
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBY) {
-  EXPECT_EQ("<ruby>^abc|<rt>123</rt></ruby>",
+  const char* whole_text_selected = "^<ruby>abc<rt>123|</rt></ruby>";
+  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>123</rt></ruby>",
             GetRange("<ruby>|abc<rt>123</rt></ruby>"));
-  EXPECT_EQ("<ruby>abc<rt>^123|</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^123|</rt></ruby>",
             GetRange("<ruby>abc<rt>1|23</rt></ruby>"));
 }
 
@@ -209,22 +211,26 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
   //       LayoutRubyBase (anonymous) at (0,0) size 22x20
   //         LayoutText {#text} at (0,0) size 22x19
   //           text run at (0,0) width 22: "abc"
+  const char* whole_text_selected = "<ruby>^abc<rt>XYZ|</rt></ruby>";
+  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
   InsertStyleElement("ruby { display: block; }");
-  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
             GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
             GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ("<ruby>abc<rt>^XYZ|</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^XYZ|</rt></ruby>",
             GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsInlineBlock) {
+  const char* whole_text_selected = "^<ruby>abc<rt>XYZ|</rt></ruby>";
+  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
   InsertStyleElement("ruby { display: inline-block; }");
-  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
             GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
             GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ("<ruby>abc<rt>^XYZ|</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^XYZ|</rt></ruby>",
             GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
 }
 

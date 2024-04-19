@@ -558,6 +558,7 @@ TEST_F(InlineItemsBuilderTest, BlockInInline) {
 }
 
 TEST_F(InlineItemsBuilderTest, HasRuby) {
+  ScopedRubyLineBreakableForTest enable_ruby_line_breakable(false);
   HeapVector<InlineItem> items;
   InlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
   EXPECT_FALSE(HasRuby(builder)) << "has_ruby_ should be false initially.";
@@ -614,6 +615,10 @@ TEST_F(InlineItemsBuilderTest, OpenCloseRubyColumns) {
   builder.EnterInline(orphan_rt);
   AppendText("anno3", &builder);
   builder.ExitInline(orphan_rt);
+
+  auto* node_data = MakeGarbageCollected<InlineNodeData>();
+  builder.DidFinishCollectInlines(node_data);
+  EXPECT_TRUE(node_data->HasRuby());
 
   wtf_size_t i = 0;
   EXPECT_ITEM_OFFSET(items[i], InlineItem::kOpenTag, 0u, 0u);  // <ruby>

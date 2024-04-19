@@ -173,7 +173,7 @@ TEST_F(SelectionModifierTest, PreviousLineWithDisplayNone) {
 TEST_F(SelectionModifierTest, PreviousSentenceWithNull) {
   InsertStyleElement("b {display:inline-block}");
   const SelectionInDOMTree selection =
-      SetSelectionTextToBody("<b><ruby><a>|</a></ruby></b>");
+      SetSelectionTextToBody("<b><b><a>|</a></b></b>");
   SelectionModifier modifier(GetFrame(), selection);
   // We call |PreviousSentence()| with null-position.
   EXPECT_FALSE(modifier.Modify(SelectionModifyAlteration::kMove,
@@ -185,7 +185,7 @@ TEST_F(SelectionModifierTest, PreviousSentenceWithNull) {
 TEST_F(SelectionModifierTest, StartOfSentenceWithNull) {
   InsertStyleElement("b {display:inline-block}");
   const SelectionInDOMTree selection =
-      SetSelectionTextToBody("|<b><ruby><a></a></ruby></b>");
+      SetSelectionTextToBody("|<b><b><a></a></b></b>");
   SelectionModifier modifier(GetFrame(), selection);
   // We call |StartOfSentence()| with null-position.
   EXPECT_FALSE(modifier.Modify(SelectionModifyAlteration::kMove,

@@ -944,6 +944,9 @@ rt { margin: 17179869191em; }
 C c
 <rt>
 )HTML");
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
   // The test passes if we have no DCHECK failures in BreakLines().
   BreakLines(node, LayoutUnit::Max());
 }
