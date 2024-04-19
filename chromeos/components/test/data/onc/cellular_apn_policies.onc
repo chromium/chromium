@@ -4,22 +4,33 @@
   "Cellular": {
     "AllowRoaming": true,
     "APN": {
-      "AccessPointName": "test-apn",
+      "AccessPointName": "test-apn-1",
       "ApnTypes": ["Default"],
-      "Authentication": "",
+      "IpType": "",
       "Username": "test-username",
-      "Password": "test-password"
+      "Password": "test-password",
+      "State": "Enabled",
+      "Source": "Admin"
     },
     "AutoConnect": true,
     "CustomAPNList": [
+      {
+        "AccessPointName": "test-apn-1",
+        "ApnTypes": ["Default"],
+        "IpType": "",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Enabled",
+        "Source": "Admin"
+      },
       {
         "AccessPointName": "test-apn-1",
         "ApnTypes": ["Attach"],
         "IpType": "",
         "Username": "test-username",
         "Password": "test-password",
-        "State": "Enabled",
-        "Source": "Ui"
+        "State": "Disabled",
+        "Source": "Admin"
       },
       {
         "AccessPointName": "test-apn-2",
@@ -27,8 +38,8 @@
         "Authentication": "CHAP",
         "Username": "test-username",
         "Password": "test-password",
-        "State": "Disabled",
-        "Source": "Ui"
+        "State": "Enabled",
+        "Source": "Admin"
       },
       {
         "AccessPointName": "test-apn-3",
@@ -38,7 +49,7 @@
         "Username": "test-username",
         "Password": "test-password",
         "State": "Enabled",
-        "Source": "Ui"
+        "Source": "Admin"
       },
       {
         "AccessPointName": "test-apn-4",
@@ -48,7 +59,7 @@
         "Username": "test-username",
         "Password": "test-password",
         "State": "Enabled",
-        "Source": "Ui"
+        "Source": "Admin"
       }
     ]
   }

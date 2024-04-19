@@ -1,0 +1,49 @@
+{
+  "AutoConnect": true,
+  "Type": "cellular",
+  "Cellular.AllowRoaming": true,
+  "Cellular.APN": {
+    "apn": "test-apn-1",
+    "apn_source": "ui",
+    "apn_types": "DEFAULT",
+    "ip_type": "",
+    "username": "test-username",
+    "password": "test-password"
+  },
+  "Cellular.CustomAPNList": [
+    {
+      "apn": "test-apn-1",
+      "apn_source": "ui",
+      "apn_types": "DEFAULT",
+      "ip_type": "",
+      "username": "test-username",
+      "password": "test-password"
+    },
+    {
+      "apn": "test-apn-2",
+      "apn_source": "ui",
+      "apn_types": "DEFAULT",
+      "authentication": "chap",
+      "username": "test-username",
+      "password": "test-password"
+    },
+    {
+      "apn": "test-apn-3",
+      "apn_source": "ui",
+      "apn_types": "DEFAULT,IA",
+      "authentication": "pap",
+      "ip_type": "ipv4v6",
+      "username": "test-username",
+      "password": "test-password"
+    },
+    {
+      "apn": "test-apn-4",
+      "apn_source": "ui",
+      "apn_types": "DEFAULT,IA,DUN",
+      "authentication": "chap",
+      "ip_type": "ipv4v6",
+      "username": "test-username",
+      "password": "test-password"
+    }
+  ]
+}

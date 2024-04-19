@@ -216,6 +216,7 @@ COMPONENT_EXPORT(ONC) extern const char kApnTypeAttach[];
 COMPONENT_EXPORT(ONC) extern const char kApnTypeTether[];
 COMPONENT_EXPORT(ONC) extern const char kSource[];
 COMPONENT_EXPORT(ONC) extern const char kSourceUi[];
+COMPONENT_EXPORT(ONC) extern const char kSourceAdmin[];
 COMPONENT_EXPORT(ONC) extern const char kSourceModb[];
 COMPONENT_EXPORT(ONC) extern const char kSourceModem[];
 }  // namespace cellular_apn

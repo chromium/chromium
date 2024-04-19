@@ -1112,6 +1112,7 @@ std::string MojoApnSourceToOnc(mojom::ApnSource source) {
       return ::onc::cellular_apn::kSourceModb;
     case mojom::ApnSource::kUi:
       return ::onc::cellular_apn::kSourceUi;
+      // TODO(b/5429735): Add mojom::ApnSource::kAdmin in follow up CL
   }
   NOTREACHED() << "Unexpected mojo ApnSource: " << source;
   return ::onc::cellular_apn::kSourceModem;

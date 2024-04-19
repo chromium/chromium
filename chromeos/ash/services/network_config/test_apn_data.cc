@@ -124,6 +124,7 @@ base::Value::Dict TestApnData::AsShillApn() const {
   apn.Set(shill::kApnUsernameProperty, username);
   apn.Set(shill::kApnPasswordProperty, password);
   apn.Set(shill::kApnAttachProperty, attach);
+  apn.Set(shill::kApnSourceProperty, onc_source);
   apn.Set(kShillApnAuthenticationType, onc_authentication);
   if (features::IsApnRevampEnabled()) {
     apn.Set(kShillApnId, id);

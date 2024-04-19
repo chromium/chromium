@@ -106,6 +106,8 @@ mojom::ApnSource OncApnSourceToMojo(const std::optional<std::string>& source) {
     return mojom::ApnSource::kUi;
   }
 
+  // TODO(b/5429735): Add mojom::ApnSource::kAdmin in follow up CL
+
   NET_LOG(DEBUG) << "Unexpected APN source: " << source.value();
   return mojom::ApnSource::kModem;
 }

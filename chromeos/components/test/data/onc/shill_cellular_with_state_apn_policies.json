@@ -1,0 +1,104 @@
+{
+  "AutoConnect": true,
+  "Type": "cellular",
+  "Name": "Test Network",
+  "Cellular.ActivationState": "activated",
+  "Cellular.ActivationType": "OTASP",
+  "Cellular.AllowRoaming": true,
+  "Cellular.EID": "test_eid",
+  "Cellular.ICCID": "test_iccid",
+  "Cellular.NetworkTechnology": "LTE Advanced",
+  "Cellular.Olp": {
+    "method": "GET",
+    "url": "http://test.com/payment"
+  },
+  "Cellular.RoamingState": "home",
+  "Cellular.ServingOperator": {
+    "code": "test-code",
+    "country": "test-country",
+    "name" : "test-name"
+  },
+  "Cellular.APN": {
+    "apn": "test-apn",
+    "apn_types": "DEFAULT",
+    "name": "test-apn-name",
+    "apn_source": "admin",
+    "username": "test-username",
+    "password": "test-password"
+  },
+  "Cellular.LastConnectedAttachApnProperty": {
+    "apn": "test-apn-2",
+    "apn_types": "IA",
+    "authentication": "pap",
+    "ip_type": "",
+    "apn_source": "admin",
+    "name": "test-apn-name-2",
+    "username": "test-username-2",
+    "password": "test-password-2"
+  },
+  "Cellular.LastConnectedDefaultApnProperty": {
+    "apn": "test-apn-3",
+    "apn_types": "DEFAULT",
+    "authentication": "chap",
+    "ip_type": "ipv6",
+    "apn_source": "admin",
+    "name": "test-apn-name-3",
+    "username": "test-username-3",
+    "password": "test-password-3"
+  },
+  "Cellular.LastGoodAPN": {
+    "apn": "test-apn-4",
+    "apn_types": "DEFAULT,IA",
+    "authentication": "pap",
+    "ip_type": "ipv4v6",
+    "apn_source": "admin",
+    "name": "test-apn-name-4",
+    "username": "test-username-4",
+    "password": "test-password-4"
+  },
+  "Device": {
+    // This dictionary contains Device properties and not Service properties as
+    // above.
+    "Cellular.APNList": [
+      {
+        "apn": "test-apn0",
+        "apn_types": "DUN",
+        "ip_type": "ipv4",
+        "apn_source": "admin",
+        "username": "test-username0",
+        "password": "test-password0"
+      },
+      {
+        "apn": "test-apn1",
+        "apn_types": "DEFAULT",
+        "username": "test-username1",
+        "password": "test-password1"
+      },
+      {
+        "apn": "test-apn2",
+        "apn_types": "DEFAULT",
+        "username": "test-username2",
+        "password": "test-password2"
+      },
+      {
+        "apn": "test-apn3",
+        "apn_types": "IA",
+        "username": "test-username3",
+        "password": "test-password3",
+        "attach": "attach"
+      }
+    ],
+    "Cellular.ICCID": "test_iccid",
+    "Cellular.HomeProvider": {
+      "country": "us",
+      "name": "cellular_provider"
+    },
+    "Cellular.PolicyAllowRoaming": true,
+    "Cellular.SIMLockStatus": {
+      "LockType": "sim-pin",
+      "LockEnabled": true
+    },
+    "Scanning": true
+  },
+  "Profile": "/profile/default"
+}

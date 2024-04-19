@@ -21,6 +21,8 @@ namespace ash::onc {
 
 namespace {
 
+// TODO(b/333100319): Replace with shill::kApnSourceModem and
+// shill::kApnSourceModb once http://crrev/c/5428687 lands.
 const char kShillApnSourceModem[] = "modem";
 const char kShillApnSourceModb[] = "modb";
 
@@ -471,6 +473,7 @@ const StringTranslationEntry kApnIpTypeTranslationTable[] = {
 const StringTranslationEntry kApnSourceTranslationTable[] = {
     {::onc::cellular_apn::kSourceModem, kShillApnSourceModem},
     {::onc::cellular_apn::kSourceModb, kShillApnSourceModb},
+    {::onc::cellular_apn::kSourceAdmin, shill::kApnSourceAdmin},
     {::onc::cellular_apn::kSourceUi, shill::kApnSourceUi},
     {nullptr}};
 

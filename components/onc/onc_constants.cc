@@ -201,6 +201,7 @@ const char kSource[] = "Source";
 const char kSourceModem[] = "Modem";
 const char kSourceModb[] = "Modb";
 const char kSourceUi[] = "Ui";
+const char kSourceAdmin[] = "Admin";
 }  // namespace cellular_apn
 
 namespace cellular_found_network {
