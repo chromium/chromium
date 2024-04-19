@@ -45,6 +45,7 @@ const std::string kSimpleResponse = R"(
               "mid": "/g/abcd"
             },
             "title": "Circle",
+            "summary": "Circle is round",
             "imageUrl": "http://example.com/image.png",
             "productSpecificationValues": [
               {
@@ -132,6 +133,7 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
                       spec->products[0].image_url.spec());
             ASSERT_EQ("Red",
                       spec->products[0].product_dimension_values[100000][0]);
+            ASSERT_EQ("Circle is round", spec->products[0].summary);
 
             looper->Quit();
           },
@@ -171,6 +173,7 @@ TEST_F(ProductSpecificationsServerProxyTest,
                      ASSERT_EQ(
                          "Red",
                          spec->products[0].product_dimension_values[100000][0]);
+                     ASSERT_EQ("Circle is round", spec->products[0].summary);
 
                      looper->Quit();
                    },

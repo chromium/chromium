@@ -102,6 +102,9 @@ struct ProductSpecificationsProduct {
 
   // A map of dimension IDs to the string value as it relates to this product.
   map<uint64, array<string>> product_dimension_values;
+
+  // A brief summary of the product.
+  string summary;
 };
 
 struct ProductSpecifications {

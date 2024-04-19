@@ -36,6 +36,7 @@ const char kGPCKey[] = "gpcId";
 const char kMIDKey[] = "mid";
 const char kImageURLKey[] = "imageUrl";
 const char kDescriptionsKey[] = "descriptions";
+const char kSummaryKey[] = "summary";
 
 const char kGPCTypeName[] = "GLOBAL_PRODUCT_CLUSTER_ID";
 
@@ -251,6 +252,11 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
     const std::string* image_url = spec.GetDict().FindString(kImageURLKey);
     if (image_url) {
       product.image_url = GURL(*image_url);
+    }
+
+    const std::string* summary = spec.GetDict().FindString(kSummaryKey);
+    if (summary) {
+      product.summary = *summary;
     }
 
     const base::Value::List* product_spec_values =

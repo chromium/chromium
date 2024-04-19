@@ -190,6 +190,7 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
     product_ptr->product_cluster_id = product.product_cluster_id;
     product_ptr->title = product.title;
     product_ptr->image_url = product.image_url;
+    product_ptr->summary = product.summary;
 
     for (const auto& [dimen_id, value] : product.product_dimension_values) {
       product_ptr->product_dimension_values[dimen_id] = value;

@@ -725,6 +725,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
   product.product_cluster_id = 12345L;
   product.title = "title";
   product.product_dimension_values[1] = {"red"};
+  product.summary = "summary";
   specs.products.push_back(std::move(product));
 
   shopping_service_->SetResponseForGetProductSpecificationsForUrls(
@@ -742,6 +743,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
             ASSERT_EQ("red",
                       specs_ptr->products[0]->product_dimension_values[1][0]);
             ASSERT_EQ("title", specs_ptr->products[0]->title);
+            ASSERT_EQ("summary", specs_ptr->products[0]->summary);
 
             run_loop->Quit();
           },
