@@ -49,8 +49,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -329,6 +331,7 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testCreditCardViewFiltersTouchEvents() {
         runOnUiThreadBlocking(
                 () -> {
@@ -496,15 +499,18 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testIbanViewFiltersTouchEvents() {
         runOnUiThreadBlocking(
                 () -> {
                     PropertyModel ibanModel = createIbanModel(LOCAL_IBAN, () -> fail());
-                    mTouchToFillPaymentMethodModel.get(SHEET_ITEMS).add(new ListItem(IBAN, ibanModel));
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(IBAN, ibanModel));
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(new ListItem(FILL_BUTTON, ibanModel));
-                            mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
