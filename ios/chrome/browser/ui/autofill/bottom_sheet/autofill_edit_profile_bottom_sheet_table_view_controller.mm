@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -27,6 +28,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 @interface AutofillEditProfileBottomSheetTableViewController () <
     UITextFieldDelegate> {
+  // Delegate for this view controller.
+  __weak id<AutofillEditProfileBottomSheetTableViewControllerDelegate>
+      _delegate;
+
   // Denotes the mode of the address save for the edit profile bottom sheet.
   AutofillSaveProfilePromptMode _editSheetMode;
 }
@@ -37,10 +42,13 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 #pragma mark - Initialization
 
-- (instancetype)initWithEditSheetMode:
-    (AutofillSaveProfilePromptMode)editSheetMode {
+- (instancetype)
+    initWithDelegate:
+        (id<AutofillEditProfileBottomSheetTableViewControllerDelegate>)delegate
+       editSheetMode:(AutofillSaveProfilePromptMode)editSheetMode {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
+    _delegate = delegate;
     _editSheetMode = editSheetMode;
   }
   return self;
@@ -64,6 +72,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(handleCancelButton)];
+  cancelButton.accessibilityIdentifier = kEditProfileBottomSheetCancelButton;
 
   self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
@@ -164,7 +173,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 #pragma mark - Actions
 
 - (void)handleCancelButton {
-  // TODO(crbug.com/1482269): Implement.
+  CHECK(_delegate);
+  [_delegate didCancelBottomSheetView];
 }
 
 #pragma mark - UITextFieldDelegate

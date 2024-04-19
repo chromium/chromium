@@ -27,6 +27,7 @@
 
 @interface AutofillEditProfileBottomSheetCoordinator () <
     AutofillCountrySelectionTableViewControllerDelegate,
+    AutofillEditProfileBottomSheetTableViewControllerDelegate,
     AutofillProfileEditMediatorDelegate>
 @end
 
@@ -93,7 +94,8 @@
   // Bottom sheet table VC
   AutofillEditProfileBottomSheetTableViewController* editModalViewController =
       [[AutofillEditProfileBottomSheetTableViewController alloc]
-          initWithEditSheetMode:saveProfilePromptMode];
+          initWithDelegate:self
+             editSheetMode:saveProfilePromptMode];
 
   // View controller that lays down the table views for the edit profile view.
   _autofillProfileEditTableViewController =
@@ -175,6 +177,12 @@
 - (void)didSelectCountry:(CountryItem*)selectedCountry {
   [_navigationController popViewControllerAnimated:YES];
   [_autofillProfileEditMediator didSelectCountry:selectedCountry];
+}
+
+#pragma mark - AutofillEditProfileBottomSheetTableViewControllerDelegate
+
+- (void)didCancelBottomSheetView {
+  [self stop];
 }
 
 #pragma mark - Private

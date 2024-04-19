@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_constants.h"
+#import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_address_profile_modal_constants.h"
@@ -141,7 +143,9 @@ id<GREYMatcher> SearchBarScrim() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector(testUserData_LocalEditViaBottomSheet)]) {
+  if ([self isRunningTest:@selector(testUserData_LocalEditViaBottomSheet)] ||
+      [self
+          isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)]) {
     config.features_enabled.push_back(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
@@ -451,6 +455,38 @@ id<GREYMatcher> SearchBarScrim() {
   // Ensure profile is saved locally.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
                   @"Profile should have been saved.");
+}
+
+// Tests that the bottom sheet to edit address is just hidden on Cancel.
+- (void)testUserData_LocalHideBottomSheetOnCancel {
+  // Fill and submit the form.
+  [self fillPresidentProfileAndShowSaveModal];
+
+  // Edit the profile.
+  [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Tap "Cancel"
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kEditProfileBottomSheetCancelButton),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitButton),
+                                   nil)] performAction:grey_tap()];
+
+  // Open modal by selecting the badge that shouldn't be accepted.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBadgeButtonSaveAddressProfileAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
+      performAction:grey_tap()];
 }
 
 // Tests the sticky address prompt journey where the prompt remains there when

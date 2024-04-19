@@ -9,12 +9,22 @@
 #import "ios/chrome/browser/ui/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
 
+@protocol AutofillEditProfileBottomSheetTableViewControllerDelegate
+
+// Invoked when the "Cancel" button is pressed.
+- (void)didCancelBottomSheetView;
+
+@end
+
 // The Bottom Sheet TableView for an Autofill save/update address edit menu.
 @interface AutofillEditProfileBottomSheetTableViewController
     : LegacyChromeTableViewController
 
-- (instancetype)initWithEditSheetMode:
-    (AutofillSaveProfilePromptMode)editSheetMode NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithDelegate:
+        (id<AutofillEditProfileBottomSheetTableViewControllerDelegate>)delegate
+       editSheetMode:(AutofillSaveProfilePromptMode)editSheetMode
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

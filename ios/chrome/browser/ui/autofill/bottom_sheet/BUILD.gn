@@ -11,6 +11,13 @@ group("unit_tests") {
   ]
 }
 
+source_set("constants") {
+  sources = [
+    "bottom_sheet_constants.h",
+    "bottom_sheet_constants.mm",
+  ]
+}
+
 source_set("bottom_sheet") {
   sources = [
     "autofill_edit_profile_bottom_sheet_coordinator.h",
@@ -60,6 +67,7 @@ source_set("bottom_sheet_ui") {
     "payments_suggestion_bottom_sheet_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//build:branding_buildflags",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
