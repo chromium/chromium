@@ -100,12 +100,14 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
   }
 }
 
-void DefaultBrowserPromptManager::CloseAllPrompts() {
+void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {
   CloseAllInfoBars();
 
   SetShowAppMenuPromptVisibility(false);
 
-  SetAppMenuItemVisibility(false);
+  if (close_reason == CloseReason::kAccept) {
+    SetAppMenuItemVisibility(false);
+  }
 }
 
 bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {
@@ -141,9 +143,9 @@ void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
   static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())
       ->RemoveObserver(this);
 
-  if (user_initiated_info_bar_close_pending_) {
-    CloseAllPrompts();
-    user_initiated_info_bar_close_pending_ = false;
+  if (user_initiated_info_bar_close_pending_.has_value()) {
+    CloseAllPrompts(user_initiated_info_bar_close_pending_.value());
+    user_initiated_info_bar_close_pending_.reset();
   }
 }
 
@@ -152,11 +154,11 @@ void DefaultBrowserPromptManager::OnAccept() {
                               g_browser_process->local_state()->GetInteger(
                                   prefs::kDefaultBrowserDeclinedCount) +
                                   1);
-  user_initiated_info_bar_close_pending_ = true;
+  user_initiated_info_bar_close_pending_ = CloseReason::kAccept;
 }
 
 void DefaultBrowserPromptManager::OnDismiss() {
-  user_initiated_info_bar_close_pending_ = true;
+  user_initiated_info_bar_close_pending_ = CloseReason::kDismiss;
 }
 
 DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
@@ -264,7 +266,8 @@ void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
         FROM_HERE, app_menu_remaining_duration, base::BindOnce([]() {
           UpdatePrefsForDismissedPrompt(
               BrowserList::GetInstance()->GetLastActive()->profile());
-          DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts();
+          DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+              CloseReason::kDismiss);
         }));
   } else {
     app_menu_prompt_dismiss_timer_.Stop();

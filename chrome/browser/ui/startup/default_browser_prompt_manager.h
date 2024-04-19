@@ -35,6 +35,11 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
     virtual void OnShowAppMenuPromptChanged() = 0;
   };
 
+  enum class CloseReason {
+    kAccept,
+    kDismiss,
+  };
+
   static DefaultBrowserPromptManager* GetInstance();
 
   // Resets the tracking preferences for the default browser prompts so that
@@ -59,7 +64,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   void RemoveObserver(Observer* observer);
 
   void MaybeShowPrompt();
-  void CloseAllPrompts();
+
+  void CloseAllPrompts(CloseReason close_reason);
 
   // BrowserTabStripTrackerDelegate
   bool ShouldTrackBrowser(Browser* browser) override;
@@ -100,7 +106,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
-  bool user_initiated_info_bar_close_pending_ = false;
+
+  std::optional<CloseReason> user_initiated_info_bar_close_pending_;
 
   bool show_app_menu_prompt_ = false;
   bool show_app_menu_item_ = false;
