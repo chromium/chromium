@@ -923,8 +923,8 @@ ServiceWorkerVersion* ServiceWorkerContextCore::GetLiveVersion(int64_t id) {
 }
 
 void ServiceWorkerContextCore::AddLiveVersion(ServiceWorkerVersion* version) {
-  // TODO(horo): If we will see crashes here, we have to find the root cause of
-  // the version ID conflict. Otherwise change CHECK to DCHECK.
+  // TODO(crbug.com/335613089): Determine why we see these crashes. Once
+  // resolved change DCHECK.
   CHECK(!GetLiveVersion(version->version_id()));
   live_versions_[version->version_id()] = version;
   version->AddObserver(this);
