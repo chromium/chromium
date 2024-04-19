@@ -30,6 +30,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
@@ -202,6 +203,108 @@ static void CollectElementsByTagName(
       SelectorQueryTrait::AppendElement(output, element);
       if (SelectorQueryTrait::kShouldOnlyMatchFirstElement) {
         return;
+      }
+    }
+  }
+}
+
+static bool AttributeValueMatchesExact(const Attribute& attribute_item,
+                                       const AtomicString& selector_value,
+                                       TextCaseSensitivity case_sensitivity) {
+  const AtomicString& value = attribute_item.Value();
+  if (value.IsNull()) {
+    return false;
+  }
+  if (case_sensitivity == kTextCaseSensitive) {
+    return selector_value == value;
+  }
+  return EqualIgnoringASCIICase(selector_value, value);
+}
+
+template <typename SelectorQueryTrait>
+static void CollectElementsByAttributeExact(
+    ContainerNode& root_node,
+    const CSSSelector& selector,
+    typename SelectorQueryTrait::OutputType& output) {
+  const QualifiedName& selector_attr = selector.Attribute();
+  const AtomicString& selector_value = selector.Value();
+  const TextCaseSensitivity case_sensitivity =
+      (selector.AttributeMatch() ==
+       CSSSelector::AttributeMatchType::kCaseInsensitive)
+          ? kTextCaseASCIIInsensitive
+          : kTextCaseSensitive;
+  const bool is_html_doc = IsA<HTMLDocument>(root_node.GetDocument());
+  // Legacy dictates that values of some attributes should be compared in
+  // a case-insensitive manner regardless of whether the case insensitive
+  // flag is set or not.
+  const bool legacy_case_insensitive =
+      is_html_doc && !selector.IsCaseSensitiveAttribute();
+
+  for (Element& element : ElementTraversal::DescendantsOf(root_node)) {
+    QUERY_STATS_INCREMENT(fast_scan);
+    // Synchronize the attribute in case it is lazy-computed.
+    // Currently all lazy properties have a null namespace, so only pass
+    // localName().
+    // TODO: figure out how to only call this if necessary.
+    element.SynchronizeAttribute(selector_attr.LocalName());
+    AttributeCollection attributes = element.AttributesWithoutUpdate();
+    for (const auto& attribute_item : attributes) {
+      if (!attribute_item.Matches(selector_attr)) {
+        if (element.IsHTMLElement() || !is_html_doc) {
+          continue;
+        }
+        // Non-html attributes in html documents are normalized to their camel-
+        // cased version during parsing if applicable. Yet, attribute selectors
+        // are lower-cased for selectors in html documents. Compare the selector
+        // and the attribute local name insensitively to e.g. allow matching SVG
+        // attributes like viewBox.
+        //
+        // NOTE: If changing this behavior, be sure to also update the bucketing
+        // in ElementRuleCollector::CollectMatchingRules() accordingly.
+        if (!attribute_item.MatchesCaseInsensitive(selector_attr)) {
+          continue;
+        }
+      }
+
+      if (AttributeValueMatchesExact(attribute_item, selector_value,
+                                     case_sensitivity)) {
+        SelectorQueryTrait::AppendElement(output, element);
+        if (SelectorQueryTrait::kShouldOnlyMatchFirstElement) {
+          return;
+        }
+        break;
+      }
+
+      if (case_sensitivity == kTextCaseASCIIInsensitive) {
+        if (selector_attr.NamespaceURI() != g_star_atom) {
+          break;
+        }
+        continue;
+      }
+
+      // If case-insensitive, re-check, and count if result differs.
+      // See http://code.google.com/p/chromium/issues/detail?id=327060
+      if (legacy_case_insensitive &&
+          AttributeValueMatchesExact(attribute_item, selector_value,
+                                     kTextCaseASCIIInsensitive)) {
+        // If the `s` modifier is in the attribute selector, return false
+        // despite of legacy_case_insensitive.
+        if (selector.AttributeMatch() ==
+            CSSSelector::AttributeMatchType::kCaseSensitiveAlways) {
+          DCHECK(RuntimeEnabledFeatures::CSSCaseSensitiveSelectorEnabled());
+          break;
+        }
+
+        UseCounter::Count(element.GetDocument(),
+                          WebFeature::kCaseInsensitiveAttrSelectorMatch);
+        SelectorQueryTrait::AppendElement(output, element);
+        if (SelectorQueryTrait::kShouldOnlyMatchFirstElement) {
+          return;
+        }
+        break;
+      }
+      if (selector_attr.NamespaceURI() != g_star_atom) {
+        break;
       }
     }
   }
@@ -435,6 +538,13 @@ void SelectorQuery::Execute(
         // throws before we get here, but we still may have selectors for
         // elements without a namespace.
         DCHECK_EQ(first_selector.TagQName().NamespaceURI(), g_null_atom);
+        break;
+      case CSSSelector::kAttributeExact:
+        if (RuntimeEnabledFeatures::FastPathSingleSelectorExactMatchEnabled()) {
+          CollectElementsByAttributeExact<SelectorQueryTrait>(
+              root_node, first_selector, output);
+          return;
+        }
         break;
       default:
         break;  // If we need another fast path, add here.

@@ -1538,6 +1538,11 @@
       // crbug.com/333630754
       name: "FasterMinContent",
     },
+    // Kill switch.
+    {
+      name: "FastPathSingleSelectorExactMatch",
+      status: "stable",
+    },
     {
       name: "FastPositionIterator",
       // Not enabled due to a RTL issue. crbug.com/1421016.
