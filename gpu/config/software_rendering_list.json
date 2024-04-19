@@ -1482,6 +1482,22 @@
       "features": [
         "skia_graphite"
       ]
+    },
+    {
+      "id": 183,
+      "cr_bugs": [335564846, 335640712],
+      "description": "Analytic clipping is not implemented in Graphite",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "11"
+      },
+      "features": [
+        "skia_graphite"
+      ]
     }
   ]
 }
