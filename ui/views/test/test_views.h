@@ -61,8 +61,8 @@ class ProportionallySizedView : public View {
 
   void SetPreferredWidth(int width);
 
-  int GetHeightForWidth(int w) const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
 
  private:
   // The multiplicative factor between width and height, i.e.
