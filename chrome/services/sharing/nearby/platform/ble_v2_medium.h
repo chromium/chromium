@@ -112,8 +112,6 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
   uint64_t GenerateUniqueSessionId();
   chrome::BleV2RemotePeripheral* GetDiscoveredBlePeripheral(
       const std::string& address);
-  Uuid BluetoothServiceUuidToNearbyUuid(
-      const device::BluetoothUUID& bluetooth_service_uuid);
 
   mojo::SharedRemote<bluetooth::mojom::Adapter> adapter_;
 

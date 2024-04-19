@@ -11,6 +11,7 @@
 #include "chrome/services/sharing/nearby/platform/ble_v2_gatt_server.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_server_socket.h"
+#include "chrome/services/sharing/nearby/platform/bluetooth_utils.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/cross_device/nearby/nearby_features.h"
 #include "third_party/nearby/src/internal/platform/byte_array.h"
@@ -396,7 +397,7 @@ void BleV2Medium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
   for (const auto& service_data_pair : device->service_data_map) {
     bluetooth_service_set.insert(service_data_pair.first);
     advertisement_data.service_data.insert(
-        {BluetoothServiceUuidToNearbyUuid(service_data_pair.first),
+        {BluetoothUuidToNearbyUuid(service_data_pair.first),
          ByteArray{std::string(service_data_pair.second.begin(),
                                service_data_pair.second.end())}});
   }
@@ -478,15 +479,4 @@ uint64_t BleV2Medium::GenerateUniqueSessionId() {
   return kFailedGenerateSessionId;
 }
 
-Uuid BleV2Medium::BluetoothServiceUuidToNearbyUuid(
-    const device::BluetoothUUID& bluetooth_service_uuid) {
-  auto uint_bytes = bluetooth_service_uuid.GetBytes();
-  uint64_t most_sig_bits = 0;
-  uint64_t least_sig_bits = 0;
-  for (int i = 0; i < 8; i++) {
-    most_sig_bits |= static_cast<uint64_t>(uint_bytes[i]) << ((7 - i) * 8);
-    least_sig_bits |= static_cast<uint64_t>(uint_bytes[i + 8]) << ((7 - i) * 8);
-  }
-  return Uuid{most_sig_bits, least_sig_bits};
-}
 }  // namespace nearby::chrome
