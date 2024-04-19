@@ -392,8 +392,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil([&]() { return observer.request_shown(); }));
 }
 
+// TODO(b/335801964): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowSidePanelAfterManualRegionSelection \
+  DISABLED_ShowSidePanelAfterManualRegionSelection
+#else
+#define MAYBE_ShowSidePanelAfterManualRegionSelection \
+  ShowSidePanelAfterManualRegionSelection
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       ShowSidePanelAfterManualRegionSelection) {
+                       MAYBE_ShowSidePanelAfterManualRegionSelection) {
   WaitForPaint();
 
   // State should start in off.
