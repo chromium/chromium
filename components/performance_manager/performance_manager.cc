@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -15,6 +17,7 @@
 #include "components/performance_manager/performance_manager_registry_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/performance_manager_owned.h"
+#include "components/performance_manager/resource_attribution/query_scheduler.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
@@ -243,6 +246,13 @@ PerformanceManagerRegistered* PerformanceManager::GetRegisteredObject(
 // static
 scoped_refptr<base::SequencedTaskRunner> PerformanceManager::GetTaskRunner() {
   return PerformanceManagerImpl::GetTaskRunner();
+}
+
+// static
+void PerformanceManager::RecordMemoryMetrics() {
+  using QueryScheduler = resource_attribution::internal::QueryScheduler;
+  QueryScheduler::CallWithScheduler(
+      base::BindOnce(&QueryScheduler::RecordMemoryMetrics));
 }
 
 }  // namespace performance_manager

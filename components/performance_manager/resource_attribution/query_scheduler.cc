@@ -278,6 +278,11 @@ uint32_t QueryScheduler::GetQueryCountForTesting(
   NOTREACHED_NORETURN();
 }
 
+void QueryScheduler::RecordMemoryMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cpu_monitor_.RecordMemoryMetrics();
+}
+
 void QueryScheduler::AddCPUQuery() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(graph_, nullptr);

@@ -82,6 +82,9 @@ class QueryScheduler
   // Gives tests access to the query count for `resource_type`.
   uint32_t GetQueryCountForTesting(ResourceType resource_type) const;
 
+  // Logs metrics on Resource Attribution's memory usage to UMA.
+  void RecordMemoryMetrics();
+
  private:
   // Increases the CPU query count. `cpu_monitor_` will start monitoring CPU
   // usage when the count > 0.

@@ -19,12 +19,16 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/clamped_math.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
+#include "base/types/variant_util.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -215,6 +219,138 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
   }
 
   return results;
+}
+
+void CPUMeasurementMonitor::RecordMemoryMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  constexpr size_t kNumContextTypes =
+      absl::variant_size<ResourceContext>::value;
+
+  // Estimated size of a result: map entry (key + pointer) + pointed-to data.
+  // These are clamped so that multiplying by it will never overflow.
+  constexpr base::ClampedNumeric<uint32_t> kResultEntrySize =
+      sizeof(std::pair<ResourceContext, ScopedCPUTimeResultPtr>);
+  constexpr base::ClampedNumeric<uint32_t> kResultSize =
+      sizeof(ScopedCPUTimeResultPtr::element_type);
+
+  std::set<ScopedCPUTimeResultPtr::element_type*> visited_result_ptrs;
+
+  // Estimates for each live ResourceContext type by index into the
+  // ResourceContext variant.
+  std::vector<base::ClampedNumeric<uint32_t>> live_context_estimates(
+      kNumContextTypes);
+  base::ClampedNumeric<uint32_t> total_live_estimate = 0;
+  base::ClampedNumeric<uint32_t> live_opaque_origins_estimate = 0;
+  for (const auto& [context, result_ptr] : measurement_results_) {
+    CHECK(result_ptr);
+    const auto [_, inserted] = visited_result_ptrs.insert(result_ptr.get());
+    CHECK(inserted);
+
+    // Each result has a single reference.
+    auto estimate = kResultEntrySize + kResultSize;
+    if (ContextIs<OriginInPageContext>(context)) {
+      // OriginInPageContext includes an url::Origin, which has variable-size
+      // data.
+      const url::Origin& origin =
+          AsContext<OriginInPageContext>(context).GetOrigin();
+      estimate += origin.EstimateMemoryUsage();
+      if (origin.opaque()) {
+        live_opaque_origins_estimate += estimate;
+      }
+    }
+
+    live_context_estimates.at(context.index()) += estimate;
+    total_live_estimate += estimate;
+  }
+
+  // Estimates for each dead ResourceContext type by index into the
+  // ResourceContext variant.
+  std::vector<base::ClampedNumeric<uint32_t>> dead_context_estimates(
+      kNumContextTypes);
+  base::ClampedNumeric<uint32_t> total_dead_estimate = 0;
+  base::ClampedNumeric<uint32_t> dead_opaque_origins_estimate = 0;
+  for (const auto& [_, result_list] : dead_measurement_results_) {
+    for (const auto& [context, result_ptr] : result_list) {
+      CHECK(result_ptr);
+      const auto [_, inserted] = visited_result_ptrs.insert(result_ptr.get());
+
+      // Multiple references to each result. Only include the result size
+      // the first time it's seen, but include every copy of the key.
+      auto estimate = kResultEntrySize;
+      if (inserted) {
+        estimate += kResultSize;
+      }
+
+      if (ContextIs<OriginInPageContext>(context)) {
+        // OriginInPageContext includes an url::Origin, which has variable-size
+        // data.
+        const url::Origin& origin =
+            AsContext<OriginInPageContext>(context).GetOrigin();
+        estimate += origin.EstimateMemoryUsage();
+        if (origin.opaque()) {
+          dead_opaque_origins_estimate += estimate;
+        }
+      }
+
+      dead_context_estimates.at(context.index()) += estimate;
+      total_dead_estimate += estimate;
+    }
+  }
+
+  for (size_t index = 0; index < kNumContextTypes; ++index) {
+    const char* context_name = nullptr;
+    switch (index) {
+      case base::VariantIndexOfType<ResourceContext, FrameContext>():
+        context_name = "FrameContexts";
+        break;
+      case base::VariantIndexOfType<ResourceContext, PageContext>():
+        context_name = "PageContexts";
+        break;
+      case base::VariantIndexOfType<ResourceContext, ProcessContext>():
+        context_name = "ProcessContexts";
+        break;
+      case base::VariantIndexOfType<ResourceContext, WorkerContext>():
+        context_name = "WorkerContexts";
+        break;
+      case base::VariantIndexOfType<ResourceContext, OriginInPageContext>():
+        context_name = "OriginInPageContexts";
+        break;
+    }
+    CHECK(context_name);
+
+    base::UmaHistogramMemoryKB(
+        base::StrCat(
+            {"PerformanceManager.CPUMonitorMemoryUse.", context_name, ".Live"}),
+        live_context_estimates.at(index) / 1024);
+    base::UmaHistogramMemoryKB(
+        base::StrCat(
+            {"PerformanceManager.CPUMonitorMemoryUse.", context_name, ".Dead"}),
+        dead_context_estimates.at(index) / 1024);
+    base::UmaHistogramMemoryKB(
+        base::StrCat({"PerformanceManager.CPUMonitorMemoryUse.", context_name,
+                      ".Total"}),
+        (live_context_estimates.at(index) + dead_context_estimates.at(index)) /
+            1024);
+  }
+  base::UmaHistogramMemoryKB(
+      "PerformanceManager.CPUMonitorMemoryUse.AllContexts.Live",
+      total_live_estimate / 1024);
+  base::UmaHistogramMemoryKB(
+      "PerformanceManager.CPUMonitorMemoryUse.AllContexts.Dead",
+      total_dead_estimate / 1024);
+  base::UmaHistogramMemoryKB(
+      "PerformanceManager.CPUMonitorMemoryUse.AllContexts.Total",
+      (total_live_estimate + total_dead_estimate) / 1024);
+
+  base::UmaHistogramMemoryKB(
+      "PerformanceManager.CPUMonitorMemoryUse.OpaqueOriginContexts.Live",
+      live_opaque_origins_estimate / 1024);
+  base::UmaHistogramMemoryKB(
+      "PerformanceManager.CPUMonitorMemoryUse.OpaqueOriginContexts.Dead",
+      dead_opaque_origins_estimate / 1024);
+  base::UmaHistogramMemoryKB(
+      "PerformanceManager.CPUMonitorMemoryUse.OpaqueOriginContexts.Total",
+      (live_opaque_origins_estimate + dead_opaque_origins_estimate) / 1024);
 }
 
 void CPUMeasurementMonitor::OnFrameNodeAdded(const FrameNode* frame_node) {

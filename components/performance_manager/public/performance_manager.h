@@ -215,6 +215,10 @@ class PerformanceManager {
   // In practice it's preferable to use CallOnGraph() whenever possible.
   static scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
+  // Logs metrics on Performance Manager's memory usage to UMA. Does nothing
+  // when IsAvailable() returns false. Valid to call from the main thread only.
+  static void RecordMemoryMetrics();
+
  protected:
   PerformanceManager();
 

@@ -86,6 +86,9 @@ class CPUMeasurementMonitor
   QueryResultMap UpdateAndGetCPUMeasurements(
       std::optional<internal::QueryId> query_id = std::nullopt);
 
+  // Logs metrics on CPUMeasurementMonitor's memory usage to UMA.
+  void RecordMemoryMetrics();
+
   // FrameNode::Observer:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;

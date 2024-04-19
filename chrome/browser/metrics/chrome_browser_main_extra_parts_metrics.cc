@@ -44,6 +44,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/metrics/android_metrics_helper.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -159,11 +160,13 @@ void RecordMemoryMetricsAfterDelay() {
           memory_instrumentation::GetDelayForNextMemoryLog()));
 }
 
-// Records memory metrics, and then triggers memory colleciton after a delay.
+// Records memory metrics, and then triggers memory collection after a delay.
 void RecordMemoryMetrics() {
   scoped_refptr<ProcessMemoryMetricsEmitter> emitter(
       new ProcessMemoryMetricsEmitter);
   emitter->FetchAndEmitProcessMemoryMetrics();
+
+  performance_manager::PerformanceManager::RecordMemoryMetrics();
 
   RecordMemoryMetricsAfterDelay();
 }
