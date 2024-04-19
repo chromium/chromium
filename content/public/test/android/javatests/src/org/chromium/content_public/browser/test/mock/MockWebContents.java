@@ -270,6 +270,11 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public int getBackgroundColor() {
+        return 0;
+    }
+
+    @Override
     public float getLoadProgress() {
         return 0;
     }

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.display_cutout.DisplayCutoutTabHelper;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
@@ -333,6 +334,13 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void didChangeThemeColor() {
             mTab.updateThemeColor(mTab.getWebContents().getThemeColor());
+        }
+
+        @Override
+        public void onBackgroundColorChanged() {
+            if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+                mTab.changeBackgroundColor(mTab.getWebContents().getBackgroundColor());
+            }
         }
 
         @Override

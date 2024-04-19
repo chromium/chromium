@@ -454,14 +454,7 @@ RenderWidgetHostViewAndroid*
 }
 
 jint WebContentsAndroid::GetBackgroundColor(JNIEnv* env) {
-  RenderWidgetHostViewAndroid* rwhva = GetRenderWidgetHostViewAndroid();
-
-  // Return transparent as an indicator that the web content background color
-  // is not specified, and a default background color will be used on the Java
-  // side.
-  if (!rwhva || !rwhva->GetCachedBackgroundColor())
-    return SK_ColorTRANSPARENT;
-  return *rwhva->GetCachedBackgroundColor();
+  return web_contents_->GetBackgroundColor().value_or(SK_ColorTRANSPARENT);
 }
 
 ScopedJavaLocalRef<jobject> WebContentsAndroid::GetLastCommittedURL(

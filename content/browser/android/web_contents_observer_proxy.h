@@ -64,6 +64,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
   void FrameReceivedUserActivation(RenderFrameHost*) override;
   void WebContentsDestroyed() override;
   void DidChangeThemeColor() override;
+  void OnBackgroundColorChanged() override;
   void MediaStartedPlaying(const MediaPlayerInfo& video_type,
                            const MediaPlayerId& id) override;
   void MediaStoppedPlaying(

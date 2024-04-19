@@ -379,6 +379,18 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
+    public void onBackgroundColorChanged() {
+        handleObserverCall();
+        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
+        for (; observersIterator.hasNext(); ) {
+            WebContentsObserver obs = observersIterator.next();
+            obs.onBackgroundColorChanged();
+        }
+        finishObserverCall();
+    }
+
+    @Override
+    @CalledByNative
     public void mediaStartedPlaying() {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();

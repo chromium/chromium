@@ -421,13 +421,16 @@ public interface WebContents extends Parcelable {
 
     /**
      * This returns the theme color as set by the theme-color meta tag.
-     * <p>
-     * The color returned may retain non-fully opaque alpha components.  A value of
-     * {@link android.graphics.Color#TRANSPARENT} means there was no theme color specified.
+     *
+     * <p>The color returned may retain non-fully opaque alpha components. A value of {@link
+     * android.graphics.Color#TRANSPARENT} means there was no theme color specified.
      *
      * @return The theme color for the content as set by the theme-color meta tag.
      */
     int getThemeColor();
+
+    /** This returns the background color for the web contents. */
+    int getBackgroundColor();
 
     /**
      * @return Current page load progress on a scale of 0 to 1.

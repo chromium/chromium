@@ -229,6 +229,11 @@ void WebContentsObserverProxy::DidChangeThemeColor() {
   Java_WebContentsObserverProxy_didChangeThemeColor(env, java_observer_);
 }
 
+void WebContentsObserverProxy::OnBackgroundColorChanged() {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_onBackgroundColorChanged(env, java_observer_);
+}
+
 void WebContentsObserverProxy::MediaStartedPlaying(
     const MediaPlayerInfo& video_type,
     const MediaPlayerId& id) {

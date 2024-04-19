@@ -799,6 +799,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public int getBackgroundColor() {
+        checkNotDestroyed();
+        return WebContentsImplJni.get().getBackgroundColor(mNativeWebContentsAndroid);
+    }
+
+    @Override
     public float getLoadProgress() {
         checkNotDestroyed();
         return WebContentsImplJni.get().getLoadProgress(mNativeWebContentsAndroid);
@@ -1344,6 +1350,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         boolean hasAccessedInitialDocument(long nativeWebContentsAndroid);
 
         int getThemeColor(long nativeWebContentsAndroid);
+
+        int getBackgroundColor(long nativeWebContentsAndroid);
 
         float getLoadProgress(long nativeWebContentsAndroid);
 

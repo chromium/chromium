@@ -170,8 +170,11 @@ public abstract class WebContentsObserver {
     /** Called when the theme color was changed. */
     public void didChangeThemeColor() {}
 
+    /** Called when the background color was changed. */
+    public void onBackgroundColorChanged() {}
+
     /**
-     * Called when media started playing.  Unlike the native version, this does not identify which
+     * Called when media started playing. Unlike the native version, this does not identify which
      * player because we don't have a type for it, but nothing currently needs it anyway.
      */
     public void mediaStartedPlaying() {}
