@@ -12,6 +12,7 @@ import './dialogs/move_passwords_dialog.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
@@ -41,6 +42,7 @@ export interface SettingsSectionElement {
     passwordToggle: PrefToggleButtonElement,
     trustedVaultBanner: CrLinkRowElement,
     accountStorageToggle: PrefToggleButtonElement,
+    toast: CrToastElement,
   };
 }
 
@@ -227,6 +229,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
         this.setCredentialsChangedListener_);
     this.setCredentialsChangedListener_ = null;
+    this.$.toast.hide();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -399,7 +402,15 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private onChangePasswordManagerPinRowClick_() {
-    PasswordManagerImpl.getInstance().changePasswordManagerPin();
+    PasswordManagerImpl.getInstance().changePasswordManagerPin().then(
+        this.showToastForPasswordChange_.bind(this));
+  }
+
+  private showToastForPasswordChange_(success: boolean): void {
+    if (!success) {
+      return;
+    }
+    this.$.toast.show();
   }
 }
 
