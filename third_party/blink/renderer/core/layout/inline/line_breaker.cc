@@ -1051,6 +1051,12 @@ bool LineBreaker::CanBreakAfter(const InlineItem& item) const {
     // See LineBreakerTest.OverflowTab
     return can_break_after;
   }
+  // Bidi controls produced by kOpenRubyColumn/kCloseRubyColumn are ignorable.
+  unsigned ignorable_bidi_length = IgnorableBidiControlLength(item);
+  if (ignorable_bidi_length > 0u) {
+    return break_iterator_.IsBreakable(item.EndOffset() +
+                                       ignorable_bidi_length);
+  }
   auto* const atomic_inline_item = TryGetAtomicInlineItemAfter(item);
   if (!atomic_inline_item)
     return can_break_after;
@@ -1124,6 +1130,25 @@ const InlineItem* LineBreaker::TryGetAtomicInlineItemAfter(
       return nullptr;
   }
   return nullptr;
+}
+
+unsigned LineBreaker::IgnorableBidiControlLength(const InlineItem& item) const {
+  const InlineItem* items = Items().data();
+  for (wtf_size_t i =
+           base::checked_cast<wtf_size_t>(std::distance(items, &item)) + 1;
+       i < end_item_index_; ++i) {
+    if (items[i].Length() == 0u) {
+      continue;
+    }
+    if (items[i].Type() != InlineItem::kOpenRubyColumn &&
+        items[i].Type() != InlineItem::kCloseRubyColumn) {
+      return items[i].StartOffset() - item.EndOffset();
+    }
+  }
+  return (end_item_index_ >= Items().size()
+              ? Text().length()
+              : items[end_item_index_].StartOffset()) -
+         item.EndOffset();
 }
 
 void LineBreaker::HandleText(const InlineItem& item,
@@ -3090,8 +3115,32 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
 
 bool LineBreaker::CanBreakAfterRubyColumn(
     const InlineItemResult& column_result) const {
-  // TODO(crbug.com/324111880): Implement this correctly.
-  return true;
+  DCHECK_EQ(column_result.item->Type(), InlineItem::kOpenRubyColumn);
+  DCHECK(column_result.ruby_column);
+  if (!auto_wrap_) {
+    return false;
+  }
+  const LineInfo& base_line = column_result.ruby_column->base_line;
+  if (base_line.GetBreakToken()) {
+    return true;
+  }
+  // Populate `text_content` with column_result's base text and text content
+  // after `column_result`.
+  StringBuilder text_content;
+  unsigned base_text_length =
+      base_line.EndTextOffset() - base_line.StartOffset();
+  text_content.Append(
+      StringView(Text(), base_line.StartOffset(), base_text_length));
+  const InlineItem& next_item =
+      Items()[column_result.ruby_column->annotation_line_list[0]
+                  .EndItemIndex()];
+  DCHECK_EQ(next_item.Type(), InlineItem::kCloseRubyColumn);
+  unsigned ignorable_bidi_length = 1 + IgnorableBidiControlLength(next_item);
+  text_content.Append(
+      StringView(Text(), next_item.StartOffset() + ignorable_bidi_length));
+  LazyLineBreakIterator break_iterator(break_iterator_,
+                                       text_content.ReleaseString());
+  return break_iterator.IsBreakable(base_text_length);
 }
 
 // Figure out if the float should be pushed after the current line. This

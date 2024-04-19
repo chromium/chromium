@@ -235,6 +235,7 @@ class CORE_EXPORT LineBreaker {
   //    kNoBreakSpaceCharacter (U+00A0) if |sticky_images_quirk_|.
   bool MayBeAtomicInline(wtf_size_t offset) const;
   const InlineItem* TryGetAtomicInlineItemAfter(const InlineItem& item) const;
+  unsigned IgnorableBidiControlLength(const InlineItem& item) const;
 
   bool ShouldPushFloatAfterLine(UnpositionedFloat*, LineInfo*);
   void HandleFloat(const InlineItem&,
