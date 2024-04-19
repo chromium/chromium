@@ -6649,12 +6649,12 @@
   {
     "name": "password-generation-experiment",
     "owners": ["rgod@google.com", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "password-generation-strong-label-experiment",
     "owners": ["rgod@google.com", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "password-manager-signin-uff",
