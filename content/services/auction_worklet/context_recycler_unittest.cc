@@ -400,7 +400,12 @@ TEST_F(ContextRecyclerTest, RegisterAdBeaconBindings) {
 // Exercise ReportBindings, and make sure they reset properly.
 TEST_F(ContextRecyclerTest, ReportBindings) {
   const char kScript[] = R"(
-    function test(url) {
+    function sendReportOnce(url) {
+      sendReportTo(url);
+    }
+
+    function sendReportTwice(url) {
+      sendReportTo(url);
       sendReportTo(url);
     }
   )";
@@ -418,7 +423,7 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
     // Make sure an exception doesn't stick around between executions.
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs,
+    Run(scope, script, "sendReportOnce", error_msgs,
         gin::ConvertToV8(helper_->isolate(), std::string("not-a-url")));
     EXPECT_THAT(
         error_msgs,
@@ -429,7 +434,7 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs,
+    Run(scope, script, "sendReportOnce", error_msgs,
         gin::ConvertToV8(helper_->isolate(),
                          std::string("https://example2.test/a")));
     EXPECT_THAT(error_msgs, ElementsAre());
@@ -437,14 +442,13 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
     EXPECT_EQ("https://example2.test/a",
               context_recycler.report_bindings()->report_url()->spec());
   }
-
   // Should already be cleared between executions.
   EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
 
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs,
+    Run(scope, script, "sendReportOnce", error_msgs,
         gin::ConvertToV8(helper_->isolate(),
                          std::string("https://example.test/b")));
     EXPECT_THAT(error_msgs, ElementsAre());
@@ -452,6 +456,66 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
     EXPECT_EQ("https://example.test/b",
               context_recycler.report_bindings()->report_url()->spec());
   }
+  EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
+
+  // Calling sendReportTo() twice should result in an error.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "sendReportTwice", error_msgs,
+        gin::ConvertToV8(helper_->isolate(),
+                         std::string("https://example.test/b")));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
+                    "sendReportTo may be called at most once."));
+    EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
+  }
+  EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
+
+  std::string almost_too_long_url = "https://report.test/";
+  almost_too_long_url +=
+      std::string(url::kMaxURLChars - almost_too_long_url.size(), '1');
+  std::string too_long_url = almost_too_long_url + "2";
+  // URLs that are the max URL length should be passed along without issues.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "sendReportOnce", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), almost_too_long_url));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    ASSERT_TRUE(context_recycler.report_bindings()->report_url().has_value());
+    EXPECT_EQ(almost_too_long_url,
+              context_recycler.report_bindings()->report_url()->spec());
+  }
+  EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
+
+  // URLs that are too long should be treated as empty URLs, but should not
+  // throw.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "sendReportOnce", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), too_long_url));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
+  }
+  EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
+
+  // Calling sendReportTo() twice, even with too-long URLs should result in an
+  // error.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "sendReportTwice", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), too_long_url));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
+                    "sendReportTo may be called at most once."));
+    EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
+  }
+  EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
 }
 
 // Exercise SetBidBindings, and make sure they reset properly.

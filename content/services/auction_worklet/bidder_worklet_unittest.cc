@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -54,6 +55,7 @@
 #include "third_party/googletest/src/googlemock/include/gmock/gmock-more-matchers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 using testing::HasSubstr;
 using testing::IsEmpty;
@@ -7127,6 +7129,51 @@ TEST_F(BidderWorkletTest, ReportWin) {
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/ execution of `reportWin` timed out."});
+}
+
+TEST_F(BidderWorkletTest, SendReportToLongUrl) {
+  // Copying large URLs can cause flaky generateBid() timeouts with the default
+  // value, even on the standard debug bots.
+  browser_signal_reporting_timeout_ = TestTimeouts::action_max_timeout();
+
+  GURL long_report_url("https://long.test/" +
+                       std::string(url::kMaxURLChars, '1'));
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateReportWinScript(base::StringPrintf(
+          R"(sendReportTo("%s"))", long_report_url.spec().c_str())));
+
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  base::RunLoop run_loop;
+  RunReportWinExpectingResultAsync(
+      worklet_impl, /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false,
+      /*expected_errors=*/{}, run_loop.QuitClosure());
+  run_loop.Run();
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      base::StringPrintf("[{\"type\":\"string\", \"value\":\"sendReportTo "
+                         "passed URL of length %" PRIuS
+                         " but accepts URLs of at most length %" PRIuS ".\"}]",
+                         long_report_url.spec().size(), url::kMaxURLChars),
+      /*stack_trace_size=*/1, /*function=*/"reportWin",
+      interest_group_bidding_url_, /*line_number=*/10);
+
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 // Debug win/loss reporting APIs should do nothing when feature

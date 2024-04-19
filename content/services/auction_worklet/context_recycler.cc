@@ -78,7 +78,8 @@ void ContextRecycler::AddRegisterAdMacroBindings() {
 
 void ContextRecycler::AddReportBindings() {
   DCHECK(!report_bindings_);
-  report_bindings_ = std::make_unique<ReportBindings>(v8_helper_);
+  report_bindings_ =
+      std::make_unique<ReportBindings>(v8_helper_, v8_logger_.get());
   AddBindings(report_bindings_.get());
 }
 
