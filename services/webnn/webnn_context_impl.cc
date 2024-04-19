@@ -80,25 +80,6 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
   buffer_impls_.erase(it);
 }
 
-void WebNNContextImpl::ReadBuffer(
-    const WebNNBufferImpl& src_buffer,
-    mojom::WebNNBuffer::ReadBufferCallback callback) {
-  // Call ReadBufferImpl() implemented by a backend.
-  ReadBufferImpl(src_buffer, std::move(callback));
-}
-
-void WebNNContextImpl::WriteBuffer(const WebNNBufferImpl& dst_buffer,
-                                   mojo_base::BigBuffer src_buffer) {
-  // TODO(crbug.com/1472888): Generate error using MLContext.
-  if (dst_buffer.size() < src_buffer.size()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
-    return;
-  }
-
-  // Call WriteBufferImpl() implemented by a backend.
-  WriteBufferImpl(dst_buffer, std::move(src_buffer));
-}
-
 void WebNNContextImpl::OnWebNNGraphImplCreated(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     std::unique_ptr<WebNNGraphImpl> graph_impl) {

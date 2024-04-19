@@ -128,6 +128,8 @@ component("webnn_service") {
 
   if (webnn_use_tflite) {
     sources += [
+      "tflite/buffer_impl.cc",
+      "tflite/buffer_impl.h",
       "tflite/op_resolver.cc",
       "tflite/op_resolver.h",
     ]
@@ -201,7 +203,10 @@ source_set("tests") {
   }
 
   if (webnn_use_tflite || is_mac || is_win) {
-    sources += [ "webnn_graph_impl_backend_test.cc" ]
+    sources += [
+      "webnn_buffer_impl_backend_test.cc",
+      "webnn_graph_impl_backend_test.cc",
+    ]
   }
 
   deps = [

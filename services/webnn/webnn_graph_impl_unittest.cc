@@ -88,19 +88,6 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
     NOTIMPLEMENTED();
     return {};
   }
-
-  void ReadBufferImpl(
-      const WebNNBufferImpl& src_buffer,
-      mojom::WebNNBuffer::ReadBufferCallback callback) override {
-    // TODO(crbug.com/1472888): Implement MLBuffer support for graphs.
-    NOTIMPLEMENTED();
-  }
-
-  void WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
-                       mojo_base::BigBuffer src_buffer) override {
-    // TODO(crbug.com/1472888): Implement MLBuffer support for graphs.
-    NOTIMPLEMENTED();
-  }
 };
 
 // Helper class to create the FakeWebNNContext that is intended to test

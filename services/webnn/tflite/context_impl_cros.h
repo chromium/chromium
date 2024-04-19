@@ -39,12 +39,6 @@ class ContextImplCrOS final : public WebNNContextImpl {
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override;
 
-  void ReadBufferImpl(const WebNNBufferImpl& src_buffer,
-                      mojom::WebNNBuffer::ReadBufferCallback callback) override;
-
-  void WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
-                       mojo_base::BigBuffer src_buffer) override;
-
   // The TFLite model will be loaded in the callback when creating `ModelLoader`
   // interface successfully.
   void OnModelLoaderCreated(

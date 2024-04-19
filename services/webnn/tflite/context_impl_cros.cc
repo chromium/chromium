@@ -5,8 +5,8 @@
 #include "services/webnn/tflite/context_impl_cros.h"
 
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "services/webnn/tflite/buffer_impl.h"
 #include "services/webnn/tflite/graph_impl_cros.h"
-#include "services/webnn/webnn_buffer_impl.h"
 
 namespace webnn::tflite {
 
@@ -90,25 +90,8 @@ std::unique_ptr<WebNNBufferImpl> ContextImplCrOS::CreateBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
-  // TODO(crbug.com/1472888): Implement MLBuffer for TFLite. Involve
-  // an IPC security reviewer.
-  NOTIMPLEMENTED();
-  return {};
-}
-
-void ContextImplCrOS::ReadBufferImpl(
-    const WebNNBufferImpl& src_buffer,
-    mojom::WebNNBuffer::ReadBufferCallback callback) {
-  // TODO(crbug.com/1472888): Implement MLBuffer for TFLite. Involve
-  // an IPC security reviewer.
-  NOTIMPLEMENTED();
-}
-
-void ContextImplCrOS::WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
-                                      mojo_base::BigBuffer src_buffer) {
-  // TODO(crbug.com/1472888): Implement MLBuffer for TFLite. Involve
-  // an IPC security reviewer.
-  NOTIMPLEMENTED();
+  return BufferImpl::Create(std::move(receiver), this, std::move(buffer_info),
+                            buffer_handle);
 }
 
 }  // namespace webnn::tflite

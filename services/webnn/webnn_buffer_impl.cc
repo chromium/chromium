@@ -15,9 +15,9 @@ WebNNBufferImpl::WebNNBufferImpl(
     uint64_t size,
     const base::UnguessableToken& buffer_handle)
     : WebNNObjectImpl(buffer_handle),
+      context_(context),
       size_(size),
-      receiver_(this, std::move(receiver)),
-      context_(context) {
+      receiver_(this, std::move(receiver)) {
   // Safe to use base::Unretained because `this` owns `receiver_`.
   receiver_.set_disconnect_handler(
       base::BindOnce(&WebNNBufferImpl::OnDisconnect, base::Unretained(this)));
@@ -26,11 +26,19 @@ WebNNBufferImpl::WebNNBufferImpl(
 WebNNBufferImpl::~WebNNBufferImpl() = default;
 
 void WebNNBufferImpl::ReadBuffer(ReadBufferCallback callback) {
-  context_->ReadBuffer(*this, std::move(callback));
+  // Call ReadBufferImpl() implemented by a backend.
+  ReadBufferImpl(std::move(callback));
 }
 
 void WebNNBufferImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
-  context_->WriteBuffer(*this, std::move(src_buffer));
+  // TODO(https://crbug.com/40278771): Generate error using MLContext.
+  if (size() < src_buffer.size()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return;
+  }
+
+  // Call WriteBufferImpl() implemented by a backend.
+  WriteBufferImpl(std::move(src_buffer));
 }
 
 void WebNNBufferImpl::OnDisconnect() {

@@ -79,9 +79,8 @@ std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
                                       this, buffer_info->size, buffer_handle);
 }
 
-void ContextImpl::ReadBufferImpl(
-    const WebNNBufferImpl& src_buffer,
-    mojom::WebNNBuffer::ReadBufferCallback callback) {
+void ContextImpl::ReadBuffer(const WebNNBufferImpl& src_buffer,
+                             mojom::WebNNBuffer::ReadBufferCallback callback) {
   HRESULT hr = StartRecordingIfNecessary();
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
@@ -170,8 +169,8 @@ void ContextImpl::OnReadbackComplete(
       mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
 }
 
-void ContextImpl::WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
-                                  mojo_base::BigBuffer src_buffer) {
+void ContextImpl::WriteBuffer(const WebNNBufferImpl& dst_buffer,
+                              mojo_base::BigBuffer src_buffer) {
   if (FAILED(StartRecordingIfNecessary())) {
     return;
   }

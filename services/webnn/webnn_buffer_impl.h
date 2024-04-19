@@ -33,6 +33,21 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   // TODO(crbug.com/1472888): prefer using `size_t` over `uint64_t`.
   uint64_t size() const { return size_; }
 
+ protected:
+  // This method will be called by `ReadBuffer()` after the read info is
+  // validated. A backend subclass should implement this method to read data
+  // from a platform specific buffer.
+  virtual void ReadBufferImpl(
+      mojom::WebNNBuffer::ReadBufferCallback callback) = 0;
+
+  // This method will be called by `WriteBuffer()` after the write info is
+  // validated. A backend subclass should implement this method to write data
+  // to a platform specific buffer.
+  virtual void WriteBufferImpl(mojo_base::BigBuffer src_buffer) = 0;
+
+  // WebNNContextImpl owns this object.
+  const raw_ptr<WebNNContextImpl> context_;
+
  private:
   // mojom::WebNNBuffer
   void ReadBuffer(ReadBufferCallback callback) override;
@@ -48,9 +63,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   const uint64_t size_;
 
   mojo::AssociatedReceiver<mojom::WebNNBuffer> receiver_;
-
-  // WebNNContextImpl owns this object.
-  const raw_ptr<WebNNContextImpl> context_;
 };
 
 }  // namespace webnn

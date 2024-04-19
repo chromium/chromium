@@ -20,4 +20,14 @@ BufferImpl::BufferImpl(
 
 BufferImpl::~BufferImpl() = default;
 
+void BufferImpl::ReadBufferImpl(ReadBufferCallback callback) {
+  static_cast<ContextImpl*>(context_.get())
+      ->ReadBuffer(*this, std::move(callback));
+}
+
+void BufferImpl::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
+  static_cast<ContextImpl*>(context_.get())
+      ->WriteBuffer(*this, std::move(src_buffer));
+}
+
 }  // namespace webnn::dml

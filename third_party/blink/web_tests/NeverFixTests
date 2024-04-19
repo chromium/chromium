@@ -2129,8 +2129,6 @@ crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/web
 [ Mac13-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
 
 # WebNN feature work in-progress.
-crbug.com/1472888 [ Linux ] virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/gpu/buffer.https.any.html [ Skip ]
-crbug.com/1472888 [ Linux ] virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/gpu/buffer.https.any.worker.html [ Skip ]
 crbug.com/1472888 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/buffer.https.any.html [ Skip ]
 crbug.com/1472888 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/buffer.https.any.worker.html [ Skip ]
 

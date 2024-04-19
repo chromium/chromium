@@ -39,16 +39,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void DisconnectAndDestroyWebNNBufferImpl(
       const base::UnguessableToken& handle);
 
-  // This method will be called by `WebNNBuffer::ReadBuffer()` to validate the
-  // buffer to be read from then execute the read buffer operation.
-  void ReadBuffer(const WebNNBufferImpl& src_buffer,
-                  mojom::WebNNBuffer::ReadBufferCallback callback);
-
-  // This method will be called by `WebNNBuffer::WriteBuffer()` to validate the
-  // buffer to be written to then execute the write buffer operation.
-  void WriteBuffer(const WebNNBufferImpl& dst_buffer,
-                   mojo_base::BigBuffer src_buffer);
-
   // This method will be called once `WebNNGraph::CreateGraph()` completes
   // initialization to associate the `WebNNGraph` instance and receiver to
   // this context. Once called, the `WebNNGraph` instance can safely access the
@@ -82,19 +72,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) = 0;
-
-  // This method will be called by `ReadBuffer()` after the read info is
-  // validated. A backend subclass should implement this method to read data
-  // from a platform specific buffer.
-  virtual void ReadBufferImpl(
-      const WebNNBufferImpl& src_buffer,
-      mojom::WebNNBuffer::ReadBufferCallback callback) = 0;
-
-  // This method will be called by `WriteBuffer()` after the write info is
-  // validated. A backend subclass should implement this method to write data
-  // to a platform specific buffer.
-  virtual void WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
-                               mojo_base::BigBuffer src_buffer) = 0;
 
   mojo::Receiver<mojom::WebNNContext> receiver_;
 

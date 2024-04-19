@@ -33,6 +33,12 @@ class ContextImpl final : public WebNNContextImpl {
 
   ~ContextImpl() override;
 
+  void ReadBuffer(const WebNNBufferImpl& src_buffer,
+                  mojom::WebNNBuffer::ReadBufferCallback callback);
+
+  void WriteBuffer(const WebNNBufferImpl& dst_buffer,
+                   mojo_base::BigBuffer src_buffer);
+
  private:
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                        CreateGraphCallback callback) override;
@@ -41,12 +47,6 @@ class ContextImpl final : public WebNNContextImpl {
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override;
-
-  void ReadBufferImpl(const WebNNBufferImpl& src_buffer,
-                      mojom::WebNNBuffer::ReadBufferCallback callback) override;
-
-  void WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
-                       mojo_base::BigBuffer src_buffer) override;
 
   // Begins recording commands needed for context operations.
   // If recording failed, calling this function will recreate the recorder to
