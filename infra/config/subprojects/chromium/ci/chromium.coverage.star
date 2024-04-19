@@ -606,11 +606,13 @@ coverage_builder(
             "use_clang_coverage",
             "no_symbols",
             "chrome_with_codecs",
+            "x64",
         ],
     ),
     builderless = True,
-    cores = 12,
+    cores = None,
     os = os.MAC_ANY,
+    cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
             category = "mac",

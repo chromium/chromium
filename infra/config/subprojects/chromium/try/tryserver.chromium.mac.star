@@ -504,6 +504,7 @@ try_.builder(
     name = "mac-code-coverage",
     mirrors = ["ci/mac-code-coverage"],
     gn_args = "ci/mac-code-coverage",
+    cpu = cpu.ARM64,
     execution_timeout = 20 * time.hour,
 )
 
