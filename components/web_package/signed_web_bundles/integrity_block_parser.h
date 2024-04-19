@@ -110,13 +110,6 @@ class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
   void ProcessNextSignatureBlock(uint64_t offset_in_stream,
                                  uint64_t signature_stack_entries_left);
 
-  void SkipSignatureStackEntryValue(
-      uint64_t offset_in_stream,
-      uint64_t signature_stack_entries_left,
-      mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
-      uint64_t value_size,
-      const std::optional<std::vector<uint8_t>>& data);
-
   void RunSuccessCallback(const uint64_t offset_in_stream);
 
   void RunErrorCallback(const std::string& message,

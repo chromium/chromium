@@ -169,8 +169,6 @@ void IntegrityBlockParser::ParseSignatureStackEntry(
 
   mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry =
       mojom::BundleIntegrityBlockSignatureStackEntry::New();
-  signature_stack_entry->signature_info =
-      mojom::SignatureInfo::NewUnknown(mojom::SignatureInfoUnknown::New());
 
   base::Extend(signature_stack_entry->complete_entry_cbor,
                base::span(*data).first(input.CurrentOffset()));
@@ -301,13 +299,6 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyName(
       signature_stack_entry->signature_info =
           mojom::SignatureInfo::NewEd25519(mojom::SignatureInfoEd25519::New());
 
-      data_source_->get()->Read(
-          offset_in_stream, *public_key_value_size,
-          base::BindOnce(&IntegrityBlockParser::
-                             ReadSignatureStackEntryAttributesPublicKeyValue,
-                         weak_factory_.GetWeakPtr(), offset_in_stream,
-                         signature_stack_entries_left,
-                         std::move(signature_stack_entry)));
       break;
     }
     case mojom::SignatureInfo::Tag::kUnknown: {
@@ -317,16 +308,19 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyName(
         return;
       }
 
-      data_source_->get()->Read(
-          offset_in_stream, *public_key_value_size,
-          base::BindOnce(&IntegrityBlockParser::SkipSignatureStackEntryValue,
-                         weak_factory_.GetWeakPtr(), offset_in_stream,
-                         signature_stack_entries_left,
-                         std::move(signature_stack_entry),
-                         *public_key_value_size));
+      signature_stack_entry->signature_info =
+          mojom::SignatureInfo::NewUnknown(mojom::SignatureInfoUnknown::New());
+
       break;
     }
   }
+  data_source_->get()->Read(
+      offset_in_stream, *public_key_value_size,
+      base::BindOnce(&IntegrityBlockParser::
+                         ReadSignatureStackEntryAttributesPublicKeyValue,
+                     weak_factory_.GetWeakPtr(), offset_in_stream,
+                     signature_stack_entries_left,
+                     std::move(signature_stack_entry)));
 }
 
 void IntegrityBlockParser::ReadSignatureStackEntryAttributesPublicKeyValue(
@@ -338,11 +332,19 @@ void IntegrityBlockParser::ReadSignatureStackEntryAttributesPublicKeyValue(
     RunErrorCallback("Error reading signature stack entry's public key.");
     return;
   }
-  CHECK(signature_stack_entry->signature_info->is_ed25519());
-  ASSIGN_OR_RETURN(
-      signature_stack_entry->signature_info->get_ed25519()->public_key,
-      Ed25519PublicKey::Create(*public_key_bytes),
-      [&](std::string error) { RunErrorCallback(std::move(error)); });
+
+  auto& signature_info = signature_stack_entry->signature_info;
+  switch (signature_info->which()) {
+    case mojom::SignatureInfo::Tag::kEd25519: {
+      ASSIGN_OR_RETURN(
+          signature_stack_entry->signature_info->get_ed25519()->public_key,
+          Ed25519PublicKey::Create(*public_key_bytes),
+          [&](std::string error) { RunErrorCallback(std::move(error)); });
+      break;
+    }
+    case mojom::SignatureInfo::Tag::kUnknown:
+      break;
+  }
 
   // Keep track of the raw CBOR bytes of both the complete signature stack entry
   // and its attributes.
@@ -377,12 +379,20 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignatureHeader(
         "Cannot parse the size of signature stack entry's signature.");
     return;
   }
-  if (*signature_length != ED25519_SIGNATURE_LEN) {
-    RunErrorCallback(
-        base::StringPrintf("The signature does not have the correct length, "
-                           "expected %u bytes.",
-                           ED25519_SIGNATURE_LEN));
-    return;
+
+  auto& signature_info = signature_stack_entry->signature_info;
+  switch (signature_info->which()) {
+    case mojom::SignatureInfo::Tag::kEd25519: {
+      if (*signature_length != ED25519_SIGNATURE_LEN) {
+        RunErrorCallback(base::StringPrintf(
+            "The signature does not have the correct length, "
+            "expected %u bytes.",
+            ED25519_SIGNATURE_LEN));
+        return;
+      }
+    } break;
+    case mojom::SignatureInfo::Tag::kUnknown:
+      break;
   }
 
   // Keep track of the raw CBOR bytes of the complete signature stack entry.
@@ -408,11 +418,17 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignature(
     return;
   }
 
-  CHECK(signature_stack_entry->signature_info->is_ed25519());
-  ASSIGN_OR_RETURN(
-      signature_stack_entry->signature_info->get_ed25519()->signature,
-      Ed25519Signature::Create(*signature_bytes),
-      [&](std::string error) { RunErrorCallback(std::move(error)); });
+  auto& signature_info = signature_stack_entry->signature_info;
+  switch (signature_info->which()) {
+    case mojom::SignatureInfo::Tag::kEd25519: {
+      ASSIGN_OR_RETURN(
+          signature_stack_entry->signature_info->get_ed25519()->signature,
+          Ed25519Signature::Create(*signature_bytes),
+          [&](std::string error) { RunErrorCallback(std::move(error)); });
+    } break;
+    case mojom::SignatureInfo::Tag::kUnknown:
+      break;
+  }
 
   // Keep track of the raw CBOR bytes of the complete signature stack entry.
   base::Extend(signature_stack_entry->complete_entry_cbor, *signature_bytes);
@@ -420,28 +436,6 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignature(
   signature_stack_.emplace_back(std::move(signature_stack_entry));
 
   offset_in_stream += signature_bytes->size();
-
-  ProcessNextSignatureBlock(offset_in_stream, signature_stack_entries_left);
-}
-
-void IntegrityBlockParser::SkipSignatureStackEntryValue(
-    uint64_t offset_in_stream,
-    uint64_t signature_stack_entries_left,
-    mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
-    uint64_t value_size,
-    const std::optional<std::vector<uint8_t>>& data) {
-  if (!data) {
-    RunErrorCallback("Error reading CBOR ...");
-    return;
-  }
-
-  InputReader input(*data);
-  input.ReadBytes(value_size);
-
-  auto span = base::span(*data).first(input.CurrentOffset());
-  base::Extend(signature_stack_entry->complete_entry_cbor, span);
-  base::Extend(signature_stack_entry->attributes_cbor, span);
-  offset_in_stream += input.CurrentOffset();
 
   ProcessNextSignatureBlock(offset_in_stream, signature_stack_entries_left);
 }
