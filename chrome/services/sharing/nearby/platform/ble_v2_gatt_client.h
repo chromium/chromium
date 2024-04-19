@@ -7,8 +7,13 @@
 
 #include "device/bluetooth/public/mojom/device.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/internal/platform/implementation/ble_v2.h"
+
+namespace base {
+class SequencedTaskRunner;
+class WaitableEvent;
+}  // namespace base
 
 namespace nearby::chrome {
 
@@ -42,7 +47,32 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
   void Disconnect() override;
 
  private:
-  mojo::Remote<bluetooth::mojom::Device> remote_device_;
+  struct GattService {
+    GattService();
+    ~GattService();
+
+    bluetooth::mojom::ServiceInfoPtr service_info;
+  };
+
+  void DoDiscoverServices(
+      base::WaitableEvent* discover_services_waitable_event);
+  void OnGetGattServices(
+      base::WaitableEvent* discover_services_waitable_event,
+      std::vector<bluetooth::mojom::ServiceInfoPtr> services);
+
+  void Shutdown(base::WaitableEvent* shutdown_waitable_event);
+
+  bool have_gatt_services_been_discovered_ = false;
+  std::map<std::string, std::unique_ptr<GattService>>
+      uuid_to_discovered_gatt_service_map_;
+
+  // Track all pending tasks in case the object is invalidated while
+  // waiting.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::flat_set<raw_ptr<base::WaitableEvent>>
+      pending_discover_services_waitable_events_;
+
+  mojo::SharedRemote<bluetooth::mojom::Device> remote_device_;
 };
 
 }  // namespace nearby::chrome

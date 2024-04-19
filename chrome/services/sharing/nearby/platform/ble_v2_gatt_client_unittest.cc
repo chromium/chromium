@@ -4,37 +4,32 @@
 
 #include "chrome/services/sharing/nearby/platform/ble_v2_gatt_client.h"
 
-#include <memory>
-
-#include "base/run_loop.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "device/bluetooth/device.h"
-#include "device/bluetooth/test/mock_bluetooth_adapter.h"
-#include "device/bluetooth/test/mock_bluetooth_device.h"
-#include "device/bluetooth/test/mock_bluetooth_gatt_connection.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/services/sharing/nearby/test_support/fake_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/nearby/src/internal/platform/uuid.h"
 
 namespace {
 
-const char kTestAddress[] = "11:22:33:44:55:66";
+const nearby::Uuid kServiceUuid1 = nearby::Uuid("0000");
+const nearby::Uuid kServiceUuid2 = nearby::Uuid("1111");
 
-class FakeBluetoothDevice
-    : public testing::NiceMock<device::MockBluetoothDevice> {
- public:
-  FakeBluetoothDevice(device::MockBluetoothAdapter* adapter,
-                      const std::string& address)
-      : testing::NiceMock<device::MockBluetoothDevice>(adapter,
-                                                       /*bluetooth_class=*/0u,
-                                                       /*name=*/"Test Device",
-                                                       address,
-                                                       /*paired=*/true,
-                                                       /*connected=*/true) {}
-
-  FakeBluetoothDevice(const FakeBluetoothDevice&) = delete;
-  FakeBluetoothDevice& operator=(const FakeBluetoothDevice&) = delete;
-};
+std::vector<bluetooth::mojom::ServiceInfoPtr> GenerateServiceInfo(
+    nearby::Uuid service_uuid) {
+  std::vector<bluetooth::mojom::ServiceInfoPtr> service_infos;
+  bluetooth::mojom::ServiceInfoPtr service_info =
+      bluetooth::mojom::ServiceInfo::New();
+  service_info->uuid = device::BluetoothUUID(std::string(service_uuid));
+  service_infos.push_back(std::move(service_info));
+  return service_infos;
+}
 
 }  // namespace
 
@@ -48,50 +43,74 @@ class BleV2GattClientTest : public testing::Test {
   BleV2GattClientTest& operator=(const BleV2GattClientTest&) = delete;
 
   void SetUp() override {
-    adapter_ =
-        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
-
-    fake_device_ =
-        std::make_unique<FakeBluetoothDevice>(adapter_.get(), kTestAddress);
-
-    ON_CALL(*adapter_, GetDevice(kTestAddress))
-        .WillByDefault(Return(fake_device_.get()));
-
-    auto connection = std::make_unique<
-        testing::NiceMock<device::MockBluetoothGattConnection>>(adapter_,
-                                                                kTestAddress);
-
-    // TODO(b/316395226): We're creating a real Device object here, and relying
-    // on the underlying MockBluetoothDevice implementation to handle the test
-    // logic. This is likely to become unwieldy, and we should define and use a
-    // stubbed FakeDevice class instead.
+    auto fake_device = std::make_unique<bluetooth::FakeDevice>();
+    fake_device_ = fake_device.get();
     mojo::PendingRemote<bluetooth::mojom::Device> pending_device;
-    bluetooth::Device::Create(adapter_, std::move(connection),
-                              pending_device.InitWithNewPipeAndPassReceiver());
-
+    mojo::MakeSelfOwnedReceiver(
+        std::move(fake_device),
+        pending_device.InitWithNewPipeAndPassReceiver());
     ble_v2_gatt_client_ =
         std::make_unique<BleV2GattClient>(std::move(pending_device));
   }
 
   void TearDown() override {
+    fake_device_ = nullptr;
+
     ble_v2_gatt_client_->Disconnect();
 
     // TODO(b/316395226): Rework to avoid RunUntilIdle().
     base::RunLoop().RunUntilIdle();
   }
 
+  void CallDiscoverServiceAndCharacteristics(
+      bool expected_success,
+      const Uuid& service_uuid,
+      const std::vector<Uuid>& characteristic_uuids) {
+    EXPECT_EQ(expected_success,
+              ble_v2_gatt_client_->DiscoverServiceAndCharacteristics(
+                  service_uuid, characteristic_uuids));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
-  std::unique_ptr<FakeBluetoothDevice> fake_device_;
   std::unique_ptr<BleV2GattClient> ble_v2_gatt_client_;
+  raw_ptr<bluetooth::FakeDevice> fake_device_;
 };
 
-// TODO(b/311430390): Remove this skeleton test once other methods are
-// implemented.
-TEST_F(BleV2GattClientTest, SetUpSucceeds) {
-  // SetUp() should instantiate the gatt client.
-  EXPECT_FALSE(!ble_v2_gatt_client_);
+TEST_F(BleV2GattClientTest, DiscoverServiceAndCharacteristics_Success) {
+  fake_device_->set_services(GenerateServiceInfo(kServiceUuid1));
+
+  // TODO(b/311430390): populate `characteristic_uuids` with characteristics
+  // once implemented in a follow up CL.
+  std::vector<Uuid> characteristic_uuids;
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(
+              &BleV2GattClientTest::CallDiscoverServiceAndCharacteristics,
+              base::Unretained(this), /*expected_success=*/true, kServiceUuid1,
+              /*characteristic_uuids=*/characteristic_uuids),
+          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(BleV2GattClientTest,
+       DiscoverServiceAndCharacteristics_FailureIfNoServiceUuidMatch) {
+  fake_device_->set_services(GenerateServiceInfo(kServiceUuid2));
+  std::vector<Uuid> characteristic_uuids;
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(
+              &BleV2GattClientTest::CallDiscoverServiceAndCharacteristics,
+              base::Unretained(this), /*expected_success=*/false, kServiceUuid1,
+              /*characteristic_uuids=*/characteristic_uuids),
+          run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace nearby::chrome

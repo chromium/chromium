@@ -12,6 +12,8 @@ source_set("test_support") {
   sources = [
     "fake_adapter.cc",
     "fake_adapter.h",
+    "fake_device.cc",
+    "fake_device.h",
     "fake_gatt_service.cc",
     "fake_gatt_service.h",
     "fake_nearby_presence_credential_storage.cc",
