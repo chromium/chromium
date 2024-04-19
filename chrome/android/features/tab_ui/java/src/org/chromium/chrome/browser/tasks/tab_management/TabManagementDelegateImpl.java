@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -60,7 +61,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             TabSwitcher tabSwitcher,
             ViewGroup tabSwitcherScrimAnchor,
             ScrimCoordinator scrimCoordinator,
-            ObservableSupplier<Float> appHeaderHeightSupplier) {
+            DesktopWindowStateProvider desktopWindowStateProvider) {
         return new TabSwitcherLayout(
                 context,
                 updateHost,
@@ -70,7 +71,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabSwitcher,
                 tabSwitcherScrimAnchor,
                 scrimCoordinator,
-                appHeaderHeightSupplier);
+                desktopWindowStateProvider);
     }
 
     @Override

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -60,7 +61,8 @@ public interface TabManagementDelegate {
      * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
      *     when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
-     * @param appHeaderHeightSupplier A supplier for the app header height, in px.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance for the
+     *     current activity.
      * @return The {@link TabSwitcherLayout}.
      */
     Layout createTabSwitcherLayout(
@@ -72,7 +74,7 @@ public interface TabManagementDelegate {
             TabSwitcher tabSwitcher,
             ViewGroup tabSwitcherScrimAnchor,
             ScrimCoordinator scrimCoordinator,
-            ObservableSupplier<Float> appHeaderHeightSupplier);
+            DesktopWindowStateProvider desktopWindowStateProvider);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.

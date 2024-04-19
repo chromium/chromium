@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -39,6 +38,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
@@ -100,7 +100,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
     private ThemeColorObserver mThemeColorObserver;
 
-    protected ObservableSupplierImpl<Float> mAppHeaderHeightSupplier;
+    protected @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
@@ -230,7 +230,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         tabSwitcher,
                         tabSwitcherScrimAnchor,
                         scrimCoordinator,
-                        mAppHeaderHeightSupplier);
+                        mDesktopWindowStateProvider);
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())) {
             mTabSwitcherFocusLayoutStateObserver =
@@ -267,7 +267,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         renderHost,
                         /* layoutStateProvider= */ this,
                         hubLayoutDependencyHolder,
-                        mTabModelSelectorSupplier);
+                        mTabModelSelectorSupplier,
+                        mDesktopWindowStateProvider);
         if (mTabContentManagerSupplier.hasValue()) {
             mHubLayout.setTabContentManager(mTabContentManagerSupplier.get());
         }

@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -134,6 +135,7 @@ public class HubLayoutUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
     @Mock private DoubleConsumer mOnAlphaChange;
+    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private UserActionTester mActionTester;
 
@@ -289,7 +291,8 @@ public class HubLayoutUnitTest {
                                 mRenderHost,
                                 mLayoutStateProvider,
                                 dependencyHolder,
-                                mTabModelSelectorSupplier));
+                                mTabModelSelectorSupplier,
+                                mDesktopWindowStateProvider));
         mHubLayout.setTabModelSelector(mTabModelSelector);
         mHubLayout.setTabContentManager(mTabContentManager);
         mHubLayout.onFinishNativeInitialization();

@@ -54,6 +54,9 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.resources.ResourceManager;
@@ -71,14 +74,16 @@ import java.util.function.DoubleConsumer;
  * <p>Normally, this layout will show an empty {@link SceneLayer}. However, to facilitate thumbnail
  * capture and animations it may transiently host a {@link StaticTabSceneLayer}.
  */
-public class HubLayout extends Layout implements HubLayoutController {
+public class HubLayout extends Layout implements HubLayoutController, AppHeaderObserver {
     private final @NonNull Callback<Pane> mOnPaneFocused = this::updateEmptyLayerColor;
     private final @NonNull LayoutStateProvider mLayoutStateProvider;
     private final @NonNull ViewGroup mRootView;
+    private final @NonNull HubManager mHubManager;
     private final @NonNull HubController mHubController;
     private final @NonNull PaneManager mPaneManager;
     private final @NonNull HubLayoutScrimController mScrimController;
     private final @NonNull DoubleConsumer mOnToolbarAlphaChange;
+    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     /**
      * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and {@link
@@ -114,7 +119,8 @@ public class HubLayout extends Layout implements HubLayoutController {
             @NonNull LayoutRenderHost renderHost,
             @NonNull LayoutStateProvider layoutStateProvider,
             @NonNull HubLayoutDependencyHolder dependencyHolder,
-            Supplier<TabModelSelector> tabModelSelectorSupplier) {
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         super(context, updateHost, renderHost);
         mPreviousLayoutTypeSupplier.set(layoutStateProvider.getActiveLayoutType());
 
@@ -127,31 +133,24 @@ public class HubLayout extends Layout implements HubLayoutController {
         mRootView = dependencyHolder.getHubRootView();
         mRootView.setBackgroundColor(Color.TRANSPARENT);
 
-        HubManager hubManager = dependencyHolder.getHubManager();
-        mHubController = hubManager.getHubController();
+        mHubManager = dependencyHolder.getHubManager();
+        mHubController = mHubManager.getHubController();
         mHubController.setHubLayoutController(this);
-        mPaneManager = hubManager.getPaneManager();
+        mPaneManager = mHubManager.getPaneManager();
         mPaneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocused);
         mScrimController = dependencyHolder.getScrimController();
         mOnToolbarAlphaChange = dependencyHolder.getOnToolbarAlphaChange();
         mTabModelSelector = tabModelSelectorSupplier.get();
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.addObserver(this);
+            maybeUpdateLayout();
+        }
     }
 
     @Override
-    public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
-        super.onDesktopWindowingModeChanged(isInDesktopWindow);
-        // If desktop windowing mode changes while the HubLayout is active, adjust the container
-        // view's y-offset. This update will be posted because it has been observed that an
-        // immediate update causes unexpected visual positioning in this scenario, potentially
-        // because the top margin for the view is also updated at nearly the same time, but the root
-        // cause is unknown.
-        // TODO (crbug/335651375): Investigate and remove the use of a PostTask for this update.
-        // TODO (crbug/334156232): Also update container height.
-        if (isActive()) {
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> mHubController.getContainerView().setY(getContainerYOffset()));
-        }
+    public void onAppHeaderStateChanged(AppHeaderState newState) {
+        maybeUpdateLayout();
     }
 
     /** Returns the current {@link HubLayoutAnimationType}. */
@@ -200,6 +199,9 @@ public class HubLayout extends Layout implements HubLayoutController {
         }
         mCurrentSceneLayer = null;
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.removeObserver(this);
+        }
     }
 
     @Override
@@ -742,6 +744,31 @@ public class HubLayout extends Layout implements HubLayoutController {
     private float getContainerYOffset() {
         var params = (FrameLayout.LayoutParams) mHubController.getContainerView().getLayoutParams();
         return params.topMargin;
+    }
+
+    /**
+     * Update the top margin and y-offset of the container view in response to an app header state
+     * change.
+     */
+    private void maybeUpdateLayout() {
+        int appHeaderHeight =
+                (mDesktopWindowStateProvider != null
+                                && mDesktopWindowStateProvider.getAppHeaderState() != null)
+                        ? mDesktopWindowStateProvider.getAppHeaderState().getAppHeaderHeight()
+                        : 0;
+        mHubManager.setAppHeaderHeight(appHeaderHeight);
+        // If the app header height or desktop windowing mode changes while the HubLayout is active,
+        // adjust the container view's y-offset. This update will be posted because it has been
+        // observed that an immediate update causes unexpected visual positioning in this scenario,
+        // potentially because the top margin for the view is also updated at nearly the same time,
+        // but the root cause is unknown.
+        // TODO (crbug/335651375): Investigate and remove the use of a PostTask for this update.
+        // TODO (crbug/334156232): Also update container height.
+        if (isActive()) {
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> mHubController.getContainerView().setY(getContainerYOffset()));
+        }
     }
 
     public HubController getHubControllerForTesting() {

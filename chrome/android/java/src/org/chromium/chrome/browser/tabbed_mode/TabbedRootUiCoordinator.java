@@ -125,7 +125,6 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -426,18 +425,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mAppHeaderObserver =
                 new DesktopWindowStateProvider.AppHeaderObserver() {
                     @Override
-                    public void onAppHeaderStateChanged(AppHeaderState newState) {}
-
-                    @Override
                     public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
                         desktopWindowModeSupplier.set(isInDesktopWindow);
-                        if (hubManagerSupplier.hasValue()) {
-                            hubManagerSupplier.get().setAppHeaderHeight(getAppHeaderHeight());
-                        }
-                        if (layoutManagerSupplier.get() != null) {
-                            var layout = layoutManagerSupplier.get().getActiveLayout();
-                            layout.onDesktopWindowingModeChanged(isInDesktopWindow);
-                        }
                     }
                 };
         initAppHeaderCoordinator();
@@ -1258,8 +1247,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mAppHeaderDelegateSupplier,
                         mTabStripTransitionCoordinatorSupplier);
         mAppHeaderCoordinator.addObserver(mAppHeaderObserver);
-        mHubManagerSupplier.onAvailable(
-                hubManager -> hubManager.setAppHeaderHeight(getAppHeaderHeight()));
     }
 
     @Override
