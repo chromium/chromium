@@ -59,12 +59,12 @@ void ProductSpecificationsService::DeleteProductSpecificationsSet(
 }
 
 void ProductSpecificationsService::AddObserver(
-    const commerce::ProductSpecificationsSet::Observer* observer) {
+    commerce::ProductSpecificationsSet::Observer* observer) {
   bridge_->AddObserver(observer);
 }
 
 void ProductSpecificationsService::RemoveObserver(
-    const commerce::ProductSpecificationsSet::Observer* observer) {
+    commerce::ProductSpecificationsSet::Observer* observer) {
   bridge_->RemoveObserver(observer);
 }
 

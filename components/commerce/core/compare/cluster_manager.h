@@ -9,26 +9,38 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/uuid.h"
 #include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "url/gurl.h"
 
 namespace commerce {
+class ProductSpecificationsService;
 struct CandidateProduct;
 struct ProductGroup;
 
 // Class for clustering product information.
-class ClusterManager {
+class ClusterManager : public ProductSpecificationsSet::Observer {
  public:
   using GetProductInfoCallback =
       base::RepeatingCallback<void(const GURL&, ProductInfoCallback)>;
   using GetOpenUrlInfosCallback =
       base::RepeatingCallback<const std::vector<UrlInfo>()>;
 
-  ClusterManager(const GetProductInfoCallback& get_product_info_cb,
+  ClusterManager(ProductSpecificationsService* product_specification_service,
+                 const GetProductInfoCallback& get_product_info_cb,
                  const GetOpenUrlInfosCallback& get_open_url_infos_cb);
-  ~ClusterManager();
+  ~ClusterManager() override;
   ClusterManager(const ClusterManager&) = delete;
   ClusterManager& operator=(const ClusterManager&) = delete;
+
+  // ProductSpecificationsSet::Observe Implementation.
+  void OnProductSpecificationsSetAdded(
+      const ProductSpecificationsSet& product_specifications_set) override;
+  void OnProductSpecificationsSetUpdate(
+      const ProductSpecificationsSet& product_specifications_set) override;
+  void OnProductSpecificationsSetRemoved(const base::Uuid& uuid) override;
 
   // A notification that a WebWrapper with `url` has been destroyed. This
   // signals that the web page backing the provided WebWrapper is about to be
@@ -42,11 +54,11 @@ class ClusterManager {
  private:
   friend class ClusterManagerTest;
 
-  // Adds a product group to the `product_group_map_`.
-  void AddProductGroup(std::unique_ptr<ProductGroup> product_group);
+  // Adds or updates a product group to the `product_group_map_`.
+  void UpdateProductGroup(std::unique_ptr<ProductGroup> product_group);
 
   // Removes a product group from `product_group_map_`.
-  void RemoveProductGroup(const std::string& group_id);
+  void RemoveProductGroup(const base::Uuid& uuid);
 
   // Called when information about a product is retrieved.
   void OnProductInfoRetrieved(
@@ -76,10 +88,14 @@ class ClusterManager {
   GetOpenUrlInfosCallback get_open_url_infos_cb_;
 
   // A map storing info of existing product groups, keyed by product group ID.
-  std::map<std::string, std::unique_ptr<ProductGroup>> product_group_map_;
+  std::map<base::Uuid, std::unique_ptr<ProductGroup>> product_group_map_;
 
   // A map storing info of candidate products, keyed by product page URL.
   std::map<GURL, std::unique_ptr<CandidateProduct>> candidate_product_map_;
+
+  base::ScopedObservation<ProductSpecificationsService,
+                          ProductSpecificationsSet::Observer>
+      obs_{this};
 
   base::WeakPtrFactory<ClusterManager> weak_ptr_factory_{this};
 };

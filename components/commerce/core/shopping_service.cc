@@ -219,9 +219,10 @@ ShoppingService::ShoppingService(
       std::make_unique<ProductSpecificationsServerProxy>(
           account_checker_.get(), identity_manager, url_loader_factory);
 
-  if (account_checker_ &&
+  if (account_checker_ && product_specifications_service_ &&
       IsProductSpecificationsEnabled(account_checker_.get())) {
     cluster_manager_ = std::make_unique<ClusterManager>(
+        product_specifications_service_,
         base::BindRepeating(&ShoppingService::GetProductInfoForUrl,
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,

@@ -241,17 +241,17 @@ void ProductSpecificationsSyncBridge::OnCommit(
 }
 
 void ProductSpecificationsSyncBridge::AddObserver(
-    const commerce::ProductSpecificationsSet::Observer* observer) {
+    commerce::ProductSpecificationsSet::Observer* observer) {
   observers_.AddObserver(observer);
 }
 void ProductSpecificationsSyncBridge::RemoveObserver(
-    const commerce::ProductSpecificationsSet::Observer* observer) {
+    commerce::ProductSpecificationsSet::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
 void ProductSpecificationsSyncBridge::OnSpecificsAdded(
     const sync_pb::CompareSpecifics& compare_specifics) {
-  for (const auto& observer : observers_) {
+  for (auto& observer : observers_) {
     observer.OnProductSpecificationsSetAdded(
         ProductSpecificationsSet::FromProto(compare_specifics));
   }
@@ -259,7 +259,7 @@ void ProductSpecificationsSyncBridge::OnSpecificsAdded(
 
 void ProductSpecificationsSyncBridge::OnSpecificsUpdated(
     const sync_pb::CompareSpecifics& compare_specifics) {
-  for (const auto& observer : observers_) {
+  for (auto& observer : observers_) {
     observer.OnProductSpecificationsSetUpdate(
         ProductSpecificationsSet::FromProto(compare_specifics));
   }
@@ -267,7 +267,7 @@ void ProductSpecificationsSyncBridge::OnSpecificsUpdated(
 
 void ProductSpecificationsSyncBridge::OnSpecificsRemoved(
     const std::string& uuid) {
-  for (const auto& observer : observers_) {
+  for (auto& observer : observers_) {
     observer.OnProductSpecificationsSetRemoved(uuid);
   }
 }

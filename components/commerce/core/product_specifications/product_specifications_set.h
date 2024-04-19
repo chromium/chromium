@@ -24,18 +24,17 @@ class ProductSpecificationsSet {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnProductSpecificationsSetAdded(
-        const ProductSpecificationsSet& product_specifications_set) const {}
+        const ProductSpecificationsSet& product_specifications_set) {}
 
     virtual void OnProductSpecificationsSetUpdate(
-        const ProductSpecificationsSet& product_specifications_set) const {}
+        const ProductSpecificationsSet& product_specifications_set) {}
 
-    virtual void OnProductSpecificationsSetRemoved(
-        const base::Uuid& uuid) const {}
+    virtual void OnProductSpecificationsSetRemoved(const base::Uuid& uuid) {}
 
    private:
     friend commerce::ProductSpecificationsSyncBridge;
 
-    void OnProductSpecificationsSetRemoved(const std::string& uuid) const {
+    void OnProductSpecificationsSetRemoved(const std::string& uuid) {
       OnProductSpecificationsSetRemoved(base::Uuid::ParseLowercase(uuid));
     }
   };

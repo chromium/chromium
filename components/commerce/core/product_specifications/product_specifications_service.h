@@ -38,12 +38,10 @@ class ProductSpecificationsService : public KeyedService {
   void DeleteProductSpecificationsSet(const std::string& uuid);
 
   // Observer monitoring add/remove/update of ProductSpecificationSets.
-  void AddObserver(
-      const commerce::ProductSpecificationsSet::Observer* observer);
+  void AddObserver(commerce::ProductSpecificationsSet::Observer* observer);
 
   // Remove observer monitoring add/remove/update of ProductSpecificationSets.
-  void RemoveObserver(
-      const commerce::ProductSpecificationsSet::Observer* observer);
+  void RemoveObserver(commerce::ProductSpecificationsSet::Observer* observer);
 
  private:
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;

@@ -160,17 +160,17 @@ class MockProductSpecificationsSetObserver
   MOCK_METHOD(void,
               OnProductSpecificationsSetAdded,
               (const ProductSpecificationsSet& set),
-              (const override));
+              (override));
 
   MOCK_METHOD(void,
               OnProductSpecificationsSetUpdate,
               (const ProductSpecificationsSet& set),
-              (const override));
+              (override));
 
   MOCK_METHOD(void,
               OnProductSpecificationsSetRemoved,
               (const base::Uuid& uuid),
-              (const override));
+              (override));
 };
 
 class ProductSpecificationsServiceTest : public testing::Test {

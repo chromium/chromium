@@ -10,6 +10,7 @@
 
 #include "components/commerce/core/compare/candidate_product.h"
 #include "components/commerce/core/compare/product_group.h"
+#include "components/commerce/core/product_specifications/product_specifications_service.h"
 
 namespace commerce {
 namespace {
@@ -70,12 +71,33 @@ bool IsProductSimilarToGroup(
 }  // namespace
 
 ClusterManager::ClusterManager(
+    ProductSpecificationsService* product_specification_service,
     const GetProductInfoCallback& get_product_info_cb,
     const GetOpenUrlInfosCallback& get_open_url_infos_cb)
     : get_product_info_cb_(get_product_info_cb),
-      get_open_url_infos_cb_(get_open_url_infos_cb) {}
+      get_open_url_infos_cb_(get_open_url_infos_cb) {
+  obs_.Observe(product_specification_service);
+}
 
 ClusterManager::~ClusterManager() = default;
+
+void ClusterManager::OnProductSpecificationsSetAdded(
+    const ProductSpecificationsSet& product_specifications_set) {
+  // TODO(qinmin): need to get the category data for the products in
+  // `product_specifications_set`.
+  auto product_group = std::make_unique<ProductGroup>(
+      product_specifications_set.uuid(), product_specifications_set.urls());
+  UpdateProductGroup(std::move(product_group));
+}
+
+void ClusterManager::OnProductSpecificationsSetUpdate(
+    const ProductSpecificationsSet& product_specifications_set) {
+  OnProductSpecificationsSetAdded(product_specifications_set);
+}
+
+void ClusterManager::OnProductSpecificationsSetRemoved(const base::Uuid& uuid) {
+  RemoveProductGroup(uuid);
+}
 
 void ClusterManager::WebWrapperDestroyed(const GURL& url) {
   RemoveCandidateProductURLIfNotOpen(url);
@@ -174,10 +196,10 @@ void ClusterManager::RemoveProductFromProductGroupsIfNecessary(
   }
 }
 
-void ClusterManager::AddProductGroup(
+void ClusterManager::UpdateProductGroup(
     std::unique_ptr<ProductGroup> product_group) {
   ProductGroup* group = product_group.get();
-  product_group_map_[product_group->group_id] = std::move(product_group);
+  product_group_map_[product_group->uuid] = std::move(product_group);
   for (const auto& candidate_product : candidate_product_map_) {
     if (IsProductSimilarToGroup(candidate_product.second->category_data,
                                 group->categories)) {
@@ -186,8 +208,8 @@ void ClusterManager::AddProductGroup(
   }
 }
 
-void ClusterManager::RemoveProductGroup(const std::string& group_id) {
-  product_group_map_.erase(group_id);
+void ClusterManager::RemoveProductGroup(const base::Uuid& uuid) {
+  product_group_map_.erase(uuid);
 }
 
 }  // namespace commerce
