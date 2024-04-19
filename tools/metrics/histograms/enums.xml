@@ -16363,6 +16363,8 @@ from previous Chrome versions.
       label="ImprovedCookieControlsForThirdPartyCookieBlocking:disabled"/>
   <int value="-2122048316"
       label="DisplayPersistenceToggleInPermissionPrompts:enabled"/>
+  <int value="-2121708425"
+      label="AccessibilityOverscrollSettingFeature:enabled"/>
   <int value="-2120571448" label="TheoraVideoCodec:disabled"/>
   <int value="-2120124160" label="FirmwareUpdateJelly:disabled"/>
   <int value="-2120118296" label="ChromeManagementPageAndroid:enabled"/>
@@ -22840,6 +22842,8 @@ from previous Chrome versions.
       label="AccessibilitySelectToSpeakHoverTextImprovements:disabled"/>
   <int value="735393448" label="InsertKeyToggleMode:disabled"/>
   <int value="736911267" label="ExperimentalCrostiniUI:disabled"/>
+  <int value="737058890"
+      label="AccessibilityOverscrollSettingFeature:disabled"/>
   <int value="737195667" label="AutofillPageLanguageDetection:enabled"/>
   <int value="737421745" label="enable-accessibility-object-model"/>
   <int value="738868972" label="GdiTextPrinting:disabled"/>

@@ -214,6 +214,14 @@ bool IsAccessibilityCaretBlinkIntervalSettingEnabled() {
       ::features::kAccessibilityCaretBlinkIntervalSetting);
 }
 
+BASE_FEATURE(kAccessibilityOverscrollSettingFeature,
+             "AccessibilityOverscrollSettingFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityOverscrollSettingFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityOverscrollSettingFeature);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -168,6 +168,17 @@ class OSSettingsMochaTestMagnifierFollowsStsEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class OSSettingsMochaTestOverscrollFeatureEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsMochaTestOverscrollFeatureEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityOverscrollSettingFeature);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 class OSSettingsRevampMochaTestMouseKeysEnabled
     : public OSSettingsRevampMochaTest {
  protected:
@@ -1091,6 +1102,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestMouseKeysEnabled,
+                       OsA11yPageCursorAndTouchpadPage) {
+  RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestOverscrollFeatureEnabled,
                        OsA11yPageCursorAndTouchpadPage) {
   RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
 }

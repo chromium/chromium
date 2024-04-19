@@ -167,6 +167,10 @@ AX_BASE_EXPORT bool IsAccessibilityMouseKeysEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityCaretBlinkIntervalSetting);
 AX_BASE_EXPORT bool IsAccessibilityCaretBlinkIntervalSettingEnabled();
 
+// Control whether the overscroll setting is available.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOverscrollSettingFeature);
+AX_BASE_EXPORT bool IsAccessibilityOverscrollSettingFeatureEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

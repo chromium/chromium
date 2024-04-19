@@ -408,6 +408,20 @@ const std::vector<SearchConcept>& GetA11ySwitchAccessOnSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetA11yOverscrollSettingSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_OVERSCROLL_ENABLED,
+       mojom::kCursorAndTouchpadSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kOverscrollEnabled},
+       {IDS_OS_SETTINGS_TAG_A11Y_OVERSCROLL_ENABLED_ALT1,
+        SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetA11ySwitchAccessKeyboardSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD,
@@ -528,6 +542,10 @@ bool IsAccessibilityMouseKeysEnabled() {
 
 bool IsAccessibilityExtraLargeCursorEnabled() {
   return ::features::IsAccessibilityExtraLargeCursorEnabled();
+}
+
+bool IsAccessibilityOverscrollSettingFeatureEnabled() {
+  return ::features::IsAccessibilityOverscrollSettingFeatureEnabled();
 }
 
 }  // namespace
@@ -1221,6 +1239,8 @@ void AccessibilitySection::AddLoadTimeData(
       {"textToSpeechVolumeMinimumLabel",
        IDS_SETTINGS_TEXT_TO_SPEECH_VOLUME_MINIMUM_LABEL},
       {"ttsSettingsLinkDescription", IDS_SETTINGS_TTS_LINK_DESCRIPTION},
+      {"overscrollHistoryNavigationTitle",
+       IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -1269,6 +1289,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean(
       "isAccessibilityCaretBlinkIntervalSettingEnabled",
       ::features::IsAccessibilityCaretBlinkIntervalSettingEnabled());
+
+  html_source->AddBoolean("isAccessibilityOverscrollSettingFeatureEnabled",
+                          IsAccessibilityOverscrollSettingFeatureEnabled());
 
   ::settings::AddCaptionSubpageStrings(html_source);
 }
@@ -1435,6 +1458,11 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Accessibility.PdfOcr.Enabled",
           value.GetBool());
       return true;
+    case mojom::Setting::kOverscrollEnabled:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.OverscrollHistoryNavigation.Enabled",
+          value.GetBool());
+      return true;
     default:
       return false;
   }
@@ -1536,6 +1564,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kCaretBlinkInterval,
       mojom::Setting::kReducedAnimationsEnabled,
       mojom::Setting::kPdfOcrOnOff,
+      mojom::Setting::kOverscrollEnabled,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
                             kManageAccessibilitySettings, generator);
@@ -1662,6 +1691,10 @@ void AccessibilitySection::UpdateSearchTags() {
   }
 
   updater.AddSearchTags(GetA11yColorCorrectionSearchConcepts());
+
+  if (IsAccessibilityOverscrollSettingFeatureEnabled()) {
+    updater.AddSearchTags(GetA11yOverscrollSettingSearchConcepts());
+  }
 
   if (!pref_service_->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled)) {
     return;

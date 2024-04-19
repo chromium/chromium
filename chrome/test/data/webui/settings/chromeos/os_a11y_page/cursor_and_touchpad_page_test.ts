@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsCursorAndTouchpadPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -30,6 +30,8 @@ suite('<settings-cursor-and-touchpad-page>', () => {
   let page: SettingsCursorAndTouchpadPageElement;
   let deviceBrowserProxy: TestDevicePageBrowserProxy;
   let prefElement: SettingsPrefsElement;
+  const overscrollFeatureEnabled =
+      loadTimeData.getBoolean('isAccessibilityOverscrollSettingFeatureEnabled');
 
   async function initPage() {
     prefElement = document.createElement('settings-prefs');
@@ -373,6 +375,64 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         assertTrue(cursorHighlightToggle.checked);
         assertTrue(page.prefs.settings.a11y.cursor_highlight.value);
       });
+
+  if (overscrollFeatureEnabled) {
+    test('overscroll setting enabled', async () => {
+      await initPage();
+      const overscrollToggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#overscrollToggle');
+
+      // Setting is visible.
+      assert(overscrollToggle);
+      assertTrue(isVisible(overscrollToggle));
+
+      // Pref has default value.
+      assertTrue(overscrollToggle.checked);
+      assertTrue(page.prefs.settings.a11y.overscroll_history_navigation.value);
+
+      overscrollToggle.click();
+
+      await waitBeforeNextRender(page);
+      flush();
+      assertFalse(overscrollToggle.checked);
+      assertFalse(page.prefs.settings.a11y.overscroll_history_navigation.value);
+    });
+
+    test('kOverscrollSetting is deep-linkable', async () => {
+      await initPage();
+
+      const setting = settingMojom.Setting.kOverscrollEnabled;
+      const params = new URLSearchParams();
+      params.append('settingId', setting.toString());
+      Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD, params);
+
+      const deepLinkElement =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#overscrollToggle');
+
+      assert(deepLinkElement);
+
+      await waitAfterNextRender(deepLinkElement);
+
+      assertEquals(
+          deepLinkElement, page.shadowRoot!.activeElement,
+          `Element should be focused for settingId=${setting}'`);
+    });
+  } else {
+    test('overscroll setting disabled', async () => {
+      await initPage();
+      const overscrollToggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#overscrollToggle');
+
+      // No setting visible.
+      assertNull(overscrollToggle);
+
+      // Pref has default value.
+      assertTrue(page.prefs.settings.a11y.overscroll_history_navigation.value);
+    });
+  }
 
   test(
       'face gaze feature does not show if the feature flag is disabled',

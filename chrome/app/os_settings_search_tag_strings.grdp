@@ -1493,6 +1493,12 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD" desc="Text for search result item which, when clicked, navigates the user to accessibility switch access settings, with a slider to set the auto-scan repeat rate.">
     Switch access keyboard auto-scan
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_OVERSCROLL_ENABLED" desc="Text for search result item which, when clicked, navigates the user to an accessibility setting to turn on or off overscroll navigation.">
+    Swipe to navigate between pages
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_OVERSCROLL_ENABLED_ALT1" desc="Text for search result item which, when clicked, navigates the user to an accessibility setting to turn on or off overscroll navigation.">
+    Overscroll to navigate between pages
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_LABELS_FROM_GOOGLE" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable getting image descriptions from Google.">
     Get image descriptions from Google
   </message>

@@ -283,6 +283,17 @@ export class SettingsCursorAndTouchpadPageElement extends
       },
 
       /**
+       * Whether to show the overscroll history navigation setting.
+       */
+      isAccessibilityOverscrollSettingFeatureEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'isAccessibilityOverscrollSettingFeatureEnabled');
+        },
+      },
+
+      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -294,6 +305,7 @@ export class SettingsCursorAndTouchpadPageElement extends
           Setting.kHighlightCursorWhileMoving,
           Setting.kTabletNavigationButtons,
           Setting.kEnableCursorColor,
+          Setting.kOverscrollEnabled,
         ]),
       },
     };
@@ -311,13 +323,14 @@ export class SettingsCursorAndTouchpadPageElement extends
   private cursorAndTouchpadBrowserProxy_: CursorAndTouchpadPageBrowserProxy;
   private cursorColorOptions_: Option[];
   private deviceBrowserProxy_: DevicePageBrowserProxy;
-  private isKioskModeActive_: boolean;
+  private readonly isKioskModeActive_: boolean;
   private shelfNavigationButtonsImplicitlyEnabled_: boolean;
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   private showShelfNavigationButtonsSettings_: boolean;
-  private isAccessibilityFaceGazeEnabled_: boolean;
-  private isAccessibilityMouseKeysEnabled_: boolean;
+  private readonly isAccessibilityFaceGazeEnabled_: boolean;
+  private readonly isAccessibilityMouseKeysEnabled_: boolean;
+  private readonly isAccessibilityOverscrollSettingFeatureEnabled_: boolean;
   private readonly largeCursorMaxSize_: number;
 
   constructor() {

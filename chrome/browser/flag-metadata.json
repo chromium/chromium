@@ -2256,6 +2256,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "enable-accessibility-overscroll-setting",
+    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "enable-accessibility-page-zoom",
     "owners": [ "mschillaci@chromium.org", "aldietz@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130

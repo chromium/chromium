@@ -7735,6 +7735,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityCaretBlinkIntervalSetting)},
 
+    {"enable-accessibility-overscroll-setting",
+     flag_descriptions::kAccessibilityOverscrollSettingFeatureName,
+     flag_descriptions::kAccessibilityOverscrollSettingFeatureDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityOverscrollSettingFeature)},
+
     {"enable-accessibility-service",
      flag_descriptions::kAccessibilityServiceName,
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,

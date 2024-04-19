@@ -194,6 +194,14 @@
     label="$i18n{cursorHighlightLabel}"
     deep-link-focus-id$="[[Setting.kHighlightCursorWhileMoving]]">
 </settings-toggle-button>
+<template is="dom-if" if="[[isAccessibilityOverscrollSettingFeatureEnabled_]]">
+  <settings-toggle-button id="overscrollToggle"
+      class="hr"
+      pref="{{prefs.settings.a11y.overscroll_history_navigation}}"
+      label="$i18n{overscrollHistoryNavigationTitle}"
+      deep-link-focus-id$="[[Setting.kOverscrollEnabled]]">
+  </settings-toggle-button>
+</template>
 <template is="dom-if" if="[[showShelfNavigationButtonsSettings_]]" restamp>
   <!-- If shelf navigation buttons are implicitly enabled by other a11y
       settings (e.g. by spoken feedback), the toggle control should be

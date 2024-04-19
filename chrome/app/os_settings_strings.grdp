@@ -1746,6 +1746,9 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_SETTINGS_AUTOCLICK_MOVEMENT_THRESHOLD_EXTRA_LARGE" desc="Description of an extra large mouse movement threshold for autoclick mouse movements">
     Extra large
   </message>
+  <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE" desc="Title for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
+    Use a swipe gesture to navigate between pages
+  </message>
   <!-- TODO(b/259372916): Finalize and translate these strings before Mouse Keys launches-->
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LABEL" desc="Label for the mouse keys setting toggle." translateable="false">
     Mouse Keys

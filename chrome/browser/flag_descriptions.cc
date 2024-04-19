@@ -1105,6 +1105,12 @@ const char kAccessibilityCaretBlinkIntervalSettingDescription[] =
     "Allows the user to change their text caret blink rate setting across Ash "
     "and Chrome.";
 
+const char kAccessibilityOverscrollSettingFeatureName[] =
+    "Adds overscroll to navigate setting";
+const char kAccessibilityOverscrollSettingFeatureDescription[] =
+    "Allows the user to change the swipe to navigate setting on ChromeOS in "
+    "Accessibility settings.";
+
 const char kAccessibilityServiceName[] = "Experimental Accessibility Service";
 const char kAccessibilityServiceDescription[] =
     "This option enables the experimental Accessibility Service and runs some "

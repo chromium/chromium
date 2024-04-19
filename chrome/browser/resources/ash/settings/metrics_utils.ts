@@ -108,6 +108,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kLargeCursor,
     type: PrefType.BOOLEAN,
   },
+  'settings.a11y.overscroll_history_navigation': {
+    setting: Setting.kOverscrollEnabled,
+    type: PrefType.BOOLEAN,
+  },
   // os_a11y_page/display_and_magnification_subpage.ts
   'ash.docked_magnifier.enabled': {
     setting: Setting.kDockedMagnifier,

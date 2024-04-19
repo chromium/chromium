@@ -205,7 +205,10 @@ chromium-metrics-reviews@google.com.
   <owner>estalin@chromium.org</owner>
   <summary>
     Logs whether the overscroll history navigation setting is enabled or
-    disabled when it is toggled in chrome://settings/accessibility.
+    disabled when it is toggled in chrome://settings/accessibility. Compare to
+    the histogram
+    &quot;ChromeOS.Settings.OverscrollHistoryNavigation.Enabled&quot; on Chrome
+    OS.
   </summary>
 </histogram>
 
