@@ -27,32 +27,43 @@ bool IsUrlOpen(
   return false;
 }
 
-// Gets the bottom label from a product category.
-std::optional<CategoryLabel> GetBottomLabel(const ProductCategory& category) {
+// Gets product label from the bottom of a product category. If
+// `level_from_bottom` is 0, this returns the last level of the category. If
+// `level_from_bottom` is 1, this returns the second to last level of the
+// category, and so on.
+std::optional<std::string> GetLabelFromBottom(const ProductCategory& category,
+                                              int level_from_bottom) {
   int label_size = category.category_labels_size();
-  if (label_size == 0) {
+  if (label_size <= level_from_bottom) {
     return std::nullopt;
   }
-  return category.category_labels(label_size - 1);
+  return category.category_labels(label_size - 1 - level_from_bottom)
+      .category_default_label();
 }
 
-// Determines if two CategoryData are similar. Currently this method only checks
-// whether the bottom category matches.
-// TODO(qinmin): adding more logics here for complicated cases.
+// Determines if two CategoryData are similar. If the bottom label from one of
+// the categories in the first CategoryData matches either the bottom or the
+// second to bottom label from one of the categories in the second CategoryData,
+// they are considered similar.
 bool AreCategoriesSimilar(const CategoryData& first,
                           const CategoryData& second) {
-  std::set<std::string> bottom_labels;
   for (const auto& first_category : first.product_categories()) {
-    std::optional<CategoryLabel> label = GetBottomLabel(first_category);
-    if (label) {
-      bottom_labels.emplace(label->category_default_label());
-    }
-  }
-  for (const auto& second_category : second.product_categories()) {
-    std::optional<CategoryLabel> label = GetBottomLabel(second_category);
-    if (label && bottom_labels.find(label->category_default_label()) !=
-                     bottom_labels.end()) {
-      return true;
+    std::optional<std::string> bottom_1 = GetLabelFromBottom(first_category, 0);
+    std::optional<std::string> second_to_bottom_1 =
+        GetLabelFromBottom(first_category, 1);
+    for (const auto& second_category : second.product_categories()) {
+      std::optional<std::string> bottom_2 =
+          GetLabelFromBottom(second_category, 0);
+      std::optional<std::string> second_to_bottom_2 =
+          GetLabelFromBottom(second_category, 1);
+      if (bottom_1) {
+        if (bottom_1 == bottom_2 || bottom_1 == second_to_bottom_2) {
+          return true;
+        }
+      }
+      if (second_to_bottom_1 && second_to_bottom_1 == bottom_2) {
+        return true;
+      }
     }
   }
   return false;

@@ -27,6 +27,7 @@ const std::string kTestUrl2 = "http://www.foo2.com";
 const std::string kTestUrl3 = "http://www.foo3.com";
 const std::string kCategoryLamp = "Lamp";
 const std::string kCategoryChair = "Chair";
+const std::string kCategoryGamingChair = "GamingChair";
 }  // namespace
 
 class ClusterManagerTest : public testing::Test {
@@ -75,6 +76,10 @@ class ClusterManagerTest : public testing::Test {
 
   void UpdateProductInfo(const std::string& label) {
     product_info_ = ProductInfo();
+    AddProductCategoryToProductInfo(label);
+  }
+
+  void AddProductCategoryToProductInfo(const std::string& label) {
     product_info_.category_data.add_product_categories()
         ->add_category_labels()
         ->set_category_default_label(label);
@@ -128,6 +133,7 @@ TEST_F(ClusterManagerTest, NewCandidateProductClustered) {
 
   // Add 3 products, product 1 and 3 has the same category.
   UpdateProductInfo(kCategoryLamp);
+
   cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
   UpdateProductInfo(kCategoryChair);
   cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
@@ -141,6 +147,40 @@ TEST_F(ClusterManagerTest, NewCandidateProductClustered) {
 
   CandidateProduct* product2 = (*GetCandidateProductMap())[foo2].get();
   ASSERT_EQ(product2->similar_candidate_products_urls.size(), 0u);
+
+  CandidateProduct* product3 = (*GetCandidateProductMap())[foo3].get();
+  ASSERT_EQ(product3->similar_candidate_products_urls.size(), 1u);
+  ASSERT_EQ(product3->similar_candidate_products_urls.count(foo1), 1u);
+}
+
+TEST_F(ClusterManagerTest, CandidateProductWithMultipleLabelsClustered) {
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  GURL foo3(kTestUrl3);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3});
+
+  // Product 1 belongs to 2 categories.
+  UpdateProductInfo(kCategoryLamp);
+  AddProductCategoryToProductInfo(kCategoryChair);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  // Product 2's category label has 2 levels, Chair -> GamingChair.
+  UpdateProductInfo(kCategoryChair);
+  product_info_.category_data.mutable_product_categories(0)
+      ->add_category_labels()
+      ->set_category_default_label(kCategoryGamingChair);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  UpdateProductInfo(kCategoryLamp);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
+  ASSERT_EQ(3u, GetCandidateProductMap()->size());
+
+  CandidateProduct* product1 = (*GetCandidateProductMap())[foo1].get();
+  ASSERT_EQ(product1->similar_candidate_products_urls.size(), 2u);
+  ASSERT_EQ(product1->similar_candidate_products_urls.count(foo2), 1u);
+  ASSERT_EQ(product1->similar_candidate_products_urls.count(foo3), 1u);
+
+  CandidateProduct* product2 = (*GetCandidateProductMap())[foo2].get();
+  ASSERT_EQ(product2->similar_candidate_products_urls.size(), 1u);
+  ASSERT_EQ(product2->similar_candidate_products_urls.count(foo1), 1u);
 
   CandidateProduct* product3 = (*GetCandidateProductMap())[foo3].get();
   ASSERT_EQ(product3->similar_candidate_products_urls.size(), 1u);
