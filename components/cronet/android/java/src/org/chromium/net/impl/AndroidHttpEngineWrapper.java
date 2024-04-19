@@ -10,19 +10,29 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 import android.net.Network;
 import android.net.http.HttpEngine;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresExtension;
 
-import org.chromium.net.ExperimentalCronetEngine;
+import org.chromium.net.BidirectionalStream;
+import org.chromium.net.CronetEngine;
+import org.chromium.net.RequestFinishedInfo;
+import org.chromium.net.UploadDataProvider;
+import org.chromium.net.UrlRequest;
 
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
-class AndroidHttpEngineWrapper extends ExperimentalCronetEngine {
+class AndroidHttpEngineWrapper extends CronetEngineBase {
     private final HttpEngine mBackend;
 
     public AndroidHttpEngineWrapper(HttpEngine backend) {
@@ -59,12 +69,8 @@ class AndroidHttpEngineWrapper extends ExperimentalCronetEngine {
     public void bindToNetwork(long networkHandle) {
         // Network#fromNetworkHandle throws IAE if networkHandle does not translate to a valid
         // Network. Though, this can only happen if we're given a fake networkHandle (in which case
-        // we will throw, which is fine).
-        Network network =
-                networkHandle == UNBIND_NETWORK_HANDLE
-                        ? null
-                        : Network.fromNetworkHandle(networkHandle);
-        mBackend.bindToNetwork(network);
+        // we will throw, which is fine)
+        mBackend.bindToNetwork(getNetwork(networkHandle));
     }
 
     @Override
@@ -95,16 +101,103 @@ class AndroidHttpEngineWrapper extends ExperimentalCronetEngine {
     @Override
     public org.chromium.net.ExperimentalBidirectionalStream.Builder newBidirectionalStreamBuilder(
             String url, org.chromium.net.BidirectionalStream.Callback callback, Executor executor) {
-        return new AndroidBidirectionalStreamBuilderWrapper(
-                mBackend.newBidirectionalStreamBuilder(
-                        url, executor, new AndroidBidirectionalStreamCallbackWrapper(callback)));
+        return new BidirectionalStreamBuilderImpl(url, callback, executor, this);
     }
 
     @Override
-    public org.chromium.net.ExperimentalUrlRequest.Builder newUrlRequestBuilder(
-            String url, org.chromium.net.UrlRequest.Callback callback, Executor executor) {
-        return new AndroidUrlRequestBuilderWrapper(
-                mBackend.newUrlRequestBuilder(
-                        url, executor, new AndroidUrlRequestCallbackWrapper(callback)));
+    public org.chromium.net.ExperimentalBidirectionalStream createBidirectionalStream(
+            String url,
+            BidirectionalStream.Callback callback,
+            Executor executor,
+            String httpMethod,
+            List<Entry<String, String>> requestHeaders,
+            @StreamPriority int priority,
+            boolean delayRequestHeadersUntilFirstFlush,
+            Collection<Object> requestAnnotations /* not in HttpEngine */,
+            boolean trafficStatsTagSet,
+            int trafficStatsTag,
+            boolean trafficStatsUidSet,
+            int trafficStatsUid,
+            long networkHandle /* TODO(b/309112420): add to HttpEngine */) {
+        AndroidBidirectionalStreamCallbackWrapper wrappedCallback =
+                new AndroidBidirectionalStreamCallbackWrapper(callback);
+
+        android.net.http.BidirectionalStream.Builder streamBuilder =
+                mBackend.newBidirectionalStreamBuilder(url, executor, wrappedCallback);
+        streamBuilder.setHttpMethod(httpMethod);
+        for (Map.Entry<String, String> header : requestHeaders) {
+            streamBuilder.addHeader(header.getKey(), header.getValue());
+        }
+        streamBuilder.setPriority(priority);
+        streamBuilder.setDelayRequestHeadersUntilFirstFlushEnabled(
+                delayRequestHeadersUntilFirstFlush);
+        if (trafficStatsTagSet) {
+            streamBuilder.setTrafficStatsTag(trafficStatsTag);
+        }
+        if (trafficStatsUidSet) {
+            streamBuilder.setTrafficStatsUid(trafficStatsUid);
+        }
+
+        return AndroidBidirectionalStreamWrapper.createAndAddToCallback(
+                streamBuilder.build(), wrappedCallback);
+    }
+
+    @Override
+    public org.chromium.net.ExperimentalUrlRequest createRequest(
+            String url,
+            UrlRequest.Callback callback,
+            Executor executor,
+            @RequestPriority int priority,
+            Collection<Object> requestAnnotations /* not in HttpEngine */,
+            boolean disableCache,
+            boolean disableConnectionMigration /* not in HttpEngine */,
+            boolean allowDirectExecutor,
+            boolean trafficStatsTagSet,
+            int trafficStatsTag,
+            boolean trafficStatsUidSet,
+            int trafficStatsUid,
+            @Nullable RequestFinishedInfo.Listener requestFinishedListener /* not in HttpEngine */,
+            @Idempotency int idempotency /* not in HttpEngine */,
+            long networkHandle,
+            String method,
+            ArrayList<Map.Entry<String, String>> requestHeaders,
+            UploadDataProvider uploadDataProvider,
+            Executor uploadDataProviderExecutor) {
+        AndroidUrlRequestCallbackWrapper wrappedCallback =
+                new AndroidUrlRequestCallbackWrapper(callback);
+        android.net.http.UrlRequest.Builder requestBuilder =
+                mBackend.newUrlRequestBuilder(url, executor, wrappedCallback);
+
+        requestBuilder.setPriority(priority);
+        requestBuilder.setCacheDisabled(disableCache);
+        requestBuilder.setDirectExecutorAllowed(allowDirectExecutor);
+        if (trafficStatsTagSet) {
+            requestBuilder.setTrafficStatsTag(trafficStatsTag);
+        }
+        if (trafficStatsUidSet) {
+            requestBuilder.setTrafficStatsTag(trafficStatsUid);
+        }
+        requestBuilder.bindToNetwork(getNetwork(networkHandle));
+        requestBuilder.setHttpMethod(method);
+        for (Map.Entry<String, String> header : requestHeaders) {
+            requestBuilder.addHeader(header.getKey(), header.getValue());
+        }
+        if (uploadDataProvider != null) {
+            requestBuilder.setUploadDataProvider(
+                    new AndroidUploadDataProviderWrapper(uploadDataProvider),
+                    uploadDataProviderExecutor);
+        }
+
+        return AndroidUrlRequestWrapper.createAndAddToCallback(
+                requestBuilder.build(), wrappedCallback);
+    }
+
+    private Network getNetwork(long networkHandle) {
+        // Network#fromNetworkHandle throws IAE if networkHandle does not translate to a valid
+        // Network. Though, this can only happen if we're given a fake networkHandle (in which case
+        // we will throw, which is fine).
+        return networkHandle == CronetEngine.UNBIND_NETWORK_HANDLE
+                ? null
+                : Network.fromNetworkHandle(networkHandle);
     }
 }

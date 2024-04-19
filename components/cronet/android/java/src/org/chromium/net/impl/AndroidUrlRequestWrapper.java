@@ -48,4 +48,18 @@ class AndroidUrlRequestWrapper extends org.chromium.net.ExperimentalUrlRequest {
     public void getStatus(StatusListener listener) {
         mBackend.getStatus(new AndroidUrlRequestStatusListenerWrapper(listener));
     }
+
+    /**
+     * Creates an {@link AndroidUrlRequestWrapper} that is recorded on the callback.
+     *
+     * @param backend the http UrlRequest
+     * @param callback the stream's callback
+     * @return the wrapped request
+     */
+    static AndroidUrlRequestWrapper createAndAddToCallback(
+            android.net.http.UrlRequest backend, AndroidUrlRequestCallbackWrapper callback) {
+        AndroidUrlRequestWrapper wrappedRequest = new AndroidUrlRequestWrapper(backend);
+        callback.setRequest(wrappedRequest);
+        return wrappedRequest;
+    }
 }

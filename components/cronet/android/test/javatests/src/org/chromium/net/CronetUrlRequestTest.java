@@ -2928,7 +2928,7 @@ public class CronetUrlRequestTest {
             // given a fake networkHandle.
             assertThrows(
                     IllegalArgumentException.class,
-                    () -> builder.bindToNetwork(-150 /* invalid network handle */));
+                    () -> builder.bindToNetwork(-150 /* invalid network handle */).build());
             return;
         }
 
@@ -2967,10 +2967,6 @@ public class CronetUrlRequestTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onRedirect_receivesSameRequestObject() {
         AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
         TestUrlRequestCallback callback =
@@ -2990,10 +2986,6 @@ public class CronetUrlRequestTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onResponseStarted_receivesSameRequestObject() {
         AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
         TestUrlRequestCallback callback =
@@ -3012,10 +3004,6 @@ public class CronetUrlRequestTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onReadCompleted_receivesSameRequestObject() {
         AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
         TestUrlRequestCallback callback =
@@ -3036,10 +3024,6 @@ public class CronetUrlRequestTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onSucceeded_receivesSameRequestObject() {
         AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
         TestUrlRequestCallback callback =
@@ -3058,10 +3042,6 @@ public class CronetUrlRequestTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onCanceled_receivesSameRequestObject() {
         AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
         TestUrlRequestCallback callback =
@@ -3081,10 +3061,6 @@ public class CronetUrlRequestTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onFailed_receivesSameRequestObject() {
         AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
         TestUrlRequestCallback callback =
@@ -3118,10 +3094,6 @@ public class CronetUrlRequestTest {
     }
 
     @Test
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallback_twoRequestsFromOneBuilder_receivesCorrectRequestObject() {
         AtomicReference<UrlRequest> onResponseStartedRequest = new AtomicReference<>();
         AtomicReference<UrlRequest> onReadCompletedRequest = new AtomicReference<>();

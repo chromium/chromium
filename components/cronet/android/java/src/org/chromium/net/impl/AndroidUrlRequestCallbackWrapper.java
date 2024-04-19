@@ -20,6 +20,7 @@ import java.util.Objects;
 @SuppressWarnings("Override")
 class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Callback {
     private final org.chromium.net.UrlRequest.Callback mBackend;
+    private AndroidUrlRequestWrapper mWrappedRequest;
 
     public AndroidUrlRequestCallbackWrapper(org.chromium.net.UrlRequest.Callback backend) {
         Objects.requireNonNull(backend, "Callback is required.");
@@ -41,10 +42,8 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
                             AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-                    AndroidUrlRequestWrapper specializedRequest =
-                            new AndroidUrlRequestWrapper(request);
                     mBackend.onRedirectReceived(
-                            specializedRequest, specializedResponseInfo, newLocationUrl);
+                            mWrappedRequest, specializedResponseInfo, newLocationUrl);
                     return null;
                 },
                 Exception.class);
@@ -58,9 +57,7 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
                             AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-                    AndroidUrlRequestWrapper specializedRequest =
-                            new AndroidUrlRequestWrapper(request);
-                    mBackend.onResponseStarted(specializedRequest, specializedResponseInfo);
+                    mBackend.onResponseStarted(mWrappedRequest, specializedResponseInfo);
                     return null;
                 },
                 Exception.class);
@@ -76,10 +73,7 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
                             AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-                    AndroidUrlRequestWrapper specializedRequest =
-                            new AndroidUrlRequestWrapper(request);
-                    mBackend.onReadCompleted(
-                            specializedRequest, specializedResponseInfo, byteBuffer);
+                    mBackend.onReadCompleted(mWrappedRequest, specializedResponseInfo, byteBuffer);
                     return null;
                 },
                 Exception.class);
@@ -90,8 +84,7 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
             android.net.http.UrlRequest request, android.net.http.UrlResponseInfo info) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-        AndroidUrlRequestWrapper specializedRequest = new AndroidUrlRequestWrapper(request);
-        mBackend.onSucceeded(specializedRequest, specializedResponseInfo);
+        mBackend.onSucceeded(mWrappedRequest, specializedResponseInfo);
     }
 
     @Override
@@ -101,9 +94,8 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
             HttpException error) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-        AndroidUrlRequestWrapper specializedRequest = new AndroidUrlRequestWrapper(request);
         mBackend.onFailed(
-                specializedRequest,
+                mWrappedRequest,
                 specializedResponseInfo,
                 CronetExceptionTranslationUtils.translateCheckedAndroidCronetException(error));
     }
@@ -114,7 +106,10 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
             @Nullable android.net.http.UrlResponseInfo info) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-        AndroidUrlRequestWrapper specializedRequest = new AndroidUrlRequestWrapper(request);
-        mBackend.onCanceled(specializedRequest, specializedResponseInfo);
+        mBackend.onCanceled(mWrappedRequest, specializedResponseInfo);
+    }
+
+    void setRequest(AndroidUrlRequestWrapper request) {
+        mWrappedRequest = request;
     }
 }

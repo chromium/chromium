@@ -371,6 +371,7 @@ cronet_impl_common_java_deps_to_package =
 # by all Cronet engine implementations.
 android_library("cronet_impl_common_java") {
   sources = [
+    "java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
     "java/src/org/chromium/net/impl/CallbackExceptionImpl.java",
     "java/src/org/chromium/net/impl/CronetEngineBase.java",
     "java/src/org/chromium/net/impl/CronetEngineBuilderImpl.java",
@@ -502,7 +503,6 @@ android_library("cronet_impl_native_java") {
     "java/src/org/chromium/net/httpflags/BaseFeature.java",
     "java/src/org/chromium/net/httpflags/HttpFlagsLoader.java",
     "java/src/org/chromium/net/httpflags/ResolvedFlags.java",
-    "java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
     "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
@@ -539,7 +539,6 @@ android_library("cronet_impl_native_java") {
 # loaded from AOSP (only for Android U onwards)
 android_library("httpengine_native_provider_java") {
   sources = [
-    "java/src/org/chromium/net/impl/AndroidBidirectionalStreamBuilderWrapper.java",
     "java/src/org/chromium/net/impl/AndroidBidirectionalStreamCallbackWrapper.java",
     "java/src/org/chromium/net/impl/AndroidBidirectionalStreamWrapper.java",
     "java/src/org/chromium/net/impl/AndroidCallbackExceptionWrapper.java",
@@ -551,7 +550,6 @@ android_library("httpengine_native_provider_java") {
     "java/src/org/chromium/net/impl/AndroidQuicExceptionWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUploadDataProviderWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUploadDataSinkWrapper.java",
-    "java/src/org/chromium/net/impl/AndroidUrlRequestBuilderWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUrlRequestCallbackWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUrlRequestStatusListenerWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUrlRequestWrapper.java",
