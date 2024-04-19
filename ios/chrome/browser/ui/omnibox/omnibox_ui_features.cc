@@ -61,5 +61,6 @@ bool IsRichAutocompletionEnabled(RichAutocompletionImplementation type) {
   }
 
   // TextField is the default.
-  return true;
+  return featureParam == kRichAutocompletionParamTextField ||
+         featureParam.empty();
 }
