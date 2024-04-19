@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
@@ -18,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#include "services/video_effects/video_effects_processor_webgpu.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 
 namespace video_effects {
@@ -71,13 +73,21 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
-  // Helper, registered as a disconnect handler for `manager_remote_` and
-  // `processor_receiver_`.
+  // Registered as a disconnect handler for `manager_remote_` and
+  // `processor_receiver_`. Calling it will cause this processor to become
+  // defunct as we cannot work without functional mojo connections.
   void OnMojoDisconnected();
 
-  // Helper, initializes GPU state (context providers and shared image
-  // interface).
+  // Passed into `processor_webgpu_` as its unrecoverable error callback.
+  // It will attempt to recreate the `processor_webgpu_` instance and
+  // reinitialize it.
+  void OnWebGpuProcessorError();
+
+  // Initializes GPU state (context providers and shared image interface).
   bool InitializeGpuState();
+
+  // Calls `on_unrecoverable_error_` if it's set.
+  void MaybeCallOnUnrecoverableError();
 
   bool initialized_ = false;
 
@@ -86,20 +96,21 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
 
   std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider_;
 
+  // Called when this processor enters a defunct state.
+  base::OnceClosure on_unrecoverable_error_;
+
   // GPU state. Will be created in `Initialize()`, and should be recreated
   // on context loss.
   scoped_refptr<viz::ContextProviderCommandBuffer> webgpu_context_provider_;
-  scoped_refptr<viz::ContextProviderCommandBuffer>
-      raster_interface_context_provider_;
+  scoped_refptr<viz::RasterContextProvider> raster_interface_context_provider_;
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+
+  std::unique_ptr<VideoEffectsProcessorWebGpu> processor_webgpu_;
 
   // We'll keep track of how many context losses we've experienced. If this
   // number is too high, we'll make this processor defunct, assuming that
   // it is causing some instability with GPU service.
   int num_context_losses_ = 0;
-
-  // Called when this processor enters a defunct state.
-  base::OnceClosure on_unrecoverable_error_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

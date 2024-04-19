@@ -1,13 +1,16 @@
 include_rules = [
   "+components/viz/common/gpu",
   "+content/public/common",
+  "+gpu/command_buffer/client",
   "+gpu/command_buffer/common",
   "+gpu/ipc/client",
+  "+gpu/webgpu",
   "+media/base",
   "+media/capture/mojom",
   "+services/viz/public/cpp/gpu",
   "+services/viz/public/mojom",
   "+services/video_effects/public/mojom",
+  "+third_party/dawn/include/dawn",
 ]
 
 specific_include_rules = {
