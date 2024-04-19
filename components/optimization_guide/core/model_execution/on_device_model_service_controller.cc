@@ -10,13 +10,15 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
+#include "components/optimization_guide/core/model_execution/safety_model_info.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -68,6 +70,19 @@ OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
   }
 }
 
+proto::OnDeviceModelVersions GetModelVersions(
+    const OnDeviceModelMetadata& model_metadata,
+    const SafetyModelInfo* safety_model_info) {
+  proto::OnDeviceModelVersions versions;
+  versions.mutable_on_device_model_service_version()->set_component_version(
+      model_metadata.version());
+
+  if (safety_model_info) {
+    versions.set_text_safety_model_version(safety_model_info->GetVersion());
+  }
+  return versions;
+}
+
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
@@ -76,51 +91,15 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
         on_device_component_state_manager)
     : access_controller_(std::move(access_controller)),
       on_device_component_state_manager_(
-          std::move(on_device_component_state_manager)),
-      config_interpreter_(
-          std::make_unique<OnDeviceModelExecutionConfigInterpreter>()) {
-  if (on_device_component_state_manager_) {
-    on_device_component_state_manager_->AddObserver(this);
-  }
-}
+          std::move(on_device_component_state_manager)) {}
 
-OnDeviceModelServiceController::~OnDeviceModelServiceController() {
-  if (on_device_component_state_manager_) {
-    on_device_component_state_manager_->RemoveObserver(this);
-  }
-}
+OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
 
 void OnDeviceModelServiceController::Init() {
-  auto model_path_override_switch =
-      switches::GetOnDeviceModelExecutionOverride();
-  if (model_path_override_switch) {
-    SetModelPath(*StringToFilePath(*model_path_override_switch), "override");
-  } else if (on_device_component_state_manager_) {
-    const OnDeviceModelComponentState* state =
-        on_device_component_state_manager_->GetState();
-    if (state) {
-      SetModelPath(state->GetInstallDirectory(),
-                   state->GetComponentVersion().GetString());
-    }
-  }
-}
-
-void OnDeviceModelServiceController::ClearModelPath() {
-  model_path_ = std::nullopt;
-  model_versions_ = std::nullopt;
-  config_interpreter_->ClearState();
-  model_remote_.reset();
-}
-
-void OnDeviceModelServiceController::SetModelPath(
-    const base::FilePath& model_path,
-    const std::string& version) {
-  // Even if model_path didn't change, we want to go through this process anyway
-  // because the content in the directory may have changed.
-  ClearModelPath();
-  model_path_ = model_path;
-  model_versions_ = GetModelVersions(version);
-  config_interpreter_->UpdateConfigWithFileDir(model_path);
+  model_metadata_loader_.emplace(
+      base::BindRepeating(&OnDeviceModelServiceController::UpdateModel,
+                          weak_ptr_factory_.GetWeakPtr()),
+      on_device_component_state_manager_);
 }
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
@@ -140,15 +119,15 @@ OnDeviceModelServiceController::CreateSession(
     logger.set_reason(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
     return nullptr;
   }
-  if (!model_path_) {
+  if (!model_metadata_) {
     logger.set_reason(OnDeviceModelEligibilityReason::kModelNotAvailable);
     return nullptr;
   }
 
   on_device_model::ModelAssetPaths model_paths;
-  model_paths.sp_model = model_path_->Append(kSpModelFile);
-  model_paths.model = model_path_->Append(kModelFile);
-  model_paths.weights = model_path_->Append(kWeightsFile);
+  model_paths.sp_model = model_metadata_->model_path().Append(kSpModelFile);
+  model_paths.model = model_metadata_->model_path().Append(kModelFile);
+  model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
 
   std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
   if (!safety_model_info_ && features::GetOnDeviceModelMustUseSafetyModel()) {
@@ -182,7 +161,7 @@ OnDeviceModelServiceController::CreateSession(
   }
 
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter =
-      config_interpreter_->GetAdapter(ToModelExecutionFeatureProto(feature));
+      model_metadata_->GetAdapter(ToModelExecutionFeatureProto(feature));
   if (!adapter) {
     logger.set_reason(
         OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature);
@@ -207,7 +186,8 @@ OnDeviceModelServiceController::CreateSession(
   SessionImpl::OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
       weak_ptr_factory_.GetWeakPtr(), model_paths);
-  opts.model_versions.CopyFrom(model_versions_.value());
+  opts.model_versions =
+      GetModelVersions(*model_metadata_, safety_model_info_.get());
   opts.adapter = std::move(adapter);
   opts.safety_cfg = SafetyConfig(safety_config);
 
@@ -288,24 +268,12 @@ void OnDeviceModelServiceController::SetLanguageDetectionModel(
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
   safety_model_info_ = SafetyModelInfo::Load(model_info);
-  if (safety_model_info_ && model_versions_) {
-    model_versions_->set_text_safety_model_version(
-        safety_model_info_->GetVersion());
-  }
 }
 
-void OnDeviceModelServiceController::StateChanged(
-    const OnDeviceModelComponentState* state) {
-  if (switches::GetOnDeviceModelExecutionOverride()) {
-    return;
-  }
-
-  if (state) {
-    SetModelPath(state->GetInstallDirectory(),
-                 state->GetComponentVersion().GetString());
-  } else {
-    ClearModelPath();
-  }
+void OnDeviceModelServiceController::UpdateModel(
+    std::unique_ptr<OnDeviceModelMetadata> model_metadata) {
+  model_remote_.reset();
+  model_metadata_ = std::move(model_metadata);
 }
 
 void OnDeviceModelServiceController::OnLoadModelResult(
@@ -339,21 +307,6 @@ void OnDeviceModelServiceController::ShutdownServiceIfNoModelLoaded() {
 void OnDeviceModelServiceController::OnRemoteIdle() {
   service_remote_.reset();
   model_remote_.reset();
-}
-
-proto::OnDeviceModelVersions OnDeviceModelServiceController::GetModelVersions(
-    const std::string& component_version) const {
-  CHECK(!component_version.empty());
-
-  proto::OnDeviceModelVersions versions;
-  versions.mutable_on_device_model_service_version()->set_component_version(
-      component_version);
-
-  if (safety_model_info_) {
-    versions.set_text_safety_model_version(safety_model_info_->GetVersion());
-  }
-
-  return versions;
 }
 
 OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(

@@ -21,6 +21,7 @@
 #include "base/types/pass_key.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/safety_model_info.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_info.h"
@@ -40,7 +41,7 @@ class FilePath;
 namespace optimization_guide {
 class OnDeviceModelAccessController;
 class OnDeviceModelComponentStateManager;
-class OnDeviceModelExecutionConfigInterpreter;
+class OnDeviceModelMetadata;
 class ModelQualityLogsUploaderService;
 
 // Controls the lifetime of the on-device model service, loading and unloading
@@ -55,8 +56,7 @@ class ModelQualityLogsUploaderService;
 // this. Also handle multiple requests gracefully and fail the subsequent
 // requests, while handling the first one.
 class OnDeviceModelServiceController
-    : public base::RefCounted<OnDeviceModelServiceController>,
-      public OnDeviceModelComponentStateManager::Observer {
+    : public base::RefCounted<OnDeviceModelServiceController> {
  public:
   OnDeviceModelServiceController(
       std::unique_ptr<OnDeviceModelAccessController> access_controller,
@@ -106,15 +106,11 @@ class OnDeviceModelServiceController
   virtual void MaybeUpdateSafetyModel(
       base::optional_ref<const ModelInfo> model_info);
 
-  // OnDeviceModelComponentStateManager::Observer.
-  void StateChanged(const OnDeviceModelComponentState* state) override;
-
-  OnDeviceModelExecutionConfigInterpreter& ConfigInterpreterForTesting() {
-    return *config_interpreter_;
-  }
+  // Updates the main execution model.
+  void UpdateModel(std::unique_ptr<OnDeviceModelMetadata> model_metadata);
 
  protected:
-  ~OnDeviceModelServiceController() override;
+  virtual ~OnDeviceModelServiceController();
 
   std::optional<base::FilePath> language_detection_model_path() const {
     return language_detection_model_path_;
@@ -143,12 +139,6 @@ class OnDeviceModelServiceController
   friend class OnDeviceModelServiceControllerTest;
   friend class FakeOnDeviceModelServiceController;
 
-  // Sets the base model directory and initializes the on-device model
-  // controller with the parameters, to be ready to load models and execute.
-  void SetModelPath(const base::FilePath& model_path,
-                    const std::string& component_version);
-  void ClearModelPath();
-
   // Ensures the service is running and provides a remote for the model.
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
       on_device_model::ModelAssetPaths model_paths);
@@ -169,25 +159,18 @@ class OnDeviceModelServiceController
   // idle.
   void OnRemoteIdle();
 
-  // Gets the model versions based on the current model paths set.
-  proto::OnDeviceModelVersions GetModelVersions(
-      const std::string& component_version) const;
-
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
+  std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
 
-  // Directory containing file assets for underlying on-device models. This does
-  // not include the text safety model or the language detection model.
-  std::optional<base::FilePath> model_path_;
   // Full path of the language detection model file if it's available.
   std::optional<base::FilePath> language_detection_model_path_;
 
-  std::optional<proto::OnDeviceModelVersions> model_versions_;
-  // Can be null if no safey model available.
+  // Can be null if no safety model available.
   std::unique_ptr<SafetyModelInfo> safety_model_info_;
-  std::unique_ptr<OnDeviceModelExecutionConfigInterpreter> config_interpreter_;
+  std::unique_ptr<OnDeviceModelMetadata> model_metadata_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;
 

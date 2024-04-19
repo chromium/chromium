@@ -20,7 +20,7 @@
 #include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
