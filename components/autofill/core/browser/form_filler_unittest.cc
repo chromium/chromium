@@ -685,7 +685,7 @@ TEST_F(FormFillerTest, FillCreditCardNumberIntoSingleDigitFields) {
                              20, {.autocomplete_attribute = "cc-number"})});
   // Set the size limit of the first nineteen fields to 1.
   for (size_t i = 0; i < 19; i++) {
-    form.fields[i].max_length = 1;
+    form.fields[i].set_max_length(1);
   }
   FormsSeen({form});
 
@@ -1165,7 +1165,7 @@ TEST_F(FormFillerTest, FillPhoneNumber) {
         test_field.max_length);
     form_with_us_number_max_length.fields.push_back(field);
 
-    field.max_length = default_max_length;
+    field.set_max_length(default_max_length);
     field.autocomplete_attribute = test_field.autocomplete_attribute;
     field.parsed_autocomplete =
         ParseAutocompleteAttribute(test_field.autocomplete_attribute);

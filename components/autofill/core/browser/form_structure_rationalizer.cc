@@ -109,7 +109,7 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
         if (!is_text_field) {
           continue;
         }
-        if (field->max_length == 1) {
+        if (field->max_length() == 1) {
           set_html_type(HtmlFieldType::kAdditionalNameInitial);
         }
         break;
@@ -139,9 +139,9 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
                             ? HtmlFieldType::kCreditCardExpDate4DigitYear
                             : HtmlFieldType::kCreditCardExpDate2DigitYear);
         } else {
-          if (field->max_length == 5) {
+          if (field->max_length() == 5) {
             set_html_type(HtmlFieldType::kCreditCardExpDate2DigitYear);
-          } else if (field->max_length == 7) {
+          } else if (field->max_length() == 7) {
             set_html_type(HtmlFieldType::kCreditCardExpDate4DigitYear);
           }
         }
@@ -174,9 +174,9 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
                             ? HtmlFieldType::kCreditCardExp4DigitYear
                             : HtmlFieldType::kCreditCardExp2DigitYear);
         } else {
-          if (field->max_length == 2) {
+          if (field->max_length() == 2) {
             set_html_type(HtmlFieldType::kCreditCardExp2DigitYear);
-          } else if (field->max_length == 4) {
+          } else if (field->max_length() == 4) {
             set_html_type(HtmlFieldType::kCreditCardExp4DigitYear);
           }
         }
@@ -494,12 +494,13 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
           return f->ComputedType().GetStorableType() == CREDIT_CARD_NUMBER;
         }));
     size_t last = group.size() - 1;
-    return group[0]->max_length <= kMaxGroupElementLength &&
+    return group[0]->max_length() <= kMaxGroupElementLength &&
            group[last]->ComputedType().GetStorableType() ==
                CREDIT_CARD_NUMBER &&
            group[last]->renderer_form_id() == group[0]->renderer_form_id() &&
            group[last]->IsFocusable() == group[0]->IsFocusable() &&
-           (last == 0 || group[last - 1]->max_length == group[0]->max_length);
+           (last == 0 ||
+            group[last - 1]->max_length() == group[0]->max_length());
   };
 
   // `has_reasonable_length({f, f + N + 1})` is true iff
@@ -510,16 +511,17 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   // 2. there are at least 2 non-overflow fields.
   auto has_reasonable_length = [](Group group) {
     DCHECK(!group.empty());
-    DCHECK(base::ranges::all_of(group.first(group.size() - 1),
-                                [group](const auto& f) {
-                                  return f->max_length == group[0]->max_length;
-                                }));
+    DCHECK(base::ranges::all_of(
+        group.first(group.size() - 1), [group](const auto& f) {
+          return f->max_length() == group[0]->max_length();
+        }));
     size_t size = group.size();
     size_t last = group.size() - 1;
-    bool last_is_overflow = group[last]->max_length > kMaxGroupElementLength;
-    size_t length = group[0]->max_length * (size - 1) + group[last]->max_length;
+    bool last_is_overflow = group[last]->max_length() > kMaxGroupElementLength;
+    size_t length =
+        group[0]->max_length() * (size - 1) + group[last]->max_length();
     size_t length_without_overflow =
-        length - last_is_overflow * group[last]->max_length;
+        length - last_is_overflow * group[last]->max_length();
     return length >= kMinValidCardNumberSize &&
            length_without_overflow <= kMaxValidCardNumberSize &&
            size >= 2 + last_is_overflow;
@@ -548,7 +550,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
       size_t offset = 0;
       for (auto& field : Group{begin, end}) {
         field->set_credit_card_number_offset(offset);
-        offset += field->max_length;
+        offset += field->max_length();
       }
     }
     DCHECK(begin != end);

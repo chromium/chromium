@@ -1409,12 +1409,12 @@ TEST_F(FormDataImporterTest,
        {ADDRESS_HOME_ZIP, kDefaultZip},
        {ADDRESS_HOME_COUNTRY, kDefaultCountry}});
 
-  form_data.fields[3].max_length = 3;
-  form_data.fields[4].max_length = 3;
-  form_data.fields[5].max_length = 4;
-  form_data.fields[6].max_length = 3;
-  form_data.fields[7].max_length = 3;
-  form_data.fields[8].max_length = 4;
+  form_data.fields[3].set_max_length(3);
+  form_data.fields[4].set_max_length(3);
+  form_data.fields[5].set_max_length(4);
+  form_data.fields[6].set_max_length(3);
+  form_data.fields[7].set_max_length(3);
+  form_data.fields[8].set_max_length(4);
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form_data);
@@ -1515,9 +1515,9 @@ TEST_F(FormDataImporterTest,
 
   // Define the length of the phone number fields to allow the parser to
   // identify them as area code, prefix and suffix.
-  form_data.fields[3].max_length = 3;
-  form_data.fields[4].max_length = 3;
-  form_data.fields[5].max_length = 4;
+  form_data.fields[3].set_max_length(3);
+  form_data.fields[4].set_max_length(3);
+  form_data.fields[5].set_max_length(4);
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form_data);
@@ -2082,7 +2082,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_2DigitYear) {
                           FormControlType::kInputText),
       CreateTestFormField("Exp Year:", "exp_year", "45",
                           FormControlType::kInputText)};
-  form.fields.back().max_length = 2;
+  form.fields.back().set_max_length(2);
 
   SubmitFormAndExpectImportedCardWithData(form, "John Smith",
                                           "4111111111111111", "05", "2045");

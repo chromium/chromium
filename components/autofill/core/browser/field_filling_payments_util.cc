@@ -352,8 +352,8 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
   std::u16string expiration_candidate =
       base::StrCat({mm, format.separator,
                     format.digits_in_expiration_year == 4 ? yyyy : yy});
-  if (field.max_length != 0 &&
-      expiration_candidate.length() > field.max_length) {
+  if (field.max_length() != 0 &&
+      expiration_candidate.length() > field.max_length()) {
     if (failure_to_fill) {
       *failure_to_fill +=
           "Field to fill must have a max length of at least 4. ";
@@ -382,7 +382,7 @@ std::u16string GetFillingValueForCreditCardForInput(
                                                    action_persistence, cvc);
     case CREDIT_CARD_NUMBER:
       return GetCreditCardNumberForInput(
-          credit_card, field.credit_card_number_offset(), field.max_length,
+          credit_card, field.credit_card_number_offset(), field.max_length(),
           app_locale, action_persistence);
     case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
@@ -390,7 +390,7 @@ std::u16string GetFillingValueForCreditCardForInput(
     case CREDIT_CARD_EXP_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_4_DIGIT_YEAR:
       return GetExpirationYearForInput(credit_card, storable_type,
-                                       field.max_length);
+                                       field.max_length());
     default:
       // All other cases handled here.
       return credit_card.GetInfo(storable_type, app_locale);
@@ -425,7 +425,7 @@ std::u16string GetValueForVirtualCardInputPreview(
                  : CreditCard::GetMidlineEllipsisPlainDots(/*num_dots=*/3);
     case CREDIT_CARD_NUMBER:
       return GetVirtualCardNumberForPreviewInput(
-          virtual_card, field.credit_card_number_offset(), field.max_length);
+          virtual_card, field.credit_card_number_offset(), field.max_length());
     case CREDIT_CARD_EXP_MONTH:
     case CREDIT_CARD_EXP_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_4_DIGIT_YEAR:

@@ -156,7 +156,7 @@ void FillInDummyFormData(FormData* data) {
   field_data.set_value(u"value");
   field_data.set_form_control_type(FormControlType::kInputPassword);
   field_data.autocomplete_attribute = "off";
-  field_data.max_length = 200;
+  field_data.set_max_length(200);
   field_data.set_is_autofilled(true);
   field_data.check_status = FormFieldData::CheckStatus::kChecked;
   field_data.is_focusable = true;
@@ -167,7 +167,7 @@ void FillInDummyFormData(FormData* data) {
   data->fields.push_back(field_data);
 
   // Change a few fields.
-  field_data.max_length = 150;
+  field_data.set_max_length(150);
   field_data.options = {{.value = u"Third", .content = u"Third"}};
   data->fields.push_back(field_data);
 }

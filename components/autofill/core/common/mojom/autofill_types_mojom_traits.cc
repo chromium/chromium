@@ -291,7 +291,7 @@ bool StructTraits<
   }
 
   out->form_control_ax_id = data.form_control_ax_id();
-  out->max_length = data.max_length();
+  out->set_max_length(data.max_length());
   out->is_user_edited = data.is_user_edited();
   out->set_is_autofilled(data.is_autofilled());
 

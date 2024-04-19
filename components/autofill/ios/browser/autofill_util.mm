@@ -317,7 +317,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
     field_data->autocomplete_attribute = *autocomplete_attribute;
   }
   if (std::optional<int> max_length = field.FindInt("max_length")) {
-    field_data->max_length = *max_length;
+    field_data->set_max_length(*max_length);
   }
   field_data->parsed_autocomplete =
       ParseAutocompleteAttribute(field_data->autocomplete_attribute);

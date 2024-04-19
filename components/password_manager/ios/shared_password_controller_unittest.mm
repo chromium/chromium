@@ -625,7 +625,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
   field.set_value(u"p4ssword");
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.set_renderer_id(autofill::test::MakeFieldRendererId());
-  field.max_length = max_length;
+  field.set_max_length(max_length);
   form_data.fields.push_back(field);
 
   autofill::FormFieldData password_field_data = form_data.fields.back();

@@ -432,7 +432,7 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
   }
   if (field_type.group() == FieldTypeGroup::kPhone) {
     return GetPhoneNumberValueForInput(
-        field_data.max_length, value,
+        field_data.max_length(), value,
         profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
   }
   if (field_type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
@@ -442,7 +442,7 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
   if (field_type.GetStorableType() == ADDRESS_HOME_STATE) {
     return GetStateTextForInput(
         value, data_util::GetCountryCodeWithFallback(profile, app_locale),
-        field_data.max_length, failure_to_fill);
+        field_data.max_length(), failure_to_fill);
   }
   return value;
 }

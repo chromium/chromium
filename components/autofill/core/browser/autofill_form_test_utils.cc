@@ -121,7 +121,7 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
     ff.placeholder = *fd.placeholder;
   }
   if (fd.max_length) {
-    ff.max_length = *fd.max_length;
+    ff.set_max_length(*fd.max_length);
   }
   if (fd.origin) {
     ff.origin = *fd.origin;

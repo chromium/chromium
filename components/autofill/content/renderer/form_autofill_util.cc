@@ -1931,7 +1931,7 @@ void WebFormControlElementToFormField(
   field->form_control_ax_id = element.GetAxId();
   field->set_form_control_type(
       ToAutofillFormControlType(element.FormControlTypeForAutofill()));
-  field->max_length = GetMaxLength(element);
+  field->set_max_length(GetMaxLength(element));
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
   field->parsed_autocomplete =
       ParseAutocompleteAttribute(field->autocomplete_attribute);

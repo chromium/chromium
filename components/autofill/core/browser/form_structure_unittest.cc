@@ -1849,27 +1849,27 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
 
   field.set_label(u"Phone:");
   field.set_name(u"dayphone1");
-  field.max_length = 0;
+  field.set_max_length(0);
   field.set_renderer_id(test::MakeFieldRendererId());
   form.fields.push_back(field);
 
   field.set_label(u"-");
   field.set_name(u"dayphone2");
-  field.max_length = 3;  // Size of prefix is 3.
+  field.set_max_length(3);  // Size of prefix is 3.
   field.set_renderer_id(test::MakeFieldRendererId());
   form.fields.push_back(field);
 
   field.set_label(u"-");
   field.set_name(u"dayphone3");
-  field.max_length = 4;  // Size of suffix is 4.  If unlimited size is
-                         // passed, phone will be parsed as
-                         // <country code> - <area code> - <phone>.
+  field.set_max_length(4);  // Size of suffix is 4.  If unlimited size is
+                            // passed, phone will be parsed as
+                            // <country code> - <area code> - <phone>.
   field.set_renderer_id(test::MakeFieldRendererId());
   form.fields.push_back(field);
 
   field.set_label(u"ext.:");
   field.set_name(u"dayphone4");
-  field.max_length = 0;
+  field.set_max_length(0);
   field.set_renderer_id(test::MakeFieldRendererId());
   form.fields.push_back(field);
 
@@ -2333,7 +2333,7 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
   form.url = GURL("http://foo.com");
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
-  field.max_length = 10000;
+  field.set_max_length(10000);
 
   field.set_label(u"Full Name");
   field.set_name(u"fullName");
@@ -2692,7 +2692,7 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
   form.url = GURL("http://foo.com");
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
-  field.max_length = 10000;
+  field.set_max_length(10000);
 
   field.set_label(u"Full Name");
   field.set_name(u"fullName");

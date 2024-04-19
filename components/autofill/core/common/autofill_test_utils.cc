@@ -168,7 +168,7 @@ FormFieldData CreateTestFormField(std::string_view label,
   FormFieldData field = CreateTestFormField(label, name, value, type);
   // First, set the `max_length`, as the `parsed_autocomplete` is set based on
   // this value.
-  field.max_length = max_length;
+  field.set_max_length(max_length);
   field.autocomplete_attribute = autocomplete;
   field.parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
   return field;

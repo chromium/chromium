@@ -121,7 +121,7 @@ autofill::FieldGlobalId PhoneFieldParserTest::AppendField(
   field.set_form_control_type(field_data.type);
   field.set_label(field_data.label);
   field.set_name(field_data.name);
-  field.max_length = field_data.max_length;
+  field.set_max_length(field_data.max_length);
   for (auto* const element : field_data.options) {
     field.options.push_back(
         {.value = u"", .content = base::UTF8ToUTF16(element)});

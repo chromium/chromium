@@ -110,7 +110,7 @@ bool DeserializeSection1(base::PickleIterator* iter,
     field_data->set_name(std::move(name));
     field_data->set_value(std::move(value));
     field_data->autocomplete_attribute = std::move(autocomplete_attribute);
-    field_data->max_length = max_length;
+    field_data->set_max_length(max_length);
     field_data->set_is_autofilled(std::move(is_autofilled));
     // Form control types are serialized as strings for legacy reasons.
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
@@ -254,7 +254,7 @@ auto IdentityTuple(const FormFieldData& f) {
   return std::tuple_cat(
       std::tie(f.label(), f.name(), f.name_attribute(), f.id_attribute(),
                f.form_control_type(), f.autocomplete_attribute, f.placeholder,
-               f.max_length, f.css_classes, f.is_focusable,
+               f.max_length(), f.css_classes, f.is_focusable,
                f.should_autocomplete, f.role, f.text_direction, f.options),
       std::make_tuple(IsCheckable(f.check_status)));
 }
@@ -488,7 +488,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteString(FormControlTypeToString(field_data.form_control_type()));
   // We don't serialize the `parsed_autocomplete`. See http://crbug.com/1353392.
   pickle->WriteString(field_data.autocomplete_attribute);
-  pickle->WriteUInt64(field_data.max_length);
+  pickle->WriteUInt64(field_data.max_length());
   pickle->WriteBool(field_data.is_autofilled());
   pickle->WriteInt(static_cast<int>(field_data.check_status));
   pickle->WriteBool(field_data.is_focusable);
@@ -654,7 +654,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
                     ? field.parsed_autocomplete->ToString()
                     : "")
             << "' " << "placeholder='" << field.placeholder << "' "
-            << "max_length=" << field.max_length << " " << "css_classes='"
+            << "max_length=" << field.max_length() << " " << "css_classes='"
             << field.css_classes << "' "
             << "autofilled=" << field.is_autofilled() << " "
             << "check_status=" << field.check_status << " "

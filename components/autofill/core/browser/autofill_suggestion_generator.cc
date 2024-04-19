@@ -1058,7 +1058,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   }
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
       profiles_to_suggest, field_types, last_targeted_fields,
-      trigger_field_type, trigger_field.max_length);
+      trigger_field_type, trigger_field.max_length());
 
   if (suggestions.empty()) {
     return suggestions;

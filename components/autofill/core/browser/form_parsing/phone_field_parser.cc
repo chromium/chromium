@@ -235,8 +235,8 @@ bool PhoneFieldParser::ParseGrammar(ParsingContext& context,
     }
 
     if (rule.max_size != 0 &&
-        (parsed_fields[rule.phone_part]->max_length == 0 ||
-         rule.max_size < parsed_fields[rule.phone_part]->max_length)) {
+        (parsed_fields[rule.phone_part]->max_length() == 0 ||
+         rule.max_size < parsed_fields[rule.phone_part]->max_length())) {
       return false;
     }
   }

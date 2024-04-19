@@ -115,7 +115,7 @@ TEST_P(PhoneNumberTest, FillPhoneNumber) {
   auto test_case = GetParam();
   AutofillField field;
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
-  field.max_length = test_case.field_max_length;
+  field.set_max_length(test_case.field_max_length);
 
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
@@ -383,7 +383,7 @@ TEST_P(AutofillStateTextTest, FillStateText) {
   auto test_case = GetParam();
   AutofillField field;
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
-  field.max_length = test_case.field_max_length;
+  field.set_max_length(test_case.field_max_length);
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(ADDRESS_HOME_STATE, test_case.value_to_fill);
@@ -702,7 +702,7 @@ TEST_F(FieldFillingAddressUtilTest, FillStateAbbreviationInTextField) {
   AutofillField field(test::CreateTestFormField("State", "state", "",
                                                 FormControlType::kInputText));
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
-  field.max_length = 4;
+  field.set_max_length(4);
 
   AutofillProfile profile(AddressCountryCode("DE"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
@@ -776,7 +776,7 @@ TEST_F(FieldFillingAddressUtilTest, FillUpperCaseAbbreviationInStateTextField) {
   AutofillField field{test::CreateTestFormField("State", "state", "",
                                                 FormControlType::kInputText)};
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
-  field.max_length = 4;
+  field.set_max_length(4);
 
   AutofillProfile profile(AddressCountryCode("DE"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");

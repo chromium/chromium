@@ -175,7 +175,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 TEST_F(FieldFillingPaymentsUtilTest,
        FillFormField_MaxLength_CreditCardField_MaxLengthExceedsLength) {
   AutofillField field;
-  field.max_length = 30;
+  field.set_max_length(30);
   field.set_credit_card_number_offset(2);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
 
@@ -191,7 +191,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 TEST_F(FieldFillingPaymentsUtilTest,
        FillFormField_MaxLength_CreditCardField_OffsetExceedsLength) {
   AutofillField field;
-  field.max_length = 18;
+  field.set_max_length(18);
   field.set_credit_card_number_offset(19);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
 
@@ -207,7 +207,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 TEST_F(FieldFillingPaymentsUtilTest,
        FillFormField_MaxLength_CreditCardField_WithOffset) {
   AutofillField field;
-  field.max_length = 1;
+  field.set_max_length(1);
   field.set_credit_card_number_offset(3);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
 
@@ -223,7 +223,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 // Verify that only the truncated value of the credit card number is set.
 TEST_F(FieldFillingPaymentsUtilTest, FillFormField_MaxLength_CreditCardField) {
   AutofillField field;
-  field.max_length = 1;
+  field.set_max_length(1);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
 
   CreditCard credit_card;
@@ -362,7 +362,7 @@ TEST_P(ExpirationYearTest, FillExpirationYearInput) {
   AutofillField field;
   field.set_form_control_type(FormControlType::kInputText);
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
-  field.max_length = test_case.field_max_length;
+  field.set_max_length(test_case.field_max_length);
 
   CreditCard credit_card = test::GetCreditCard();
   credit_card.SetExpirationDateFromString(u"12/2023");
@@ -470,7 +470,7 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
   AutofillField field;
   field.set_form_control_type(FormControlType::kInputText);
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
-  field.max_length = test_case.field_max_length;
+  field.set_max_length(test_case.field_max_length);
 
   CreditCardFieldParser::ExpirationDateFormat format =
       CreditCardFieldParser::DetermineExpirationDateFormat(
@@ -990,7 +990,7 @@ TEST_F(FieldFillingPaymentsUtilTest, FillCreditCardNumberWithEqualSizeSplits) {
   for (size_t i = 0; i < test.total_splits_; ++i) {
     AutofillField field;
     field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
-    field.max_length = test.splits_[i];
+    field.set_max_length(test.splits_[i]);
     field.set_credit_card_number_offset(4 * i);
 
     // Fill with a card-number; should fill just the card_number_part.
@@ -1032,7 +1032,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
   for (size_t i = 0; i < test.total_splits_; ++i) {
     AutofillField field;
     field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
-    field.max_length = test.splits_[i];
+    field.set_max_length(test.splits_[i]);
     field.set_credit_card_number_offset(4 * i);
 
     // Fill with a card-number; should fill just the card_number_part.
@@ -1071,7 +1071,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
   for (size_t i = 0; i < test.total_splits_; ++i) {
     AutofillField field;
     field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
-    field.max_length = test.splits_[i];
+    field.set_max_length(test.splits_[i]);
     field.set_credit_card_number_offset(GetNumberOffset(i, test));
 
     // Fill with a card-number; should fill just the card_number_part.
@@ -1116,7 +1116,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
   for (size_t i = 0; i < test.total_splits_; ++i) {
     AutofillField field;
     field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
-    field.max_length = test.splits_[i];
+    field.set_max_length(test.splits_[i]);
     field.set_credit_card_number_offset(GetNumberOffset(i, test));
 
     // Fill with a card-number; should fill just the card_number_part.
@@ -1231,7 +1231,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedYear) {
   // Test reducing 4 digit year to 2 digits.
   AutofillField field;
-  field.max_length = 2;
+  field.set_max_length(2);
   field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_4_DIGIT_YEAR);
@@ -1249,7 +1249,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualDate) {
   field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
-  field.max_length = 7;
+  field.set_max_length(7);
 
   // A date that has a year containing four digits should return two dots for
   // month and four dots for year.
@@ -1267,7 +1267,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualDate) {
   // month and two for year.
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
-  field.max_length = 5;
+  field.set_max_length(5);
   expected = base::StrCat({kMidlineEllipsis2DotsWithoutPadding, slash,
                            kMidlineEllipsis2DotsWithoutPadding});
   EXPECT_EQ(expected, GetFillingValueForCreditCard(
@@ -1279,7 +1279,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
   // Test reducing dates to various max length field values.
   AutofillField field;
   field.set_form_control_type(FormControlType::kInputText);
-  field.max_length = 4;
+  field.set_max_length(4);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
 
@@ -1291,7 +1291,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
                           credit_card, /*cvc=*/u"", kAppLocale,
                           mojom::ActionPersistence::kPreview, field));
 
-  field.max_length = 5;
+  field.set_max_length(5);
   std::u16string slash = u"/";
   // Expected: MM/YY = ••/••.
   expected = base::StrCat({kMidlineEllipsis2DotsWithoutPadding, slash,
@@ -1300,7 +1300,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
                           credit_card, /*cvc=*/u"", kAppLocale,
                           mojom::ActionPersistence::kPreview, field));
 
-  field.max_length = 6;
+  field.set_max_length(6);
   // Expected: MMYYYY = ••••••.
   expected = base::StrCat({kMidlineEllipsis2DotsWithoutPadding,
                            kMidlineEllipsis4DotsWithoutPadding});
@@ -1308,7 +1308,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
                           credit_card, /*cvc=*/u"", kAppLocale,
                           mojom::ActionPersistence::kPreview, field));
 
-  field.max_length = 7;
+  field.set_max_length(7);
   // Expected: MM/YYYY = ••/••••.
   expected = base::StrCat({kMidlineEllipsis2DotsWithoutPadding, slash,
                            kMidlineEllipsis4DotsWithoutPadding});
@@ -1369,7 +1369,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCardNumber) {
 TEST_F(FieldFillingPaymentsUtilTest,
        PreviewVirtualCardNumber_OffsetExceedsLength) {
   AutofillField field;
-  field.max_length = 17;
+  field.set_max_length(17);
   field.set_credit_card_number_offset(18);
   field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);

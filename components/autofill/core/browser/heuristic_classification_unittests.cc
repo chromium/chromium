@@ -356,7 +356,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   if (const std::string* maxlength = field_dict.FindString("maxlength_attr")) {
     uint64_t max_length = 0;
     base::StringToUint64(*maxlength, &max_length);
-    field.max_length = max_length;
+    field.set_max_length(max_length);
   }
   field.is_focusable = true;
   field.role = FormFieldData::RoleAttribute::kOther;

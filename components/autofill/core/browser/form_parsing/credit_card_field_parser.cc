@@ -614,7 +614,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   scanner->RewindTo(month_year_saved_cursor);
 
   // Bail out if the field cannot fit a 2-digit year expiration date.
-  const uint64_t current_field_max_length = scanner->Cursor()->max_length;
+  const uint64_t current_field_max_length = scanner->Cursor()->max_length();
   if (!FieldCanFitDataForFieldType(current_field_max_length,
                                    CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR))
     return false;
@@ -683,7 +683,7 @@ FieldType CreditCardFieldParser::DetermineExpirationYearType(
 
   // For text fields, look for placeholder patterns.
   if (field.IsTextInputElement()) {
-    if (field.max_length == 2) {
+    if (field.max_length() == 2) {
       return CREDIT_CARD_EXP_2_DIGIT_YEAR;
     }
     // If you add new languages, also update other places labeled with
@@ -698,7 +698,7 @@ FieldType CreditCardFieldParser::DetermineExpirationYearType(
         MatchesRegex<kYYRegex>(field.label(), nullptr)) {
       return CREDIT_CARD_EXP_2_DIGIT_YEAR;
     }
-    if (field.max_length == 4) {
+    if (field.max_length() == 4) {
       return CREDIT_CARD_EXP_4_DIGIT_YEAR;
     }
   }
@@ -776,8 +776,8 @@ FieldType CreditCardFieldParser::GetExpirationYearType() const {
         /*server_hint=*/NO_SERVER_DATA,
         /*forced_field_type=*/NO_SERVER_DATA);
   }
-  return expiration_year_->max_length == 2 ? CREDIT_CARD_EXP_2_DIGIT_YEAR
-                                           : CREDIT_CARD_EXP_4_DIGIT_YEAR;
+  return expiration_year_->max_length() == 2 ? CREDIT_CARD_EXP_2_DIGIT_YEAR
+                                             : CREDIT_CARD_EXP_4_DIGIT_YEAR;
 }
 
 bool CreditCardFieldParser::HasExpiration() const {
@@ -884,7 +884,7 @@ CreditCardFieldParser::DetermineExpirationDateFormat(
   for (uint8_t year_length : year_length_candidates) {
     for (const std::u16string& separator : separator_candidates) {
       uint8_t candidate_size = kMonthLength + separator.length() + year_length;
-      if (field.max_length == 0 || candidate_size <= field.max_length) {
+      if (field.max_length() == 0 || candidate_size <= field.max_length()) {
         return {separator, year_length};
       }
     }
@@ -892,7 +892,7 @@ CreditCardFieldParser::DetermineExpirationDateFormat(
 
   // Now use to the `field.max_length` attribute to guess an appropriate
   // format.
-  switch (field.max_length) {
+  switch (field.max_length()) {
     case 1:
     case 2:
     case 3:

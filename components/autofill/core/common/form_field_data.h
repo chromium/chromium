@@ -372,7 +372,10 @@ struct FormFieldData {
   // which could span 32 & 64 bit processes. We chose uint64_t instead of
   // uint32_t to maintain compatibility with old code which used size_t
   // (base::Pickle used to serialize that as 64 bit).
-  uint64_t max_length = std::numeric_limits<uint32_t>::max();
+  const uint64_t& max_length() const { return max_length_; }
+  void set_max_length(uint64_t max_length) {
+    max_length_ = std::move(max_length);
+  }
 
   const bool& is_autofilled() const { return is_autofilled_; }
   void set_is_autofilled(bool is_autofilled) {
@@ -446,6 +449,7 @@ struct FormFieldData {
   std::u16string value_;
   FormControlType form_control_type_ = FormControlType::kInputText;
   FieldRendererId renderer_id_;
+  uint64_t max_length_ = std::numeric_limits<uint32_t>::max();
   bool is_autofilled_ = false;
 };
 
@@ -530,7 +534,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
     EXPECT_EQ(expected.autocomplete_attribute, actual.autocomplete_attribute); \
     EXPECT_EQ(expected.parsed_autocomplete, actual.parsed_autocomplete);       \
     EXPECT_EQ(expected.placeholder, actual.placeholder);                       \
-    EXPECT_EQ(expected.max_length, actual.max_length);                         \
+    EXPECT_EQ(expected.max_length(), actual.max_length());                     \
     EXPECT_EQ(expected.css_classes, actual.css_classes);                       \
     EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());               \
     EXPECT_EQ(expected.is_user_edited, actual.is_user_edited);                 \
