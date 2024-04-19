@@ -25,7 +25,46 @@
 import {KeyCode} from '/common/key_code.js';
 
 import {Command, CommandCategory} from './command.js';
-import {KeyBinding, KeySequence, SerializedKeySequence} from './key_sequence.js';
+import {KeySequence} from './key_sequence.js';
+
+// TODO(anastasi): Import these types from key_sequence.js once this file is
+// converted to TypeScript.
+
+/**
+ * @typedef {{
+ *   keyCode: !Array<!KeyCode>,
+ *   altGraphKey: Array<boolean>,
+ *   altKey: Array<boolean>,
+ *   ctrlKey: Array<boolean>,
+ *   metaKey: Array<boolean>,
+ *   searchKeyHeld: Array<boolean>,
+ *   shiftKey: Array<boolean>,
+ * }}
+ */
+let Keys;
+
+/**
+ * @typedef {{
+ *   keys: Keys,
+ *   cvoxModifier: (boolean|undefined),
+ *   doubleTap: (boolean|undefined),
+ *   prefixKey: (boolean|undefined),
+ *   requireStickyMode: (boolean|undefined),
+ *   skipStripping: (boolean|undefined),
+ *   stickyMode: (boolean|undefined),
+ * }}
+ */
+let SerializedKeySequence;
+
+/**
+ * @typedef {{
+ *   command: !Command,
+ *   sequence: !KeySequence,
+ *   keySeq: (string|undefined),
+ *   title: (string|undefined),
+ * }}
+ */
+let KeyBinding;
 
 export class CommandStore {
   /**

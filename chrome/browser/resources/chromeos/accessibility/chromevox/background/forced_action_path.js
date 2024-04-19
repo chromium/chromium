@@ -11,13 +11,42 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command.js';
-import {KeySequence, SerializedKeySequence} from '../common/key_sequence.js';
+import {KeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {QueueMode} from '../common/tts_types.js';
 
 import {CommandHandlerInterface} from './input/command_handler_interface.js';
 import {Output} from './output/output.js';
+
+// TODO(anastasi): Import these types from key_sequence.js once this file is
+// converted to TypeScript.
+
+/**
+ * @typedef {{
+ *   keyCode: !Array<!KeyCode>,
+ *   altGraphKey: Array<boolean>,
+ *   altKey: Array<boolean>,
+ *   ctrlKey: Array<boolean>,
+ *   metaKey: Array<boolean>,
+ *   searchKeyHeld: Array<boolean>,
+ *   shiftKey: Array<boolean>,
+ * }}
+ */
+let Keys;
+
+/**
+ * @typedef {{
+ *   keys: Keys,
+ *   cvoxModifier: (boolean|undefined),
+ *   doubleTap: (boolean|undefined),
+ *   prefixKey: (boolean|undefined),
+ *   requireStickyMode: (boolean|undefined),
+ *   skipStripping: (boolean|undefined),
+ *   stickyMode: (boolean|undefined),
+ * }}
+ */
+let SerializedKeySequence;
 
 /**
  * The types of actions we want to monitor.

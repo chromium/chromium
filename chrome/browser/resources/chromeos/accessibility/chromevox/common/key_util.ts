@@ -282,7 +282,6 @@ export namespace KeyUtil {
             modifier = metaKey;
             break;
           case 'keyCode':
-            // @ts-expect-error Can't index with string.
             const keyCode = keySequence.keys[keyPressed][index];
             // We make sure the keyCode isn't for a modifier key. If it is, then
             // we've already added that into the string above.

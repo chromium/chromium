@@ -18,7 +18,7 @@ import {CommandStore} from '../common/command_store.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
-import {KeyBinding, KeySequence} from '../common/key_sequence.js';
+import {KeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {Msgs} from '../common/msgs.js';
 import {ALL_PANEL_MENU_NODE_DATA, PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
@@ -26,6 +26,19 @@ import {ALL_PANEL_MENU_NODE_DATA, PanelNodeMenuData, PanelNodeMenuId, PanelNodeM
 import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
 import {PanelMode} from './panel_mode.js';
+
+// TODO(anastasi): Import these types from key_sequence.js once this file is
+// converted to TypeScript.
+
+/**
+ * @typedef {{
+*   command: !Command,
+*   sequence: !KeySequence,
+*   keySeq: (string|undefined),
+*   title: (string|undefined),
+* }}
+*/
+let KeyBinding;
 
 const $ = (id) => document.getElementById(id);
 

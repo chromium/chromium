@@ -19,7 +19,20 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from './command.js';
 import {CommandStore} from './command_store.js';
-import {KeyBinding, KeySequence, SerializedKeySequence} from './key_sequence.js';
+import {KeySequence} from './key_sequence.js';
+
+// TODO(anastasi): Import these types from key_sequence.js once this file is
+// converted to TypeScript.
+
+/**
+ * @typedef {{
+ *   command: !Command,
+ *   sequence: !KeySequence,
+ *   keySeq: (string|undefined),
+ *   title: (string|undefined),
+ * }}
+ */
+let KeyBinding;
 
 export class KeyMap {
   /**
