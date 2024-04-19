@@ -294,6 +294,7 @@ bool IsCapturedTab(TabRole role) {
 // static
 infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
+    infobars::InfoBar* old_infobar,
     const std::u16string& shared_tab_name,
     const std::u16string& capturer_name,
     content::WebContents* web_contents,
@@ -305,12 +306,15 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     TabShareType capture_type,
     bool favicons_used_for_switch_to_tab_button) {
   DCHECK(infobar_manager);
-  return infobar_manager->AddInfoBar(
+  std::unique_ptr<infobars::InfoBar> new_infobar =
       CreateTabSharingInfoBar(base::WrapUnique(new TabSharingInfoBarDelegate(
           shared_tab_name, capturer_name, web_contents, role,
           share_this_tab_instead_button_state, focus_target,
           captured_surface_control_active, ui, capture_type,
-          favicons_used_for_switch_to_tab_button))));
+          favicons_used_for_switch_to_tab_button)));
+  return old_infobar ? infobar_manager->ReplaceInfoBar(old_infobar,
+                                                       std::move(new_infobar))
+                     : infobar_manager->AddInfoBar(std::move(new_infobar));
 }
 
 TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(

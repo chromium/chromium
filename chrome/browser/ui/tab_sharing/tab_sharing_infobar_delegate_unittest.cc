@@ -82,7 +82,7 @@ class TabSharingInfoBarDelegateTest
     content::WebContents* const web_contents =
         browser()->tab_strip_model()->GetWebContentsAt(prefs.tab_index);
     return TabSharingInfoBarDelegate::Create(
-        infobars::ContentInfoBarManager::FromWebContents(web_contents),
+        infobars::ContentInfoBarManager::FromWebContents(web_contents), nullptr,
         prefs.shared_tab_name, prefs.capturer_name, web_contents, prefs.role,
         prefs.can_share_instead
             ? TabSharingInfoBarDelegate::ButtonState::ENABLED

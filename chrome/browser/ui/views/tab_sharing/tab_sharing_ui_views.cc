@@ -58,6 +58,13 @@ using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 using content::WebContents;
 
+// Replace InfoBars when updating their content to avoid an animation instead of
+// removing the old InfoBar and then adding the new one, which causes an
+// animation flickering.
+BASE_FEATURE(kTabSharingBarReplace,
+             "TabSharingBarReplace",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 bool g_apply_dlp_for_all_users_for_testing_ = false;
 #endif
@@ -417,11 +424,16 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
     return;
   }
 
+  infobars::InfoBar* old_infobar = nullptr;
   auto infobars_entry = infobars_.find(contents);
-  // Recreate the infobar if it already exists.
+  // Stop observing the previous infobar instance if it already exists.
   if (infobars_entry != infobars_.end()) {
-    infobars_entry->second->owner()->RemoveObserver(this);
-    infobars_entry->second->RemoveSelf();
+    old_infobar = infobars_entry->second;
+    old_infobar->owner()->RemoveObserver(this);
+    if (!base::FeatureList::IsEnabled(kTabSharingBarReplace)) {
+      old_infobar->RemoveSelf();
+      old_infobar = nullptr;
+    }
   }
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(contents);
@@ -489,7 +501,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
                 : TabSharingInfoBarDelegate::ButtonState::DISABLED;
 
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
-      infobar_manager, shared_tab_name_, capturer_name_, contents,
+      infobar_manager, old_infobar, shared_tab_name_, capturer_name_, contents,
       GetTabRole(is_capturing_tab, is_captured_tab),
       share_this_tab_instead_button_state, focus_target,
       captured_surface_control_active_, this, capture_type_,
