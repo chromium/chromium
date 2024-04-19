@@ -51,10 +51,10 @@ def _use_reclient(outdir):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--source', action='append',
+  parser.add_argument('source', nargs='+',
     help=('The source file being analyzed.'
-          'Multiple --source arguments can be passed in order to batch '
-          'process is desired. '))
+          'Multiple source arguments can be passed in order to batch '
+          'process if desired.'))
   parser.add_argument('--perform-build', action='store_true',
     help=('If specified, actually build the target, including any generated '
           'prerequisite files. '
@@ -62,7 +62,7 @@ def main():
           'the GeneratedFile results will only be returned if a build has '
           'been previously completed, and may be stale.'))
   parser.add_argument('--out-dir',
-    help=('Output directory, containing  args.gn, which specifies the build '
+    help=('Output directory, containing args.gn, which specifies the build '
           'configuration.'))
   options = parser.parse_args()
 
