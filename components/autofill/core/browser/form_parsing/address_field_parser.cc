@@ -383,6 +383,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   AutofillField* old_zip = zip_;
   AutofillField* old_zip4 = zip4_;
   AutofillField* old_apartment_number = apartment_number_;
+  AutofillField* old_house_number_and_apt_ = house_number_and_apt_;
 
   AddressCountryCode country_code(context.client_country.value());
 
@@ -541,6 +542,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   zip_ = old_zip;
   zip4_ = old_zip4;
   apartment_number_ = old_apartment_number;
+  house_number_and_apt_ = old_house_number_and_apt_;
 
   scanner->RewindTo(saved_cursor_position);
   return false;
