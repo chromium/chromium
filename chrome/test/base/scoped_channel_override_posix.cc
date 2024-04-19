@@ -45,6 +45,8 @@ std::string GetVersionExtra(ScopedChannelOverride::Channel channel) {
       return "beta";
     case ScopedChannelOverride::Channel::kDev:
       return "unstable";
+    case ScopedChannelOverride::Channel::kCanary:
+      return "canary";
   }
 }
 

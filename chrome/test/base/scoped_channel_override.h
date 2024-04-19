@@ -32,7 +32,8 @@ class ScopedChannelOverride {
     kStable,
     kBeta,
     kDev,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(IS_LINUX)
     kCanary,
 #endif
   };
