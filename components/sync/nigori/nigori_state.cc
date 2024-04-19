@@ -93,33 +93,6 @@ bool EncryptEncryptionKeys(const CryptographerImpl& cryptographer,
   return cryptographer.Encrypt(keys_for_encryption, encrypted);
 }
 
-// Writes deprecated per-type encryption fields. Can be removed once <M82
-// clients aren't supported.
-void WriteDeprecatedPerTypeEncryptionFields(
-    sync_pb::NigoriSpecifics* specifics) {
-  specifics->set_encrypt_bookmarks(true);
-  specifics->set_encrypt_preferences(true);
-  specifics->set_encrypt_autofill_profile(true);
-  specifics->set_encrypt_autofill(true);
-  specifics->set_encrypt_autofill_wallet_metadata(true);
-  specifics->set_encrypt_themes(true);
-  specifics->set_encrypt_typed_urls(true);
-  specifics->set_encrypt_extensions(true);
-  specifics->set_encrypt_search_engines(true);
-  specifics->set_encrypt_sessions(true);
-  specifics->set_encrypt_apps(true);
-  specifics->set_encrypt_app_settings(true);
-  specifics->set_encrypt_extension_settings(true);
-  specifics->set_encrypt_dictionary(true);
-  specifics->set_encrypt_app_list(true);
-  specifics->set_encrypt_arc_package(true);
-  specifics->set_encrypt_printers(true);
-  specifics->set_encrypt_reading_list(true);
-  specifics->set_encrypt_send_tab_to_self(true);
-  specifics->set_encrypt_web_apps(true);
-  specifics->set_encrypt_os_preferences(true);
-}
-
 void UpdateSpecificsFromKeyDerivationParams(
     const KeyDerivationParams& params,
     sync_pb::NigoriSpecifics* specifics) {
@@ -332,9 +305,6 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
   }
   specifics.set_keybag_is_frozen(true);
   specifics.set_encrypt_everything(encrypt_everything);
-  if (encrypt_everything) {
-    WriteDeprecatedPerTypeEncryptionFields(&specifics);
-  }
   specifics.set_passphrase_type(passphrase_type);
   if (passphrase_type == sync_pb::NigoriSpecifics::CUSTOM_PASSPHRASE) {
     DCHECK(custom_passphrase_key_derivation_params);

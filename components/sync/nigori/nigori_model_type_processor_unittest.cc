@@ -20,6 +20,7 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -344,7 +345,8 @@ TEST_F(NigoriModelTypeProcessorTest,
   auto entity_data = std::make_unique<syncer::EntityData>();
   sync_pb::NigoriSpecifics* nigori_specifics =
       entity_data->specifics.mutable_nigori();
-  nigori_specifics->set_encrypt_bookmarks(true);
+  nigori_specifics->set_passphrase_type(
+      sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE);
   entity_data->name = kNigoriNonUniqueName;
 
   processor()->Put(std::move(entity_data));
@@ -365,7 +367,8 @@ TEST_F(NigoriModelTypeProcessorTest,
   entity_data = std::make_unique<syncer::EntityData>();
   nigori_specifics = entity_data->specifics.mutable_nigori();
   entity_data->name = kNigoriNonUniqueName;
-  nigori_specifics->set_encrypt_preferences(true);
+  nigori_specifics->set_passphrase_type(
+      sync_pb::NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE);
   processor()->Put(std::move(entity_data));
 
   // ApplyIncrementalSyncChanges() should be called to trigger persistence of

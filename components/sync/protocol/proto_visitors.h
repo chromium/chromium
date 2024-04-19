@@ -883,22 +883,6 @@ VISIT_PROTO_FIELDS(const sync_pb::CrossUserSharingPrivateKey& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::NigoriSpecifics& proto) {
   VISIT(encryption_keybag);
   VISIT(keybag_is_frozen);
-  VISIT(encrypt_bookmarks);
-  VISIT(encrypt_preferences);
-  VISIT(encrypt_autofill_profile);
-  VISIT(encrypt_autofill);
-  VISIT(encrypt_themes);
-  VISIT(encrypt_typed_urls);
-  VISIT(encrypt_extension_settings);
-  VISIT(encrypt_extensions);
-  VISIT(encrypt_sessions);
-  VISIT(encrypt_app_settings);
-  VISIT(encrypt_apps);
-  VISIT(encrypt_search_engines);
-  VISIT(encrypt_dictionary);
-  VISIT(encrypt_app_list);
-  VISIT(encrypt_arc_package);
-  VISIT(encrypt_reading_list);
   VISIT(encrypt_everything);
   VISIT(server_only_was_missing_keystore_migration_time);
   VISIT(sync_tab_favicons);
