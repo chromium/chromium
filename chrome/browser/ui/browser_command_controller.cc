@@ -13,7 +13,9 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/profiler.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1103,9 +1105,25 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SET_BROWSER_AS_DEFAULT:
       base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
           ->StartSetAsDefault(base::DoNothing());
+
+      // Log metrics before clearing prefs and closing prompts.
+      if (g_browser_process->local_state()->HasPrefPath(
+              prefs::kDefaultBrowserFirstShownTime)) {
+        base::UmaHistogramCounts100(
+            "DefaultBrowser.AppMenu.TimesShownBeforeAccept",
+            g_browser_process->local_state()->GetInteger(
+                prefs::kDefaultBrowserDeclinedCount) +
+                1);
+        base::UmaHistogramCustomTimes(
+            "DefaultBrowser.AppMenu.TimeToSetDefault",
+            base::Time::Now() - g_browser_process->local_state()->GetTime(
+                                    prefs::kDefaultBrowserFirstShownTime),
+            base::Milliseconds(1), base::Days(7), 50);
+      }
       DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
           browser_->profile());
       DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts();
+
       break;
 #endif
     default:
