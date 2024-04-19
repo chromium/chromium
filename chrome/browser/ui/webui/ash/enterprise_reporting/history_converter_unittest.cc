@@ -255,6 +255,58 @@ TEST(HistoryConverterTest, ForceConfirmCallTest) {
           Field(&ErpHistoryEvent::time, Eq(9876))))));
 }
 
+TEST(HistoryConverterTest, BlockedRecordCallTest) {
+  ::reporting::ERPHealthData history_data;
+  auto* const record = history_data.add_history();
+  record->set_timestamp_seconds(9876L);
+  auto* const call_record = record->mutable_blocked_record_call();
+  call_record->set_destination(::reporting::OS_EVENTS);
+  call_record->set_priority(::reporting::SECURITY);
+  const auto converted_history = ConvertHistory(history_data);
+
+  EXPECT_THAT(
+      converted_history->events,
+      ElementsAre(Pointee(
+          AllOf(Field(&ErpHistoryEvent::call, StrEq("BlockedRecord")),
+                Field(&ErpHistoryEvent::parameters,
+                      UnorderedElementsAre(
+                          Pointee(AllOf(Field(&ErpHistoryEventParameter::name,
+                                              StrEq("Destination")),
+                                        Field(&ErpHistoryEventParameter::value,
+                                              StrEq("OS_EVENTS")))),
+                          Pointee(AllOf(Field(&ErpHistoryEventParameter::name,
+                                              StrEq("Priority")),
+                                        Field(&ErpHistoryEventParameter::value,
+                                              StrEq("SECURITY")))))),
+                Field(&ErpHistoryEvent::time, Eq(9876))))));
+}
+
+TEST(HistoryConverterTest, BlockedDestinationsUpdatedCallTest) {
+  ::reporting::ERPHealthData history_data;
+  auto* const record = history_data.add_history();
+  record->set_timestamp_seconds(9876L);
+  auto* const call_record = record->mutable_blocked_destinations_updated_call();
+  call_record->add_destinations(::reporting::TELEMETRY_METRIC);
+  call_record->add_destinations(::reporting::LOCK_UNLOCK_EVENTS);
+  const auto converted_history = ConvertHistory(history_data);
+
+  EXPECT_THAT(
+      converted_history->events,
+      ElementsAre(Pointee(
+          AllOf(Field(&ErpHistoryEvent::call, StrEq("BlockedDestinations")),
+                Field(&ErpHistoryEvent::parameters,
+                      UnorderedElementsAre(
+                          Pointee(AllOf(Field(&ErpHistoryEventParameter::name,
+                                              StrEq("Destination")),
+                                        Field(&ErpHistoryEventParameter::value,
+                                              StrEq("TELEMETRY_METRIC")))),
+                          Pointee(AllOf(Field(&ErpHistoryEventParameter::name,
+                                              StrEq("Destination")),
+                                        Field(&ErpHistoryEventParameter::value,
+                                              StrEq("LOCK_UNLOCK_EVENTS")))))),
+                Field(&ErpHistoryEvent::time, Eq(9876))))));
+}
+
 TEST(HistoryConverterTest, MultipleRecordsTest) {
   ::reporting::ERPHealthData history_data;
 

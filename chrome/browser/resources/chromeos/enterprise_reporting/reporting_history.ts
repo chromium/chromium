@@ -39,6 +39,8 @@ export class ReportingHistoryElement extends PolymerElement {
     'Flush',
     'Confirm',
     'Upload',
+    'BlockedRecord',
+    'BlockedDestinations',
   ];
   private selectedOption: string = ReportingHistoryElement.allEvents;
   private currentHistory: ErpHistoryData;
