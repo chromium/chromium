@@ -147,11 +147,13 @@ void VTTElement::Trace(Visitor* visitor) const {
 }
 
 LayoutObject* VTTElement::CreateLayoutObject(const ComputedStyle& style) {
-  switch (web_vtt_node_type_) {
-    case kVTTNodeTypeRuby:
-      return MakeGarbageCollected<LayoutRuby>(this);
-    case kVTTNodeTypeRubyText:
-      return MakeGarbageCollected<LayoutRubyText>(this);
+  if (!RuntimeEnabledFeatures::VttCueDisplayRubyEnabled()) {
+    switch (web_vtt_node_type_) {
+      case kVTTNodeTypeRuby:
+        return MakeGarbageCollected<LayoutRuby>(this);
+      case kVTTNodeTypeRubyText:
+        return MakeGarbageCollected<LayoutRubyText>(this);
+    }
   }
   return LayoutObject::CreateObject(this, style);
 }

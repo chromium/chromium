@@ -288,6 +288,17 @@ void LayoutTheme::AdjustStyle(const Element* element,
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
+  if (RuntimeEnabledFeatures::VttCueDisplayRubyEnabled()) {
+    // !important is necessary because this style is loaded earlier than
+    // mediaControls.css.
+    //
+    // Avoid to write "video::cue" for a false-positive by
+    // audit_non_blink_usage.py.
+    return "video::"
+           "cue(rt) { display: ruby-text !important; }\n"
+           "video::"
+           "cue(ruby) { display: ruby; }\n";
+  }
   return g_empty_string;
 }
 

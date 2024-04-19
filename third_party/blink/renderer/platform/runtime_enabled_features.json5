@@ -4080,6 +4080,10 @@
       status: "experimental",
     },
     {
+      name: "VttCueDisplayRuby",
+      status: "stable",
+    },
+    {
       // The "WakeLock" feature was originally implied_by "ScreenWakeLock" and
       // "SystemWakeLock". The former was removed after being promoted to
       // stable, but we need to keep this feature around for code and IDLs that
