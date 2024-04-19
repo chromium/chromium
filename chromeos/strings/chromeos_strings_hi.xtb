@@ -372,6 +372,7 @@
 <translation id="3170673040743561620">अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="3174321110679064523">डॉन टू डार्क वॉलपेपर</translation>
 <translation id="3178532070248519384">अवांत-गार्द</translation>
+<translation id="3182676044300231689">"इसे बदलकर बेहतर बनाओ" जैसा कोई प्रॉम्प्ट डालें</translation>
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
 <translation id="319101249942218879">अवतार इमेज बदली गई</translation>
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
@@ -575,6 +576,7 @@
 <translation id="4394049700291259645">बंद करें</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> को रीस्टार्ट किया जा रहा है</translation>
 <translation id="4395835743215824109">कीबोर्ड की रोशनी को पसंद के मुताबिक बनाएं</translation>
+<translation id="439946595190720558">इस बैकग्राउंड को एआई की मदद से बनाया गया है. इसके लिए, यह टेक्स्ट इस्तेमाल किया गया: "<ph name="PROMPT" />."</translation>
 <translation id="4415951057168511744">मौजूदा अवतार</translation>
 <translation id="4417830657741848074">आपके एडमिन ने कुछ ऐप्लिकेशन, अपने-आप चालू होने के लिए सेट अप किए हैं. ऐसा हो सकता है कि इनमें से कुछ ऐप्लिकेशन बंद न हों.</translation>
 <translation id="4422041425070339732">डाउन ऐरो</translation>
@@ -1018,6 +1020,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> पर वापस जाएं</translation>
 <translation id="6910312834584889076">स्कैनर का कवर खुला हुआ है. कवर बंद करें और फिर से कोशिश करें.</translation>
 <translation id="6911383237894364323">मीडिया सर्वर से कनेक्ट नहीं किया जा सका</translation>
+<translation id="6930597342185648547">बैकग्राउंड के बारे में जानकारी</translation>
 <translation id="6939766318048400022">कैफ़े</translation>
 <translation id="6943893908656559156">रिमोट आइडेंटिटी (ज़रूरी नहीं)</translation>
 <translation id="6953137545147683679">सुनहरे</translation>

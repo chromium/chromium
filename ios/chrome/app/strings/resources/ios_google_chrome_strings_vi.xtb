@@ -125,6 +125,7 @@ Những yếu tố cần xem xét:
 <translation id="4633328489441962921">Chrome không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="4636900170638246267">Đăng nhập vào trang web này và Chrome.</translation>
 <translation id="4761869838909035636">Chạy quy trình Kiểm tra an toàn trên Chrome</translation>
+<translation id="4798859546468762093">Để sử dụng chế độ cá nhân hoá và các tính năng khác, hãy thêm Chrome vào <ph name="FEATURE_NAME_1" /> và <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Để giúp cải thiện ứng dụng, Chrome sẽ gửi dữ liệu về sự cố và mức sử dụng cho Google. <ph name="BEGIN_LINK" />Quản lý<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Một số dữ liệu Chrome của bạn chưa được lưu vào Tài khoản Google.
 
@@ -181,6 +182,7 @@ Những yếu tố cần xem xét:
 <translation id="6389317667633680932">Khám phá các tính năng mới giúp bạn khai thác tối đa Chrome.</translation>
 <translation id="6412673304250309937">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, Chrome cũng có thể gửi các URL, bao gồm cả các đoạn nội dung trên trang, đến tính năng Duyệt web an toàn.</translation>
 <translation id="6427126399757991875">Tổ chức của bạn đang thiết lập Chrome...</translation>
+<translation id="6481963882741794338">Liên kết Chrome và các dịch vụ khác của Google cho mục đích cá nhân hoá và các mục đích khác</translation>
 <translation id="6484712497741564393">Bạn đã đăng nhập bằng <ph name="EMAIL" />.
 
 Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu Chrome vào Tài khoản Google của bạn.</translation>

@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1247030632403369975">鋁</translation>
 <translation id="1252209483516427155">外套</translation>
+<translation id="1253096324252841344">使用「<ph name="FINANCIAL_ACCOUNT_TYPES" />」付款</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" /> (已同步)</translation>
 <translation id="1255086252236620440">食物攪拌機</translation>
 <translation id="1256368399071562588">&lt;p&gt;如果您無法順利開啟網站，請先執行以下解決疑難步驟來修正錯誤：&lt;/p&gt;
@@ -1513,6 +1514,7 @@
 <translation id="385489333361351399">相機和照片設備</translation>
 <translation id="3858027520442213535">更新日期和時間</translation>
 <translation id="3858860766373142691">名稱</translation>
+<translation id="3865339060090354361">點按這個連結查看「<ph name="CREDIT_CARD_NAME" />」的條款</translation>
 <translation id="3872834068356954457">科學</translation>
 <translation id="3875783148670536197">顯示方法</translation>
 <translation id="3880456882942693779">藝術及娛樂</translation>
@@ -2354,6 +2356,7 @@
 <translation id="553377674408670169">教育職位</translation>
 <translation id="5536214594743852365">顯示「<ph name="SECTION" />」部分</translation>
 <translation id="553782666181800029">Chou 2 信封</translation>
+<translation id="5538270463355278784">自動進入全螢幕模式</translation>
 <translation id="5539243836947087108">卡板</translation>
 <translation id="5540224163453853">找不到要求的文章。</translation>
 <translation id="5540969246441091044">馬術</translation>
@@ -2718,6 +2721,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理您喺 Chrome 度下載嘅檔案</translation>
 <translation id="6254436959401408446">記憶體不足，因此無法開啟此網頁</translation>
 <translation id="625463612687472648">不再授予權限</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{在 Chrome 中進行購買交易時可選擇「<ph name="FINANCIAL_ACCOUNT_TYPES" />」}other{在 Chrome 中進行購買交易時可選擇「<ph name="FINANCIAL_ACCOUNT_TYPES" />」}}</translation>
 <translation id="6259156558325130047">重做重新排序(&amp;R)</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 書籤</translation>
 <translation id="6264376385120300461">仍要下載</translation>
@@ -2948,6 +2952,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以搵你登入 Google 帳戶嘅裝置</translation>
 <translation id="6695428916538794739">動作和冒險電影</translation>
 <translation id="6696424331653607346">旅遊指南和遊記</translation>
+<translation id="6698097747703777657">沒有收到驗證碼嗎？<ph name="BEGIN_LINK" />取得新的驗證碼<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">已建立：</translation>
 <translation id="67007264085648978">時間拖曳點</translation>
 <translation id="6702851555558236418">音訊和音樂軟件</translation>
@@ -3853,6 +3858,7 @@
 <translation id="8378714024927312812">由您的機構管理</translation>
 <translation id="8380941800586852976">不安全</translation>
 <translation id="8381674639488873545">這些費用可能是一次性或會重複收取，而收費時亦可能難以察覺。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">自動進入全螢幕模式</translation>
 <translation id="838307841291975086">房車</translation>
 <translation id="8389532092404711541">一般為 <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">改裝車和性能車</translation>

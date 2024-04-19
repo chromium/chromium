@@ -1044,6 +1044,7 @@
 <translation id="6363526231572697780">沒有使用者名稱</translation>
 <translation id="6366190659675876144">標準防護</translation>
 <translation id="6366663624406569102">登出並關閉同步功能</translation>
+<translation id="6368038301482806847">從清單中選擇搜尋引擎。</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6377118281273296434">網站安全性</translation>
 <translation id="6383719166112032471">開啟位置…</translation>
@@ -1203,6 +1204,7 @@
 <translation id="7161230316646448869">同步你在所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="7162168282402939716">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁</translation>
 <translation id="7173114856073700355">開啟設定</translation>
+<translation id="7186568385131859684">控管在各項 Google 服務中將瀏覽記錄和其他資料搭配使用的方式</translation>
 <translation id="7189598951263744875">分享...</translation>
 <translation id="719133302483559673">管理興趣和偏好設定。</translation>
 <translation id="7192050974311852563">開始記錄</translation>
@@ -1246,6 +1248,7 @@
 <translation id="7438481509621345350">日後開啟新分頁時，你就會看到「<ph name="CHANNEL_NAME" />」的故事。</translation>
 <translation id="7451023311965289370">{count,plural, =1{書籤已儲存到「{title}」}other{書籤已儲存到「{title}」}}</translation>
 <translation id="7454057999980797137">州/縣</translation>
+<translation id="7458706065921255639">個人化與連結</translation>
 <translation id="745899714366929493">全天</translation>
 <translation id="7459628154744868585">強化防護功能已開啟</translation>
 <translation id="7465351360025415755">接收重要內容通知</translation>

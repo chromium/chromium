@@ -847,6 +847,7 @@
 <translation id="5407969256130905701">Отхвърляне на промените</translation>
 <translation id="5414763847370083940">Ще получите сигнал, когато цената в някой от сайтовете се понижи.</translation>
 <translation id="5416022985862681400">Последните 7 дни</translation>
+<translation id="5416455648658732408">Преместване в група раздели</translation>
 <translation id="5423269318075950257">Следене на цената</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
 <translation id="5433691172869980887">Потребителското име е копирано</translation>
@@ -1043,6 +1044,7 @@
 <translation id="6363526231572697780">Няма потребителско име</translation>
 <translation id="6366190659675876144">Стандартна защита</translation>
 <translation id="6366663624406569102">Излизане от профила и изключване на синхронизирането</translation>
+<translation id="6368038301482806847">Изберете търсеща машина от списъка.</translation>
 <translation id="6374469231428023295">Нов опит</translation>
 <translation id="6377118281273296434">Сигурност на сайта</translation>
 <translation id="6383719166112032471">Отваряне на местоположението…</translation>
@@ -1202,6 +1204,7 @@
 <translation id="7161230316646448869">Синхронизиране на отметките, историята ви и др. на всички устройства</translation>
 <translation id="7162168282402939716">Отключване на разделите в режим „инкогнито“ с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Към настройките</translation>
+<translation id="7186568385131859684">Контролирайте начина, по който историята на сърфиране се използва с другите ви данни в услугите на Google</translation>
 <translation id="7189598951263744875">Споделяне...</translation>
 <translation id="719133302483559673">Управлявайте интересите и предпочитанията си.</translation>
 <translation id="7192050974311852563">Стартиране на регистрирането</translation>
@@ -1245,6 +1248,7 @@
 <translation id="7438481509621345350">Когато отворите нов раздел, вече ще виждате материали от <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Отметката е запазена в(ъв) „{title}“}other{Отметките са запазени в(ъв) „{title}“}}</translation>
 <translation id="7454057999980797137">Щат/държава</translation>
+<translation id="7458706065921255639">Персонализиране и свързване</translation>
 <translation id="745899714366929493">Цял ден</translation>
 <translation id="7459628154744868585">Режимът за подобрена защита е включен</translation>
 <translation id="7465351360025415755">Получавайте важно за вас съдържание</translation>
@@ -1332,6 +1336,7 @@
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7856733331829174190">Неуспешно изтегляне</translation>
 <translation id="7859704718976024901">История на сърфирането</translation>
+<translation id="7860900259978879139">Премахване от групата</translation>
 <translation id="7866501058614003444">Проследяването на тази пратка е прекратено.</translation>
 <translation id="7866872729285243843">За да имате достъп до списъка си за четене на всичките си устройства, включете съответната опция от настройките.</translation>
 <translation id="7866993391592926595">Скриването на тази карта ще изключи проследяването на пратки и ще премахне всичките ви данни</translation>
@@ -1419,9 +1424,11 @@
 <translation id="8273982424131314219">Ще попълните информацията на адрес <ph name="URL" /></translation>
 <translation id="8281781826761538115">Стандартно – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Пропускане</translation>
+<translation id="8282657446819506217">Отваряне в група раздели</translation>
 <translation id="828291969289324795">{count,plural, =1{Добавяне на раздела към нова група}other{Добавяне на разделите към нова група}}</translation>
 <translation id="8283172974887967105">Задаване…</translation>
 <translation id="8286036467436129157">Вход</translation>
+<translation id="8289930144142009940">Известията за „<ph name="FEATURE_NAME" />“ са изключени</translation>
 <translation id="8292843446079898078">Получавайте сигнали за понижение на цената за продукти, които следите.</translation>
 <translation id="8299417921174340354">За да използвате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="8299613349954694191">Отворете раздел в режим „инкогнито“, за да сърфирате частно в мрежата.</translation>
@@ -1429,6 +1436,7 @@
 <translation id="8313645224014086262">Запазване на файл</translation>
 <translation id="8319076807703933069">Ново търсене</translation>
 <translation id="8328777765163860529">Затваряне на всички</translation>
+<translation id="8343286328361420468">Изключване на известията за „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8343993175958086504">Създайте резервно копие на нещата си и ги използвайте на всяко устройство.</translation>
 <translation id="834783239627985533">Най-посещавани сайтове</translation>
 <translation id="8358401059263985056">Включване на известията</translation>

@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Аўтар:</translation>
 <translation id="1247030632403369975">Алюміній</translation>
 <translation id="1252209483516427155">Вопратка</translation>
+<translation id="1253096324252841344">Аплата (<ph name="FINANCIAL_ACCOUNT_TYPES" />)</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (сінхранізаваныя)</translation>
 <translation id="1255086252236620440">Міксеры</translation>
 <translation id="1256368399071562588">&lt;p&gt;Калі патрэбны вэб-сайт не адкрываецца, паспрабуйце знайсці і вырашыць праблему наступным чынам:&lt;/p&gt;
@@ -1514,6 +1515,7 @@
 <translation id="385489333361351399">Абсталяванне для фота- і відэаздымкі</translation>
 <translation id="3858027520442213535">Абнавіць дату і час</translation>
 <translation id="3858860766373142691">Назва</translation>
+<translation id="3865339060090354361">Азнаёмцеся з умовамі выкарыстання карткі <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Навука</translation>
 <translation id="3875783148670536197">Паказаць</translation>
 <translation id="3880456882942693779">Мастацтва і забавы</translation>
@@ -2353,6 +2355,7 @@
 <translation id="553377674408670169">Вакансіі ў сферы адукацыі</translation>
 <translation id="5536214594743852365">Паказаць раздзел "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Канверт Chou 2</translation>
+<translation id="5538270463355278784">аўтаматычны поўнаэкранны рэжым</translation>
 <translation id="5539243836947087108">Пліта</translation>
 <translation id="5540224163453853">Не ўдалося знайсці запытаны артыкул.</translation>
 <translation id="5540969246441091044">Верхавая язда</translation>
@@ -2717,6 +2720,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць файламі, якія вы спампавалі ў браўзеры Chrome, націсніце Tab, затым Enter</translation>
 <translation id="6254436959401408446">Недастаткова памяці, каб адкрыць гэту старонку</translation>
 <translation id="625463612687472648">Адклікаць дазвол</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабу аплаты}one{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабаў аплаты}few{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабаў аплаты}many{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабаў аплаты}other{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабаў аплаты}}</translation>
 <translation id="6259156558325130047">&amp;Паўтарыць змяненне парадку</translation>
 <translation id="6263376278284652872">Закладкі <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Усё роўна спампаваць</translation>
@@ -3853,6 +3857,7 @@
 <translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="8380941800586852976">Небяспечна</translation>
 <translation id="8381674639488873545">Плацяжы могуць быць аднаразовыя або рэгулярныя, і інфармацыю пра іх можа быць цяжка заўважыць. <ph name="BEGIN_LINK" />Усе роўна паказаць<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Аўтаматычны поўнаэкранны рэжым</translation>
 <translation id="838307841291975086">Аўтамабілі з кузавам "універсал"</translation>
 <translation id="8389532092404711541">Звычайна <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Мадыфікаваныя і спартыўныя аўтамабілі</translation>

@@ -847,6 +847,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5407969256130905701">Supprimer les modifications</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur n'importe quel site.</translation>
 <translation id="5416022985862681400">Sept derniers jours</translation>
+<translation id="5416455648658732408">Déplacer vers le groupe d'onglets</translation>
 <translation id="5423269318075950257">Suivre le prix</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
@@ -1335,6 +1336,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7856733331829174190">Échec du téléchargement</translation>
 <translation id="7859704718976024901">Historique de navigation</translation>
+<translation id="7860900259978879139">Retirer du groupe</translation>
 <translation id="7866501058614003444">Ce colis n'est plus suivi.</translation>
 <translation id="7866872729285243843">Pour obtenir votre Liste de lecture sur tous vos appareils, activez « Liste de lecture » dans les paramètres.</translation>
 <translation id="7866993391592926595">Masquer cette carte désactivera le suivi des colis et retirera toutes vos données</translation>
@@ -1422,9 +1424,11 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8273982424131314219">Vous remplirez les renseignements dans <ph name="URL" /></translation>
 <translation id="8281781826761538115">Paramètres régionaux par défaut - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ignorer</translation>
+<translation id="8282657446819506217">Ouvrir dans le groupe d'onglets</translation>
 <translation id="828291969289324795">{count,plural, =1{Ajouter un onglet au nouveau groupe}one{Ajouter un onglet au nouveau groupe}other{Ajouter des onglets au nouveau groupe}}</translation>
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8286036467436129157">Se connecter</translation>
+<translation id="8289930144142009940">Notifications pour <ph name="FEATURE_NAME" /> désactivées</translation>
 <translation id="8292843446079898078">Recevez des alertes de réduction de prix pour les produits que vous suivez.</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web de manière incognito.</translation>
@@ -1432,6 +1436,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8313645224014086262">Enregistrer le fichier</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8328777765163860529">Tout fermer</translation>
+<translation id="8343286328361420468">Désactiver les notifications pour <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
 <translation id="834783239627985533">Sites les plus visités</translation>
 <translation id="8358401059263985056">Activer les notifications</translation>

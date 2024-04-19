@@ -1043,6 +1043,7 @@
 <translation id="6363526231572697780">Адсутнічае імя карыстальніка</translation>
 <translation id="6366190659675876144">Стандартная абарона</translation>
 <translation id="6366663624406569102">Выйсці і выключыць сінхранізацыю</translation>
+<translation id="6368038301482806847">Выберыце пошукавую сістэму са спіса.</translation>
 <translation id="6374469231428023295">Паўтарыць спробу</translation>
 <translation id="6377118281273296434">Бяспека сайта</translation>
 <translation id="6383719166112032471">Адкрыць адрас…</translation>
@@ -1202,6 +1203,7 @@
 <translation id="7161230316646448869">Сінхранізуйце закладкі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
 <translation id="7162168282402939716">Разблакіраваць укладкі ў рэжыме інкогніта, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
+<translation id="7186568385131859684">Кантралюйце, як гісторыя прагляду сайтаў і іншыя вашы даныя выкарыстоўваюцца ў сэрвісах Google</translation>
 <translation id="7189598951263744875">Абагуліць...</translation>
 <translation id="719133302483559673">Кіруйце сваімі інтарэсамі і параметрамі</translation>
 <translation id="7192050974311852563">Пачаць вядзенне журнала</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7438481509621345350">Цяпер пры адкрыцці новай укладкі вы будзеце бачыць змесціва з сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладка захавана ў "{title}"}one{Закладкі захаваны ў "{title}"}few{Закладкі захаваны ў "{title}"}many{Закладак захавана ў "{title}"}other{Закладак захавана ў "{title}"}}</translation>
 <translation id="7454057999980797137">Штат/акруга</translation>
+<translation id="7458706065921255639">Персаналізацыя і звязванне</translation>
 <translation id="745899714366929493">Цэлы дзень</translation>
 <translation id="7459628154744868585">Палепшаная абарона ўключана</translation>
 <translation id="7465351360025415755">Атрымлівайце апавяшчэнні пра важнае для вас змесціва</translation>

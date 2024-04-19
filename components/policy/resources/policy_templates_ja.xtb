@@ -1991,6 +1991,10 @@ DevTools の生成 AI 機能は次のとおりです。
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
+<translation id="2585535930727399201">エンタープライズ拡張機能では、chrome.systemLog API を介してシステムログ ファイルにログを追加できます。
+
+このポリシーを有効に設定した場合、システムログ ファイルに一定期間ログを保持できます。
+このポリシーを無効に設定するか未設定のままにした場合、ログはシステムログ ファイルに追加されず、セッション間で保持されません。</translation>
 <translation id="2586117300379904732">電源管理の wake lock を許可する</translation>
 <translation id="2586231026319371211">地域の実経過時間を 24 時間制で表示します。</translation>
 <translation id="2587719089023392205"><ph name="PRODUCT_NAME" /> を既定のブラウザに設定する</translation>
@@ -5941,6 +5945,11 @@ https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_clien
 
       False に設定するか未設定のままにした場合、サイトでは WebAssembly モジュールを同じオリジンのウィンドウとワーカーにのみ送信できます。</translation>
 <translation id="6008497706608447728">フローティング SSO サービスでブロックするドメインのリスト</translation>
+<translation id="6009419785187615211">このポリシーでは、安全な（HTTPS）サイトに組み込まれた安全でないフォーム（HTTP で送信するフォーム）のブラウザでの取り扱い方法を管理します。
+       このポリシーを有効にした場合、もしくは設定を行わない場合、安全でないフォームで送信が行われると、ページ全体に警告メッセージが表示されます。さらに、フォームの各項目がフォーカスされると、項目の横に警告のふきだしが表示され、フォームへの自動入力が無効になります。
+       このポリシーが無効の場合、安全でないフォームでも警告は表示されず、自動入力も通常通り機能します。
+
+       このポリシーは Chrome 130 で削除される予定です。</translation>
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011969832398368671">サイトがファイルとディレクトリへの書き込みアクセスをユーザーに要求することを許可する</translation>
 <translation id="601234435141599215">Linux 仮想マシンへのポート転送を許可する</translation>

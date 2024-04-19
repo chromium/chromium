@@ -1045,6 +1045,7 @@
 <translation id="6363526231572697780">ليس هناك اسم مستخدم</translation>
 <translation id="6366190659675876144">الحماية العادية</translation>
 <translation id="6366663624406569102">تسجيل الخروج وإيقاف المزامنة</translation>
+<translation id="6368038301482806847">اختَر محرك بحث من القائمة.</translation>
 <translation id="6374469231428023295">إعادة المحاولة</translation>
 <translation id="6377118281273296434">أمن الموقع الإلكتروني</translation>
 <translation id="6383719166112032471">‏فتح عنوان URL…</translation>
@@ -1204,6 +1205,7 @@
 <translation id="7161230316646448869">مزامنة الإشارات المرجعية والسجلّ وغير ذلك على جميع الأجهزة</translation>
 <translation id="7162168282402939716">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
+<translation id="7186568385131859684">‏التحكّم في كيفية استخدام سجلّ التصفّح مع بياناتك الأخرى في جميع خدمات Google</translation>
 <translation id="7189598951263744875">مشاركة...</translation>
 <translation id="719133302483559673">يمكنك إدارة اهتماماتك وإعداداتك المفضّلة.</translation>
 <translation id="7192050974311852563">بدء التسجيل</translation>
@@ -1247,6 +1249,7 @@
 <translation id="7438481509621345350">ستظهر لك قصص من <ph name="CHANNEL_NAME" /> عند فتح علامة تبويب جديدة</translation>
 <translation id="7451023311965289370">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}".}zero{تم حفظ الإشارات المرجعية في "{title}".}two{تم حفظ الإشارتَين المرجعيتَين في "{title}".}few{تم حفظ الإشارات المرجعية في "{title}".}many{تم حفظ الإشارات المرجعية في "{title}".}other{تم حفظ الإشارات المرجعية في "{title}".}}</translation>
 <translation id="7454057999980797137">الولاية/المقاطعة</translation>
+<translation id="7458706065921255639">الخيارات المخصَّصة والربط</translation>
 <translation id="745899714366929493">اليوم كله</translation>
 <translation id="7459628154744868585">"الحماية المحسَّنة" مفعَّلة</translation>
 <translation id="7465351360025415755">الحصول على المحتوى الذي يهمّك</translation>

@@ -2147,6 +2147,10 @@ OBSERVAÇÃO: essa política tinha documentado incorretamente o padrão como "ve
       Se a política não tiver definição, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
+<translation id="2585535930727399201">As extensões empresariais podem adicionar registros pela API chrome.systemLog a um arquivo de registro do sistema.
+
+Se a política for ativada, os registros serão mantidos no arquivo de registro do sistema por tempo limitado.
+Se ela for desativada ou deixada sem definição, os registros não poderão ser adicionados ao arquivo de registro do sistema. Isso significa que os registros não serão mantidos entre as sessões.</translation>
 <translation id="2586117300379904732">Permitir wake locks para gerenciamento de energia</translation>
 <translation id="2586231026319371211">Horário interpretado no formato local convencional de 24h.</translation>
 <translation id="2587719089023392205">Definir o <ph name="PRODUCT_NAME" /> como meu navegador padrão</translation>
@@ -6403,6 +6407,11 @@ e serão desativadas por padrão se a política não for definida. Se você defi
 
       Se for definida como falsa ou for deixada sem definição, os sites só poderão enviar módulos WebAssembly para janelas e workers na mesma origem.</translation>
 <translation id="6008497706608447728">Lista de domínios bloqueados do serviço de SSO flutuante</translation>
+<translation id="6009419785187615211">Esta política controla o tratamento de formulários não seguros (enviados por HTTP) incorporados em sites seguros (HTTPS) no navegador.
+       Se ela for ativada ou deixada sem definição, um alerta de página inteira será mostrado quando um formulário não seguro for enviado. Além disso, um balão de alerta será mostrado ao lado dos campos do formulário quando o cursor do mouse estiver sobre eles, e o preenchimento automático será desativado para esses formulários.
+       Se a política for desativada, os alertas não serão mostrados para formulários não seguros e o preenchimento automático vai funcionar normalmente.
+
+       Essa política será removida no Chrome 130.</translation>
 <translation id="6011193465932186973">Impressão digital</translation>
 <translation id="6011969832398368671">Permitir que sites peçam ao usuário para conceder acesso de gravação de arquivos e diretórios</translation>
 <translation id="601234435141599215">Permitir o encaminhamento de portas a máquinas virtuais Linux</translation>

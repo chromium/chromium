@@ -847,6 +847,7 @@
 <translation id="5407969256130905701">পরিবর্তনগুলি বাতিল করুন</translation>
 <translation id="5414763847370083940">কোনও সাইটে দাম কমলে সেই সম্পর্কে আপনি বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="5416022985862681400">গত ৭ দিনে</translation>
+<translation id="5416455648658732408">ট্যাব গ্রুপে সরান</translation>
 <translation id="5423269318075950257">দাম ট্র্যাক করুন</translation>
 <translation id="543338862236136125">পাসওয়ার্ড এডিট করুন</translation>
 <translation id="5433691172869980887">ইউজারনেম কপি করা হয়েছে</translation>
@@ -1044,6 +1045,7 @@
 <translation id="6363526231572697780">ব্যবহারকারীর নাম নেই</translation>
 <translation id="6366190659675876144">স্ট্যান্ডার্ড সুরক্ষা</translation>
 <translation id="6366663624406569102">সাইন-আউট করে সিঙ্ক করা বন্ধ করুন</translation>
+<translation id="6368038301482806847">তালিকা থেকে একটি সার্চ ইঞ্জিন বেছে নিন।</translation>
 <translation id="6374469231428023295">আবার চেষ্টা করুন</translation>
 <translation id="6377118281273296434">সাইটের নিরাপত্তা</translation>
 <translation id="6383719166112032471">লোকেশন খুলুন…</translation>
@@ -1203,6 +1205,7 @@
 <translation id="7161230316646448869">সমস্ত ডিভাইসে আপনার বুকমার্ক, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে ছদ্মবেশী ট্যাব আনলক করুন</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
+<translation id="7186568385131859684">Google পরিষেবা জুড়ে আপনার অন্যান্য ডেটার সাথে কীভাবে আপনার ব্রাউজিং ইতিহাস ব্যবহার করা হয় তা নিয়ন্ত্রণ করুন</translation>
 <translation id="7189598951263744875">শেয়ার করুন...</translation>
 <translation id="719133302483559673">আপনার আগ্রহের বিষয় ও পছন্দ ম্যানেজ করুন।</translation>
 <translation id="7192050974311852563">লগ করা শুরু করুন</translation>
@@ -1246,6 +1249,7 @@
 <translation id="7438481509621345350">এখন আপনি নতুন কোনও ট্যাব খুললেই, <ph name="CHANNEL_NAME" /> থেকে স্টোরি পড়তে পারবেন।</translation>
 <translation id="7451023311965289370">{count,plural, =1{"{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{"{title}"-এ বুকমার্ক সেভ করা হয়েছে}other{"{title}"-এ বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="7454057999980797137">রাজ্য / দেশ</translation>
+<translation id="7458706065921255639">পছন্দমতো সাজিয়ে নেওয়া ও লিঙ্ক করা</translation>
 <translation id="745899714366929493">সারাদিন</translation>
 <translation id="7459628154744868585">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
 <translation id="7465351360025415755">আপনার ক্ষেত্রে প্রয়োজনীয় কন্টেন্ট পান</translation>
@@ -1333,6 +1337,7 @@
 <translation id="7853202427316060426">ক্রিয়াকলাপ</translation>
 <translation id="7856733331829174190">ডাউনলোড করা যায়নি</translation>
 <translation id="7859704718976024901">ব্রাউজিং ইতিহাস</translation>
+<translation id="7860900259978879139">গ্রুপ থেকে সরান</translation>
 <translation id="7866501058614003444">এই প্যাকেজটি আর ট্র্যাক করা হচ্ছে না।</translation>
 <translation id="7866872729285243843">আপনার সব ডিভাইসে নিজের পড়ার তালিকা পেতে সেটিংসে গিয়ে “পড়ার তালিকা” চালু করুন।</translation>
 <translation id="7866993391592926595">এই কার্ড আড়াল করলে প্যাকেজ ট্র্যাকিং বন্ধ হয়ে যাবে ও আপনার সমস্ত ডেটা সরিয়ে দেওয়া হবে</translation>
@@ -1420,9 +1425,11 @@
 <translation id="8273982424131314219">আপনি <ph name="URL" />-এ তথ্য পূরণ করবেন</translation>
 <translation id="8281781826761538115">ডিফল্ট - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">এড়িয়ে যান</translation>
+<translation id="8282657446819506217">ট্যাব গ্রুপে খুলুন</translation>
 <translation id="828291969289324795">{count,plural, =1{নতুন গ্রুপে ট্যাব যোগ করুন}one{নতুন গ্রুপে ট্যাব যোগ করুন}other{নতুন গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="8283172974887967105">সেট করুন…</translation>
 <translation id="8286036467436129157">সাইন-ইন করুন</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> সম্পর্কিত বিজ্ঞপ্তি বন্ধ করুন</translation>
 <translation id="8292843446079898078">আপনার ট্র্যাক করা প্রোডাক্টের দাম কমা সংক্রান্ত অ্যালার্ট পান।</translation>
 <translation id="8299417921174340354">পাসওয়ার্ড ব্যবহার করার জন্য, আপনাকে ডিভাইসে প্রথমে একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="8299613349954694191">গোপনে ওয়েব ব্রাউজ করতে ছদ্মবেশী ট্যাব খুলুন।</translation>
@@ -1430,6 +1437,7 @@
 <translation id="8313645224014086262">ফাইল সেভ করুন</translation>
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
 <translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" />-এর জন্য বিজ্ঞপ্তি বন্ধ করুন</translation>
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="834783239627985533">সবচেয়ে বেশিবার ভিজিট করা সাইট</translation>
 <translation id="8358401059263985056">বিজ্ঞপ্তি চালু করুন</translation>

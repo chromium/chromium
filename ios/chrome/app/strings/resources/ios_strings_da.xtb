@@ -1044,6 +1044,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6363526231572697780">Der er intet brugernavn</translation>
 <translation id="6366190659675876144">Standardbeskyttelse</translation>
 <translation id="6366663624406569102">Log ud, og deaktiver synkronisering</translation>
+<translation id="6368038301482806847">Vælg en søgemaskine på listen.</translation>
 <translation id="6374469231428023295">Prøv igen</translation>
 <translation id="6377118281273296434">Sikkerhed på websitet</translation>
 <translation id="6383719166112032471">Åbn lokation…</translation>
@@ -1203,6 +1204,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7161230316646448869">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="7162168282402939716">Lås inkognitofaner op med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Åbn Indstillinger</translation>
+<translation id="7186568385131859684">Administrer, hvordan browserhistorik bruges sammen med dine øvrige data i Google-tjenester</translation>
 <translation id="7189598951263744875">Del...</translation>
 <translation id="719133302483559673">Administrer dine interesser og præferencer.</translation>
 <translation id="7192050974311852563">Start logføring</translation>
@@ -1246,6 +1248,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7438481509621345350">Du får nu vist historier fra <ph name="CHANNEL_NAME" />, når du åbner en ny fane.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bogmærket er gemt under "{title}"}one{Bogmærket er gemt under "{title}"}other{Bogmærkerne er gemt under "{title}"}}</translation>
 <translation id="7454057999980797137">Delstat/amt</translation>
+<translation id="7458706065921255639">Personlig tilpasning og tilknytning</translation>
 <translation id="745899714366929493">Hele dagen</translation>
 <translation id="7459628154744868585">Forbedret beskyttelse er aktiveret</translation>
 <translation id="7465351360025415755">Se indhold, du interesserer dig for</translation>

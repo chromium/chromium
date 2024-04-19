@@ -129,6 +129,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1435537621343861112">Can't start dictation. Your mic is off.</translation>
+<translation id="1448963928642384376">Your device hotspots</translation>
 <translation id="1455242230282523554">Show language settings</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
 <translation id="14648076227129703">This allows camera access for <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the camera permission</translation>
@@ -161,6 +162,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1569384531973824928">This allows access for all apps and websites with the camera and microphone permissions. You may need to refresh the web page or restart the app.</translation>
 <translation id="1571697193564730395">Toggle Do Not Disturb. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zoom out when magnifier is on</translation>
+<translation id="1582946770779745370">Game Dashboard available. Press <ph name="LAUNCHER_KEY_NAME" /> + shift + Escape, then <ph name="LAUNCHER_KEY_NAME" /> + g at any time to open</translation>
 <translation id="1586324912145647027">Go to desk 1 to 8</translation>
 <translation id="158838227375272121">Google Classroom website</translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>

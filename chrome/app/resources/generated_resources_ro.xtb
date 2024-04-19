@@ -246,6 +246,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1178601482396475810">Gestionează sincronizarea dispozitivelor</translation>
 <translation id="117916940443676133">Cheia de securitate nu este protejată printr-un cod PIN. Pentru a gestiona datele de conectare, creează mai întâi un cod PIN.</translation>
+<translation id="1179902906564467236">Urmează instrucțiunile de pe telefon sau folosește aplicația camerei foto</translation>
 <translation id="118057123461613219">Economii uriașe de memorie</translation>
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="1181366777303791449">pe <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -659,6 +660,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1500801317528437432">Află mai multe despre aplicațiile Chrome neacceptate</translation>
 <translation id="1501480321619201731">Șterge grupul</translation>
 <translation id="1503392482221435031">Trimite automat statistici de utilizare la Google. Poți să activezi sau să dezactivezi rapoartele de blocare din setările dispozitivului.</translation>
+<translation id="1503556098270577657">Te-ai conectat la <ph name="USER_EMAIL" /> folosind telefonul Android</translation>
 <translation id="150411034776756821">Elimină <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Dosarele comune sunt disponibile în Windows la <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportă parolele</translation>
@@ -5587,6 +5589,10 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5235050375939235066">Dezinstalezi aplicația?</translation>
 <translation id="523505283826916779">Setări de accesibilitate</translation>
 <translation id="5235750401727657667">Înlocuiește pagina pe care o vezi la deschiderea unei file noi</translation>
+<translation id="5237124927415201087">Configurează cu ușurință dispozitivul <ph name="DEVICE_TYPE" /> cu telefonul. Poți adăuga rețeaua Wi-Fi și Contul Google fără să introduci manual parolele.
+    <ph name="BR" />
+    <ph name="BR" />
+    Vizibil ca <ph name="DEVICE_TYPE" />...</translation>
 <translation id="523862956770478816">Permisiuni la nivel de site</translation>
 <translation id="5240931875940563122">Conectează-te cu telefonul Android</translation>
 <translation id="5242724311594467048">Activați extensia „<ph name="EXTENSION_NAME" />”?</translation>
@@ -8903,6 +8909,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Nu permite site-urilor să blocheze tastatura</translation>
 <translation id="7789963078219276159">Fundalul paginii de pornire a fost modificat la <ph name="CATEGORY" />.</translation>
+<translation id="7790689625219600437">OCR în PDF</translation>
 <translation id="7791269138074599214">Metoda de introducere a textului</translation>
 <translation id="7791429245559955092">Aplicația se va instala în profilul Chrome folosit în momentul de față</translation>
 <translation id="7791436592012979144">Derularea inversă este activată</translation>
@@ -10839,6 +10846,10 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="940212040923880623">&amp;Găsește și modifică</translation>
 <translation id="942296794412775122">Microfon activat / dezactivat</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> trimite conținutul unei file Chrome și conținutul audio.</translation>
+<translation id="943673863723789781">Configurează cu ușurință dispozitivul <ph name="DEVICE_TYPE" /> cu telefonul. Poți adăuga Contul Google fără să introduci manual parola.
+    <ph name="BR" />
+    <ph name="BR" />
+    Vizibil ca <ph name="DEVICE_TYPE" />...</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
 <translation id="947329552760389097">&amp;Inspectează elementele</translation>

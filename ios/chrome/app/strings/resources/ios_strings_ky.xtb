@@ -847,6 +847,7 @@
 <translation id="5407969256130905701">Өзгөрүүлөрдү жоюу</translation>
 <translation id="5414763847370083940">Кандайдыр бир сайтта баасы төмөндөсө, билдирүү аласыз.</translation>
 <translation id="5416022985862681400">Акыркы 7 күндө</translation>
+<translation id="5416455648658732408">Өтмөктөр тобуна жылдыруу</translation>
 <translation id="5423269318075950257">Баага көз салуу</translation>
 <translation id="543338862236136125">Сырсөздү түзөтүү</translation>
 <translation id="5433691172869980887">Колдонуучунун аты көчүрүлдү</translation>
@@ -1335,6 +1336,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7853202427316060426">Аракеттер</translation>
 <translation id="7856733331829174190">Жүктөлүп алынган жок</translation>
 <translation id="7859704718976024901">Серептөө таржымалы</translation>
+<translation id="7860900259978879139">Топтон чыгаруу</translation>
 <translation id="7866501058614003444">Бул топтомго көз салынбай калды.</translation>
 <translation id="7866872729285243843">Окуу тизмеңиз бардык түзмөктөрүңүздө болушу үчүн жөндөөлөрдөн "Окуу тизмесин" күйгүзүңүз.</translation>
 <translation id="7866993391592926595">Бул картаны жашырсаңыз, таңгактарга көз салуу функциясы жана бардык маалыматыңыз өчүрүлөт</translation>
@@ -1422,9 +1424,11 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8273982424131314219">Маалыматты <ph name="URL" /> сайтында толтурасыз</translation>
 <translation id="8281781826761538115">Демейки - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Өткөрүп жиберүү</translation>
+<translation id="8282657446819506217">Өтмөктөр тобунда ачуу</translation>
 <translation id="828291969289324795">{count,plural, =1{Өтмөктү жаңы топко кошуу}other{Өтмөктөрдү жаңы топко кошуу}}</translation>
 <translation id="8283172974887967105">Коюу…</translation>
 <translation id="8286036467436129157">Кириңиз</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> билдирмелери өчүрүлдү</translation>
 <translation id="8292843446079898078">Көз салынган товарлардын баасынын төмөндөшү тууралуу эскертүүлөрдү алыңыз.</translation>
 <translation id="8299417921174340354">Сырсөздөрдү колдонуу үчүн адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="8299613349954694191">Интернетте купуя серептөө үчүн жашыруун өтмөктү ачыңыз.</translation>
@@ -1432,6 +1436,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8313645224014086262">Файлды сактоо</translation>
 <translation id="8319076807703933069">Жаңы издөө</translation>
 <translation id="8328777765163860529">Баарын жабуу</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" /> билдирмелерин өчүрүү</translation>
 <translation id="8343993175958086504">Маалыматтын камдык көчүрмөсүн сактап, башка түзмөктө колдоно аласыз.</translation>
 <translation id="834783239627985533">Эң көп кирилген сайттар</translation>
 <translation id="8358401059263985056">Билдирмелерди күйгүзүү</translation>

@@ -381,6 +381,7 @@
 <translation id="3170673040743561620">Розмістіть документ на сканері</translation>
 <translation id="3174321110679064523">Фоновий малюнок "Від світанку до заходу сонця"</translation>
 <translation id="3178532070248519384">авангард</translation>
+<translation id="3182676044300231689">Введіть запит, наприклад "перепиши впевненішим тоном"</translation>
 <translation id="3188257591659621405">Мої файли</translation>
 <translation id="319101249942218879">Аватар змінено</translation>
 <translation id="3192947282887913208">Аудіофайли</translation>
@@ -586,6 +587,7 @@
 <translation id="4394049700291259645">Вимкнути</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> перезапускається</translation>
 <translation id="4395835743215824109">налаштування клавіатури</translation>
+<translation id="439946595190720558">Цей фон створено за допомогою ШІ на основі такого тексту: "<ph name="PROMPT" />".</translation>
 <translation id="4415951057168511744">Поточний аватар</translation>
 <translation id="4417830657741848074">Ваш адміністратор налаштував автоматичний запуск певних додатків. Деякі з них не можна закрити.</translation>
 <translation id="4422041425070339732">стрілка вниз</translation>
@@ -1034,6 +1036,7 @@
 <translation id="6905724422583748843">Повернутися на сторінку <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Кришка сканера відкрита. Закрийте її та повторіть спробу.</translation>
 <translation id="6911383237894364323">Не вдалося підключитися до медіасерверів</translation>
+<translation id="6930597342185648547">Про фон</translation>
 <translation id="6939766318048400022">Кафе</translation>
 <translation id="6943893908656559156">Віддалена ідентифікація (необов’язково)</translation>
 <translation id="6953137545147683679">золотому</translation>

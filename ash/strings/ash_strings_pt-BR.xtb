@@ -129,6 +129,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1420408895951708260">Alternar Modo noturno. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1435537621343861112">Não foi possível iniciar o ditado. Seu microfone está desativado.</translation>
+<translation id="1448963928642384376">Pontos de acesso do dispositivo</translation>
 <translation id="1455242230282523554">Mostrar configurações de idioma</translation>
 <translation id="1460620680449458626">O som está desativado.</translation>
 <translation id="14648076227129703">Dá acesso à câmera para os apps <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e a todos os apps e sites com essa permissão</translation>
@@ -161,6 +162,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1569384531973824928">Essa ação libera o acesso para todos os apps e sites com as permissões de câmera e microfone. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="1571697193564730395">Alternar "Não perturbe". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Diminuir zoom quando a lupa estiver ativada</translation>
+<translation id="1582946770779745370">Painel de jogo disponível. Pressione "<ph name="LAUNCHER_KEY_NAME" /> + Shift + Esc" e, em seguida, "<ph name="LAUNCHER_KEY_NAME" /> + g" a qualquer momento para abrir</translation>
 <translation id="1586324912145647027">Ir para o espaço de trabalho 1 a 8</translation>
 <translation id="158838227375272121">Site do Google Sala de Aula</translation>
 <translation id="1589090746204042747">acessar todas as suas atividades nesta sessão;</translation>
@@ -1706,7 +1708,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietário)</translation>
 <translation id="7647488630410863958">Desbloquear dispositivo para ver as notificações</translation>
 <translation id="7649070708921625228">Ajuda</translation>
-<translation id="7654687942625752712">Pressione as duas teclas de volumes e as mantenha pressionadas por cinco segundos para desativar a resposta falada.</translation>
+<translation id="7654687942625752712">Mantenha as duas teclas de volume pressionadas por cinco segundos para desativar a resposta falada.</translation>
 <translation id="7654916369822103315">A resolução do "<ph name="DISPLAY_NAME" />" mudou para <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Devido a limitações de largura de banda da porta, sua tela não tem suporte a uma resolução de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Se você não confirmar, as configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659861092419699379">O espaço de trabalho e as janelas foram fechadas</translation>

@@ -705,6 +705,7 @@
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Εικονική κάρτα</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
+<translation id="4738065825338914557">Απεγγραφή…</translation>
 <translation id="4738836084190194332">Τελευταίος συγχρονισμός: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Θα λαμβάνετε βελτιωμένες προτάσεις στη γραμμή διευθύνσεων</translation>
 <translation id="4742970037960872810">Κατάργηση επισήμανσης</translation>
@@ -1058,6 +1059,7 @@
 <translation id="6477928892249167417">Αυτοί οι ιστότοποι φαίνονται σημαντικοί για εσάς:</translation>
 <translation id="6481963882741794338">Σύνδεση του Chrome και άλλων υπηρεσιών Google για εξατομίκευση και για άλλους σκοπούς</translation>
 <translation id="6482749332252372425">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω έλλειψης αποθηκευτικού χώρου.</translation>
+<translation id="6495590690749880440">Άνοιγμα ομάδας καρτελών;</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Η λήψη του αρχείου ολοκληρώθηκε.}other{# ολοκληρωμένες λήψεις}}</translation>
 <translation id="6508722015517270189">Επανεκκινήστε το Chrome</translation>
 <translation id="6518133107902771759">Επαλήθευση</translation>
@@ -1342,6 +1344,7 @@
 <translation id="7780645209293383778">Όταν είστε συνδεδεμένοι, συνδέει προσωρινά αυτά τα δεδομένα με τον Λογαριασμό σας Google, για να σας προστατεύσει σε όλες τις εφαρμογές Google.</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="7798392620021911922">Έγινε επαναφορά <ph name="TAB_COUNT" /> καρτελών</translation>
+<translation id="780287761701992588">Μεταφορά σελιδοδεικτών, κωδικών πρόσβασης και άλλων δεδομένων σε όλες τις συσκευές σας</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7808889146555843082">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="SITE" />. Αλλάξτε τον κωδικό πρόσβασης ή διαγράψτε τον λογαριασμό σας στον ιστότοπο <ph name="SITE" /> για να τον διατηρήσετε ασφαλή.</translation>
 <translation id="7810647596859435254">Άνοιγμα με…</translation>

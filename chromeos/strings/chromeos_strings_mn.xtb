@@ -24,6 +24,7 @@
 <translation id="1119447706177454957">Дотоод алдаа</translation>
 <translation id="1124772482545689468">Хэрэглэгч</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1135805404083530719">Удирдлагын самбар</translation>
 <translation id="1145018782460575098">Гадаад төхөөрөмжүүдийн жижиг программыг шинэчлэх цонх нээлттэй байна. <ph name="NUM_UPDATES" /> шинэчлэлт боломжтой байна.</translation>
 <translation id="1145516343487477149">Тусламжийн нийтлэл болон Chromebook-н нийтлэг асуултуудын хариултыг олно уу</translation>
 <translation id="1154390310959620237">Та зөвхөн 5 товчлол өөрчлөх боломжтой. Шинэ товчлол нэмэхийн тулд нэг товчлолыг устгана уу.</translation>
@@ -32,6 +33,7 @@
 <translation id="1167755866710282443">Товчнуудыг өөрчлөхийн тулд цэсийг нээнэ үү. Цэсийг чирч зөөнө үү.</translation>
 <translation id="1171349345463658120">элсэн цүлхэн</translation>
 <translation id="1174073918202301297">Товчлол нэмсэн</translation>
+<translation id="11743817593307477">Энэ удирдлагыг хүссэн тоглоомын үйлдэл рүүгээ шилжүүлэх бол суман товчийг ашиглана уу. Удирдлагыг тавих бол enter товчийг ашиглана уу. Цуцлах бол escape товчийг ашиглана уу.</translation>
 <translation id="1175697296044146566">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг.</translation>
 <translation id="1175951029573070619">Дундаж (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">тохитой</translation>
@@ -101,6 +103,7 @@
 <translation id="1515129336378114413">хөтчийн үндсэн нүүр</translation>
 <translation id="1526389707933164996">Дэлгэц амраагчийн анимаци</translation>
 <translation id="152892567002884378">Дууны түвшинг нэмэх</translation>
+<translation id="1539864135338521185">номин</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="155865706765934889">Мэдрэгч самбар</translation>
 <translation id="1561927818299383735">арын гэрлийн өнгө</translation>
@@ -109,6 +112,7 @@
 <translation id="1567064801249837505">Цомог</translation>
 <translation id="1572585716423026576">Дэлгэцийн зураг болгох</translation>
 <translation id="1578784163189013834">Дэлгэц амраагчийн арын дэвсгэрийг сонгох</translation>
+<translation id="1593528591614229756">Мобайл үйлчилгээ үзүүлэгч эсвэл администраторынхаа олгосон APN-уудыг сонгохоо мартуузай. APN-уудыг сонгосноор дурын захиалгат APN-г идэвхгүй болгоно. Хүчингүй APN-ууд нь таны мобайл холболтыг тасалдуулж болзошгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Зургийг урьдчилан үзэх</translation>
 <translation id="1611649489706141841">цааш</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
@@ -161,6 +165,7 @@
 <translation id="1801418420130173017">Бараан загварыг идэвхгүй болгох</translation>
 <translation id="1807246157184219062">Гэрэлтүүлэг</translation>
 <translation id="1808803439260407870">Сонгодог урлаг</translation>
+<translation id="1815850098929213707">Сонгосон товч нь <ph name="KEYS" /> байна. Удирдлагыг засахын тулд товчлуур дээр товшино уу</translation>
 <translation id="1823120442877418684">Тэмдэгтүүд</translation>
 <translation id="1827738518074806965">Уран зургийн галерей</translation>
 <translation id="1836553715834333258">Системийн өнгө</translation>
@@ -215,6 +220,7 @@
 <translation id="2105810540595158374">Төхөөрөмж нь тоглоомын гар байна.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-р хувилбар</translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ГБ-аас <ph name="AVAILABLE_MEMORY" /> ГБ боломжтой</translation>
+<translation id="2135668738111962377"><ph name="ACTION_NAME" />-г засах</translation>
 <translation id="2138109643290557664">Хажуугаар хөвөх</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> зураг</translation>
@@ -227,6 +233,7 @@
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
 <translation id="2180197493692062006">Алдаа гарлаа. Аппыг дахин нээж үзнэ үү.</translation>
 <translation id="2189104374785738357">APN-н дэлгэрэнгүйг засах</translation>
+<translation id="2195732836444333448">Ачаалалтай байна. Удахгүй эргэн ирээрэй.</translation>
 <translation id="2201758491318984023">унадаг дугуй</translation>
 <translation id="2203222757805818543">Одоогийн хуваарийг <ph name="SUNRISE" /> - <ph name="SUNSET" /> болгож тохируулсан. Бараан горимын хуваарийг автоматаар шинэчлэхийн тулд <ph name="BEGIN_LINK" />байршлын хандалтыг асаана уу<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">халуун рашаан</translation>
@@ -287,6 +294,7 @@
 <translation id="2517472476991765520">Шалгах</translation>
 <translation id="2521835766824839541">өмнөх бичлэг</translation>
 <translation id="2526590354069164005">Десктоп</translation>
+<translation id="2529641961800709867">Товчлуурын сонголтууд</translation>
 <translation id="253029298928638905">Дахин эхлүүлж байна...</translation>
 <translation id="2531772459602846206">барын чих цэцэг</translation>
 <translation id="2533048460510040082">Санал болгосон тусламжийн контент</translation>
@@ -297,6 +305,7 @@
 <translation id="2584547424703650812">Гялалзсан дүр зураг</translation>
 <translation id="2584559707064218956">Тохируулахын тулд Тохиргоо руу очно уу</translation>
 <translation id="2586146417912237930">цэнхэр, хөх нил ягаан</translation>
+<translation id="2589921777872778654">Цэсийг засах, устгах</translation>
 <translation id="2597774443162333062">Файлыг дебаг хийхээр Google-д илгээж байна</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скан хийж дууссан. 1 хуудсыг скан хийсэн}other{Скан хийж дууссан. {NUMBER_OF_PAGES} хуудсыг скан хийсэн}}</translation>
 <translation id="2617397783536231890">хөвөн</translation>
@@ -372,6 +381,7 @@
 <translation id="3170673040743561620">Сканнер дээр документоо байрлуулна уу</translation>
 <translation id="3174321110679064523">Үүр цайхаас шөнө хүртэлх байдлыг харуулсан дэлгэцийн зураг</translation>
 <translation id="3178532070248519384">авангард</translation>
+<translation id="3182676044300231689">"Илүү итгэлтэй болго" зэрэг заавар оруулна уу</translation>
 <translation id="3188257591659621405">Миний файл</translation>
 <translation id="319101249942218879">Аватар зургийг өөрчилсөн</translation>
 <translation id="3192947282887913208">Аудио файлууд</translation>
@@ -428,6 +438,7 @@
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Гүйцэтгэлийн ул мөрийн өгөгдлийг<ph name="END_LINK1" /> илгээх</translation>
 <translation id="3517001332549868749">ChromeOS-н шинэчлэлт</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
+<translation id="353214771040290298">Засаж дууслаа</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> орчим минут үлдсэн байна</translation>
 <translation id="3533790840489634638">усан сан</translation>
 <translation id="3547264467365135390">Томьёо</translation>
@@ -530,6 +541,7 @@
 <translation id="4130035430755296270">Бүдүүвчийн илүү олон сонголтыг харахын тулд үргэлжлүүлэн зөөгөөрэй</translation>
 <translation id="4130750466177569591">Би зөвшөөрч байна.</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
+<translation id="4143226836069425823">Солихын тулд өөр гарын товч дээр товшино уу</translation>
 <translation id="4145784616224233563">HTTP галт хана</translation>
 <translation id="4147897805161313378">Google Зураг</translation>
 <translation id="4150201353443180367">Дэлгэц</translation>
@@ -575,6 +587,7 @@
 <translation id="4394049700291259645">Идэвхгүй болгох</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />-г дахин эхлүүлж байна</translation>
 <translation id="4395835743215824109">гар өөрчлөх</translation>
+<translation id="439946595190720558">Энэ арын дэвсгэрийг дараах текстийг ашиглан ХОУ-аар үүсгэсэн: "<ph name="PROMPT" />."</translation>
 <translation id="4415951057168511744">Одоогийн аватар</translation>
 <translation id="4417830657741848074">Танай администратор зарим аппыг автоматаар эхлүүлэхээр тохируулсан. Эдгээр аппын заримыг нь хааж болохгүй байж магадгүй.</translation>
 <translation id="4422041425070339732">доош заасан сум</translation>
@@ -624,6 +637,7 @@
 <translation id="4665014895760275686">Үйлдвэрлэгч</translation>
 <translation id="467510802200863975">Нууц үг таарахгүй байна</translation>
 <translation id="467715984478005772">Галт хана байж магадгүй</translation>
+<translation id="4683762547447150570">Товч онооход төвлөрөхийн тулд товчлуур дээр товшино уу</translation>
 <translation id="4691278870498629773">Зогссон - Цаасны тэвш алга</translation>
 <translation id="469379815867856270">Дохионы хүч</translation>
 <translation id="4697260493945012995">Удирдлагын төрлөө сонгоно уу</translation>
@@ -705,6 +719,7 @@
 <translation id="5130848777448318809">одой морьд</translation>
 <translation id="5137451382116112100">Бүтэн</translation>
 <translation id="5142961317498132443">Баталгаажуулалт</translation>
+<translation id="5144311987923128508">Баталгаажуулах товчлуурыг одоо идэвхгүй болгосон</translation>
 <translation id="5144887194300568405">Орчуулгыг хуулах</translation>
 <translation id="5145081769226915336">Бараан горимыг автоматаар асаах уу?</translation>
 <translation id="5154917547274118687">Санах ойн</translation>
@@ -824,6 +839,7 @@
 <translation id="5860491529813859533">Асаах</translation>
 <translation id="5876385649737594562">Сонголт сонгохын тулд асаана уу</translation>
 <translation id="588258955323874662">Дэлгэц дүүрэн</translation>
+<translation id="5893975327266416093">Оноохын тулд гарын түлхүүр дээр товшино уу</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5901630391730855834">Шар</translation>
 <translation id="5903200662178656908">Төхөөрөмж нь гар болон хулганын хослол юм.</translation>
@@ -896,6 +912,7 @@
 <translation id="6243280677745499710">Одоогийн тохируулсан дэлгэцийн зураг</translation>
 <translation id="6250316632541035980">гахайн утсан мах, өндөгнүүд</translation>
 <translation id="6255213378196499011">Надад бичихэд тусал онцлогийн тохиргоо</translation>
+<translation id="6265268291107409527">Сонгосон товч нь <ph name="KEYS" /> байна. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Баруун сум</translation>
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -957,6 +974,7 @@
 <translation id="6535178685492749208">Та офлайн байна. Санал хүсэлтийг дараа нь илгээнэ.</translation>
 <translation id="6543412779435705598">таконууд</translation>
 <translation id="6551839203326557324">алимууд</translation>
+<translation id="65526652485742171">Баталгаажуулах товчлуур одоо идэвхэжсэн</translation>
 <translation id="6557784757915238407">APN нь <ph name="ATTACH" /> төрөл юм.</translation>
 <translation id="65587193855025101">Тавцант</translation>
 <translation id="6560196641871357166">Хурц тод</translation>
@@ -1018,6 +1036,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> руу буцах</translation>
 <translation id="6910312834584889076">Сканнерын таг нээлттэй байна. Тагийг хаагаад, дахин оролдоно уу.</translation>
 <translation id="6911383237894364323">Медиа серверт холбогдох боломжгүй</translation>
+<translation id="6930597342185648547">Арын дэвсгэрийн тухай</translation>
 <translation id="6939766318048400022">Кафе</translation>
 <translation id="6943893908656559156">Алсын таниулбар (заавал биш)</translation>
 <translation id="6953137545147683679">алтан шар</translation>
@@ -1031,6 +1050,16 @@
 <translation id="6975981640379148271">коаланууд</translation>
 <translation id="6977381486153291903">Жижиг программын шалгалт</translation>
 <translation id="6981982820502123353">Хандалт</translation>
+<translation id="698242338298293034">Загвар сонгоод, дараа нь ХОУ-ы зургуудаа хувийн болгохын тулд доогуур нь зурсан үгнүүдийг сонгоно уу.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ХОУ-ы зургуудын илүү өвөрмөц, ялгаатай сонголтыг авахын тулд "Надад урам өг" гэснийг сонгоно уу.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Та ХОУ-аар үүсгэх үед <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-н нууцлалын бодлогын<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> дагуу зааврыг зургууд үүсгэх, бүтээгдэхүүнийг сайжруулахын тулд Google AI-н серверүүд рүү илгээдэг.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Үүсгэгч ХОУ нь туршилтынх мөн хөгжүүлэлтийн эхэн шатандаа байгаа бөгөөд боломжтой байдал нь одоогоор хязгаарлагдмал байна.</translation>
 <translation id="6982462588253070448">элсэн манхнууд</translation>
 <translation id="7005833343836210400">Төхөөрөмж офлайн байна</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
@@ -1051,6 +1080,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> гэсэн нэртэй <ph name="COUNT" />-н <ph name="INDEX" />-р төхөөрөмж.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" />-н онцгой постерыг сонгоно уу</translation>
 <translation id="7108668606237948702">оруулах</translation>
+<translation id="7118522231018231199">Мобайл үйлчилгээ үзүүлэгч эсвэл администраторынхаа олгосон APN-уудыг сонгохоо мартуузай. APN-уудыг сонгосноор дурын захиалгат APN-г идэвхгүй болгоно. Хүчингүй APN-ууд нь таны мобайл холболтыг тасалдуулж болзошгүй.</translation>
 <translation id="7119389851461848805">Асааж унтраах</translation>
 <translation id="7129287270910503851">Таны дата ашиглалтыг сар бүрийн энэ өдөр шинэчилнэ</translation>
 <translation id="7130438335435247835">Хандах цэгийн нэрс (APN)</translation>
@@ -1173,6 +1203,7 @@
 <translation id="7791543448312431591">Нэмэх</translation>
 <translation id="779591286616261875">Шинэ мэдээлэл илгээх</translation>
 <translation id="7799817062559422778">Гэрэлтэй горим</translation>
+<translation id="7802764839223122985">Товч дутуу байна. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7813073042185856802">уул</translation>
@@ -1219,6 +1250,7 @@
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> дэвсгэр дээрх <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8067126283828232460">APN холбогдсон.</translation>
 <translation id="8067208048261192356">бор</translation>
+<translation id="8067224607978179455"><ph name="ACTION_NAME" />-г устгах</translation>
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="8076492880354921740">Таб</translation>
 <translation id="8079860070590459552">цэцгийн талбай</translation>
@@ -1244,6 +1276,7 @@
 <translation id="8226628635270268143">Дуртай зураг, цомгуудаа сонгоно уу</translation>
 <translation id="8227119283605456246">Файл хавсаргах</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
+<translation id="8238771987802558562">APN-г сонгох</translation>
 <translation id="8246209727385807362">Тодорхойгүй оператор компани</translation>
 <translation id="8250926778281121244">зэв</translation>
 <translation id="8257572018929862473">Шуурхай хариултын тохиргоог нээх</translation>
@@ -1366,6 +1399,7 @@
 <translation id="8928727111548978589">Амжилтгүй болсон - Цаас дууссан</translation>
 <translation id="8930521118335213258">Төстэй апп</translation>
 <translation id="8930622219860340959">Утасгүй</translation>
+<translation id="8933650076320258356">Сонгосон товч нь <ph name="DIRECTION" />-н <ph name="KEYS" /> байна. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Клиентийн IP хаяг</translation>
 <translation id="8944651180182756621">Эхлүүлэгчийн өнгө</translation>
 <translation id="8945308580158685341">зөгийнүүд</translation>
@@ -1416,18 +1450,22 @@
 <translation id="9149391708638971077">Санах ойн туршилтыг ажиллуулах</translation>
 <translation id="9159524746324788320">гамбургерүүд</translation>
 <translation id="9161276708550942948">space</translation>
+<translation id="9169345239923038539">Та одоогоор холбогдоогүй байна. Хэрэв таны мобайл оператор компани захиалгат APN-г зөвлөж байвал <ph name="BEGIN_LINK" />APN-н мэдээллийг оруулна уу.<ph name="END_LINK" /></translation>
 <translation id="9173638680043580060">Минут хүрэхгүй хугацаа үлдлээ</translation>
 <translation id="9174334653006917325">UI-н өнгө</translation>
 <translation id="917720651393141712">Шалгалт</translation>
 <translation id="9188992814426075118">Таны гар дэлгэцийн зурагтай тань автоматаар таарах боломжтой</translation>
 <translation id="9189000703457422362">Автоматаар устгасан APN-уудыг ашиглан энэ сүлжээнд холбогдох боломжгүй. Дэлгэрэнгүй мэдээлэл авах бол мобайл оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="9193744392140377127">APN*</translation>
+<translation id="9195918315673527512">Сонгогдсон залуур товчнууд нь <ph name="KEYS" /> байна. Удирдлагыг засахын тулд товчлуур дээр товшино уу</translation>
 <translation id="9204237731135241582">Android аппуудаас гэйтвэйтэй холбогдох боломжгүй</translation>
 <translation id="921080052717160800">Зургийг камерын дэвсгэрээр тохируулсан</translation>
 <translation id="9211490828691860325">Бүх дэлгэц</translation>
+<translation id="9218016617214286986">Мэдэгдэж буй APN-уудыг харуулах</translation>
 <translation id="932327136139879170">Нүүр хуудас</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
+<translation id="950520315903467048"><ph name="DIRECTION" />-н товч дутуу байна. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>
 <translation id="95718197892796296">шавар</translation>
 <translation id="960719561871045870">Операторын код</translation>

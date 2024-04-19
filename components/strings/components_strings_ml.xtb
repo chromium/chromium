@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">രചയിതാവ്:</translation>
 <translation id="1247030632403369975">അലുമിനിയം</translation>
 <translation id="1252209483516427155">ഔട്ടർവെയർ</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> ഉപയോഗിച്ച് പേ ചെയ്യൂ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (സമന്വയിപ്പിച്ചു)</translation>
 <translation id="1255086252236620440">ഫുഡ് മിക്‌സറുകൾ</translation>
 <translation id="1256368399071562588">&lt;p&gt;നിങ്ങളൊരു വെബ്‌സൈറ്റ് സന്ദർശിക്കാൻ ശ്രമിക്കുകയും അത് തുറക്കാതിരിക്കുകയുമാണെങ്കിൽ, ഇനിപ്പറയുന്ന ട്രബിള്‍ഷൂട്ടിംഗ് ഘട്ടങ്ങൾ ഉപയോഗിച്ച്, പ്രശ്നം പരിഹരിക്കാൻ ശ്രമിക്കുക:&lt;/p&gt;
@@ -1513,6 +1514,7 @@
 <translation id="385489333361351399">ക്യാമറയും ഫോട്ടോ ഉപകരണവും</translation>
 <translation id="3858027520442213535">തീയതിയും സമയവും അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="3858860766373142691">പേര്</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> എന്നതിനുള്ള നിബന്ധനകൾ ഇവിടെ കാണുക</translation>
 <translation id="3872834068356954457">ശാസ്ത്രം</translation>
 <translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
 <translation id="3880456882942693779">കലയും വിനോദവും</translation>
@@ -2110,6 +2112,7 @@
 <translation id="5040262127954254034">സ്വകാര്യത</translation>
 <translation id="5043480802608081735">നിങ്ങൾ പകർത്തിയ ലിങ്ക്</translation>
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
+<translation id="5048293684454354469">പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ സൈറ്റിന് ഉപയോഗിക്കാനാകുന്ന നിരവധി കാര്യങ്ങളിൽ ഒരെണ്ണം മാത്രമാണ് പരസ്യത്തിന്റെ വിഷയം. പരസ്യത്തിന്റെ വിഷയങ്ങൾ ഇല്ലെങ്കിൽ പോലും, സൈറ്റുകൾക്ക് തുടർന്നും നിങ്ങളെ പരസ്യങ്ങൾ കാണിക്കാനാകും, എന്നാൽ അവ അത്ര വ്യക്തിപരമാക്കിയത് ആയേക്കില്ല. <ph name="BEGIN_LINK" />നിങ്ങളുടെ പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത മാനേജ് ചെയ്യുന്നതിനെ<ph name="LINK_END" />കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="5052517576853118371">സജീവമായ വിഷയങ്ങൾ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{സമീപമുള്ള പങ്കിടൽ ഉപയോഗിച്ച് ഈ ഫയൽ അയയ്‌ക്കാൻ നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്ടിക്കുക}other{സമീപമുള്ള പങ്കിടൽ ഉപയോഗിച്ച് ഈ ഫയലുകൾ അയയ്‌ക്കാൻ നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്ടിക്കുക}}</translation>
 <translation id="505757197798929356">തുറക്കാനുള്ള കാരണം നൽകുക (ആവശ്യമാണ്)</translation>
@@ -2329,6 +2332,7 @@
     <ph name="LINE_BREAK" />
     നിങ്ങളുടെ സിസ്‌റ്റം അഡ്‌മിനിസ്‌ട്രേറ്ററുമായി ബന്ധപ്പെടാൻ ശ്രമിക്കുക.</translation>
 <translation id="549333378215107354">വലുപ്പം 3</translation>
+<translation id="5496804587179176046">സുരക്ഷാ കോഡുകൾ സംരക്ഷിക്കുക, നിലവിൽ സുരക്ഷാ കോഡുകളൊന്നും സംരക്ഷിച്ചിട്ടില്ല</translation>
 <translation id="550365051221576010">എല്ലാ വിവരങ്ങളും നൽകുക</translation>
 <translation id="5508443345185481044">ക്യാമറകളും ക്യാംകോർഡറുകളും</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2352,6 +2356,7 @@
 <translation id="553377674408670169">വിദ്യാഭ്യാസ സംബന്ധമായ ജോലികൾ</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" വിഭാഗം കാണിക്കുക</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
+<translation id="5538270463355278784">സ്വയമേവയുള്ള പൂർണ്ണസ്ക്രീൻ</translation>
 <translation id="5539243836947087108">റാഫ്റ്റ്</translation>
 <translation id="5540224163453853">അഭ്യർത്ഥിച്ച ലേഖനം കണ്ടെത്താനായില്ല.</translation>
 <translation id="5540969246441091044">കുതിരസവാരിക്കാർ</translation>
@@ -2716,6 +2721,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങൾ Chrome-ൽ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="6254436959401408446">ഈ പേജ് തുറക്കാൻ മതിയായ മെമ്മറി ഇല്ല</translation>
 <translation id="625463612687472648">അനുവദിക്കുന്നത് നിർത്തുക</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഒരു ഓപ്ഷനായി <ph name="FINANCIAL_ACCOUNT_TYPES" /> കാണുക}other{നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഓപ്ഷനുകളായി <ph name="FINANCIAL_ACCOUNT_TYPES" /> കാണുക}}</translation>
 <translation id="6259156558325130047">&amp;പുനഃക്രമീകരിക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="6264376385120300461">എന്തായാലും ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -2946,6 +2952,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google അക്കൗണ്ടിൽ ഉപകരണം കണ്ടെത്താൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="6695428916538794739">ആക്‌ഷൻ, സാഹസിക സിനിമകൾ</translation>
 <translation id="6696424331653607346">യാത്രാ ഗൈഡുകളും യാത്രാ വിവരണങ്ങളും</translation>
+<translation id="6698097747703777657">കോഡ് ലഭിച്ചില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">സൃഷ്ടിച്ചു:</translation>
 <translation id="67007264085648978">ടൈം സ്‌ക്രബർ</translation>
 <translation id="6702851555558236418">ഓഡിയോ, സംഗീത സോഫ്റ്റ്‌വെയർ</translation>
@@ -3849,6 +3856,7 @@
 <translation id="8378714024927312812">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8380941800586852976">അപകടകരമായത്</translation>
 <translation id="8381674639488873545">ഈ നിരക്കുകൾ ഒറ്റത്തവണ അടയ്ക്കുന്നതോ ആവർത്തിക്കുന്നതോ ആവാം, ഒപ്പം വ്യക്തമല്ലായിരിക്കാം. <ph name="BEGIN_LINK" />എന്തായാലും കാണിക്കുക<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">സ്വയമേവയുള്ള പൂർണ്ണസ്ക്രീൻ</translation>
 <translation id="838307841291975086">സ്റ്റേഷൻ വാഗണുകൾ</translation>
 <translation id="8389532092404711541">സാധാരണഗതിയിൽ <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">ഇഷ്ടാനുസൃത, പെർഫോമൻസ് വാഹനങ്ങൾ</translation>

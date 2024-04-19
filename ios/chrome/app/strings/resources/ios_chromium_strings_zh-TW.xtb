@@ -29,6 +29,7 @@
 <translation id="1722370509450468186">密碼會儲存至你的帳戶 (<ph name="EMAIL" />)。</translation>
 <translation id="1736662517232558588">已清除 Chromium 資料</translation>
 <translation id="1791845338122684020">開啟 Chromium 歷史記錄頁面。</translation>
+<translation id="1811860791247653035">如要享有個人化服務和其他功能，請在「<ph name="FEATURE_NAME_1" />」和「<ph name="FEATURE_NAME_2" />」中納入 Chromium</translation>
 <translation id="1838412507805038478">Chromium 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
 <translation id="1843424232666537147">Chromium 的功能可讓你輕鬆管理網際網路數據傳輸和網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -91,6 +92,7 @@
 <translation id="3639997914391704523">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼。</translation>
 <translation id="3688710892786762883">當你造訪網站時，Chromium 會在網站上偵測是否有包裹追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將你的資料分享給 Google，以改善所有使用者的購物體驗。</translation>
 <translation id="372658070733623520">如要將 Chromium 的資料儲存到 Google 帳戶及使用這類資料，請驗證身分。</translation>
+<translation id="3728124580182886854">連結 Chromium 和其他 Google 服務，用於個人化等用途</translation>
 <translation id="3780779443901618967">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chromium 的警告。</translation>
 <translation id="3784369638459513223">開啟新的 Chromium 無痕分頁。</translation>
 <translation id="3805899903892079518">Chromium 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>

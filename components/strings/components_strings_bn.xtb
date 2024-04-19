@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">লেখক:</translation>
 <translation id="1247030632403369975">অ্যালুমিনিয়াম</translation>
 <translation id="1252209483516427155">বাইরের পোশাক</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" />-এর মাধ্যমে পেমেন্ট করুন</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (সিঙ্ক হয়েছে)</translation>
 <translation id="1255086252236620440">ফুড মিক্সার</translation>
 <translation id="1256368399071562588">&lt;p&gt;আপনি যে ওয়েবসাইটে যেতে চান সেটি যদি না খোলে তাহলে প্রথমে এই ধাপগুলি অনুসরণ করে সমস্যাটির সমাধান করার চেষ্টা করুন:&lt;/p&gt;
@@ -1515,6 +1516,7 @@
 <translation id="385489333361351399">ক্যামেরা ও ফটো সম্পর্কিত সরঞ্জাম</translation>
 <translation id="3858027520442213535">তারিখ এবং সময় আপডেট করুন</translation>
 <translation id="3858860766373142691">নাম</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" />-এর শর্তাবলী এখানে দেখুন</translation>
 <translation id="3872834068356954457">বিজ্ঞান</translation>
 <translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
 <translation id="3880456882942693779">কলা এবং বিনোদন</translation>
@@ -2112,6 +2114,7 @@
 <translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="5043480802608081735">আপনার কপি করা লিঙ্ক</translation>
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
+<translation id="5048293684454354469">পছন্দমতো বিজ্ঞাপন দেখানোর জন্য কোনও সাইট যেসব জিনিস ব্যবহার করে, সেগুলির মধ্যে একটি হল বিজ্ঞাপনের বিষয়। এমনকি বিজ্ঞাপনের বিষয় ছাড়াও সাইট আপনাকে বিজ্ঞাপন দেখাতে পারে তবে সেক্ষেত্রে বিজ্ঞাপনগুলি আপনার পছন্দমতো নাও হতে পারে। <ph name="BEGIN_LINK" />আপনার বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করা<ph name="LINK_END" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="5052517576853118371">অ্যাক্টিভ বিষয়</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইল পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}one{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}other{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}}</translation>
 <translation id="505757197798929356">খোলার কারণ লিখুন (খালি রাখা যাবে না)</translation>
@@ -2331,6 +2334,7 @@
     <ph name="LINE_BREAK" />
     আপনার সিস্টেম প্রশাসকের সাথে যোগাযোগের চেষ্টা করুন।</translation>
 <translation id="549333378215107354">সাইজ ৩</translation>
+<translation id="5496804587179176046">সুরক্ষা কোড সেভ করুন, তবে বর্তমানে কোনও সুরক্ষা কোড নেই</translation>
 <translation id="550365051221576010">ঠিকানার সবকটি ফিল্ডে তথ্য লিখুন</translation>
 <translation id="5508443345185481044">ক্যামেরা ও ক্যামকোডার</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2354,6 +2358,7 @@
 <translation id="553377674408670169">শিক্ষা সংক্রান্ত চাকরি</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" বিভাগ দেখুন</translation>
 <translation id="553782666181800029">এনভেলপ চৌ ২</translation>
+<translation id="5538270463355278784">অটোমেটিক ফুল-স্ক্রিন</translation>
 <translation id="5539243836947087108">র‍্যাফট</translation>
 <translation id="5540224163453853">অনুরোধকৃত নিবন্ধ খুঁজে পাওয়া যায়নি৷</translation>
 <translation id="5540969246441091044">অশ্বারোহণ</translation>
@@ -2717,6 +2722,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এ ডাউনলোড করা ফাইল ম্যানেজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="6254436959401408446">এই পৃষ্ঠাটি খোলার জন্য পর্যাপ্ত মেমরি নেই</translation>
 <translation id="625463612687472648">অনুমতি বন্ধ করুন</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome-এ কিছু কেনাকাটা করলে বিকল্প হিসেবে <ph name="FINANCIAL_ACCOUNT_TYPES" /> দেখতে পাবেন}one{Chrome-এ কিছু কেনাকাটা করলে বিকল্প হিসেবে <ph name="FINANCIAL_ACCOUNT_TYPES" /> দেখতে পাবেন}other{Chrome-এ কিছু কেনাকাটা করলে বিকল্প হিসেবে <ph name="FINANCIAL_ACCOUNT_TYPES" /> দেখতে পাবেন}}</translation>
 <translation id="6259156558325130047">&amp;পুনর্বিন্যাসকে আবার করুন</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> বুকমার্কগুলি</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
@@ -2947,6 +2953,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google অ্যাকাউন্টে আপনার ডিভাইস খুঁজে দেখতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="6695428916538794739">অ্যাকশন ও রোমাঞ্চকর সিনেমা</translation>
 <translation id="6696424331653607346">ভ্রমণের নির্দেশিকা ও ভ্রমণ বৃত্তান্ত</translation>
+<translation id="6698097747703777657">এখনও আপনার কোড আসেনি? <ph name="BEGIN_LINK" />নতুন কোড পান<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">তৈরি হয়েছে:</translation>
 <translation id="67007264085648978">টাইম স্ক্রাবার</translation>
 <translation id="6702851555558236418">অডিও ও মিউজিক সফ্টওয়্যার</translation>
@@ -3852,6 +3859,7 @@
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
 <translation id="8380941800586852976">বিপজ্জনক</translation>
 <translation id="8381674639488873545">এই চার্জ এককালীন হতে পারে বা তার পুনরাবৃত্তি হতে পারে এবং তা স্পষ্ট করে বোঝা নাও যেতে পারে। <ph name="BEGIN_LINK" />তবুও দেখান<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">অটোমেটিক ফুল-স্ক্রিন</translation>
 <translation id="838307841291975086">স্টেশন ওয়াগন</translation>
 <translation id="8389532092404711541">সাধারণত <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">কাস্টম ও দ্রুতগামী যানবাহন</translation>
