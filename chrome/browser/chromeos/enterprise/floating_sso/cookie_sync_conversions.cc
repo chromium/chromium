@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -193,12 +194,12 @@ std::optional<sync_pb::CookieSpecifics> ToSyncProto(
   net::CookieBase::StrictlyUniqueCookieKey key = cookie.StrictlyUniqueKey();
   const auto& [partition_key, name, domain, path, source_scheme, source_port] =
       key;
-  std::string serialized_key =
-      serialized_partition_key->TopLevelSite() +
-      (serialized_partition_key->has_cross_site_ancestor() ? "true" : "false") +
-      name + domain + path +
-      base::NumberToString(static_cast<int>(source_scheme)) +
-      base::NumberToString(source_port);
+  std::string serialized_key = base::StrCat(
+      {serialized_partition_key->TopLevelSite(),
+       (serialized_partition_key->has_cross_site_ancestor() ? "true" : "false"),
+       name, domain, path,
+       base::NumberToString(static_cast<int>(source_scheme)),
+       base::NumberToString(source_port)});
 
   sync_pb::CookieSpecifics proto;
   proto.set_unique_key(serialized_key);

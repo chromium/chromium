@@ -4,11 +4,13 @@
 
 #include "chrome/browser/chromeos/enterprise/floating_sso/cookie_sync_conversions.h"
 
+#include <initializer_list>
 #include <limits>
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
@@ -36,31 +38,37 @@ constexpr int kPortForTests = 19;
 // Verify that a cookie can be written to proto and then restored from it
 // without loosing any data.
 TEST(CookieSyncConversionsTest, CookieToProtoAndBack) {
-  std::string cookie_line = std::string(kNameForTests) + "=" + kValueForTests +
-                            "; Partitioned;" + " Path=" + kPathForTests +
-                            "; Secure";
-  base::Time creation_time = base::Time::Now();
-  std::optional<base::Time> server_time = std::nullopt;
-  auto partition_key =
-      net::CookiePartitionKey::FromURLForTesting(GURL(kTopLevelSiteForTesting));
-  net::CookieInclusionStatus status;
-  std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
-      GURL(kUrlForTesting), cookie_line, creation_time, server_time,
-      partition_key, /*block_truncated=*/true, net::CookieSourceType::kHTTP,
-      &status);
+  // Partition key is the hardest cookie field to serialize, so
+  // make sure that we can handle both partitioned and non-partitioned
+  // cookies.
+  for (bool is_partitioned : {false, true}) {
+    std::string cookie_line = base::StrCat(
+        {kNameForTests, "=", kValueForTests, " Path=", kPathForTests,
+         "; Secure", is_partitioned ? "; Partitioned;" : ""});
+    base::Time creation_time = base::Time::Now();
+    std::optional<base::Time> server_time = std::nullopt;
+    auto partition_key = net::CookiePartitionKey::FromURLForTesting(
+        GURL(kTopLevelSiteForTesting));
+    std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateForTesting(GURL(kUrlForTesting),
+                                               cookie_line, creation_time,
+                                               server_time, partition_key);
 
-  ASSERT_TRUE(cookie);
+    ASSERT_TRUE(cookie);
+    ASSERT_EQ(cookie->IsPartitioned(), is_partitioned);
 
-  std::optional<sync_pb::CookieSpecifics> sync_specifics = ToSyncProto(*cookie);
+    std::optional<sync_pb::CookieSpecifics> sync_specifics =
+        ToSyncProto(*cookie);
 
-  ASSERT_TRUE(sync_specifics.has_value());
+    ASSERT_TRUE(sync_specifics.has_value());
 
-  std::unique_ptr<net::CanonicalCookie> restored_cookie =
-      FromSyncProto(*sync_specifics);
+    std::unique_ptr<net::CanonicalCookie> restored_cookie =
+        FromSyncProto(*sync_specifics);
 
-  ASSERT_TRUE(restored_cookie);
+    ASSERT_TRUE(restored_cookie);
 
-  EXPECT_TRUE(restored_cookie->HasEquivalentDataMembers(*cookie));
+    EXPECT_TRUE(restored_cookie->HasEquivalentDataMembers(*cookie));
+  }
 }
 
 // Verify that reading a cookie from Sync proto and then writing it back
