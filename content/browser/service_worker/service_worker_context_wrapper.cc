@@ -515,6 +515,7 @@ void ServiceWorkerContextWrapper::OnStopped(int64_t version_id) {
 }
 
 void ServiceWorkerContextWrapper::OnDeleteAndStartOver() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   is_deleting_and_starting_over_ = true;
   ClearRunningServiceWorkers();
 }
@@ -596,6 +597,7 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorker(
     const GURL& scope,
     const blink::StorageKey& key,
     ResultCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   UnregisterServiceWorkerImpl(scope, key, /*is_immediate=*/false,
                               std::move(callback));
 }
@@ -604,6 +606,7 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediately(
     const GURL& scope,
     const blink::StorageKey& key,
     ResultCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   UnregisterServiceWorkerImpl(scope, key, /*is_immediate=*/true,
                               std::move(callback));
 }
@@ -804,6 +807,7 @@ void ServiceWorkerContextWrapper::StartServiceWorkerAndDispatchMessage(
     const blink::StorageKey& key,
     blink::TransferableMessage message,
     ResultCallback result_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Ensure the callback is called asynchronously.
   auto wrapped_callback = base::BindOnce(
       [](ResultCallback callback, bool success) {
