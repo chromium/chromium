@@ -97,7 +97,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   prerender_headers.RemoveHeader("Downlink");
   potential_activation_headers.RemoveHeader("Downlink");
 
-  // TODO(https://crbug.com/1378921): Instead of handling headers added by
+  // TODO(crbug.com/40244149): Instead of handling headers added by
   // embedders specifically, prerender should expose an interface to embedders
   // to set url parameters.
 #if BUILDFLAG(IS_ANDROID)
@@ -419,7 +419,7 @@ bool PrerenderHost::StartPrerendering() {
     // prefetch-src was already deprecated, but this code path seems still
     // reachable. To be clarify the actual scenario, let's have the dump code.
     // We may eventually return false for this code path to make things simple.
-    // TODO(https://crbug.com/1394486): Monitor reports and decide if we
+    // TODO(crbug.com/40248615): Monitor reports and decide if we
     // continue to have the `is_ready_for_activation_` check in
     // CheckInitialPrerenderNavigationParamsCompatibleWithNavigation().
     net::Error net_error = created_navigation_handle->GetNetErrorCode();
@@ -534,7 +534,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   FrameTree& target_frame_tree = web_contents_->GetPrimaryFrameTree();
 
   // There should be no ongoing main-frame navigation during activation.
-  // TODO(https://crbug.com/1190644): Make sure sub-frame navigations are
+  // TODO(crbug.com/40174232): Make sure sub-frame navigations are
   // fine.
   CHECK(!frame_tree_->root()->HasNavigation());
 
@@ -696,7 +696,7 @@ bool PrerenderHost::IsFramePolicyCompatibleWithPrimaryFrameTree() {
 bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
     NavigationRequest& navigation_request,
     PrerenderCancellationReason& reason) {
-  // TODO(crbug.com/1181763): compare the rest of the navigation parameters. We
+  // TODO(crbug.com/40170513): compare the rest of the navigation parameters. We
   // should introduce compile-time parameter checks as well, to ensure how new
   // fields should be compared for compatibility.
 
@@ -763,7 +763,7 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   // Don't activate a prerendered page if the potential activation request
   // requires validation or bypass of the browser cache, as the prerendered page
   // is a kind of caches.
-  // TODO(https://crbug.com/1213299): Instead of checking the load flags on
+  // TODO(crbug.com/40183588): Instead of checking the load flags on
   // activation, we should cancel prerendering when the prerender initial
   // navigation has the flags.
   int cache_load_flags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
@@ -909,12 +909,12 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
 
   // has_user_gesture doesn't affect any of the security properties of the
   // document created by navigation, so equality of the values is not required.
-  // TODO(crbug.com/1232915): ensure that the user activation status is
+  // TODO(crbug.com/40191309): ensure that the user activation status is
   // propagated to the activated document.
 
   // text_fragment_token doesn't affect any of the security properties of the
   // document created by navigation, so equality of the values is not required.
-  // TODO(crbug.com/1232919): ensure the activated document consumes
+  // TODO(crbug.com/40191311): ensure the activated document consumes
   // text_fragment_token and scrolls to the corresponding viewport.
 
   // No need to compare should_check_main_world_csp, as if the CSP blocks the

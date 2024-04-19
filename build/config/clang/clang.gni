@@ -20,7 +20,7 @@ declare_args() {
       ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_mac ||
        is_win || is_chromeos_lacros || is_chromeos_ash)
 
-  # TODO(crbug.com/1446146): Merge with enable_check_raw_ptr_fields once both
+  # TODO(crbug.com/40268473): Merge with enable_check_raw_ptr_fields once both
   # checks are activated on the same set of platforms.
   enable_check_raw_ref_fields =
       build_with_chromium && !is_official_build &&

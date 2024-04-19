@@ -19,7 +19,8 @@ BASE_FEATURE(kUsePowerMonitorWithThreadController,
              "UsePowerMonitorWithThreadController",
              FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(1074332): Remove this when the experiment becomes the default.
+// TODO(crbug.com/40127966): Remove this when the experiment becomes the
+// default.
 bool g_use_thread_controller_power_monitor_ = false;
 
 }  // namespace

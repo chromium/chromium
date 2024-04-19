@@ -282,8 +282,8 @@ bool PrerendererImpl::MaybePrerender(
   PreloadingPredictor creating_predictor =
       GetPredictorForPreloadingTriggerType(trigger_type);
   int prerender_host_id = [&] {
-    // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
-    // have the same URL but its `target_browsing_context_name_hint` is
+    // TODO(crbug.com/40235424): Handle the case where multiple speculation
+    // rules have the same URL but its `target_browsing_context_name_hint` is
     // different. In the current implementation, only the first rule is
     // triggered.
     switch (candidate->target_browsing_context_name_hint) {

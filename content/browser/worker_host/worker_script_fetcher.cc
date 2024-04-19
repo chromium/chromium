@@ -433,7 +433,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
     factory_params->is_trusted = true;
 
     bool bypass_redirect_checks = false;
-    // TODO(https://crbug.com/1103288): The UKM ID could be computed.
+    // TODO(crbug.com/40139181): The UKM ID could be computed.
     constexpr ukm::SourceIdObj source_id = ukm::kInvalidSourceIdObj;
     url_loader_factory::CreateAndConnectToPendingReceiver(
         factory_bundle_for_browser_info->pending_default_factory()

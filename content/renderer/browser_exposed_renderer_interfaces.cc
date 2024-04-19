@@ -181,7 +181,7 @@ void ExposeRendererInterfacesToBrowser(
       base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  // TODO(crbug.com/1186912): Bind on `task_runner_for_service_worker_startup`
+  // TODO(crbug.com/40753993): Bind on `task_runner_for_service_worker_startup`
   // instead of the main thread, so startup isn't blocked on the main thread.
   // Currently it's on the main thread as CreateEmbeddedWorker accesses
   // `cors_exempt_header_list` from `render_thread`.

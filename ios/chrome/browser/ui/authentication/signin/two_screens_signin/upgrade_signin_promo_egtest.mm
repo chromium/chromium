@@ -195,7 +195,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
 // Tests sign-in promo behavior in landscape. It should appears if and only if
 // the device is an ipad.
-// TODO(crbug.com/1442297): Need to enable this test.
+// TODO(crbug.com/40266894): Need to enable this test.
 - (void)DISABLED_testNoSignInPromoInLandscapeMode {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                 error:nil];

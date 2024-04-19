@@ -242,7 +242,7 @@ bool WebFileHandlersParser::Parse(Extension* extension, std::u16string* error) {
 
   // Only parse if Web File Handlers supported in this session. If they are not,
   // the install will succeed with a warning, and the key won't be parsed.
-  // TODO(crbug.com/1446007): Remove this after launching web file handlers.
+  // TODO(crbug.com/40268398): Remove this after launching web file handlers.
   if (!WebFileHandlers::SupportsWebFileHandlers(*extension)) {
     extension->AddInstallWarning(InstallWarning(ErrorUtils::FormatErrorMessage(
         manifest_errors::kUnrecognizedManifestKey, "file_handlers")));

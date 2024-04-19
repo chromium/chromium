@@ -378,7 +378,7 @@ void WebContentsObserverConsistencyChecker::WebContentsDestroyed() {
 void WebContentsObserverConsistencyChecker::DidStartLoading() {
   // TODO(clamy): add checks for the loading state in the rest of observer
   // methods.
-  // TODO(crbug.com/1145572): Add back CHECK(!is_loading_). The CHECK was
+  // TODO(crbug.com/40155922): Add back CHECK(!is_loading_). The CHECK was
   // removed because of flaky failures during some browser_tests.
   CHECK(web_contents()->IsLoading());
   is_loading_ = true;

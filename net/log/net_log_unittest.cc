@@ -211,7 +211,7 @@ class LoggingObserver : public NetLog::ThreadSafeObserver {
   }
 
   void OnAddEntry(const NetLogEntry& entry) override {
-    // TODO(https://crbug.com/1418110): This should be updated to be a
+    // TODO(crbug.com/40257546): This should be updated to be a
     // base::Value::Dict instead of a std::unique_ptr.
     std::unique_ptr<base::Value::Dict> dict =
         std::make_unique<base::Value::Dict>(entry.ToDict());

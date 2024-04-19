@@ -236,7 +236,7 @@ class CookieSettingsTest
   // A version of above that considers Top-Level Storage Access API grant
   // instead of Storage Access API grant.
   ContentSetting SettingWithTopLevelSaaOverride() const {
-    // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
+    // TODO(crbug.com/40246640): Check TopLevelStorageAccessAPI instead after
     // separating the feature flag.
     return IsTopLevelStorageAccessGrantEligible() ? CONTENT_SETTING_ALLOW
                                                   : CONTENT_SETTING_BLOCK;
@@ -257,7 +257,7 @@ class CookieSettingsTest
   // instead of Storage Access API grant.
   net::cookie_util::StorageAccessResult
   BlockedStorageAccessResultWithTopLevelSaaOverride() const {
-    // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
+    // TODO(crbug.com/40246640): Check TopLevelStorageAccessAPI instead after
     // separating the feature flag.
     if (IsTopLevelStorageAccessGrantEligible()) {
       return net::cookie_util::StorageAccessResult::
@@ -597,7 +597,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccessUnblocks) {
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 2);
-  // TODO(crbug.com/1385156): Separate metrics between StorageAccessAPI
+  // TODO(crbug.com/40246640): Separate metrics between StorageAccessAPI
   // and the page-level variant.
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,

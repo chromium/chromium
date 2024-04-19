@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Utility methods for {@link CachedFlag}.
  *
- * TODO(crbug.com/1442347): Rename this to CachedFlagUtils.
+ * <p>TODO(crbug.com/40266922): Rename this to CachedFlagUtils.
  */
 public class CachedFlagUtils {
     /** Caches flags that must take effect on startup but are set via native code. */

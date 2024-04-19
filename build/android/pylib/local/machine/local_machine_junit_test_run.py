@@ -224,7 +224,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       with open(self._test_instance.json_config) as f:
         json_config = json.load(f)
     else:
-      # TODO(1384204): This step can take 3-4 seconds for chrome_junit_tests.
+      # TODO(crbug.com/40878339): This step can take 3-4 seconds for
+      # chrome_junit_tests.
       try:
         json_config = self._QueryTestJsonConfig(temp_dir, allow_debugging=False)
       except subprocess.CalledProcessError:

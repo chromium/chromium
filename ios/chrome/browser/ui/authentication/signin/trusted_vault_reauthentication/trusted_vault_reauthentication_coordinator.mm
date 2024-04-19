@@ -114,7 +114,7 @@ using l10n_util::GetNSStringF;
           self.browser->GetBrowserState());
   DCHECK(
       authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
-  // TODO(crbug.com/1019685): Should test if reauth is still needed. If still
+  // TODO(crbug.com/40105436): Should test if reauth is still needed. If still
   // needed, the reauth should be really started.
   // If not, the coordinator can be closed successfuly, by calling
   // -[TrustedVaultReauthenticationCoordinator

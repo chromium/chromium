@@ -83,7 +83,7 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
     watched_thread_name_str_uma_ = ".main";
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1223033): Remove this once macOS uses system-wide ids.
+  // TODO(crbug.com/40187449): Remove this once macOS uses system-wide ids.
   // On macOS the thread ids used by CrashPad are not the same as the ones
   // provided by PlatformThread
   uint64_t watched_thread_id;

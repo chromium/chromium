@@ -305,7 +305,7 @@ class _Generator(object):
       .Sblock('    %s) {' % self._GenerateParams(
           ('const base::Value::Dict& dict', '%(name)s& out'))))
 
-    # TODO(crbug.com/1145154): The generated code here will ignore
+    # TODO(crbug.com/40729306): The generated code here will ignore
     # unrecognized keys, but the parsing code for types passed to APIs in the
     # renderer will hard-error on them. We should probably be consistent with
     # the renderer here (at least for types also parsed in the renderer).
@@ -444,7 +444,7 @@ class _Generator(object):
                 param_type=param_type))
     )
     c.Sblock();
-    # TODO(crbug.com/1354063): Once the deprecated version of this method is
+    # TODO(crbug.com/40235429): Once the deprecated version of this method is
     # removed, we should consider making Populate return an optional, rather
     # than using an out param.
     if self._generate_error_messages:
@@ -1016,7 +1016,7 @@ class _Generator(object):
     """An overloaded added to `Create()` communinicating errors through
     `base::expected`.
     """
-    # TODO(crbug.com/1415174): This function is being temporarily added
+    # TODO(crbug.com/40256450): This function is being temporarily added
     # separately to allow us to migrate the places where error is being passed
     # as an out param. Once that is done, this duplication should be deleted,
     # and everything should be handled by a single Create function.

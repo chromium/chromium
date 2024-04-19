@@ -284,7 +284,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
       set_used_router_source_type(source_type);
 
       // Set router information of matched rule for DevTools.
-      // TODO(crbug.com/1502443): Prepare the router info in ResponseHead even
+      // TODO(crbug.com/40942806): Prepare the router info in ResponseHead even
       // when the response is not set by `DidDispatchFetchEvent()`.
       network::mojom::ServiceWorkerRouterInfoPtr router_info =
           network::mojom::ServiceWorkerRouterInfo::New();

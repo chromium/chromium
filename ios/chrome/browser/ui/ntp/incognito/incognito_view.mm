@@ -406,7 +406,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   [learnMoreButton addTarget:self
                       action:@selector(learnMoreButtonPressed)
             forControlEvents:UIControlEventTouchUpInside];
-  // TODO(crbug.com/1075616): Style as a link rather than a button.
+  // TODO(crbug.com/40128314): Style as a link rather than a button.
   learnMoreButton.pointerInteractionEnabled = YES;
 
   UIStackView* subtitleStackView = [[UIStackView alloc]

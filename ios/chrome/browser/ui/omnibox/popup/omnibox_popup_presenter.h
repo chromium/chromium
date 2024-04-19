@@ -32,7 +32,7 @@
 @end
 
 /// The UI Refresh implementation of the popup presenter.
-/// TODO(crbug.com/936833): This class should be refactored to handle a nil
+/// TODO(crbug.com/40616000): This class should be refactored to handle a nil
 /// delegate.
 @interface OmniboxPopupPresenter : NSObject <ToolbarOmniboxConsumer>
 

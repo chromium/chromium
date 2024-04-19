@@ -1440,7 +1440,7 @@ mojom("mojom") {
 
   enabled_features = []
 
-  # TODO(crbug/598073): When moving the service implementation to
+  # TODO(crbug.com/40083944): When moving the service implementation to
   # //services/network, add the correct values for export_class_attribute /
   # export_define / export_header here. Context in https://crrev.com/2225673002.
 

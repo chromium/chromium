@@ -202,7 +202,7 @@ struct BASE_EXPORT AllocationTraceRecorderStatistics {
 // Note: As a process might be terminated for whatever reason while stack
 // traces are being written, the recorded data may contain some garbage.
 //
-// TODO(https://crbug.com/1419908): Evaluate the impact of the shared cache
+// TODO(crbug.com/40258550): Evaluate the impact of the shared cache
 // lines between entries.
 class BASE_EXPORT AllocationTraceRecorder {
  public:

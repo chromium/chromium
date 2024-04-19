@@ -386,8 +386,8 @@ void EmbeddedWorkerInstance::Start(
   CHECK(params->forced_enabled_runtime_features.empty() ||
         rph->GetProcessLock().is_locked_to_site());
 
-  // TODO(crbug.com/862854): Support changes to blink::RendererPreferences while
-  // the worker is running.
+  // TODO(crbug.com/40584626): Support changes to blink::RendererPreferences
+  // while the worker is running.
   DCHECK(context_->wrapper()->browser_context() ||
          process_manager->IsShutdown());
   params->renderer_preferences = blink::RendererPreferences();

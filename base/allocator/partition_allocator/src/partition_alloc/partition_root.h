@@ -1487,7 +1487,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   // We are going to read from |*slot_span| in all branches, but haven't done it
   // yet.
   //
-  // TODO(crbug.com/1207307): It would be much better to avoid touching
+  // TODO(crbug.com/40181250): It would be much better to avoid touching
   // |*slot_span| at all on the fast path, or at least to separate its read-only
   // parts (i.e. bucket pointer) from the rest. Indeed, every thread cache miss
   // (or batch fill) will *write* to |slot_span->freelist_head|, leading to
@@ -1508,7 +1508,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
                              GetSlotUsableSize(slot_span));
     }
   }
-  // TODO(https://crbug.com/1497380): Collecting objects for
+  // TODO(crbug.com/40287058): Collecting objects for
   // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
   // refcount, cookie, etc.)
   // For better debuggability, we should do these checks before quarantining.

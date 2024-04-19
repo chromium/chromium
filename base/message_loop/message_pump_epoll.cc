@@ -218,7 +218,7 @@ bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout) {
 
   // `timeout` has microsecond resolution, but timeouts accepted by epoll_wait()
   // are integral milliseconds. Round up to the next millisecond.
-  // TODO(https://crbug.com/1382894): Consider higher-resolution timeouts.
+  // TODO(crbug.com/40245876): Consider higher-resolution timeouts.
   const int epoll_timeout =
       timeout.is_max() ? -1
                        : saturated_cast<int>(timeout.InMillisecondsRoundedUp());

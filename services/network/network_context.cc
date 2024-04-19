@@ -2224,7 +2224,7 @@ void NetworkContext::LookupProxyAuthCredentials(
       url_request_context_->http_transaction_factory()
           ->GetSession()
           ->http_auth_cache();
-  // TODO(https://crbug.com/1103768): Mapping proxy addresses to URLs is a
+  // TODO(crbug.com/40704785): Mapping proxy addresses to URLs is a
   // lossy conversion, shouldn't do this.
   const char* scheme =
       proxy_server.is_secure_http_like() ? "https://" : "http://";

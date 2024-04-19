@@ -248,7 +248,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // `PostTask`. Since `task` may run synchronously, it is generally not
   // appropriate to invoke this if `task` may take a long time to run.
   //
-  // TODO(crbug.com/1503967): This API is still in development. It doesn't yet
+  // TODO(crbug.com/40944462): This API is still in development. It doesn't yet
   // support SequenceLocalStorage.
   virtual bool RunOrPostTask(subtle::RunOrPostTaskPassKey,
                              const Location& from_here,

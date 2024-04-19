@@ -98,7 +98,7 @@ WebBluetoothServiceImpl::ScanningClient::~ScanningClient() = default;
 
 void WebBluetoothServiceImpl::ScanningClient::SendEvent(
     const blink::mojom::WebBluetoothAdvertisingEvent& event) {
-  // TODO(https://crbug.com/1108958): Filter out advertisement data if not
+  // TODO(crbug.com/40707749): Filter out advertisement data if not
   // included in the filters, optionalServices, or optionalManufacturerData.
   auto filtered_event = event.Clone();
   if (options_->accept_all_advertisements) {

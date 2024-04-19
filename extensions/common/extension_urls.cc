@@ -67,7 +67,7 @@ GURL AppendUtmSource(const GURL& url, std::string_view utm_source_value) {
 // TODO(devlin): Try to use GURL methods like Resolve instead of string
 // concatenation.
 std::string GetWebstoreExtensionsCategoryURL() {
-  // TODO(crbug.com/1488136): Refactor this check into
+  // TODO(crbug.com/40073814): Refactor this check into
   // extension_urls::GetWebstoreLaunchURL() and fix tests relying on it.
   if (base::FeatureList::IsEnabled(extensions_features::kNewWebstoreURL)) {
     return GetNewWebstoreLaunchURL().spec() + "category/extensions";

@@ -47,7 +47,7 @@ void CrOSMLServiceImpl::CreateModelLoader(
   // The receiver sent to ml-service.
   auto cros_receiver = blink_remote.InitWithNewPipeAndPassReceiver();
 
-  // TODO(https://crbug.com/1309814): we should consider restricting the
+  // TODO(crbug.com/40219596): we should consider restricting the
   // resource usage of this API.
   chromeos::machine_learning::ServiceConnection::GetInstance()
       ->GetMachineLearningService()

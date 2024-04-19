@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 }
 
 // Same test as CallWithAudioDebugRecordings, but does two parallel calls.
-// TODO(crbug.com/874378): Fix an re-enable test.
+// TODO(crbug.com/40589452): Fix an re-enable test.
 // List of issues filed before this test was disabled for all platforms:
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 // Renderer crashes under Android: https://crbug.com/820934.

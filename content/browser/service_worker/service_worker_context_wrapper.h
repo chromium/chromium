@@ -59,7 +59,7 @@ class StoragePartitionImpl;
 // classes.
 //
 // All the methods called on the UI thread.
-// TODO(https://crbug.com/1161153): Require all references to be on the UI
+// TODO(crbug.com/40738640): Require all references to be on the UI
 // thread and remove RefCountedThreadSafe.
 class CONTENT_EXPORT ServiceWorkerContextWrapper
     : public ServiceWorkerContext,

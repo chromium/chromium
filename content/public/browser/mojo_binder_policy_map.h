@@ -46,7 +46,7 @@ enum class MojoBinderAssociatedPolicy {
 
 // Used by content/ layer to manage interfaces' binding policies. Embedders can
 // set their own policies via this interface.
-// TODO(https://crbug.com/1157334): Consider integrating it with
+// TODO(crbug.com/40160797): Consider integrating it with
 // mojo::BinderMap.
 class CONTENT_EXPORT MojoBinderPolicyMap {
  public:

@@ -2101,7 +2101,7 @@ std::unique_ptr<SnapSelectionStrategy> InputHandler::CreateSnapStrategy(
     // Note: gesture scroll end is delayed in anticipation of future wheel
     // scrolls so it is fired well after the scroll ends as opposed to precise
     // touch devices where we fire it as soon as the user lifts their finger.
-    // TODO(crbug.com/1201678): The directional scroll should probably be
+    // TODO(crbug.com/40762499): The directional scroll should probably be
     // triggered at gesture scroll begin to improve responsiveness.
     return SnapSelectionStrategy::CreateForDirection(current_offset,
                                                      scroll_delta, true);

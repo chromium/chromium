@@ -105,7 +105,7 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
   const base::FilePath log_file = temp_path.Append("log-file");
   const base::FilePath exec_file("/bin/ls");
 
-  // TODO(crbug.com/1456568): re-enable syscall filter for this test.
+  // TODO(crbug.com/40273168): re-enable syscall filter for this test.
   // SandboxV2Test.SandboxProfileTest uses system() which uses a denied syscall,
   // which should cause the test to fail.
   SetParametersForTest(&compiler, log_file, exec_file,

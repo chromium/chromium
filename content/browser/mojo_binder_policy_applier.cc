@@ -13,7 +13,7 @@
 
 namespace {
 
-// TODO(https://crbug.com/1245961): It is not sustainable to maintain a list.
+// TODO(crbug.com/40196368): It is not sustainable to maintain a list.
 // An ideal solution should:
 // 1. Show a pre-submit warning if a frame-scoped interface is specified with
 //    kDefer but declares synchronous methods.

@@ -116,7 +116,7 @@ Time Time::Midnight(bool is_local) const {
   [[maybe_unused]] const bool result =
       FromExploded(is_local, exploded, &out_time);
 #if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY)
-  // TODO(crbug.com/1263873): DCHECKs have limited coverage during automated
+  // TODO(crbug.com/40800460): DCHECKs have limited coverage during automated
   // testing on CrOS and this check failed when tested on an experimental
   // builder. Testing for ARCH_CPU_ARM_FAMILY prevents regressing coverage on
   // x86_64, which is already enabled. See go/chrome-dcheck-on-cros or

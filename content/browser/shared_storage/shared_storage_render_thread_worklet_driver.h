@@ -23,7 +23,7 @@ class SiteInstance;
 //
 // The lifetime of the WorkletDriver is tied to the `SharedStorageWorkletHost`.
 //
-// TODO(crbug.com/1141459): Once AgentSchedulingGroupHostObserver exists, we
+// TODO(crbug.com/40154232): Once AgentSchedulingGroupHostObserver exists, we
 // need to use it to track the lifetime of `agent_scheduling_group_host_`
 // instead of RenderProcessHostObserver. For more context see
 // crbug.com/1141459#c4.

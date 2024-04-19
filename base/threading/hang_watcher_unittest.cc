@@ -691,7 +691,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
   }
 }
 
-// TODO(crbug.com/1223033): On MAC, the base::PlatformThread::CurrentId(...)
+// TODO(crbug.com/40187449): On MAC, the base::PlatformThread::CurrentId(...)
 // should return the system wide IDs. The HungThreadIDs test fails because the
 // reported process ids do not match.
 #if BUILDFLAG(IS_MAC)

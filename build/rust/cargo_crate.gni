@@ -252,7 +252,7 @@ template("cargo_crate") {
 
     rustc_metadata = _rustc_metadata
 
-    # TODO(crbug.com/1422745): don't default to true. This requires changes to
+    # TODO(crbug.com/40259764): don't default to true. This requires changes to
     # third_party.toml and gnrt when generating third-party build targets.
     allow_unsafe = true
 
@@ -460,7 +460,7 @@ template("cargo_crate") {
 
           # Avoid generating profiling data for build scripts.
           #
-          # TODO(crbug.com/1426472): determine for sure whether to remove this
+          # TODO(crbug.com/40261306): determine for sure whether to remove this
           # config. I'm not sure of the overlap between PGO instrumentation and
           # code coverage instrumentation, but we definitely don't want build
           # script coverage for PGO, while we might for test coverage metrics.

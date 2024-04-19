@@ -331,7 +331,7 @@ class ScrollBehaviorBrowserTestWithPercentBasedScrolling
 // This tests that a in-progress smooth scroll on an overflow:scroll element
 // stops when interrupted by an instant scroll.
 //
-// TODO(crbug.com/1133492): the last animation is committed after we set the
+// TODO(crbug.com/40722572): the last animation is committed after we set the
 // scrollTop even when we cancel the animation, so the final scrollTop value
 // is not 0, we need to fix it.
 IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTest,

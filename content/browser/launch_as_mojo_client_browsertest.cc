@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1259557): This test implementation fundamentally conflicts
+// TODO(crbug.com/40057593): This test implementation fundamentally conflicts
 // with a fix for the linked bug because it causes a browser process to behave
 // partially as a broker and partially as a non-broker. This can be re-enabled
 // when we migrate away from the current Mojo implementation. It's OK to disable

@@ -87,7 +87,7 @@ bool DeviceHasEnoughMemoryForPrerender() {
   // which report lower RAM due to carveouts.
   // Previously used the same default threshold as the back/forward cache. See
   // comments in DeviceHasEnoughMemoryForBackForwardCache().
-  // TODO(https://crbug.com/1470820): experiment with 1200 MB threshold like
+  // TODO(crbug.com/40277975): experiment with 1200 MB threshold like
   // back/forward cache.
   static constexpr int kDefaultMemoryThresholdMb =
 #if BUILDFLAG(IS_ANDROID)
@@ -710,7 +710,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // case, we want to control the limit based on the initiator
     // WebContents.
     //
-    // TODO(crbug.com/1355151): Enqueue the request exceeding the number limit
+    // TODO(crbug.com/40235847): Enqueue the request exceeding the number limit
     // until the forerunners are cancelled, and suspend starting a new prerender
     // when the number reaches the limit.
     if (!initiator_web_contents.GetPrerenderHostRegistry()
@@ -832,7 +832,7 @@ int PrerenderHostRegistry::CreateAndStartHostForNewTab(
 }
 
 int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
-  // TODO(https://crbug.com/1424425): Don't start prerendering if the current
+  // TODO(crbug.com/40260412): Don't start prerendering if the current
   // memory pressure level is critical, and then retry prerendering when the
   // memory pressure level goes down.
 
@@ -1181,7 +1181,7 @@ void PrerenderHostRegistry::OnActivationFinished(int frame_tree_node_id) {
   // page, which means the activation failed.
   CHECK_EQ(frame_tree_node_id, reserved_prerender_host_->frame_tree_node_id());
 
-  // TODO(https://crbug.com/1378151): Monitor the final status metric and see
+  // TODO(crbug.com/40243805): Monitor the final status metric and see
   // whether it could be possible.
   ScheduleToDeleteAbandonedHost(
       std::move(reserved_prerender_host_),

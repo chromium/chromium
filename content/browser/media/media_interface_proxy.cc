@@ -564,9 +564,9 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
 
   // Passing an empty CdmType as MediaFoundation-based CDMs don't use CdmStorage
   // currently.
-  // TODO(crbug.com/1231162): This works but is a bit hacky. CdmType is used for
-  // both CDM-process-isolation and storage isolation. We probably still want to
-  // have the information on whether we want to use CdmStorage in CDM
+  // TODO(crbug.com/40779490): This works but is a bit hacky. CdmType is used
+  // for both CDM-process-isolation and storage isolation. We probably still
+  // want to have the information on whether we want to use CdmStorage in CDM
   // registration and populate that info here.
   mf_service.CreateInterfaceFactory(
       mf_interface_factory_remote_.BindNewPipeAndPassReceiver(),

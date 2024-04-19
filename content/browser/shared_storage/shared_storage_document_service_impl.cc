@@ -100,7 +100,7 @@ void SharedStorageDocumentServiceImpl::Bind(
       is_secure_frame);
 
   if (!is_secure_frame) {
-    // TODO(https://crbug.com/1470628): Invoke mojo::ReportBadMessage here when
+    // TODO(crbug.com/40068897): Invoke mojo::ReportBadMessage here when
     // we can be sure honest renderers won't hit this path.
     return;
   }

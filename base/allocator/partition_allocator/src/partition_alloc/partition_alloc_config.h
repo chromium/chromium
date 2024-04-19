@@ -107,7 +107,7 @@ static_assert(sizeof(void*) != 8, "");
 // - On macOS, pthread_mutex_trylock() is fast by default starting with macOS
 //   10.14. Chromium targets an earlier version, so it cannot be known at
 //   compile-time. So we use something different.
-//   TODO(https://crbug.com/1459032): macOS 10.15 is now required; switch to
+//   TODO(crbug.com/40274152): macOS 10.15 is now required; switch to
 //   better locking.
 // - Otherwise, on POSIX we assume that a fast userspace pthread_mutex_trylock()
 //   is available.

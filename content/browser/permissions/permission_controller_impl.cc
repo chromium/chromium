@@ -61,7 +61,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
           kRequestedBackgroundWorkPermission;
     case PermissionType::STORAGE_ACCESS_GRANT:
     // These two permissions are in the process of being split; they share logic
-    // for now. TODO(crbug.com/1385156): split and consolidate as much as
+    // for now. TODO(crbug.com/40246640): split and consolidate as much as
     // possible.
     case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       return blink::scheduler::WebSchedulerTrackedFeature::

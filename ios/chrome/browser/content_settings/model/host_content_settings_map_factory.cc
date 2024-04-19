@@ -44,7 +44,7 @@ HostContentSettingsMapFactory::BuildServiceInstanceFor(
     GetForBrowserState(browser_state->GetOriginalChromeBrowserState());
   }
 
-  // TODO(crbug.com/1081711): Set restore_session to whether or not the phone
+  // TODO(crbug.com/40130635): Set restore_session to whether or not the phone
   // has been reset, which would mirror iOS's cookie store.
   const bool is_off_the_record = browser_state->IsOffTheRecord();
   const bool should_record_metrics = !is_off_the_record;

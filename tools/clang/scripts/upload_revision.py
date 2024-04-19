@@ -198,7 +198,7 @@ def PatchRustStage0():
   if verify_stage0.returncode == 0:
     return
 
-  # TODO(crbug.com/1405814): We're printing a warning that the hash has
+  # TODO(crbug.com/40252478): We're printing a warning that the hash has
   # changed, but we could require a verification step of some sort here. We
   # should do the same for both Rust and Clang if we do so.
   print(verify_stage0.stdout)
@@ -246,7 +246,7 @@ def Git(*args, no_run: bool):
 
 def main():
   parser = argparse.ArgumentParser(description='upload new clang revision')
-  # TODO(crbug.com/1401042): Remove this when the cron job doesn't pass a SHA.
+  # TODO(crbug.com/40250560): Remove this when the cron job doesn't pass a SHA.
   parser.add_argument(
       'ignored',
       nargs='?',

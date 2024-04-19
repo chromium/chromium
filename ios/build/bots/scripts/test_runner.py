@@ -276,7 +276,7 @@ def print_process_output(proc,
 
     # This is a temporary mitigation to surface this issue so that
     # test runner can clear runtime cache for the next run.
-    # TODO(crbug.com/1370522): remove this workaround once the issue
+    # TODO(crbug.com/40241048): remove this workaround once the issue
     # is resolved.
     if HOST_IS_DOWN_ERROR in line:
       raise HostIsDownError()

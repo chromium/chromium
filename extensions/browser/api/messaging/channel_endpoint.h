@@ -19,7 +19,7 @@ namespace extensions {
 
 // Represents an endpoint (tab, frame or worker) of a message channel in a
 // render process or a native messaging host.
-// TODO(crbug.com/939594): Consolidate all classes/structs around extension
+// TODO(crbug.com/40617215): Consolidate all classes/structs around extension
 // message ports.
 class ChannelEndpoint {
  public:

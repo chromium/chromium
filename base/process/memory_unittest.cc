@@ -653,7 +653,7 @@ TEST_F(OutOfMemoryHandledTest, NewReleasesReservation) {
 
 // Android's allocator does not allow overcommits, so very large
 // UncheckedMallocs will yield OOM errors.
-// TODO(crbug.com/1112840): Fails on some Android bots.
+// TODO(crbug.com/40143202): Fails on some Android bots.
 #define MAYBE_UncheckedMallocDies DISABLED_UncheckedMallocDies
 #define MAYBE_UncheckedCallocDies DISABLED_UncheckedCallocDies
 TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedMallocDies) {

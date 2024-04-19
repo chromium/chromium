@@ -143,7 +143,7 @@ CourseWork::~CourseWork() = default;
 // static
 void CourseWork::RegisterJSONConverter(
     base::JSONValueConverter<CourseWork>* converter) {
-  // TODO(crbug.com/1444535): Handle base::Value::Dict here.
+  // TODO(crbug.com/40911919): Handle base::Value::Dict here.
   converter->RegisterRepeatedCustomValue<CourseWorkItem>(
       kApiResponseCourseWorkKey, &CourseWork::items_,
       &CourseWorkItem::ConvertCourseWorkItem);

@@ -1823,7 +1823,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
     case mojom::InputOperandLayout::kChannelsLast: {
       input_tensor_desc.Transpose(kNhwcToNchwPermutation);
 
-      // TODO(crbug.com/1476718): Figure out the optimal physical layout for
+      // TODO(crbug.com/40280069): Figure out the optimal physical layout for
       // output tensor.
       output_tensor_desc.Transpose(kNhwcToNchwPermutation);
       break;
@@ -2213,7 +2213,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
                                         DML_OPERATOR_ELEMENT_WISE_LOG>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
-    // TODO(crbug.com/1502731): Implement the negate operator directly by
+    // TODO(crbug.com/40943114): Implement the negate operator directly by
     // DML_ELEMENT_WISE_NEGATE_OPERATOR_DESC which is available in
     // DML_FEATURE_LEVEL_5_0.
     // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_negate_operator_desc#availability

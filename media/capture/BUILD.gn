@@ -568,7 +568,7 @@ test("capture_unittests") {
   }
 }
 
-# TODO(crbug.com/1484229): Move platform-specific files/targets into subdirectories.
+# TODO(crbug.com/40932597): Move platform-specific files/targets into subdirectories.
 copy("camera_hal_dispatcher_mojo_policy") {
   sources = [ "video/chromeos/camera_hal_dispatcher_mojo_policy.jsonc" ]
   outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]

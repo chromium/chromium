@@ -98,7 +98,7 @@ group("deps") {
       if (can_build_rust_unit_tests) {
         deps += [ "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_dylib_unittests" ]
 
-        # TODO(crbug.com/1442273): The shared library unittest EXE ends up
+        # TODO(crbug.com/40266882): The shared library unittest EXE ends up
         # requiring the DLL to run, even though it does not use the DLL.
         if (!is_win && !is_mac) {
           deps += [ "//build/rust/tests/test_rust_shared_library:test_rust_shared_library_unittests" ]

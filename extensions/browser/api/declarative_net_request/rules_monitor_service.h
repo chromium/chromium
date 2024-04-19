@@ -278,7 +278,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
       update_dynamic_or_session_rules_queue_map_;
 
   // Session scoped rules value corresponding to extensions.
-  // TODO(crbug.com/1152430): Currently we are storing session scoped rules in
+  // TODO(crbug.com/40733652): Currently we are storing session scoped rules in
   // two forms: one as a base::Value::List and second in the indexed format as
   // part of RulesetMatcher, leading to double memory usage. We should be able
   // to do away with the base::Value::List representation.

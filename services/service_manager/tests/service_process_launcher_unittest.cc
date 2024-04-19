@@ -69,7 +69,7 @@ class ServiceProcessLauncherDelegateImpl
 };
 
 // TODO(qsr): Multiprocess service manager tests are not supported on android.
-// TODO(crbug.com/1288830): Flakes on all platforms.
+// TODO(crbug.com/40817146): Flakes on all platforms.
 TEST(ServiceProcessLauncherTest, DISABLED_StartJoin) {
   base::test::TaskEnvironment task_environment;
 

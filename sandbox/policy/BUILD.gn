@@ -96,7 +96,7 @@ component("policy") {
       deps += [ "//media/gpu:buildflags" ]
     }
     if (is_linux) {
-      deps += [ "//net" ]  # TODO(crbug.com/1312226): remove this.
+      deps += [ "//net" ]  # TODO(crbug.com/40220507): remove this.
     }
     if (enable_oop_printing) {
       sources += [
@@ -204,7 +204,7 @@ buildflag_header("chromecast_sandbox_allowlist_buildflags") {
   flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_castos" ]
 }
 
-# TODO(crbug.com/1097376): Figure out a better organization for //sandbox
+# TODO(crbug.com/40136586): Figure out a better organization for //sandbox
 # tests.
 source_set("tests") {
   testonly = true

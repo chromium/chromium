@@ -175,7 +175,7 @@ ExtensionMessagePort::ExtensionMessagePort(
   CHECK(tab);
   frame_tracker_->TrackTabFrames(tab);
   if (include_child_frames) {
-    // TODO(https://crbug.com/1227787) We don't yet support MParch for
+    // TODO(crbug.com/40189370) We don't yet support MParch for
     // prerender so make sure `include_child_frames` is only provided for
     // primary main frames.
     CHECK(render_frame_host->IsInPrimaryMainFrame());
@@ -745,7 +745,7 @@ bool ExtensionMessagePort::ShouldSkipFrameForBFCache(
     // enabled, so no message will be sent to the BFCached target. There could
     // be some messages that were created before the ExtensionMessagePort is
     // disconnected, and they should be discarded.
-    // TODO(crbug.com/1488379): clean up the flag.
+    // TODO(crbug.com/40283601): clean up the flag.
     if (!base::FeatureList::IsEnabled(
             features::kDisconnectExtensionMessagePortWhenPageEntersBFCache)) {
       content::BackForwardCache::DisableForRenderFrameHost(

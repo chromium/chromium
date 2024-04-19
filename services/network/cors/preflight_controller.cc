@@ -563,7 +563,7 @@ class PreflightController::PreflightLoader final {
     std::optional<std::string> name =
         GetHeaderString(head.headers, header_names::kPrivateNetworkDeviceName);
 
-    // TODO(https://crbug.com/1455395): `target_ip_address_space` should be
+    // TODO(crbug.com/40272755): `target_ip_address_space` should be
     // checked in `CorsURLLoaderFactory`. Remove the following bit after that.
     if (!url_loader_network_service_observer_ ||
         original_request_.target_ip_address_space ==

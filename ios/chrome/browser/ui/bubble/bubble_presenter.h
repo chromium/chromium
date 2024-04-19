@@ -27,7 +27,7 @@ namespace segmentation_platform {
 class DeviceSwitcherResultDispatcher;
 }  // namespace segmentation_platform
 
-// TODO(crbug.com/1454553): refactor the class.
+// TODO(crbug.com/40272358): refactor the class.
 // Object handling the presentation of the different bubbles tips. The class is
 // holding all the bubble presenters.
 @interface BubblePresenter : NSObject <HelpCommands>

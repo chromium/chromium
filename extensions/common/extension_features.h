@@ -65,7 +65,7 @@ BASE_DECLARE_FEATURE(kRestrictFileURLNavigation);
 
 // Whether extension contexts can use SharedArrayBuffers unconditionally (i.e.
 // without requiring cross origin isolation).
-// TODO(crbug.com/1184892): Flip this in M95.
+// TODO(crbug.com/40752831): Flip this in M95.
 BASE_DECLARE_FEATURE(kAllowSharedArrayBuffersUnconditionally);
 
 // Enables the UI in the install prompt which lets a user choose to withhold

@@ -1092,7 +1092,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // from calling nested StartWorker(). A nested StartWorker() call makes `this`
   // enter an invalid state (i.e., `start_callbacks_` is empty even when
   // `running_status()` is STARTING) so it should not happen.
-  // TODO(crbug.com/1161800): Figure out a way to disallow a callback to
+  // TODO(crbug.com/40739069): Figure out a way to disallow a callback to
   // re-enter StartWorker().
   bool is_running_start_callbacks_ = false;
   std::vector<StatusCallback> start_callbacks_;

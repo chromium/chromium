@@ -97,7 +97,7 @@ class Refresh():
     """Update .test file expectations to reflect the changes in the newly merged
     Server Predictions"""
     cmd = '...'
-    #TODO(crbug.com/1300642)
+    #TODO(crbug.com/40216356)
     print('Not Implemented')
 
 

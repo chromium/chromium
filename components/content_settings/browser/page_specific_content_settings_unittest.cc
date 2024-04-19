@@ -920,7 +920,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, SiteDataAccessed) {
     std::unique_ptr<content::NavigationSimulator> navigation =
         content::NavigationSimulator::CreateRendererInitiated(
             prerender_url, web_contents()->GetPrimaryMainFrame());
-    // TODO(https://crbug.com/1181763): Investigate how default referrer value
+    // TODO(crbug.com/40170513): Investigate how default referrer value
     // is set and update here accordingly.
     navigation->SetReferrer(blink::mojom::Referrer::New(
         web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
@@ -1013,7 +1013,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, ContentAllowedAndBlocked) {
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
           prerender_url, web_contents()->GetPrimaryMainFrame());
-  // TODO(https://crbug.com/1181763): Investigate how default referrer value is
+  // TODO(crbug.com/40170513): Investigate how default referrer value is
   // set and update here accordingly.
   navigation->SetReferrer(blink::mojom::Referrer::New(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),

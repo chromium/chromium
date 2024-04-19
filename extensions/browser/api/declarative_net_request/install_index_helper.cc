@@ -36,7 +36,7 @@ InstallIndexHelper::Result CombineResults(
   size_t enabled_regex_rules_count = 0;
   base::TimeDelta total_index_and_persist_time;
 
-  // TODO(crbug.com/754526): Limit the number of install warnings across all
+  // TODO(crbug.com/40534665): Limit the number of install warnings across all
   // rulesets.
 
   // Note |results| may be empty.

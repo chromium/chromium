@@ -32,7 +32,7 @@ TestDocumentLoader::TestDocumentLoader(
 
 TestDocumentLoader::~TestDocumentLoader() = default;
 
-// TODO(crbug.com/1056817): Consider faking out URLLoaderWrapper, to avoid
+// TODO(crbug.com/40120473): Consider faking out URLLoaderWrapper, to avoid
 // simulating the behavior of DocumentLoaderImpl (although that would result in
 // 64 KiB loads).
 bool TestDocumentLoader::SimulateLoadData(uint32_t max_bytes) {

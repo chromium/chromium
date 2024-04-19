@@ -961,7 +961,7 @@ void URLLoader::ProcessOutboundSharedStorageInterceptor() {
   ScheduleStart();
 }
 
-// TODO(https://crbug.com/1410256): Parallelize Private State Tokens and
+// TODO(crbug.com/40254265): Parallelize Private State Tokens and
 // Attribution operations.
 void URLLoader::ProcessOutboundAttributionInterceptor() {
   if (!attribution_request_helper_) {

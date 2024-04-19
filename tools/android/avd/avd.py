@@ -145,7 +145,7 @@ def main(raw_args):
   subparser.add_argument('--no-read-only',
                          action='store_false',
                          dest='read_only')
-  # TODO(crbug.com/1278096): Default to False when AVDs with sideloaded
+  # TODO(crbug.com/40208043): Default to False when AVDs with sideloaded
   # system apks are rolled.
   subparser.set_defaults(read_only=True)
   subparser.add_argument(

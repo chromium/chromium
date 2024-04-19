@@ -231,7 +231,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
     // because it will call _exit(0) and kill the process before the browser
     // side is ready to exit.
     ANNOTATE_LEAKING_OBJECT_PTR(process_.get());
-    // TODO(crbug.com/1219038): `StopIOThreadForTesting()` is a stop-gap
+    // TODO(crbug.com/40771960): `StopIOThreadForTesting()` is a stop-gap
     // solution to fix flaky tests (see crbug.com/1126157). The underlying
     // reason for this issue is that the `RenderThreadImpl` created in `SetUp()`
     // above actually shares its main thread with the browser's, which is

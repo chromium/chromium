@@ -196,7 +196,7 @@ class SnapSearchResult {
   // then this will be a position inside the range. In the covered case, the
   // result from FindClosestValidArea has a snap_offset_ equal to the
   // intended_position() of the SnapSelectionStrategy.
-  // TODO(crbug.com/1472410): With refactoring it may be possible to replace
+  // TODO(crbug.com/40278621): With refactoring it may be possible to replace
   // snap_offset_ and covered_range_ with a single range field with start == end
   // for "aligned" snap positions.
   float snap_offset_;

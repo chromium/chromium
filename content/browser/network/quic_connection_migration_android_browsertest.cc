@@ -161,7 +161,7 @@ class QuicConnectionMigrationTest : public ContentBrowserTest {
 };
 
 // Currently trybots skip this test because trybots disabled real networks.
-// TODO(https://crbug.com/1486376): Run this test once the infra
+// TODO(crbug.com/40282869): Run this test once the infra
 // supports enabling networks.
 IN_PROC_BROWSER_TEST_F(QuicConnectionMigrationTest, Basic) {
   if (!EnsureWifiEnabled()) {
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(QuicConnectionMigrationTest, Basic) {
 }
 
 // Currently trybots skip this test because trybots disabled real networks.
-// TODO(https://crbug.com/1486376): Run this test once the infra
+// TODO(crbug.com/40282869): Run this test once the infra
 // supports enabling networks.
 IN_PROC_BROWSER_TEST_F(QuicConnectionMigrationTest,
                        ConnectionCloseDuringMigration) {

@@ -596,7 +596,7 @@ bool ThreadController::RunLevelTracker::TimeKeeper::ShouldRecordNow(
   // cycle in which `histogram_` is enabled. Only start recording from there.
   // Ignore any nested phases. `reqs` may indicate exceptions to this.
   //
-  // TODO(crbug.com/1329717): In a follow-up, we could probably always be
+  // TODO(crbug.com/40226913): In a follow-up, we could probably always be
   // tracking the phases of the pump and merely ignore the reporting if
   // `histogram_` isn't set.
   switch (reqs) {

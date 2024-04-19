@@ -230,7 +230,7 @@ bool PlatformSensor::UpdateSensorInternal(const ConfigMap& configurations) {
     return true;
   }
 
-  // TODO(https://crbug.com/1427302): `is_active_` needs to be set to true
+  // TODO(crbug.com/40261729): `is_active_` needs to be set to true
   // before before calling `StartSensor` because
   // `FakePlatformSensor::StartSensor` calls
   // `PlatformSensor::UpdateSharedBuffer` before returning, which without this

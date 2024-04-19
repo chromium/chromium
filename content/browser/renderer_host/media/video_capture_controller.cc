@@ -166,9 +166,10 @@ VideoCaptureController::BufferContext::CloneBufferHandle() {
     // VideoCaptureBufferPool which, among other use cases, provides decoder
     // output buffers.
     //
-    // TODO(crbug.com/793446): BroadcastingReceiver::BufferContext also defines
-    // CloneBufferHandle and independently decides on handle permissions. The
-    // permissions should be coordinated between these two classes.
+    // TODO(crbug.com/40553989): BroadcastingReceiver::BufferContext also
+    // defines CloneBufferHandle and independently decides on handle
+    // permissions. The permissions should be coordinated between these two
+    // classes.
     return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
         buffer_handle_->get_unsafe_shmem_region().Duplicate());
   } else if (buffer_handle_->is_read_only_shmem_region()) {

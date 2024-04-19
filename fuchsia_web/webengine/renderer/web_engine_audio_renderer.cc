@@ -163,7 +163,7 @@ void WebEngineAudioRenderer::InitializeStream() {
   // AAC streams require bitstream conversion. Without it the demuxer may
   // produce decoded stream without ADTS headers which are required for AAC
   // streams in AudioConsumer.
-  // TODO(crbug.com/1120095): Reconsider this logic.
+  // TODO(crbug.com/40145747): Reconsider this logic.
   if (demuxer_stream_->audio_decoder_config().codec() ==
       media::AudioCodec::kAAC) {
     demuxer_stream_->EnableBitstreamConverter();

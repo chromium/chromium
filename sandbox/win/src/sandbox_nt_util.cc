@@ -222,8 +222,8 @@ bool MapGlobalMemory() {
       g_shared_policy_memory =
           reinterpret_cast<char*>(g_shared_IPC_memory) + g_shared_IPC_size;
     }
-    // TODO(1435571) make this a read-only mapping in the child, distinct from
-    // the IPC & policy memory as it should be const.
+    // TODO(crbug.com/40265190) make this a read-only mapping in the child,
+    // distinct from the IPC & policy memory as it should be const.
     if (g_delegate_data_size > 0) {
       g_shared_delegate_data = reinterpret_cast<char*>(g_shared_IPC_memory) +
                                g_shared_IPC_size + g_shared_policy_size;

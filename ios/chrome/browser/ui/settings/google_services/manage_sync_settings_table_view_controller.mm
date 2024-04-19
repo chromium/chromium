@@ -182,8 +182,8 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   if (!indexPath) {
     // No need to reload if the item is not in the model. This would also cause
     // a crash below since NSArrays cannot contain nil.
-    // TODO(crbug.com/1485554): Better understand the crash root cause and CHECK
-    // instead of no-op.
+    // TODO(crbug.com/40073025): Better understand the crash root cause and
+    // CHECK instead of no-op.
     return;
   }
   // To avoid animation glitches related to crbug.com/1469539.

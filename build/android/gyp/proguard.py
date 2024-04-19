@@ -485,7 +485,8 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
 
         # Found in: com/facebook/fbui/textlayoutbuilder/StaticLayoutHelper
         'android.text.StaticLayout.<init>',
-        # TODO(crbug/1426964): Remove once chrome builds with Android U SDK.
+        # TODO(crbug.com/40261573): Remove once chrome builds with Android U
+        # SDK.
         ' android.',
 
         # Explicictly guarded by try (NoClassDefFoundError) in Flogger's

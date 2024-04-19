@@ -136,7 +136,7 @@ AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
 void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   const auto& impression = navigation_handle->GetImpression();
 
-  // TODO(crbug.com/1428315): Consider checking for navigations taking place in
+  // TODO(crbug.com/40262156): Consider checking for navigations taking place in
   // a prerendered main frame.
 
   // Impression navigations need to navigate the primary main frame to be valid.

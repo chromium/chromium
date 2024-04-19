@@ -85,7 +85,7 @@ try_.builder(
 
 try_.builder(
     name = "mega-cq-launcher",
-    # TODO(crbug.com/1227778): Document the Mega-CQ somewhere in markdown, then
+    # TODO(crbug.com/40189365): Document the Mega-CQ somewhere in markdown, then
     # link to it in the description here.
     description_html = "Triggers all builders needed for Chromium's Mega CQ.",
     executable = "recipe:chromium/mega_cq_launcher",

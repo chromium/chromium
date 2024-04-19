@@ -600,8 +600,8 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       ]
       flags.append('--gtest_list_tests')
 
-      # TODO(crbug.com/726880): Remove retries when no longer necessary.
-      for i in range(0, retries+1):
+      # TODO(crbug.com/40522854): Remove retries when no longer necessary.
+      for i in range(0, retries + 1):
         logging.info('flags:')
         for f in flags:
           logging.info('  %s', f)

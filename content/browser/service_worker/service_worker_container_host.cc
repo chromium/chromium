@@ -298,7 +298,7 @@ void ServiceWorkerContainerHost::Register(
   // RegisterServiceWorker() can drop the callback on service worker
   // context core shutdown (i.e., browser session shutdown or
   // DeleteAndStartOver()) and a DCHECK would happen.
-  // TODO(crbug.com/1002776): Remove this wrapper and have the Mojo connections
+  // TODO(crbug.com/40646828): Remove this wrapper and have the Mojo connections
   // drop during shutdown, so the callback can be dropped without crash. Note
   // that we currently would need to add this WrapCallback to *ALL* Mojo
   // callbacks that go through ServiceWorkerContextCore or its members like
@@ -1086,7 +1086,7 @@ void ServiceWorkerContainerHost::UpdateUrls(
   DCHECK((origin_to_dcheck.opaque() && key_.origin().opaque()) ||
          origin_to_dcheck.IsSameOriginWith(key_.origin()))
       << origin_to_dcheck << " and " << key_.origin() << " should be equal.";
-  // TODO(crbug.com/1402965): verify that `top_frame_origin` matches the
+  // TODO(crbug.com/40251360): verify that `top_frame_origin` matches the
   // `top_level_site` of `storage_key`, in most cases.
   //
   // This is currently not the case if:

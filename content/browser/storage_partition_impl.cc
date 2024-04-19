@@ -2053,7 +2053,7 @@ void StoragePartitionImpl::OnAuthRequired(
     // has been deleted. Treating this as an invalid process ID will cancel the
     // auth, which is the same outcome as if the ServiceWorker's process were
     // used.
-    // TODO(https://crbug.com/1322751): Update the ServiceWorker code to
+    // TODO(crbug.com/40224422): Update the ServiceWorker code to
     // recognize when the RenderFrameHost goes away and not use
     // CreateForRenderFrameHost above.
     if (context.navigation_or_document()) {
@@ -2905,8 +2905,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     // have information on the page/context that uses the public key origin,
     // therefore we don't check origins and instead just delete all rows in the
     // given time range.
-    // TODO(crbug.com/1284971): Consider fine-grained deletion of public keys.
-    // TODO(crbug.com/1286173): Consider adding aggregation service origins to
+    // TODO(crbug.com/40210305): Consider fine-grained deletion of public keys.
+    // TODO(crbug.com/40815455): Consider adding aggregation service origins to
     // `CookiesTreeModel`.
     aggregation_service->ClearData(
         begin, end, generic_filter,

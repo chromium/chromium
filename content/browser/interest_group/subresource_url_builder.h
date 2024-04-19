@@ -23,7 +23,7 @@ class CONTENT_EXPORT SubresourceUrlBuilder {
   // process, except the renderer process ID (which is held by the
   // AuctionURLLoaderFactoryProxy, since it is per-frame).
   //
-  // TODO(crbug.com/1355887): Once subresource bundles support shared ownership
+  // TODO(crbug.com/40860075): Once subresource bundles support shared ownership
   // handle types, replace this class with that handle type. That way, this
   // struct will also hold shared ownership of all the subresource bundles.
   struct CONTENT_EXPORT BundleSubresourceInfo {

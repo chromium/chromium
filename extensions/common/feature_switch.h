@@ -83,7 +83,7 @@ class FeatureSwitch {
   std::string GetLegacyDisableFlag() const;
   bool ComputeValue() const;
 
-  // TODO(crbug.com/1449286): detect under BRP.
+  // TODO(crbug.com/40269737): detect under BRP.
   raw_ptr<const base::CommandLine, DanglingUntriaged> command_line_;
   const char* switch_name_;
   bool default_value_;

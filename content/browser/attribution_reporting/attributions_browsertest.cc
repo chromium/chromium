@@ -1067,7 +1067,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AttributionsPrerenderBrowserTest,
                          ::testing::Bool());
 
-// TODO(crbug.com/1344264): these tests are flaky on most release bots.
+// TODO(crbug.com/40231714): these tests are flaky on most release bots.
 #if defined(NDEBUG)
 #define ATTRIBUTION_PRERENDER_BROWSER_TEST(TEST_NAME) \
   IN_PROC_BROWSER_TEST_P(AttributionsPrerenderBrowserTest, DISABLED_##TEST_NAME)

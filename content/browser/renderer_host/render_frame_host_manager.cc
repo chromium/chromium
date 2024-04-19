@@ -1027,7 +1027,7 @@ void RenderFrameHostManager::UnloadOldFrame(
   // To prevent the cancellation be used as a channel from fenced frames to
   // the primary main frame, we won't cancel modal dialogs for fenced frame
   // navigations.
-  // TODO(crbug.com/1249466): Update CancelModalDialogsForRenderManager
+  // TODO(crbug.com/40791259): Update CancelModalDialogsForRenderManager
   // to take a RFH/RPH and only clear relevant dialogs instead of all dialogs in
   // the WebContents.
   if (current_frame_host()->GetLifecycleState() !=

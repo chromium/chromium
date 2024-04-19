@@ -1163,7 +1163,7 @@ void EventRouter::DispatchEventToProcess(
         << " but this shouldn't be possible";
   }
   if (!feature_available_to_context) {
-    // TODO(crbug.com/1412151): Ideally it shouldn't be possible to reach here,
+    // TODO(crbug.com/40255138): Ideally it shouldn't be possible to reach here,
     // because access is checked on registration. However, we don't always
     // refresh the list of events an extension has registered when other factors
     // which affect availability change (e.g. API allowlists changing). Those
@@ -1415,7 +1415,7 @@ void EventRouter::DispatchPendingEvent(
     return;
   DCHECK(event);
 
-  // TODO(https://crbug.com/1442744): We shouldn't dispatch events to processes
+  // TODO(crbug.com/40267088): We shouldn't dispatch events to processes
   // that don't have a listener for that event. Currently, we enforce this for
   // the webRequest API (since a bug there can result in a request hanging
   // indefinitely). We don't do this in all cases yet because extensions may be

@@ -322,7 +322,7 @@ class ObserverList {
   // Determine whether a particular observer is in the list.
   bool HasObserver(const ObserverType* obs) const {
     // Client code passing null could be confused by the treatment of observers
-    // removed mid-iteration. TODO(https://crbug.com/876588): This should
+    // removed mid-iteration. TODO(crbug.com/40590447): This should
     // probably DCHECK, but some client code currently does pass null.
     if (obs == nullptr)
       return false;

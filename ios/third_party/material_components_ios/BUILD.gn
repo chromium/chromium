@@ -1581,7 +1581,7 @@ config("config") {
   include_dirs = _mdc_include_dirs
 }
 
-# TODO(crbug.com/1481650): Necessary to build those third-party dependencies.
+# TODO(crbug.com/40281680): Necessary to build those third-party dependencies.
 # This config as well as disable_nullability_completeness and
 # disable_availability have been audited and that do not cause deprecation
 # leaks to the rest of chromium.

@@ -95,9 +95,9 @@ def CheckoutCrubit(commit, dir):
 
 
 def BuildCrubit(build_mac_arm):
-    # TODO(https://crbug.com/1337346): Use locally built Rust instead of having
+    # TODO(crbug.com/40229251): Use locally built Rust instead of having
     # Bazel always download the whole Rust toolchain from the internet.
-    # TODO(https://crbug.com/1337348): Use crates from chromium/src/third_party/rust.
+    # TODO(crbug.com/40229252): Use crates from chromium/src/third_party/rust.
 
     # This environment variable is consumed by crubit/bazel/llvm.bzl and will
     # configure Crubit's build to include and link against LLVM+Clang headers

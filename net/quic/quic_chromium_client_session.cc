@@ -2115,7 +2115,7 @@ int QuicChromiumClientSession::HandleWriteError(
           weak_factory_.GetWeakPtr(), error_code,
           // UnsafeDanglingUntriaged triggered by test:
           // QuicSessionPoolTest.MigrateSessionOnSyncWriteErrorPauseBeforeConnected
-          // TODO(https://crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+          // TODO(crbug.com/40061562): Remove `UnsafeDanglingUntriaged`
           base::UnsafeDanglingUntriaged(connection()->writer())));
 
   ignore_read_error_ = true;

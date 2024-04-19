@@ -27,7 +27,7 @@ namespace chrome_pdf {
 // orientation of pages.
 class DocumentLayout final {
  public:
-  // TODO(crbug.com/1144505): Add `kTwoUpEven` page spread support.
+  // TODO(crbug.com/40155509): Add `kTwoUpEven` page spread support.
   enum class PageSpread {
     kOneUp = 0,     // One page per spread.
     kTwoUpOdd = 1,  // Two pages per spread, with odd pages first.

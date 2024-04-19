@@ -270,7 +270,7 @@ TEST_F(WebBundleManagerTest,
   // manually here, as network::URLLoaderFactory does, and verify that the
   // subresource request is correctly loaded.
   //
-  // TODO(crbug.com/1158709): Find a better way to test this scenario.
+  // TODO(crbug.com/40161416): Find a better way to test this scenario.
 
   WebBundleManager manager;
 

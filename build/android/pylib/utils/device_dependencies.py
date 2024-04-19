@@ -139,7 +139,7 @@ def GetDataDependencies(runtime_deps_path):
       os.path.abspath(os.path.join(output_directory, r))
       for r in rel_host_files]
   filtered_abs_host_files = _FilterDataDeps(abs_host_files)
-  # TODO(crbug.com/752610): Filter out host executables, and investigate
+  # TODO(crbug.com/40533647): Filter out host executables, and investigate
   # whether other files could be filtered as well.
   return [(f, DevicePathComponentsFor(f, output_directory))
           for f in filtered_abs_host_files]

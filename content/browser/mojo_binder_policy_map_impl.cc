@@ -120,7 +120,7 @@ void RegisterChannelAssociatedPoliciesForSameOriginPrerendering(
     MojoBinderPolicyMap& map) {
   // Basic skeleton. All of them are critical to load a page so their policies
   // have to be kGrant.
-  // TODO(https://crbug.com/1259007): Message-level control should be performed.
+  // TODO(crbug.com/40201285): Message-level control should be performed.
   map.SetAssociatedPolicy<mojom::FrameHost>(MojoBinderAssociatedPolicy::kGrant);
   map.SetAssociatedPolicy<blink::mojom::LocalFrameHost>(
       MojoBinderAssociatedPolicy::kGrant);
@@ -220,7 +220,7 @@ class BrowserInterfaceBrokerMojoBinderPolicyMapHolder {
   }
 
  private:
-  // TODO(https://crbug.com/1145976): Set default policy map for content/.
+  // TODO(crbug.com/40156088): Set default policy map for content/.
   // Changes to `same_origin_map_` require security review.
   MojoBinderPolicyMapImpl same_origin_map_;
 

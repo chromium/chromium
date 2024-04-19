@@ -1315,7 +1315,7 @@ void ContentMainRunnerImpl::Shutdown() {
   // (like Android) does not run this shutdown, we also need to ensure that we
   // permit sync primitives during shutdown. If we don't do this, eg, tearing
   // down test fixtures will often fail.
-  // TODO(crbug.com/800808): ideally these would both be scoped allowances.
+  // TODO(crbug.com/40557572): ideally these would both be scoped allowances.
   // That would be one of the first step to ensure no persistent work is being
   // done after ThreadPoolInstance::Shutdown() in order to move towards atomic
   // shutdown.

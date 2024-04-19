@@ -76,7 +76,7 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   // being signed out.
   IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state);
 
-  // TODO(crbug.com/171406): Change AboutSigninInternalsFactory to load on
+  // TODO(crbug.com/40299450): Change AboutSigninInternalsFactory to load on
   // startup once bug has been fixed.
   ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
 

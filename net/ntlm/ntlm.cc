@@ -293,7 +293,7 @@ void GenerateNtlmHashV2(const std::u16string& domain,
   // NOTE: According to [MS-NLMP] Section 3.3.2 only the username and not the
   // domain is uppercased.
 
-  // TODO(https://crbug.com/1051924): Using a locale-sensitive upper casing
+  // TODO(crbug.com/40674019): Using a locale-sensitive upper casing
   // algorithm is problematic. A more predictable approach would be to only
   // uppercase ASCII characters, so the hash does not change depending on the
   // user's locale.

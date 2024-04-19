@@ -76,8 +76,8 @@ class MEDIA_EXPORT BitstreamBuffer {
 
   // If a region needs to be taken from a const BitstreamBuffer, it must be
   // duplicated. This function makes that explicit.
-  // TODO(crbug.com/793446): this is probably only needed by legacy IPC, and can
-  // be removed once that is converted to the new shared memory API.
+  // TODO(crbug.com/40553989): this is probably only needed by legacy IPC, and
+  // can be removed once that is converted to the new shared memory API.
   base::UnsafeSharedMemoryRegion DuplicateRegion() const {
     return region_.Duplicate();
   }

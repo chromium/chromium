@@ -154,7 +154,7 @@ class AudioEncoder::ImplBase
       audio_frame->rtp_timestamp = frame_rtp_timestamp_;
       audio_frame->reference_time = frame_capture_time_;
 
-      // TODO(https://crbug.com/1478375): get accurate timestamps for both
+      // TODO(crbug.com/40280546): get accurate timestamps for both
       // capture begin and capture end.
       audio_frame->capture_begin_time = frame_capture_time_;
       audio_frame->capture_end_time = frame_capture_time_;

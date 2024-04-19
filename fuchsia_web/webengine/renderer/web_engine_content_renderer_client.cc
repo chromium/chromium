@@ -289,7 +289,7 @@ bool WebEngineContentRendererClient::IsSupportedVideoType(
   return IsSupportedHardwareVideoCodec(type);
 }
 
-// TODO(crbug.com/1067435): Look into the ChromiumContentRendererClient version
+// TODO(crbug.com/40682958): Look into the ChromiumContentRendererClient version
 // of this method and how it may apply here.
 bool WebEngineContentRendererClient::DeferMediaLoad(
     content::RenderFrame* render_frame,

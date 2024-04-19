@@ -465,7 +465,7 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
     // libraries).
     // On ChromeOS none of these third party libraries are installed, so there
     // is no need to discourage getaddrinfo().
-    // TODO(crbug.com/1312224): in the future this should depend on the
+    // TODO(crbug.com/40220505): in the future this should depend on the
     // libraries listed in /etc/nsswitch.conf, and should be a
     // SandboxLinux::Options option.
     DiscourageGetaddrinfo();

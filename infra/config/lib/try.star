@@ -403,7 +403,7 @@ def _orchestrator_builder(
     if not builder_group:
         fail("builder_group must be specified")
 
-    # TODO(crbug/1287228): Make this the default once all CQ builders are
+    # TODO(crbug.com/40211151): Make this the default once all CQ builders are
     # migrated to be srcless
     if use_orchestrator_pool:
         kwargs.setdefault("pool", "luci.chromium.try.orchestrator")

@@ -1042,7 +1042,7 @@ void PageHandler::CaptureSnapshot(
 
 // Sets a clip with full page dimensions. Calls CaptureScreenshot with updated
 // value to proceed with capturing the full page screenshot.
-// TODO(crbug.com/1363574): at the point this method is called, the page could
+// TODO(crbug.com/40238745): at the point this method is called, the page could
 // have changed its size.
 void PageHandler::CaptureFullPageScreenshot(
     Maybe<std::string> format,

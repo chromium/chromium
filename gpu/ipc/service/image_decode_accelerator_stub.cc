@@ -196,7 +196,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     return;
   }
 
-  // TODO(crbug.com/995883): the output_size parameter is going away, so this
+  // TODO(crbug.com/40641220): the output_size parameter is going away, so this
   // validation is not needed. Checking if the size is too small should happen
   // at the level of the decoder (since that's the component that's aware of its
   // own capabilities).

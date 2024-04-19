@@ -303,7 +303,7 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   std::optional<std::string> sha256_script_checksum_;
 
   std::optional<blink::ServiceWorkerRouterRules> router_rules_;
-  // TODO(crbug.com/1501047): It may be better to make this an optional, so it
+  // TODO(crbug.com/40941292): It may be better to make this an optional, so it
   // is possible to distinguish between unset and kStopped, which are not really
   // equivalent.
   blink::EmbeddedWorkerStatus initial_running_status_ =

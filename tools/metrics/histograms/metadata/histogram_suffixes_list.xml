@@ -3944,7 +3944,7 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ServiceWorker_EventType" separator="_">
-<!-- TODO(crbug.com/1353689): rewrite with the new way. -->
+<!-- TODO(crbug.com/40858621): rewrite with the new way. -->
 
   <suffix name="ACTIVATE" label="ACTIVATE"/>
   <suffix name="BACKGROUND_FETCH_ABORT" label=""/>

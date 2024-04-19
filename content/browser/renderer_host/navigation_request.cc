@@ -4829,7 +4829,7 @@ void NavigationRequest::OnRequestFailedInternal(
   }
 
   is_mhtml_or_subframe_ = false;
-  // TODO(https://crbug.com/1158370): Apparently, error pages inherit sandbox
+  // TODO(crbug.com/40736932): Apparently, error pages inherit sandbox
   // flags from their parent/opener. Document loaded from the network
   // shouldn't have any influence over Chrome's internal error page. We should
   // define our own flags, preferably the strictest ones instead.
@@ -9148,7 +9148,7 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
     // (https://crbug.com/1254770) and guest views (https://crbug.com/1261928)
     // since those do not use MPArch.
     //
-    // TODO(https://crbug.com/1420576): Determine how to treat portals.
+    // TODO(crbug.com/40258825): Determine how to treat portals.
     // TODO(https://crbug.com/1420577): Determine how to treat guest views.
     //
     // NOTE: ShadowDOM-based fenced frames are treated as `kSubframe`.
@@ -9224,7 +9224,7 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
       return client_security_state;
     }
 
-    // TODO(https://crbug.com/1420574): Determine how to treat prerendered
+    // TODO(crbug.com/40258824): Determine how to treat prerendered
     // main frames.
     case FrameType::kPrerenderMainFrame:
       return nullptr;
@@ -10195,7 +10195,7 @@ void NavigationRequest::CheckSoftNavigationHeuristicsInvariants() {
   if (!commit_params_->soft_navigation_heuristics_task_id) {
     return;
   }
-  // TODO(https://crbug.com/1487628): Checking for a restore here, to
+  // TODO(crbug.com/40283341): Checking for a restore here, to
   // accommodate for restored same document navigations. They are currently
   // NOT executed as same-document. The task ID is cleared to ensure it never
   // leak toward a different document.

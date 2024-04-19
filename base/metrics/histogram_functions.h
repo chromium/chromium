@@ -14,8 +14,8 @@
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
 
-// TODO(crbug/1265443): Update this file's function comments to provide more
-// detail, like histogram_macros.h.
+// TODO(crbug.com/40801421): Update this file's function comments to provide
+// more detail, like histogram_macros.h.
 //
 // Functions for recording metrics.
 //

@@ -83,7 +83,7 @@ void WebFileHandlersPermissionHandler::Confirm(
   CHECK(!base_names.empty());
 
   // Default installed extensions can skip the file launch dialog.
-  // TODO(crbug.com/1448893): Remove the allowlist check after development.
+  // TODO(crbug.com/40269541): Remove the allowlist check after development.
   // Also, for development and manual testing purposes, the manifest_features
   // allowlist can also bypass the dialog.
   if (WebFileHandlers::CanBypassPermissionDialog(extension)) {

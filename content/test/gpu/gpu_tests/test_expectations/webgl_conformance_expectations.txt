@@ -672,7 +672,7 @@ crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/tex
 
 ## ChromeOS: affecting all devices. ##
 
-# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
+# TODO(crbug.com/40207367) uncomment after fix for updated part of test applies
 # crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 crbug.com/957807 [ angle-opengles chromeos chromeos-board-amd64-generic mesa_ge_21.0 passthrough target-cpu-64 ] conformance/uniforms/uniform-samplers-test.html [ Failure ]

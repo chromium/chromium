@@ -111,7 +111,7 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
       std::move(fenced_frame_reporter));
 }
 
-// TODO(crbug.com/1335504): Consider moving this function to
+// TODO(crbug.com/40847123): Consider moving this function to
 // third_party/blink/common/fenced_frame/fenced_frame_utils.cc.
 bool IsValidFencedFrameReportingURL(const GURL& url) {
   if (!url.is_valid()) {

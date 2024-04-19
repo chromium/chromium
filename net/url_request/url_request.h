@@ -286,7 +286,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // how that behavior changes when following redirects. This may only be
   // changed before Start() is called.
   //
-  // TODO(https://crbug.com/1060631): This isn't actually used yet for SameSite
+  // TODO(crbug.com/40122112): This isn't actually used yet for SameSite
   // cookies. Update consumers and fix that.
   void set_isolation_info(const IsolationInfo& isolation_info) {
     isolation_info_ = isolation_info;

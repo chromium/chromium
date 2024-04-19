@@ -94,7 +94,7 @@
   cell.textLabel.text = deviceID;
   DeviceInfo* info = [self.deviceInfos objectForKey:deviceID];
   cell.detailTextLabel.text = info.deviceName;
-  // TODO(crbug.com/1431447): Display more information if required.
+  // TODO(crbug.com/40263537): Display more information if required.
   return cell;
 }
 
@@ -156,7 +156,7 @@
     UITableViewCell* updatingCell =
         [self.tableView cellForRowAtIndexPath:updatingPath];
     updatingCell.detailTextLabel.text = deviceName;
-    // TODO(crbug.com/1431447): Display more information if required.
+    // TODO(crbug.com/40263537): Display more information if required.
   } else {
     if (!self.isViewLoaded || !self.view.window) {
       // If the view disappears, it skips updating the table.

@@ -5,6 +5,6 @@
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 
 declare_args() {
-  # TODO(crbug/1321052): Replace use_real_dbus_clients with this.
+  # TODO(crbug.com/40223748): Replace use_real_dbus_clients with this.
   use_real_chromeos_services = use_real_dbus_clients
 }

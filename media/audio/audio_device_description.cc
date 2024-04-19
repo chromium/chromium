@@ -32,7 +32,7 @@ constexpr char kAirpodsNameSubstring[] = "AirPods";  // crbug.com/1163072
 // both microphone and speakers.  "... Stereo" is another special profile
 // which supports higher quality audio. Windows 11 merges the two to avoid
 // confusing the user.
-// TODO(crbug.com/1412400): The strings are localized by the OS which
+// TODO(crbug.com/40255253): The strings are localized by the OS which
 // should be taken into account.
 constexpr char kProfileNameHandsFree[] = "Hands-Free AG Audio";
 constexpr char kProfileNameStereo[] = "Stereo";

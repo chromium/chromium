@@ -202,7 +202,7 @@
     # them probably should use zip_helpers.zip_directory() instead.
     'mini_installer_tests.zip',
 
-    # TODO(crbug.com/1453509): Upstream fixes are happening to fix Windows exe
+    # TODO(crbug.com/40271942): Upstream fixes are happening to fix Windows exe
     # determinisim from Rust (it produces non-reproducible paths in the linker
     # command line which then is recorded in the PDB).
     'test_control_flow_guard.exe',

@@ -607,7 +607,7 @@ class RuleBasedHostResolverProc : public HostResolverProc {
               int* os_error) override;
 
   struct Rule {
-    // TODO(https://crbug.com/1298106) Deduplicate this enum's definition.
+    // TODO(crbug.com/40822747) Deduplicate this enum's definition.
     enum ResolverType {
       kResolverTypeFail,
       kResolverTypeFailTimeout,

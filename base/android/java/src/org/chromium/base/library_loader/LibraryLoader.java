@@ -62,7 +62,7 @@ public class LibraryLoader {
     static final boolean DEBUG = false;
 
     // Compile time switch for sharing RELRO between the browser and the app zygote.
-    // TODO(crbug.com/1154224): remove when the issue is closed.
+    // TODO(crbug.com/40159355): remove when the issue is closed.
     private static final boolean ALLOW_CHROMIUM_LINKER_IN_ZYGOTE = true;
 
     // Shared preferences key for the background thread pool setting.

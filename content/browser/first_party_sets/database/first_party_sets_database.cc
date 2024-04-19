@@ -908,8 +908,8 @@ void FirstPartySetsDatabase::IncreaseRunCount() {
   // db data is corrupted and delete db file if that's not the case.
   if (meta_table_.GetValue(kRunCountKey, &count) && count <= 0) {
     db_status_ = InitStatus::kCorrupted;
-    // TODO(crbug/1316090): Need to resolve how the restarted `run_count_` could
-    // affect cache clearing.
+    // TODO(crbug.com/40222048): Need to resolve how the restarted `run_count_`
+    // could affect cache clearing.
     if (!Destroy()) {
       LOG(ERROR) << "First-Party Sets database destruction failed.";
     }

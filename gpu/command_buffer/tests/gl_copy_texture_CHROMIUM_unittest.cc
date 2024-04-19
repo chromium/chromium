@@ -674,7 +674,7 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
       return;
     }
     if (IsMac() && !gl_.gpu_preferences().use_passthrough_cmd_decoder) {
-      // TODO(crbug.com/1227853): Remove this suppression once this passes on
+      // TODO(crbug.com/40189400): Remove this suppression once this passes on
       // Mac 11.
       LOG(INFO) << "Validating decoder on Mac. Skipping.";
       return;

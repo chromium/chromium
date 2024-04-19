@@ -105,7 +105,7 @@ enum class TestFileSystemType {
        return await promise;", \
       base::Int64ToValue(TestTimeouts::action_timeout().InMilliseconds())) +
 
-// TODO(https://crbug.com/1019297): Consider making these WPTs, and adding a
+// TODO(crbug.com/40105284): Consider making these WPTs, and adding a
 // lot more of them. For example:
 //   - change types
 //   - observing a handle without permission should fail
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(records.GetList(), testing::IsEmpty());
 }
 
-// TODO(https://crbug.com/1489029): Add a ReObserveAfterUnobserve test once the
+// TODO(crbug.com/40283884): Add a ReObserveAfterUnobserve test once the
 // unobserve() method is no longer racy. See https://crrev.com/c/4814709.
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ReObserveAfterDisconnect) {
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // TODO(https://crbug.com/1425601): Support change types for the local file
   // system on more platforms.
   //
-  // TODO(https://crbug.com/1019297): Consider reporting a consistent change
+  // TODO(crbug.com/40105284): Consider reporting a consistent change
   // type when writing to a file via a WritableFileStream. On the local file
   // system, changes are naively considered "moved" events because the swap file
   // is moved over the target file. Meanwhile, the BucketFS intentionally

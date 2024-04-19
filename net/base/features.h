@@ -479,7 +479,7 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDisableBlackholeOnNoNewNetwork);
 #if BUILDFLAG(IS_LINUX)
 // AddressTrackerLinux will not run inside the network service in this
 // configuration, which will improve the Linux network service sandbox.
-// TODO(crbug.com/1312226): remove this.
+// TODO(crbug.com/40220507): remove this.
 NET_EXPORT BASE_DECLARE_FEATURE(kAddressTrackerLinuxIsProxied);
 #endif  // BUILDFLAG(IS_LINUX)
 

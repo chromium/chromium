@@ -113,7 +113,7 @@ gn_args.config(
     },
 )
 
-# TODO(https://crbug.com/1020714): This is temporary. We'd like to run a
+# TODO(crbug.com/40105916): This is temporary. We'd like to run a
 # smoke test on android_binary_sizes to ensure coverage of proguard, at
 # which point we can merge this into android_fastbuild. Until then, only
 # disable proguard on a few bots to gather metrics on the effect on build

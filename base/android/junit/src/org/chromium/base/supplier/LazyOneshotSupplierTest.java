@@ -27,7 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class LazyOneshotSupplierTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    // TODO(https://crbug.com/1498561): Switch to @Mock once the default #bind works on mocks.
+    // TODO(crbug.com/40287492): Switch to @Mock once the default #bind works on mocks.
     @Spy private Callback<Object> mOnAvailable;
 
     @Test

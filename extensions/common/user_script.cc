@@ -100,7 +100,7 @@ UserScript::Source UserScript::GetSourceForScriptID(
     return Source::kDynamicUserScript;
   }
 
-  // TODO(crbug.com/1475409): Handle gracefully when a new source is handed,
+  // TODO(crbug.com/40927913): Handle gracefully when a new source is handed,
   // specially when user has different Chrome versions.
   NOTREACHED_NORETURN();
 }

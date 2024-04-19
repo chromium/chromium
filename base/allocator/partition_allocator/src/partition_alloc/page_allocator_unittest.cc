@@ -454,8 +454,8 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-// TODO(crbug.com/1291888): Understand why we can't read from Read-Execute pages
-// on iOS.
+// TODO(crbug.com/40212918): Understand why we can't read from Read-Execute
+// pages on iOS.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_ReadExecutePages DISABLED_ReadExecutePages
 #else
@@ -653,7 +653,7 @@ TEST(PartitionAllocPageAllocatorTest, AllocInaccessibleWillJitLater) {
 }
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1452151): Fix test to GTEST_SKIP() if MAP_JIT is in-use,
+// TODO(crbug.com/40916148): Fix test to GTEST_SKIP() if MAP_JIT is in-use,
 // or to be run otherwise, since kReadWriteExecute is used in some other
 // configurations.
 #define MAYBE_AllocReadWriteExecute DISABLED_AllocReadWriteExecute

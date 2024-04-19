@@ -807,7 +807,7 @@ class MetaBuildWrapper:
                    self.args.config_file) + '\n  '.join(errs))
 
     expectations_dir = self.args.expectations_dir
-    # TODO(crbug.com/1117577): Force all versions of mb_config.pyl to have
+    # TODO(crbug.com/40145178): Force all versions of mb_config.pyl to have
     # expectations. For now, just ignore those that don't have them.
     if self.Exists(expectations_dir):
       jsonish_blob = self._ToJsonish()
@@ -1331,7 +1331,7 @@ class MetaBuildWrapper:
       target_type = isolate_map[target]['type']
       label = isolate_map[target]['label']
       stamp_runtime_deps = 'obj/%s.stamp.runtime_deps' % label.replace(':', '/')
-      # TODO(https://crbug.com/876065): 'official_tests' use
+      # TODO(crbug.com/40590196): 'official_tests' use
       # type='additional_compile_target' to isolate tests. This is not the
       # intended use for 'additional_compile_target'.
       if (target_type == 'additional_compile_target' and

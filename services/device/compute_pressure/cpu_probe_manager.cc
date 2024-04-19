@@ -164,7 +164,7 @@ mojom::PressureState CpuProbeManager::CalculateState(
     std::optional<CpuSample> maybe_sample) {
   const CpuSample sample = maybe_sample.value_or(kUnsupportedValue);
 
-  // TODO(crbug.com/1342528): A more advanced algorithm that calculates
+  // TODO(crbug.com/40231044): A more advanced algorithm that calculates
   // PressureState using CpuSample needs to be determined.
   // At this moment the algorithm is the simplest possible
   // with thresholds defining the state.

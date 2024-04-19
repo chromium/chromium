@@ -573,7 +573,7 @@ void ShowSearchEngineSettings(Browser* browser) {
 
 void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value) {
   GURL webstore_url = extension_urls::GetWebstoreLaunchURL();
-  // TODO(crbug.com/1488136): Refactor this check into
+  // TODO(crbug.com/40073814): Refactor this check into
   // extension_urls::GetWebstoreLaunchURL() and fix tests relying on it.
   if (base::FeatureList::IsEnabled(extensions_features::kNewWebstoreURL)) {
     webstore_url = extension_urls::GetNewWebstoreLaunchURL();

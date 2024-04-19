@@ -28,7 +28,7 @@ interface ServiceWorkerHost {
   // finished executing its top-level JavaScript.
   // Start corresponds to EmbeddedWorkerInstance::OnStarted notification.
   //
-  // TODO(crbug.com/1422440): This is a workaround: ideally this IPC should be
+  // TODO(crbug.com/40259636): This is a workaround: ideally this IPC should be
   // redundant because it directly corresponds to
   // EmbeddedWorkerInstance::OnStarted message. However, because OnStarted
   // message is on different mojo IPC pipe, and most extension IPCs are on

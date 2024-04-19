@@ -540,7 +540,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns whether a custom handler is registered for the scheme of the
   // specified URL scheme.
   // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers
-  // TODO(crbug.com/1139176) Move custom protocol handler code to content.
+  // TODO(crbug.com/40153317) Move custom protocol handler code to content.
   virtual bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
                                       const std::string& scheme);
 

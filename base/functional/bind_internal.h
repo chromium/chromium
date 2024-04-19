@@ -409,7 +409,7 @@ class OwnedRefWrapper {
 //  2) `is_valid_` is distinct from `nullptr` because it is valid to bind a null
 //     scoper to a `Callback` and allow the `Callback` to execute once.
 //
-// TODO(crbug.com/1326449): We have rvalue references and such now. Remove.
+// TODO(crbug.com/40840557): We have rvalue references and such now. Remove.
 template <typename T>
 class PassedWrapper {
  public:

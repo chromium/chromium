@@ -103,7 +103,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) std::string GetFresnelAPIKey();
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 // Sets the API key. This should be called as early as possible before this
 // API key is even accessed. It must be called before GetAPIKey.
-// TODO(https://crbug.com/1166007): Enforce this is called before GetAPIKey.
+// TODO(crbug.com/40164066): Enforce this is called before GetAPIKey.
 COMPONENT_EXPORT(GOOGLE_APIS) void SetAPIKey(const std::string& api_key);
 #endif
 

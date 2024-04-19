@@ -271,7 +271,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   void BlockResponseForOrb(mojom::URLResponseHeadPtr response_head) {
     // A minimum implementation to block ORB-protected resources.
     //
-    // TODO(crbug.com/1082020): Re-use
+    // TODO(crbug.com/40130781): Re-use
     // network::URLLoader::BlockResponseForOrb(), instead of copying
     // essential parts from there, so that the two implementations won't
     // diverge further. That requires non-trivial refactoring.

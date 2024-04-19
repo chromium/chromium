@@ -296,7 +296,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
   // Changing the priority of the main thread causes performance
   // regressions. https://crbug.com/601270
-  // TODO(https://crbug.com/1280764): Remove this check. kCompositing is the
+  // TODO(crbug.com/40209052): Remove this check. kCompositing is the
   // default on Mac, so this check is counter intuitive.
   if ([[NSThread currentThread] isMainThread] &&
       thread_type >= ThreadType::kCompositing &&

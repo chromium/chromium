@@ -229,7 +229,7 @@ linux_memory_builder(
         category = "cros|asan",
         short_name = "bld",
     ),
-    # TODO(crbug.com/1030593): Builds take more than 3 hours sometimes. Remove
+    # TODO(crbug.com/40661942): Builds take more than 3 hours sometimes. Remove
     # once the builds are faster.
     execution_timeout = 6 * time.hour,
 )

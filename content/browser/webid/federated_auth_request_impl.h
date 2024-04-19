@@ -345,7 +345,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Adds a console error message related to a federated authentication request
   // issue. The Issues panel is preferred, but for now we also surface console
   // error messages since it is much simpler to add.
-  // TODO(crbug.com/1294415): When the FedCM API is more stable, we should
+  // TODO(crbug.com/40820517): When the FedCM API is more stable, we should
   // ensure that the Issues panel contains all of the needed debugging
   // information and then we can remove the console error messages.
   void AddConsoleErrorMessage(blink::mojom::FederatedAuthRequestResult result);

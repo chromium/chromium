@@ -18,7 +18,8 @@ namespace {
 // https://github.com/foldable-devices/foldable-windows-registry-specification
 // This approach is a stop gap solution until Windows gains proper APIs.
 //
-// TODO(1465934): When Windows gains the APIs we should update this code.
+// TODO(crbug.com/40276180): When Windows gains the APIs we should update this
+// code.
 //
 // FOLED stands for Foldable OLED.
 constexpr wchar_t kFoledRegKeyPath[] = L"Software\\Intel\\Foled";

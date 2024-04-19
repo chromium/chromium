@@ -4085,7 +4085,7 @@ TEST_F(AttributionStorageTest,
                         ReportTimeIs(report_time))));
 }
 
-// TODO(crbug.com/1501555): Support multiple trigger specs instead of just 1.
+// TODO(crbug.com/40941848): Support multiple trigger specs instead of just 1.
 TEST_F(AttributionStorageTest, RejectsMultipleTriggerSpecs) {
   auto source = SourceBuilder().Build();
   source.registration().trigger_specs =

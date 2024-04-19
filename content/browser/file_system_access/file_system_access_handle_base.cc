@@ -451,7 +451,7 @@ void FileSystemAccessHandleBase::DidMove(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result->status == blink::mojom::FileSystemAccessStatus::kOk) {
-    // TODO(crbug.com/1247850): Update permission grants appropriately when
+    // TODO(crbug.com/40790187): Update permission grants appropriately when
     // moving into/out of the OPFS. Current state:
     // - Moving out of the OPFS: the destination directory is guaranteed to have
     //   write permission. We _should_ update `handle_state_` to point to this

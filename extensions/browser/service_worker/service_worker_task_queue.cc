@@ -192,7 +192,7 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
     // This is definitely hit, and often enough that we can't NOTREACHED(),
     // CHECK(), or DumpWithoutCrashing(). Instead, log an error and gracefully
     // return.
-    // TODO(https://crbug.com/1447448): Investigate and fix.
+    // TODO(crbug.com/40913640): Investigate and fix.
     LOG(ERROR) << "Received bad DidStartWorkerForScope() message. "
                   "No corresponding RenderProcessHost.";
     return;
@@ -841,7 +841,7 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessage(
       message.source_url,
       content::ConsoleMessageLevelToLogSeverity(message.message_level),
       -1 /* a service worker does not have a render_view_id */,
-      -1 /* TODO(crbug.com/1218812): Retrieve render_process_id */);
+      -1 /* TODO(crbug.com/40771841): Retrieve render_process_id */);
 
   ExtensionsBrowserClient::Get()->ReportError(browser_context_,
                                               std::move(error_instance));

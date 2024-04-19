@@ -53,7 +53,7 @@ struct DispatcherParameters {
     // PoissonAllocationSampler will become enabled in the course of the
     // runtime.
     //
-    // TODO(https://crbug.com/1411454): Clarify for which components we need to
+    // TODO(crbug.com/40062835): Clarify for which components we need to
     // enforce PoissonAllocationSampler.
     kEnforce,
   };

@@ -1039,8 +1039,8 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
                     // Enable MessagePumpPhases metrics/tracing on-first-idle,
                     // not before as queuing time is not relevant before first
                     // idle.
-                    // TODO(1329717): Consider supporting the initial run (until
-                    // first idle) as well.
+                    // TODO(crbug.com/40226913): Consider supporting the initial
+                    // run (until first idle) as well.
                     auto enable_message_pump_metrics =
                         base::BindRepeating([](const char* thread_name) {
                           base::CurrentThread::Get()
@@ -1142,7 +1142,7 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
                      &base::PermanentThreadAllowance::AllowBlocking)));
 
   // Also allow waiting to join threads.
-  // TODO(crbug.com/800808): Ideally this (and the above AllowBlocking() would
+  // TODO(crbug.com/40557572): Ideally this (and the above AllowBlocking() would
   // be scoped allowances). That would be one of the first step to ensure no
   // persistent work is being done after ThreadPoolInstance::Shutdown() in order
   // to move towards atomic shutdown.

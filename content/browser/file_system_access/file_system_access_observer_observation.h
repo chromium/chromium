@@ -25,7 +25,7 @@ class FileSystemAccessObserverHost;
 // call from JavaScript. Forwards changes to the observed file or directory
 // to a mojo pipe whose receiver is owned by the renderer.
 //
-// TODO(https://crbug.com/1019297): Consider removing this class in favor of
+// TODO(crbug.com/40105284): Consider removing this class in favor of
 // giving the ObserverHost a FileSystemAccessObserver mojo::RemoteSet. See
 // https://chromium-review.googlesource.com/c/chromium/src/+/4809069/comment/8d90508d_74ae7891/.
 class FileSystemAccessObserverObservation {

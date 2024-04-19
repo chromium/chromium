@@ -439,7 +439,7 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
 }
 
 bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
-  // TODO(1268074) can remove once v8 is cet-compatible.
+  // TODO(crbug.com/40803284) can remove once v8 is cet-compatible.
   if (sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit)
     return false;
   auto utility_sub_type =

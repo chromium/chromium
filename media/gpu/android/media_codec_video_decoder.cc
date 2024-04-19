@@ -786,7 +786,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
       MEDIA_LOG(INFO, media_log_) << "Using a coded size alignment of "
                                   << coded_size_alignment->ToString();
     } else {
-      // TODO(crbug.com/1456427): If the known cases work well, we can try
+      // TODO(crbug.com/40917948): If the known cases work well, we can try
       // guessing generically since we get a glitch either way.
       MEDIA_LOG(WARNING, media_log_)
           << "Unable to lookup coded size alignment for codec " << name;

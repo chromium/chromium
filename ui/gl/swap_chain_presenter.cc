@@ -2248,7 +2248,7 @@ void SwapChainPresenter::RecordPresentationStatistics() {
 bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
                                              gfx::Transform* visual_transform,
                                              gfx::Rect* visual_clip_rect) {
-  // TODO(crbug.com/999747): Include an early out path in case the same dcomp
+  // TODO(crbug.com/40642952): Include an early out path in case the same dcomp
   // surface is being presented.
   auto* dcomp_surface_proxy = params.overlay_image->dcomp_surface_proxy();
   last_overlay_image_ = std::move(params.overlay_image);
@@ -2318,7 +2318,7 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
     return true;
   }
 
-  // TODO(crbug.com/999747): Call UpdateVisuals() here.
+  // TODO(crbug.com/40642952): Call UpdateVisuals() here.
 
   // Scaling is handled by the MF video renderer, so we only need the
   // translation component.

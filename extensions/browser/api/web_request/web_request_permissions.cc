@@ -267,7 +267,7 @@ bool WebRequestPermissions::HideRequest(
                extensions::WebRequestResourceType::OBJECT);
 
     // Hide sub-frame requests to clientsX.google.com.
-    // TODO(crbug.com/890006): Determine if the code here can be cleaned up
+    // TODO(crbug.com/40595750): Determine if the code here can be cleaned up
     // since browser initiated non-navigation requests are now hidden from
     // extensions.
     if (request.web_request_type !=

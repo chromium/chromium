@@ -199,7 +199,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
       // cross-site to the initial prerendering URL.
       if (prerender_navigation_utils::IsCrossSite(
               navigation_url, initial_prerendering_origin)) {
-        // TODO(crbug.com/1456866): Remove this crash key when investigation is
+        // TODO(crbug.com/40918153): Remove this crash key when investigation is
         // completed.
         if (!is_redirection) {
           SCOPED_CRASH_KEY_BOOL("Bug1456866", "scheme",

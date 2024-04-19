@@ -424,7 +424,7 @@ enum class PresentedState {
 
 - (void)dismissBookmarksEditorAnimated:(BOOL)animated {
   if (self.currentPresentedState != PresentedState::BOOKMARK_EDITOR) {
-    // TODO(crbug.com/1404250): This test should be turned into a DCHECK().
+    // TODO(crbug.com/40062447): This test should be turned into a DCHECK().
     return;
   }
   self.bookmarkEditorCoordinator.animatedDismissal = animated;

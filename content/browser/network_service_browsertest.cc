@@ -1780,9 +1780,9 @@ class NetworkServiceBoundedNetLogBrowserTest
 // This is disabled for Mac and iOS. Mac due to the crbug below, and iOS because
 // the test is flaky and the feature it's testing isn't usable on iOS.
 //
-// TODO(crbug.com/1466224): Try-bots use a different temp directory that the Mac
-// network sandbox doesn't allow and causes this test to fail. Disable the test
-// until this is resolved.
+// TODO(crbug.com/40276296): Try-bots use a different temp directory that the
+// Mac network sandbox doesn't allow and causes this test to fail. Disable the
+// test until this is resolved.
 #if BUILDFLAG(IS_APPLE)
 #define MAYBE_LogCreated DISABLED_LogCreated
 #else

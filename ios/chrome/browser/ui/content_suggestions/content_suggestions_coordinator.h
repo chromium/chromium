@@ -40,7 +40,8 @@ class WebState;
     MagicStackCollectionViewController* magicStackCollectionView;
 
 // The mediator used by this coordinator.
-// TODO(crbug.com/1403298): Replace this with a delegate to avoid exposing this.
+// TODO(crbug.com/40251499): Replace this with a delegate to avoid exposing
+// this.
 @property(nonatomic, strong, readonly)
     ContentSuggestionsMediator* contentSuggestionsMediator;
 

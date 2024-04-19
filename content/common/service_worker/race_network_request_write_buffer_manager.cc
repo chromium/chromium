@@ -137,7 +137,7 @@ size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteDataWithSize(
   CHECK_GE(read_buffer.size(), num_bytes_to_consume);
   // Check if all memory spaces are available to access. `volatile` to avoid the
   // compiler optimization.
-  // TODO(crbug.com/1502946) Remove this code once we confirmed the root cause
+  // TODO(crbug.com/40943349) Remove this code once we confirmed the root cause
   // of the crash.
   volatile const char* read_buffer_v =
       static_cast<volatile const char*>(read_buffer.data());

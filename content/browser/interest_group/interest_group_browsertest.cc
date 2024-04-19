@@ -2176,7 +2176,7 @@ class InterestGroupPrivateNetworkBrowserTest : public InterestGroupBrowserTest {
         /*`enabled_features`=*/
         {features::kPrivateNetworkAccessRespectPreflightResults},
         /*disabled_features=*/
-        // TODO(https://crbug.com/1427145): Enable same-origin exemption when
+        // TODO(crbug.com/40261655): Enable same-origin exemption when
         // the initiator is fixed.
         {network::features::
              kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin});
@@ -18515,7 +18515,7 @@ class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1289207): Investigate why this is failing on
+// TODO(crbug.com/40817393): Investigate why this is failing on
 // android-pie-x86-rel.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_NavigatingWithBfcachePreservesAuctionLimits \

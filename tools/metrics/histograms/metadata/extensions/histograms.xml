@@ -3071,7 +3071,7 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
-<!-- TODO(crbug.com/1383740): Change all .NonUser/.User metrics to use histogram suffixes rather than be duplicated here. -->
+<!-- TODO(crbug.com/40878021): Change all .NonUser/.User metrics to use histogram suffixes rather than be duplicated here. -->
 
 <histogram name="Extensions.InstallSource.NonUser" enum="ExtensionLocation"
     expires_after="never">

@@ -36,7 +36,7 @@ bool ValidateSameSite(const url::Origin& origin,
   if (origin.opaque())
     return false;
 
-  // TODO(https://crbug.com/1060631): GetURL() is expensive. Maybe make a
+  // TODO(crbug.com/40122112): GetURL() is expensive. Maybe make a
   // version of IsFirstParty that works on origins?
   return site_for_cookies.IsFirstParty(origin.GetURL());
 }
@@ -72,7 +72,7 @@ bool IsConsistent(IsolationInfo::RequestType request_type,
       // |frame_origin| are the same, once the ViewSource code creates a
       // consistent IsolationInfo object.
       //
-      // TODO(https://crbug.com/1060631): Once CreatePartial() is removed,
+      // TODO(crbug.com/40122112): Once CreatePartial() is removed,
       // check if SiteForCookies is non-null if the scheme is HTTP or HTTPS.
       break;
     case IsolationInfo::RequestType::kSubFrame:

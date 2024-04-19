@@ -31,7 +31,7 @@ base::Token SubCaptureTargetIdWebContentsHelper::GUIDToToken(
   std::string lowercase = guid.AsLowercaseString();
 
   // |lowercase| is either empty, or follows the expected pattern.
-  // TODO(crbug.com/1260380): Resolve open question of correct treatment
+  // TODO(crbug.com/40201847): Resolve open question of correct treatment
   // of an invalid GUID.
   if (lowercase.empty()) {
     return base::Token();

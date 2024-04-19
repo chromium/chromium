@@ -63,7 +63,7 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
   // `scope_`. This may fail if the scope cannot be watched.
   // `on_source_initialized` is run with a error status indicating whether
   // setting up this source succeeds.
-  // TODO(https://crbug.com/1019297): Assert that this is called before
+  // TODO(crbug.com/40105284): Assert that this is called before
   // notifying of changes.
   void EnsureInitialized(
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>

@@ -291,7 +291,7 @@ HRESULT CommandRecorder::ExecuteOperator(
           descriptor_heap->GetGPUDescriptorHandleForHeapStart(),
       .SizeInDescriptors =
           execution_binding_properties.RequiredDescriptorCount};
-  // TODO(crbug.com/1455278): Consider reusing the binding table.
+  // TODO(crbug.com/40272709): Consider reusing the binding table.
   ComPtr<IDMLBindingTable> binding_table;
   RETURN_IF_FAILED(dml_device_->CreateBindingTable(
       &binding_table_desc, IID_PPV_ARGS(&binding_table)));

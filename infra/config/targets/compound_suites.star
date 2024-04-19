@@ -864,7 +864,7 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "gpu_fyi_chromeos_release_gtests",
     basic_suites = [
-        # TODO(crbug.com/1135720): Missing cros wrapper script.
+        # TODO(crbug.com/40723796): Missing cros wrapper script.
         # "gpu_angle_unit_gtests",
         # TODO(crbug.com/1087567, crbug.com/1087590): Enable once there are tests
         # that actually pass.

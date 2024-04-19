@@ -134,7 +134,8 @@ ServiceWorkerNetworkProviderForFrame::GetSubresourceLoaderFactory(
   }
 
   // Record use counter for intercepting requests from opaque stylesheets.
-  // TODO(crbug.com/898497): Remove this feature usage once we have enough data.
+  // TODO(crbug.com/40092842): Remove this feature usage once we have enough
+  // data.
   if (observer_ && is_from_origin_dirty_style_sheet) {
     observer_->ReportFeatureUsage(
         blink::mojom::WebFeature::

@@ -109,7 +109,7 @@
 -WebRtcGetUserMediaBrowserTest.TestGetUserMediaAspectRatio1To1
 -WebRtcGetUserMediaBrowserTest.TestGetUserMediaAspectRatio4To3
 
-# TODO(crbug.com/1466880): cannot create shared image.
+# TODO(crbug.com/40276544): cannot create shared image.
 -Default/MediaTest.LoadManyVideos/0
 -Default/MediaTest.VideoBearMp4/1
 -Default/MediaTest.VideoBearMp4Hevc10bit/1
@@ -129,7 +129,7 @@
 # TODO(crbug.com/1509461): these flakily timeout.
 -All/BackForwardCacheNetworkLimitBrowserTest.ImageStillLoading*
 
-# TODO(crbug.com/1466881): hitting unexpected driver errors.
+# TODO(crbug.com/40276545): hitting unexpected driver errors.
 -ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/0
 -ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/1
 -ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/0
@@ -144,7 +144,7 @@
 # and fallback ID.
 -BFCachedRenderWidgetHostViewBrowserTest.BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback
 
-# TODO(https://crbug.com/1472026): `WCImpl::GetSize()` should be replaced by
+# TODO(crbug.com/40278487): `WCImpl::GetSize()` should be replaced by
 # `WC::GetRenderWidgetHostView()->GetViewBounds()`; `ui::GrabViewSnapshot` isn't
 # implemented for IOS.
 -RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition.NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
@@ -179,7 +179,7 @@
 -All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink
 -All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink
 
-# TODO(crbug.com/1489278): Audio output unit startup is failing with partition
+# TODO(crbug.com/40283968): Audio output unit startup is failing with partition
 # alloc
 -All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/1
 -All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/2
@@ -270,7 +270,7 @@
 -WebRtcAudioDebugRecordingsBrowserTest.CallWithAudioDebugRecordings
 -WebRtcMediaRecorderTest.TwoChannelAudioRecording
 
-# TODO(crbug.com/1492573): reports the wrong width/height.
+# TODO(crbug.com/40285557): reports the wrong width/height.
 -RenderWidgetHostFoldableCSSTest.ViewportSegmentsWorksInUAFullscreenCSS
 
 # TODO(crbug.com/1495761): Text area handle has shrunk.
@@ -284,7 +284,7 @@
 -TouchInputBrowserTest.TouchStartNoConsume
 -TouchInputBrowserTest.MultiPointTouchPress
 
-# TODO(crbug.com/1501820): Consistently fails on the platform.
+# TODO(crbug.com/40942136): Consistently fails on the platform.
 -PrerenderBrowserTest.ActivateOnWindowOpen
 
 # TODO(crbug.com/325442902): Consistently fails on the platform.

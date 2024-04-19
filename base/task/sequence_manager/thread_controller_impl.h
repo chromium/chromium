@@ -37,7 +37,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   ThreadControllerImpl& operator=(const ThreadControllerImpl&) = delete;
   ~ThreadControllerImpl() override;
 
-  // TODO(https://crbug.com/948051): replace |funneled_sequence_manager| with
+  // TODO(crbug.com/40620995): replace |funneled_sequence_manager| with
   // |funneled_task_runner| when we sort out the workers
   static std::unique_ptr<ThreadControllerImpl> Create(
       SequenceManagerImpl* funneled_sequence_manager,

@@ -530,7 +530,7 @@ class UnitTest(unittest.TestCase):
     self.check(['gen', '-m', 'fake_builder_group', '-b', 'fake_args_bot',
                 '//out/Debug'],
                mbw=mbw, ret=0)
-    # TODO(https://crbug.com/1093038): This assert is inappropriately failing.
+    # TODO(crbug.com/40134852): This assert is inappropriately failing.
     # self.assertEqual(
     #     mbw.files['/fake_src/out/Debug/args.gn'],
     #     'import("//build/args/bots/fake_builder_group/fake_args_bot.gn")\n')

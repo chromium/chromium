@@ -71,7 +71,7 @@ void SharedStorageURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.destination =
       network::mojom::RequestDestination::kSharedStorageWorklet;
 
-  // TODO(crbug/1268616): create a new factory when the current one gets
+  // TODO(crbug.com/40803630): create a new factory when the current one gets
   // disconnected.
   frame_url_loader_factory_->CreateLoaderAndStart(
       std::move(receiver), GlobalRequestID::MakeBrowserInitiated().request_id,

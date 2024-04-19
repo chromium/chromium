@@ -331,7 +331,7 @@ try_.builder(
 try_.builder(
     name = "android-cronet-arm64-rel",
     mirrors = ["ci/android-cronet-arm64-rel"],
-    # TODO(crbug/597596): Switch this back to debug try builder when cronet's
+    # TODO(crbug.com/40462241): Switch this back to debug try builder when cronet's
     # shared library loading is fixed.
     gn_args = "ci/android-cronet-arm64-rel",
     contact_team_email = "cronet-team@google.com",

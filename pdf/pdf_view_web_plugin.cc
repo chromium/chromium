@@ -161,7 +161,7 @@ enum class PinchPhase {
 // Initialization performed per renderer process. Initialization may be
 // triggered from multiple plugin instances, but should only execute once.
 //
-// TODO(crbug.com/1123621): We may be able to simplify this once we've figured
+// TODO(crbug.com/40147027): We may be able to simplify this once we've figured
 // out exactly which processes need to initialize and shutdown PDFium.
 class PerProcessInitializer final {
  public:
@@ -331,7 +331,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
   // plugin process, the active URL changes frequently within a renderer process
   // (see crbug.com/1266050 for details).
   //
-  // TODO(crbug.com/1266087): If multiple PDF plugin instances share the same
+  // TODO(crbug.com/40801869): If multiple PDF plugin instances share the same
   // renderer process, the crash key will be overwritten by the newest value.
   static base::debug::CrashKeyString* subresource_url =
       base::debug::AllocateCrashKeyString("subresource_url",
@@ -1697,7 +1697,7 @@ gfx::PointF PdfViewWebPlugin::GetScrollPositionFromOffset(
     const gfx::Vector2dF& scroll_offset) const {
   gfx::PointF scroll_origin;
 
-  // TODO(crbug.com/1140374): Right-to-left scrolling currently is not
+  // TODO(crbug.com/40726602): Right-to-left scrolling currently is not
   // compatible with the PDF viewer's sticky "scroller" element.
   if (ui_direction_ == base::i18n::RIGHT_TO_LEFT && IsPrintPreview()) {
     scroll_origin.set_x(
@@ -1971,7 +1971,7 @@ void PdfViewWebPlugin::OnViewportChanged(
   device_scale_ = new_device_scale;
   plugin_rect_ = new_plugin_rect_in_css_pixel;
 
-  // TODO(crbug.com/1250173): We should try to avoid the downscaling in this
+  // TODO(crbug.com/40791703): We should try to avoid the downscaling in this
   // calculation, perhaps by migrating off `plugin_dip_size_`.
   plugin_dip_size_ = gfx::ScaleToEnclosingRect(new_plugin_rect_in_css_pixel,
                                                1.0f / new_device_scale)
@@ -2361,7 +2361,7 @@ void PdfViewWebPlugin::SendThumbnail(base::Value::Dict reply,
 
 gfx::Point PdfViewWebPlugin::FrameToPdfCoordinates(
     const gfx::PointF& frame_coordinates) const {
-  // TODO(crbug.com/1288847): Use methods on `blink::WebPluginContainer`.
+  // TODO(crbug.com/40817151): Use methods on `blink::WebPluginContainer`.
   return gfx::ToFlooredPoint(
              gfx::ScalePoint(frame_coordinates, device_scale_)) -
          gfx::Vector2d(available_area_.x(), 0);

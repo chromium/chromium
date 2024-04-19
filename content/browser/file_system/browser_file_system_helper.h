@@ -45,7 +45,7 @@ CreateFileSystemContext(
 CONTENT_EXPORT bool FileSystemURLIsValid(storage::FileSystemContext* context,
                                          const storage::FileSystemURL& url);
 
-// TODO(crbug.com/1278433): Consider making this a method on FileSystemContext.
+// TODO(crbug.com/40810215): Consider making this a method on FileSystemContext.
 // Get the platform path from a file system URL. This needs to be called
 // on the FILE thread.
 using DoGetPlatformPathCB = base::OnceCallback<void(const base::FilePath&)>;

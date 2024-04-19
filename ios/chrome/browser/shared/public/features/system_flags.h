@@ -36,7 +36,7 @@ NSString* GetAlternateDiscoverFeedServerURL();
 
 // Returns true if the prefs for the notice card views count and clicks count
 // should be reset to zero on feed start.
-// TODO(crbug.com/1189232): Remove after launch.
+// TODO(crbug.com/40173621): Remove after launch.
 bool ShouldResetNoticeCardOnFeedStart();
 
 // Returns true if the count of showing the First Follow modal should be reset

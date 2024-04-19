@@ -165,8 +165,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    // TODO(crbug.com/1425657): Removed this once the other test suites properly
-    // clean up their NSUserDefaults on teardown.
+    // TODO(crbug.com/40260996): Removed this once the other test suites
+    // properly clean up their NSUserDefaults on teardown.
     CleanupNSUserDefaults();
 
     TestChromeBrowserState::Builder builder;

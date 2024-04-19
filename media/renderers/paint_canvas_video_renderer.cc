@@ -1477,7 +1477,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // Since skia always produces premultiply alpha outputs,
     // trying direct uploading path when video format is opaque or premultiply
     // alpha been requested. And dst texture mipLevel must be 0.
-    // TODO(crbug.com/1155003): Figure out whether premultiply options here are
+    // TODO(crbug.com/40159723): Figure out whether premultiply options here are
     // accurate.
     // NOTE: The direct upload path is not supported on Android (see comment on
     // UploadVideoFrameToGLTexture()).
@@ -1701,7 +1701,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   if (!raster_context_provider)
     return false;
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1181993): These formats don't work with the passthrough
+  // TODO(crbug.com/40751207): These formats don't work with the passthrough
   // command decoder on Android for some reason.
   const auto format_enum = static_cast<GLenum>(internal_format);
   if (format_enum == GL_RGB10_A2 || format_enum == GL_RGB565 ||

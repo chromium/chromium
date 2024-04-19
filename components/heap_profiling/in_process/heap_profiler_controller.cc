@@ -372,7 +372,7 @@ HeapProfilerController::HeapProfilerController(version_info::Channel channel,
 
   // Before starting the profiler, record the ReentryGuard's TLS slot to a crash
   // key to debug reentry into the profiler.
-  // TODO(crbug.com/1411454): Remove this after diagnosing reentry crashes.
+  // TODO(crbug.com/40062835): Remove this after diagnosing reentry crashes.
   base::allocator::dispatcher::ReentryGuard::RecordTLSSlotToCrashKey();
 }
 

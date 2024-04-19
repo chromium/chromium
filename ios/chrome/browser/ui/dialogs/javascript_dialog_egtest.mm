@@ -437,7 +437,7 @@ void TapSuppressDialogsButton() {
 // Tests that if an alert should be called when settings are displays, the alert
 // waits for the dismiss of the settings.
 - (void)MAYBE_testShowJavaScriptBehindSettings {
-// TODO(crbug.com/1209340): test failing on ipad device
+// TODO(crbug.com/40182086): test failing on ipad device
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");

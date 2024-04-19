@@ -154,7 +154,7 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   bool mono_output_;
   bool fuzzing_;
 #if defined(ADDRESS_SANITIZER) || defined(UNDEFINED_SANITIZER)
-  // TODO(https://crbug.com/924030): ASAN causes Run() timeouts to be reached.
+  // TODO(crbug.com/40610469): ASAN causes Run() timeouts to be reached.
   const base::test::ScopedDisableRunLoopTimeout disable_run_timeout_;
 #endif
   std::unique_ptr<Demuxer> demuxer_;

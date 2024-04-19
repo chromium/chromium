@@ -109,7 +109,7 @@ void SodaInstallerImpl::UninstallLanguage(const std::string& language,
 }
 
 std::vector<std::string> SodaInstallerImpl::GetAvailableLanguages() const {
-  // TODO(crbug.com/1161569): SODA is only available for English right now.
+  // TODO(crbug.com/40162502): SODA is only available for English right now.
   // Update this to check available languages.
   return {kUsEnglishLocale};
 }

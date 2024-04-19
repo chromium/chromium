@@ -772,7 +772,7 @@ def _run_benchmarks_on_shardmap(
   env = os.environ.copy()
   if 'GTEST_SHARD_INDEX' in env:
     shard_index = env['GTEST_SHARD_INDEX']
-  # TODO(crbug.com/972844): shard environment variables are not specified
+  # TODO(crbug.com/40631538): shard environment variables are not specified
   # for single-shard shard runs.
   if not shard_index:
     shard_map_has_multiple_shards = bool(shard_map.get('1', False))

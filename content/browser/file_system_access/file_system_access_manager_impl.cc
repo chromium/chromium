@@ -1542,7 +1542,7 @@ void FileSystemAccessManagerImpl::DidCreateAndTruncateSaveFile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<blink::mojom::FileSystemAccessEntryPtr> result_entries;
   if (!success) {
-    // TODO(https://crbug.com/1124871): Failure to create or truncate the file
+    // TODO(crbug.com/40717501): Failure to create or truncate the file
     // should probably not just result in a generic error, but instead inform
     // the user of the problem?
     std::move(callback).Run(

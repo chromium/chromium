@@ -528,7 +528,7 @@ void ExtensionFrameHelper::ExecuteDeclarativeScript(
     const ExtensionId& extension_id,
     const std::string& script_id,
     const GURL& url) {
-  // TODO(https://crbug.com/1186220): URL-checking isn't the best approach to
+  // TODO(crbug.com/40753624): URL-checking isn't the best approach to
   // avoid user data leak. Consider what we can do to mitigate this case.
   // Begin script injection workflow only if the current URL is identical to the
   // one that matched declarative conditions in the browser.

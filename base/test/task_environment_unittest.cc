@@ -1510,7 +1510,7 @@ TEST_F(TaskEnvironmentTest, NoCOMEnvironment) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// TODO(crbug.com/1318840): Re-enable this test
+// TODO(crbug.com/40835641): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ParallelExecutionFence DISABLED_ParallelExecutionFence
 #else

@@ -365,7 +365,7 @@ void ExtensionRegistrar::ReloadExtension(
       // Retain DevToolsAgentHosts for the extension being reloaded to prevent
       // client disconnecting. We will re-attach later, when the extension is
       // loaded.
-      // TODO(crbug.com/1246530): clean up upon failure to reload.
+      // TODO(crbug.com/40196582): clean up upon failure to reload.
       orphaned_dev_tools_[extension_id] = std::move(agent_hosts);
     }
     path = enabled_extension->path();

@@ -50,7 +50,7 @@ GetBindHostReceiverInterceptor() {
 
 void BrowserChildProcessHostImpl::BindHostReceiver(
     mojo::GenericPendingReceiver receiver) {
-  // TODO(crbug.com/1492057): this function should run on the IO thread and
+  // TODO(crbug.com/40285371): this function should run on the IO thread and
   // calls functions documented as running on the IO thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

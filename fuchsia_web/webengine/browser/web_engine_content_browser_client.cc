@@ -343,7 +343,7 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
     int frame_tree_node_id,
     std::optional<int64_t> navigation_id) {
   if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
-    // TODO(crbug.com/1378791): Add support for Shared and Service Workers.
+    // TODO(crbug.com/40244093): Add support for Shared and Service Workers.
     return {};
   }
 

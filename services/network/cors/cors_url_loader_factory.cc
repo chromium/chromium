@@ -117,7 +117,7 @@ bool IsTrustedNavigationRequestFromSecureContext(
   }
 
   // `client_security_state` is not set for top-level navigation requests.
-  // TODO(crbug.com/1129326): Remove this when we set it for top-level
+  // TODO(crbug.com/40149351): Remove this when we set it for top-level
   // navigation requests.
   if (!request.trusted_params->client_security_state) {
     return IsUrlPotentiallyTrustworthy(request.url);

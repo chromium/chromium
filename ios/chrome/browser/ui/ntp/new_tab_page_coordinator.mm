@@ -876,7 +876,7 @@
 #pragma mark - FeedControlDelegate
 
 - (FollowingFeedSortType)followingFeedSortType {
-  // TODO(crbug.com/1352935): Add a DCHECK to make sure the coordinator isn't
+  // TODO(crbug.com/40858105): Add a DCHECK to make sure the coordinator isn't
   // stopped when we check this. That would require us to use the NTPHelper to
   // get this information.
   return (FollowingFeedSortType)self.prefService->GetInteger(
@@ -1038,7 +1038,7 @@
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_NTP_FEED_BOTTOM_PROMO];
   [handler showSignin:command baseViewController:self.NTPViewController];
-  // TODO(crbug.com/1455963): Strictly speaking this should record a bucket
+  // TODO(crbug.com/40066051): Strictly speaking this should record a bucket
   // other than kShowSyncFlow. But I don't think we care too much about this
   // particular histogram, just rename the bucket after launch.
   [self.feedMetricsRecorder
@@ -1350,7 +1350,7 @@
     case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
     case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
       // If sign-in becomes disabled, the sign-in promo must be disabled too.
-      // TODO(crbug.com/1479446): The sign-in promo should just be hidden
+      // TODO(crbug.com/40280872): The sign-in promo should just be hidden
       // instead of resetting the hierarchy.
       [self updateNTPForFeed];
       [self setContentOffsetToTop];

@@ -56,7 +56,7 @@ void RecordDestinationOriginStatus(
 }
 
 // Same as `attribution_reporting::SuitableOrigin`
-// TODO(https://crbug.com/1408181): unify logic across browser and network
+// TODO(crbug.com/40253421): unify logic across browser and network
 // service.
 bool IsSuitableDestinationOrigin(const url::Origin& origin) {
   const std::string& scheme = origin.scheme();
@@ -118,7 +118,7 @@ struct AttributionRequestHelper::VerificationOperation {
   // over a message that includes a different id as we need one id per report
   // that we want to create & verify. With N (id,token) pairs, we can create N
   // verified reports.
-  // TODO(https://crbug.com/1406645): use explicitly spec compliant structure.
+  // TODO(crbug.com/40252802): use explicitly spec compliant structure.
   std::vector<base::Uuid> aggregatable_report_ids;
 
   AttributionVerificationMediator mediator;
@@ -179,7 +179,7 @@ void AttributionRequestHelper::Begin(net::URLRequest& request,
                                      base::OnceClosure done) {
   CHECK(!verification_operation_);
 
-  // TODO(https://crbug.com/1406643): investigate the situations in which
+  // TODO(crbug.com/40252800): investigate the situations in which
   // `url_request->isolation_info().top_frame_origin()` would not be defined and
   // confirm that it can be relied upon here.
   if (!request.isolation_info().top_frame_origin().has_value()) {

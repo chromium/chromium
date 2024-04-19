@@ -47,7 +47,7 @@ constexpr size_t kMaxNumberOfWorkers = 256;
 //    be scheduled concurrently when we believe that a BEST_EFFORT task is
 //    blocked forever.
 // Currently, only 1. is true as the configuration is per thread group.
-// TODO(https://crbug.com/927755): Fix racy condition when MayBlockThreshold ==
+// TODO(crbug.com/40612168): Fix racy condition when MayBlockThreshold ==
 // BlockedWorkersPoll.
 constexpr TimeDelta kForegroundMayBlockThreshold = Milliseconds(1000);
 constexpr TimeDelta kForegroundBlockedWorkersPoll = Milliseconds(1200);
@@ -464,7 +464,7 @@ ThreadGroup::GetScopedWindowsThreadEnvironment(WorkerEnvironment environment) {
   if (environment == WorkerEnvironment::COM_MTA) {
     scoped_environment = std::make_unique<win::ScopedWinrtInitializer>();
 
-    // TODO(crbug.com/1498668): rollback the change or replace it with a CHECK
+    // TODO(crbug.com/40076080): rollback the change or replace it with a CHECK
     // before closing the bug.
     DUMP_WILL_BE_CHECK(scoped_environment->Succeeded());
   }

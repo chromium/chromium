@@ -804,7 +804,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
   def generate_script_test(self, waterfall, tester_name, tester_config,
                            test_name, test_config):
-    # TODO(https://crbug.com/953072): Remove this check whenever a better
+    # TODO(crbug.com/40623237): Remove this check whenever a better
     # long-term solution is implemented.
     if (waterfall.get('forbid_script_tests', False) or
         waterfall['machines'][tester_name].get('forbid_script_tests', False)):
@@ -1078,7 +1078,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         else:  # pragma: no cover
           # Some tests do not have an entry gn_isolate_map.pyl, such as
           # telemetry tests.
-          # TODO(crbug.com/1035304): require an entry in gn_isolate_map.
+          # TODO(crbug.com/40112160): require an entry in gn_isolate_map.
           pass
 
   def resolve_composition_test_suites(self):
@@ -2051,7 +2051,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                         step_data)
 
   def _check_swarming_config(self, filename, builder, step_name, step_data):
-    # TODO(crbug.com/1203436): Ensure all swarming tests specify cpu, not
+    # TODO(crbug.com/40179524): Ensure all swarming tests specify cpu, not
     # just mac tests.
     if 'swarming' in step_data:
       dimensions = step_data['swarming'].get('dimensions')

@@ -323,7 +323,7 @@ RenderFrameHostImpl& PageImpl::GetMainDocument() const {
 void PageImpl::UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                           cc::BrowserControlsState current,
                                           bool animate) {
-  // TODO(https://crbug.com/1154852): Asking for the LocalMainFrame interface
+  // TODO(crbug.com/40159655): Asking for the LocalMainFrame interface
   // before the RenderFrame is created is racy.
   if (!GetMainDocument().IsRenderFrameLive())
     return;

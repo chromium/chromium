@@ -125,8 +125,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest, AuraWindowLookup) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
-                       // TODO(crbug.com/1377184): Re-enable this test
-                       // TODO(crbug.com/1376643): Re-enable this test
+                       // TODO(crbug.com/40874148): Re-enable this test
+                       // TODO(crbug.com/40873813): Re-enable this test
                        DISABLED_StaleFrameContentOnEvictionNormal) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
 

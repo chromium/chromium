@@ -755,8 +755,8 @@ void SequenceManagerImpl::MaybeAddLeewayToTask(Task& task) const {
   }
 }
 
-// TODO(crbug/1267874): Rename once ExplicitHighResolutionTimerWin experiment is
-// shipped.
+// TODO(crbug.com/40204558): Rename once ExplicitHighResolutionTimerWin
+// experiment is shipped.
 bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
   // Only consider high-res tasks in the |wake_up_queue| (ignore the
   // |non_waking_wake_up_queue|).

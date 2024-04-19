@@ -79,7 +79,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   void NoDueToDisableForRenderFrameHostCalled(
       const DisabledReasonsMap& reasons);
   void NoDueToDisallowActivation(uint64_t reason);
-  // TODO(crbug.com/1341507): Remove this function.
+  // TODO(crbug.com/40060145): Remove this function.
   void NoDueToAXEvents(const std::vector<ui::AXEvent>& events);
 
   // The conditions for storing and restoring the pages are different in that

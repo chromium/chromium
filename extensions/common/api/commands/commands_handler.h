@@ -53,7 +53,7 @@ class CommandsHandler : public ManifestHandler {
   // configure a shortcut for it. No keyboard shortcut will be assigned to it,
   // until the user selects one. A generic command is not set for extensions
   // defining a page action.
-  // TODO(crbug.com/1353210): Change name to MaybeSetActionDefault.
+  // TODO(crbug.com/40858296): Change name to MaybeSetActionDefault.
   void MaybeSetBrowserActionDefault(const Extension* extension,
                                     CommandsInfo* info);
 

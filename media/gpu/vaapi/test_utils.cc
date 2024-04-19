@@ -434,7 +434,7 @@ bool CompareImages(const DecodedImage& reference_image,
           image_size.width(), image_size.height());
     } else {
       // |hw_fourcc| is YUY2 or YUYV, which are handled the same.
-      // TODO(crbug.com/868400): support other formats/planarities/pitches.
+      // TODO(crbug.com/40586948): support other formats/planarities/pitches.
       conversion_result = libyuv::YUY2ToI420(
           hw_decoded_image.planes[0].data, hw_decoded_image.planes[0].stride,
           temp_y.get(), image_size.width(), temp_u.get(),

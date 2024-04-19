@@ -428,7 +428,7 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId(
   if (scoped_trace)
     scoped_trace->AddStep(__func__);
   if (!raw_id) {
-    // TODO(https://crbug.com/1337706): return an error.
+    // TODO(crbug.com/40848542): return an error.
     MediaStreamManager::SendMessageToNativeLog(
         base::StringPrintf("MDDH::GetVideoInputDeviceFormats: Failed to find "
                            "raw device id for '%s'",

@@ -111,7 +111,7 @@ class TrustTokenStore {
   // of issuers allowed to be associated with a given top-level origin, returns
   // false. Otherwise, associates |issuer| with |top_level| and returns true.
   //
-  // TODO(crbug.com/1060716): As part of adding solid support for multiple
+  // TODO(crbug.com/40679190): As part of adding solid support for multiple
   // issuers, it'd be good to make these associations expire after some
   // reasonably long amount of time, so that top-level origins can change their
   // minds about their associated issuers.

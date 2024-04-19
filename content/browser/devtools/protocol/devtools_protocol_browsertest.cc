@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 }
 
 // ChromeOS and Android has fading out scrollbars, which makes the test flacky.
-// TODO(crbug.com/1150059) Android has a problem with changing scale.
+// TODO(crbug.com/40157725) Android has a problem with changing scale.
 // TODO(crbug.com/1147911) Android Lollipop has a problem with capturing
 // screenshot.
 // TODO(crbug.com/1156767) Flaky on linux-lacros-tester-rel
@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-// TODO(crbug.com/1366271): Semi-transparent screenshots of viewport fail on
+// TODO(crbug.com/40239673): Semi-transparent screenshots of viewport fail on
 // android devices - a scrollbar is showing.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshotsFull) {

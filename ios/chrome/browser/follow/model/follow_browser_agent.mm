@@ -186,9 +186,9 @@ void FollowBrowserAgent::ShowOverlayMessage(FollowSource source,
   // followed/unfollowed the site through feed management. This is to avoid the
   // announcement being cut off by the addition of a new row to the feed
   // management table.
-  // TODO(crbug.com/1398955): Temporary solution. A permanent solution should be
-  // in place to make sure that the agent verifies that the feed management UI
-  // is updated before showing the snackbar message.
+  // TODO(crbug.com/40249735): Temporary solution. A permanent solution should
+  // be in place to make sure that the agent verifies that the feed management
+  // UI is updated before showing the snackbar message.
   if (UIAccessibilityIsVoiceOverRunning() &&
       source == FollowSource::Management) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

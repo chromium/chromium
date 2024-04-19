@@ -8,7 +8,7 @@ include_rules = [
   "+ios/chrome/browser/ui/ntp/new_tab_page_feature.h",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
 
-  # TODO(crbug.com/1448830): Remove this deps.
+  # TODO(crbug.com/40269518): Remove this deps.
   "+ios/chrome/browser/ui/scoped_ui_blocker",
 ]
 

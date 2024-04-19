@@ -51,7 +51,7 @@ VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec);
 
 openscreen::IPAddress ToOpenscreenIPAddress(const net::IPAddress& address);
 
-// TODO(https://crbug.com/1441658): should be replaced with Open Screen's
+// TODO(crbug.com/40266598): should be replaced with Open Screen's
 // internal conversion methods.
 constexpr int kAesKeyLength = 16;
 std::array<uint8_t, kAesKeyLength> AesKeyToArray(std::string aes_key);

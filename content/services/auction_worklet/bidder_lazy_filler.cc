@@ -71,7 +71,7 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
     }
     DCHECK(win_values[1]->IsObject());
     v8::Local<v8::Object> prev_ad = win_values[1].As<v8::Object>();
-    // TODO(crbug.com/1448936): Remove this condition logic when we can assume
+    // TODO(crbug.com/40269563): Remove this condition logic when we can assume
     // it is true (30 days after switching to a Chrome version at least this
     // recent).
     // If prev_ad has "renderURL" instead of "render_url" it must be the newer

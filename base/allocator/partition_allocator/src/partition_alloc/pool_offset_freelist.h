@@ -326,7 +326,7 @@ class PoolOffsetFreelistEntry {
                                  (next_address & kSuperPageBaseMask);
 
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
-    // TODO(crbug.com/1461983): Add support for freeslot bitmaps.
+    // TODO(crbug.com/40274683): Add support for freeslot bitmaps.
     static_assert(false, "USE_FREESLOT_BITMAP not supported");
 #else
     constexpr bool marked_as_free_in_bitmap = true;

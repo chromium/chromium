@@ -254,7 +254,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // These tests use GoogleTest assertions without using the GoogleTest
   // framework. While this is the case, tell GoogleTest's stack trace getter
   // that GoogleTest is being left now so that there is a basis for traces
-  // collected upon assertion failure. TODO(https://crbug.com/1039559): use
+  // collected upon assertion failure. TODO(crbug.com/40113640): use
   // RUN_ALL_TESTS() and remove this code.
   ::testing::internal::GetUnitTestImpl()
       ->os_stack_trace_getter()

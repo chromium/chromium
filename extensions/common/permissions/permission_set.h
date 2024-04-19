@@ -49,7 +49,7 @@ class PermissionSet {
 
   // Creates a new permission set equal to the intersection of |set1| and
   // |set2|.
-  // TODO(https://crbug.com/867549): Audit callers of CreateIntersection() and
+  // TODO(crbug.com/40586635): Audit callers of CreateIntersection() and
   // have them determine the proper intersection behavior.
   static std::unique_ptr<PermissionSet> CreateIntersection(
       const PermissionSet& set1,

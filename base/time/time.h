@@ -643,7 +643,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // Converts time to/from a number of seconds since the Unix epoch (Jan 1,
   // 1970).
   //
-  // TODO(crbug.com/1495550): Add integral versions and use them.
+  // TODO(crbug.com/40286582): Add integral versions and use them.
   // TODO(crbug.com/1495554): Add ...PreservingNull() versions; see comments in
   // the implementation of FromSecondsSinceUnixEpoch().
   static constexpr Time FromSecondsSinceUnixEpoch(double dt);

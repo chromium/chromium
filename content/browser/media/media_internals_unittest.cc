@@ -301,7 +301,7 @@ INSTANTIATE_TEST_SUITE_P(
         media::AudioLogFactory::AudioComponent::kAudioOuputController,
         media::AudioLogFactory::AudioComponent::kAudioOutputStream));
 
-// TODO(https://crbug.com/873320): AudioFocusManager is not available on
+// TODO(crbug.com/40589017): AudioFocusManager is not available on
 // Android.
 #if !BUILDFLAG(IS_ANDROID)
 

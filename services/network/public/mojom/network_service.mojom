@@ -115,7 +115,7 @@ struct NetworkServiceParams {
 
   // The initial AddressMapOwnerLinux::AddressMap and set of online links for
   // the AddressMapCacheLinux in the network service.
-  // TODO(crbug.com/1312226): this should be non-optional once the kill switch
+  // TODO(crbug.com/40220507): this should be non-optional once the kill switch
   // is removed.
   [EnableIf=use_network_interface_change_listener]
   InitialAddressMap? initial_address_map;
@@ -412,7 +412,7 @@ interface NetworkService {
 
   // Set the GssapiLibraryLoadObserver for this network service.
   // Will only be notified once unless the observer is set again.
-  // TODO(crbug.com/1474362): remove this observer once GSSAPI is brokered
+  // TODO(crbug.com/40070096): remove this observer once GSSAPI is brokered
   // out of the network service.
   [EnableIf=is_linux]
   SetGssapiLibraryLoadObserver(

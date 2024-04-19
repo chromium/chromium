@@ -317,7 +317,7 @@ TEST_F(ES3MapBufferRangeTest, ReadPixels) {
   GLTestHelper::CheckGLError("no errors", __LINE__);
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1230038): This step causes a crash on mac intel-uhd bot.
+  // TODO(crbug.com/40778773): This step causes a crash on mac intel-uhd bot.
   if (GPUTestBotConfig::CurrentConfigMatches("Mac Intel 0x3e9b"))
     return;
 #endif

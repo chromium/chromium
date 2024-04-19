@@ -75,7 +75,7 @@ using partition_alloc::win::kOomExceptionCode;
 
 // *Must* be used to free memory allocated with base::UncheckedMalloc() and
 // base::UncheckedCalloc().
-// TODO(crbug.com/1279371): Enforce it, when all callers are converted.
+// TODO(crbug.com/40208525): Enforce it, when all callers are converted.
 BASE_EXPORT void UncheckedFree(void* ptr);
 
 // Function object which invokes 'UncheckedFree' on its parameter, which should

@@ -548,7 +548,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 }
 
 // Tests to turn off UMA, and open the UMA dialog to turn it back on.
-// TODO(crbug.com/1487756): Test fails on official builds.
+// TODO(crbug.com/40073685): Test fails on official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define MAYBE_testUMAUncheckedAndCheckItAgain \
   DISABLED_testUMAUncheckedAndCheckItAgain
@@ -892,7 +892,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 
 #pragma mark - Supervised User
 
-// TODO(crbug.com/1476928): This test is failing.
+// TODO(crbug.com/40070867): This test is failing.
 // Tests FRE with UMA default value and with sign-in for a supervised user.
 - (void)DISABLED_testWithUMACheckedAndSigninSupervised {
   // Add a fake supervised identity to the device.

@@ -280,5 +280,5 @@ TEST_F(SignoutActionSheetCoordinatorTest,
   [signout_coordinator_ start];
 }
 
-// TODO(crbug.com/1496731): Add test for recording signout outcome upon warning
+// TODO(crbug.com/40075765): Add test for recording signout outcome upon warning
 // dialog for unsynced data (i.e. for Sync.SignoutWithUnsyncedData).

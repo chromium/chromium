@@ -208,7 +208,7 @@ void WebmEncoderMuxer::InitializeVideoEncoder(
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&WebmEncoderMuxer::OnVideoEncoderInitialized,
                      weak_ptr_factory_.GetWeakPtr(),
-                     // TODO(https://crbug.com/1380714): Remove
+                     // TODO(crbug.com/40061562): Remove
                      // `UnsafeDanglingUntriaged`
                      base::UnsafeDanglingUntriaged(video_encoder_.get())));
 }

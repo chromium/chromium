@@ -687,7 +687,7 @@ TEST_P(IndexedDBTest, CloseAfterUpgrade) {
   connection.reset();
 }
 
-// TODO(crbug.com/1282613): Test is flaky on Mac in debug.
+// TODO(crbug.com/40813013): Test is flaky on Mac in debug.
 #if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
 #define MAYBE_OpenNewConnectionWhileUpgrading \
   DISABLED_OpenNewConnectionWhileUpgrading

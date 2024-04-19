@@ -1896,7 +1896,7 @@ def generate_performance_test(tester_config, test, builder_name):
   elif 'builder-perf' not in builder_name:
     # Enable Result DB on all perf test bots. Builders with names including
     # "builder-perf" are used for compiling only, and do not run perf tests.
-    # TODO(crbug.com/1135718): Replace the following line by specifying either
+    # TODO(crbug.com/40151981): Replace the following line by specifying either
     # "result_format" for GTests, or "has_native_resultdb_integration" for all
     # other tests.
     result['resultdb'] = {'enable': True}

@@ -1813,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   EXPECT_EQ(1, script2_request_counter->GetRequestCount());
 }
 
-// TODO(crbug.com/1350046): Flaky.
+// TODO(crbug.com/40856259): Flaky.
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
                        DISABLED_CORS) {
   std::unique_ptr<net::EmbeddedTestServer> data_server =

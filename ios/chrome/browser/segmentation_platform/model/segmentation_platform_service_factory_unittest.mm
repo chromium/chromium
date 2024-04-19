@@ -224,7 +224,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
 };
 
 TEST_F(SegmentationPlatformServiceFactoryTest, Test) {
-  // TODO(crbug.com/1333641): Add test for the API once the initialization is
+  // TODO(crbug.com/40227968): Add test for the API once the initialization is
   // fixed.
 }
 

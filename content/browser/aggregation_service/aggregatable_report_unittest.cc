@@ -212,7 +212,7 @@ void VerifyReport(
         EXPECT_TRUE(CborMapContainsKeyAndType(payload_map, "dpf_key",
                                               cbor::Value::Type::BYTE_STRING));
 
-        // TODO(crbug.com/1238459): Test the payload details (e.g. dpf key) in
+        // TODO(crbug.com/40193482): Test the payload details (e.g. dpf key) in
         // more depth against a minimal helper server implementation.
 
         EXPECT_FALSE(payload_map.contains(cbor::Value("data")));

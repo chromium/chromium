@@ -344,7 +344,8 @@ const Extension* ExtensionWebContentsObserver::GetExtensionFromFrame(
     // This check is needed to eliminate origins that are not within a
     // hosted-app's web extent, and sandboxed extension frames with an opaque
     // origin.
-    // TODO(1139108) See if extension check is still needed after bug is fixed.
+    // TODO(crbug.com/40725839) See if extension check is still needed after bug
+    // is fixed.
     auto* extension_for_origin = ExtensionRegistry::Get(browser_context)
                                      ->enabled_extensions()
                                      .GetExtensionOrAppByURL(origin.GetURL());

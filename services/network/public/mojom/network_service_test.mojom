@@ -20,7 +20,7 @@ import "services/network/public/mojom/transferable_socket.mojom";
 
 // Maps to net::RuleBasedHostResolverProc::Rule::ResolverType.
 //
-// TODO(https://crbug.com/1298106) Deduplicate this enum's definition.
+// TODO(crbug.com/40822747) Deduplicate this enum's definition.
 enum ResolverType {
   kResolverTypeFail,
   kResolverTypeFailTimeout,

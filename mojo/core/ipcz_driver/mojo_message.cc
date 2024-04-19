@@ -43,7 +43,7 @@ constexpr int kGrowthFactor = 2;
 //
 // Returns true if and only if the handle list is well-formed in this regard.
 //
-// TODO(https://crbug.com/1382170): Since boxes now support application objects,
+// TODO(crbug.com/40877163): Since boxes now support application objects,
 // DataPipe can be migrated out of the driver and we can avoid this whole
 // serialization hack.
 bool FixUpDataPipeHandles(std::vector<IpczHandle>& handles) {

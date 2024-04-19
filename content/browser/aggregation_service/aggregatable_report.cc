@@ -87,7 +87,7 @@ std::vector<GURL> GetDefaultProcessingUrls(
             kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get())};
       }
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
-      // TODO(crbug.com/1295705): Update default processing urls.
+      // TODO(crbug.com/40214439): Update default processing urls.
       return {GURL("https://server1.example"), GURL("https://server2.example")};
   }
 }

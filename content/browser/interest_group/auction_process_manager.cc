@@ -430,7 +430,7 @@ RenderProcessHost* DedicatedAuctionProcessManager::LaunchProcess(
       ServiceProcessHost::Options()
           .WithDisplayName(display_name)
 #if BUILDFLAG(IS_MAC)
-          // TODO(https://crbug.com/1281311) add a utility helper for Jit.
+          // TODO(crbug.com/40812055) add a utility helper for Jit.
           .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
 #endif
           .WithProcessCallback(base::BindOnce(

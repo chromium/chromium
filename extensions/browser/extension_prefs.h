@@ -220,8 +220,8 @@ class ExtensionPrefs : public KeyedService {
 
   // Get/Set the set of extensions that are pinned to the toolbar. Only used
   // when the experiment ExtensionsMenu is active."
-  // TODO(crbug.com/943702): Remove reference to experiment when it launches or
-  // remove code if it does not.
+  // TODO(crbug.com/40619134): Remove reference to experiment when it launches
+  // or remove code if it does not.
   ExtensionIdList GetPinnedExtensions() const;
   void SetPinnedExtensions(const ExtensionIdList& extension_ids);
 

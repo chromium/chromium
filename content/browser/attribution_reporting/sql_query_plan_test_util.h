@@ -16,7 +16,7 @@
 
 namespace content {
 
-// TODO(crbug.com/1407007): Move these utilities to //sql once they are trialed
+// TODO(crbug.com/40252981): Move these utilities to //sql once they are trialed
 // in the attribution_reporting directory.
 
 // This type wraps a returned sqlite query plan, as returned from EXPLAIN QUERY

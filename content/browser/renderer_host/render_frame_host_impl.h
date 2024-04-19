@@ -1289,7 +1289,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // Transition to this state happens only from kActive and kPrerendering
     // states. Note that eviction from BackForwardCache does not wait for unload
     // handlers, and kInBackForwardCache moves to kReadyToBeDeleted.
-    // TODO(https://crbug.com/1222909): Omit unload handling on canceling
+    // TODO(crbug.com/40187396): Omit unload handling on canceling
     // prerendering, and making kPrerendering move to kReadyToBeDeleted
     // directly.
     kRunningUnloadHandlers,
@@ -3927,7 +3927,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Check the renderer provided sandbox flags matches with what the browser
   // process computed on its own. This triggers DCHECK and DumpWithoutCrashing()
   //
-  // TODO(https://crbug.com/1041376) Remove this when we are confident the value
+  // TODO(crbug.com/40051217) Remove this when we are confident the value
   // computed from the browser is always matching.
   void CheckSandboxFlags();
 
@@ -4581,7 +4581,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Counts the number of times the associated renderer process has exited.
   // This is used to track problematic RenderFrameHost reuse.
-  // TODO(https://crbug.com/1172882): Remove once enough data has been
+  // TODO(crbug.com/40166847): Remove once enough data has been
   // collected.
   int renderer_exit_count_ = 0;
 

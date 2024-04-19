@@ -30,7 +30,7 @@
 // which variation of the Post Restore Default Browser Promo is currently
 // active.
 - (promos_manager::Promo)identifier {
-  // TODO(crbug.com/1453786): add other variations and check for them.
+  // TODO(crbug.com/40272069): add other variations and check for them.
 
   // Returns the iOS alert promo as the default.
   return promos_manager::Promo::PostRestoreDefaultBrowserAlert;

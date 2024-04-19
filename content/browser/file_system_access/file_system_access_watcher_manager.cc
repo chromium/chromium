@@ -181,7 +181,7 @@ void FileSystemAccessWatcherManager::OnRawChange(
   // TODO(https://crbug.com/1488864): Use `change_info.cookie` to connect
   // related events.
   //
-  // TODO(https://crbug.com/1488874): Ignore changes caused by API
+  // TODO(crbug.com/40283778): Ignore changes caused by API
   // implementation details, such as writes to swap files.
   //
   // TODO(https://crbug.com/1447240): Batch changes.
@@ -229,7 +229,7 @@ void FileSystemAccessWatcherManager::RemoveObserver(Observation* observation) {
   // Remove the respective source if we own it and it was the only observer
   // for this scope.
   //
-  // TODO(https://crbug.com/1019297): Handle initializing sources.
+  // TODO(crbug.com/40105284): Handle initializing sources.
   base::EraseIf(owned_sources_, [&](const auto& source) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return source->scope().Contains(newly_unobserved_scope) &&
@@ -270,7 +270,7 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
   } else {
     auto owned_change_source = CreateOwnedSourceForScope(scope);
     if (!owned_change_source) {
-      // TODO(https://crbug.com/1019297): Watching `scope` is not supported.
+      // TODO(crbug.com/40105284): Watching `scope` is not supported.
       std::move(on_source_initialized)
           .Run(file_system_access_error::FromStatus(
               blink::mojom::FileSystemAccessStatus::kNotSupportedError));
@@ -306,7 +306,7 @@ void FileSystemAccessWatcherManager::DidInitializeSource(
     // If we owned this source, remove it. A source which is not initialized
     // will not notify of changes, so there's no use keeping it around.
     //
-    // TODO(https://crbug.com/1019297): Decide how to handle unowned sources
+    // TODO(crbug.com/40105284): Decide how to handle unowned sources
     // which fail to initialize.
     base::EraseIf(
         owned_sources_,

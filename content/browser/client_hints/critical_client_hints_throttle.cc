@@ -155,7 +155,7 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
   restarted_origins_.insert(response_origin);
 
   net::HttpRequestHeaders modified_headers;
-  // TODO(crbug.com/1195034): If the frame tree node doesn't have an associated
+  // TODO(crbug.com/40175866): If the frame tree node doesn't have an associated
   // navigation_request (e.g. a service worker request) it might not override
   // the user agent correctly.
   if (frame_tree_node) {

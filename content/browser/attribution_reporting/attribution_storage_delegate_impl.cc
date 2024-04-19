@@ -129,7 +129,7 @@ AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
       delay_mode_ == AttributionDelayMode::kDefault) {
     // Add uniform random noise in the range of [0, 1 minutes] to the report
     // time.
-    // TODO(https://crbug.com/1075600): This delay is very conservative.
+    // TODO(crbug.com/40687765): This delay is very conservative.
     // Consider increasing this delay once we can be sure reports are still
     // sent at reasonable times, and not delayed for many browser sessions due
     // to short session up-times.

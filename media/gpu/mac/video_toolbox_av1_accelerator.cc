@@ -195,7 +195,7 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     hdr_metadata = hdr_metadata_;
   }
 
-  // TODO(crbug.com/1493614): Should this be the current frame size, or the
+  // TODO(crbug.com/40936765): Should this be the current frame size, or the
   // sequence max frame size?
   gfx::Size coded_size(base::strict_cast<int>(pic.frame_header.width),
                        base::strict_cast<int>(pic.frame_header.height));

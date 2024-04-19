@@ -400,7 +400,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
       return pending_high_res_tasks_;
     }
 
-    // TODO(crbug.com/1155905): we pass SequenceManager to be able to record
+    // TODO(crbug.com/40735653): we pass SequenceManager to be able to record
     // crash keys. Remove this parameter after chasing down this crash.
     void SweepCancelledTasks(SequenceManagerImpl* sequence_manager);
     Value::List AsValue(TimeTicks now) const;

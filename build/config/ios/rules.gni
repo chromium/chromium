@@ -1792,7 +1792,7 @@ template("ios_xctest_test") {
     product_type = _ios_xcode_xctest_bundle_id
     host_target = _host_target
 
-    # TODO(crbug.com/1056328) The change in output name results in a mismatch
+    # TODO(crbug.com/40120290) The change in output name results in a mismatch
     # between this value and the ios_app_bundle target name. To mitigate, this
     # has been modified to _host_target. output_name is set to _host_output
     # to mitigate the naming.

@@ -650,7 +650,7 @@ PermissionsManager::GetBoundedExtensionDesiredPermissions(
   // Additionally, we ensure that all "required" permissions are included in
   // this desired set (to guard against any pref corruption - this ensures at
   // least everything is in a "sane" state).
-  // TODO(https://crbug.com/1341118): Maddeningly, the order of the arguments
+  // TODO(crbug.com/40850847): Maddeningly, the order of the arguments
   // passed to CreateUnion() here is *important*. Passing `bounded_desired` as
   // the first param results in the valid schemes being removed.
   bounded_desired =

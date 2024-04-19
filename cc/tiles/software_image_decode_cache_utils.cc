@@ -107,7 +107,7 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
       SkISize::Make(key.target_size().width(), key.target_size().height());
   SkImageInfo target_info =
       SkImageInfo::Make(target_size, color_type, kPremul_SkAlphaType);
-  // TODO(crbug.com/983348): If this turns into a crasher, pass an actual
+  // TODO(crbug.com/40095682): If this turns into a crasher, pass an actual
   // "free memory" closure.
   std::unique_ptr<base::DiscardableMemory> target_pixels =
       AllocateDiscardable(target_info, base::DoNothing());

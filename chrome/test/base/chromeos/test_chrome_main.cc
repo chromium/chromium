@@ -33,7 +33,7 @@ int ChromeMain(int argc, const char** argv) {
   // below is removed, this could theoretically be moved later in startup, but
   // it needs to be initialized fairly early because browser tests of the heap
   // profiler use the PoissonAllocationSampler.
-  // TODO(https://crbug.com/1411454): Clean up other paths that call this Init()
+  // TODO(crbug.com/40062835): Clean up other paths that call this Init()
   // function, which are now redundant.
   base::PoissonAllocationSampler::Init();
 

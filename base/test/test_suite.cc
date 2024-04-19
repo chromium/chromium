@@ -558,7 +558,7 @@ void TestSuite::Initialize() {
   base::debug::AsanService::GetInstance()->Initialize();
 #endif
 
-  // TODO(https://crbug.com/1400058): Enable BackupRefPtr in unittests on
+  // TODO(crbug.com/40250141): Enable BackupRefPtr in unittests on
   // Android too. Same for ASAN.
   // TODO(https://crbug.com/1413674): Enable PartitionAlloc in unittests with
   // ASAN.

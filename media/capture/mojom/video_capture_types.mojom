@@ -315,7 +315,7 @@ struct VideoCaptureParams {
   PowerLineFrequency power_line_frequency;
   bool enable_face_detection;
 
-  // TODO(https://crbug.com/1412589): remove this once HiDPI is enabled for
+  // TODO(crbug.com/40255351): remove this once HiDPI is enabled for
   // all video capture sessions.
   [MinVersion=1] bool is_high_dpi_enabled;
 };

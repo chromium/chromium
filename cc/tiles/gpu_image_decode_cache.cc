@@ -3226,7 +3226,8 @@ bool GpuImageDecodeCache::TryLockImage(HaveContextLock have_context_lock,
     auto* ri = context_->RasterInterface();
     // If |have_context_lock|, we can immediately lock the image and send
     // the lock command to the GPU process.
-    // TODO(crbug.com/914622): Add Chrome GL extension to upload texture array.
+    // TODO(crbug.com/40606304): Add Chrome GL extension to upload texture
+    // array.
     if (data->info.yuva.has_value() &&
         ri->LockDiscardableTextureCHROMIUM(data->upload.gl_y_id()) &&
         ri->LockDiscardableTextureCHROMIUM(data->upload.gl_u_id()) &&

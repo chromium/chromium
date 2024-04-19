@@ -189,7 +189,7 @@ bool ExtensionCreator::CreateZip(const base::FilePath& extension_dir,
   zip::FilterCallback filter_cb =
       base::BindRepeating(&ExtensionCreatorFilter::ShouldPackageFile, filter);
 
-  // TODO(crbug.com/862471): Surface a warning to the user for files excluded
+  // TODO(crbug.com/40584446): Surface a warning to the user for files excluded
   // from being packed.
   if (!zip::ZipWithFilterCallback(extension_dir, *zip_path,
                                   std::move(filter_cb))) {

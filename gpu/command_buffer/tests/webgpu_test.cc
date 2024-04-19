@@ -69,7 +69,7 @@ bool WebGPUTest::WebGPUSharedImageSupported() const {
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
      BUILDFLAG(IS_WIN)) &&                                                 \
     BUILDFLAG(USE_DAWN)
-  // TODO(crbug.com/1172447): Re-enable on AMD when the RX 5500 XT issues are
+  // TODO(crbug.com/40166640): Re-enable on AMD when the RX 5500 XT issues are
   // resolved.
   return !GPUTestBotConfig::CurrentConfigMatches("Linux AMD");
 #else

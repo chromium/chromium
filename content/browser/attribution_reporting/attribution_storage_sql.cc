@@ -429,7 +429,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       source_id, aggregatable_budget_consumed, randomized_response_rate,
       trigger_data_matching, event_level_epsilon);
   if (!stored_source.has_value()) {
-    // TODO(crbug.com/1498497): Consider enumerating errors from StoredSource.
+    // TODO(crbug.com/40287459): Consider enumerating errors from StoredSource.
     return base::unexpected(ReportCorruptionStatusSetAndIds(
         ReportCorruptionStatusSet{
             ReportCorruptionStatus::kStoredSourceConstructionFailed},
@@ -1927,7 +1927,7 @@ void AttributionStorageSql::ClearData(
   // See this comment for more information:
   // crrev.com/c/2150071/4/content/browser/conversions/conversion_storage_sql.cc#342
   //
-  // TODO(crbug.com/1290377): Look into optimizing origin filter callback.
+  // TODO(crbug.com/40212333): Look into optimizing origin filter callback.
   // TODO(apaseltiner): Consider wrapping `filter` such that it deletes
   // opaque/untrustworthy origins.
 
@@ -3206,7 +3206,7 @@ void AttributionStorageSql::AssignTriggerVerificationData(
     const AttributionTrigger& trigger) {
   DCHECK(!reports.empty());
 
-  // TODO(https://crbug.com/1442578): Add metric to understand the number of
+  // TODO(crbug.com/40267018): Add metric to understand the number of
   // reports sent with a verification token.
 
   if (trigger.verifications().empty()) {

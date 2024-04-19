@@ -169,7 +169,7 @@ void AggregatableReportAssembler::OnPublicKeyFetched(
 
   PendingRequest& pending_request = pending_request_it->second;
 
-  // TODO(crbug.com/1254792): Consider implementing some retry logic.
+  // TODO(crbug.com/40199738): Consider implementing some retry logic.
 
   ++pending_request.num_returned_key_fetches;
   pending_request.processing_url_keys[processing_url_index] = std::move(key);

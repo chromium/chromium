@@ -172,7 +172,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // OnActivationFinished() with the id to release the reserved host. This also
   // cancels all the prerender hosts except the one to be activated.
   //
-  // TODO(https://crbug.com/1198815): Consider returning the ownership of the
+  // TODO(crbug.com/40177514): Consider returning the ownership of the
   // reserved host and letting NavigationRequest own it instead of
   // PrerenderHostRegistry.
   int ReserveHostToActivate(NavigationRequest& navigation_request,

@@ -1109,7 +1109,7 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
       url_loader_->CancelWithError(
           error, std::string_view(base::NumberToString(error)));
     } else {
-      // TODO(https://crbug.com/1052242): Make sure ResetWithReason() is called
+      // TODO(crbug.com/40118809): Make sure ResetWithReason() is called
       // on the original `url_loader_`.
       OnComplete(network::URLLoaderCompletionStatus(error));
     }
@@ -1526,7 +1526,7 @@ NavigationURLLoaderImpl::CreateTerminalNonNetworkLoaderFactory(
         base::FeatureList::IsEnabled(
             blink::features::kFileSystemUrlNavigation) ||
         !frame_tree_node->navigation_request()->IsRendererInitiated()) {
-      // TODO(https://crbug.com/256067): Once DevTools has support for
+      // TODO(crbug.com/40323778): Once DevTools has support for
       // sandboxed file system inspection there isn't much reason anymore to
       // support browser initiated filesystem: navigations, so remove this
       // entirely at that point.

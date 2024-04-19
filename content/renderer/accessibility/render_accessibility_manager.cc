@@ -23,7 +23,7 @@ RenderAccessibilityManager::~RenderAccessibilityManager() = default;
 void RenderAccessibilityManager::BindReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::RenderAccessibility>
         receiver) {
-  // TODO(https://crbug.com/1329532): re-add   DCHECK(!receiver_.is_bound()),
+  // TODO(crbug.com/40842669): re-add   DCHECK(!receiver_.is_bound()),
   // once underlying issue is resolved.
   if (receiver_.is_bound())
     receiver_.reset();

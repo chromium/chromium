@@ -941,7 +941,7 @@ void ServiceWorkerVersion::AddControllee(
 
 void ServiceWorkerVersion::RemoveControllee(const std::string& client_uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/1015692): Remove this once RemoveControllee() matches with
+  // TODO(crbug.com/40653867): Remove this once RemoveControllee() matches with
   // AddControllee().
   if (!base::Contains(controllee_map_, client_uuid))
     return;
@@ -3022,7 +3022,7 @@ bool ServiceWorkerVersion::SetupRouterEvaluator(
   CHECK(IsStaticRouterEnabled());
   blink::ServiceWorkerRouterRules new_rules;
   // If there are existing router rules, set them first.
-  // TODO(crbug.com/1468184) Consider having a method to merge rules instead of
+  // TODO(crbug.com/40277030) Consider having a method to merge rules instead of
   // replacing each time.
   if (router_evaluator()) {
     for (const auto& e : router_evaluator()->rules().rules) {

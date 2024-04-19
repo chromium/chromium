@@ -1,7 +1,7 @@
 # TODO(crbug/1345499)
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
 
-# TODO(crbug/1345504)
+# TODO(crbug.com/40232150)
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
 
 # TODO(crbug/1469692)

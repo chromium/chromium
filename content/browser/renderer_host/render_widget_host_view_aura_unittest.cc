@@ -5637,7 +5637,7 @@ TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
 
 // Test that the rendering timeout for newly loaded content fires when enough
 // time passes without receiving a new compositor frame.
-// TODO(https://crbug.com/1225139): This test is flaky on "Linux ASan LSan Tests
+// TODO(crbug.com/40775652): This test is flaky on "Linux ASan LSan Tests
 // (1)"
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_NewContentRenderingTimeout DISABLED_NewContentRenderingTimeout

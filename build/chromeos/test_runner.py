@@ -32,7 +32,7 @@ from pylib.base import base_test_result  # pylint: disable=import-error
 from pylib.results import json_results  # pylint: disable=import-error
 
 sys.path.insert(0, os.path.join(CHROMIUM_SRC_PATH, 'build', 'util'))
-# TODO(crbug.com/1421441): Re-enable the 'no-name-in-module' check.
+# TODO(crbug.com/40259280): Re-enable the 'no-name-in-module' check.
 from lib.results import result_sink  # pylint: disable=import-error,no-name-in-module
 
 import subprocess  # pylint: disable=import-error,wrong-import-order

@@ -53,7 +53,7 @@ BASE_EXPORT uint64_t RandUint64();
 
 // Returns a random number between min and max (inclusive). Thread-safe.
 //
-// TODO(crbug.com/1488681): Change from fully-closed to half-closed (i.e.
+// TODO(crbug.com/40283703): Change from fully-closed to half-closed (i.e.
 // exclude `max`) to parallel other APIs here.
 BASE_EXPORT int RandInt(int min, int max);
 

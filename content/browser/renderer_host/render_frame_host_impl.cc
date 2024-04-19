@@ -3145,7 +3145,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
     // `renderer_initiated_creation_of_main_frame` set to false, even though the
     // frames arguably are renderer-created.
     //
-    // TODO(https://crbug.com/1194421): Address the prerendering case.
+    // TODO(crbug.com/40758431): Address the prerendering case.
     DCHECK(IsOutermostMainFrame());
     if (!renderer_initiated_creation_of_main_frame &&
         lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
@@ -6192,7 +6192,7 @@ void RenderFrameHostImpl::DidFirstVisuallyNonEmptyPaint() {
 
 void RenderFrameHostImpl::DownloadURL(
     blink::mojom::DownloadURLParamsPtr blink_parameters) {
-  // TODO(crbug.com/1205359): We should defer the download until the
+  // TODO(crbug.com/40180431): We should defer the download until the
   // prerendering page is activated, and it will comply with the prerendering
   // spec.
   if (CancelPrerendering(
@@ -13657,7 +13657,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
     // Associate the blink::Document source id to the URL. Only URLs on primary
     // main frames can be recorded.
-    // TODO(crbug.com/1245014): For prerendering pages, record the source url
+    // TODO(crbug.com/40195952): For prerendering pages, record the source url
     // after activation.
     if (navigation_request->IsInPrimaryMainFrame() &&
         document_ukm_source_id != ukm::kInvalidSourceId) {

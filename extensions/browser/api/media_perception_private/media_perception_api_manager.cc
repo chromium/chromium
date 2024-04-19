@@ -340,8 +340,8 @@ void MediaPerceptionAPIManager::SetState(
     // callback. StartMediaAnalytics is still called, however, in the case that
     // the old CrOS deployment path for the media analytics process is still in
     // use.
-    // TODO(crbug.com/789376): When the old deployment path is no longer in use,
-    // only start media analytics if the mount point is set.
+    // TODO(crbug.com/40552021): When the old deployment path is no longer in
+    // use, only start media analytics if the mount point is set.
     if (!mount_point_.empty())
       upstart_env.push_back(std::string("mount_point=") + mount_point_);
 
@@ -392,7 +392,7 @@ void MediaPerceptionAPIManager::UpstartStartProcessCallback(
     return;
   }
 
-  // TODO(crbug.com/1003968): Look into using
+  // TODO(crbug.com/40098825): Look into using
   // ObjectProxy::WaitForServiceToBeAvailable instead, since a timeout is
   // inherently not deterministic, even if it works in practice.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

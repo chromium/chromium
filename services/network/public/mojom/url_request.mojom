@@ -147,7 +147,7 @@ struct URLRequest {
   // third-party context when it otherwise wouldn't be able to.
   // https://crbug.com/1060631 will move the SFC computation into the browser
   // process to prevent this.
-  // TODO(https://crbug.com/1060631): Remove this message after the fix is
+  // TODO(crbug.com/40122112): Remove this message after the fix is
   // landed.
   SiteForCookies site_for_cookies;
 

@@ -894,7 +894,7 @@ PDFiumPage::Area PDFiumPage::GetLinkTarget(FPDF_LINK link, LinkTarget* target) {
     case PDFACTION_URI:
       return GetURITarget(action, target);
       // TODO(crbug.com/767191): Support PDFACTION_LAUNCH.
-      // TODO(crbug.com/142344): Support PDFACTION_REMOTEGOTO.
+      // TODO(crbug.com/40260046): Support PDFACTION_REMOTEGOTO.
     case PDFACTION_LAUNCH:
     case PDFACTION_REMOTEGOTO:
     default:

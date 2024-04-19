@@ -2537,7 +2537,7 @@ class DOMMessageQueue::MessageObserver : public WebContentsObserver {
 };
 
 DOMMessageQueue::DOMMessageQueue() {
-  // TODO(https://crbug.com/1174774): Remove the need to listen for this
+  // TODO(crbug.com/40746969): Remove the need to listen for this
   // notification.
   for (auto* contents : WebContentsImpl::GetAllWebContents()) {
     observers_.emplace(std::make_unique<MessageObserver>(this, contents));

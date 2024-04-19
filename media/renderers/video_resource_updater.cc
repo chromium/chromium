@@ -206,7 +206,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     case PIXEL_FORMAT_NV12:
       // |target| is set to 0 for Vulkan textures.
       //
-      // TODO(https://crbug.com/1116101): Note that GL_TEXTURE_EXTERNAL_OES is
+      // TODO(crbug.com/40144615): Note that GL_TEXTURE_EXTERNAL_OES is
       // allowed even for two-texture NV12 frames. This is intended to handle a
       // couple of cases: a) when these textures are connected to the
       // corresponding plane of the contents of an EGLStream using

@@ -4008,8 +4008,8 @@ void RenderProcessHostImpl::Cleanup() {
   // RenderProcessHost around for non-live listeners_. Allow embedders to skip
   // this check (e.g., Android WebView does not yet cleanly handle this exit for
   // its sole RenderProcessHost).
-  // TODO(crbug.com/1268454): Support this on Android WebView as well and remove
-  // the ContentBrowserClient method.
+  // TODO(crbug.com/40803531): Support this on Android WebView as well and
+  // remove the ContentBrowserClient method.
   bool has_only_non_live_rfhs =
       GetContentClient()->browser()->ShouldAllowNoLongerUsedProcessToExit() &&
       HasOnlyNonLiveRenderFrameHosts();
@@ -4106,7 +4106,7 @@ void RenderProcessHostImpl::Cleanup() {
   // We cannot delete `this` twice; if this fails, there is an issue with our
   // control flow.
   //
-  // TODO(crbug.com/1200340): Revert this to a DCHECK after some investigation.
+  // TODO(crbug.com/40761751): Revert this to a DCHECK after some investigation.
   CHECK(!deleting_soon_);
 
   // There are no `return` statements anywhere below - at this point we have
@@ -5238,7 +5238,7 @@ void RenderProcessHostImpl::UpdateControllerServiceWorkerProcessPriority() {
 
   for (const auto& kv : context->GetRunningServiceWorkerInfos()) {
     ServiceWorkerVersion* version = context->GetLiveVersion(kv.first);
-    // TODO(https://crbug.com/1271393): It appears that some times `version` is
+    // TODO(crbug.com/40805534): It appears that some times `version` is
     // nullptr here, but we don't know why.  Once that is solved revert this
     // runtime check back to a DCHECK.
     if (version && version->IsControlleeProcessID(GetID())) {

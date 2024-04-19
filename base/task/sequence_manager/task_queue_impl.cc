@@ -1605,7 +1605,7 @@ TaskQueueImpl::DelayedIncomingQueue::DelayedIncomingQueue() = default;
 TaskQueueImpl::DelayedIncomingQueue::~DelayedIncomingQueue() = default;
 
 void TaskQueueImpl::DelayedIncomingQueue::push(Task task) {
-  // TODO(crbug.com/1247285): Remove this once the cause of corrupted tasks in
+  // TODO(crbug.com/40789839): Remove this once the cause of corrupted tasks in
   // the queue is understood.
   CHECK(task.task);
   if (task.is_high_res)

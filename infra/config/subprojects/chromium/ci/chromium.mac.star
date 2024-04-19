@@ -144,7 +144,7 @@ ci.builder(
 ci.builder(
     name = "mac-arm64-on-arm64-rel",
 
-    # TODO(crbug.com/1186823): Expand to more branches when all M1 bots are
+    # TODO(crbug.com/40172659): Expand to more branches when all M1 bots are
     # rosettaless.
     # branch_selector = branches.selector.MAC_BRANCHES,
     builder_spec = builder_config.builder_spec(

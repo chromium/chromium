@@ -252,7 +252,7 @@ const CGFloat kMediumAlpha = 0.5;
 - (void)loadElementsFromContext {
   NSString* typeURL = UTTypeURL.identifier;
   __weak ShareViewController* weakSelf = self;
-  // TODO(crbug.com/1472758): Reorganize sharing extension handler.
+  // TODO(crbug.com/40278725): Reorganize sharing extension handler.
   BOOL foundMatch = false;
   for (NSExtensionItem* item in self.extensionContext.inputItems) {
     for (NSItemProvider* itemProvider in item.attachments) {

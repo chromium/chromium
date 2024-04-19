@@ -8004,7 +8004,7 @@ IN_PROC_BROWSER_TEST_F(
             GetDelegatedFrameHost(rfh_red->GetView())
                 ->GetFallbackSurfaceIdForTesting());
 
-  // TODO(https://crbug.com/1472026): If the red page's renderer still hasn't
+  // TODO(crbug.com/40278487): If the red page's renderer still hasn't
   // submitted a new frame after the ContentRenderingTimeout is up, we should
   // abort the transition. Expand this test to cover that behavior when we have
   // a way to abort the transition.

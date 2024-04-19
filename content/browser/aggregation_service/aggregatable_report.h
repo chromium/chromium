@@ -251,7 +251,7 @@ class CONTENT_EXPORT AggregatableReport {
   // fields specified in `additional_fields_`.
   base::Value::Dict GetAsJson() const;
 
-  // TODO(crbug.com/1247409): Expose static method to validate that a
+  // TODO(crbug.com/40196851): Expose static method to validate that a
   // base::Value appears to represent a valid report.
 
   // Returns whether `number` is a valid number of processing URLs for the

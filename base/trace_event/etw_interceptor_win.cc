@@ -60,7 +60,7 @@ void ETWInterceptor::Delegate::OnTrackEvent(
       break;
   }
   DCHECK_NE(nullptr, phase_string);
-  // TODO(crbug.com/1465855): Consider exporting thread time once
+  // TODO(crbug.com/40276149): Consider exporting thread time once
   // TrackEventStateTracker supports it.
   if (event.track_event.type() ==
       perfetto::protos::pbzero::TrackEvent::TYPE_SLICE_END) {

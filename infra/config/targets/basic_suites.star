@@ -1887,7 +1887,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "finch_smoke_tests",
     tests = {
-        # TODO(crbug.com/1227222): Change this to the actual finch smoke test
+        # TODO(crbug.com/40189140): Change this to the actual finch smoke test
         # once it exists.
         "base_unittests": targets.legacy_test_config(),
     },

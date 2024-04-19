@@ -386,7 +386,7 @@ BluetoothTestWinrt::BluetoothTestWinrt() {
   } else {
     disabled.push_back(kNewBLEGattSessionHandling);
   }
-  // TODO(crbug.com/1335586): Remove once `kWebBluetoothConfirmPairingSupport`
+  // TODO(crbug.com/40847175): Remove once `kWebBluetoothConfirmPairingSupport`
   // is enabled by default.
   enabled.push_back(features::kWebBluetoothConfirmPairingSupport);
   scoped_feature_list_.InitWithFeatures(enabled, disabled);

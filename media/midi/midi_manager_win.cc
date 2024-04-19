@@ -95,7 +95,7 @@ constexpr HMIDIIN kInvalidInHandle = nullptr;
 constexpr HMIDIOUT kInvalidOutHandle = nullptr;
 
 // Defines SysEx message size limit.
-// TODO(crbug.com/383578): This restriction should be removed once Web MIDI
+// TODO(crbug.com/40370059): This restriction should be removed once Web MIDI
 // defines a standardized way to handle large sysex messages.
 // Note for built-in USB-MIDI driver:
 // From an observation on Windows 7/8.1 with a USB-MIDI keyboard,

@@ -192,7 +192,7 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
   // Some scenarios may end up with an empty `source_url` (e.g. this may have
   // been triggered by the ExtensionApiTabTest.TabConnect test).
   //
-  // TODO(https://crbug.com/1370079): Remove this workaround once the bug is
+  // TODO(crbug.com/40240882): Remove this workaround once the bug is
   // fixed.
   if (source_url.is_empty()) {
     return true;

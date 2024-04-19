@@ -497,7 +497,7 @@ template("test") {
       # Adds the unwind tables from unstripped binary as an asset file in the
       # apk, if |add_unwind_tables_in_apk| is specified by the test.
       if (_add_unwind_tables_in_apk) {
-        # TODO(crbug.com/1315603): Remove generation of v1 unwind asset when
+        # TODO(crbug.com/40833600): Remove generation of v1 unwind asset when
         # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroid`.
         _unwind_table_name = "${_library_target_name}_unwind_v1"
         unwind_table_v1(_unwind_table_name) {

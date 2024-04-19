@@ -420,7 +420,7 @@ std::optional<std::string> GetIframeOriginForDisplay(
   if (!exclude_iframe) {
     iframe_for_display = FormatOriginForDisplay(iframe_origin);
 
-    // TODO(crbug.com/1422040): Decide what to do if we want to include iframe
+    // TODO(crbug.com/40259453): Decide what to do if we want to include iframe
     // domain in the dialog but iframe_for_display is opaque.
     if (iframe_origin.opaque()) {
       std::move(callback).Run(FederatedAuthRequestResult::kError,
@@ -1060,7 +1060,7 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
     return;
   }
 
-  // TODO(crbug.com/1456368): notify Android UI about token request being
+  // TODO(crbug.com/40273061): notify Android UI about token request being
   // resolved.
   if (!identity_registry_) {
     std::move(callback).Run(false);
@@ -2334,7 +2334,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
   token_request_status_ = status;
   token_error_ = token_error;
 
-  // TODO(crbug.com/1485710): Refactor IdentityCredentialTokenError
+  // TODO(crbug.com/40282657): Refactor IdentityCredentialTokenError
   request_dialog_controller_->ShowErrorDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
@@ -3034,7 +3034,7 @@ void FederatedAuthRequestImpl::MaybeShowButtonModeModalDialog(
     const GURL& idp_config_url,
     const GURL& idp_login_url) {
   if (IsFedCmMultipleIdentityProvidersEnabled() && idp_infos_.size() > 1) {
-    // TODO(https://crbug.com/1487268): handle the button flow and the
+    // TODO(crbug.com/40283218): handle the button flow and the
     // Multi IdP API (what should happen if you are logged in to some
     // IdPs but not to others).
     // TODO(crbug.com/326987150): This is temporary so we should degrade
@@ -3045,7 +3045,7 @@ void FederatedAuthRequestImpl::MaybeShowButtonModeModalDialog(
   // We fail sooner before, but just to double check, we assert that
   // we are inside a user gesture here again.
   CHECK(had_transient_user_activation_);
-  // TODO(crbug.com/1487270): we should probably make idp_login_url
+  // TODO(crbug.com/40283219): we should probably make idp_login_url
   // optional instead of empty.
   LoginToIdP(/*can_append_hints=*/false, idp_config_url, idp_login_url);
   return;

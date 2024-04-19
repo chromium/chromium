@@ -186,7 +186,7 @@ FourccAndFlip GetFourccAndFlipFromPixelFormat(
 namespace media {
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1474871): When this code path has been verified on
+// TODO(crbug.com/40070224): When this code path has been verified on
 // Canary, change to enabled-by-default.
 BASE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac,
              "FallbackToSharedMemoryIfNotNv12OnMac",

@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
 
 // Verify that TransportSecurityState data is not cleared if REMOVE_CACHE is not
 // set or there is a deletelist filter.
-// TODO(crbug.com/1040065): Add support for filtered deletions and update test.
+// TODO(crbug.com/40667157): Add support for filtered deletions and update test.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
                        PreserveTransportSecurityState) {
   IssueRequestThatSetsHsts();

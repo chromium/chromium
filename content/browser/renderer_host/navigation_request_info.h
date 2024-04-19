@@ -127,7 +127,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // Specifies the security state applying to the navigation. For iframes, this
   // is the security state of their parent. Nullptr otherwise.
   //
-  // TODO(https://crbug.com/1129326): Set this for top-level navigation requests
+  // TODO(crbug.com/40149351): Set this for top-level navigation requests
   // too once the UX story is sorted out.
   const network::mojom::ClientSecurityStatePtr client_security_state;
 

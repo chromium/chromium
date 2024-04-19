@@ -472,8 +472,8 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
 
     // Make a copy of the data before hashing. A compromised renderer could
     // change shared memory before we can compute the hash and write the data.
-    // TODO(1135729) Eliminate this copy when the shared memory can't be written
-    // by the sender.
+    // TODO(crbug.com/40151989) Eliminate this copy when the shared memory can't
+    // be written by the sender.
     mojo_base::BigBuffer copy({data.data(), data.size()});
     if (copy.size() != data.size())
       return;

@@ -261,7 +261,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       // ProfileOAuth2TokenService.
       continue;
     }
-    // TODO(crbug.com/1081274): This re-ordering will be redundant once we
+    // TODO(crbug.com/40691260): This re-ordering will be redundant once we
     // apply ordering changes to the account reconciler.
     TableViewItem* item = [self accountItem:identity];
     if ([identity.userEmail isEqualToString:authenticatedEmail]) {
@@ -708,7 +708,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     DCHECK(!self.removeOrMyGoogleChooserAlertCoordinator);
     DCHECK(!self.removeAccountCoordinator);
     DCHECK(!self.signoutCoordinator);
-    // TODO(crbug.com/1221066): Need to add a completion block in
+    // TODO(crbug.com/40056250): Need to add a completion block in
     // `dismissAccountDetailsViewControllerBlock` callback, to trigger
     // `popAccountsTableViewController()`.
     // Once we have a completion block, we can set `animated` to YES.

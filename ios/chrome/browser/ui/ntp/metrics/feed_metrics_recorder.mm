@@ -462,7 +462,7 @@ using feed::FeedUserActionType;
 }
 
 - (void)recordCardTappedAtIndex:(NSUInteger)index {
-  // TODO(crbug.com/1174088): No-op since this function gets called multiple
+  // TODO(crbug.com/40746586): No-op since this function gets called multiple
   // times for a tap. Log index when this is fixed.
 }
 
@@ -575,7 +575,7 @@ using feed::FeedUserActionType;
 - (void)recordFeedWillRefresh {
   base::RecordAction(base::UserMetricsAction(kFeedWillRefresh));
   // The feed will have new content so reset the engagement tracking variable.
-  // TODO(crbug.com/1423467): We need to know whether the feed was actually
+  // TODO(crbug.com/40260057): We need to know whether the feed was actually
   // refreshed, and not just when it was triggered.
   self.engagedWithLatestRefreshedContent = NO;
 }

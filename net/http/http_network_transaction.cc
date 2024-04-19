@@ -626,7 +626,7 @@ void HttpNetworkTransaction::OnStreamReady(const ProxyInfo& used_proxy_info,
   stream_ = std::move(stream);
   stream_->SetRequestHeadersCallback(request_headers_callback_);
   proxy_info_ = used_proxy_info;
-  // TODO(crbug.com/621512): Remove `was_alpn_negotiated` when we remove
+  // TODO(crbug.com/40473589): Remove `was_alpn_negotiated` when we remove
   // chrome.loadTimes API.
   response_.was_alpn_negotiated =
       stream_request_->negotiated_protocol() != kProtoUnknown;
@@ -2022,7 +2022,7 @@ GURL HttpNetworkTransaction::AuthURL(HttpAuth::Target target) const {
           proxy_info_.proxy_chain().is_direct()) {
         return GURL();  // There is no proxy chain.
       }
-      // TODO(https://crbug.com/1103768): Mapping proxy addresses to
+      // TODO(crbug.com/40704785): Mapping proxy addresses to
       // URLs is a lossy conversion, shouldn't do this.
       auto& proxy_server = proxy_info_.proxy_chain().First();
       const char* scheme =

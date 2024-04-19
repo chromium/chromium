@@ -1993,7 +1993,7 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationTabRestoreTest,
       browser()->tab_strip_model()->GetActiveWebContents(), 0,
       blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
 
-  // TODO(https://crbug.com/1487628) - We're not actually getting a report on
+  // TODO(crbug.com/40283341) - We're not actually getting a report on
   // the second navigation, as they are not committed. We need to actually wait
   // for the second soft navigation and see that it fires, once the bug is
   // fixed.
@@ -2001,7 +2001,7 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationTabRestoreTest,
   // And make sure everything looks right.
   EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
   EXPECT_EQ(closed_tab_index, browser()->tab_strip_model()->active_index());
-  // TODO(https://crbug.com/1487628) - validate the the URL is back to the
+  // TODO(crbug.com/40283341) - validate the the URL is back to the
   // original one, once the bug is fixed.
 }
 

@@ -133,7 +133,7 @@ class EGLImageBackingFactoryThreadSafeTest
 #if BUILDFLAG(IS_ANDROID)
     auto* command_line = base::CommandLine::ForCurrentProcess();
     if (gles2::UsePassthroughCommandDecoder(command_line)) {
-      // TODO(crbug.com/1472516): fix this tests to work with passthrough.
+      // TODO(crbug.com/40278643): fix this tests to work with passthrough.
       GTEST_SKIP();
     }
 #endif

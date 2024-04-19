@@ -206,7 +206,7 @@ TEST_F(NetworkServiceAIATest, MAYBE(AIAFetching)) {
 TEST_F(NetworkServiceAIATest,
        MAYBE(AIAFetchingWithURLLoaderFactoryDisconnect)) {
   if (!cert_net_fetcher_url_loader()) {
-    // TODO(crbug.com/1015706): Switch to GTEST_SKIP().
+    // TODO(crbug.com/40103822): Switch to GTEST_SKIP().
     LOG(WARNING) << "Skipping AIA reconnection test because the underlying "
                     "cert verifier does not use a CertNetFetcherURLLoader.";
     return;

@@ -27,7 +27,7 @@ namespace dnr_api = api::declarative_net_request;
 namespace {
 
 bool ShouldCollapseResourceType(flat_rule::ElementType type) {
-  // TODO(crbug.com/848842): Add support for other element types like
+  // TODO(crbug.com/40578984): Add support for other element types like
   // OBJECT.
   return type == flat_rule::ElementType_IMAGE ||
          type == flat_rule::ElementType_SUBDOCUMENT;

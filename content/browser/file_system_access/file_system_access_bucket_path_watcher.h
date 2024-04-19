@@ -22,7 +22,7 @@ class FileSystemAccessWatcherManager;
 // observers. This class must be created, used, and destroyed on the same
 // sequence as the `FileSystemContext` it holds a reference to.
 //
-// TODO(https://crbug.com/1019297): Account for changes made by
+// TODO(crbug.com/40105284): Account for changes made by
 // SyncAccessHandles.
 class FileSystemAccessBucketPathWatcher : public FileSystemAccessChangeSource,
                                           public storage::FileChangeObserver {

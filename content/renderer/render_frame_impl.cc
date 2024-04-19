@@ -3343,7 +3343,7 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
     // empty-payload IPCs are sent, then the only way to get here should be
     // because of `pending_isolated_world_factories`.
     //
-    // TODO(https://crbug.com/1152550): Remove the whole `else` branch once
+    // TODO(crbug.com/40158699): Remove the whole `else` branch once
     // Chrome Platform Apps and `pending_isolated_world_factories` are gone.
     DCHECK(!subresource_loader_factories->pending_isolated_world_factories()
                 .empty());
@@ -4006,7 +4006,7 @@ void RenderFrameImpl::DidCommitNavigation(
       // waiting for the factory call to finish on the IO thread, so if we tried
       // to lazily initialize it, we could deadlock.
       //
-      // TODO(https://crbug.com/668275): Still, it is odd for one specific
+      // TODO(crbug.com/40495144): Still, it is odd for one specific
       // factory to be registered here, make this a RenderFrameObserver.
       // code.
       factory.MaybeDeregisterRemoteFactory(GetWebFrame()->GetLocalFrameToken());

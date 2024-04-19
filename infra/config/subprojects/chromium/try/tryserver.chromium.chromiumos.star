@@ -46,7 +46,7 @@ try_.builder(
     mirrors = [
         "ci/chromeos-amd64-generic-cfi-thin-lto-rel",
     ],
-    # TODO(crbug.com/913750): Enable DCHECKS on the two amd64-generic bots
+    # TODO(crbug.com/40605913): Enable DCHECKS on the two amd64-generic bots
     # when the PFQ has it enabled.
     gn_args = "ci/chromeos-amd64-generic-cfi-thin-lto-rel",
     # TODO(b/326865026): This build seems to have a high number of fallbacks,

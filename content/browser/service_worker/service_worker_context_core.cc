@@ -732,7 +732,7 @@ void ServiceWorkerContextCore::AddWarmUpRequest(
     std::move(cb).Run();
   }
 
-  // TODO(crbug.com/1431792): Move `kFifo` to the caller.
+  // TODO(crbug.com/40263674): Move `kFifo` to the caller.
   const bool kFifo =
       blink::features::kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom.Get();
 

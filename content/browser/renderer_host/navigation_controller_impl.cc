@@ -1714,7 +1714,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
 
   if (navigation_request->IsPrerenderedPageActivation()) {
     BroadcastHistoryOffsetAndLength();
-    // TODO(crbug.com/1222893): Broadcasting happens after the prerendered page
+    // TODO(crbug.com/40187392): Broadcasting happens after the prerendered page
     // is activated. As a result, a "prerenderingchange" event listener sees the
     // history.length which is not updated yet. We should guarantee that
     // history's length and offset should be updated before a
@@ -4807,7 +4807,7 @@ void NavigationControllerImpl::NavigateToNavigationApiKey(
   if (!current_entry)
     return;
 
-  // TODO(https://crbug.com/1383704): Make sure that the right task ID is passed
+  // TODO(crbug.com/40878000): Make sure that the right task ID is passed
   // when `navigation.traverseTo()` is called.
 
   // We want to find the nearest matching entry that is contiguously

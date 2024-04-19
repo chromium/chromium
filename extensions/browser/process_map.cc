@@ -174,7 +174,7 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
   // WARNING: This logic must match ScriptContextSet::ClassifyJavaScriptContext,
   // as much as possible.
 
-  // TODO(crbug.com/1055168): Move this into the !extension if statement below
+  // TODO(crbug.com/40676105): Move this into the !extension if statement below
   // or document why we want to return WEBUI_CONTEXT for content scripts in
   // WebUIs.
   if (ProcessHasWebUIBindings(process_id)) {

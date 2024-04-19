@@ -120,7 +120,7 @@ void AggregatableReportSender::SendReport(const GURL& url,
 
   std::string contents_json;
 
-  // TODO(crbug.com/1244991): Check for required fields of contents.
+  // TODO(crbug.com/40195940): Check for required fields of contents.
   bool succeeded = base::JSONWriter::Write(contents, &contents_json);
   CHECK(succeeded, base::NotFatalUntil::M128);
   simple_url_loader_ptr->AttachStringForUpload(contents_json,

@@ -519,7 +519,7 @@ const CGFloat kSpinnerButtonPadding = 18;
     // change when the user is in the Advanced Settings (e.g., if the user
     // confirms a Sync passphrase). Because these navigation controllers are
     // not directly related to Settings, we check the type before dismissal.
-    // TODO(crbug.com/1151287): Revisit with Advanced Sync Settings changes.
+    // TODO(crbug.com/40158230): Revisit with Advanced Sync Settings changes.
     if (settingsNavigationController) {
       [settingsNavigationController
           popViewControllerOrCloseSettingsAnimated:YES];

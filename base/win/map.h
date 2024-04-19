@@ -152,7 +152,7 @@ class Map
 
   // Iterates over base::win::Map.
   // Its methods return E_CHANGED_STATE is the map is modified.
-  // TODO(https://crbug.com/987533): Refactor MapIterator to leverage
+  // TODO(crbug.com/40637532): Refactor MapIterator to leverage
   // std::map::iterator.
   class MapIterator
       : public Microsoft::WRL::RuntimeClass<

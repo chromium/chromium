@@ -529,8 +529,8 @@ void StorageStorageAreaClearFunction::GetQuotaLimitHeuristics(
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaSetAccessLevelFunction::RunWithStorage(ValueStore* storage) {
-  // TODO(crbug.com/1508463). Support these storage areas. For now, we return an
-  // error.
+  // TODO(crbug.com/40949182). Support these storage areas. For now, we return
+  // an error.
   return Error("This StorageArea is not available for setting access level");
 }
 

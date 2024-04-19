@@ -53,7 +53,7 @@ bool PressureServiceBase::HasImplicitFocus(RenderFrameHost* render_frame_host) {
   }
 
   // 4. If browsing context is capturing, return true.
-  // TODO(crbug/1505317): Take muted state into account.
+  // TODO(crbug.com/40945930): Take muted state into account.
   if (static_cast<RenderFrameHostImpl*>(render_frame_host)
           ->HasMediaStreams(
               RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream)) {

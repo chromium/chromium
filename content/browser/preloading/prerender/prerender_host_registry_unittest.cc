@@ -152,7 +152,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     // proceed past CommitDeferringConditions on potential activations,
     // so IsPrerenderedPageActivation() will fail with a CHECK because
     // prerender_frame_tree_node_id_ is not populated.
-    // TODO(https://crbug.com/1239220): Fix NavigationSimulator to wait for
+    // TODO(crbug.com/40784651): Fix NavigationSimulator to wait for
     // commit deferring conditions as it does throttles.
     return navigation_request
         ->is_running_potential_prerender_activation_checks();

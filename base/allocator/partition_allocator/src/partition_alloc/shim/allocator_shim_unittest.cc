@@ -292,7 +292,7 @@ class AllocatorShimTest : public testing::Test {
 
   static size_t MaxSizeTracked() {
 #if BUILDFLAG(IS_IOS)
-    // TODO(crbug.com/1077271): 64-bit iOS uses a page size that is larger than
+    // TODO(crbug.com/40129080): 64-bit iOS uses a page size that is larger than
     // SystemPageSize(), causing this test to make larger allocations, relative
     // to SystemPageSize().
     return 6 * partition_alloc::internal::SystemPageSize();

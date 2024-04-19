@@ -83,7 +83,7 @@ declare_args() {
 # internal:generate_metrics_key_header must be a deps when
 # USE_OFFICIAL_GOOGLE_API_KEYS` is defined. Use this variable for both.
 # On iOS, Chrome branding had been overriding use_official_google_api_keys.
-# TODO(crbug.com/1362160): Fix this logic on iOS. Can this variable be replaced
+# TODO(crbug.com/40864074): Fix this logic on iOS. Can this variable be replaced
 # with just use_official_google_api_keys?
 _use_official_google_keys_and_generate_metrics_key_header =
     use_official_google_api_keys || (is_ios && is_chrome_branded)

@@ -154,7 +154,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   }
 
   void OnProcessCrashed() override {
-    // TODO(https://crbug.com/1016027): It is unclear how we can observe
+    // TODO(crbug.com/40654042): It is unclear how we can observe
     // |OnProcessCrashed()| without observing |OnProcessLaunched()| first, but
     // it can happen on Android. Ignore the notification in this case.
     if (!process_info_)

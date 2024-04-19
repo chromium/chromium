@@ -59,7 +59,7 @@ class PageUserData : public base::SupportsUserData::Data {
     }
   }
 
-  // TODO(crbug.com/1335845): Due to a unresolved bug, this can return nullptr
+  // TODO(crbug.com/40847334): Due to a unresolved bug, this can return nullptr
   // even after CreateForPage() or GetOrCreateForPage() has been called.
   static T* GetForPage(Page& page) {
     return static_cast<T*>(page.GetUserData(UserDataKey()));

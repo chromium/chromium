@@ -254,7 +254,7 @@ void AggregationServiceNetworkFetcherImpl::OnError(
   CHECK_NE(error, FetchStatus::kSuccess, base::NotFatalUntil::M128);
   RecordFetchStatus(error);
 
-  // TODO(crbug.com/1232601): Look into better backoff logic for fetching and
+  // TODO(crbug.com/40191195): Look into better backoff logic for fetching and
   // parsing error.
 
   if (enable_debug_logging_) {

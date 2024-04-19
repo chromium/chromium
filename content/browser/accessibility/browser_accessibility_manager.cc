@@ -1814,8 +1814,8 @@ void BrowserAccessibilityManager::BuildAXTreeHitTestCacheInternal(
 
 BrowserAccessibility* BrowserAccessibilityManager::AXTreeHitTest(
     const gfx::Point& blink_screen_point) const {
-  // TODO(crbug.com/1287526): assert that this gets called on a valid node. This
-  // should usually be the root node except for Paint Preview.
+  // TODO(crbug.com/40211255): assert that this gets called on a valid node.
+  // This should usually be the root node except for Paint Preview.
   DCHECK(cached_node_rtree_);
 
   std::vector<ui::AXNodeID> results;

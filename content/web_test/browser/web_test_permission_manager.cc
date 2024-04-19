@@ -198,7 +198,7 @@ WebTestPermissionManager::GetPermissionStatusForRequestPermission(
 
   // The same-site auto-grant mechanism for STORAGE_ACCESS_GRANT currently only
   // works when requesting permissions.
-  // TODO(crbug.com/1471209): maybe it should also work when querying
+  // TODO(crbug.com/40278136): maybe it should also work when querying
   // permissions.
   if (permission == blink::PermissionType::STORAGE_ACCESS_GRANT &&
       (requesting_origin == embedding_origin ||

@@ -221,7 +221,7 @@ OpaqueResponseBlockingAnalyzer::OpaqueResponseBlockingAnalyzer(
     : per_factory_state_(&state) {}
 
 OpaqueResponseBlockingAnalyzer::~OpaqueResponseBlockingAnalyzer() {
-  // TODO(https://crbug.com/1178928): Add UMA tracking the size of ORB state
+  // TODO(crbug.com/40169301): Add UMA tracking the size of ORB state
   // from `per_factory_state_`.
 }
 

@@ -285,7 +285,7 @@ struct URLResponseHead {
   // see:
   // https://wicg.github.io/attribution-reporting-api/#generating-randomized-null-reports
   //
-  // TODO(https://crbug.com/1374121): Remove the property when attribution
+  // TODO(crbug.com/40242339): Remove the property when attribution
   // response parsing moves from blink to the network service.
   array<TriggerVerification> trigger_verifications;
 

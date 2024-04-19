@@ -170,7 +170,7 @@ bool NetLog::HasCaptureModeObserver(ThreadSafeCaptureModeObserver* observer) {
 // static
 std::string NetLog::TickCountToString(const base::TimeTicks& time) {
   int64_t delta_time = time.since_origin().InMilliseconds();
-  // TODO(https://crbug.com/915391): Use NetLogNumberValue().
+  // TODO(crbug.com/40606676): Use NetLogNumberValue().
   return base::NumberToString(delta_time);
 }
 

@@ -365,7 +365,7 @@ component("network_service") {
   if (is_linux || is_chromeos) {
     deps += [
       ":network_sandbox_hook",
-      "//sandbox/linux:sandbox_services",  # TODO(crbug.com/1312224): remove.
+      "//sandbox/linux:sandbox_services",  # TODO(crbug.com/40220505): remove.
     ]
   }
 

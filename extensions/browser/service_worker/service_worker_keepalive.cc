@@ -72,7 +72,7 @@ ServiceWorkerKeepalive::ServiceWorkerKeepalive(
 
   ProcessManager* process_manager = ProcessManager::Get(browser_context_);
   CHECK(process_manager);
-  // TODO(https://crbug.com/1501930): Investigate the circumstances in which
+  // TODO(crbug.com/40942252): Investigate the circumstances in which
   // this CHECK can fail. It's possible the service worker called an API before
   // it fully finished initializing.
   // This isn't ideal, but the keepalive mechanism in ProcessManager doesn't

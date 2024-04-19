@@ -429,7 +429,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
   EXPECT_EQ(get_observation_future.Get().error()->status,
             blink::mojom::FileSystemAccessStatus::kOperationFailed);
 
-  // TODO(https://crbug.com/1019297): Determine what should happen on failure to
+  // TODO(crbug.com/40105284): Determine what should happen on failure to
   // initialize a source, then add better test coverage.
 }
 
@@ -500,7 +500,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
       /*exclusive=*/false, /*recursive=*/true);
   ASSERT_EQ(create_file_future.Get(), base::File::Error::FILE_OK);
 
-  // TODO(https://crbug.com/1486978): Expect changes for recursively-created
+  // TODO(crbug.com/40283118): Expect changes for recursively-created
   // intermediate directories.
   Change expected_change{
       test_dir_url,
@@ -789,7 +789,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ErrorTakesPrecedenceOverChangeType) {
   }));
 }
 
-// TODO(https://crbug.com/1019297): Consider parameterizing these tests once
+// TODO(crbug.com/40105284): Consider parameterizing these tests once
 // observing changes to other backends is supported.
 
 TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
@@ -923,7 +923,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   EXPECT_TRUE(watcher_manager().HasSourceContainingScopeForTesting(
       accumulator.observation()->scope()));
 
-  // TODO(https://crbug.com/1432064): Ensure that no events are reported by this
+  // TODO(crbug.com/40263777): Ensure that no events are reported by this
   // point.
 
   // Delete a file in the sub-directory. This should be reported to

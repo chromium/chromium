@@ -18,7 +18,7 @@
 
 namespace {
 
-// TODO(https://crbug.com/1418110): This should be updated to pass a
+// TODO(crbug.com/40257546): This should be updated to pass a
 // base::Value::Dict instead of a std::unique_ptr.
 std::unique_ptr<base::Value::Dict> GetWebEngineConstants() {
   base::Value::Dict constants_dict = net::GetNetConstants();

@@ -18,7 +18,7 @@ bool IsVp9kSVCHWDecodingEnabled() {
   // dependent. x86: Always supported.
   return true;
 #elif BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1494459): Experiment to enable on Windows.
+  // TODO(crbug.com/40286220): Experiment to enable on Windows.
   return base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding);
 #else
   return false;

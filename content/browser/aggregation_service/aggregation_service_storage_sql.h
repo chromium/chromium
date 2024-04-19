@@ -48,7 +48,7 @@ struct PublicKeyset;
 // Instances may be constructed on any sequence but must be accessed and
 // destroyed on the same sequence.
 
-// TODO(crbug.com/1232608): Support public key protocol versioning.
+// TODO(crbug.com/40191198): Support public key protocol versioning.
 class CONTENT_EXPORT AggregationServiceStorageSql
     : public AggregationServiceStorage {
  public:

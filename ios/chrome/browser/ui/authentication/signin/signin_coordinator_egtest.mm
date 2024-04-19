@@ -254,7 +254,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests that signing out from the Settings works correctly.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
+// TODO(crbug.com/40070966): Evaluate if the test is relevant with
 - (void)testSignInDisconnectFromChrome {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];

@@ -137,7 +137,7 @@ TEST_F(ExtensionCreatorTest, ValidateExtension) {
       R"({ "manifest_version": 3, "name": "test", "version": "1" })"));
 
   EXPECT_TRUE(ValidateExtension(src_path, 0));
-  // TODO(crbug.com/1472723) Adjust GetDefaultLocaleFromManifest method.
+  // TODO(crbug.com/40278707) Adjust GetDefaultLocaleFromManifest method.
   // EXPECT_TRUE(extension_creator()->error_message().empty());
 
   // Replace manifest specifying default_locale without adding folder yet.

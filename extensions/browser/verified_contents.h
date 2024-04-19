@@ -106,8 +106,8 @@ class VerifiedContents {
   // might not have the exact right capitalization. Note that this doesn't
   // affect case-sensitive systems (linux, chromeos) as we use the exact cased
   // keys.
-  // TODO(crbug.com/29941) - we should give developers client-side warnings in
-  // each of those cases, and have the webstore reject the cases they can
+  // TODO(crbug.com/40334716) - we should give developers client-side warnings
+  // in each of those cases, and have the webstore reject the cases they can
   // statically detect.
   typedef std::multimap<CanonicalRelativePath, std::string> RootHashes;
   RootHashes root_hashes_;

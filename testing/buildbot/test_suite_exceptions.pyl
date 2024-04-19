@@ -27,7 +27,7 @@
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         'args': [
-            # TODO(crbug.com/1442303): Re-enable.
+            # TODO(crbug.com/40266898): Re-enable.
           '--gtest_filter=-AXPlatformNodeAuraLinuxTest.AtkComponentScrollTo:'
           'AtkUtilAuraLinuxTest.*',
         ],
@@ -113,7 +113,7 @@
           'dimensions': {
             'device_type': 'crosshatch',
           },
-          # TODO(crbug/1456515): Temporarily increase the shard by 1 for the surging number of tests.
+          # TODO(crbug.com/40917979): Temporarily increase the shard by 1 for the surging number of tests.
           # Recover to original number of shards(4) after the bug is fixed.
           'shards': 5,
         },
@@ -1055,7 +1055,7 @@
         }
       },
       'linux-chromeos-chrome': {
-        # TODO(https://crbug.com/932269): Promote out of experiment when the
+        # TODO(crbug.com/40614042): Promote out of experiment when the
         # tests are green.
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
@@ -1367,7 +1367,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
         ],
-        # TODO(https://crbug.com/1285975) Remove experiment and enable on
+        # TODO(crbug.com/40210655) Remove experiment and enable on
         # trybot once the device offline issue is resolved.
         'ci_only': True,
         'experiment_percentage': 100,
@@ -3342,7 +3342,7 @@
       },
     },
     'remove_from': [
-      # TODO(https://crbug.com/1432753): Runs too slowly in this configuration.
+      # TODO(crbug.com/40264100): Runs too slowly in this configuration.
       'android-oreo-x86-rel',
     ],
   },
@@ -3945,7 +3945,7 @@
     'modifications': {
       'linux-ubsan-vptr': {
         'args': [
-          # TODO(crbug.com/1456464): Remove this.
+          # TODO(crbug.com/40273116): Remove this.
           '--gtest_filter=-SandboxBPF.ApplyBasicAllowlistPolicy:SandboxBPF.SyntheticPolicy:SandboxBPF.UnsafeTrapWithCond',
         ],
       },

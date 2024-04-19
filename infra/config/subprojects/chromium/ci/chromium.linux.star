@@ -344,7 +344,7 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
-    # TODO(crbug.com/1249968): Roll this out more broadly.
+    # TODO(crbug.com/40197817): Roll this out more broadly.
     resultdb_bigquery_exports = [
         resultdb.export_text_artifacts(
             bq_table = "chrome-luci-data.chromium.ci_text_artifacts",

@@ -151,7 +151,7 @@ TEST_F(EXTMultisampleCompatibilityTest, DrawAndResolve) {
     return;
   }
 
-  // TODO(crbug.com/1144270) Fails on Mac Mini 8.1
+  // TODO(crbug.com/40728740) Fails on Mac Mini 8.1
   if (GPUTestBotConfig::CurrentConfigMatches("Mac Intel 0x3e9b"))
     return;
 

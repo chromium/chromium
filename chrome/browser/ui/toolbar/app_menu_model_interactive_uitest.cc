@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuModelInteractiveTest, ManageExtensions) {
                                MENU_ACTION_VISIT_CHROME_WEB_STORE, 0);
 }
 
-// TODO(crbug.com/1488136): Remove this test in favor of a unit test
+// TODO(crbug.com/40073814): Remove this test in favor of a unit test
 // extension_urls::GetWebstoreLaunchURL().
 class ExtensionsMenuVisitChromeWebstoreModelInteractiveTest
     : public AppMenuModelInteractiveTest,

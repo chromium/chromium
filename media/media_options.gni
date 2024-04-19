@@ -205,7 +205,7 @@ declare_args() {
     # ASAN and TSAN will occasionally hang during pa_context_connect(), so we
     # disable PulseAudio when these configurations are enabled.
     #
-    # TODO(crbug.com/986021): We shouldn't have to do this, but it's unclear why
+    # TODO(crbug.com/40636948): We shouldn't have to do this, but it's unclear why
     # our test bots are hanging and all of the ones that don't hang just fall
     # back to ALSA after a connection error anyways.
     if (!use_cras && !is_castos && !is_asan && !is_tsan) {

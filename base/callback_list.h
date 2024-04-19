@@ -132,7 +132,7 @@ class CallbackListBase {
   using CallbackType =
       typename CallbackListTraits<CallbackListImpl>::CallbackType;
 
-  // TODO(crbug.com/1103086): Update references to use this directly and by
+  // TODO(crbug.com/40139093): Update references to use this directly and by
   // value, then remove.
   using Subscription = CallbackListSubscription;
 

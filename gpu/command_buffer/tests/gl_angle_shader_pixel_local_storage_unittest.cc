@@ -25,7 +25,7 @@ class ANGLEShaderPixelLocalStorageTest : public testing::Test {
 #if BUILDFLAG(IS_ANDROID)
     auto* command_line = base::CommandLine::ForCurrentProcess();
     if (gles2::UsePassthroughCommandDecoder(command_line)) {
-      // TODO(crbug.com/1472517): fix the test for passthrough.
+      // TODO(crbug.com/40278644): fix the test for passthrough.
       GTEST_SKIP();
     }
 #endif

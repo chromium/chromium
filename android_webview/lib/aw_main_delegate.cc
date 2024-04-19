@@ -397,7 +397,7 @@ void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
   // observers of PoissonAllocationSampler. Unfortunately, some potential
   // candidates are still linked and may sneak in through hidden paths.
   // Therefore, we include PoissonAllocationSampler unconditionally.
-  // TODO(crbug.com/1411454): Which observers of PoissonAllocationSampler are
+  // TODO(crbug.com/40062835): Which observers of PoissonAllocationSampler are
   // really in use on Android WebView? Can we add the sampler conditionally or
   // remove it completely?
   memory_system::Initializer()

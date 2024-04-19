@@ -2850,7 +2850,7 @@ if (current_toolchain == default_toolchain) {
   # As compared to chrome_public_test_apk, this target contains only unit tests
   # that require on device capabilities. These tests are smaller, more tightly
   # scoped, and do not leave lingering state after execution.
-  # TODO(crbug.com/1238057): Set clear rules for what tests can be added here.
+  # TODO(crbug.com/40193330): Set clear rules for what tests can be added here.
   chrome_public_test_apk_tmpl("chrome_public_unit_test_apk") {
     apk_name = "ChromePublicUnitTest"
     deps = [
@@ -2921,7 +2921,7 @@ if (current_toolchain == default_toolchain) {
     is_unit_test = true
   }
 
-  # TODO(crbug.com/1238057): Rename to chrome_public_integration_test_apk
+  # TODO(crbug.com/40193330): Rename to chrome_public_integration_test_apk
   chrome_public_test_apk_tmpl("chrome_public_test_apk") {
     # TODO(wnwen): Re-enable when new lint failures are disabled for test targets.
     #enable_lint = true

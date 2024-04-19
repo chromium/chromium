@@ -41,7 +41,7 @@
   SitePerProcessAccessibilityBrowserTest
 #endif
 // "All/DISABLED_SitePerProcessAccessibilityBrowserTest" does not work. We need
-// "DISABLED_All/...". TODO(https://crbug.com/1096416) delete when fixed.
+// "DISABLED_All/...". TODO(crbug.com/40136187) delete when fixed.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_All DISABLED_All
 #else

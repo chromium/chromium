@@ -633,7 +633,7 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   void* slot_start_tagged = std::assume_aligned<internal::kAlignment>(
       internal::SlotStartAddr2Ptr(slot_start));
 #else
-  // TODO(crbug.com/1429450): std::assume_aligned introuces an additional
+  // TODO(crbug.com/40262684): std::assume_aligned introuces an additional
   // dependency: _libcpp_verbose_abort(const char*, ...).  It will cause
   // "undefined symbol" error when linking allocator_shim.dll.
   void* slot_start_tagged = internal::SlotStartAddr2Ptr(slot_start);

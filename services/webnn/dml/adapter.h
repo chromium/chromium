@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
  public:
   // Get the shared `Adapter` instance. If `Adapter` instance already exists,
   // the that one is returned regardless of whether the `dxgi_adapter` matches.
-  // TODO(crbug.com/1469755): Support `Adapter` instance for other adapters.
+  // TODO(crbug.com/40277628): Support `Adapter` instance for other adapters.
   //
   // This method is not thread-safe and should only be called on the GPU main
   // thread.

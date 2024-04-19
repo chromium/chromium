@@ -792,7 +792,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
     size_t n_partitioned_cookies = 0;
 
-    // TODO(crbug.com/1031664): Reduce the number of times the cookie list
+    // TODO(crbug.com/40110557): Reduce the number of times the cookie list
     // is iterated over. Get metrics for every cookie which is included.
     for (const auto& c : maybe_included_cookies) {
       bool request_is_secure = request_->url().SchemeIsCryptographic();
@@ -898,8 +898,8 @@ void URLRequestHttpJob::AnnotateAndMoveUserBlockedCookies(
 
 void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   DCHECK(set_cookie_access_result_list_.empty());
-  // TODO(crbug.com/1186863): Turn this CHECK into DCHECK once the investigation
-  // is done.
+  // TODO(crbug.com/40753971): Turn this CHECK into DCHECK once the
+  // investigation is done.
   CHECK_EQ(0, num_cookie_lines_left_);
 
   // End of the call started in OnStartCompleted.

@@ -126,7 +126,7 @@ class Dispatcher : public content::RenderThreadObserver,
   // * the extension isn't loaded yet.
   // Suspending background service worker is required because we need to
   // install extension API bindings before executing the service worker.
-  // TODO(crbug.com/1000890): Figure out better way to coalesce them.
+  // TODO(crbug.com/40645846): Figure out better way to coalesce them.
   //
   // Runs on the service worker thread and should only use thread-safe member
   // variables.

@@ -14,8 +14,8 @@ import "mojo/public/mojom/base/time.mojom";
 // kTrustTokenV3Pmb, and kTrustTokenV3Voprf can safely be supported at the same
 // time, as they use the same underlying data model; they just use different
 // cryptosystems to generate tokens' signatures.
-// TODO(crbug/1133969): Schema versioning needs to be implemented for future
-// versions that need to clear the database on schema changes.
+// TODO(crbug.com/40722816): Schema versioning needs to be implemented for
+// future versions that need to clear the database on schema changes.
 //
 // NOTE: When updating this enum, you probably also need to update
 // kTrustTokensMajorVersion in trust_token_parameterization.h.

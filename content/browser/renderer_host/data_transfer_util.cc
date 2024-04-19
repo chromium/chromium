@@ -106,7 +106,7 @@ FileSystemFileInfosToDragItemFileSystemFilePtr(
     base::FilePath::StringType extension = file_system_url.path().Extension();
     if (!extension.empty()) {
       std::string mime_type;
-      // TODO(https://crbug.com/155455): Historically for blobs created from
+      // TODO(crbug.com/40291155): Historically for blobs created from
       // file system URLs we've only considered well known content types to
       // avoid leaking the presence of locally installed applications when
       // creating blobs from files in the sandboxed file system. However, since

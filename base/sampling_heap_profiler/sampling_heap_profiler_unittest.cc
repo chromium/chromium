@@ -314,7 +314,7 @@ TEST_F(SamplingHeapProfilerTest, StartStop) {
   EXPECT_EQ(0, GetRunningSessionsCount());
 }
 
-// TODO(crbug.com/1116543): Test is crashing on Mac.
+// TODO(crbug.com/40711998): Test is crashing on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ConcurrentStartStop DISABLED_ConcurrentStartStop
 #else

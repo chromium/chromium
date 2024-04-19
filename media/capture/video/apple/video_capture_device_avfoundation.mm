@@ -1048,7 +1048,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // The SampleBufferTransformer CHECK-crashes if the sample buffer is not MJPEG
   // and does not have a pixel buffer (https://crbug.com/1160647) so we fall
   // back on the M87 code path if this is the case.
-  // TODO(https://crbug.com/1160315): When the SampleBufferTransformer is
+  // TODO(crbug.com/40162135): When the SampleBufferTransformer is
   // patched to support non-MJPEG-and-non-pixel-buffer sample buffers, remove
   // this workaround and the fallback other code path.
   bool sampleHasPixelBufferOrIsMjpeg =
@@ -1058,7 +1058,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   // If the SampleBufferTransformer is enabled, convert all possible capture
   // formats to an IOSurface-backed NV12 pixel buffer.
-  // TODO(https://crbug.com/1175142): Refactor to not hijack the code paths
+  // TODO(crbug.com/40747183): Refactor to not hijack the code paths
   // below the transformer code.
   if (_useGPUMemoryBuffer && sampleHasPixelBufferOrIsMjpeg) {
     _sampleBufferTransformer->Reconfigure(

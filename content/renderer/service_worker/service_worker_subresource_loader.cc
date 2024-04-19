@@ -698,7 +698,7 @@ void ServiceWorkerSubresourceLoader::OnFallback(
       // fallback request is not dispatched. OnFallback doesn't delete the
       // instance and flip the status. Those are handled in the process of
       // RaceNetworkRequest handling.
-      // TODO(crbug.com/1432075) Fallback response should be handled as a
+      // TODO(crbug.com/40263783) Fallback response should be handled as a
       // fallback. The response from RaceNetworkRequest is currently handled by
       // the code path for the non-fallback case.
       return;

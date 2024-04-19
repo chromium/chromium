@@ -22,7 +22,7 @@ IOSChromeVariationsServiceClient::IOSChromeVariationsServiceClient() = default;
 IOSChromeVariationsServiceClient::~IOSChromeVariationsServiceClient() = default;
 
 base::Version IOSChromeVariationsServiceClient::GetVersionForSimulation() {
-  // TODO(crbug.com/1288101): Get the version that will be used on restart
+  // TODO(crbug.com/40816694): Get the version that will be used on restart
   // instead of the current version.
   return version_info::GetVersion();
 }

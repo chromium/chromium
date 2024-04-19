@@ -197,7 +197,7 @@ TEST_F(LinkerTest, FindReservedMemoryRegion) {
     return;
   }
 
-  // TODO(crbug.com/1223747): Check that only non-low-end Android Q+ devices
+  // TODO(crbug.com/40774803): Check that only non-low-end Android Q+ devices
   // reach this point.
 
   // Create a properly named synthetic region with a size smaller than a real

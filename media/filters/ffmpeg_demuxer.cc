@@ -1799,7 +1799,7 @@ void FFmpegDemuxer::OnVideoSeekedForTrackChange(
     base::OnceClosure seek_completed_cb,
     int result) {
   static_cast<FFmpegDemuxerStream*>(video_stream)->FlushBuffers(true);
-  // TODO(crbug.com/1424380): Report seek failures for track changes too.
+  // TODO(crbug.com/40898124): Report seek failures for track changes too.
   std::move(seek_completed_cb).Run();
 }
 

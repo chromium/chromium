@@ -24,7 +24,7 @@ namespace base {
 // Deprecated: Computes a hash of a memory buffer, use FastHash() instead.
 // If you need to persist a change on disk or between computers, use
 // PersistentHash().
-// TODO(https://crbug.com/1025358): Migrate client code to new hash function.
+// TODO(crbug.com/40107835): Migrate client code to new hash function.
 BASE_EXPORT uint32_t Hash(const std::string& str);
 
 // Really *fast* and high quality hash.

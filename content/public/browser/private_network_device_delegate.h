@@ -22,7 +22,7 @@ class CONTENT_EXPORT PrivateNetworkDeviceDelegate {
   // Request permission for the Private Network Device.
   // |callback| accepts a bool specifying whether the user granted permission.
   //
-  // TODO(https://crbug.com/1455117): Check if there's permission in the storage
+  // TODO(crbug.com/40272624): Check if there's permission in the storage
   // already. If not, show the chooser.
   virtual void RequestPermission(RenderFrameHost& frame,
                                  blink::mojom::PrivateNetworkDevicePtr device,

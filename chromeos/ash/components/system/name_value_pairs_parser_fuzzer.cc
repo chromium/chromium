@@ -47,7 +47,7 @@ class NameValuePairsParserFuzzer {
     std::string value = input;
     value.erase(std::remove(value.begin(), value.end(), '\n'), value.end());
     testInputAsVpdDumpValueForKey(value);
-    // TODO(crbug.com/1250434): Check that the value for "key" is |value|.
+    // TODO(crbug.com/40197992): Check that the value for "key" is |value|.
   }
 
   void testInputAsVpdDumpValueForKey(const std::string& input) {

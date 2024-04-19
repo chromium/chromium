@@ -709,7 +709,7 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
 void BrowsingDataRemoverImpl::OnTaskComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/305259): This should also observe session clearing (what
+  // TODO(crbug.com/40336135): This should also observe session clearing (what
   // about other things such as passwords, etc.?) and wait for them to complete
   // before continuing.
 

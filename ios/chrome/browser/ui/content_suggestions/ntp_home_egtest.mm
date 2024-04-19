@@ -1487,7 +1487,8 @@ id<GREYMatcher> mostlyNotVisible() {
 // Tests that content suggestions are hidden for supervised users on sign-in.
 // When the supervised user signs out the active policy should apply to the NTP.
 - (void)testFeedHiddenForSupervisedUser {
-  // TODO(crbug.com/1438444): Re-enable the test on iPad once the test is fixed.
+  // TODO(crbug.com/40907845): Re-enable the test on iPad once the test is
+  // fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad as the test fails.");
   }
@@ -1546,7 +1547,7 @@ id<GREYMatcher> mostlyNotVisible() {
 
 // Tests that the feed top sync promo is visible when conditions are met, and
 // that pressing the dismiss button makes it disappear.
-// TODO(crbug.com/1406885): Enable test when feed is supported.
+// TODO(crbug.com/40252918): Enable test when feed is supported.
 - (void)DISABLED_testFeedTopSyncPromoIsVisibleAndDismiss {
   // Scroll into feed to trigger engagement condition.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]

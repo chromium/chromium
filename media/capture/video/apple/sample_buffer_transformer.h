@@ -37,7 +37,7 @@ class CAPTURE_EXPORT SampleBufferTransformer {
     kLibyuv,
   };
 
-  // TODO(https://crbug.com/1175763): Make determining the optimal Transformer
+  // TODO(crbug.com/40747532): Make determining the optimal Transformer
   // an implementation detail determined at Transform()-time, making
   // Reconfigure() only care about destination resolution and pixel format. Then
   // make it possible to override this decision explicitly but only do that for

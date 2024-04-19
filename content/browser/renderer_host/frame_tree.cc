@@ -960,7 +960,7 @@ void FrameTree::Shutdown() {
     // Delete all RFHs pending shutdown, which will lead the corresponding RVHs
     // to be shutdown and be deleted as well.
     node->render_manager()->ClearRFHsPendingShutdown();
-    // TODO(https://crbug.com/1199676): Ban WebUI instance in Prerender pages.
+    // TODO(crbug.com/40177939): Ban WebUI instance in Prerender pages.
     node->render_manager()->ClearWebUIInstances();
   }
 

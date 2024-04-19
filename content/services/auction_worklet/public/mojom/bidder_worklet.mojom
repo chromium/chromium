@@ -21,7 +21,7 @@ struct PreviousWin {
   // seconds, to reduce time resolution of cross-site information provided to an
   // untrusted service.
   //
-  // TODO(https://crbug.com/1207135): Decide what to do when wins are
+  // TODO(crbug.com/40765411): Decide what to do when wins are
   // "in the future" due to clock changes.
   mojo_base.mojom.Time time;
 

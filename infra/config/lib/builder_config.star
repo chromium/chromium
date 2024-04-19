@@ -814,7 +814,7 @@ def _set_builder_config_property(ctx):
                 "cft",
             ]
             excluded_builders = [
-                # TODO(crbug.com/1484233): Remove the following as trybots are
+                # TODO(crbug.com/40282196): Remove the following as trybots are
                 # created for them.
                 "android-arm64-archive-rel",
                 "lacros-arm-archive-rel",

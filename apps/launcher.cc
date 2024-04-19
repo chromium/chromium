@@ -216,7 +216,7 @@ class PlatformAppPathLauncher
 
     app_runtime::LaunchData launch_data;
 
-    // TODO(crbug.com/1354063): This conditional block is being added here
+    // TODO(crbug.com/40235429): This conditional block is being added here
     // temporarily, and should be removed once the underlying type of
     // |launch_data.action_data| is wrapped with std::optional<T>.
     if (action_data_) {

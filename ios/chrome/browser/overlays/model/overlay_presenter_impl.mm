@@ -250,7 +250,7 @@ void OverlayPresenterImpl::PresentOverlayForActiveRequest() {
       presentation_context_, request);
   OverlayDismissalCallback dismissal_callback = base::BindOnce(
       &OverlayPresenterImpl::OverlayWasDismissed, weak_factory_.GetWeakPtr(),
-      // TODO(crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+      // TODO(crbug.com/40061562): Remove `UnsafeDanglingUntriaged`
       presentation_context_, base::UnsafeDanglingUntriaged(request),
       GetActiveQueue()->GetWeakPtr());
   presentation_context_->ShowOverlayUI(

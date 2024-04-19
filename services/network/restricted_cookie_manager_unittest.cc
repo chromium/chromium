@@ -579,7 +579,7 @@ TEST_P(RestrictedCookieManagerTest,
   }
 }
 
-// TODO(crbug.com/1393050): Add test cases that modify the cookies through
+// TODO(crbug.com/40061885): Add test cases that modify the cookies through
 // net::CookieStore::SetCanonicalCookie and/or modify the subscription URL.
 TEST_P(RestrictedCookieManagerTest, CookieVersion) {
   std::string cookies_out;

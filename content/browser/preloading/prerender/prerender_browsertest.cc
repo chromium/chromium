@@ -5072,7 +5072,7 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
                        CertificateValidation_SWSubResource) {
   // Skip the test when the block type is kCertError. With the type, this test
   // times out due to https://crbug.com/1311887.
-  // TODO(https://crbug.com/1311887): Enable the test with kCertError.
+  // TODO(crbug.com/40220378): Enable the test with kCertError.
   if (GetParam() == SSLPrerenderTestErrorBlockType::kCertError)
     return;
 
@@ -5256,7 +5256,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       "Navigation.Prerender.ActivationCommitDeferTime.SpeculationRule", 1u);
 }
 
-// TODO(https://crbug.com/1182032): Now the File System Access API is not
+// TODO(crbug.com/40170624): Now the File System Access API is not
 // supported on Android. Enable this browser test after
 // https://crbug.com/1011535 is fixed.
 #if BUILDFLAG(IS_ANDROID)
@@ -5372,7 +5372,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
       PrerenderCancelledInterface::kGamepadMonitor, 1);
 }
 
-// TODO(https://crbug.com/1201980) LaCrOS binds the HidManager interface, which
+// TODO(crbug.com/40178939) LaCrOS binds the HidManager interface, which
 // might be required by Gamepad Service, in a different way. Disable this test
 // before figuring out how to set the test context correctly.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -5449,7 +5449,7 @@ void LoadAndWaitForPrerenderDestroyed(test::PrerenderTestHelper* helper,
 // Tests that we will cancel the prerendering if the prerendering page attempts
 // to use plugins.
 //
-// TODO(crbug.com/1205920): This does not cover embedders that override
+// TODO(crbug.com/40180674): This does not cover embedders that override
 // `ContentRendererClient::OverrideCreatePlugin()` (such as for Chrome's PDF
 // viewer), as cancellation depends on the renderer attempting to bind
 // `content::mojom::PepperHost`.
@@ -9299,7 +9299,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
     EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
         prerendering_url_b, blink::mojom::SpeculationAction::kPrerender));
 
-    // TODO(crbug.com/1457989): In the current implementation, non-eager
+    // TODO(crbug.com/40273826): In the current implementation, non-eager
     // candidates that are once processed by user interaction will no
     // longer be stored in |on_standby_candidates_| when retriggered (more
     // specifically, |UpdateSpeculationCandidates| is (re)invoked) and instead

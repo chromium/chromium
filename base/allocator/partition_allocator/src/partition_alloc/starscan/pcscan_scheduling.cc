@@ -209,7 +209,7 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
 
 base::TimeDelta MUAwareTaskBasedBackend::UpdateDelayedSchedule() {
   ScopedGuard guard(scheduler_lock_);
-  // TODO(1197479): Adjust schedule to current heap sizing.
+  // TODO(crbug.com/40176938): Adjust schedule to current heap sizing.
   const auto delay = earliest_next_scan_time_ - base::TimeTicks::Now();
   PA_PCSCAN_VLOG(3) << "Schedule is off by " << delay.InMillisecondsF() << "ms";
   return delay >= base::TimeDelta() ? delay : base::TimeDelta();

@@ -31,7 +31,7 @@ WebSelectionResponse* ParseResponse(base::WeakPtr<web::WebState> weak_web_state,
 
 }  // namespace
 
-// TODO(crbug.com/1416459): migrate to kIsolatedWorld.
+// TODO(crbug.com/40256864): migrate to kIsolatedWorld.
 WebSelectionJavaScriptFeature::WebSelectionJavaScriptFeature()
     : JavaScriptFeature(web::ContentWorld::kPageContentWorld,
                         {FeatureScript::CreateWithFilename(

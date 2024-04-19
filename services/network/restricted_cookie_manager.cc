@@ -1195,7 +1195,7 @@ void RestrictedCookieManager::CallCookiesAccessed() {
     for (auto& c : container) {
       details.emplace_back(std::move(c.first));
     }
-    // TODO(crbug.com/1487308): remove deduplication size estimation and
+    // TODO(crbug.com/40283234): remove deduplication size estimation and
     // histograms when no longer needed.
     base::UmaHistogramCounts10M(
         "Net.RestrictedCookieManager."

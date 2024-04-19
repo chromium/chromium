@@ -393,7 +393,7 @@ void CSPHandler::SetSandboxCSP(Extension* extension, std::string sandbox_csp) {
 }
 
 bool CSPHandler::AlwaysParseForType(Manifest::Type type) const {
-  // TODO(crbug.com/1005978): Check if TYPE_USER_SCRIPT needs to be included
+  // TODO(crbug.com/40099692): Check if TYPE_USER_SCRIPT needs to be included
   // here.
   return type == Manifest::TYPE_PLATFORM_APP ||
          type == Manifest::TYPE_EXTENSION ||

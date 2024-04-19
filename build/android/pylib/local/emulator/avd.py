@@ -1184,7 +1184,7 @@ class _AvdInstance:
     return self._emulator_device
 
 
-# TODO(crbug.com/1275767): Refactor it to a dict-based approach.
+# TODO(crbug.com/40207212): Refactor it to a dict-based approach.
 def _EnsureSystemSettings(device):
   set_long_press_timeout_cmd = [
       'settings', 'put', 'secure', 'long_press_timeout', _LONG_PRESS_TIMEOUT
@@ -1202,7 +1202,7 @@ def _EnsureSystemSettings(device):
   else:
     logging.warning('long_press_timeout is not set correctly')
 
-  # TODO(crbug.com/1488458): Move the date sync function to device_utils.py
+  # TODO(crbug.com/40283631): Move the date sync function to device_utils.py
   if device.IsUserBuild():
     logging.warning('Cannot sync the device date on "user" build')
     return
@@ -1231,7 +1231,7 @@ def _EnsureSystemSettings(device):
 
 def _EnableNetwork(device):
   logging.info('Enable the network on the emulator.')
-  # TODO(https://crbug.com/1486376): Remove airplane_mode once all AVD
+  # TODO(crbug.com/40282869): Remove airplane_mode once all AVD
   # are rolled to svc-based version.
   device.RunShellCommand(
       ['settings', 'put', 'global', 'airplane_mode_on', '0'], as_root=True)

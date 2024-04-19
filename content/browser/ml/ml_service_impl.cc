@@ -31,7 +31,7 @@ MLServiceImpl::MLServiceImpl() = default;
 
 void MLServiceImpl::CreateModelLoader(CreateModelLoaderOptionsPtr options,
                                       CreateModelLoaderCallback callback) {
-  // TODO(https://crbug.com/1309672): We should consider supporting this API on
+  // TODO(crbug.com/40219537): We should consider supporting this API on
   // the other platforms in the future.
   std::move(callback).Run(CreateModelLoaderResult::kNotSupported,
                           mojo::NullRemote());

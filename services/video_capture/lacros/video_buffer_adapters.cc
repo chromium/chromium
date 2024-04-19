@@ -62,7 +62,7 @@ std::unique_ptr<media::ScopedFrameDoneHelper> GetAccessPermissionHelper(
 media::mojom::VideoBufferHandlePtr ConvertToMediaVideoBuffer(
     crosapi::mojom::VideoBufferHandlePtr buffer_handle) {
   if (buffer_handle->is_shared_buffer_handle()) {
-    // TODO(https://crbug.com/1307959): The LaCrOS interface should be migrated
+    // TODO(crbug.com/40218955): The LaCrOS interface should be migrated
     // to use base::UnsafeSharedMemoryRegion as well.
     return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
         base::UnsafeSharedMemoryRegion::Deserialize(

@@ -440,7 +440,7 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
   } else {
     // Max kern_return_t is 0x100 = 256, plus trailing null.
     // (https://opensource.apple.com/source/xnu/xnu-792.25.20/osfmk/mach/kern_return.h)
-    // TODO(crbug.com/1365392): Remove this when done debugging the uncaught
+    // TODO(crbug.com/40866217): Remove this when done debugging the uncaught
     // memory regression.
     static crash_reporter::CrashKeyString<4> task_info_kern_return(
         "task-info-kern-return");

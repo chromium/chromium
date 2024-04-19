@@ -380,7 +380,7 @@ class Function(object):
           namespace,
           Origin(from_client=True),
       )
-      # TODO(https://crbug.com/1143032): Returning a synchronous value is
+      # TODO(crbug.com/40154924): Returning a synchronous value is
       # incompatible with returning a promise. There are APIs that specify this,
       # though, so we make sure they have specified does_not_support_promises if
       # they do.

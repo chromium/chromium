@@ -61,7 +61,7 @@ class WebRtcVideoCaptureBrowserTest : public ContentBrowserTest {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/1235254): This test is flakey on macOS.
-// TODO(https://crbug.com/1444362): This test is flaky on Windows.
+// TODO(crbug.com/40911814): This test is flaky on Windows.
 #define MAYBE_RecoverFromCrashInVideoCaptureProcess \
   DISABLED_RecoverFromCrashInVideoCaptureProcess
 #else

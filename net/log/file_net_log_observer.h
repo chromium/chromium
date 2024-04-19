@@ -54,7 +54,7 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
   // |constants| is an optional legend for decoding constant values used in the
   // log. It should generally be a modified version of GetNetConstants(). If not
   // present, the output of GetNetConstants() will be used.
-  // TODO(https://crbug.com/1418110): This should be updated to pass a
+  // TODO(crbug.com/40257546): This should be updated to pass a
   // base::Value::Dict instead of a std::unique_ptr.
   static std::unique_ptr<FileNetLogObserver> CreateBounded(
       const base::FilePath& log_path,

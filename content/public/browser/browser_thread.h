@@ -122,8 +122,8 @@ class CONTENT_EXPORT BrowserThread {
   //
   // This is useful when a task needs to run on |task_runner| (for thread-safety
   // reasons) but should be delayed until after critical phases (e.g. startup).
-  // TODO(crbug.com/793069): Add support for sequence-funneling and remove this
-  // method.
+  // TODO(crbug.com/40553790): Add support for sequence-funneling and remove
+  // this method.
   static void PostBestEffortTask(const base::Location& from_here,
                                  scoped_refptr<base::TaskRunner> task_runner,
                                  base::OnceClosure task);

@@ -2718,7 +2718,7 @@ ElementId LayerTreeImpl::FindFrameElementIdAtPoint(
                                          layer_list_[0].get(), &state);
 
   if (const auto* layer = state.closest_match.get()) {
-    // TODO(https://crbug.com/1058870): Permit hit testing only if the framed
+    // TODO(crbug.com/40121347): Permit hit testing only if the framed
     // element hit has a simple mask/clip. We don't have enough information
     // about complex masks/clips on the impl-side to do accurate hit testing.
     bool layer_hit_test_region_is_masked =

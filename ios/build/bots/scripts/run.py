@@ -267,7 +267,7 @@ class Runner():
       # and passed here via swarming.py. This argument defaults to
       # ${ISOLATED_OUTDIR}/output.json. out-dir is set to ${ISOLATED_OUTDIR}
 
-      # TODO(crbug.com/1031338) - the content of this output.json will
+      # TODO(crbug.com/40110412) - the content of this output.json will
       # work with Chromium recipe because we use the noop_merge merge script,
       # but will require structural changes to support the default gtest
       # merge script (ref: //testing/merge_scripts/standard_gtest_merge.py)
@@ -402,7 +402,7 @@ class Runner():
         type=int,
         default=constants.READLINE_TIMEOUT,
     )
-    #TODO(crbug.com/1056887): Implement this arg in infra.
+    #TODO(crbug.com/40120509): Implement this arg in infra.
     parser.add_argument(
         '--release',
         help='Indicates if this is a release build.',

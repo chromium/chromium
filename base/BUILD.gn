@@ -121,7 +121,7 @@ if (is_fuchsia) {
 # have a Rust toolchain, so we need a fallback to C++ for it until it removes
 # its dependency on //base.
 #
-# TODO(crbug.com/1280708): Drop toolchain_has_rust and move the C++ parser into
+# TODO(crbug.com/40811643): Drop toolchain_has_rust and move the C++ parser into
 # components/nacl to just run in-process there. Don't compile base::JSONReader
 # on NaCL at all.
 build_rust_json_reader = toolchain_has_rust && enable_rust_json
@@ -2546,7 +2546,7 @@ buildflag_header("debugging_buildflags") {
   enable_lldbinit_warning =
       is_debug && strip_absolute_paths_from_debug_symbols && is_mac
 
-  # TODO(crbug.com/1420774): Try and enable these checks on Android too.
+  # TODO(crbug.com/40258939): Try and enable these checks on Android too.
   enable_commandline_sequence_checks =
       (is_debug || dcheck_always_on) && !is_android
 

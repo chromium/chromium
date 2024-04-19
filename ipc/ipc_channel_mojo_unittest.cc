@@ -1457,7 +1457,7 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
   DestroyProxy();
 }
 
-// TODO(https://crbug.com/1500560): Disabled for flaky behavior of forced
+// TODO(crbug.com/40940810): Disabled for flaky behavior of forced
 // process termination. Will be re-enabled with a fix.
 TEST_F(IPCChannelProxyMojoTest, DISABLED_SyncAssociatedInterfacePipeError) {
   // Regression test for https://crbug.com/1494461.

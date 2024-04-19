@@ -100,7 +100,7 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
   DCHECK(profile_prefs);
   DCHECK(global_prefs);
 
-  // TODO(crbug.com/1161569): Language pack path should be configurable per
+  // TODO(crbug.com/40162502): Language pack path should be configurable per
   // SpeechRecognitionRecognizer to allow multiple features to use Speech
   // recognition. For now, only Live Caption uses SpeechRecognitionService on
   // non-Chrome OS Chrome, so hard-coding to the Live Caption language code.

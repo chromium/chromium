@@ -3879,7 +3879,7 @@ IN_PROC_BROWSER_TEST_F(
 //
 // Top-level navigations are never blocked.
 //
-// TODO(https://crbug.com/1129326): Revisit this when top-level navigations are
+// TODO(crbug.com/40149351): Revisit this when top-level navigations are
 // subject to Private Network Access checks.
 
 // When the `PrivateNetworkAccessForIframes` feature is disabled, iframe fetches

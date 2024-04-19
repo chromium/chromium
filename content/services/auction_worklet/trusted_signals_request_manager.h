@@ -88,7 +88,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // "&`trusted_bidding_signals_slot_size_param`" is appended to the end of the
   // query string. It's expected to already be escaped if necessary.
   //
-  // TODO(https://crbug.com/1279643): Investigate improving the
+  // TODO(crbug.com/40810962): Investigate improving the
   // `automatically_send_requests` logic.
   TrustedSignalsRequestManager(
       Type type,

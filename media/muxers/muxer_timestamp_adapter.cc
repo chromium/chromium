@@ -182,7 +182,7 @@ base::TimeTicks MuxerTimestampAdapter::UpdateLastTimestampAndGetNext(
   DVLOG(3) << __func__ << " ts " << timestamp << " last " << *last_timestamp;
   // In theory, time increases monotonically. In practice, it does not.
   // See http://crbug/618407.
-  // TODO(crbug.com/1494273): consider not re-using the last timestamp for
+  // TODO(crbug.com/40286147): consider not re-using the last timestamp for
   // MP4.
   DLOG_IF(WARNING, timestamp < last_timestamp)
       << "Encountered a non-monotonically increasing timestamp. Was: "

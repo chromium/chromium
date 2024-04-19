@@ -257,7 +257,7 @@ class SequenceBound {
   // object. This allows arbitrary logic to be safely executed on the object's
   // task runner. The object is guaranteed to remain alive for the duration of
   // the task.
-  // TODO(crbug.com/1182140): Consider checking whether the task runner can run
+  // TODO(crbug.com/40170667): Consider checking whether the task runner can run
   // tasks in current sequence, and using "plain" binds and task posting (here
   // and other places that `CrossThreadTraits::PostTask`).
   using ConstPostTaskCallback = CrossThreadTask<void(const UnwrappedT&)>;

@@ -424,7 +424,7 @@ MIRACLE_PARAMETER_FOR_INT(
 // abundance of caution, we provide this toggle that allows us to
 // wholly disable MiraclePtr in the buffer partition, if necessary.
 //
-// TODO(crbug.com/1444624): this is unneeded once
+// TODO(crbug.com/40064499): this is unneeded once
 // MiraclePtr-for-Renderer launches.
 BASE_FEATURE(kPartitionAllocDisableBRPInBufferPartition,
              "PartitionAllocDisableBRPInBufferPartition",

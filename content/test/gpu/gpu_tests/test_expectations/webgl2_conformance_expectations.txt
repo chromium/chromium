@@ -281,7 +281,7 @@ crbug.com/1507168 [ chromeos intel passthrough ] deqp/functional/gles3/clipping.
 # Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
 crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
 
-# TODO(crbug.com/891861): Remove when either workaround is implemented in cmd decoder,
+# TODO(crbug.com/40596525): Remove when either workaround is implemented in cmd decoder,
 # or when angle is used everywhere.
 crbug.com/891861 [ mac no-passthrough ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Skip ]
 crbug.com/891861 [ mac no-passthrough ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Skip ]
@@ -303,7 +303,7 @@ crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.h
 # Until Qualcomm devices on the waterfall and CQ are updated to Android S, skip this new test.
 crbug.com/1076188 [ android qualcomm ] conformance2/glsl3/fragment-shader-loop-crash.html [ Skip ]
 
-# TODO(crbug.com/1000354): Remove when either workaround is implemented in cmd decoder,
+# TODO(crbug.com/40097199): Remove when either workaround is implemented in cmd decoder,
 # or when angle is used everywhere.
 crbug.com/1000354 [ android no-passthrough ] conformance2/extensions/ext-texture-norm16.html [ Skip ]
 

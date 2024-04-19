@@ -12,7 +12,7 @@ namespace content {
 
 namespace {
 
-// TODO(https://crbug.com/1019297): Consider upstreaming this.
+// TODO(crbug.com/40105284): Consider upstreaming this.
 bool IsStrictParent(const storage::FileSystemURL& parent,
                     const storage::FileSystemURL& child) {
   return parent.IsParent(child) &&

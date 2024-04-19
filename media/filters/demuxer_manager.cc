@@ -414,7 +414,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
   bool is_static = true;
 
   if (demuxer_override_) {
-    // TODO(https://crbug.com/1076267): Should everything else after this block
+    // TODO(crbug.com/40128583): Should everything else after this block
     // run in the demuxer override case?
     SetDemuxer(std::move(demuxer_override_));
   } else if (!load_media_source) {

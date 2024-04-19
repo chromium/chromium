@@ -38,7 +38,7 @@ bool WaitableEventWatcher::StartWatching(
 
   // UnsafeDanglingUntriaged triggered by test:
   // WaitableEventWatcherDeletionTest.SignalAndDelete
-  // TODO(https://crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+  // TODO(crbug.com/40061562): Remove `UnsafeDanglingUntriaged`
   callback_ =
       BindOnce(std::move(callback), base::UnsafeDanglingUntriaged(event));
 

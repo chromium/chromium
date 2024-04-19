@@ -961,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
 
 // Tests that the renderer receives the root widget's viewport segments and
 // correctly exposes those via CSS.
-// TODO(crbug.com/1098549) Convert this to a WPT once emulation is available
+// TODO(crbug.com/40137084) Convert this to a WPT once emulation is available
 // via WebDriver.
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
                        FoldablesCSSWithOverrides) {

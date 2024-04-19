@@ -20,7 +20,7 @@ using FeedbackPrivateHooksDelegateTest = NativeExtensionBindingsSystemUnittest;
 // Tests that the result modifier used in the sendFeedback handle request hook
 // results in callback-based calls getting a response with multiple arguments
 // and promise-based calls getting a response with a single object.
-// TODO(crbug.com/1378143): Disabled on ASAN due to bot failures caused by an
+// TODO(crbug.com/40243802): Disabled on ASAN due to bot failures caused by an
 // underlying gin issue.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_SendFeedback DISABLED_SendFeedback

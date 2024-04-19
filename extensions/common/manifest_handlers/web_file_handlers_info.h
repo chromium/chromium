@@ -46,7 +46,8 @@ struct WebFileHandlers : public Extension::ManifestData {
   // Return an enum type instead of the idl string type. This value is currently
   // set to `single-client` if it or nothing is provided, set to
   // `multiple-clients` if that's provided, or errors in any other case.
-  // TODO(crbug/1448893): Store enum instead of the string on manifest parse.
+  // TODO(crbug.com/40269541): Store enum instead of the string on manifest
+  // parse.
   static WebFileHandler::LaunchType GetLaunchType(
       const std::optional<std::string>& launch_type);
 

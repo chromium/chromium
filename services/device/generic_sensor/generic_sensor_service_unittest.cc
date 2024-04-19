@@ -250,7 +250,7 @@ TEST_F(GenericSensorServiceTest, GetDefaultConfigurationTest) {
     run_loop.Run();
   }
 
-  // TODO(crbug.com/1458770): this test is not very meaningful. It could be
+  // TODO(crbug.com/40274069): this test is not very meaningful. It could be
   // better to check if the default configuration is always clamped between the
   // minimum and maximum allowed frequencies (it currently is not), for example.
   base::test::TestFuture<const PlatformSensorConfiguration&> future;

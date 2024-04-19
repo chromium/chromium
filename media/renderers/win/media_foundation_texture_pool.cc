@@ -39,7 +39,7 @@ MediaFoundationTexturePool::TextureInfo::operator=(
 MediaFoundationTexturePool::MediaFoundationTexturePool() = default;
 MediaFoundationTexturePool::~MediaFoundationTexturePool() = default;
 
-// TODO(crbug.com/1278157): The pool should release the textures when the media
+// TODO(crbug.com/40810044): The pool should release the textures when the media
 // engine is idling to save resources.
 HRESULT MediaFoundationTexturePool::Initialize(
     ID3D11Device* device,
@@ -50,7 +50,7 @@ HRESULT MediaFoundationTexturePool::Initialize(
       static_cast<UINT>(frame_size.height()),
       1,
       1,
-      // TODO(crbug.com/1276134): Need to handle higher bit-depths like HDR.
+      // TODO(crbug.com/40808700): Need to handle higher bit-depths like HDR.
       DXGI_FORMAT_B8G8R8A8_UNORM,
       {1, 0},
       D3D11_USAGE_DEFAULT,

@@ -23,7 +23,7 @@ class TestBlinkWebUnitTestSupport;
 // testing::Environment* const blink_env =
 //   testing::AddGlobalTestEnvironment(new BlinkTestEnvironment);
 //
-// TODO(crbug.com/1315595): Move this to blink/renderer/controllers/tests/
+// TODO(crbug.com/40221845): Move this to blink/renderer/controllers/tests/
 class BlinkTestEnvironment : public ::testing::Environment {
  public:
   BlinkTestEnvironment();

@@ -140,7 +140,7 @@ bool WaitableEventWatcher::StartWatching(
   cancel_flag_ = new Flag;
   // UnsafeDanglingUntriaged triggered by test:
   // WaitableEventWatcherDeletionTest.SignalAndDelete
-  // TODO(https://crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+  // TODO(crbug.com/40061562): Remove `UnsafeDanglingUntriaged`
   OnceClosure internal_callback =
       base::BindOnce(&AsyncCallbackHelper, base::RetainedRef(cancel_flag_),
                      std::move(callback), base::UnsafeDanglingUntriaged(event));

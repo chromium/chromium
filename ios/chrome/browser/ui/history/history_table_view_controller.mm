@@ -527,7 +527,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
         [self.tableViewModel itemAtIndexPath:indexPath]);
     BrowsingHistoryService::HistoryEntry entry;
     entry.url = object.URL;
-    // TODO(crbug.com/634507) Remove base::TimeXXX::ToInternalValue().
+    // TODO(crbug.com/40479288) Remove base::TimeXXX::ToInternalValue().
     entry.all_timestamps.insert(object.timestamp.ToInternalValue());
     entries.push_back(entry);
   }

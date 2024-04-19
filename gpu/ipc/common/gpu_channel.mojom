@@ -360,7 +360,7 @@ interface DCOMPTexture {
   // pattern in `StreamTexture::StartListening()` to delay notifications until
   // the client side is ready.
   //
-  // TODO(crbug.com/999747): Investigate if we can remove this by having the
+  // TODO(crbug.com/40642952): Investigate if we can remove this by having the
   // `client` as a parameter to `CreateDCOMPTexture()`.
   StartListening(pending_associated_remote<DCOMPTextureClient> client);
 

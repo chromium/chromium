@@ -241,7 +241,7 @@ struct IsSupportedType<T, std::enable_if_t<std::is_convertible_v<T*, id>>> {
 // lead to manipulating random memory when treating it as BackupRefPtr
 // ref-count.  See also https://crbug.com/1262017.
 //
-// TODO(https://crbug.com/1262017): Cover other handle types like HANDLE,
+// TODO(crbug.com/40799223): Cover other handle types like HANDLE,
 // HLOCAL, HINTERNET, or HDEVINFO.  Maybe we should avoid using raw_ptr<T> when
 // T=void (as is the case in these handle types).  OTOH, explicit,
 // non-template-based raw_ptr<void> should be allowed.  Maybe this can be solved

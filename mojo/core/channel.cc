@@ -41,7 +41,8 @@ namespace {
 
 std::atomic_bool g_use_trivial_messages{false};
 
-// TODO(1301294): Consider asking the memory allocator for a suitable size.
+// TODO(crbug.com/40824727): Consider asking the memory allocator for a suitable
+// size.
 constexpr int kGrowthFactor = 2;
 
 static_assert(

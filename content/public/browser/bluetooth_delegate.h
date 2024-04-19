@@ -42,7 +42,7 @@ class RenderFrameHost;
 // Provides an interface for managing device permissions for Web Bluetooth and
 // Web Bluetooth Scanning API. An embedder may implement this to manage these
 // permissions.
-// TODO(https://crbug.com/1048325): There are several Bluetooth related methods
+// TODO(crbug.com/40117221): There are several Bluetooth related methods
 // in WebContentsDelegate and ContentBrowserClient that can be moved into this
 // class.
 class CONTENT_EXPORT BluetoothDelegate {

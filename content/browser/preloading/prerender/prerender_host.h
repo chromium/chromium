@@ -106,7 +106,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   // Checks whether two headers are the same in a case-insensitive and
   // order-insensitive way.
-  // TODO(https://crbug.com/1443922): Migrate this method into
+  // TODO(crbug.com/40267487): Migrate this method into
   // `HttpRequestHeaders`.
   static bool IsActivationHeaderMatch(
       const net::HttpRequestHeaders& potential_activation_headers,

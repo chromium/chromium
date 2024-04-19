@@ -43,7 +43,7 @@ void AggregationServiceKeyFetcher::GetPublicKey(const GURL& url,
     return;
 
   // First we check if we already have keys stored.
-  // TODO(crbug.com/1223488): Pass url by value and move after C++17.
+  // TODO(crbug.com/40187645): Pass url by value and move after C++17.
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::GetPublicKeys)
       .WithArgs(url)

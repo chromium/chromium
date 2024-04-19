@@ -581,8 +581,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
 }
 
 // TODO(crbug.com/966820): Fails pretty often on Android.
-// TODO(crbug.com/1258886): Fails flakily on all platforms with Synchronous HTML
-// Parsing enabled.
+// TODO(crbug.com/40201215): Fails flakily on all platforms with Synchronous
+// HTML Parsing enabled.
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
                        DISABLED_BadMICE) {
   InstallMockCertChainInterceptor();
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 }
 
-// TODO(crbug.com/1412461): Re-enable this test when de-flaked.
+// TODO(crbug.com/40890897): Re-enable this test when de-flaked.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_NotControlledByDistributorsSW \
   DISABLED_NotControlledByDistributorsSW
@@ -1632,7 +1632,7 @@ class SignedExchangePKPBrowserTest
           network_service_test.BindNewPipeAndPassReceiver());
       network_service_test->SetTransportSecurityStateSource(reporting_port);
     } else {
-      // TODO(https://crbug.com/1008175):  This code is not threadsafe, as the
+      // TODO(crbug.com/40649862):  This code is not threadsafe, as the
       // network stack does not run on the IO thread. Ideally, the
       // NetworkServiceTest object would be set up in-process on the network
       // service's thread, and this path would be removed.

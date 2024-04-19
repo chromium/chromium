@@ -157,7 +157,7 @@ class AvailableValuesFilter {
     const Feature* feature =
         FeatureProvider::GetManifestFeatures()->GetFeature(feature_path);
 
-    // TODO(crbug.com/1171466): We assume that if a feature does not exist,
+    // TODO(crbug.com/40745121): We assume that if a feature does not exist,
     // it is available. This is ok for child features (if its parent is
     // available) but is probably not correct for top-level features. We
     // should see if false can be returned for these non-existent top-level

@@ -1422,7 +1422,7 @@ class InterestGroupAuction::BuyerHelper
     }
 
     // 2. Reporting URLs must be okay
-    // TODO(1457931): Implement reporting
+    // TODO(crbug.com/40273798): Implement reporting
 
     return std::make_unique<Bid>(
         bid_role, ad_metadata.value_or("null"), bid, bid_currency,

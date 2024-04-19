@@ -127,7 +127,7 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystem(
 
   SetFileSystemContext(file_system_context);
 
-  // TODO(https://crbug.com/1236243): figure out if StorageKey conversion
+  // TODO(crbug.com/40782681): figure out if StorageKey conversion
   // should replaced with a third-party value: is ppapi only limited to
   // first-party contexts? If so, the implementation below is correct.
   file_system_context_->OpenFileSystem(
@@ -179,7 +179,7 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystemComplete(
   int32_t pp_error = ppapi::FileErrorToPepperError(error);
   if (pp_error == PP_OK) {
     opened_ = true;
-    // TODO(crbug.com/1323925): Store and use FileSystemURL instead.
+    // TODO(crbug.com/40838958): Store and use FileSystemURL instead.
     root_url_ = root.ToGURL();
 
     ShouldCreateQuotaReservation(base::BindOnce(

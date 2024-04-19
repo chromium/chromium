@@ -65,11 +65,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      * Provides access to the test class (and the annotations defined for it) and the
      * instrumentation context.
      *
-     * The only reason to use a ClassHook instead of a TestRule is because @BeforeClass/@AfterClass
-     * run during test listing, or multiple times for parameterized tests. See
-     * https://crbug.com/1090043.
+     * <p>The only reason to use a ClassHook instead of a TestRule is
+     * because @BeforeClass/@AfterClass run during test listing, or multiple times for parameterized
+     * tests. See https://crbug.com/1090043.
      *
-     * TODO(https://crbug.com/1092646): Migrate all Class/Test Hooks to TestRules.
+     * <p>TODO(crbug.com/40134682): Migrate all Class/Test Hooks to TestRules.
      */
     public interface ClassHook {
         /**

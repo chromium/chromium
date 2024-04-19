@@ -398,7 +398,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   }
 
   if (params.context_type == mojom::ContextType::kUntrustedWebUi) {
-    // TODO(https://crbug.com/1435575): We should, at minimum, be using an
+    // TODO(crbug.com/40265193): We should, at minimum, be using an
     // origin here. It'd be even better if we could have a more robust way of
     // checking that a process can host untrusted webui.
     if (extension || !render_frame_host_url ||

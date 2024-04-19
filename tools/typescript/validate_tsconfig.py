@@ -163,7 +163,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'ui/webui/resources/js',
       'ui/webui/resources/mojo',
 
-      # TODO(crbug.com/1478961) : Migrate to TypeScript.
+      # TODO(crbug.com/40280699) : Migrate to TypeScript.
       'chrome/test/data/webui/media_internals',
       'content/browser/resources/media',
 

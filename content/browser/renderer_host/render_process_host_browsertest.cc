@@ -765,7 +765,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, KeepAliveRendererProcess) {
   EXPECT_LT(base::TimeTicks::Now() - start, base::Seconds(30));
 }
 
-// TODO(crbug.com/1462719): Fix and re-enable.
+// TODO(crbug.com/40275040): Fix and re-enable.
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
                        DISABLED_KeepAliveRendererProcessWithServiceWorker) {
   if (IsKeepAliveInBrowserMigrationEnabled()) {

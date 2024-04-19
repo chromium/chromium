@@ -244,7 +244,7 @@ class AttributionVerificationMediator {
   // `GetHeadersForVerification` is called with multiple messages, we need to
   // start an issuance per message. As a result, the number of cryptographers
   // must match the number of messages received.
-  // TODO(https://crbug.com/1440838): use batch issuance instead of N
+  // TODO(crbug.com/40266288): use batch issuance instead of N
   // cryptographers when BorringSSL adds support for it.
   std::vector<std::unique_ptr<Cryptographer>> cryptographers_;
 

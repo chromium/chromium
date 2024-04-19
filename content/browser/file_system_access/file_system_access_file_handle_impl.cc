@@ -692,7 +692,7 @@ void FileSystemAccessFileHandleImpl::DidCheckSwapFileExists(
   }
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/1413443): Expand use of copy-on-write swap files
+  // TODO(crbug.com/40255657): Expand use of copy-on-write swap files
   // to other file systems which support it.
   if (CanUseCowSwapFile()) {
     CreateClonedSwapFile(count, swap_url, auto_close, std::move(lock),

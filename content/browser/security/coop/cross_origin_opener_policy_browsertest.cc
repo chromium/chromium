@@ -3457,7 +3457,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_FALSE(current_si->GetSiteInfo().requires_origin_keyed_process());
 }
 
-// TODO(crbug.com/1467243): Disable flaky test in Linux.
+// TODO(crbug.com/40924316): Disable flaky test in Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_CrossOriginIsolatedSiteInstance_MainFrame \
   DISABLED_CrossOriginIsolatedSiteInstance_MainFrame

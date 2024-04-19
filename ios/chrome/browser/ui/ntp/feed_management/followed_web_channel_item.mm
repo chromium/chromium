@@ -49,7 +49,7 @@
 }
 
 - (UIColor*)thirdRowTextColor {
-  // TODO(crbug.com/1296745): Polish color.
+  // TODO(crbug.com/40821890): Polish color.
   return [UIColor redColor];
 }
 

@@ -43,7 +43,7 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
   };
 
   enum class PublicKeyFetchStatus {
-    // TODO(crbug.com/1217823): Propagate up more granular errors.
+    // TODO(crbug.com/40185368): Propagate up more granular errors.
     kOk,
     kPublicKeyFetchFailed,
     kMaxValue = kPublicKeyFetchFailed,

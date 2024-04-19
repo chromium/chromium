@@ -164,7 +164,7 @@ WebRTCInternals* WebRTCInternals::CreateSingletonInstance() {
 }
 
 WebRTCInternals* WebRTCInternals::GetInstance() {
-  // TODO(crbug.com/1322082): DCHECK calling from UI thread.
+  // TODO(crbug.com/40837773): DCHECK calling from UI thread.
   // Currently, some unit tests call this from outside of the UI thread,
   // but that's not a real issue as these tests neglect setting
   // `g_webrtc_internals` to begin with, and therefore just ignore it.

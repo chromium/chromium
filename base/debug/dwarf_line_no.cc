@@ -1337,7 +1337,7 @@ void GetDwarfCompileUnitOffsets(const void* const* trace,
       continue;
     }
 
-    // TODO(https://crbug.com/1335630): Consider exposing the end address so a
+    // TODO(crbug.com/40228616): Consider exposing the end address so a
     // range of frames can be bulk-populated. This was originally implemented,
     // but line number symbolization is currently broken by default (and also
     // broken in sandboxed processes). The various issues will be addressed

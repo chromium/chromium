@@ -45,7 +45,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 namespace {
-// TODO(https://crbug.com/1192867): Some pages can hang if we try to wait for
+// TODO(crbug.com/40757470): Some pages can hang if we try to wait for
 // the compositor to acknowledge receipt of a frame before moving it to the
 // "rendering" state of the state machine. However, not doing so could increase
 // the latency of frames under heavy load as we aren't listening to back
@@ -1090,7 +1090,7 @@ void ArCoreGl::GetRenderedFrameStats(WebXrFrame* frame) {
   // the WritesDone time reported via OnBeginFrame's timing_data instead, but
   // those aren't guaranteed to be available. See also the GPU load
   // estimate in rendering_time_ratio_ which uses a different calculation.
-  // TODO(https://crbug.com/1382589): revisit this calculation?
+  // TODO(crbug.com/40877379): revisit this calculation?
   base::TimeTicks completion_time = now;
   DCHECK(frame->render_completion_fence);
   completion_time = static_cast<gl::GLFenceAndroidNativeFenceSync*>(

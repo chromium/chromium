@@ -141,7 +141,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // handler doesn't dispatch the corresponding fetch request. In that case the
   // pipe may be stacked. So this method provides a way to just consume data.
   //
-  // TODO(crbug.com/1472634): Consider migrating this to CancelWriteData().
+  // TODO(crbug.com/40278676): Consider migrating this to CancelWriteData().
   void DrainData(mojo::ScopedDataPipeConsumerHandle source);
 
   // Close the corresponding data pipe based on |commit_responsibility|, and
