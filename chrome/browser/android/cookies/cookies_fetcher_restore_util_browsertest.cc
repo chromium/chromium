@@ -79,6 +79,8 @@ class CookiesFetcherRestoreUtilBrowserTest : public AndroidBrowserTest {
     EXPECT_EQ(cookies_for_profile[0].PartitionKey(),
               *net::CookiePartitionKey::FromStorage(
                   partition_key, /*has_cross_site_ancestor=*/true));
+    EXPECT_NE(cookies_for_profile[0].IsPartitioned(),
+              partition_key.empty());
     return true;
   }
 

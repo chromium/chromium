@@ -84,21 +84,14 @@ void CookiesFetcherRestoreCookiesImpl(
     return;
   }
 
-  // Assume HTTPS - since the cookies are being restored from another store,
-  // they have already gone through the strict secure check.
-  //
-  // Similarly, permit samesite cookies to be imported.
-  net::CookieOptions options;
-  options.set_include_httponly();
-  options.set_same_site_cookie_context(
-      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-  options.set_do_not_update_access_time();
+  // Fetch cookies all-inclusive as we are doing so for the OTR profile.
   GetCookieServiceClient()->SetCanonicalCookie(
       *cookie,
       net::cookie_util::CookieDomainAndPathToURL(
           domain_str, path_str,
           static_cast<net::CookieSourceScheme>(source_scheme)),
-      options, network::mojom::CookieManager::SetCanonicalCookieCallback());
+      net::CookieOptions::MakeAllInclusive(),
+      network::mojom::CookieManager::SetCanonicalCookieCallback());
 }
 
 }  // namespace cookie_fetcher_restore_util
