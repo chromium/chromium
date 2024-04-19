@@ -9,6 +9,7 @@
 #import "base/command_line.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/test/scoped_feature_list.h"
@@ -223,7 +224,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
 
     ReadingListModel* model =
         ReadingListModelFactory::GetForBrowserState(browser_state_.get());
-    EXPECT_TRUE(model->DeleteAllEntries());
+    EXPECT_TRUE(model->DeleteAllEntries(FROM_HERE));
     model->AddOrReplaceEntry(pending_url, "unread",
                              reading_list::ADDED_VIA_CURRENT_APP,
                              /*estimated_read_time=*/base::TimeDelta());

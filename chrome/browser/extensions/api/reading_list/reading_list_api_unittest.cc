@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/location.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_api_constants.h"
@@ -501,7 +502,7 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryRemoved) {
 
   TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
 
-  reading_list_model->RemoveEntryByURL(url);
+  reading_list_model->RemoveEntryByURL(url, FROM_HERE);
   EXPECT_EQ(reading_list_model->size(), 0u);
 
   EXPECT_EQ(event_observer.events().size(), 1u);

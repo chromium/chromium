@@ -6,7 +6,8 @@
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_REMOVER_HELPER_H_
 
 #include "base/functional/callback.h"
-#import "base/memory/raw_ptr.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -31,7 +32,8 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
 
   // Removes all Reading list items and asynchronously invoke `completion` with
   // boolean indicating success or failure.
-  void RemoveAllUserReadingListItemsIOS(Callback completion);
+  void RemoveAllUserReadingListItemsIOS(const base::Location& location,
+                                        Callback completion);
 
   // ReadingListModelObserver implementation.
   void ReadingListModelLoaded(const ReadingListModel* model) override;
@@ -44,6 +46,7 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
   void ReadlingListItemsRemoved(bool success);
 
   Callback completion_;
+  base::Location location_;
   raw_ptr<ReadingListModel> reading_list_model_ = nullptr;
   raw_ptr<ReadingListDownloadService> reading_list_download_service_ = nullptr;
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>

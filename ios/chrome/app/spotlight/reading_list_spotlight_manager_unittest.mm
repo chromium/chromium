@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -201,7 +202,7 @@ TEST_F(ReadingListSpotlightManagerTest, testRemoveEntry) {
             spotlightInterface:fakeSpotlightInterface
          searchableItemFactory:searchableItemFactory_];
 
-  model_->RemoveEntryByURL(GURL(kTestURL1));
+  model_->RemoveEntryByURL(GURL(kTestURL1), FROM_HERE);
 
   // We expect to attempt deleting the item that was removed, from spotlight.
   EXPECT_EQ(
@@ -232,7 +233,7 @@ TEST_F(ReadingListSpotlightManagerTest, testBackgroundPausesModelUpdates) {
                 .deleteSearchableItemsWithDomainIdentifiersCallsCount,
             1u);
 
-  model_->RemoveEntryByURL(GURL(kTestURL1));
+  model_->RemoveEntryByURL(GURL(kTestURL1), FROM_HERE);
 
   EXPECT_EQ(
       fakeSpotlightInterface.deleteSearchableItemsWithIdentifiersCallsCount,

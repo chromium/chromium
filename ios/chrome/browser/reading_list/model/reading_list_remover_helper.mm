@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_remover_helper.h"
 
 #import "base/functional/bind.h"
+#import "base/location.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
@@ -34,7 +35,7 @@ void ReadingListRemoverHelper::ReadingListModelLoaded(
   DCHECK(scoped_observation_.IsObservingSource(reading_list_model_.get()));
   scoped_observation_.Reset();
 
-  bool model_cleared = reading_list_model_->DeleteAllEntries();
+  bool model_cleared = reading_list_model_->DeleteAllEntries(location_);
   reading_list_download_service_->Clear();
 
   ReadlingListItemsRemoved(model_cleared);
@@ -50,9 +51,11 @@ void ReadingListRemoverHelper::ReadingListModelBeingDeleted(
 }
 
 void ReadingListRemoverHelper::RemoveAllUserReadingListItemsIOS(
+    const base::Location& location,
     Callback completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   completion_ = std::move(completion);
+  location_ = location;
 
   if (!reading_list_model_) {
     ReadlingListItemsRemoved(false);

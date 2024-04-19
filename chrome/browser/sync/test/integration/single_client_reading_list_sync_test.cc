@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/location.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -17,11 +18,34 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 
+namespace {
+
+using testing::ElementsAre;
 using testing::Eq;
 
-namespace {
+MATCHER_P2(MatchesDeletionOrigin, expected_version, expected_location, "") {
+  const sync_pb::DeletionOrigin& actual_origin = arg;
+  if (actual_origin.chromium_version() != expected_version) {
+    *result_listener << "Expected version " << expected_version << " but got "
+                     << actual_origin.chromium_version();
+    return false;
+  }
+  if (actual_origin.file_name_hash() !=
+      base::PersistentHash(expected_location.file_name())) {
+    *result_listener << "Unexpected file name hash: "
+                     << actual_origin.file_name_hash();
+    return false;
+  }
+  if (actual_origin.file_line_number() != expected_location.line_number()) {
+    *result_listener << "Unexpected line number: "
+                     << actual_origin.file_line_number();
+    return false;
+  }
+  return true;
+}
 
 // Checker used to block until the reading list URLs on the server match a
 // given set of expected reading list URLs.
@@ -258,19 +282,49 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
                        ShouldDeleteTheDeletedEntryFromTheServer) {
   const GURL kUrl("http://url.com/");
+  const base::Location kLocation = FROM_HERE;
+
   fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
 
   ASSERT_TRUE(SetupClients());
-
   ASSERT_THAT(model()->size(), Eq(0ul));
-
   SignInAndWaitForReadingListActive();
-
   ASSERT_THAT(model()->size(), Eq(1ul));
 
-  model()->RemoveEntryByURL(kUrl);
+  model()->RemoveEntryByURL(kUrl, kLocation);
   ASSERT_THAT(model()->size(), Eq(0ul));
   EXPECT_TRUE(ServerReadingListURLsEqualityChecker({}).Wait());
+
+  EXPECT_THAT(GetFakeServer()->GetCommittedDeletionOrigins(
+                  syncer::ModelType::READING_LIST),
+              ElementsAre(MatchesDeletionOrigin(
+                  version_info::GetVersionNumber(), kLocation)));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldDeleteAllEntriesFromTheServer) {
+  const base::Location kLocation = FROM_HERE;
+
+  fake_server_->InjectEntity(
+      CreateTestReadingListEntity(GURL("http://url1.com/"), "entry_title1"));
+  fake_server_->InjectEntity(
+      CreateTestReadingListEntity(GURL("http://url2.com/"), "entry_title2"));
+
+  ASSERT_TRUE(SetupClients());
+  ASSERT_THAT(model()->size(), Eq(0ul));
+  SignInAndWaitForReadingListActive();
+  ASSERT_THAT(model()->size(), Eq(2ul));
+
+  model()->DeleteAllEntries(kLocation);
+  ASSERT_THAT(model()->size(), Eq(0ul));
+  EXPECT_TRUE(ServerReadingListURLsEqualityChecker({}).Wait());
+
+  EXPECT_THAT(
+      GetFakeServer()->GetCommittedDeletionOrigins(
+          syncer::ModelType::READING_LIST),
+      ElementsAre(
+          MatchesDeletionOrigin(version_info::GetVersionNumber(), kLocation),
+          MatchesDeletionOrigin(version_info::GetVersionNumber(), kLocation)));
 }
 
 // ChromeOS doesn't have the concept of sign-out, so this only exists on other

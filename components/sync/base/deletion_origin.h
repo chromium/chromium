@@ -40,6 +40,11 @@ class DeletionOrigin {
   // `is_specified()` is true.
   sync_pb::DeletionOrigin ToProto(std::string_view chromium_version) const;
 
+  // Test-only API to allow comparing with a base::Location.
+  const std::optional<base::Location>& GetLocationForTesting() const {
+    return location_;
+  }
+
  private:
   explicit DeletionOrigin(std::optional<base::Location> location);
   std::optional<base::Location> location_;

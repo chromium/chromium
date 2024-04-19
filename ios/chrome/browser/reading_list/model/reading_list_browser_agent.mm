@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/i18n/message_formatter.h"
+#import "base/location.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -224,7 +225,7 @@ void ReadingListBrowserAgent::RemoveURLsFromReadingList(
           browser_->GetBrowserState());
 
   for (URLWithTitle* url_with_title in urls) {
-    reading_model->RemoveEntryByURL(url_with_title.URL);
+    reading_model->RemoveEntryByURL(url_with_title.URL, FROM_HERE);
   }
 }
 

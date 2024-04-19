@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -95,6 +96,7 @@ void ReadingListSyncBridge::DidAddOrUpdateEntry(
 
 void ReadingListSyncBridge::DidRemoveEntry(
     const ReadingListEntry& entry,
+    const base::Location& location,
     syncer::MetadataChangeList* metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -102,7 +104,9 @@ void ReadingListSyncBridge::DidRemoveEntry(
     return;
   }
 
-  change_processor()->Delete(entry.URL().spec(), metadata_change_list);
+  change_processor()->Delete(entry.URL().spec(),
+                             syncer::DeletionOrigin::FromLocation(location),
+                             metadata_change_list);
 }
 
 // IsTrackingMetadata() continues to be true while ApplyDisableSyncChanges() is

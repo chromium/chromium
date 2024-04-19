@@ -60,7 +60,7 @@ class DualReadingListModel : public ReadingListModel,
   size_t unread_size() const override;
   size_t unseen_size() const override;
   void MarkAllSeen() override;
-  bool DeleteAllEntries() override;
+  bool DeleteAllEntries(const base::Location& location) override;
   scoped_refptr<const ReadingListEntry> GetEntryByURL(
       const GURL& gurl) const override;
   bool IsUrlSupported(const GURL& url) override;
@@ -72,7 +72,8 @@ class DualReadingListModel : public ReadingListModel,
       const std::string& title,
       reading_list::EntrySource source,
       base::TimeDelta estimated_read_time) override;
-  void RemoveEntryByURL(const GURL& url) override;
+  void RemoveEntryByURL(const GURL& url,
+                        const base::Location& location) override;
   void SetReadStatusIfExists(const GURL& url, bool read) override;
   void SetEntryTitleIfExists(const GURL& url,
                              const std::string& title) override;

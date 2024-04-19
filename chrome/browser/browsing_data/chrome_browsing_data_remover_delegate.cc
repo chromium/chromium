@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -806,7 +807,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ReadingListModelFactory::GetForBrowserContext(profile_);
     if (reading_list_model) {
       if (delete_begin_.is_null() && delete_end_.is_max()) {
-        reading_list_model->DeleteAllEntries();
+        reading_list_model->DeleteAllEntries(FROM_HERE);
       } else {
         NOTIMPLEMENTED();
       }

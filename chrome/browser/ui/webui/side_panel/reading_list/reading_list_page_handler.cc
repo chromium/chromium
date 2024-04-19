@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
@@ -121,7 +122,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         reading_list_model_->SetReadStatusIfExists(url_, false);
         break;
       case kDelete:
-        reading_list_model_->RemoveEntryByURL(url_);
+        reading_list_model_->RemoveEntryByURL(url_, FROM_HERE);
         break;
       default:
         NOTREACHED();
@@ -241,7 +242,7 @@ void ReadingListPageHandler::AddCurrentTab() {
 }
 
 void ReadingListPageHandler::RemoveEntry(const GURL& url) {
-  reading_list_model_->RemoveEntryByURL(url);
+  reading_list_model_->RemoveEntryByURL(url, FROM_HERE);
   base::RecordAction(base::UserMetricsAction("DesktopReadingList.RemoveItem"));
 }
 

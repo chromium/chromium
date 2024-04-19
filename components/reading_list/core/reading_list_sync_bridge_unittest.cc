@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -59,6 +60,11 @@ MATCHER_P2(MatchesEntry, url_matcher, is_read_matcher, "") {
              .MatchAndExplain(arg->URL(), result_listener) &&
          testing::SafeMatcherCast<bool>(is_read_matcher)
              .MatchAndExplain(arg->IsRead(), result_listener);
+}
+
+MATCHER_P(DeletionOriginMatchesLocation, expected_location, "") {
+  return arg.is_specified() &&
+         *arg.GetLocationForTesting() == expected_location;
 }
 
 // Tests that the transition from |entryA| to |entryB| is possible (|possible|
@@ -202,12 +208,15 @@ TEST_F(ReadingListSyncBridgeTest, SaveOneUnread) {
 }
 
 TEST_F(ReadingListSyncBridgeTest, DeleteOneEntry) {
+  const base::Location kLocation = FROM_HERE;
   auto entry = MakeRefCounted<ReadingListEntry>(
       GURL("http://unread.example.com/"), "unread title",
       AdvanceAndGetTime(&clock_));
-  EXPECT_CALL(processor_, Delete("http://unread.example.com/", _, _));
+  EXPECT_CALL(processor_, Delete("http://unread.example.com/",
+                                 DeletionOriginMatchesLocation(kLocation), _));
   auto batch = model_->BeginBatchUpdatesWithSyncMetadata();
-  bridge()->DidRemoveEntry(*entry, batch->GetSyncMetadataChangeList());
+  bridge()->DidRemoveEntry(*entry, kLocation,
+                           batch->GetSyncMetadataChangeList());
 }
 
 TEST_F(ReadingListSyncBridgeTest, SyncMergeOneEntry) {

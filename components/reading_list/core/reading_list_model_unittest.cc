@@ -4,6 +4,7 @@
 
 #include "components/reading_list/core/reading_list_model.h"
 
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
@@ -325,7 +326,7 @@ TEST_F(ReadingListModelTest, DeleteAllEntries) {
         .RetiresOnSaturation();
   }
 
-  EXPECT_TRUE(model_->DeleteAllEntries());
+  EXPECT_TRUE(model_->DeleteAllEntries(FROM_HERE));
 
   EXPECT_THAT(model_->GetEntryByURL(example1), IsNull());
   EXPECT_THAT(model_->GetEntryByURL(example2), IsNull());
@@ -544,7 +545,7 @@ TEST_F(ReadingListModelTest, RemoveEntryByUrlWhenUnread) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(model_.get(), url));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
-  model_->RemoveEntryByURL(url);
+  model_->RemoveEntryByURL(url, FROM_HERE);
 
   EXPECT_EQ(0, storage_saved_);
   EXPECT_EQ(1, storage_removed_);
@@ -569,7 +570,7 @@ TEST_F(ReadingListModelTest, RemoveEntryByUrlWhenRead) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(model_.get(), url));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
-  model_->RemoveEntryByURL(url);
+  model_->RemoveEntryByURL(url, FROM_HERE);
 
   EXPECT_EQ(0, storage_saved_);
   EXPECT_EQ(1, storage_removed_);

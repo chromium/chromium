@@ -5,6 +5,7 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 
 #include "base/auto_reset.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
@@ -151,7 +152,7 @@ void DualReadingListModel::MarkAllSeen() {
   DCHECK_EQ(unseen_entry_count_, 0ul);
 }
 
-bool DualReadingListModel::DeleteAllEntries() {
+bool DualReadingListModel::DeleteAllEntries(const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!loaded()) {
@@ -164,7 +165,7 @@ bool DualReadingListModel::DeleteAllEntries() {
   std::unique_ptr<DualReadingListModel::ScopedReadingListBatchUpdate>
       scoped_model_batch_updates = BeginBatchUpdates();
   for (const auto& url : GetKeys()) {
-    RemoveEntryByURL(url);
+    RemoveEntryByURL(url, location);
   }
 
   DCHECK_EQ(0u, local_or_syncable_model_->size());
@@ -239,7 +240,7 @@ void DualReadingListModel::MarkAllForUploadToSyncServerIfNeeded() {
 
   for (const GURL& url : local_or_syncable_model_->GetKeys()) {
     scoped_refptr<ReadingListEntry> entry = GetEntryByURL(url)->Clone();
-    local_or_syncable_model_->RemoveEntryByURL(url);
+    local_or_syncable_model_->RemoveEntryByURL(url, FROM_HERE);
     // If the url already exists in the account model, remove the account entry
     // first before adding the "merged" entry back to the account model.
     // Note: This workaround is used than just using AddOrReplaceEntry() to
@@ -247,7 +248,7 @@ void DualReadingListModel::MarkAllForUploadToSyncServerIfNeeded() {
     // AddOrReplaceEntry(), which causes observers to be notified even though
     // this particular function does not need to send any notifications at all
     // (including ReadingListModelBeganBatchUpdates).
-    account_model_->RemoveEntryByURL(url);
+    account_model_->RemoveEntryByURL(url, FROM_HERE);
     account_model_->AddEntry(std::move(entry),
                              reading_list::ADDED_VIA_CURRENT_APP);
     // The entry state counters do not need to updated since no value was
@@ -271,7 +272,7 @@ const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
       scoped_model_batch_updates;
   if (GetEntryByURL(url)) {
     scoped_model_batch_updates = BeginBatchUpdates();
-    RemoveEntryByURL(url);
+    RemoveEntryByURL(url, FROM_HERE);
   }
 
   if (account_model_->IsTrackingSyncMetadata()) {
@@ -288,7 +289,8 @@ const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
   return entry;
 }
 
-void DualReadingListModel::RemoveEntryByURL(const GURL& url) {
+void DualReadingListModel::RemoveEntryByURL(const GURL& url,
+                                            const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
 
@@ -306,8 +308,8 @@ void DualReadingListModel::RemoveEntryByURL(const GURL& url) {
   {
     base::AutoReset<bool> auto_reset_suppress_observer_notifications(
         &suppress_observer_notifications_, true);
-    local_or_syncable_model_->RemoveEntryByURL(url);
-    account_model_->RemoveEntryByURL(url);
+    local_or_syncable_model_->RemoveEntryByURL(url, location);
+    account_model_->RemoveEntryByURL(url, location);
   }
 
   NotifyObserversWithDidRemoveEntry(url);

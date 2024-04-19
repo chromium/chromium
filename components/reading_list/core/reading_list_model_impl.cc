@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -165,14 +166,14 @@ void ReadingListModelImpl::MarkAllSeen() {
   DCHECK(unseen_entry_count_ == 0);
 }
 
-bool ReadingListModelImpl::DeleteAllEntries() {
+bool ReadingListModelImpl::DeleteAllEntries(const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!loaded()) {
     return false;
   }
   auto scoped_model_batch_updates = BeginBatchUpdates();
   for (const auto& url : GetKeys()) {
-    RemoveEntryByURL(url);
+    RemoveEntryByURL(url, location);
   }
 
   DCHECK(entries_.empty());
@@ -269,14 +270,16 @@ void ReadingListModelImpl::SyncRemoveEntry(const GURL& url) {
   DCHECK(loaded());
   DCHECK(IsPerformingBatchUpdates());
 
-  RemoveEntryByURLImpl(url, true);
+  RemoveEntryByURLImpl(url, FROM_HERE, true);
 }
 
-void ReadingListModelImpl::RemoveEntryByURL(const GURL& url) {
-  RemoveEntryByURLImpl(url, false);
+void ReadingListModelImpl::RemoveEntryByURL(const GURL& url,
+                                            const base::Location& location) {
+  RemoveEntryByURLImpl(url, location, false);
 }
 
 void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
+                                                const base::Location& location,
                                                 bool from_sync) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
@@ -295,7 +298,8 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
   batch->RemoveEntry(url);
 
   if (!from_sync) {
-    sync_bridge_.DidRemoveEntry(*entry, batch->GetSyncMetadataChangeList());
+    sync_bridge_.DidRemoveEntry(*entry, location,
+                                batch->GetSyncMetadataChangeList());
   }
 
   UpdateEntryStateCountersOnEntryRemoval(*entry);
@@ -311,7 +315,7 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
 }
 
 void ReadingListModelImpl::SyncDeleteAllEntriesAndSyncMetadata() {
-  DeleteAllEntries();
+  DeleteAllEntries(FROM_HERE);
   storage_layer_->DeleteAllEntriesAndSyncMetadata();
 }
 
@@ -360,7 +364,7 @@ const ReadingListEntry& ReadingListModelImpl::AddOrReplaceEntry(
       scoped_model_batch_updates;
   if (GetEntryByURL(url)) {
     scoped_model_batch_updates = BeginBatchUpdates();
-    RemoveEntryByURL(url);
+    RemoveEntryByURL(url, FROM_HERE);
   }
 
   std::string trimmed_title = TrimTitle(title);

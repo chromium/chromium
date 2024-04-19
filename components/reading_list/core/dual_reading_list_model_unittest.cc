@@ -5,6 +5,7 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 
 #include "base/files/file_path.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -655,7 +656,7 @@ TEST_F(DualReadingListModelTest, DeleteAllEntries) {
         .RetiresOnSaturation();
   }
 
-  EXPECT_TRUE(dual_model_->DeleteAllEntries());
+  EXPECT_TRUE(dual_model_->DeleteAllEntries(FROM_HERE));
 
   EXPECT_THAT(dual_model_->GetEntryByURL(local_url), IsNull());
   EXPECT_THAT(dual_model_->GetEntryByURL(account_url), IsNull());
@@ -821,7 +822,7 @@ TEST_F(DualReadingListModelTest, RemoveNonExistingEntryByUrl) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -841,7 +842,7 @@ TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrl) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -861,7 +862,7 @@ TEST_F(DualReadingListModelTest, RemoveAccountEntryByUrl) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -882,7 +883,7 @@ TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrl) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -964,7 +965,7 @@ TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrlFromTheLocalModel) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -983,7 +984,7 @@ TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrlFromTheLocalModel) {
   EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
   EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
@@ -2285,7 +2286,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2310,7 +2311,7 @@ TEST_F(DualReadingListModelTest, ShouldMaintainCountsWhenRemoveLocalReadEntry) {
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2337,7 +2338,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2364,7 +2365,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2392,7 +2393,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2421,7 +2422,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2625,7 +2626,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2651,7 +2652,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2679,7 +2680,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2710,7 +2711,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/1ul),
                              _));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));

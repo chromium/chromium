@@ -12,6 +12,7 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "base/location.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -555,9 +556,9 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // ChromeBrowserState is destroyed, and ReadingListRemoverHelper supports
     // being deleted while the callback is run..
     reading_list_remover_helper_ptr->RemoveAllUserReadingListItemsIOS(
-        base::BindOnce(&ReadingListClearedAdapter,
-                       std::move(reading_list_remover_helper),
-                       CreatePendingTaskCompletionClosure()));
+        FROM_HERE, base::BindOnce(&ReadingListClearedAdapter,
+                                  std::move(reading_list_remover_helper),
+                                  CreatePendingTaskCompletionClosure()));
   }
 
   if (IsRemoveDataMaskSet(mask,

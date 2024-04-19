@@ -17,6 +17,7 @@
 
 namespace base {
 class Clock;
+class Location;
 }  // namespace base
 
 namespace syncer {
@@ -53,6 +54,7 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   void DidAddOrUpdateEntry(const ReadingListEntry& entry,
                            syncer::MetadataChangeList* metadata_change_list);
   void DidRemoveEntry(const ReadingListEntry& entry,
+                      const base::Location& location,
                       syncer::MetadataChangeList* metadata_change_list);
 
   // Exposes whether the underlying ModelTypeChangeProcessor is tracking

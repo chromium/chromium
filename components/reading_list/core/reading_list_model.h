@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,6 +19,10 @@
 
 class GURL;
 class ReadingListModelObserver;
+
+namespace base {
+class Location;
+}  // namespace base
 
 namespace syncer {
 class ModelTypeControllerDelegate;
@@ -80,8 +85,8 @@ class ReadingListModel : public KeyedService {
   virtual void MarkAllSeen() = 0;
 
   // Delete all the Reading List entries. Return true if entries where indeed
-  // deleted.
-  virtual bool DeleteAllEntries() = 0;
+  // deleted. |location| is used for logging purposes and investigations.
+  virtual bool DeleteAllEntries(const base::Location& location) = 0;
 
   // Returns a specific entry. Returns null if the entry does not exist.
   // Please note that the value saved to the account may not be identical to the
@@ -123,8 +128,9 @@ class ReadingListModel : public KeyedService {
       base::TimeDelta estimated_read_time) = 0;
 
   // Removes an entry. The removal may be asynchronous, and not happen
-  // immediately.
-  virtual void RemoveEntryByURL(const GURL& url) = 0;
+  // immediately. |location| is used for logging purposes and investigations.
+  virtual void RemoveEntryByURL(const GURL& url,
+                                const base::Location& location) = 0;
 
   // If the |url| is in the reading list and entry(|url|).read != |read|, sets
   // the read state of the URL to read. This will also update the update time of
