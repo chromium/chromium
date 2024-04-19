@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -387,6 +388,7 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/335867572")
     public void testWithNoAccount_instantSignin_requiredHistorySync() {
         CoreAccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_1;
         mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, accountInfo.getEmail());
