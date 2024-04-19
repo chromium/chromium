@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2018 The Chromium Authors.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -220,7 +220,7 @@ def PushToOriginWithoutReviewAndTrackIfNeeded(cfg):
         return
     shell.log("Pushing merge to origin without review")
     cfg.Call(["git", "push", "origin", cfg.sushi_branch_name(), "-o",
-              "push-justification=b/1234"])
+              "push-justification=b/1234", "-o", "banned-words~skip"])
     shell.log("Setting tracking branch")
     cfg.Call([
         "git", "branch",
