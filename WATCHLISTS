@@ -2016,15 +2016,14 @@
     },
     'settings_os_settings': {
       'filepath': 'chrome/browser/resources/ash/settings/'\
-                  '|chrome/browser/ui/webui/settings/ash/'\
-                  '|chrome/browser/ui/webui/settings/chromeos/'\
-                  '|chrome/test/data/webui/settings/chromeos/'\
+                  '|chrome/browser/ui/webui/ash/settings/'\
+                  '|chrome/test/data/webui/chromeos/settings/'\
                   '|ui/webui/resources/cr_elements/chromeos/',
     },
     'settings_os_settings_languages': {
       'filepath': 'chrome/browser/resources/ash/settings/os_languages_page/'\
-                  '|chrome/browser/ui/webui/settings/ash/languages_'\
-                  '|chrome/test/data/webui/settings/chromeos/os_languages_page/'
+                  '|chrome/browser/ui/webui/ash/settings/languages_'\
+                  '|chrome/test/data/webui/chromeos/settings/os_languages_page/'
     },
     'sharing': {
       'filepath': 'chrome/browser/sharing/|'\
@@ -2054,7 +2053,7 @@
                   '|chrome/browser/ash/login/easy_unlock/'\
                   '|chrome/browser/resources/chromeos/quick_unlock/'\
                   '|chrome/browser/resources/ash/settings/multidevice_page/multidevice_smartlock'\
-                  '|chrome/test/data/webui/settings/chromeos/multidevice_smartlock'\
+                  '|chrome/test/data/webui/chromeos/settings/multidevice_smartlock'\
                   '|chromeos/ash/components/dbus/easy_unlock/'\
                   '|chromeos/ash/components/proximity_auth/',
     },

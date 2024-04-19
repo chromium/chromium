@@ -27,7 +27,6 @@ def isInAshFolder(path):
       'chrome/test/data/webui/chromeos',
       'chrome/test/data/webui/cr_components/chromeos',
       'chrome/test/data/webui/nearby_share',
-      'chrome/test/data/webui/settings/chromeos',
   ]
   return any(path.startswith(folder) for folder in ash_folders)
 
