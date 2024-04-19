@@ -57,9 +57,9 @@ class PromosManagerCoordinatorTest : public PlatformTest {
 
     startup_information_ = [[FakeStartupInformation alloc] init];
     [startup_information_ setIsColdStart:YES];
-    AppState* app_state =
-        [[AppState alloc] initWithStartupInformation:startup_information_];
 
+    AppState* app_state = OCMClassMock([AppState class]);
+    OCMStub([(AppState*)app_state initStage]).andReturn(InitStageFinal);
     scene_state_ =
         [[FakeSceneState alloc] initWithAppState:app_state
                                     browserState:browser_state_.get()];
@@ -89,11 +89,6 @@ class PromosManagerCoordinatorTest : public PlatformTest {
 
   // Sets up the UI to be ready for promo display.
   void SetupUIForPromoDisplay() {
-    // App state stage can be moved only one stage at a time.
-    while (browser_.get()->GetSceneState().appState.initStage <
-           InitStageFinal) {
-      [browser_.get()->GetSceneState().appState queueTransitionToNextInitStage];
-    }
     browser_.get()->GetSceneState().activationLevel =
         SceneActivationLevelForegroundActive;
   }
@@ -175,18 +170,8 @@ TEST_F(PromosManagerCoordinatorTest, BanneredViewControllerDismissesViaSwipe) {
   [banneredProvider verify];
 }
 
-// Tests ...
-// TODO(crbug.com/333873672): Re-enable after fixing.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_DisplayPromoCallbackTest DisplayPromoCallbackTest
-#else
-#define MAYBE_DisplayPromoCallbackTest DISABLED_DisplayPromoCallbackTest
-#endif
-TEST_F(PromosManagerCoordinatorTest, MAYBE_DisplayPromoCallbackTest) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Test is failing on iOS15 simulator.
-    return;
-  }
+// Tests that promo will be displayed if UI is available.
+TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackTest) {
   // Prepare UI for promo display.
   SetupUIForPromoDisplay();
 
@@ -206,19 +191,8 @@ TEST_F(PromosManagerCoordinatorTest, MAYBE_DisplayPromoCallbackTest) {
   [mockCoordinator verify];
 }
 
-// TODO(crbug.com/333873672): Re-enable after fixing.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_DisplayPromoCallbackUINotAvailableTest DisplayPromoCallbackUINotAvailableTest
-#else
-#define MAYBE_DisplayPromoCallbackUINotAvailableTest \
-  DISABLED_DisplayPromoCallbackUINotAvailableTest
-#endif
-TEST_F(PromosManagerCoordinatorTest,
-       MAYBE_DisplayPromoCallbackUINotAvailableTest) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Test is failing on iOS15 simulator.
-    return;
-  }
+// Tests that promo will not be displayed if UI is not available.
+TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackUINotAvailableTest) {
   // Prepare UI for promo display.
   SetupUIForPromoDisplay();
   CreatePromosManagerCoordinator();
