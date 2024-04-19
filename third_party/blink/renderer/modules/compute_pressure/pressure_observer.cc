@@ -99,6 +99,7 @@ void PressureObserver::unobserve(V8PressureSource source) {
   manager_->RemoveObserver(source.AsEnum(), this);
   last_record_map_[source_index].Clear();
   after_penalty_records_[source_index].Clear();
+  pending_delayed_report_to_callback_[source_index].Cancel();
   // Reject all pending promises for `source`.
   RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kAbortError,
                          "Called unobserve method.");
@@ -122,6 +123,11 @@ void PressureObserver::disconnect() {
   for (auto& after_penalty_record : after_penalty_records_) {
     after_penalty_record.Clear();
   }
+
+  for (auto& pending_callback : pending_delayed_report_to_callback_) {
+    pending_callback.Cancel();
+  }
+
   // Reject all pending promises.
   for (const auto& source : supportedSources()) {
     RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kAbortError,

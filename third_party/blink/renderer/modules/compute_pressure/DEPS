@@ -4,3 +4,10 @@ include_rules = [
     "+third_party/blink/renderer/modules/document_picture_in_picture",
     "+third_party/blink/renderer/modules/modules_export.h",
 ]
+
+specific_include_rules = {
+  "pressure_observer_test_utils\.cc|.+_test\.cc": [
+    "+base/run_loop.h",
+  ],
+}
+
