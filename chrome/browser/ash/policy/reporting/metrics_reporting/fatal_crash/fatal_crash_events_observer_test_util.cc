@@ -31,8 +31,8 @@ FatalCrashEventsObserver::TestEnvironment::CreateFatalCrashEventsObserver(
     scoped_refptr<base::SequencedTaskRunner> uploaded_crash_info_io_task_runner)
     const {
   auto observer = base::WrapUnique(new FatalCrashEventsObserver(
-      save_file_paths_provider_, reported_local_id_io_task_runner,
-      uploaded_crash_info_io_task_runner));
+      GetReportedLocalIdSaveFilePath(), GetUploadedCrashInfoSaveFilePath(),
+      reported_local_id_io_task_runner, uploaded_crash_info_io_task_runner));
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer->sequence_checker_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -55,10 +55,6 @@ FatalCrashEventsObserver::TestEnvironment::CreateFatalCrashEventsObserver(
   return observer;
 }
 
-const FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider&
-FatalCrashEventsObserver::TestEnvironment::GetSaveFilePathsProvider() const {
-  return save_file_paths_provider_;
-}
 
 // static
 FatalCrashEventsObserver::SettingsForTest&
@@ -125,25 +121,22 @@ void FatalCrashEventsObserver::TestEnvironment::
   run_loop.Run();
 }
 
+base::FilePath
+FatalCrashEventsObserver::TestEnvironment::GetReportedLocalIdSaveFilePath()
+    const {
+  return temp_dir_.Append("REPORTED_LOCAL_IDS");
+}
+
+base::FilePath
+FatalCrashEventsObserver::TestEnvironment::GetUploadedCrashInfoSaveFilePath()
+    const {
+  return temp_dir_.Append("UPLOADED_CRASH_INFO");
+}
+
 // static
 const base::flat_set<::ash::cros_healthd::mojom::CrashEventInfo::CrashType>&
 FatalCrashEventsObserver::TestEnvironment::GetAllowedCrashTypes() {
   return FatalCrashEventsObserver::GetAllowedCrashTypes();
-}
-
-FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider::
-    SaveFilePathsProvider() = default;
-FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider::
-    ~SaveFilePathsProvider() = default;
-
-base::FilePath FatalCrashEventsObserver::TestEnvironment::
-    SaveFilePathsProvider::GetReportedLocalIdSaveFilePath() const {
-  return temp_dir_.Append("REPORTED_LOCAL_IDS");
-}
-
-base::FilePath FatalCrashEventsObserver::TestEnvironment::
-    SaveFilePathsProvider::GetUploadedCrashInfoSaveFilePath() const {
-  return temp_dir_.Append("UPLOADED_CRASH_INFO");
 }
 
 FatalCrashEventsObserver::TestEnvironment::SequenceBlocker::SequenceBlocker(

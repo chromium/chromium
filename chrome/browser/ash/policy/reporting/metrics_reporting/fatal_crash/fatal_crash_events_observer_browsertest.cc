@@ -9,8 +9,6 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_save_file_paths_provider.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_test_util.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -53,20 +51,6 @@ bool IsRecordCrashEvent(const ::reporting::Record& record) {
       record_data.event_data().type() == MetricEventType::FATAL_CRASH;
 }
 
-// Browser test environment for fatal crash events.
-class [[maybe_unused]] BrowserTestEnvironment final
-    : public FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider {
- public:
-  BrowserTestEnvironment() = default;
-  ~BrowserTestEnvironment() override = default;
-  BrowserTestEnvironment(const BrowserTestEnvironment&) = delete;
-  BrowserTestEnvironment& operator=(const BrowserTestEnvironment&) = delete;
-
- private:
-  // Reset g_default_save_file_paths_provider_ during the test.
-  base::AutoReset<decltype(g_default_save_file_paths_provider_)> auto_reset_{
-      &g_default_save_file_paths_provider_, this};
-};
 
 class FatalCrashEventsBrowserTest
     : public ::policy::DevicePolicyCrosBrowserTest,
@@ -109,7 +93,6 @@ class FatalCrashEventsBrowserTest
   }
 
  private:
-  BrowserTestEnvironment fatal_crash_events_browser_test_environment_;
   ::policy::DevicePolicyCrosTestHelper test_helper_;
   // Set up device affiliation. No need to set up or log in as an affiliated
   // user, because reporting fatal crash events is controlled by a device

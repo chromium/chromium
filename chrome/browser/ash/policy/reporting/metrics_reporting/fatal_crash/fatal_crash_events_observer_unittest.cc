@@ -714,8 +714,7 @@ class FatalCrashEventsObserverReportedLocalIdsTestBase
 
   // Gets the path to the save file.
   base::FilePath GetSaveFilePath() const {
-    return fatal_crash_test_environment_.GetSaveFilePathsProvider()
-        .GetReportedLocalIdSaveFilePath();
+    return fatal_crash_test_environment_.GetReportedLocalIdSaveFilePath();
   }
 
   // Generates an uninteresting fatal crash event to alter the observer's state
@@ -1378,8 +1377,7 @@ class FatalCrashEventsObserverUploadedCrashTestBase
 
   // Gets the path to the save file.
   base::FilePath GetSaveFilePath() const {
-    return fatal_crash_test_environment_.GetSaveFilePathsProvider()
-        .GetUploadedCrashInfoSaveFilePath();
+    return fatal_crash_test_environment_.GetUploadedCrashInfoSaveFilePath();
   }
 
   // Generates an uninteresting fatal crash event to alter the observer's state

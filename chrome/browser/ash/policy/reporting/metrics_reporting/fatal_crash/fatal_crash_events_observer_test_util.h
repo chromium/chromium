@@ -14,7 +14,6 @@
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_save_file_paths_provider.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 
 namespace reporting {
@@ -24,23 +23,6 @@ class FatalCrashEventsObserver::TestEnvironment {
   using ShouldReportResult =
       FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReportResult;
 
-  // Save file paths provider for tests.
-  class SaveFilePathsProvider
-      : public FatalCrashEventsObserver::SaveFilePathsProviderInterface {
-   public:
-    SaveFilePathsProvider();
-    SaveFilePathsProvider(const SaveFilePathsProvider&) = delete;
-    SaveFilePathsProvider& operator=(const SaveFilePathsProvider&) = delete;
-    virtual ~SaveFilePathsProvider();
-
-    // SaveFilePathsProviderInterface:
-    base::FilePath GetReportedLocalIdSaveFilePath() const override;
-    base::FilePath GetUploadedCrashInfoSaveFilePath() const override;
-
-   private:
-    // Temporary dir for storing save files.
-    base::FilePath temp_dir_{base::CreateUniqueTempDirectoryScopedToTest()};
-  };
 
   // Posts a task that blocks a sequence, and unblocks when requested. User must
   // ensure that the blocking task is cleared when this object is destroyed.
@@ -71,8 +53,6 @@ class FatalCrashEventsObserver::TestEnvironment {
   TestEnvironment& operator=(const TestEnvironment&) = delete;
   ~TestEnvironment();
 
-  // Gets the paths to the save files.
-  const SaveFilePathsProvider& GetSaveFilePathsProvider() const;
 
   // Creates a `FatalCrashEventsObserver` object that uses `save_file_path_` as
   // the save file and returns the pointer. If
@@ -109,14 +89,17 @@ class FatalCrashEventsObserver::TestEnvironment {
   static void FlushTaskRunnerWithCurrentSequenceBlocked(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  base::FilePath GetReportedLocalIdSaveFilePath() const;
+  base::FilePath GetUploadedCrashInfoSaveFilePath() const;
+
   // Get allowed crash types. Proxy of `FatalCrashEvents::GetAllowedCrashTypes`.
   static const base::flat_set<
       ::ash::cros_healthd::mojom::CrashEventInfo::CrashType>&
   GetAllowedCrashTypes();
 
  private:
-  // Save file paths used in unit tests.
-  const SaveFilePathsProvider save_file_paths_provider_;
+  // Temporary dir for storing save files.
+  base::FilePath temp_dir_{base::CreateUniqueTempDirectoryScopedToTest()};
 };
 }  // namespace reporting
 

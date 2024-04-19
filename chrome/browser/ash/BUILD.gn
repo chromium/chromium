@@ -2835,8 +2835,6 @@ source_set("ash") {
     "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h",
     "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.cc",
     "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h",
-    "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_save_file_paths_provider.cc",
-    "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_save_file_paths_provider.h",
     "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.cc",
     "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h",
     "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.cc",

@@ -67,11 +67,6 @@ class FatalCrashEventsObserver
   // specifies the path for the save file.
   friend class FatalCrashEventsObserver::TestEnvironment;
 
-  // Manages default save file paths. The defaults are changed in browser tests.
-  class SaveFilePathsProviderInterface;
-  // Production implementation of `SaveFilePathsProviderInterface`.
-  class DefaultSaveFilePathsProvider;
-
   // For `OnEvent`. Not let `TestEnvironment` be a proxy of `OnEvent` because it
   // is an exception to allow `SlowFileLoadingFieldsPassedThrough` to call
   // `OnEvent` directly. Using `TestEnvironment` as a proxy would expose
@@ -92,7 +87,8 @@ class FatalCrashEventsObserver
   // input parameters to accommodate the test environment. In production code,
   // they are always the default value specified in the default constructor.
   FatalCrashEventsObserver(
-      const SaveFilePathsProviderInterface& save_file_paths_provider,
+      const base::FilePath& reported_local_id_save_file_path,
+      const base::FilePath& uploaded_crash_info_save_file_path,
       scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner,
       scoped_refptr<base::SequencedTaskRunner>
           uploaded_crash_info_io_task_runner);
