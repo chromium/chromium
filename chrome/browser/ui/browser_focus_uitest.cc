@@ -153,13 +153,13 @@ class BrowserFocusBasicTest : public InProcessBrowserTest {
     // window occlusion is turned off. Turn it on to match the production
     // environment.
     base::FieldTrialParams field_trial_params{
-        { features::kApplyNativeOcclusionToCompositorType.Get(),
+        { features::kApplyNativeOcclusionToCompositorType.name,
           features::kApplyNativeOcclusionToCompositorTypeRelease }};
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kAlwaysTrackNativeWindowOcclusionForTest, {}},
-         { features::kApplyNativeOcclusionToCompositor,
-           field_trial_params }},
+        {{features::kApplyNativeOcclusionToCompositor, field_trial_params},
+         { features::kAlwaysTrackNativeWindowOcclusionForTest,
+           {} }},
         /*disabled_features=*/{});
 #endif
   }
