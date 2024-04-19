@@ -1016,10 +1016,8 @@ void VideoCaptureManager::OnScreenLocked() {
     DCHECK(lock_time_.is_null());
     lock_time_ = base::TimeTicks::Now();
 
-    if (base::FeatureList::IsEnabled(features::kStopVideoCaptureOnScreenLock)) {
-      idle_close_timer_.Start(FROM_HERE, idle_close_timeout_, this,
-                              &VideoCaptureManager::ReleaseDevices);
-    }
+    idle_close_timer_.Start(FROM_HERE, idle_close_timeout_, this,
+                            &VideoCaptureManager::ReleaseDevices);
   }
 
   for (auto session_id : desktopcapture_session_ids) {
@@ -1036,10 +1034,8 @@ void VideoCaptureManager::OnScreenUnlocked() {
   DCHECK(!locked_sessions_.empty());
   lock_time_ = base::TimeTicks();
 
-  if (base::FeatureList::IsEnabled(features::kStopVideoCaptureOnScreenLock)) {
-    idle_close_timer_.Stop();
-    ResumeDevices();
-  }
+  idle_close_timer_.Stop();
+  ResumeDevices();
 }
 
 void VideoCaptureManager::EmitLogMessage(const std::string& message,

@@ -491,10 +491,6 @@ BASE_FEATURE(kSpeculativeServiceWorkerStartup,
              "SpeculativeServiceWorkerStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStopVideoCaptureOnScreenLock,
-             "StopVideoCaptureOnScreenLock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kTextInputClient,
              "TextInputClient",
