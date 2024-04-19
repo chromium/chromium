@@ -126,8 +126,15 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, MAYBE_RestoreTab) {
   }
 }
 
+// TODO(crbug.com/335421977): Flaky on "Linux ChromiumOS MSan Tests"
+#if (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER))
+#define MAYBE_RestoredTabsAreLoadedGradually \
+  DISABLED_RestoredTabsAreLoadedGradually
+#else
+#define MAYBE_RestoredTabsAreLoadedGradually RestoredTabsAreLoadedGradually
+#endif
 IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
-                       RestoredTabsAreLoadedGradually) {
+                       MAYBE_RestoredTabsAreLoadedGradually) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url_, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
