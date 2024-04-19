@@ -443,6 +443,86 @@ TEST_F(PageSpecificContentSettingsTest, EmptyCookieList) {
       content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
+TEST_F(PageSpecificContentSettingsTest, BlockedThirdPartyCookie) {
+  NavigateAndCommit(GURL("https://google.com"));
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  std::unique_ptr<net::CanonicalCookie> cookie(
+      net::CanonicalCookie::CreateForTesting(
+          GURL("https://google.com"),
+          "CookieName=CookieValue;Secure;SameSite=None", base::Time::Now()));
+
+  // 1P cookie should not be blocked.
+  GetHandle()->OnCookiesAccessed(
+      web_contents()->GetPrimaryMainFrame(),
+      {content::CookieAccessDetails::Type::kRead,
+       /*url=*/GURL("https://google.com"),
+       /*first_party_url=*/GURL("https://google.com"),
+       {*cookie},
+       /*count=*/1u,
+       /*blocked_by_policy=*/true,
+       /*is_ad_tagged=*/false,
+       net::CookieSettingOverrides(),
+       net::SiteForCookies::FromUrl(GURL("https://google.com"))});
+
+  auto* blocked_data_model = pscs->blocked_browsing_data_model();
+  size_t count = 0u;
+  for (const auto& entry : *blocked_data_model) {
+    if (entry.data_details->blocked_third_party) {
+      ++count;
+    }
+  }
+  EXPECT_EQ(0u, count);
+
+  // 1P cookie in ABA embed should be blocked.
+  GetHandle()->OnCookiesAccessed(
+      web_contents()->GetPrimaryMainFrame(),
+      {content::CookieAccessDetails::Type::kRead,
+       /*url=*/GURL("https://google.com"),
+       /*first_party_url=*/GURL("https://google.com"),
+       {*cookie},
+       /*count=*/1u,
+       /*blocked_by_policy=*/true,
+       /*is_ad_tagged=*/false,
+       net::CookieSettingOverrides(),
+       net::SiteForCookies()});
+
+  count = 0u;
+  for (const auto& entry : *blocked_data_model) {
+    if (entry.data_details->blocked_third_party) {
+      ++count;
+    }
+  }
+  EXPECT_EQ(1u, count);
+
+  std::unique_ptr<net::CanonicalCookie> third_party_cookie(
+      net::CanonicalCookie::CreateForTesting(
+          GURL("https://example.com"),
+          "CookieName=CookieValue;Secure;SameSite=None", base::Time::Now()));
+
+  // 3P cookie should be blocked.
+  GetHandle()->OnCookiesAccessed(
+      web_contents()->GetPrimaryMainFrame(),
+      {content::CookieAccessDetails::Type::kRead,
+       /*url=*/GURL("https://google.com"),
+       /*first_party_url=*/GURL("https://example.com"),
+       {*third_party_cookie},
+       /*count=*/1u,
+       /*blocked_by_policy=*/true,
+       /*is_ad_tagged=*/false,
+       net::CookieSettingOverrides(),
+       net::SiteForCookies::FromUrl(GURL("https://example.com"))});
+
+  count = 0u;
+  for (const auto& entry : *blocked_data_model) {
+    if (entry.data_details->blocked_third_party) {
+      ++count;
+    }
+  }
+  EXPECT_EQ(2u, count);
+}
+
 TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
   NavigateAndCommit(GURL("http://google.com"));
   auto* rfh = web_contents()->GetPrimaryMainFrame();

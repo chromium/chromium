@@ -102,6 +102,9 @@ class BrowsingDataModel {
     // support legacy UI surfaces.
     // TODO(crbug.com/1359998): Remove this when UI no longer requires it.
     uint64_t cookie_count = 0;
+
+    // Flag indicating if the data was blocked in a third-party context.
+    bool blocked_third_party = false;
   };
 
   // A view of a single "unit" of browsing data. Considered a "view" as it holds
@@ -265,7 +268,8 @@ class BrowsingDataModel {
                        StorageType storage_type,
                        uint64_t storage_size,
                        // TODO(crbug.com/1359998): Deprecate cookie count.
-                       uint64_t cookie_count = 0);
+                       uint64_t cookie_count = 0,
+                       bool blocked_third_party = false);
 
   // Removes all browsing data associated with `data_owner`, reaches out to
   // all supported storage backends to remove the data, and updates the model.

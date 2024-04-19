@@ -143,5 +143,28 @@ TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {
   EXPECT_EQ(4, unique_site_count);
 }
 
+TEST_F(BrowsingDataHelperTest, ABAEmbedCookies) {
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BrowsingDataModel::BuildEmpty(
+          browser_context_.GetDefaultStoragePartition(), /*delegate=*/nullptr);
+
+  // 1P cookies accessed in contexts with a cross-site ancestor (aka ABA embeds)
+  // should also be counted as third-party cookies.
+  browsing_data_model->AddBrowsingData(
+      *net::CanonicalCookie::CreateForTesting(
+          GURL("https://example.com/"), "abc=123; SameSite=None; Secure",
+          base::Time::Now(),
+          /*server_time=*/std::nullopt,
+          /*cookie_partition_key=*/std::nullopt,
+          /*block_truncated=*/true, net::CookieSourceType::kOther),
+      BrowsingDataModel::StorageType::kCookie,
+      /*storage_size=*/0,
+      /*cookie_count=*/1,
+      /*blocked_third_party=*/true);
+
+  EXPECT_EQ(1, GetUniqueThirdPartyCookiesHostCount(GURL("https://example.com/"),
+                                                   *browsing_data_model));
+}
+
 }  // namespace
 }  // namespace browsing_data

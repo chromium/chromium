@@ -17,7 +17,8 @@ CookieAccessDetails::CookieAccessDetails(
     size_t count,
     bool blocked_by_policy,
     bool is_ad_tagged,
-    const net::CookieSettingOverrides& cookie_setting_overrides)
+    const net::CookieSettingOverrides& cookie_setting_overrides,
+    const net::SiteForCookies& site_for_cookies)
     : type(type),
       url(url),
       first_party_url(first_party_url),
@@ -25,7 +26,8 @@ CookieAccessDetails::CookieAccessDetails(
       count(count),
       blocked_by_policy(blocked_by_policy),
       is_ad_tagged(is_ad_tagged),
-      cookie_setting_overrides(cookie_setting_overrides) {}
+      cookie_setting_overrides(cookie_setting_overrides),
+      site_for_cookies(site_for_cookies) {}
 
 CookieAccessDetails::CookieAccessDetails(const CookieAccessDetails& details) =
     default;

@@ -26,7 +26,8 @@ struct CONTENT_EXPORT CookieAccessDetails {
       bool blocked_by_policy = false,
       bool is_ad_tagged = false,
       const net::CookieSettingOverrides& cookie_setting_overrides =
-          net::CookieSettingOverrides());
+          net::CookieSettingOverrides(),
+      const net::SiteForCookies& site_for_cookies = net::SiteForCookies());
   ~CookieAccessDetails();
 
   CookieAccessDetails(const CookieAccessDetails&);
@@ -43,6 +44,12 @@ struct CONTENT_EXPORT CookieAccessDetails {
   bool blocked_by_policy;
   bool is_ad_tagged = false;
   net::CookieSettingOverrides cookie_setting_overrides;
+  // SiteForCookies is propagated to
+  // PageSpecificContentSettings::OnCookiesAccessed which checks if cookies
+  // that are same-site with the top-level frame but are accessed in a context
+  // with a cross-site ancestor (aka ABA embeds) are blocked due to third-party
+  // cookie blocking.
+  net::SiteForCookies site_for_cookies;
 };
 
 }  // namespace content

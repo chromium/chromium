@@ -227,6 +227,12 @@ bool DelayUntilCommitIfNecessary(content::RenderFrameHost* rfh,
   return false;
 }
 
+bool IsThirdPartyCookieDetails(const content::CookieAccessDetails& details) {
+  return net::SchemefulSite(details.url) !=
+             net::SchemefulSite(details.first_party_url) ||
+         !details.site_for_cookies.IsFirstParty(details.url);
+}
+
 }  // namespace
 
 InflightNavigationContentSettings::InflightNavigationContentSettings(
@@ -997,13 +1003,16 @@ void PageSpecificContentSettings::OnCookiesAccessed(
   if (details.cookie_list.empty())
     return;
 
-  auto& model = details.blocked_by_policy ? blocked_browsing_data_model_
-                                          : allowed_browsing_data_model_;
+  bool blocked = details.blocked_by_policy;
+  auto& model =
+      blocked ? blocked_browsing_data_model_ : allowed_browsing_data_model_;
   for (const auto& cookie : details.cookie_list) {
     // The size isn't relevant here and won't be displayed in the UI.
     model->AddBrowsingData(cookie, BrowsingDataModel::StorageType::kCookie,
                            /*storage_size=*/0,
-                           /*cookie_count=*/1);
+                           /*cookie_count=*/1,
+                           /*blocked_third_party=*/
+                           (blocked && IsThirdPartyCookieDetails(details)));
   }
 
   if (details.blocked_by_policy) {

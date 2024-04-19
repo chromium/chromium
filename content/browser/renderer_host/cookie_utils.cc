@@ -503,7 +503,8 @@ void SplitCookiesIntoAllowedAndBlocked(
                                   cookie_details->count,
                                   /* blocked_by_policy=*/false,
                                   cookie_details->is_ad_tagged,
-                                  cookie_details->cookie_setting_overrides});
+                                  cookie_details->cookie_setting_overrides,
+                                  cookie_details->site_for_cookies});
   int allowed_count = base::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&
@@ -521,7 +522,8 @@ void SplitCookiesIntoAllowedAndBlocked(
                                   cookie_details->count,
                                   /* blocked_by_policy=*/true,
                                   cookie_details->is_ad_tagged,
-                                  cookie_details->cookie_setting_overrides});
+                                  cookie_details->cookie_setting_overrides,
+                                  cookie_details->site_for_cookies});
   int blocked_count = base::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&
