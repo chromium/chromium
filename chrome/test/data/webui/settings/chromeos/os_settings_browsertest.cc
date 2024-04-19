@@ -232,10 +232,10 @@ class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
   }
 };
 
-class OSSettingsMochaTestAppParentalControlsEnabled
-    : public OSSettingsMochaTestRevampEnabled {
+class OSSettingsRevampMochaTestAppParentalControlsEnabled
+    : public OSSettingsRevampMochaTest {
  protected:
-  OSSettingsMochaTestAppParentalControlsEnabled() {
+  OSSettingsRevampMochaTestAppParentalControlsEnabled() {
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceAppControls,
          features::kForceOnDeviceAppControlsForAllRegions},
@@ -245,6 +245,12 @@ class OSSettingsMochaTestAppParentalControlsEnabled
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestAppParentalControlsEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestAppParentalControlsEnabled::DescribeParams);
 
 class OSSettingsDeviceTestPeripheralAndSplitAndRevampEnabled
     : public OSSettingsMochaTestRevampEnabled {
@@ -1207,133 +1213,123 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("os_about_page/edit_hostname_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsAppsPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsAppsPage) {
   RunSettingsTest("os_apps_page/os_apps_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsAppsPageRevamp) {
-  RunSettingsTest("os_apps_page/os_apps_page_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestAppParentalControlsEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestAppParentalControlsEnabled,
                        OsAppsPageWithAppParentalControls) {
   RunSettingsTest("os_apps_page/os_apps_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageAppDetailsItem) {
   RunSettingsTest("os_apps_page/app_management_page/app_details_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageAppDetailView) {
   RunSettingsTest("os_apps_page/app_management_page/app_detail_view_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageAppItem) {
   RunSettingsTest("os_apps_page/app_management_page/app_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageAppLanguageItem) {
   RunSettingsTest("os_apps_page/app_management_page/app_language_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsAppsPageAppManagementPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsAppsPageAppManagementPage) {
   RunSettingsTest(
       "os_apps_page/app_management_page/app_management_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageArcDetailView) {
   RunSettingsTest("os_apps_page/app_management_page/arc_detail_view_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageBorealisDetailView) {
   RunSettingsTest(
       "os_apps_page/app_management_page/borealis_detail_view_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageChromeAppDetailView) {
   RunSettingsTest(
       "os_apps_page/app_management_page/chrome_app_detail_view_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageDomSwitch) {
   RunSettingsTest("os_apps_page/app_management_page/dom_switch_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageMainView) {
   RunSettingsTest("os_apps_page/app_management_page/main_view_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPagePinToShelfItem) {
   RunSettingsTest("os_apps_page/app_management_page/pin_to_shelf_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPagePluginVmDetailView) {
   RunSettingsTest(
       "os_apps_page/app_management_page/plugin_vm_detail_view_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPagePwaDetailView) {
   RunSettingsTest("os_apps_page/app_management_page/pwa_detail_view_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageReducers) {
   RunSettingsTest("os_apps_page/app_management_page/reducers_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageResizeLockItem) {
   RunSettingsTest("os_apps_page/app_management_page/resize_lock_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageSupportedLinksItem) {
   RunSettingsTest(
       "os_apps_page/app_management_page/supported_links_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPagePermissionItem) {
   RunSettingsTest("os_apps_page/app_management_page/permission_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageFileHandlingItem) {
   RunSettingsTest(
       "os_apps_page/app_management_page/file_handling_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppManagementPageUninstallButton) {
   RunSettingsTest("os_apps_page/app_management_page/uninstall_button_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppNotificationsPageAppNotificationRow) {
   RunSettingsTest(
       "os_apps_page/app_notifications_page/app_notification_row_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAppsPageAppNotificationsSubpage) {
-  RunSettingsTest(
-      "os_apps_page/app_notifications_page/app_notifications_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
-                       OsAppsPageAppNotificationsSubpageRevamp) {
   RunSettingsTest(
       "os_apps_page/app_notifications_page/app_notifications_subpage_test.js");
 }
@@ -1346,8 +1342,8 @@ IN_PROC_BROWSER_TEST_F(
       "app_notifications_manager_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(
+    OSSettingsRevampMochaTest,
     OsAppsPageManageIsolatedWebAppsPageManageIsolatedWebAppsSubpage) {
   RunSettingsTest(
       "os_apps_page/manage_isolated_web_apps_page/"
@@ -1358,7 +1354,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsBluetoothPage) {
   RunSettingsTest("os_bluetooth_page/os_bluetooth_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsBluetoothPageOsBluetoothChangeDeviceNameDialog) {
   RunSettingsTest(
       "os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.js");
@@ -1370,43 +1366,44 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestSplitEnabled,
       "os_bluetooth_page/os_bluetooth_device_detail_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsBluetoothPageOsBluetoothDevicesSubpage) {
   RunSettingsTest("os_bluetooth_page/os_bluetooth_devices_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsBluetoothPageOsBluetoothPairingDialog) {
   RunSettingsTest("os_bluetooth_page/os_bluetooth_pairing_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsBluetoothPageOsBluetoothSavedDevicesList) {
   RunSettingsTest("os_bluetooth_page/os_saved_devices_list_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsBluetoothPageOsBluetoothSavedDevicesSubpage) {
   RunSettingsTest(
       "os_bluetooth_page/os_bluetooth_saved_devices_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsBluetoothPageOsBluetoothSummary) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsBluetoothPageOsBluetoothSummary) {
   RunSettingsTest("os_bluetooth_page/os_bluetooth_summary_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsBluetoothPageOsBluetoothTrueWirelessImages) {
   RunSettingsTest(
       "os_bluetooth_page/os_bluetooth_true_wireless_images_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsBluetoothPageOsPairedBluetoothList) {
   RunSettingsTest("os_bluetooth_page/os_paired_bluetooth_list_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsBluetoothPageOsPairedBluetoothListItem) {
   RunSettingsTest("os_bluetooth_page/os_paired_bluetooth_list_item_test.js");
 }
