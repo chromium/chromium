@@ -165,10 +165,6 @@ BASE_FEATURE(kIpProtectionUx,
              "IpProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCookieSettingsUiAlignment,
-             "CookieSettingsUiAlignment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTrackingProtectionSettingsLaunch,
              "TrackingProtectionSettingsLaunch",
              base::FEATURE_DISABLED_BY_DEFAULT);
