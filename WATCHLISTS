@@ -1148,7 +1148,7 @@
                   'chrome/browser/enterprise/watermark/|' \
                   'chrome/browser/safe_browsing/cloud_content_scanning/|' \
                   'components/enterprise/common/|' \
-                  'components/enterprise/data_controls/|'
+                  'components/enterprise/data_controls/'
     },
     'exo': {
       'filepath': 'components/exo',
