@@ -766,3 +766,11 @@ bool IsIOSMagicStackCollectionViewEnabled() {
 BASE_FEATURE(kDisableFullscreenScrolling,
              "DisableFullscreenScrolling",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrefetchSystemCapabilitiesOnFirstRun,
+             "PrefetchSystemCapabilitiesOnFirstRun",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPrefetchingSystemCapabilitiesOnFirstRun() {
+  return base::FeatureList::IsEnabled(kPrefetchSystemCapabilitiesOnFirstRun);
+}
