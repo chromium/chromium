@@ -352,6 +352,10 @@ class NET_EXPORT URLRequestContextBuilder {
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   void set_device_bound_session_service(
       std::unique_ptr<DeviceBoundSessionService> device_bound_session_service);
+
+  void set_has_device_bound_session_service(bool enable) {
+    has_device_bound_session_service_ = enable;
+  }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   // Binds the context to `network`. All requests scheduled through the context
@@ -461,6 +465,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  bool has_device_bound_session_service_ = false;
   std::unique_ptr<DeviceBoundSessionService> device_bound_session_service_;
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 

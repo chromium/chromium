@@ -12,17 +12,28 @@
 
 namespace net {
 
+class IsolationInfo;
+class URLRequestContext;
+
 // Main class for Device Bound Session Credentials (DBSC).
 // Full information can be found at https://github.com/WICG/dbsc
 class NET_EXPORT DeviceBoundSessionService {
  public:
-  static std::unique_ptr<DeviceBoundSessionService> Create();
+  static std::unique_ptr<DeviceBoundSessionService> Create(
+      const URLRequestContext* request_context);
 
-  virtual void RegisterBoundSession(
-      const DeviceBoundSessionRegistrationFetcherParam&
-          registration_params) = 0;
+  DeviceBoundSessionService(const DeviceBoundSessionService&) = delete;
+  DeviceBoundSessionService& operator=(const DeviceBoundSessionService&) =
+      delete;
 
   virtual ~DeviceBoundSessionService() = default;
+
+  virtual void RegisterBoundSession(
+      DeviceBoundSessionRegistrationFetcherParam registration_params,
+      const IsolationInfo& isolation_info) = 0;
+
+ protected:
+  DeviceBoundSessionService() = default;
 };
 
 }  // namespace net

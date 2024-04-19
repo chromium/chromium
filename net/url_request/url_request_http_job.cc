@@ -1071,8 +1071,9 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           request_->url(), GetResponseHeaders());
   if (auto* service = request_->context()->device_bound_session_service()) {
-    for (const auto& param : params) {
-      service->RegisterBoundSession(param);
+    for (auto& param : params) {
+      service->RegisterBoundSession(std::move(param),
+                                    request_->isolation_info());
     }
   }
 }

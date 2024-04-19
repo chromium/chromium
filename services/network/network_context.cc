@@ -2709,8 +2709,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (params_->device_bound_sessions_enabled) {
-    builder.set_device_bound_session_service(
-        net::DeviceBoundSessionService::Create());
+    builder.set_has_device_bound_session_service(true);
   }
 #endif
 

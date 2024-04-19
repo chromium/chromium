@@ -16,11 +16,11 @@ class DeviceBoundSessionServiceMock : public DeviceBoundSessionService {
   DeviceBoundSessionServiceMock();
   ~DeviceBoundSessionServiceMock() override;
 
-  MOCK_METHOD(
-      void,
-      RegisterBoundSession,
-      (const DeviceBoundSessionRegistrationFetcherParam& registration_params),
-      (override));
+  MOCK_METHOD(void,
+              RegisterBoundSession,
+              (DeviceBoundSessionRegistrationFetcherParam registration_params,
+               const IsolationInfo& isolation_info),
+              (override));
 };
 
 }  // namespace net

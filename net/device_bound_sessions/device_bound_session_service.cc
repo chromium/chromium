@@ -14,13 +14,16 @@ namespace net {
 namespace {
 class DeviceBoundSessionServiceImpl : public DeviceBoundSessionService {
  public:
+  DeviceBoundSessionServiceImpl() = default;
   // TODO(kristianm): Implement RegisterBoundSession
-  void RegisterBoundSession(const DeviceBoundSessionRegistrationFetcherParam&
-                                registration_params) override {}
+  void RegisterBoundSession(
+      DeviceBoundSessionRegistrationFetcherParam registration_params,
+      const IsolationInfo& isolation_info) override {}
 };
 }  // namespace
 
-std::unique_ptr<DeviceBoundSessionService> DeviceBoundSessionService::Create() {
+std::unique_ptr<DeviceBoundSessionService> DeviceBoundSessionService::Create(
+    const URLRequestContext* request_context) {
   return std::make_unique<DeviceBoundSessionServiceImpl>();
 }
 
