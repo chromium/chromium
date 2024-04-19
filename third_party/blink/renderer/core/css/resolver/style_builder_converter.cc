@@ -2920,23 +2920,25 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     }
   }
 
+  mojom::blink::ColorScheme color_scheme =
+      state ? state->StyleBuilder().UsedColorScheme()
+            : mojom::blink::ColorScheme::kLight;
+
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
     if (value_id == CSSValueID::kCurrentcolor) {
       return value;
     }
     if (StyleColor::IsColorKeyword(value_id)) {
-      mojom::blink::ColorScheme scheme =
-          state ? state->StyleBuilder().UsedColorScheme()
-                : mojom::blink::ColorScheme::kLight;
       Color color;
       if (IsQuirkOrLinkOrFocusRingColor(value_id)) {
         color = ResolveQuirkOrLinkOrFocusRingColor(
-            value_id, document.GetTextLinkColors(), scheme,
+            value_id, document.GetTextLinkColors(), color_scheme,
             /*for_visited_link=*/false);
       } else {
         color = StyleColor::ColorFromKeyword(
-            value_id, scheme, document.GetColorProviderForPainting(scheme));
+            value_id, color_scheme,
+            document.GetColorProviderForPainting(color_scheme));
       }
       return *cssvalue::CSSColor::Create(color);
     }
@@ -2948,6 +2950,17 @@ static const CSSValue& ComputeRegisteredPropertyValue(
         context ? context->Charset() : WTF::TextEncoding();
     return *uri_value->ComputedCSSValue(base_url, charset);
   }
+
+  if (const auto* light_dark_pair = DynamicTo<CSSLightDarkValuePair>(value)) {
+    const CSSValue& color_value =
+        color_scheme == mojom::blink::ColorScheme::kLight
+            ? light_dark_pair->First()
+            : light_dark_pair->Second();
+    return ComputeRegisteredPropertyValue(
+        document, state, css_to_length_conversion_data, color_value, context);
+  }
+
+  // TODO(https://crbug.com/335383222): Handle color-mix() values.
 
   return value;
 }
