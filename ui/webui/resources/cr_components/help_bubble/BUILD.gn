@@ -25,6 +25,7 @@ build_webui("build") {
     "help_bubble.ts",
     "help_bubble.html.ts",
     "help_bubble_mixin.ts",
+    "help_bubble_mixin_lit.ts",
     "help_bubble_proxy.ts",
     "help_bubble_controller.ts",
   ]
