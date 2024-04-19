@@ -211,6 +211,12 @@ public final class UpgradePromoCoordinator
         return mDelegate.getNativeInitializationPromise();
     }
 
+    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
+    @Override
+    public boolean shouldDisplayFooterText() {
+        return false;
+    }
+
     /** Implements {@link HistorySyncDelegate} */
     @Override
     public void dismissHistorySync() {

@@ -71,8 +71,14 @@ class FullscreenSigninViewBinder {
         } else if (propertyKey == FullscreenSigninProperties.TITLE_STRING_ID) {
             view.getTitle().setText(model.get(FullscreenSigninProperties.TITLE_STRING_ID));
         } else if (propertyKey == FullscreenSigninProperties.FOOTER_STRING) {
-            view.getFooterView().setText(model.get(FullscreenSigninProperties.FOOTER_STRING));
-            view.getFooterView().setMovementMethod(LinkMovementMethod.getInstance());
+            final CharSequence footerText = model.get(FullscreenSigninProperties.FOOTER_STRING);
+            if (footerText == null) {
+                view.getFooterView().setVisibility(View.GONE);
+            } else {
+                view.getFooterView().setVisibility(View.VISIBLE);
+                view.getFooterView().setText(footerText);
+                view.getFooterView().setMovementMethod(LinkMovementMethod.getInstance());
+            }
         } else {
             throw new IllegalArgumentException("Unknown property key:" + propertyKey);
         }
@@ -163,7 +169,9 @@ class FullscreenSigninViewBinder {
         final int otherElementsVisibility =
                 showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE;
         view.getContinueButtonView().setVisibility(otherElementsVisibility);
-        view.getFooterView().setVisibility(otherElementsVisibility);
+        final CharSequence footerText = model.get(FullscreenSigninProperties.FOOTER_STRING);
+        view.getFooterView()
+                .setVisibility(footerText == null ? View.GONE : otherElementsVisibility);
     }
 
     private static void updateVisibilityOnButtonClick(
@@ -188,7 +196,8 @@ class FullscreenSigninViewBinder {
             view.getDismissButtonView().setVisibility(bottomGroupVisibility);
         }
         view.getContinueButtonView().setVisibility(bottomGroupVisibility);
-        view.getFooterView().setVisibility(bottomGroupVisibility);
+        final CharSequence footerText = model.get(FullscreenSigninProperties.FOOTER_STRING);
+        view.getFooterView().setVisibility(footerText == null ? View.GONE : bottomGroupVisibility);
 
         view.getSigninProgressSpinner()
                 .setVisibility(showSigninProgressSpinner ? View.VISIBLE : View.GONE);

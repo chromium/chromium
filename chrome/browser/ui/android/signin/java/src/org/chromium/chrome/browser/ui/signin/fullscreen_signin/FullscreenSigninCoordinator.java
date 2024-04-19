@@ -40,8 +40,6 @@ public class FullscreenSigninCoordinator {
         void acceptTermsOfService(boolean allowMetricsAndCrashUploading);
 
         /** Called when the interaction with the page is over and the next page should be shown. */
-        // TODO(crbug.com/41493788): This method is FRE-specific. Figure out what to do with this
-        // when the coordinator is used for the upgrade promo.
         void advanceToNextPage();
 
         /** Called to display the device lock page */
@@ -89,6 +87,9 @@ public class FullscreenSigninCoordinator {
          * initialized.
          */
         Promise<Void> getNativeInitializationPromise();
+
+        /** Returns {@code true} when the footer text should be displayed */
+        boolean shouldDisplayFooterText();
     }
 
     private final FullscreenSigninMediator mMediator;
@@ -133,9 +134,10 @@ public class FullscreenSigninCoordinator {
 
     /**
      * Sets the view that is controlled by the coordinator.
-     * @param view is the FRE view including the selected account, the continue/dismiss buttons,
-     *        the footer string and other view components that change according to different state.
-     *        Can be null, in which case the coordinator will just detach from the previous view.
+     *
+     * @param view is the FRE view including the selected account, the continue/dismiss buttons, the
+     *     footer string and other view components that change according to different state. Can be
+     *     null, in which case the coordinator will just detach from the previous view.
      */
     public void setView(@Nullable FullscreenSigninView view) {
         if (mPropertyModelChangeProcessor != null) {

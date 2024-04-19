@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -73,11 +74,9 @@ import org.chromium.ui.test.util.ViewUtils;
 @DoNotBatch(reason = "This test relies on native initialization")
 @Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// The upgrade promo does not get displayed when Google Play Services are not available.
 // TODO(crbug.com/41496906): Tests temporarily disabled for automotive. They should be
 // re-enabled once the new sign-in flow is implemented for automotive.
-// TODO(crbug.com/332854339,crubg.com/333608711): Figure out why the tests are failing on one
-// specific bot and fix them. This restriction is just temporary in order to avoid entirely
-// disabling the tests.
 @Restriction({
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES
@@ -109,8 +108,11 @@ public class UpgradePromoIntegrationTest {
     public void testWithExistingAccount_refuseSignin() {
         launchActivity();
 
-        // Verify that the fullscreen sign-in promo is shown and refuse.
+        // Verify that the fullscreen sign-in promo is shown.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        // Check that the privacy disclaimer is not displayed.
+        onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
+        // Refuse sign-in.
         onView(withId(R.id.signin_fre_dismiss_button)).perform(click());
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);

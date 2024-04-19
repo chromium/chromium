@@ -484,11 +484,13 @@ public class FullscreenSigninMediator
     }
 
     /**
-     * Builds footer string dynamically.
-     * First line has a TOS link. Second line appears only if MetricsReporting is not
-     * disabled by policy.
+     * Builds footer string dynamically. Returns null if no footer text should be displayed. First
+     * line has a TOS link. Second line appears only if MetricsReporting is not disabled by policy.
      */
-    private SpannableString getFooterString(boolean isMetricsReportingDisabled) {
+    private @Nullable SpannableString getFooterString(boolean isMetricsReportingDisabled) {
+        if (!mDelegate.shouldDisplayFooterText()) {
+            return null;
+        }
         String footerString = mContext.getString(R.string.signin_fre_footer_tos);
 
         ArrayList<SpanApplier.SpanInfo> spans = new ArrayList<>();

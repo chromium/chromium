@@ -110,16 +110,16 @@ found in the LICENSE file.
         android:id="@+id/fre_footer_viewgroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="24dp">
 
         <org.chromium.ui.widget.TextViewWithClickableSpans
             android:id="@+id/signin_fre_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp"
             android:gravity="center_horizontal"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             android:text="@string/signin_fre_footer"
