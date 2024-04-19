@@ -4,9 +4,8 @@
     --corner-length: 22px;
     --corner-radius: 12px;
     --corner-width: 4px;
-    height: 100%;
+    --corner-hitbox-max-size: 40px;
     position: relative;
-    width: 100%;
   }
 
   /** Render the selected part of the image again so it appears glowing over
@@ -21,18 +20,78 @@
     object-fit: contain;
     position: absolute;
     width: 100%;
-}
+  }
+
+  #postSelection {
+    height: var(--selection-height);
+    left: var(--selection-left);
+    margin: auto;
+    position: absolute;
+    top: var(--selection-top);
+    width: var(--selection-width);
+  }
 
   #selectionCorners {
     background-image: paint(post-selection);
+    cursor: all-scroll;
     height: calc(var(--selection-height) + (2 * var(--corner-width)));
     left: calc(var(--selection-left) - var(--corner-width));
     position: absolute;
     top: calc(var(--selection-top) - var(--corner-width));
     width: calc(var(--selection-width) + (2 * var(--corner-width)));
   }
+
+  .draggable {
+    pointer-events: all;
+  }
+
+  .corner-hit-box {
+    height: 50%;
+    max-height: var(--corner-hitbox-max-size);
+    max-width: var(--corner-hitbox-max-size);
+    min-height: var(--corner-length);
+    min-width: var(--corner-length);
+    position: absolute;
+    width: 50%;
+    z-index: 5; /* Position above words. */
+  }
+
+  #topLeft {
+    cursor: nw-resize;
+    left: 0;
+    top: 0;
+    transform: translate(-25%, -25%)
+  }
+
+  #topRight {
+    cursor: ne-resize;
+    top: 0;
+    right: 0;
+    transform: translate(25%, -25%)
+  }
+
+  #bottomRight {
+    cursor: se-resize;
+    bottom: 0;
+    right: 0;
+    transform: translate(25%, 25%)
+  }
+
+  #bottomLeft {
+    cursor: sw-resize;
+    bottom: 0;
+    left: 0;
+    transform: translate(-25%, 25%)
+  }
 </style>
-<div id="postSelection" hidden$="[[!hasSelection(height, width)]]">
+<div hidden$="[[!hasSelection(height, width)]]">
   <img id="backgroundImage" src="[[screenshotDataUri]]">
-  <div id="selectionCorners"></div>
+  <!-- This inner postSelection div isn't technically required, but helps make
+   testing easier and more readable. -->
+  <div id="postSelection"></div>
+  <div id="selectionCorners" class="draggable">
+    <template is="dom-repeat" items="[[cornerIds]]">
+      <div id="[[item]]" class="corner-hit-box draggable"></div>
+    </template>
+  </div>
 </div>

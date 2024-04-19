@@ -299,4 +299,162 @@ suite('SelectionOverlay', function() {
         await waitAfterNextRender(selectionOverlayElement);
         assertNull(selectionOverlayElement.getAttribute('is-resized'));
       });
+
+  test('verify that you can drag text over post selection', async () => {
+    // Add the words
+    await addWords();
+    // Add the post selection over the words.
+    await simulateDrag(selectionOverlayElement, {x: 150, y: 150}, {x: 5, y: 5});
+    testBrowserProxy.handler.reset();
+
+    // Drag that starts on a word and post selection.
+    const wordEl = selectionOverlayElement.$.textSelectionLayer
+                       .getWordNodesForTesting()[1]!;
+    const wordElBoundingBox = wordEl.getBoundingClientRect();
+    await simulateDrag(
+        selectionOverlayElement, {
+          x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+          y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
+        },
+        {
+          x: wordElBoundingBox.right,
+          y: wordElBoundingBox.bottom,
+        });
+
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+    assertDeepEquals('there test', textQuery);
+    assertEquals(0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+  });
+
+  test(
+      'verify that dragging on post selection over an object does not tap that object',
+      async () => {
+        // Add the objects
+        await addObjects();
+        // Add the post selection over the words.
+        await simulateDrag(
+            selectionOverlayElement, {x: 150, y: 150}, {x: 5, y: 5});
+        testBrowserProxy.handler.reset();
+
+        // Store the previous post seleciton dimensions.
+        let postSelectionStyles =
+            selectionOverlayElement.$.postSelectionRenderer.style;
+        const oldLeft =
+            parseInt(postSelectionStyles.getPropertyValue('--selection-top'));
+        const oldTop =
+            parseInt(postSelectionStyles.getPropertyValue('--selection-left'));
+
+        // Drag that starts on an object
+        const objectEl = selectionOverlayElement.$.objectSelectionLayer
+                             .getObjectNodesForTesting()[1]!;
+        const objectBoundingBox = objectEl.getBoundingClientRect();
+        await simulateDrag(
+            selectionOverlayElement, {
+              x: objectBoundingBox.left + (objectBoundingBox.width / 2),
+              y: objectBoundingBox.top + (objectBoundingBox.height / 2),
+            },
+            {
+              x: 100,
+              y: 100,
+            });
+        // Should only be called once from post selection adjustment and not
+        // object tap.
+        assertEquals(
+            1, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+
+        // Get most recent styles
+        postSelectionStyles =
+            selectionOverlayElement.$.postSelectionRenderer.style;
+        assertNotEquals(
+            oldLeft,
+            parseInt(postSelectionStyles.getPropertyValue('--selection-left')));
+        assertNotEquals(
+            oldTop,
+            parseInt(postSelectionStyles.getPropertyValue('--selection-top')));
+      });
+  test(
+      `verify that only objects respond to taps, even when post selection overlaps`,
+      async () => {
+        // Add the objects
+        await addObjects();
+        // Add the post selection over the words.
+        await simulateDrag(
+            selectionOverlayElement, {x: 150, y: 150}, {x: 5, y: 5});
+        testBrowserProxy.handler.reset();
+
+        // Click on an object behind post selection
+        const objectEl = selectionOverlayElement.$.objectSelectionLayer
+                             .getObjectNodesForTesting()[1]!;
+        const objectBoundingBox = objectEl.getBoundingClientRect();
+        await simulateClick(selectionOverlayElement, {
+          x: objectBoundingBox.left + (objectBoundingBox.width / 2),
+          y: objectBoundingBox.top + (objectBoundingBox.height / 2),
+        });
+
+        // Should only be called once from post selection adjustment and not
+        // object tap.
+        assertEquals(
+            1, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+
+        // Verify tap triggered new post selection
+        const postSelectionStyles =
+            selectionOverlayElement.$.postSelectionRenderer.style;
+        const parentBoundingRect =
+            selectionOverlayElement.getBoundingClientRect();
+
+        // Based on box coordinates of {x: 70, y: 35, width: 20, height: 10},
+        const expectedHeight = 10 / parentBoundingRect.height * 100;
+        const expectedWidth = 20 / parentBoundingRect.width * 100;
+        const expectedTop = 30 / parentBoundingRect.height * 100;
+        const expectedLeft = 60 / parentBoundingRect.width * 100;
+
+        // Only look at first 5 digits to account for rounding errors.
+        assertStringContains(
+            postSelectionStyles.getPropertyValue('--selection-height'),
+            expectedHeight.toString().substring(0, 6));
+        assertStringContains(
+            postSelectionStyles.getPropertyValue('--selection-width'),
+            expectedWidth.toString().substring(0, 6));
+        assertStringContains(
+            postSelectionStyles.getPropertyValue('--selection-top'),
+            expectedTop.toString().substring(0, 6));
+        assertStringContains(
+            postSelectionStyles.getPropertyValue('--selection-left'),
+            expectedLeft.toString().substring(0, 6));
+      });
+
+  test(
+      `verify that post selection corners are draggable over text and objects`,
+      async () => {
+        await Promise.all([addWords(), addObjects()]);
+        // Add the post selection to have top left corner overlap with text
+        // and objects
+        await simulateDrag(
+            selectionOverlayElement, {x: 10, y: 150}, {x: 80, y: 20});
+        testBrowserProxy.handler.reset();
+
+        // Start drag on word corner over word and object
+        await simulateDrag(
+            selectionOverlayElement, {x: 85, y: 25}, {x: 100, y: 50});
+
+        // No text request was triggered
+        assertEquals(
+            0,
+            testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
+        // Lens request for the new region
+        const expectedRect: CenterRotatedBox = {
+          box: normalizedBox({
+            x: 55,
+            y: 100,
+            width: 90,
+            height: 100,
+          }),
+          rotation: 0,
+          coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+        };
+        const rect =
+            await testBrowserProxy.handler.whenCalled('issueLensRequest');
+        assertBoxesWithinThreshold(expectedRect, rect);
+      });
 });

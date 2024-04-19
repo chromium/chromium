@@ -114,7 +114,6 @@ export class SelectionOverlayElement extends PolymerElement {
     }
 
     this.addDragListeners();
-    this.$.postSelectionRenderer.clearSelection();
 
     this.currentGesture = {
       state: GestureState.STARTING,
@@ -127,6 +126,14 @@ export class SelectionOverlayElement extends PolymerElement {
     if (this.$.textSelectionLayer.handleDownGesture(this.currentGesture)) {
       // Text is responding to this sequence of gestures.
       this.draggingRespondent = DragFeature.TEXT;
+    } else if (this.$.postSelectionRenderer.handleDownGesture(
+                   this.currentGesture)) {
+      this.draggingRespondent = DragFeature.POST_SELECTION;
+    }
+
+    // Clear selection if user is dragging on anything but post selection.
+    if (this.draggingRespondent !== DragFeature.POST_SELECTION) {
+      this.$.postSelectionRenderer.clearSelection();
     }
   }
 
@@ -141,6 +148,8 @@ export class SelectionOverlayElement extends PolymerElement {
           this.$.regionSelectionLayer.handleUpGesture(this.currentGesture);
         } else if (this.draggingRespondent === DragFeature.TEXT) {
           this.$.textSelectionLayer.handleUpGesture();
+        } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
+          this.$.postSelectionRenderer.handleUpGesture();
         }
         break;
       case GestureState.STARTING:
@@ -175,6 +184,8 @@ export class SelectionOverlayElement extends PolymerElement {
 
       if (this.draggingRespondent === DragFeature.TEXT) {
         this.$.textSelectionLayer.handleDragGesture(this.currentGesture);
+      } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
+        this.$.postSelectionRenderer.handleDragGesture(this.currentGesture);
       } else {
         // Let the features respond to the current drag if no other feature
         // responded first.
@@ -188,6 +199,7 @@ export class SelectionOverlayElement extends PolymerElement {
     // Pointer cancelled, so cancel any pending gestures.
     this.$.textSelectionLayer.cancelGesture();
     this.$.regionSelectionLayer.cancelGesture();
+    this.$.postSelectionRenderer.cancelGesture();
 
     this.currentGesture = emptyGestureEvent();
     this.draggingRespondent = DragFeature.NONE;

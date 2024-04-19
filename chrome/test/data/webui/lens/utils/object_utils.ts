@@ -8,14 +8,19 @@ import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
 import {assertEquals, assertLT} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+export function assertWithinThreshold(value1: number, value2: number): void {
+  const threshold: number = 1e-6;
+  assertLT(
+      Math.abs(value1 - value2), threshold,
+      `Expected ${value1} and ${value2} to be within ${threshold}`);
+}
+
 export function assertBoxesWithinThreshold(
     box1: CenterRotatedBox, box2: CenterRotatedBox) {
-  const threshold: number = 1e-6;
-
-  assertLT(Math.abs(box1.box.x - box2.box.x), threshold);
-  assertLT(Math.abs(box1.box.y - box2.box.y), threshold);
-  assertLT(Math.abs(box1.box.height - box2.box.height), threshold);
-  assertLT(Math.abs(box1.box.width - box2.box.width), threshold);
+  assertWithinThreshold(box1.box.x, box2.box.x);
+  assertWithinThreshold(box1.box.y, box2.box.y);
+  assertWithinThreshold(box1.box.height, box2.box.height);
+  assertWithinThreshold(box1.box.width, box2.box.width);
   assertEquals(box1.rotation, box2.rotation);
   assertEquals(box1.coordinateType, box2.coordinateType);
 }

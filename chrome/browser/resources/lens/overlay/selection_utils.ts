@@ -14,6 +14,7 @@ export enum DragFeature {
   NONE = 0,
   TEXT = 1,
   MANUAL_REGION = 2,
+  POST_SELECTION = 3,
 }
 
 export enum GestureState {
