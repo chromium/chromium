@@ -132,53 +132,16 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signIn_historySyncManagedByCustodian() {
-        when(mHistorySyncHelperMock.isHistorySyncDisabledByCustodian()).thenReturn(true);
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+    public void testWithExistingAccount_signIn_historySyncSupressed() {
+        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
+        mSigninTestRule.addAccountAndWaitForSeeding(AccountManagerTestRule.TEST_ACCOUNT_1);
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
 
-        verifyCollapsedBottomSheetAndSignin(accountInfo);
-
-        // Verify that the flow completion callback, which finishes the activity, is called.
-        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-    }
-
-    @Test
-    @MediumTest
-    public void testWithExistingAccount_signIn_userAlreadyOptedIn() {
-        when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(true);
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
-
-        launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
-
-        verifyCollapsedBottomSheetAndSignin(accountInfo);
-
-        // Verify that the flow completion callback, which finishes the activity, is called.
-        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-    }
-
-    @Test
-    @MediumTest
-    public void testWithExistingAccount_signIn_historySyncManagedByPolicy() {
-        when(mHistorySyncHelperMock.isHistorySyncDisabledByPolicy()).thenReturn(true);
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
-
-        launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
-
-        verifyCollapsedBottomSheetAndSignin(accountInfo);
+        verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);

@@ -184,9 +184,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
-        when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(true);
-        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
+        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

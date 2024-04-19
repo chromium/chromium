@@ -55,6 +55,12 @@ public class HistorySyncHelper {
                 || mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS);
     }
 
+    public boolean shouldSuppressHistorySync() {
+        return didAlreadyOptIn()
+                || isHistorySyncDisabledByCustodian()
+                || isHistorySyncDisabledByPolicy();
+    }
+
     /**
      * Records the correct metric for the history sync opt-in not being shown, depending on the
      * reason.

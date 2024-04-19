@@ -448,13 +448,7 @@ public class SigninAndHistoryOptInCoordinator
 
     private static boolean shouldShowHistorySync(Profile profile) {
         HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
-        if (historySyncHelper.didAlreadyOptIn()) {
-            return false;
-        }
-        if (historySyncHelper.isHistorySyncDisabledByPolicy()) {
-            return false;
-        }
-        return !historySyncHelper.isHistorySyncDisabledByCustodian();
+        return !historySyncHelper.shouldSuppressHistorySync();
     }
 
     private void onFlowComplete() {
