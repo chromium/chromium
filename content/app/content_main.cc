@@ -310,8 +310,11 @@ RunContentProcess(ContentMainParams params,
       // console does not exist we should not create one.
       base::RouteStdioToConsole(/*create_console_if_not_found*/ false);
     } else if (command_line->HasSwitch(switches::kEnableLogging)) {
-      // Route stdio to parent console (if any) or create one.
-      base::RouteStdioToConsole(/*create_console_if_not_found*/ true);
+      // Route stdio to parent console (if any) or create one, do not create a
+      // console in children if handles are being passed.
+      bool create_console = command_line->GetSwitchValueASCII(
+                                switches::kEnableLogging) != "handle";
+      base::RouteStdioToConsole(create_console);
     }
 #endif
 
