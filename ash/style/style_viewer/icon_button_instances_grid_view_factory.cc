@@ -51,6 +51,7 @@ CreateIconButtonInstancesGridView() {
        {u"Default Small", IconButton::Type::kSmall, false, true, nullptr},
        {u"Default Meduim", IconButton::Type::kMedium, false, true, nullptr},
        {u"Default Large", IconButton::Type::kLarge, false, true, nullptr},
+       {u"Default XLarge", IconButton::Type::kXLarge, false, true, nullptr},
 
        {u"Floating XSmall", IconButton::Type::kXSmallFloating, false, true,
         nullptr},
@@ -60,11 +61,14 @@ CreateIconButtonInstancesGridView() {
         nullptr},
        {u"Floating Large", IconButton::Type::kLargeFloating, false, true,
         nullptr},
+       {u"Floating XLarge", IconButton::Type::kXLargeFloating, false, true,
+        nullptr},
 
        {u"Toggled XSmall", IconButton::Type::kXSmall, true, true, nullptr},
        {u"Toggled Small", IconButton::Type::kSmall, true, true, nullptr},
        {u"Toggled Meduim", IconButton::Type::kMedium, true, true, nullptr},
        {u"Toggled Large", IconButton::Type::kLarge, true, true, nullptr},
+       {u"Toggled XLarge", IconButton::Type::kLarge, true, true, nullptr},
 
        {u"Prominent Floating XSmall",
         IconButton::Type::kXSmallProminentFloating, false, true, nullptr},
@@ -73,7 +77,9 @@ CreateIconButtonInstancesGridView() {
        {u"Prominent Floating Medium",
         IconButton::Type::kMediumProminentFloating, false, true, nullptr},
        {u"Prominent Floating Large", IconButton::Type::kLargeProminentFloating,
-        false, true, nullptr}},
+        false, true, nullptr},
+       {u"Prominent Floating XLarge",
+        IconButton::Type::kXLargeProminentFloating, false, true, nullptr}},
 
       {{u"Default XSmall With Background Image", IconButton::Type::kXSmall,
         false, true, image},
@@ -83,11 +89,14 @@ CreateIconButtonInstancesGridView() {
         false, true, image},
        {u"Default Large With Background Image", IconButton::Type::kLarge, false,
         true, image},
+       {u"Default XLarge With Background Image", IconButton::Type::kXLarge,
+        false, true, image},
 
        {u"Disabled XSmall", IconButton::Type::kXSmall, false, false, nullptr},
        {u"Disabled Small", IconButton::Type::kSmall, false, false, nullptr},
        {u"Disabled Meduim", IconButton::Type::kMedium, false, false, nullptr},
-       {u"Disabled Large", IconButton::Type::kLarge, false, false, nullptr}}};
+       {u"Disabled Large", IconButton::Type::kLarge, false, false, nullptr},
+       {u"Disabled XLarge", IconButton::Type::kXLarge, false, false, nullptr}}};
 
   // Insert the instance in grid view with column-primary order.
   for (auto types : type_groups) {

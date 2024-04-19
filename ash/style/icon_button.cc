@@ -33,6 +33,7 @@ constexpr int kXSmallButtonSize = 20;
 constexpr int kSmallButtonSize = 24;
 constexpr int kMediumButtonSize = 32;
 constexpr int kLargeButtonSize = 36;
+constexpr int kXLargeButtonSize = 48;
 
 // Icon size of the small, medium and large size buttons.
 constexpr int kIconSize = 20;
@@ -70,6 +71,11 @@ int GetButtonSizeOnType(IconButton::Type type) {
     case IconButton::Type::kLargeFloating:
     case IconButton::Type::kLargeProminentFloating:
       return kLargeButtonSize;
+    case IconButton::Type::kXLarge:
+    case IconButton::Type::kXLargeProminent:
+    case IconButton::Type::kXLargeFloating:
+    case IconButton::Type::kXLargeProminentFloating:
+      return kXLargeButtonSize;
   }
 }
 
@@ -79,11 +85,13 @@ std::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
     case IconButton::Type::kSmall:
     case IconButton::Type::kMedium:
     case IconButton::Type::kLarge:
+    case IconButton::Type::kXLarge:
       return cros_tokens::kCrosSysSystemOnBase;
     case IconButton::Type::kXSmallProminent:
     case IconButton::Type::kSmallProminent:
     case IconButton::Type::kMediumProminent:
     case IconButton::Type::kLargeProminent:
+    case IconButton::Type::kXLargeProminent:
       return cros_tokens::kCrosSysSystemPrimaryContainer;
     default:
       NOTREACHED() << "Floating type button does not have a background";
@@ -101,16 +109,20 @@ ui::ColorId GetDefaultIconColorId(IconButton::Type type, bool focused) {
     case IconButton::Type::kMediumFloating:
     case IconButton::Type::kLarge:
     case IconButton::Type::kLargeFloating:
+    case IconButton::Type::kXLarge:
+    case IconButton::Type::kXLargeFloating:
       return cros_tokens::kCrosSysOnSurface;
     case IconButton::Type::kXSmallProminent:
     case IconButton::Type::kSmallProminent:
     case IconButton::Type::kMediumProminent:
     case IconButton::Type::kLargeProminent:
+    case IconButton::Type::kXLargeProminent:
       return cros_tokens::kCrosSysSystemOnPrimaryContainer;
     case IconButton::Type::kXSmallProminentFloating:
     case IconButton::Type::kSmallProminentFloating:
     case IconButton::Type::kMediumProminentFloating:
     case IconButton::Type::kLargeProminentFloating:
+    case IconButton::Type::kXLargeProminentFloating:
       return focused ? cros_tokens::kCrosSysPrimary
                      : cros_tokens::kCrosSysSecondary;
   }
@@ -136,6 +148,8 @@ bool IsFloatingIconButton(IconButton::Type type) {
     case IconButton::Type::kMediumProminentFloating:
     case IconButton::Type::kLargeFloating:
     case IconButton::Type::kLargeProminentFloating:
+    case IconButton::Type::kXLargeFloating:
+    case IconButton::Type::kXLargeProminentFloating:
       return true;
     default:
       break;
@@ -150,6 +164,7 @@ bool IsProminentFloatingType(IconButton::Type type) {
     case IconButton::Type::kSmallProminentFloating:
     case IconButton::Type::kMediumProminentFloating:
     case IconButton::Type::kLargeProminentFloating:
+    case IconButton::Type::kXLargeProminentFloating:
       return true;
     default:
       break;

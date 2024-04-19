@@ -47,18 +47,22 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     kSmall,
     kMedium,
     kLarge,
+    kXLarge,
     kXSmallProminent,
     kSmallProminent,
     kMediumProminent,
     kLargeProminent,
+    kXLargeProminent,
     kXSmallFloating,
     kSmallFloating,
     kMediumFloating,
     kLargeFloating,
+    kXLargeFloating,
     kXSmallProminentFloating,
     kSmallProminentFloating,
     kMediumProminentFloating,
     kLargeProminentFloating,
+    kXLargeProminentFloating,
   };
 
   // Used to determine how the button will behave when disabled.
