@@ -457,8 +457,11 @@
   <message name="IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE" desc="The title text for the buying options section of price insights.">
     Search more buying options
   </message>
-  <message name="IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE" desc="The description text for the BUYING_OPTIONS section of price insights.">
+  <message name="IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE" desc="The description text for the buying options section of price insights.">
     From other stores across the web
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_HISTORY_TITLE" desc="The description text for the history section of price insights.">
+    Price history across the web
   </message>
 
   <message name="IDS_SHOPPING_COLLECTION_FOLDER_NAME" desc="The name of bookmark folder that is automatically created when a user bookmarks a product page.">

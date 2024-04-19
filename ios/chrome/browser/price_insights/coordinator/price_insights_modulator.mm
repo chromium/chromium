@@ -201,6 +201,7 @@
 
 // Cell configuration handler helper.
 - (void)configureCell:(PriceInsightsCell*)cell {
+  cell.viewController = self.viewController;
   PriceInsightsItem* item = [[PriceInsightsItem alloc] init];
   [cell configureWithItem:item];
 }
