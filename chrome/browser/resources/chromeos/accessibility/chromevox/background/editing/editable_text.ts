@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {Msgs} from '../../common/msgs.js';
 import {Spannable} from '../../common/spannable.js';
@@ -40,6 +42,29 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     this.lineBreaks_ = lineBreaks;
     this.multiline = node.state![StateType.MULTILINE] || false;
     this.node_ = node;
+  }
+
+  /**
+   * Update the state of the text and selection and describe any changes as
+   * appropriate.
+   */
+  changed(evt: TextChangeEvent): void {
+    if (!this.shouldDescribeChange(evt)) {
+      this.lastChangeDescribed = false;
+      return;
+    }
+
+    if (evt.value === this.value) {
+      this.describeSelectionChanged(evt);
+    } else {
+      this.describeTextChanged(
+          new TextChangeEvent(this.value, this.start, this.end, true), evt);
+    }
+    this.lastChangeDescribed = true;
+
+    this.value = evt.value;
+    this.start = evt.start;
+    this.end = evt.end;
   }
 
   /** Called when the text field has been updated. */
@@ -162,3 +187,5 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     return lineBreaks;
   }
 }
+
+TestImportManager.exportForTesting(AutomationEditableText);

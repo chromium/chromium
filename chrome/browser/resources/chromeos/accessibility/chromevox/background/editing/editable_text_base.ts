@@ -171,29 +171,6 @@ export class ChromeVoxEditableTextBase {
   }
 
   /**
-   * Update the state of the text and selection and describe any changes as
-   * appropriate.
-   */
-  changed(evt: TextChangeEvent): void {
-    if (!this.shouldDescribeChange(evt)) {
-      this.lastChangeDescribed = false;
-      return;
-    }
-
-    if (evt.value === this.value) {
-      this.describeSelectionChanged(evt);
-    } else {
-      this.describeTextChanged(
-          new TextChangeEvent(this.value, this.start, this.end, true), evt);
-    }
-    this.lastChangeDescribed = true;
-
-    this.value = evt.value;
-    this.start = evt.start;
-    this.end = evt.end;
-  }
-
-  /**
    * Describe a change in the selection or cursor position when the text
    * stays the same.
    * @param evt The text change event.
