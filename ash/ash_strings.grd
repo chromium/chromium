@@ -7153,9 +7153,6 @@ New install
       <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show local file results.">
         My Files
       </message>
-      <message name="IDS_PICKER_EDITOR_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show editor results.">
-        Editor
-      </message>
       <message name="IDS_PICKER_DATES_TIMES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show date and time results.">
         Dates &amp; Times
       </message>
