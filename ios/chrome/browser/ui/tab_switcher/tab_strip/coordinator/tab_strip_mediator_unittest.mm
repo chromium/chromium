@@ -829,6 +829,27 @@ TEST_F(TabStripMediatorTest, CloseTab) {
             consumer_.selectedItem.identifier);
 }
 
+// Tests that removing a tab from its group works.
+TEST_F(TabStripMediatorTest, RemoveTabFromGroup) {
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  const TabGroup* group = web_state_list_->CreateGroup({1, 2}, {});
+
+  InitializeMediator();
+
+  ASSERT_EQ(4, web_state_list_->count());
+  EXPECT_EQ(2, group->range().count());
+
+  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:web_state_list_->GetWebStateAt(1)];
+  [mediator_ removeItemFromGroup:item];
+
+  EXPECT_EQ(4, web_state_list_->count());
+  EXPECT_EQ(1, group->range().count());
+}
+
 // Tests that closing all non-pinned tabs except a pinned tab works.
 TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
   AddWebState(/* pinned= */ true);  // 0

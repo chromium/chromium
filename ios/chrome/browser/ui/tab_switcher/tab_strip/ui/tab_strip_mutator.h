@@ -23,6 +23,9 @@ class TabGroup;
 /// Tells the receiver to close the `item`.
 - (void)closeItem:(TabSwitcherItem*)item;
 
+/// Tells the receiver to remove the `item` from its group.
+- (void)removeItemFromGroup:(TabSwitcherItem*)item;
+
 /// Tells the receiver to close all items except `item`.
 - (void)closeAllItemsExcept:(TabSwitcherItem*)item;
 

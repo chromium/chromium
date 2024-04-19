@@ -578,6 +578,17 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }
 
+- (void)removeItemFromGroup:(TabSwitcherItem*)item {
+  if (!self.webStateList) {
+    return;
+  }
+  int index =
+      GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
+                                              .identifier = item.identifier,
+                                          });
+  self.webStateList->RemoveFromGroups({index});
+}
+
 - (void)closeAllItemsExcept:(TabSwitcherItem*)item {
   if (!self.webStateList) {
     return;

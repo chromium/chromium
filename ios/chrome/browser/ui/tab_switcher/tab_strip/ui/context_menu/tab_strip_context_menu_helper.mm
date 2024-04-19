@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
@@ -43,20 +44,25 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
 }  // namespace
 
 @implementation TabStripContextMenuHelper {
-  BrowserList* _browserList;
+  raw_ptr<BrowserList> _browserList;
+  base::WeakPtr<WebStateList> _webStateList;
 }
 
-- (instancetype)initWithBrowserList:(BrowserList*)browserList {
+- (instancetype)initWithBrowserList:(BrowserList*)browserList
+                       webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
     CHECK(browserList);
+    CHECK(webStateList);
     _browserList = browserList;
+    _webStateList = webStateList->AsWeakPtr();
   }
   return self;
 }
 
 - (void)disconnect {
   _browserList = nullptr;
+  _webStateList = nullptr;
 }
 
 #pragma mark - TabStripContextMenuProvider
@@ -103,18 +109,36 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
   if ([TabStripFeaturesUtils isModernTabStripWithTabGroups]) {
     std::set<const TabGroup*> groups =
         GetAllGroupsForBrowserList(_browserList, self.incognito);
-    auto actionResult = ^(const TabGroup* group) {
+    CHECK(_webStateList);
+    int webStateIndex = GetWebStateIndex(
+        _webStateList.get(),
+        WebStateSearchCriteria{.identifier = tabSwitcherItem.identifier});
+    const TabGroup* currentGroup =
+        _webStateList->GetGroupOfWebStateAt(webStateIndex);
+    auto addTabToGroupBlock = ^(const TabGroup* group) {
       if (group) {
         [weakSelf.mutator addItem:tabSwitcherItem toGroup:group];
       } else {
         [weakSelf.mutator createNewGroupWithItem:tabSwitcherItem];
       }
     };
-    UIMenuElement* addTabToGroupMenu =
-        [actionFactory menuToAddTabToGroupWithGroups:groups
-                                        numberOfTabs:1
-                                               block:actionResult];
-    [menuElements addObject:addTabToGroupMenu];
+    if (currentGroup) {
+      auto removeTabFromGroupBlock = ^{
+        [weakSelf.mutator removeItemFromGroup:tabSwitcherItem];
+      };
+      UIMenuElement* moveTabToGroupMenu = [actionFactory
+          menuToMoveTabToGroupWithGroups:groups
+                            currentGroup:currentGroup
+                               moveBlock:addTabToGroupBlock
+                             removeBlock:removeTabFromGroupBlock];
+      [menuElements addObject:moveTabToGroupMenu];
+    } else {
+      UIMenuElement* addTabToGroupMenu =
+          [actionFactory menuToAddTabToGroupWithGroups:groups
+                                          numberOfTabs:1
+                                                 block:addTabToGroupBlock];
+      [menuElements addObject:addTabToGroupMenu];
+    }
   }
 
   // If tab is not NTP, add "Share" menu.

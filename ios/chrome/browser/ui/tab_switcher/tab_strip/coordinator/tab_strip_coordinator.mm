@@ -76,8 +76,9 @@
   self.mediator.tabStripHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabStripCommands);
 
-  self.contextMenuHelper =
-      [[TabStripContextMenuHelper alloc] initWithBrowserList:browserList];
+  self.contextMenuHelper = [[TabStripContextMenuHelper alloc]
+      initWithBrowserList:browserList
+             webStateList:self.browser->GetWebStateList()];
   self.contextMenuHelper.incognito = browserState->IsOffTheRecord();
   self.contextMenuHelper.mutator = self.mediator;
   self.contextMenuHelper.handler = HandlerForProtocol(

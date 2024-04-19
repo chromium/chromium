@@ -12,6 +12,7 @@
 class BrowserList;
 @protocol TabStripMutator;
 @protocol TabStripCommands;
+class WebStateList;
 
 // Creates context menus for tab strip items.
 @interface TabStripContextMenuHelper : NSObject <TabStripContextMenuProvider>
@@ -23,7 +24,9 @@ class BrowserList;
 // Whether this context menu is displayed in an Incognito browser.
 @property(nonatomic, assign) BOOL incognito;
 
+// Initializes the helper. `browserList` and `webStateList` cannot be nil.
 - (instancetype)initWithBrowserList:(BrowserList*)browserList
+                       webStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
