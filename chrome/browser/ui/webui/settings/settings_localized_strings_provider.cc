@@ -163,6 +163,10 @@
 #include "net/base/features.h"
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "extensions/common/extension_urls.h"
+#endif
+
 namespace settings {
 namespace {
 
@@ -578,8 +582,6 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_MAKING_THE_WEB},
       {"getTheMostOutOfChromeBetterWebSubTitleChromeGivesYouChoice",
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_GIVES_YOU_CHOICE},
-      {"getTheMostOutOfChromeBetterWebYouCanCustomize",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_YOU_CAN_CUSTOMIZE},
       {"getTheMostOutOfChromeBetterWebSubTitleChromeSupportsFreeWeb",
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_SUPPORTS_FREE_WEB},
       {"getTheMostOutOfChromeBetterWebAdsCritical",
@@ -611,12 +613,25 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_IMAGINE_YOU_HAVE_FAVORITE_CAFE},
       {"getTheMostOutOfChromeBeyondCookiesCookiesAllowSameLevelCustomization",
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_COOKIES_ALLOW_SAME_LEVEL_CUSTOMIZATION},
+      {"getTheMostOutOfChromeBeyondCookiesSomesSitesMisuseCookies",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_SOMES_SITES_MISUSE_COOKIES},
       {"getTheMostOutOfChromeBeyondCookiesWhatAreThirdPartyCookies",
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_WHAT_ARE_THIRD_PARTY_COOKIES},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  html_source->AddString(
+      "getTheMostOutOfChromeBetterWebYouCanCustomize",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_YOU_CAN_CUSTOMIZE,
+          base::ASCIIToUTF16(
+              google_util::AppendGoogleLocaleParam(
+                  extension_urls::AppendUtmSource(
+                      GURL(extension_urls::GetWebstoreExtensionsCategoryURL()),
+                      extension_urls::kGetMostChromeUtmSource),
+                  g_browser_process->GetApplicationLocale())
+                  .spec())));
   html_source->AddString(
       "getTheMostOutOfChromeYourDataVisitChromeHistory",
       l10n_util::GetStringFUTF16(
@@ -634,9 +649,9 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_REVIEW_PERMISSIONS,
           base::ASCIIToUTF16(chrome::kChromeUIContentSettingsURL)));
   html_source->AddString(
-      "getTheMostOutOfChromeBeyondCookiesSomesSitesMisuseCookies",
+      "getTheMostOutOfChromeBeyondCookiesPlanningToPhaseOut",
       l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_SOMES_SITES_MISUSE_COOKIES,
+          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_PLANNING_TO_PHASE_OUT,
           chrome::kUKCMAPrivacySandboxURL));
   html_source->AddString(
       "getTheMostOutOfChromeBeyondCookiesChromePartOfEffort",

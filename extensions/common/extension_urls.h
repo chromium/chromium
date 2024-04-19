@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "build/branding_buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
@@ -41,6 +42,10 @@ extern const char kAppMenuUtmSource[];
 extern const char kExtensionsMenuUtmSource[];
 // From the link in the sidebar in the chrome://extensions page.
 extern const char kExtensionsSidebarUtmSource[];
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// From the link on chrome://settings/getMostChrome page.
+extern const char kGetMostChromeUtmSource[];
+#endif
 
 // Returns the URL prefix for the extension/apps gallery. Can be set via the
 // --apps-gallery-url switch. The URL returned will not contain a trailing
