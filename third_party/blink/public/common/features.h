@@ -756,6 +756,20 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement;
 
+// Size of LRU caches for the host data for LCP critical path predictor (LCPP).
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLCPCriticalPathPredictorMaxHostsToTrack;
+
+// The virtual sliding window size for LCP critical path predictor (LCPP)
+// histogram.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLCPCriticalPathPredictorHistogramSlidingWindowSize;
+
+// The max histogram bucket count that can be stored in the LCP critical path
+// predictor (LCPP) database.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLCPCriticalPathPredictorMaxHistogramBuckets;
+
 // If enabled, script execution is observed to determine script dependencies of
 // the LCP element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPScriptObserver);

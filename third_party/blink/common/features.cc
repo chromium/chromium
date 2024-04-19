@@ -1315,6 +1315,16 @@ const base::FeatureParam<bool>
         &kLCPCriticalPathPredictor,
         "lcpp_enable_image_load_priority_for_htmlimageelement", false};
 
+const base::FeatureParam<int> kLCPCriticalPathPredictorMaxHostsToTrack{
+    &kLCPCriticalPathPredictor, "lcpp_max_hosts_to_track", 100};
+
+const base::FeatureParam<int>
+    kLCPCriticalPathPredictorHistogramSlidingWindowSize{
+        &kLCPCriticalPathPredictor, "lcpp_histogram_sliding_window_size", 1000};
+
+const base::FeatureParam<int> kLCPCriticalPathPredictorMaxHistogramBuckets{
+    &kLCPCriticalPathPredictor, "lcpp_max_histogram_buckets", 10};
+
 BASE_FEATURE(kLCPScriptObserver,
              "LCPScriptObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);

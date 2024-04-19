@@ -317,9 +317,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 
   internal::LCPPPredictResult result;
   const int max_lcpp_histogram_buckets =
-      base::GetFieldTrialParamByFeatureAsInt(
-          features::kLoadingPredictorTableConfig, "max_lcpp_histogram_buckets",
-          10) +
+      blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get() +
       internal::kLCPIndexHistogramOffset;
   if (first_valid_index_except_last) {
     if (last_lcp_index) {

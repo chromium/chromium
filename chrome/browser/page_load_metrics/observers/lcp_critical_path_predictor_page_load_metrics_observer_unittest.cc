@@ -82,9 +82,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
         loading_predictor->resource_prefetch_predictor());
     initializer.WaitUntilInitialized();
 
-    max_lcpp_histogram_buckets_ = base::GetFieldTrialParamByFeatureAsInt(
-        features::kLoadingPredictorTableConfig, "max_lcpp_histogram_buckets",
-        10);
+    max_lcpp_histogram_buckets_ =
+        blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get();
   }
 
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {

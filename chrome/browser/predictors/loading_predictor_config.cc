@@ -45,10 +45,8 @@ LoadingPredictorConfig::LoadingPredictorConfig()
           features::kLoadingPredictorTableConfig,
           "max_hosts_to_track",
           100)),
-      max_hosts_to_track_for_lcpp(base::GetFieldTrialParamByFeatureAsInt(
-          blink::features::kLCPCriticalPathPredictor,
-          "lcpp_max_hosts_to_track",
-          100)),
+      max_hosts_to_track_for_lcpp(
+          blink::features::kLCPCriticalPathPredictorMaxHostsToTrack.Get()),
       max_origins_per_entry(base::GetFieldTrialParamByFeatureAsInt(
           features::kLoadingPredictorTableConfig,
           "max_origins_per_entry",
@@ -56,14 +54,12 @@ LoadingPredictorConfig::LoadingPredictorConfig()
       max_consecutive_misses(3),
       max_redirect_consecutive_misses(5),
       flush_data_to_disk_delay_seconds(30),
-      lcpp_histogram_sliding_window_size(base::GetFieldTrialParamByFeatureAsInt(
-          features::kLoadingPredictorTableConfig,
-          "lcpp_histogram_sliding_window_size",
-          1000)),
-      max_lcpp_histogram_buckets(base::GetFieldTrialParamByFeatureAsInt(
-          features::kLoadingPredictorTableConfig,
-          "max_lcpp_histogram_buckets",
-          10)) {}
+      lcpp_histogram_sliding_window_size(
+          blink::features::kLCPCriticalPathPredictorHistogramSlidingWindowSize
+              .Get()),
+      max_lcpp_histogram_buckets(
+          blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get()) {
+}
 
 LoadingPredictorConfig::LoadingPredictorConfig(
     const LoadingPredictorConfig& other) = default;
