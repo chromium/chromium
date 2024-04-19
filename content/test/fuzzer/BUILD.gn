@@ -252,6 +252,7 @@ source_set("indexed_db_fuzzer_support") {
   public_deps = [
     "//base",
     "//content/browser/indexed_db",
+    "//content/public/browser:browser_sources",
     "//third_party/blink/public/common:headers",
   ]
   testonly = true

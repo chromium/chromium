@@ -10470,6 +10470,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIndexedDBDefaultDurabilityRelaxed, kOsAll,
      FEATURE_VALUE_TYPE(storage::kDefaultBucketUsesRelaxedDurability)},
 
+    {"indexed-db-shard-backing-stores",
+     flag_descriptions::kIndexedDBShardBackingStores,
+     flag_descriptions::kIndexedDBShardBackingStores, kOsAll,
+     FEATURE_VALUE_TYPE(features::kIndexedDBShardBackingStores)},
+
     {"autofill-enable-server-iban",
      flag_descriptions::kAutofillEnableServerIbanName,
      flag_descriptions::kAutofillEnableServerIbanDescription, kOsDesktop,

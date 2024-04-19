@@ -2102,6 +2102,12 @@ const char kIndexedDBDefaultDurabilityRelaxedDescription[] =
     "IDBTransaction \"readwrite\" transaction durability defaults to relaxed "
     "when not specified";
 
+const char kIndexedDBShardBackingStores[] =
+    "IndexedDB backend instances run tasks in parallel";
+const char kIndexedDBShardBackingStoresDescription[] =
+    "IndexedDB operations should face less contention from other IndexedDB "
+    "instances (associated with other storage buckets or sites)";
+
 const char kInProductHelpDemoModeChoiceName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeChoiceDescription[] =
     "Selects the In-Product Help demo mode.";

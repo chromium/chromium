@@ -17,7 +17,8 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-# See //content/BUILD.gn for how this works.
+# See //content/BUILD.gn for how this works. Note that targets in `//content`
+# will want to include `:common_sources` directly.
 group("common") {
   if (is_component_build) {
     public_deps = [ "//content" ]

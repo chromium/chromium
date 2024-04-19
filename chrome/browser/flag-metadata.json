@@ -4979,6 +4979,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "indexed-db-shard-backing-stores",
+    "owners": [ "estade@chromium.org", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "info-card-acknowledgement-tracking",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 130

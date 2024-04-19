@@ -8,8 +8,6 @@ source_set("indexed_db") {
   public = [ "indexed_db_control_wrapper.h" ]
 
   sources = [
-    "features.cc",
-    "features.h",
     "file_path_util.cc",
     "file_path_util.h",
     "file_stream_reader_to_data_pipe.cc",
@@ -84,6 +82,7 @@ source_set("indexed_db") {
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
     "//content:export",
+    "//content/public/common:common_sources",
     "//net",
     "//storage/browser",
     "//third_party/blink/public/common",
@@ -140,6 +139,7 @@ source_set("unit_tests") {
     "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
+    "//content/public/common",
 
     # This dependency is here to satisfy `gn check` given this target's includes
     # of :indexed_db headers. This has to be done through //content/browser to
