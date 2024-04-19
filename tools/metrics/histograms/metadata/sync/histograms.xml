@@ -613,14 +613,41 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Sync.EntitySizeOnCommit{SyncModelType}" units="bytes"
-    expires_after="2024-09-01">
+<histogram name="Sync.EntitySizeOnCommit.Entity.SpecificsOnly{SyncModelType}"
+    units="bytes" expires_after="2025-04-01">
   <owner>ankushkush@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    Size of individual sync entities in bytes. Recorded right before an entity
-    is committed to the server.
+    Size of individual sync entity specifics (not including tombstones) in
+    bytes, without the sync metadata. Recorded right before an entity is
+    committed to the server.
+  </summary>
+  <token key="SyncModelType" variants="SyncModelType"/>
+</histogram>
+
+<histogram name="Sync.EntitySizeOnCommit.Entity.WithMetadata{SyncModelType}"
+    units="bytes" expires_after="2025-04-01">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Size of individual sync entities (not including tombstones) in bytes,
+    including the sync metadata. Recorded right before an entity is committed to
+    the server. See also `Sync.EntitySizeOnCommit.Tombstone.*` for tombstones.
+  </summary>
+  <token key="SyncModelType" variants="SyncModelType"/>
+</histogram>
+
+<histogram name="Sync.EntitySizeOnCommit.Tombstone{SyncModelType}"
+    units="bytes" expires_after="2025-04-01">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Size of individual sync tombstones in bytes, including the sync metadata.
+    Recorded right before an entity is committed to the server. See also
+    `Sync.EntitySizeOnCommit.Entity.*` for non-tombstones.
   </summary>
   <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>

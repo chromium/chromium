@@ -14,7 +14,13 @@ namespace {
 const char kModelTypeMemoryHistogramPrefix[] = "Sync.ModelTypeMemoryKB.";
 const char kModelTypeCountHistogramPrefix[] = "Sync.ModelTypeCount4.";
 const char kModelTypeUpdateDropHistogramPrefix[] = "Sync.ModelTypeUpdateDrop.";
-const char kSyncEntitySizeHistogramPrefix[] = "Sync.EntitySizeOnCommit.";
+
+const char kEntitySizeWithMetadataHistogramPrefix[] =
+    "Sync.EntitySizeOnCommit.Entity.WithMetadata.";
+const char kEntitySizeSpecificsOnlyHistogramPrefix[] =
+    "Sync.EntitySizeOnCommit.Entity.SpecificsOnly.";
+const char kEntitySizeTombstoneHistogramPrefix[] =
+    "Sync.EntitySizeOnCommit.Tombstone.";
 
 std::string GetHistogramSuffixForUpdateDropReason(UpdateDropReason reason) {
   switch (reason) {
@@ -63,11 +69,21 @@ void SyncRecordModelTypeCountHistogram(ModelType model_type, size_t count) {
 }
 
 void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type,
-                                            size_t bytes) {
+                                            bool is_tombstone,
+                                            size_t specifics_bytes,
+                                            size_t total_bytes) {
   std::string type_string = ModelTypeToHistogramSuffix(model_type);
-  std::string full_histogram_name =
-      kSyncEntitySizeHistogramPrefix + type_string;
-  base::UmaHistogramCounts100000(full_histogram_name, bytes);
+  if (is_tombstone) {
+    // For tombstones, don't bother recording the `specifics_size` since the
+    // specifics is always empty.
+    base::UmaHistogramCounts100000(
+        kEntitySizeTombstoneHistogramPrefix + type_string, total_bytes);
+  } else {
+    base::UmaHistogramCounts100000(
+        kEntitySizeSpecificsOnlyHistogramPrefix + type_string, specifics_bytes);
+    base::UmaHistogramCounts100000(
+        kEntitySizeWithMetadataHistogramPrefix + type_string, total_bytes);
+  }
 }
 
 void SyncRecordModelClearedOnceHistogram(ModelType model_type) {

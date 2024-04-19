@@ -130,7 +130,8 @@ void CommitContributionImpl::AddToCommitMessage(
 
     // Record the size of the sync entity being committed.
     syncer::SyncRecordModelTypeEntitySizeHistogram(
-        type_, sync_entity->specifics().ByteSizeLong());
+        type_, commit_request->entity->is_deleted(),
+        sync_entity->specifics().ByteSizeLong(), sync_entity->ByteSizeLong());
 
     if (commit_request->entity->is_deleted()) {
       RecordEntityChangeMetrics(type_, ModelTypeEntityChange::kLocalDeletion);

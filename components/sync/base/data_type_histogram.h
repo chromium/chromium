@@ -38,9 +38,13 @@ void SyncRecordModelTypeMemoryHistogram(ModelType model_type, size_t bytes);
 // entities.
 void SyncRecordModelTypeCountHistogram(ModelType model_type, size_t count);
 
-// Records sync entity size `bytes` in `model_type` related histogram for
-// distribution of entity sizes.
-void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type, size_t bytes);
+// Records the serialized byte size of a sync entity from `model_type`, both
+// with and without sync metadata (`total_bytes` and `specifics_bytes`
+// respectively). Meant to be called when the entity is committed.
+void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type,
+                                            bool is_tombstone,
+                                            size_t specifics_bytes,
+                                            size_t total_bytes);
 
 // Records when the model (including both data and metadata) was cleared for a
 // given `model_type` due to
