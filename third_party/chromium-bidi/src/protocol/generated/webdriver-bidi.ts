@@ -343,9 +343,19 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type Locator =
+    | BrowsingContext.AccessibilityLocator
     | BrowsingContext.CssLocator
     | BrowsingContext.InnerTextLocator
     | BrowsingContext.XPathLocator;
+}
+export namespace BrowsingContext {
+  export type AccessibilityLocator = {
+    type: 'accessibility';
+    value: {
+      name?: string;
+      role?: string;
+    };
+  };
 }
 export namespace BrowsingContext {
   export type CssLocator = {

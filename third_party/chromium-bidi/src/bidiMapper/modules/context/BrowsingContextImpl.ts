@@ -1226,6 +1226,10 @@ export class BrowsingContextImpl {
             ...startNodes,
           ],
         };
+      case 'accessibility':
+        throw new UnsupportedOperationException(
+          'accessibility locator is not supported yet'
+        );
     }
   }
 
@@ -1276,7 +1280,7 @@ export class BrowsingContextImpl {
         )
       ) {
         throw new InvalidSelectorException(
-          `Not valid selector ${locator.value}`
+          `Not valid selector ${typeof locator.value === 'string' ? locator.value : JSON.stringify(locator.value)}`
         );
       }
       // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.

@@ -471,10 +471,22 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export const LocatorSchema = z.lazy(() =>
     z.union([
+      BrowsingContext.AccessibilityLocatorSchema,
       BrowsingContext.CssLocatorSchema,
       BrowsingContext.InnerTextLocatorSchema,
       BrowsingContext.XPathLocatorSchema,
     ])
+  );
+}
+export namespace BrowsingContext {
+  export const AccessibilityLocatorSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('accessibility'),
+      value: z.object({
+        name: z.string().optional(),
+        role: z.string().optional(),
+      }),
+    })
   );
 }
 export namespace BrowsingContext {
