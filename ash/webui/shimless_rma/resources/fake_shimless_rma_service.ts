@@ -7,7 +7,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
 
 
 /**
@@ -629,7 +629,7 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
    * The fake does not use the status list parameter, the fake data is never
    * updated.
    */
-  endRma(): Promise<{stateResult: StateResult}> {
+  endRma(_shutdownMethod: ShutdownMethod): Promise<{stateResult: StateResult}> {
     return this.getNextStateForMethod('endRma', State.kRepairComplete);
   }
 

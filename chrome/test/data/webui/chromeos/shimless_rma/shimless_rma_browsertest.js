@@ -34,7 +34,6 @@ this.ShimlessRmaBrowserTest = class extends PolymerTest {
 
 const tests = [
   ['Shimless3pDiagTest', 'shimless_3p_diag_test.js'],
-  ['WrapupRepairCompletePageTest', 'wrapup_repair_complete_page_test.js'],
   [
     'WrapupWaitForManualWpEnablePageTest',
     'wrapup_wait_for_manual_wp_enable_page_test.js'

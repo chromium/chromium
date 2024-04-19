@@ -161,6 +161,11 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, FinalizePage) {
   RunTest("chromeos/shimless_rma/wrapup_finalize_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, RepairCompletePage) {
+  RunTest("chromeos/shimless_rma/wrapup_repair_complete_page_test.js",
+          "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash

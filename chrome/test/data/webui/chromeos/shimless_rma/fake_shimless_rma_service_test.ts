@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, State, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import {CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, ShutdownMethod, State, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('fakeShimlessRmaServiceTestSuite', function() {
@@ -910,7 +910,7 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.endRma();
+    const result = await service.endRma(ShutdownMethod.kShutdown);
     assertEquals(State.kChooseDestination, result.stateResult.state);
     assertEquals(RmadErrorCode.kOk, result.stateResult.error);
   });
