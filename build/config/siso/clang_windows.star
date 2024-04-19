@@ -61,7 +61,10 @@ def __step_config(ctx, step_config):
             if k.startswith("label:action"):
                 continue
             largePlatform[k] = v
-        largePlatform["label:action_large"] = "1"
+
+        # no "action_large" Windows worker pool
+        if reproxy_config["platform"]["OSFamily"] != "Windows":
+            largePlatform["label:action_large"] = "1"
         step_config["platforms"].update({
             "clang-cl": reproxy_config["platform"],
             "clang-cl_large": largePlatform,
