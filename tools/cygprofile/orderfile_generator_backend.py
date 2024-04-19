@@ -242,7 +242,7 @@ class ClankCompiler:
     if self._options.goma_dir:
       gn_args += ['goma_dir="%s"' % self._options.goma_dir]
 
-    if self._options.public and os.path.exists(self._orderfile_location):
+    if os.path.exists(self._orderfile_location):
       # GN needs the orderfile path to be source-absolute.
       src_abs_orderfile = os.path.relpath(self._orderfile_location, _SRC_PATH)
       gn_args += ['chrome_orderfile_path="//{}"'.format(src_abs_orderfile)]
