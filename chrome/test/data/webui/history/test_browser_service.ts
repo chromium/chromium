@@ -122,9 +122,13 @@ export class TestBrowserService extends TestBrowserProxy implements
     this.queryResult_ = queryResult;
   }
 
-  queryHistory(searchTerm: string) {
+  queryHistory(searchTerm: string, afterDate?: number) {
     if (!this.ignoreNextQuery_) {
-      this.methodCalled('queryHistory', searchTerm);
+      if (afterDate) {
+        this.methodCalled('queryHistory', searchTerm, afterDate);
+      } else {
+        this.methodCalled('queryHistory', searchTerm);
+      }
     } else {
       this.ignoreNextQuery_ = false;
     }

@@ -82,7 +82,8 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   }
 
  protected:
-  virtual void SendHistoryQuery(int count, const std::u16string& query);
+  virtual void SendHistoryQuery(int count, const std::u16string& query,
+                                std::optional<double> begin_timestamp);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest,

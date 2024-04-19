@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
@@ -82,39 +83,44 @@ export class HistoryQueryManagerElement extends PolymerElement {
     this.set('queryState.querying', true);
     this.set('queryState.incremental', incremental);
 
+    let afterTimestamp;
+    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
+        this.queryState.after) {
+      const afterDate = new Date(this.queryState.after);
+      afterDate.setHours(0, 0, 0, 0);
+      afterTimestamp = afterDate.getTime();
+    }
+
     const browserService = BrowserServiceImpl.getInstance();
     const promise = incremental ?
         browserService.queryHistoryContinuation() :
-        browserService.queryHistory(this.queryState.searchTerm);
+        browserService.queryHistory(this.queryState.searchTerm, afterTimestamp);
     // Ignore rejected (cancelled) queries.
     promise.then(result => this.onQueryResult_(result), () => {});
   }
 
   private onChangeQuery_(e: CustomEvent<{search?: string, after?: string}>) {
     const changes = e.detail;
-
-    let needsToRequery = false;
-    let needsToUpdateRouter = false;
+    let needsUpdate = false;
 
     if (changes.search !== null &&
         changes.search !== this.queryState.searchTerm) {
       this.set('queryState.searchTerm', changes.search);
-      needsToRequery = true;
-      needsToUpdateRouter = true;
+      needsUpdate = true;
     }
 
-    if (changes.after !== null &&
-        changes.after !== this.queryState.after) {
+    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
+        changes.after !== null && changes.after !== this.queryState.after &&
+        (Boolean(changes.after) || Boolean(this.queryState.after))) {
       this.set('queryState.after', changes.after);
-      needsToUpdateRouter = true;
+      needsUpdate = true;
     }
 
-    if (needsToRequery) {
+    if (needsUpdate) {
       this.queryHistory_(false);
-    }
-
-    if (needsToUpdateRouter && this.router) {
-      this.router.serializeUrl();
+      if (this.router) {
+        this.router.serializeUrl();
+      }
     }
   }
 

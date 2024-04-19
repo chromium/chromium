@@ -38,7 +38,7 @@ export interface BrowserService {
   navigateToUrl(url: string, target: string, e: MouseEvent): void;
   otherDevicesInitialized(): void;
   queryHistoryContinuation(): Promise<QueryResult>;
-  queryHistory(searchTerm: string): Promise<QueryResult>;
+  queryHistory(searchTerm: string, beginTime?: number): Promise<QueryResult>;
   startTurnOnSyncFlow(): void;
 }
 
@@ -127,8 +127,9 @@ export class BrowserServiceImpl implements BrowserService {
     return sendWithPromise('queryHistoryContinuation');
   }
 
-  queryHistory(searchTerm: string) {
-    return sendWithPromise('queryHistory', searchTerm, RESULTS_PER_PAGE);
+  queryHistory(searchTerm: string, beginTime?: number) {
+    return sendWithPromise(
+        'queryHistory', searchTerm, RESULTS_PER_PAGE, beginTime);
   }
 
   startTurnOnSyncFlow() {

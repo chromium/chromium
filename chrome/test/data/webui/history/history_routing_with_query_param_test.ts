@@ -6,11 +6,12 @@ import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
-import {createHistoryInfo} from './test_util.js';
+import {createHistoryInfo, navigateTo} from './test_util.js';
 
 suite('routing-with-query-param', function() {
   let app: HistoryAppElement;
@@ -46,5 +47,22 @@ suite('routing-with-query-param', function() {
               expectedQuery,
               app.$.toolbar.$.mainToolbar.getSearchField().getValue());
         });
+  });
+
+  test('search with after date', async () => {
+    // Wait for initial query to get called.
+    await testService.whenCalled('queryHistory');
+    testService.reset();
+
+    loadTimeData.overrideValues({enableHistoryEmbeddings: true});
+
+    const expectedDate = new Date('2011-04-05');
+    expectedDate.setHours(0, 0, 0, 0);
+    const expectedTimestamp = expectedDate.getTime();
+
+    navigateTo('/?q=query&after=2011-04-05', app);
+    const [query, timestamp] = await testService.whenCalled('queryHistory');
+    assertEquals(expectedQuery, query);
+    assertEquals(expectedTimestamp, timestamp);
   });
 });
