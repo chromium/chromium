@@ -9,6 +9,70 @@ export enum VoicePackStatus {
   ERROR,
 }
 
+export function createInitialListOfEnabledLanguages(
+    browserOrPageBaseLang: string, storedLanguagesPref: string[],
+    availableLangs: string[], langOfDefaultVoice: string|undefined): string[] {
+  const initialAvailableLanguages: Set<string> = new Set();
+
+  // Add stored prefs to initial list of enabled languages
+  for (const lang of storedLanguagesPref) {
+    // Find the version of the lang/locale that maps to a language
+    const matchingLang =
+        convertLangToAnAvailableLangIfPresent(lang, availableLangs);
+    if (matchingLang) {
+      initialAvailableLanguages.add(matchingLang);
+    }
+  }
+
+  // Add browserOrPageBaseLang to initial list of enabled languages
+  // If there's no locale/base-lang already matching in
+  // initialAvailableLanguages, then add one
+  const browserPageLangAlreadyPresent = [...initialAvailableLanguages].some(
+      lang => lang.startsWith(browserOrPageBaseLang));
+  if (!browserPageLangAlreadyPresent) {
+    const matchingLangOfBrowserLang = convertLangToAnAvailableLangIfPresent(
+        browserOrPageBaseLang, availableLangs);
+    if (matchingLangOfBrowserLang) {
+      initialAvailableLanguages.add(matchingLangOfBrowserLang);
+    }
+  }
+
+  // If initialAvailableLanguages is still empty, add the default voice
+  // language
+  if (initialAvailableLanguages.size === 0) {
+    if (langOfDefaultVoice) {
+      initialAvailableLanguages.add(langOfDefaultVoice);
+    }
+  }
+
+  return [...initialAvailableLanguages];
+}
+
+export function convertLangToAnAvailableLangIfPresent(
+    langOrLocale: string, availableLangs: string[]): string|undefined {
+  // Convert everything to lower case
+  langOrLocale = langOrLocale.toLowerCase();
+  availableLangs = availableLangs.map(lang => lang.toLowerCase());
+
+  if (availableLangs.includes(langOrLocale)) {
+    return langOrLocale;
+  }
+
+  const baseLang = extractBaseLang(langOrLocale);
+  if (availableLangs.includes(baseLang)) {
+    return baseLang;
+  }
+
+  // See if there are any matching available locales we can default to
+  const matchingLocales: string[] = availableLangs.filter(
+      availableLang => extractBaseLang(availableLang) === baseLang);
+  if (matchingLocales) {
+    return matchingLocales[0];
+  }
+
+  return undefined;
+}
+
 // The following possible values of "status" is a union of enum values of
 // enum InstallationState and enum ErrorCode in read_anything.mojom
 export function mojoVoicePackStatusToVoicePackStatusEnum(
@@ -37,7 +101,7 @@ export function convertLangOrLocaleForVoicePackManager(langOrLocale: string):
     return langOrLocale;
   }
 
-  if (langOrLocale.includes('-')) {
+  if (!isBaseLang(langOrLocale)) {
     const baseLang = langOrLocale.substring(0, langOrLocale.indexOf('-'));
     if (PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(baseLang)) {
       return baseLang;
@@ -74,6 +138,18 @@ function convertUnsupportedBaseLangToSupportedLocale(baseLang: string): string|
     }
   }
   return undefined;
+}
+
+// Returns true if input is base lang, and false if it's a locale
+function isBaseLang(langOrLocale: string): boolean {
+  return !langOrLocale.includes('-');
+}
+
+function extractBaseLang(langOrLocale: string): string {
+  if (isBaseLang(langOrLocale)) {
+    return langOrLocale;
+  }
+  return langOrLocale.substring(0, langOrLocale.indexOf('-'));
 }
 
 // These are from the Pack Manager. Values should be kept in sync with the code

@@ -20,7 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {convertLangOrLocaleForVoicePackManager, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
+import {convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -273,6 +273,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private enabledLanguagesInPref: string[] = [];
 
   private availableVoices: SpeechSynthesisVoice[];
+  // A set of availableLangs derived from availableVoices
+  private availableLangs: string[] = [];
   // If a preview is playing, this is set to the voice the preview is playing.
   // Otherwise, this is undefined.
   private previewVoicePlaying: SpeechSynthesisVoice|null;
@@ -825,6 +827,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
             availableVoices.filter(({localService}) => localService);
       }
       this.availableVoices = availableVoices;
+      this.availableLangs = [...new Set(availableVoices.map(({lang}) => lang))];
 
       this.populateDisplayNamesForLocaleCodes();
     }
@@ -1491,9 +1494,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private restoreEnabledLanguagesFromPref_() {
-    const storedLanguagesPref = chrome.readingMode.getLanguagesEnabledInPref();
-    this.enabledLanguagesInPref =
-        storedLanguagesPref ? storedLanguagesPref : [];
+    // We need to make sure the languages we choose correspond to voices, so
+    // refresh the list of voices and available langs
+    this.getVoices();
+
+    const storedLanguagesPref: string[] =
+        chrome.readingMode.getLanguagesEnabledInPref();
+    const browserOrPageBaseLang = chrome.readingMode.baseLanguageForSpeech;
+
+    this.enabledLanguagesInPref = createInitialListOfEnabledLanguages(
+        browserOrPageBaseLang, storedLanguagesPref, this.availableLangs,
+        this.defaultVoice()?.lang);
+
     for (const lang of this.enabledLanguagesInPref) {
       this.installVoicePackIfPossible(lang);
     }
