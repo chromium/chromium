@@ -752,6 +752,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "ios_runtime_cache_17_5",
+    swarming = targets.swarming(
+        named_caches = [
+            swarming.cache(
+                name = "runtime_ios_17_5",
+                path = "Runtime-ios-17.5",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "ioswpt-chromium-swarming-pool",
     swarming = targets.swarming(
         dimensions = {
@@ -1851,12 +1863,12 @@ targets.mixin(
     name = "xcode_15_beta",
     args = [
         "--xcode-build-version",
-        "15e204a",
+        "15f5021i",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_15e204a",
+                name = "xcode_ios_15f5021i",
                 path = "Xcode.app",
             ),
         ],
