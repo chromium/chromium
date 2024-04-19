@@ -1857,7 +1857,7 @@ TEST_P(SuggestionMatchingTest,
 
   // First name is already autofilled which will make the section appear as
   // "already autofilled".
-  form.fields[0].is_autofilled = true;
+  form.fields[0].set_is_autofilled(true);
 
   // Two profiles have the same last name, and the third shares the same first
   // letter for last name.
@@ -1908,7 +1908,7 @@ TEST_P(SuggestionMatchingTest,
 
   // First name is already autofilled which will make the section appear as
   // "already autofilled".
-  form.fields[0].is_autofilled = true;
+  form.fields[0].set_is_autofilled(true);
 
   FormFieldData field = CreateTestFormField("First Name", "firstname", "E",
                                             FormControlType::kInputText);
@@ -3346,7 +3346,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
   FormsSeen({form});
 
   // Mark one of the fields as filled.
-  form.fields[2].is_autofilled = true;
+  form.fields[2].set_is_autofilled(true);
   GetAutofillSuggestions(form, form.fields[0]);
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
@@ -3378,7 +3378,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
   personal_data().AddProfile(profile);
 
   FormFieldData& field = form.fields[0];
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   field.set_value(u"Elvis");
   GetAutofillSuggestions(form, field);
   // Test that we sent the right values to the external delegate.

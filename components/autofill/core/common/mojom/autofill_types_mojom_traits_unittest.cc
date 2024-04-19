@@ -353,7 +353,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.set_renderer_id(FieldRendererId(1234));
   input.host_form_id = FormRendererId(123);
   input.max_length = 12345;
-  input.is_autofilled = true;
+  input.set_is_autofilled(true);
   input.is_user_edited = true;
   input.check_status = FormFieldData::CheckStatus::kChecked;
   input.should_autocomplete = true;
@@ -390,7 +390,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   input.aria_label = u"aria label";
   input.aria_description = u"aria description";
   input.max_length = 12345;
-  input.is_autofilled = true;
+  input.set_is_autofilled(true);
   input.is_user_edited = true;
   input.check_status = FormFieldData::CheckStatus::kChecked;
   input.should_autocomplete = true;

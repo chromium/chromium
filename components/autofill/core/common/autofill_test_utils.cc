@@ -113,7 +113,7 @@ FormData WithoutValues(FormData form) {
 
 FormData AsAutofilled(FormData form, bool is_autofilled) {
   for (FormFieldData& field : form.fields) {
-    field.is_autofilled = is_autofilled;
+    field.set_is_autofilled(is_autofilled);
   }
   return form;
 }

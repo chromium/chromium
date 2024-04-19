@@ -95,7 +95,7 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       ProjectOptions(field.datalist_options, &SelectOption::value),
       /*datalistLabels=*/
       ProjectOptions(field.datalist_options, &SelectOption::content),
-      /*visible=*/field.IsFocusable(), field.is_autofilled);
+      /*visible=*/field.IsFocusable(), field.is_autofilled());
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;
 }
@@ -108,7 +108,7 @@ void FormFieldDataAndroidBridgeImpl::UpdateFieldFromJava(FormFieldData& field) {
     return;
   }
 
-  field.is_autofilled = Java_FormFieldData_isAutofilled(env, obj);
+  field.set_is_autofilled(Java_FormFieldData_isAutofilled(env, obj));
   if (IsCheckable(field.check_status)) {
     SetCheckStatus(&field, true, Java_FormFieldData_isChecked(env, obj));
     return;

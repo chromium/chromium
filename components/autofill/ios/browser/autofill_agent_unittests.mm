@@ -158,7 +158,7 @@ TEST_F(AutofillAgentTests,
   field.set_name_attribute(field.name());
   field.set_id_attribute(u"number");
   field.set_value(u"number_value");
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(2));
   form.fields.push_back(field);
   field.set_label(u"Name on Card");
@@ -166,7 +166,7 @@ TEST_F(AutofillAgentTests,
   field.set_name_attribute(field.name());
   field.set_id_attribute(u"name");
   field.set_value(u"name_value");
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(3));
   form.fields.push_back(field);
   field.set_label(u"Expiry Month");
@@ -174,7 +174,7 @@ TEST_F(AutofillAgentTests,
   field.set_name_attribute(field.name());
   field.set_id_attribute(u"expiry_month");
   field.set_value(u"01");
-  field.is_autofilled = false;
+  field.set_is_autofilled(false);
   field.set_renderer_id(FieldRendererId(4));
   form.fields.push_back(field);
   field.set_label(u"Unknown field");
@@ -182,7 +182,7 @@ TEST_F(AutofillAgentTests,
   field.set_name_attribute(field.name());
   field.set_id_attribute(u"unknown");
   field.set_value(u"");
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(5));
   form.fields.push_back(field);
   [autofill_agent_ fillFormData:form
@@ -209,7 +209,7 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
   field.set_name_attribute(field.name());
   field.set_id_attribute(u"number");
   field.set_value(u"number_value");
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(2));
 
   [autofill_agent_
@@ -236,7 +236,7 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
   field.set_name_attribute(field.name());
   field.set_id_attribute(u"number");
   field.set_value(u"number_value");
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(2));
 
   autofill::AutofillDriverIOS* main_frame_driver =
@@ -267,7 +267,7 @@ TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
   field.set_name_attribute(field.name());
   field.set_id_attribute(u"number");
   field.set_value(u"number_value");
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(2));
 
   autofill::AutofillDriverIOS* main_frame_driver =

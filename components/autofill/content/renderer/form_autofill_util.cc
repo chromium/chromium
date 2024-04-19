@@ -2001,7 +2001,7 @@ void WebFormControlElementToFormField(
   }
 
   // The browser doesn't need to differentiate between preview and autofill.
-  field->is_autofilled = element.IsAutofilled();
+  field->set_is_autofilled(element.IsAutofilled());
   field->is_user_edited = element.UserHasEditedTheField();
   field->is_focusable = IsWebElementFocusableForAutofill(element);
   field->is_visible = kAutofillDetectFieldVisibilityEnabled

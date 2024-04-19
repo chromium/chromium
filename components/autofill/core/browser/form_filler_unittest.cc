@@ -107,12 +107,12 @@ MATCHER_P(HasValue, value, "") {
 
 // Takes a FormFieldData argument.
 MATCHER_P(AutofilledWith, value, "") {
-  return arg.is_autofilled && arg.value() == value;
+  return arg.is_autofilled() && arg.value() == value;
 }
 
 // Takes an AutofillField argument.
 MATCHER_P(AutofilledWithProfile, profile, "") {
-  return arg->is_autofilled && arg->autofill_source_profile_guid() &&
+  return arg->is_autofilled() && arg->autofill_source_profile_guid() &&
          *arg->autofill_source_profile_guid() == profile.guid();
 }
 
@@ -298,7 +298,7 @@ TEST_F(FormFillerTest, FillingDetails_FieldTypesToFill_FillOnlySpecificFields) {
   ASSERT_EQ(filled_form.fields.size(), 2u);
   EXPECT_THAT(filled_form.fields[0],
               AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[1].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[1].is_autofilled());
   EXPECT_TRUE(filled_form.fields[1].value().empty());
 }
 
@@ -319,8 +319,8 @@ TEST_F(FormFillerTest, FillTriggeredSection) {
   AutofillProfile profile = test::GetFullProfile();
   FillAutofillFormData(form, form.fields[1], &profile);
 
-  EXPECT_FALSE(form_structure->field(0)->is_autofilled);
-  EXPECT_TRUE(form_structure->field(1)->is_autofilled);
+  EXPECT_FALSE(form_structure->field(0)->is_autofilled());
+  EXPECT_TRUE(form_structure->field(1)->is_autofilled());
 }
 
 // Test that if the form cache is outdated because a field has changed, filling
@@ -401,7 +401,7 @@ TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
   EXPECT_THAT(filled_form.fields[2],
               AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale)));
   expect_hash(filled_form.fields[2], std::nullopt);
-  EXPECT_FALSE(filled_form.fields[3].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[3].is_autofilled());
   EXPECT_EQ(filled_form.fields[3].value(), form.fields[3].value());
   expect_hash(filled_form.fields[3],
               base::FastHash(base::UTF16ToUTF8(
@@ -447,9 +447,9 @@ TEST_F(FormFillerTest, SkipAllPreFilledFieldsExceptIfFieldIsAPlaceholder) {
               AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
   EXPECT_THAT(filled_form.fields[1],
               AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[2].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[2].is_autofilled());
   EXPECT_EQ(filled_form.fields[2].value(), form.fields[2].value());
-  EXPECT_FALSE(filled_form.fields[3].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[3].is_autofilled());
   EXPECT_EQ(filled_form.fields[3].value(), form.fields[3].value());
   EXPECT_THAT(filled_form.fields[4], AutofilledWith(kToBeFilledState));
 }
@@ -496,21 +496,21 @@ TEST_F(FormFillerTest, UndoResetsCachedAutofillState) {
   AutofillField filled_autofill_field(form.fields.front());
   FormFieldData* field_ptr = &form.fields.front();
   AutofillField* autofill_field_ptr = &filled_autofill_field;
-  form.fields.front().is_autofilled = false;
+  form.fields.front().set_is_autofilled(false);
   test_api(*browser_autofill_manager_)
       .AddFormFillEntry(base::make_span(&field_ptr, 1u),
                         base::make_span(&autofill_field_ptr, 1u),
                         FillingProduct::kAddress, /*is_refill=*/false);
 
-  form.fields.front().is_autofilled = true;
+  form.fields.front().set_is_autofilled(true);
   FormsSeen({form});
 
   const AutofillField* autofill_field =
       GetAutofillField(form, form.fields.front());
-  ASSERT_TRUE(autofill_field->is_autofilled);
+  ASSERT_TRUE(autofill_field->is_autofilled());
   browser_autofill_manager_->UndoAutofill(mojom::ActionPersistence::kFill, form,
                                           form.fields.front());
-  EXPECT_FALSE(autofill_field->is_autofilled);
+  EXPECT_FALSE(autofill_field->is_autofilled());
 }
 
 TEST_F(FormFillerTest, FillOrPreviewDataModelFormCallsDidFillOrPreviewForm) {
@@ -545,7 +545,7 @@ TEST_F(FormFillerTest,
   FormData filled_form = FillAutofillFormData(form, form.fields[0], &profile);
   EXPECT_THAT(filled_form.fields[0],
               AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[1].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[1].is_autofilled());
   EXPECT_THAT(filled_form.fields[2],
               AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
 
@@ -585,7 +585,7 @@ TEST_F(FormFillerTest, FillCreditCardForm_Simple) {
   EXPECT_THAT(filled_form.fields[3],
               AutofilledWith(credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR,
                                                  kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[4].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[4].is_autofilled());
 }
 
 // Test that whitespace and separators are stripped from the credit card number.
@@ -652,7 +652,7 @@ TEST_P(PartialCreditCardDateTest, FillWithPartialDate) {
   EXPECT_THAT(filled_form.fields[1], AutofilledWith(credit_card.GetInfo(
                                          CREDIT_CARD_NUMBER, kAppLocale)));
   EXPECT_EQ(filled_form.fields[2].value(), GetParam().expected_filled_date);
-  EXPECT_FALSE(filled_form.fields[3].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[3].is_autofilled());
 }
 
 // Test that only the first 19 credit card number fields are filled.
@@ -674,7 +674,7 @@ TEST_F(FormFillerTest, FillOnlyFirstNineteenCreditCardNumberFields) {
         << i;
   }
   // Verify that the 20th. credit card number field is not filled.
-  EXPECT_FALSE(filled_form.fields.back().is_autofilled);
+  EXPECT_FALSE(filled_form.fields.back().is_autofilled());
 }
 
 // Test the credit card number is filled correctly into single-digit fields.
@@ -703,7 +703,7 @@ TEST_F(FormFillerTest, FillCreditCardNumberIntoSingleDigitFields) {
                                                 : card_number))
         << i;
   }
-  EXPECT_FALSE(filled_form.fields[19].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[19].is_autofilled());
   EXPECT_TRUE(filled_form.fields[19].value().empty());
 }
 
@@ -729,7 +729,7 @@ TEST_F(FormFillerTest, FillCreditCardForm_SplitName) {
   EXPECT_THAT(filled_form.fields[4],
               AutofilledWith(credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR,
                                                  kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[5].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[5].is_autofilled());
   EXPECT_TRUE(filled_form.fields[5].value().empty());
 }
 
@@ -769,7 +769,7 @@ TEST_F(FormFillerTest, OnlyCountFilledSelectionBoxesForTypeFillingLimit) {
   for (size_t i = 21; i < 30; ++i) {
     EXPECT_THAT(filled_form.fields[i], AutofilledWith(u"US")) << i;
   }
-  EXPECT_FALSE(filled_form.fields[30].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[30].is_autofilled());
   EXPECT_TRUE(filled_form.fields[30].value().empty());
 }
 
@@ -879,11 +879,11 @@ TEST_F(FormFillerTest, FillCreditCardForm_ExpiredCard) {
                                          CREDIT_CARD_NAME_FULL, kAppLocale)));
   EXPECT_THAT(filled_form.fields[1], AutofilledWith(expired_card.GetInfo(
                                          CREDIT_CARD_NUMBER, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[2].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[2].is_autofilled());
   EXPECT_TRUE(filled_form.fields[2].value().empty());
-  EXPECT_FALSE(filled_form.fields[3].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[3].is_autofilled());
   EXPECT_TRUE(filled_form.fields[3].value().empty());
-  EXPECT_FALSE(filled_form.fields[4].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[4].is_autofilled());
   EXPECT_TRUE(filled_form.fields[4].value().empty());
 }
 
@@ -944,9 +944,9 @@ TEST_F(FormFillerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
   ASSERT_EQ(4u, filled_form.fields.size());
   EXPECT_THAT(filled_form.fields[0],
               AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[1].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[1].is_autofilled());
   EXPECT_TRUE(filled_form.fields[1].value().empty());
-  EXPECT_FALSE(filled_form.fields[2].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[2].is_autofilled());
   EXPECT_TRUE(filled_form.fields[2].value().empty());
   EXPECT_THAT(filled_form.fields[3], AutofilledWith(u"US"));
 }
@@ -975,11 +975,11 @@ TEST_F(FormFillerTest, FillFormWithAuthorSpecifiedSections) {
   // TODO(b/40264633): Replace with GetInfo.
   EXPECT_THAT(filled_form.fields[0],
               AutofilledWith(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
-  EXPECT_FALSE(filled_form.fields[1].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[1].is_autofilled());
   EXPECT_TRUE(filled_form.fields[1].value().empty());
-  EXPECT_FALSE(filled_form.fields[2].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[2].is_autofilled());
   EXPECT_TRUE(filled_form.fields[2].value().empty());
-  EXPECT_FALSE(filled_form.fields[3].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[3].is_autofilled());
   EXPECT_TRUE(filled_form.fields[3].value().empty());
   EXPECT_THAT(filled_form.fields[4],
               AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale)));
@@ -987,30 +987,30 @@ TEST_F(FormFillerTest, FillFormWithAuthorSpecifiedSections) {
   // Fill the address portion of the billing section.
   filled_form = FillAutofillFormData(form, form.fields[1], &profile);
   ASSERT_EQ(filled_form.fields.size(), 5u);
-  EXPECT_FALSE(filled_form.fields[0].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[0].is_autofilled());
   EXPECT_TRUE(filled_form.fields[0].value().empty());
   EXPECT_THAT(filled_form.fields[1],
               AutofilledWith(profile.GetInfo(ADDRESS_HOME_LINE1, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[2].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[2].is_autofilled());
   EXPECT_TRUE(filled_form.fields[2].value().empty());
-  EXPECT_FALSE(filled_form.fields[3].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[3].is_autofilled());
   EXPECT_TRUE(filled_form.fields[3].value().empty());
-  EXPECT_FALSE(filled_form.fields[4].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[4].is_autofilled());
   EXPECT_TRUE(filled_form.fields[4].value().empty());
 
   // Fill the credit card portion of the billing section.
   CreditCard credit_card = test::GetCreditCard();
   filled_form = FillAutofillFormData(form, form.fields[2], &credit_card);
   ASSERT_EQ(filled_form.fields.size(), 5u);
-  EXPECT_FALSE(filled_form.fields[0].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[0].is_autofilled());
   EXPECT_TRUE(filled_form.fields[0].value().empty());
-  EXPECT_FALSE(filled_form.fields[1].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[1].is_autofilled());
   EXPECT_TRUE(filled_form.fields[1].value().empty());
   EXPECT_THAT(filled_form.fields[2], AutofilledWith(credit_card.GetInfo(
                                          CREDIT_CARD_NAME_FULL, kAppLocale)));
   EXPECT_THAT(filled_form.fields[3], AutofilledWith(credit_card.GetInfo(
                                          CREDIT_CARD_NUMBER, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[4].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[4].is_autofilled());
   EXPECT_TRUE(filled_form.fields[4].value().empty());
 }
 
@@ -1041,7 +1041,7 @@ TEST_F(FormFillerTest, FillAutofilledAddressForm) {
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
                   {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
   for (FormFieldData& field : form.fields) {
-    field.is_autofilled = true;
+    field.set_is_autofilled(true);
   }
   FormsSeen({form});
 
@@ -1063,7 +1063,7 @@ TEST_F(FormFillerTest, FillAutofilledCreditCardForm) {
                                     {.role = CREDIT_CARD_NUMBER,
                                      .autocomplete_attribute = "cc-number"}}});
   for (FormFieldData& field : form.fields) {
-    field.is_autofilled = true;
+    field.set_is_autofilled(true);
   }
   FormsSeen({form});
 
@@ -1100,7 +1100,7 @@ TEST_F(FormFillerTest, FillPartlyManuallyFilledAddressForm) {
               AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
   EXPECT_THAT(filled_form.fields[1],
               AutofilledWith(profile.GetInfo(NAME_MIDDLE, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[2].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[2].is_autofilled());
 }
 
 // Test that we correctly fill a partly manually filled credit card form.
@@ -1128,7 +1128,7 @@ TEST_F(FormFillerTest, FillPartlyManuallyFilledCreditCardForm) {
   ASSERT_EQ(filled_form.fields.size(), 3u);
   EXPECT_THAT(filled_form.fields[0], AutofilledWith(credit_card.GetInfo(
                                          CREDIT_CARD_NAME_FIRST, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[1].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[1].is_autofilled());
   EXPECT_THAT(filled_form.fields[2], AutofilledWith(credit_card.GetInfo(
                                          CREDIT_CARD_NUMBER, kAppLocale)));
 }
@@ -1461,8 +1461,8 @@ TEST_F(FormFillerTest, FormWithHiddenOrPresentationalFields) {
               AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)));
   EXPECT_THAT(filled_form.fields[1], AutofilledWith(u"US"));
   EXPECT_THAT(filled_form.fields[2], AutofilledWith(u"CA"));
-  EXPECT_FALSE(filled_form.fields[3].is_autofilled);
-  EXPECT_FALSE(filled_form.fields[4].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[3].is_autofilled());
+  EXPECT_FALSE(filled_form.fields[4].is_autofilled());
 }
 
 TEST_F(FormFillerTest, FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {
@@ -1567,8 +1567,8 @@ TEST_F(FormFillerTest, FormChangesVisibilityOfFields) {
               AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)));
   EXPECT_THAT(filled_form.fields[1],
               AutofilledWith(profile.GetInfo(ADDRESS_HOME_LINE1, kAppLocale)));
-  EXPECT_FALSE(filled_form.fields[2].is_autofilled);
-  EXPECT_FALSE(filled_form.fields[3].is_autofilled);
+  EXPECT_FALSE(filled_form.fields[2].is_autofilled());
+  EXPECT_FALSE(filled_form.fields[3].is_autofilled());
 
   // Two other fields will show up. Select the second profile. The fields that
   // were already filled, would be left unchanged, and the rest would be filled
@@ -1684,7 +1684,7 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
       filled_form, filled_form.fields[0], gfx::RectF(), base::TimeTicks::Now());
 
   ASSERT_TRUE(form_structure->field(0)->previously_autofilled());
-  EXPECT_FALSE(form_structure->field(0)->is_autofilled);
+  EXPECT_FALSE(form_structure->field(0)->is_autofilled());
   EXPECT_THAT(form_structure->field(0)->autofill_source_profile_guid(),
               Optional(profile.guid()));
   EXPECT_THAT(form_structure->field(1), AutofilledWithProfile(profile));

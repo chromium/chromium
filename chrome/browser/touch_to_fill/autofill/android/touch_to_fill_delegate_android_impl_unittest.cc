@@ -803,7 +803,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   // Simulate that the form was autofilled by other means
   FormStructure submitted_form(form_);
   for (const std::unique_ptr<AutofillField>& field : submitted_form) {
-    field->is_autofilled = true;
+    field->set_is_autofilled(true);
   }
 
   touch_to_fill_delegate_->LogMetricsAfterSubmission(submitted_form);

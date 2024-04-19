@@ -670,9 +670,9 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
                            "buddy@gmail.com", FormControlType::kInputText),
        CreateTestFormField("Phone", "phone", "2345678901",
                            FormControlType::kInputTelephone)});
-  form.fields[0].is_autofilled = true;
-  form.fields[1].is_autofilled = false;
-  form.fields[2].is_autofilled = false;
+  form.fields[0].set_is_autofilled(true);
+  form.fields[1].set_is_autofilled(false);
+  form.fields[2].set_is_autofilled(false);
 
   SeeForm(form);
 
@@ -705,7 +705,7 @@ TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
                            FormControlType::kInputText),
        CreateTestFormField("Unknown", "unknown", "garbage",
                            FormControlType::kInputText)});
-  form.fields.front().is_autofilled = true;
+  form.fields.front().set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, PHONE_HOME_NUMBER,
                                             ADDRESS_HOME_CITY, UNKNOWN_TYPE};
@@ -814,9 +814,9 @@ TEST_F(AutofillMetricsTest, TypeOfEditedAutofilledFieldsUkmLogging) {
                            "buddy@gmail.com", FormControlType::kInputText),
        CreateTestFormField("Phone", "phone", "2345678901",
                            FormControlType::kInputTelephone)});
-  form.fields[0].is_autofilled = true;
-  form.fields[1].is_autofilled = true;
-  form.fields[2].is_autofilled = true;
+  form.fields[0].set_is_autofilled(true);
+  form.fields[1].set_is_autofilled(true);
+  form.fields[2].set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS,
                                             PHONE_HOME_CITY_AND_NUMBER};
@@ -6188,7 +6188,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
       field.set_value(fill_type != CREDIT_CARD_VERIFICATION_CODE
                           ? fill_data().credit_card.GetRawInfo(fill_type)
                           : fill_data().cvc);
-      field.is_autofilled = is_autofilled;
+      field.set_is_autofilled(is_autofilled);
       field.properties_mask = (field.properties_mask & ~kUserTyped) |
                               (is_user_typed ? kUserTyped : 0);
     }

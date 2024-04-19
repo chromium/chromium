@@ -535,7 +535,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
             features::kAutofillDontPreserveAutofillState)) {
       // Preserve state whether the field was autofilled before.
       if (reason == RetrieveFromCacheReason::kFormParsing)
-        field->is_autofilled = cached_field->is_autofilled;
+        field->set_is_autofilled(cached_field->is_autofilled());
     }
 
     field->set_autofill_source_profile_guid(

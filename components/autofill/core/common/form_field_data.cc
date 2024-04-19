@@ -111,7 +111,7 @@ bool DeserializeSection1(base::PickleIterator* iter,
     field_data->set_value(std::move(value));
     field_data->autocomplete_attribute = std::move(autocomplete_attribute);
     field_data->max_length = max_length;
-    field_data->is_autofilled = std::move(is_autofilled);
+    field_data->set_is_autofilled(std::move(is_autofilled));
     // Form control types are serialized as strings for legacy reasons.
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
     // (de)serialize form control types? Remove it or migrate it to the enum
@@ -419,7 +419,7 @@ FormFieldData::FillData::FillData(const FormFieldData& field)
       renderer_id(field.renderer_id()),
       host_form_id(field.host_form_id),
       section(field.section),
-      is_autofilled(field.is_autofilled),
+      is_autofilled(field.is_autofilled()),
       force_override(field.force_override) {}
 
 FormFieldData::FillData::FillData(const FillData&) = default;
@@ -489,7 +489,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   // We don't serialize the `parsed_autocomplete`. See http://crbug.com/1353392.
   pickle->WriteString(field_data.autocomplete_attribute);
   pickle->WriteUInt64(field_data.max_length);
-  pickle->WriteBool(field_data.is_autofilled);
+  pickle->WriteBool(field_data.is_autofilled());
   pickle->WriteInt(static_cast<int>(field_data.check_status));
   pickle->WriteBool(field_data.is_focusable);
   pickle->WriteBool(field_data.should_autocomplete);
@@ -655,8 +655,9 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
                     : "")
             << "' " << "placeholder='" << field.placeholder << "' "
             << "max_length=" << field.max_length << " " << "css_classes='"
-            << field.css_classes << "' " << "autofilled=" << field.is_autofilled
-            << " " << "check_status=" << field.check_status << " "
+            << field.css_classes << "' "
+            << "autofilled=" << field.is_autofilled() << " "
+            << "check_status=" << field.check_status << " "
             << "is_focusable=" << field.is_focusable << " "
             << "should_autocomplete=" << field.should_autocomplete << " "
             << "role=" << field.role << " "

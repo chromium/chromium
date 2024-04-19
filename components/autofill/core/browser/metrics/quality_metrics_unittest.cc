@@ -185,7 +185,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationOk) {
        // RATIONALIZATION_OK because it's a type mismatch.
        CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
                            FormControlType::kInputText)});
-  form.fields[2].is_autofilled = true;
+  form.fields[2].set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL,
                                             ADDRESS_HOME_LINE1,
@@ -233,7 +233,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationGood) {
        // RATIONALIZATION_GOOD because it's empty.
        CreateTestFormField("Phone1", "phone1", "",
                            FormControlType::kInputText)});
-  form.fields[2].is_autofilled = true;
+  form.fields[2].set_is_autofilled(true);
 
   std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                         PHONE_HOME_CITY_AND_NUMBER,
@@ -274,7 +274,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationBad) {
       CreateTestFormField("Phone1", "phone1", "2345678901",
                           FormControlType::kInputText),
   });
-  form.fields[2].is_autofilled = true;
+  form.fields[2].set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                             PHONE_HOME_CITY_AND_NUMBER,
@@ -324,7 +324,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForOnlyFillWhenFocusedField) {
        // FALSE_NEGATIVE_MISMATCH + RATIONALIZATION_OK
        CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
                            FormControlType::kInputText)});
-  form.fields[2].is_autofilled = true;
+  form.fields[2].set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL,
                                             ADDRESS_HOME_LINE1,
@@ -714,8 +714,8 @@ TEST_F(QualityMetricsTest, NoSubmission) {
                            FormControlType::kSelectOne),
        CreateTestFormField("Phone", "phone", "2345678901",
                            FormControlType::kInputTelephone)});
-  form.fields.front().is_autofilled = true;
-  form.fields.back().is_autofilled = true;
+  form.fields.front().set_is_autofilled(true);
+  form.fields.back().set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,

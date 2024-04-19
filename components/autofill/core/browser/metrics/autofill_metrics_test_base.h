@@ -124,7 +124,7 @@ class AutofillMetricsBaseTest {
                                       base::TimeTicks timestamp = {}) {
     // Assert that the field is actually set to a different value.
     ASSERT_NE(field.value(), new_value);
-    field.is_autofilled = false;
+    field.set_is_autofilled(false);
     field.set_value(new_value);
     autofill_manager().OnTextFieldDidChange(form, field, gfx::RectF(),
                                             timestamp);
@@ -135,7 +135,7 @@ class AutofillMetricsBaseTest {
       const FormData& form,
       FormFieldData& field,
       base::TimeTicks timestamp = {}) {
-    field.is_autofilled = false;
+    field.set_is_autofilled(false);
     autofill_manager().OnTextFieldDidChange(form, field, gfx::RectF(),
                                             timestamp);
   }

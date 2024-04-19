@@ -509,7 +509,7 @@ FieldType GetActualFieldType(const FieldTypeSet& possible_types,
 // only_fill_when_focused set to true.
 bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
   for (const auto& form_field : form) {
-    if (field.value() == form_field->value() && form_field->is_autofilled) {
+    if (field.value() == form_field->value() && form_field->is_autofilled()) {
       return true;
     }
   }
@@ -2028,7 +2028,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogTextFieldDidChange(
       .SetServerType(static_cast<int>(field.server_type()))
       .SetHtmlFieldType(static_cast<int>(field.html_type()))
       .SetHtmlFieldMode(static_cast<int>(field.html_mode()))
-      .SetIsAutofilled(field.is_autofilled)
+      .SetIsAutofilled(field.is_autofilled())
       .SetIsEmpty(field.IsEmpty())
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
@@ -2048,7 +2048,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFieldFillStatus(
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetValidationEvent(static_cast<int64_t>(metric_type))
-      .SetIsAutofilled(static_cast<int64_t>(field.is_autofilled))
+      .SetIsAutofilled(static_cast<int64_t>(field.is_autofilled()))
       .SetWasPreviouslyAutofilled(
           static_cast<int64_t>(field.previously_autofilled()))
       .Record(ukm_recorder_);

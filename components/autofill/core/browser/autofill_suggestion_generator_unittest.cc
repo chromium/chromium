@@ -2277,7 +2277,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ClearAddressFormSuggestion) {
 
   personal_data().AddProfile(test::GetFullProfile());
   FormFieldData field;
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForProfiles(
           {NAME_FIRST}, field, NAME_FIRST,
@@ -2296,7 +2296,7 @@ TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
 
   personal_data().AddProfile(test::GetFullProfile());
   FormFieldData field;
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForProfiles(
           {NAME_FIRST}, field, NAME_FIRST,
@@ -2492,7 +2492,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       {server_card.guid(), VirtualCardUsageData::VirtualCardLastFour(u"4444")});
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForVirtualCardStandaloneCvc(
           field, metadata_logging_context, virtual_card_guid_to_last_four_map);
@@ -2520,7 +2520,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       {server_card.guid(), VirtualCardUsageData::VirtualCardLastFour(u"4444")});
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForVirtualCardStandaloneCvc(
           field, metadata_logging_context, virtual_card_guid_to_last_four_map);
@@ -2649,7 +2649,7 @@ TEST_F(AutofillSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
@@ -2716,7 +2716,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
@@ -2741,7 +2741,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
-  field.is_autofilled = true;
+  field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,

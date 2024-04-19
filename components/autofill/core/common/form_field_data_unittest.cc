@@ -21,7 +21,7 @@ void FillCommonFields(FormFieldData* data) {
   data->set_form_control_type(FormControlType::kInputPassword);
   data->autocomplete_attribute = "off";
   data->max_length = 200;
-  data->is_autofilled = true;
+  data->set_is_autofilled(true);
   data->check_status = FormFieldData::CheckStatus::kChecked;
   data->is_focusable = true;
   data->should_autocomplete = false;
@@ -62,7 +62,7 @@ void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
   pickle->WriteString(FormControlTypeToString(data.form_control_type()));
   pickle->WriteString(data.autocomplete_attribute);
   pickle->WriteUInt64(data.max_length);
-  pickle->WriteBool(data.is_autofilled);
+  pickle->WriteBool(data.is_autofilled());
 }
 
 void WriteSection3(const FormFieldData& data, base::Pickle* pickle) {

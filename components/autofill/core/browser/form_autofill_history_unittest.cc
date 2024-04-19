@@ -34,7 +34,7 @@ class FormAutofillHistoryTest : public testing::Test {
                                    FieldType field_type,
                                    bool is_autofilled = false) {
     FormFieldData field = test::CreateTestFormField(label, name, value, type);
-    field.is_autofilled = is_autofilled;
+    field.set_is_autofilled(is_autofilled);
     filled_fields_.push_back(field);
     AutofillField autofill_field(field);
     autofill_field.SetTypeTo(AutofillType(field_type));

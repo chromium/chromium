@@ -1521,7 +1521,7 @@ void AutofillAgent::JavaScriptChangedValue(const WebFormControlElement& element,
                                      &FormFieldData::renderer_id);
         it != provisionally_saved_form()->fields.end()) {
       it->set_value(element.Value().Utf16());
-      it->is_autofilled = element.IsAutofilled();
+      it->set_is_autofilled(element.IsAutofilled());
     }
   }
   if (!was_autofilled) {

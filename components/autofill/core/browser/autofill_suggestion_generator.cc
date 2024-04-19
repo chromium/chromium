@@ -1036,7 +1036,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = GetProfilesToSuggest(
           trigger_field_type, field_value_for_filtering,
-          trigger_field.is_autofilled, field_types, trigger_source);
+          trigger_field.is_autofilled(), field_types, trigger_source);
   // If autofill for addresses is triggered from the context menu on an address
   // field and no suggestions can be shown (i.e. if a user has only addresses
   // without emails and then triggers autofill from the context menu on an email
@@ -1063,7 +1063,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   if (suggestions.empty()) {
     return suggestions;
   }
-  base::ranges::move(GetAddressFooterSuggestions(trigger_field.is_autofilled),
+  base::ranges::move(GetAddressFooterSuggestions(trigger_field.is_autofilled()),
                      std::back_inserter(suggestions));
   return suggestions;
 }
@@ -1434,7 +1434,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   base::ranges::move(
       GetCreditCardFooterSuggestions(
           should_show_scan_credit_card, should_show_cards_from_account,
-          trigger_field.is_autofilled, display_gpay_logo),
+          trigger_field.is_autofilled(), display_gpay_logo),
       std::back_inserter(suggestions));
   return suggestions;
 }
@@ -1497,7 +1497,7 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
   base::ranges::move(
       GetCreditCardFooterSuggestions(/*should_show_scan_credit_card=*/false,
                                      /*should_show_cards_from_account=*/false,
-                                     trigger_field.is_autofilled,
+                                     trigger_field.is_autofilled(),
                                      /*with_gpay_logo=*/true),
       std::back_inserter(suggestions));
 
@@ -1649,7 +1649,7 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
             field_contents, trigger_field_type,
             credit_card->record_type() ==
                 CreditCard::RecordType::kMaskedServerCard,
-            trigger_field.is_autofilled)) {
+            trigger_field.is_autofilled())) {
       continue;
     }
     if (include_virtual_cards && ShouldShowVirtualCardOption(credit_card)) {

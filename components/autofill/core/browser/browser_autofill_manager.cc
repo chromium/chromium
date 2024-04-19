@@ -811,7 +811,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     if (autofill_field->autocomplete_attribute == "off" &&
         autofill_field->did_trigger_suggestions() &&
-        !autofill_field->is_autofilled &&
+        !autofill_field->is_autofilled() &&
         !autofill_field->previously_autofilled() &&
         base::FeatureList::IsEnabled(
             features::kAutofillSuggestionNStrikeModel)) {
@@ -1034,21 +1034,21 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
 
   UpdatePendingForm(form);
 
-  if (!user_did_type_ || autofill_field->is_autofilled) {
+  if (!user_did_type_ || autofill_field->is_autofilled()) {
     user_did_type_ = true;
     form_interactions_ukm_logger()->LogTextFieldDidChange(*form_structure,
                                                           *autofill_field);
   }
 
   auto* logger = GetEventFormLogger(*autofill_field);
-  if (!autofill_field->is_autofilled) {
+  if (!autofill_field->is_autofilled()) {
     if (logger) {
       logger->OnTypedIntoNonFilledField();
     }
   }
 
-  if (autofill_field->is_autofilled) {
-    autofill_field->is_autofilled = false;
+  if (autofill_field->is_autofilled()) {
+    autofill_field->set_is_autofilled(false);
     autofill_field->set_previously_autofilled(true);
     if (logger) {
       logger->OnEditedAutofilledField();

@@ -187,7 +187,7 @@ TEST_F(AutofillFieldFillingStatsAndScoreMetricsTest,
   // Make all other filled fields, be `FillingMethod::kFullForm`.
   for (size_t i = 3; i < form_structure->fields().size(); i++) {
     AutofillField* field = form_structure->field(i);
-    if (field->is_autofilled) {
+    if (field->is_autofilled()) {
       field->AppendLogEventIfNotRepeated(
           GetFillFieldLogEventWithFillingMethod(FillingMethod::kFullForm));
     }

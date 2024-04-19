@@ -48,7 +48,7 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
           test_fields[i].predicted_type)});
       if (test_fields[i].is_autofilled) {
         field.set_autofilled_type(test_fields[i].predicted_type);
-        field.is_autofilled = true;
+        field.set_is_autofilled(true);
       }
     }
 

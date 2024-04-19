@@ -48,7 +48,7 @@ void SelectProbableNameTypes(AutofillField& field,
 // If a field was autofilled on form submission and the value was accepted, set
 // possible types to the autofilled type.
 void SetPossibleTypesToAutofilledTypeIfAvailable(AutofillField& field) {
-  if (field.is_autofilled && field.autofilled_type() &&
+  if (field.is_autofilled() && field.autofilled_type() &&
       base::FeatureList::IsEnabled(
           features::kAutofillDisambiguateContradictingFieldTypes)) {
     field.set_possible_types({*field.autofilled_type()});

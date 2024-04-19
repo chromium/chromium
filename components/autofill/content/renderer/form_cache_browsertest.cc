@@ -435,7 +435,7 @@ void FillAndCheckState(
         values_to_fill, field_to_fill.element->NameForAutofill());
     ASSERT_TRUE(value_to_fill != nullptr);
     value_to_fill->set_value(field_to_fill.value);
-    value_to_fill->is_autofilled = true;
+    value_to_fill->set_is_autofilled(true);
   }
 
   if (checkbox_element) {
@@ -443,7 +443,7 @@ void FillAndCheckState(
         FindFieldByName(values_to_fill, checkbox_element->NameForAutofill());
     ASSERT_TRUE(value_to_fill != nullptr);
     value_to_fill->check_status = fill_checkbox_check_status;
-    value_to_fill->is_autofilled = true;
+    value_to_fill->set_is_autofilled(true);
   }
 
   std::vector<FormFieldData::FillData> fields_to_fill;

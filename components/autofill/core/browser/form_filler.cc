@@ -190,7 +190,7 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
 
   // Don't fill previously autofilled fields except the initiating field or
   // when it's a refill.
-  if (field.is_autofilled && !is_trigger_field && !is_refill) {
+  if (field.is_autofilled() && !is_trigger_field && !is_refill) {
     return FieldFillingSkipReason::kAutofilledFieldsNotRefill;
   }
 
@@ -377,7 +377,7 @@ FillingProduct FormFiller::UndoAutofill(
   std::erase_if(form.fields, [this, &operation,
                               &cached_fields](const FormFieldData& field) {
     // Skip not-autofilled fields as undo only acts on autofilled fields.
-    return !field.is_autofilled ||
+    return !field.is_autofilled() ||
            // Skip fields whose last autofill operations is different than
            // the one of the trigger field.
            form_autofill_history_.GetLastFillingOperationForField(
@@ -393,11 +393,11 @@ FillingProduct FormFiller::UndoAutofill(
         operation.GetFieldFillingEntry(field.global_id());
     // Update the FormFieldData to be sent for the renderer.
     field.set_value(previous_state.value);
-    field.is_autofilled = previous_state.is_autofilled;
+    field.set_is_autofilled(previous_state.is_autofilled);
 
     // Update the cached AutofillField in the browser.
     // TODO(crbug.com/1345089): Consider updating the value too.
-    autofill_field.is_autofilled = previous_state.is_autofilled;
+    autofill_field.set_is_autofilled(previous_state.is_autofilled);
     autofill_field.set_autofill_source_profile_guid(
         previous_state.autofill_source_profile_guid);
     autofill_field.set_autofilled_type(previous_state.autofilled_type);
@@ -443,7 +443,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
         base::make_span(&autofill_field, 1u),
         GetFillingProductFromPopupItemId(popup_item_id),
         /*is_refill=*/false);
-    autofill_field->is_autofilled = true;
+    autofill_field->set_is_autofilled(true);
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
         .fill_event_id = GetNextFillEventId(),
         .had_value_before_filling = ToOptionalBoolean(!field.value().empty()),
@@ -663,7 +663,8 @@ void FormFiller::FillOrPreviewForm(
         result_form.fields[i], should_notify, cvc.has_value() ? *cvc : u"",
         action_persistence, &failure_to_fill);
     const bool autofilled_value_did_not_change =
-        form.fields[i].is_autofilled && result_form.fields[i].is_autofilled &&
+        form.fields[i].is_autofilled() &&
+        result_form.fields[i].is_autofilled() &&
         form.fields[i].value() == result_form.fields[i].value();
     if (is_newly_autofilled && !autofilled_value_did_not_change) {
       newly_filled_field_ids.insert(result_form.fields[i].global_id());
@@ -676,8 +677,8 @@ void FormFiller::FillOrPreviewForm(
     }
 
     const bool has_value_after = !result_form.fields[i].value().empty();
-    const bool is_autofilled_before = form.fields[i].is_autofilled;
-    const bool is_autofilled_after = result_form.fields[i].is_autofilled;
+    const bool is_autofilled_before = form.fields[i].is_autofilled();
+    const bool is_autofilled_after = result_form.fields[i].is_autofilled();
 
     // Log when the suggestion is selected and log on non-checkable fields that
     // have been filled.
@@ -1063,7 +1064,7 @@ bool FormFiller::FillField(
   if (action_persistence == mojom::ActionPersistence::kFill) {
     // Mark the cached field as autofilled, so that we can detect when a
     // user edits an autofilled field (for metrics).
-    autofill_field.is_autofilled = true;
+    autofill_field.set_is_autofilled(true);
     if (const AutofillProfile** profile =
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       autofill_field.set_autofill_source_profile_guid((*profile)->guid());
@@ -1074,7 +1075,7 @@ bool FormFiller::FillField(
   // Mark the field as autofilled when a non-empty value is assigned to
   // it. This allows the renderer to distinguish autofilled fields from
   // fields with non-empty values, such as select-one fields.
-  field_data.is_autofilled = true;
+  field_data.set_is_autofilled(true);
 
   if (should_notify) {
     DCHECK(absl::holds_alternative<const AutofillProfile*>(

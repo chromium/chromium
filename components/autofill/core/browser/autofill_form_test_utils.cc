@@ -126,7 +126,7 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   if (fd.origin) {
     ff.origin = *fd.origin;
   }
-  ff.is_autofilled = fd.is_autofilled.value_or(false);
+  ff.set_is_autofilled(fd.is_autofilled.value_or(false));
   ff.should_autocomplete = fd.should_autocomplete;
   ff.properties_mask = fd.properties_mask;
   ff.check_status = fd.check_status;

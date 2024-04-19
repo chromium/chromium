@@ -324,13 +324,13 @@ void TouchToFillDelegateAndroidImpl::LogMetricsAfterSubmission(
 bool TouchToFillDelegateAndroidImpl::HasAnyAutofilledFields(
     const FormStructure& submitted_form) const {
   return base::ranges::any_of(
-      submitted_form, [](const auto& field) { return field->is_autofilled; });
+      submitted_form, [](const auto& field) { return field->is_autofilled(); });
 }
 
 bool TouchToFillDelegateAndroidImpl::IsFillingPerfect(
     const FormStructure& submitted_form) const {
   return base::ranges::all_of(submitted_form, [](const auto& field) {
-    return field->value().empty() || field->is_autofilled;
+    return field->value().empty() || field->is_autofilled();
   });
 }
 

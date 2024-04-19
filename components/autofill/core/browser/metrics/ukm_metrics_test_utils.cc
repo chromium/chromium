@@ -116,7 +116,7 @@ void AppendFieldFillStatusUkm(
          {UkmFieldFillStatusType::kFieldSignatureName, field_signature.value()},
          {UkmFieldFillStatusType::kValidationEventName, metric_type},
          {UkmTextFieldDidChangeType::kIsAutofilledName,
-          field.is_autofilled ? 1 : 0},
+          field.is_autofilled() ? 1 : 0},
          {UkmFieldFillStatusType::kWasPreviouslyAutofilledName, 0}});
   }
 }

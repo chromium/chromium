@@ -553,7 +553,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   base::Value::Dict fieldsData;
   for (const auto& field : form.fields) {
     // Skip empty fields and those that are not autofilled.
-    if (field.value().empty() || !field.is_autofilled) {
+    if (field.value().empty() || !field.is_autofilled()) {
       continue;
     }
 

@@ -87,7 +87,7 @@ void LogQualityMetrics(
     // The form was not perfectly filled if a field was user-edited. Notice that
     // this means that in a perfect filling, a field must either be autofilled,
     // empty, have same value as pageload or have value set by JavaScript.
-    if (field->is_user_edited && !field->is_autofilled) {
+    if (field->is_user_edited && !field->is_autofilled()) {
       perfect_filling = false;
     }
 
@@ -96,7 +96,7 @@ void LogQualityMetrics(
     if (observed_submission) {
       // If the field was either autofilled and accepted or corrected, emit the
       // FieldWiseCorrectness metric.
-      if (field->is_autofilled || field->previously_autofilled()) {
+      if (field->is_autofilled() || field->previously_autofilled()) {
         AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
             form_interactions_ukm_logger, form_structure, *field);
       }
@@ -140,10 +140,10 @@ void LogQualityMetrics(
             FormTypeToStringView(form_type_of_field);
         LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
                                 type.GetStorableType());
-        LogPreFilledValueChanged(form_type_name, field->initial_value_changed(),
-                                 field->value(), field->field_log_events(),
-                                 field->possible_types(),
-                                 type.GetStorableType(), field->is_autofilled);
+        LogPreFilledValueChanged(
+            form_type_name, field->initial_value_changed(), field->value(),
+            field->field_log_events(), field->possible_types(),
+            type.GetStorableType(), field->is_autofilled());
         LogPreFilledFieldClassifications(
             form_type_name, field->initial_value_changed(),
             field->may_use_prefilled_placeholder());
@@ -175,7 +175,7 @@ void LogQualityMetrics(
 
       // If there was a collision, log if the NUMERIC_QUANTITY was a false
       // positive since the field was correctly filled.
-      if ((field->is_autofilled || field->previously_autofilled()) &&
+      if ((field->is_autofilled() || field->previously_autofilled()) &&
           field_has_non_empty_server_prediction &&
           !base::FeatureList::IsEnabled(
               features::kAutofillGivePrecedenceToNumericQuantities)) {
@@ -193,11 +193,11 @@ void LogQualityMetrics(
 
     ++num_detected_field_types;
 
-    if (field->is_autofilled) {
+    if (field->is_autofilled()) {
       did_autofill_some_possible_fields = true;
     }
 
-    if (field->is_autofilled) {
+    if (field->is_autofilled()) {
       autofilled_field_types.insert(type.GetStorableType());
     }
 
@@ -205,7 +205,7 @@ void LogQualityMetrics(
     frames_of_detected_fields.insert(field->host_frame);
     if (group == FieldTypeGroup::kCreditCard) {
       frames_of_detected_credit_card_fields.insert(field->host_frame);
-      if (field->is_autofilled) {
+      if (field->is_autofilled()) {
         frames_of_autofilled_credit_card_fields.insert(field->host_frame);
       }
     }

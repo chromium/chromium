@@ -157,7 +157,7 @@ void FillInDummyFormData(FormData* data) {
   field_data.set_form_control_type(FormControlType::kInputPassword);
   field_data.autocomplete_attribute = "off";
   field_data.max_length = 200;
-  field_data.is_autofilled = true;
+  field_data.set_is_autofilled(true);
   field_data.check_status = FormFieldData::CheckStatus::kChecked;
   field_data.is_focusable = true;
   field_data.should_autocomplete = false;

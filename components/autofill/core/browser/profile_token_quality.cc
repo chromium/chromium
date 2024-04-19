@@ -267,7 +267,7 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
                          [](AutofillProfile* p) { return p->guid(); }));
 
   const FieldType type = field.Type().GetStorableType();
-  if (field.is_autofilled) {
+  if (field.is_autofilled()) {
     // The filled value was accepted without editing.
     return GetDatabaseStoredTypesOfAutofillProfile().contains(type)
                ? ObservationType::kAccepted

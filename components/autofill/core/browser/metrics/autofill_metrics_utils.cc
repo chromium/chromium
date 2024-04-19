@@ -52,8 +52,9 @@ FieldFillingStatus GetFieldFillingStatus(const AutofillField& field) {
       !FieldHasMeaningfulPossibleFieldTypes(field);
   const bool possible_types_contain_type = TypeOfFieldIsPossibleType(field);
 
-  if (field.is_autofilled)
+  if (field.is_autofilled()) {
     return FieldFillingStatus::kAccepted;
+  }
 
   if (field.previously_autofilled()) {
     if (is_empty)

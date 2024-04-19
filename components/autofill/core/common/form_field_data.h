@@ -374,7 +374,10 @@ struct FormFieldData {
   // (base::Pickle used to serialize that as 64 bit).
   uint64_t max_length = std::numeric_limits<uint32_t>::max();
 
-  bool is_autofilled = false;
+  const bool& is_autofilled() const { return is_autofilled_; }
+  void set_is_autofilled(bool is_autofilled) {
+    is_autofilled_ = std::move(is_autofilled);
+  }
 
   // Whether the user has edited this field since page load or resetting the
   // field.
@@ -443,6 +446,7 @@ struct FormFieldData {
   std::u16string value_;
   FormControlType form_control_type_ = FormControlType::kInputText;
   FieldRendererId renderer_id_;
+  bool is_autofilled_ = false;
 };
 
 // Structure containing necessary information to be sent from the browser to the
@@ -528,7 +532,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
     EXPECT_EQ(expected.placeholder, actual.placeholder);                       \
     EXPECT_EQ(expected.max_length, actual.max_length);                         \
     EXPECT_EQ(expected.css_classes, actual.css_classes);                       \
-    EXPECT_EQ(expected.is_autofilled, actual.is_autofilled);                   \
+    EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());               \
     EXPECT_EQ(expected.is_user_edited, actual.is_user_edited);                 \
     EXPECT_EQ(expected.section, actual.section);                               \
     EXPECT_EQ(expected.check_status, actual.check_status);                     \
