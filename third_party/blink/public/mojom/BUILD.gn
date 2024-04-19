@@ -62,6 +62,7 @@ mojom("mojom_platform") {
     "data_transfer/data_transfer.mojom",
     "device/device.mojom",
     "device_posture/device_posture_provider.mojom",
+    "device_posture/device_posture_provider_automation.mojom",
     "devtools/console_message.mojom",
     "devtools/devtools_agent.mojom",
     "devtools/devtools_frontend.mojom",

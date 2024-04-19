@@ -1369,6 +1369,7 @@ if (!target_os_is_android) {
 static_idl_files_in_modules_for_testing = [
   "//third_party/blink/renderer/modules/accessibility/testing/internals_accessibility.idl",
   "//third_party/blink/renderer/modules/credentialmanagement/testing/internals_fed_cm.idl",
+  "//third_party/blink/renderer/modules/device_posture/testing/internals_device_posture.idl",
   "//third_party/blink/renderer/modules/fuzzing/internals_fuzzing.idl",
   "//third_party/blink/renderer/modules/mediastream/testing/internals_media_stream.idl",
   "//third_party/blink/renderer/modules/netinfo/testing/internals_net_info.idl",

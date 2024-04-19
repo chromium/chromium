@@ -225,6 +225,8 @@ source_set("modules_testing") {
     "accessibility/testing/internals_accessibility.h",
     "credentialmanagement/testing/internals_fed_cm.cc",
     "credentialmanagement/testing/internals_fed_cm.h",
+    "device_posture/testing/internals_device_posture.cc",
+    "device_posture/testing/internals_device_posture.h",
     "fuzzing/internals_fuzzing.cc",
     "fuzzing/internals_fuzzing.h",
     "mediastream/testing/internals_media_stream.cc",

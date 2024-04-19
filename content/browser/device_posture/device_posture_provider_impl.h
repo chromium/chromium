@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PROVIDER_IMPL_H_
 
 #include "content/browser/device_posture/device_posture_platform_provider.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -32,9 +33,9 @@ class DevicePostureProviderImpl final
   DevicePosturePlatformProvider* platform_provider() const;
 
   // DevicePostureProvider implementation.
-  void OverrideDevicePostureForEmulation(
+  CONTENT_EXPORT void OverrideDevicePostureForEmulation(
       blink::mojom::DevicePostureType posture) override;
-  void DisableDevicePostureOverrideForEmulation() override;
+  CONTENT_EXPORT void DisableDevicePostureOverrideForEmulation() override;
 
  private:
   // DevicePostureClient implementation.

@@ -584,6 +584,14 @@
     return internals.getVirtualSensorInformation(sensor_type);
   }
 
+  window.test_driver_internal.set_device_posture = function(posture) {
+    return internals.setDevicePostureOverride(posture);
+  }
+
+  window.test_driver_internal.clear_device_posture = function() {
+    return internals.clearDevicePostureOverride();
+  }
+
   // Enable automation so we don't wait for user input on unimplemented APIs
   window.test_driver_internal.in_automation = true;
 

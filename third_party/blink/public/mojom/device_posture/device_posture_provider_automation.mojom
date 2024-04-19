@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.test.mojom;
+
+import "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom";
+
+// Provides a way to set and clear posture overrides as described in
+// https://w3c.github.io/device-posture/#automation
+//
+// This interface exists solely for the content_shell and
+// InternalsDevicePosture implementation, as the ChromeDriver-based code path
+// uses CDP to achieve the same results.
+interface DevicePostureProviderAutomation {
+  // Makes the Device Posture API report |posture| as the current posture.
+  SetPostureOverride(blink.mojom.DevicePostureType posture);
+
+  // Clears the override if one is set, otherwise does nothing.
+  ClearPostureOverride();
+};

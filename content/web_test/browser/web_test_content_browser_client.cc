@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/origin_trials/common/features.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -52,6 +53,7 @@
 #include "content/web_test/browser/web_test_browser_main_parts.h"
 #include "content/web_test/browser/web_test_control_host.h"
 #include "content/web_test/browser/web_test_cookie_manager.h"
+#include "content/web_test/browser/web_test_device_posture_provider.h"
 #include "content/web_test/browser/web_test_fedcm_manager.h"
 #include "content/web_test/browser/web_test_origin_trial_throttle.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
@@ -85,6 +87,7 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider_automation.mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -545,6 +548,10 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<blink::test::mojom::CookieManagerAutomation>(base::BindRepeating(
       &WebTestContentBrowserClient::BindCookieManagerAutomation,
       base::Unretained(this)));
+  map->Add<blink::test::mojom::DevicePostureProviderAutomation>(
+      base::BindRepeating(
+          &WebTestContentBrowserClient::BindDevicePostureProviderAutomation,
+          base::Unretained(this)));
   map->Add<blink::test::mojom::FederatedAuthRequestAutomation>(
       base::BindRepeating(&WebTestContentBrowserClient::BindFedCmAutomation,
                           base::Unretained(this)));
@@ -597,6 +604,16 @@ void WebTestContentBrowserClient::BindCookieManagerAutomation(
                                ->GetCookieManagerForBrowserProcess(),
                            render_frame_host->GetLastCommittedURL()),
                        std::move(receiver));
+}
+
+void WebTestContentBrowserClient::BindDevicePostureProviderAutomation(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::test::mojom::DevicePostureProviderAutomation>
+        receiver) {
+  device_posture_provider_managers_.Add(
+      std::make_unique<WebTestDevicePostureProvider>(
+          static_cast<RenderFrameHostImpl*>(render_frame_host)->GetWeakPtr()),
+      std::move(receiver));
 }
 
 void WebTestContentBrowserClient::BindFedCmAutomation(
