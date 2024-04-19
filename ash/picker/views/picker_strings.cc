@@ -11,13 +11,16 @@
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/notreached.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 std::u16string GetLabelForPickerCategory(PickerCategory category) {
   switch (category) {
-    case PickerCategory::kEditor:
+    case PickerCategory::kEditorWrite:
+      return l10n_util::GetStringUTF16(IDS_PICKER_EDITOR_CATEGORY_LABEL);
+    case PickerCategory::kEditorRewrite:
       return l10n_util::GetStringUTF16(IDS_PICKER_EDITOR_CATEGORY_LABEL);
     case PickerCategory::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
@@ -69,7 +72,8 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
     case PickerCategory::kUnitsMaths:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
-    case PickerCategory::kEditor:
+    case PickerCategory::kEditorWrite:
+    case PickerCategory::kEditorRewrite:
     case PickerCategory::kExpressions:
     case PickerCategory::kUpperCase:
     case PickerCategory::kLowerCase:
@@ -84,7 +88,10 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
 std::u16string GetSectionTitleForPickerCategoryType(
     PickerCategoryType category_type) {
   switch (category_type) {
-    case PickerCategoryType::kEditors:
+    case PickerCategoryType::kEditorWrite:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_EDITOR_CATEGORY_TYPE_SECTION_TITLE);
+    case PickerCategoryType::kEditorRewrite:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_EDITOR_CATEGORY_TYPE_SECTION_TITLE);
     case PickerCategoryType::kGeneral:
@@ -124,7 +131,9 @@ std::u16string GetSectionTitleForPickerSectionType(
       return u"Recently used";
     case PickerSectionType::kExamples:
       return u"Examples";
-    case PickerSectionType::kEditor:
+    case PickerSectionType::kEditorWrite:
+      return u"Editor";
+    case PickerSectionType::kEditorRewrite:
       return u"Editor";
   }
 }

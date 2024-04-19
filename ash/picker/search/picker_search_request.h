@@ -71,7 +71,8 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleDateSearchResults(std::vector<PickerSearchResult> results);
   void HandleMathSearchResults(std::optional<PickerSearchResult> result);
   void HandleClipboardSearchResults(std::vector<PickerSearchResult> results);
-  void HandleEditorSearchResults(std::optional<PickerSearchResult> result);
+  void HandleEditorSearchResults(PickerSearchSource source,
+                                 std::optional<PickerSearchResult> result);
 
   void OnDriveSearchTimeout();
 

@@ -729,7 +729,7 @@ TEST_F(PickerViewTest, ShowsEmojiPickerWhenClickingOnExpressions) {
 
 TEST_F(PickerViewTest, ShowsEditorWhenClickingOnEditor) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEditor},
+      .available_categories = {PickerCategory::kEditorWrite},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();

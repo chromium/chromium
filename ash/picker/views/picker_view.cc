@@ -129,7 +129,8 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
     case PickerSectionType::kSuggestions:
     case PickerSectionType::kRecentlyUsed:
     case PickerSectionType::kExamples:
-    case PickerSectionType::kEditor:
+    case PickerSectionType::kEditorWrite:
+    case PickerSectionType::kEditorRewrite:
       NOTREACHED_NORETURN();
     case PickerSectionType::kExpressions:
       return PickerCategory::kExpressions;
@@ -295,7 +296,8 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
     return;
   }
 
-  if (category == PickerCategory::kEditor) {
+  if (category == PickerCategory::kEditorWrite ||
+      category == PickerCategory::kEditorRewrite) {
     if (auto* widget = GetWidget()) {
       // TODO: b/330267329 - Correctly handle opening of Editor. Probably
       // best to wait for the IME on focus event, or save some coordinates and

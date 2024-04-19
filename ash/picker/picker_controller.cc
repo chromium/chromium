@@ -240,7 +240,8 @@ std::u16string TransformText(std::u16string_view text,
       return ToSentenceCase(text);
     case PickerCategory::kTitleCase:
       return ToTitleCase(text);
-    case PickerCategory::kEditor:
+    case PickerCategory::kEditorWrite:
+    case PickerCategory::kEditorRewrite:
     case PickerCategory::kLinks:
     case PickerCategory::kExpressions:
     case PickerCategory::kDriveFiles:
@@ -345,7 +346,8 @@ void PickerController::GetResultsForCategory(PickerCategory category,
   // TODO: b/325977099 - Get actual results for each category.
   std::vector<ash::PickerSearchResult> recent_results;
   switch (category) {
-    case PickerCategory::kEditor:
+    case PickerCategory::kEditorWrite:
+    case PickerCategory::kEditorRewrite:
     case PickerCategory::kUpperCase:
     case PickerCategory::kLowerCase:
     case PickerCategory::kSentenceCase:

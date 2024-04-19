@@ -14,7 +14,10 @@ namespace {
 
 const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
   switch (category) {
-    case PickerCategory::kEditor:
+    case PickerCategory::kEditorWrite:
+      // TODO: b/322926823 - Use correct icons.
+      return kPencilIcon;
+    case PickerCategory::kEditorRewrite:
       // TODO: b/322926823 - Use correct icons.
       return kPencilIcon;
     case PickerCategory::kExpressions:

@@ -12,7 +12,8 @@ namespace ash {
 // A category specifies a type of data that can be searched for.
 enum class ASH_PUBLIC_EXPORT PickerCategory {
   // Editor categories:
-  kEditor,
+  kEditorWrite,
+  kEditorRewrite,
   // General categories:
   kLinks,
   kExpressions,

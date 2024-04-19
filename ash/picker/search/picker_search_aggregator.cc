@@ -40,8 +40,10 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
       return PickerSectionType::kFiles;
     case PickerSearchSource::kDrive:
       return PickerSectionType::kDriveFiles;
-    case PickerSearchSource::kEditor:
-      return PickerSectionType::kEditor;
+    case PickerSearchSource::kEditorWrite:
+      return PickerSectionType::kEditorWrite;
+    case PickerSearchSource::kEditorRewrite:
+      return PickerSectionType::kEditorRewrite;
   }
 }
 
@@ -109,7 +111,8 @@ void PickerSearchAggregator::PublishBurnInResults() {
   for (PickerSectionType type : {
            PickerSectionType::kSuggestions,
            PickerSectionType::kCategories,
-           PickerSectionType::kEditor,
+           PickerSectionType::kEditorWrite,
+           PickerSectionType::kEditorRewrite,
            PickerSectionType::kExpressions,
            PickerSectionType::kLinks,
            PickerSectionType::kFiles,

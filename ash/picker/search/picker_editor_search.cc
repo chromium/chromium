@@ -21,12 +21,13 @@ constexpr int kMinWordsNeededForEditorMatch = 4;
 }
 
 std::optional<PickerSearchResult> PickerEditorSearch(
+    PickerSearchResult::EditorData::Mode mode,
     std::u16string_view query) {
   CHECK(!query.empty());
   string_matching::TokenizedString tokenized_query{std::u16string(query)};
   return tokenized_query.tokens().size() >= kMinWordsNeededForEditorMatch
              ? std::make_optional(
-                   PickerSearchResult::Editor(base::UTF16ToUTF8(query)))
+                   PickerSearchResult::Editor(mode, base::UTF16ToUTF8(query)))
              : std::nullopt;
 }
 

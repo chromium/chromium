@@ -115,10 +115,22 @@ PickerSearchRequest::PickerSearchRequest(
     HandleCategorySearchResults(
         PickerCategorySearch(available_categories, query));
 
-    if (base::Contains(available_categories, PickerCategory::kEditor)) {
+    if (base::Contains(available_categories, PickerCategory::kEditorWrite)) {
       // Editor results are currently synchronous.
       editor_search_start_ = base::TimeTicks::Now();
-      HandleEditorSearchResults(PickerEditorSearch(query));
+      HandleEditorSearchResults(
+          PickerSearchSource::kEditorWrite,
+          PickerEditorSearch(PickerSearchResult::EditorData::Mode::kWrite,
+                             query));
+    }
+
+    if (base::Contains(available_categories, PickerCategory::kEditorRewrite)) {
+      // Editor results are currently synchronous.
+      editor_search_start_ = base::TimeTicks::Now();
+      HandleEditorSearchResults(
+          PickerSearchSource::kEditorRewrite,
+          PickerEditorSearch(PickerSearchResult::EditorData::Mode::kRewrite,
+                             query));
     }
   }
 }
@@ -322,6 +334,7 @@ void PickerSearchRequest::HandleClipboardSearchResults(
 }
 
 void PickerSearchRequest::HandleEditorSearchResults(
+    PickerSearchSource source,
     std::optional<PickerSearchResult> result) {
   if (editor_search_start_.has_value()) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - *editor_search_start_;
@@ -335,7 +348,7 @@ void PickerSearchRequest::HandleEditorSearchResults(
   }
 
   // Editor results are never truncated.
-  HandleSearchSourceResults(PickerSearchSource::kEditor, std::move(results),
+  HandleSearchSourceResults(source, std::move(results),
                             /*has_more_results=*/false);
 }
 

@@ -45,7 +45,8 @@ using ::testing::VariantWith;
 constexpr int kPickerWidth = 320;
 
 constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
-    PickerCategory::kEditor,
+    PickerCategory::kEditorWrite,
+    PickerCategory::kEditorRewrite,
     PickerCategory::kLinks,
     PickerCategory::kExpressions,
     PickerCategory::kClipboard,
@@ -74,7 +75,8 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
   PickerZeroStateView view(&mock_delegate, kAllCategories, true, kPickerWidth);
 
   EXPECT_THAT(view.section_views_for_testing(),
-              ElementsAre(Key(PickerCategoryType::kEditors),
+              ElementsAre(Key(PickerCategoryType::kEditorWrite),
+                          Key(PickerCategoryType::kEditorRewrite),
                           Key(PickerCategoryType::kGeneral),
                           Key(PickerCategoryType::kCalculations)));
   EXPECT_THAT(view.SuggestedSectionForTesting(), IsNull());

@@ -54,7 +54,8 @@ using ::testing::VariantWith;
 constexpr base::TimeDelta kMetricMetricTime = base::Milliseconds(300);
 
 constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
-    PickerCategory::kEditor,
+    PickerCategory::kEditorWrite,
+    PickerCategory::kEditorRewrite,
     PickerCategory::kLinks,
     PickerCategory::kExpressions,
     PickerCategory::kClipboard,
@@ -1190,12 +1191,18 @@ TEST_F(PickerSearchRequestTest, RecordsClipboardMetrics) {
       "Ash.Picker.Search.ClipboardProvider.QueryTime", kMetricMetricTime, 1);
 }
 
-TEST_F(PickerSearchRequestTest, ShowsResultsFromEditorSearch) {
+class PickerSearchRequestEditorTest
+    : public PickerSearchRequestTest,
+      public testing::WithParamInterface<
+          std::pair<PickerCategory, PickerSearchSource>> {};
+
+TEST_P(PickerSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
+  const auto& [category, source] = GetParam();
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kEditor,
+      Call(source,
            ElementsAre(Property(
                "data", &PickerSearchResult::data,
                VariantWith<PickerSearchResult::EditorData>(Field(
@@ -1209,15 +1216,15 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromEditorSearch) {
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), &emoji_search(), {{category}});
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_P(PickerSearchRequestEditorTest,
        DoNotShowResultsFromEditorSearchIfNotAvailable) {
+  const auto& [category, source] = GetParam();
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback, Call(PickerSearchSource::kEditor, _, _))
-      .Times(0);
+  EXPECT_CALL(search_results_callback, Call(source, _, _)).Times(0);
 
   PickerSearchRequest request(
       u"quick brown fox jumped over lazy dog", std::nullopt,
@@ -1226,7 +1233,8 @@ TEST_F(PickerSearchRequestTest,
       &client(), &emoji_search(), {});
 }
 
-TEST_F(PickerSearchRequestTest, RecordsEditorMetrics) {
+TEST_P(PickerSearchRequestEditorTest, RecordsEditorMetrics) {
+  const auto& [category, source] = GetParam();
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
@@ -1234,10 +1242,18 @@ TEST_F(PickerSearchRequestTest, RecordsEditorMetrics) {
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), &emoji_search(), {{category}});
 
   histogram.ExpectTotalCount("Ash.Picker.Search.EditorProvider.QueryTime", 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PickerSearchRequestEditorTest,
+    testing::Values(std::make_pair(PickerCategory::kEditorWrite,
+                                   PickerSearchSource::kEditorWrite),
+                    std::make_pair(PickerCategory::kEditorRewrite,
+                                   PickerSearchSource::kEditorRewrite)));
 
 }  // namespace
 }  // namespace ash

@@ -9,15 +9,15 @@
 #include <string_view>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 
 namespace ash {
 
-class PickerSearchResult;
-
 // `query` must not be empty.
 ASH_EXPORT std::optional<PickerSearchResult> PickerEditorSearch(
+    PickerSearchResult::EditorData::Mode mode,
     std::u16string_view query);
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_SEARCH_PICKER_CATEGORY_SEARCH_H_
+#endif  // ASH_PICKER_SEARCH_PICKER_EDITOR_SEARCH_H_

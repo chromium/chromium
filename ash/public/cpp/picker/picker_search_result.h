@@ -144,9 +144,12 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   };
 
   struct EditorData {
+    enum class Mode { kWrite, kRewrite };
+
+    Mode mode;
     std::optional<std::string> freeform_text;
 
-    EditorData(std::optional<std::string> freeform_text);
+    EditorData(Mode mode, std::optional<std::string> freeform_text);
     EditorData(const EditorData&);
     EditorData& operator=(const EditorData&);
     ~EditorData();
@@ -200,7 +203,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                       base::FilePath file_path);
   static PickerSearchResult DriveFile(std::u16string title, const GURL& url);
   static PickerSearchResult Category(PickerCategory category);
-  static PickerSearchResult Editor(std::optional<std::string> freeform_text);
+  static PickerSearchResult Editor(PickerSearchResult::EditorData::Mode mode,
+                                   std::optional<std::string> freeform_text);
 
   const Data& data() const;
 

@@ -58,7 +58,8 @@ constexpr base::TimeDelta kAfterBurnIn = base::Milliseconds(700);
 static_assert(kBurnInPeriod < kAfterBurnIn);
 
 constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
-    PickerCategory::kEditor,
+    PickerCategory::kEditorWrite,
+    PickerCategory::kEditorRewrite,
     PickerCategory::kLinks,
     PickerCategory::kExpressions,
     PickerCategory::kClipboard,

@@ -398,7 +398,7 @@ TEST_F(PickerControllerTest, AvailableCategoriesContainsEditorWhenEnabled) {
   controller.ToggleWidget();
 
   EXPECT_THAT(controller.GetAvailableCategories(),
-              Contains(PickerCategory::kEditor));
+              Contains(PickerCategory::kEditorWrite));
 }
 
 TEST_F(PickerControllerTest,
@@ -411,7 +411,7 @@ TEST_F(PickerControllerTest,
   controller.ToggleWidget();
 
   EXPECT_THAT(controller.GetAvailableCategories(),
-              Not(Contains(PickerCategory::kEditor)));
+              Not(Contains(PickerCategory::kEditorWrite)));
 }
 
 TEST_F(PickerControllerTest, GetUpperCaseSelectedText) {

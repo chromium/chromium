@@ -10,8 +10,10 @@ namespace ash {
 
 ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
   switch (category) {
-    case PickerCategory::kEditor:
-      return PickerCategoryType::kEditors;
+    case PickerCategory::kEditorWrite:
+      return PickerCategoryType::kEditorWrite;
+    case PickerCategory::kEditorRewrite:
+      return PickerCategoryType::kEditorRewrite;
     case PickerCategory::kLinks:
     case PickerCategory::kExpressions:
     case PickerCategory::kClipboard:

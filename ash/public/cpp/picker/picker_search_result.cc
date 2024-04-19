@@ -87,8 +87,9 @@ bool PickerSearchResult::CategoryData::operator==(const CategoryData&) const =
     default;
 
 PickerSearchResult::EditorData::EditorData(
+    PickerSearchResult::EditorData::Mode mode,
     std::optional<std::string> freeform_text)
-    : freeform_text(std::move(freeform_text)) {}
+    : mode(mode), freeform_text(std::move(freeform_text)) {}
 
 PickerSearchResult::EditorData::EditorData(
     const PickerSearchResult::EditorData&) = default;
@@ -191,8 +192,9 @@ PickerSearchResult PickerSearchResult::Category(PickerCategory category) {
 }
 
 PickerSearchResult PickerSearchResult::Editor(
+    PickerSearchResult::EditorData::Mode mode,
     std::optional<std::string> freeform_text) {
-  return PickerSearchResult(EditorData(std::move(freeform_text)));
+  return PickerSearchResult(EditorData(mode, std::move(freeform_text)));
 }
 
 bool PickerSearchResult::operator==(const PickerSearchResult&) const = default;

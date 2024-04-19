@@ -46,9 +46,21 @@
 
 namespace ash {
 namespace {
+
 // Some of the icons we use do not have a default size, so we need to manually
 // set it.
 constexpr int kIconSize = 20;
+
+PickerCategory GetCategoryForEditorData(
+    const PickerSearchResult::EditorData& data) {
+  switch (data.mode) {
+    case PickerSearchResult::EditorData::Mode::kWrite:
+      return PickerCategory::kEditorWrite;
+    case PickerSearchResult::EditorData::Mode::kRewrite:
+      return PickerCategory::kEditorRewrite;
+  }
+}
+
 }  // namespace
 
 PickerSearchResultsView::PickerSearchResultsView(
@@ -340,10 +352,9 @@ void PickerSearchResultsView::AddResultToSection(
           [&](const PickerSearchResult::EditorData& data) {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            item_view->SetPrimaryText(
-                GetLabelForPickerCategory(PickerCategory::kEditor));
-            item_view->SetLeadingIcon(
-                GetIconForPickerCategory(PickerCategory::kEditor));
+            const PickerCategory category = GetCategoryForEditorData(data);
+            item_view->SetPrimaryText(GetLabelForPickerCategory(category));
+            item_view->SetLeadingIcon(GetIconForPickerCategory(category));
             section_view->AddListItem(std::move(item_view));
           },
       },

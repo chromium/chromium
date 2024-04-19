@@ -37,7 +37,7 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   if (HasSelectedText()) {
     std::vector<PickerCategory> categories;
     if (editor_status_ == EditorStatus::kEnabled) {
-      categories.push_back(PickerCategory::kEditor);
+      categories.push_back(PickerCategory::kEditorRewrite);
     }
     categories.insert(categories.end(), {
                                             PickerCategory::kUpperCase,
@@ -52,7 +52,7 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
                                              ? PickerCategory::kCapsOff
                                              : PickerCategory::kCapsOn};
   if (editor_status_ == EditorStatus::kEnabled) {
-    categories.push_back(PickerCategory::kEditor);
+    categories.push_back(PickerCategory::kEditorWrite);
   }
   categories.insert(categories.end(), {
                                           PickerCategory::kLinks,

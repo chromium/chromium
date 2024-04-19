@@ -21,7 +21,8 @@ using ::testing::VariantWith;
 
 TEST(PickerEditorSearchTest, MatchesSentence) {
   EXPECT_THAT(
-      PickerEditorSearch(u"the quick brown fox"),
+      PickerEditorSearch(PickerSearchResult::EditorData::Mode::kWrite,
+                         u"the quick brown fox"),
       Optional(Property(
           "data", &PickerSearchResult::data,
           VariantWith<PickerSearchResult::EditorData>(Field(
@@ -30,7 +31,9 @@ TEST(PickerEditorSearchTest, MatchesSentence) {
 }
 
 TEST(PickerEditorSearchTest, DoesNotMatchShortSentence) {
-  EXPECT_EQ(PickerEditorSearch(u"the quick brown"), std::nullopt);
+  EXPECT_EQ(PickerEditorSearch(PickerSearchResult::EditorData::Mode::kWrite,
+                               u"the quick brown"),
+            std::nullopt);
 }
 
 }  // namespace
