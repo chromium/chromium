@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -26,6 +27,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/common/content_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chrome {
@@ -129,11 +131,15 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
                             ACCEPT_INFO_BAR,
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
 
-  // The worker pointer is reference counted. While it is running, the
-  // message loops of the FILE and UI thread will hold references to it
-  // and it will be automatically freed once all its tasks have finished.
-  base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
-      ->StartSetAsDefault(base::DoNothing());
+  // Only change the default browser when not in a test environment.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)) {
+    // The worker pointer is reference counted. While it is running, the
+    // message loops of the FILE and UI thread will hold references to
+    // it and it will be automatically freed once all its tasks have
+    // finished.
+    base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+        ->StartSetAsDefault(base::DoNothing());
+  }
 
   return ConfirmInfoBarDelegate::Accept();
 }
