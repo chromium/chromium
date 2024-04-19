@@ -215,7 +215,7 @@ declare_args() {
 
   enable_backup_ref_ptr_instance_tracer = false
 
-  backup_ref_ptr_extra_oob_checks = enable_backup_ref_ptr_support
+  backup_ref_ptr_extra_oob_checks = false
 }
 
 declare_args() {
