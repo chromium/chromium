@@ -80,6 +80,17 @@ message ConfirmRecordUploadCall {
   optional StatusProto status = 4;  // OK if absent.
 }
 
+// Data about a blocked record.
+message BlockedRecordCall {
+  optional Priority priority = 1;        // required
+  optional Destination destination = 2;  // required
+}
+
+// Data about the list of blocked destinations received from the server.
+message BlockedDestinationsUpdatedCall {
+  repeated Destination destinations = 1;  // required
+}
+
 message HealthDataHistory {
   oneof record {
     EnqueueRecordCall enqueue_record_call = 1;
@@ -87,6 +98,8 @@ message HealthDataHistory {
     UploadEncryptedRecordCall upload_encrypted_record_call = 3;
     ConfirmRecordUploadCall confirm_record_upload_call = 4;
     StorageQueueAction storage_queue_action = 5;
+    BlockedRecordCall blocked_record_call = 7;
+    BlockedDestinationsUpdatedCall blocked_destinations_updated_call = 8;
   }
 
   optional int64 timestamp_seconds = 6;  // required
