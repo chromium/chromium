@@ -18,4 +18,6 @@ const char kOrcaRewriteMode[] = "rewrite";
 const char kOrcaPresetParamKey[] = "preset";
 const char kOrcaFreeformParamKey[] = "freeform";
 
+const char kOrcaResizingEnabledParamKey[] = "resizing-enabled";
+
 }  // namespace ash

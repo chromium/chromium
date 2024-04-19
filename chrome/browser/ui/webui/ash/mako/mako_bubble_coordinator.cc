@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_consent_view.h"
@@ -62,6 +63,10 @@ void MakoBubbleCoordinator::LoadEditorUI(
                                            preset_query_id);
   url = net::AppendOrReplaceQueryParameter(url, kOrcaFreeformParamKey,
                                            freeform_text);
+  if (base::FeatureList::IsEnabled(ash::features::kOrcaResizingSupport)) {
+    url = net::AppendOrReplaceQueryParameter(url, kOrcaResizingEnabledParamKey,
+                                             "true");
+  }
 
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
       url, profile, IDS_ACCNAME_ORCA, /*webui_resizes_host=*/true,
