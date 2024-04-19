@@ -335,7 +335,13 @@ def CreateVetPolicyDescription(crate_ids: List[str]) -> str:
                        "audits.toml."
         items.append(f"{crate_ids}: {criteria}")
 
-    description = "The following `cargo vet` audit criteria are required:\n\n"
+    description = \
+"""Chromium `supply-chain/config.toml` policy requires that the following
+audit criteria are met (note that these are the *minimum* required
+criteria and `supply-chain/audits.toml` can and should record a stricter
+certification if possible;  see also //docs/rust-unsafe.md):
+
+"""
     description += SortedMarkdownList(items)
 
     return description

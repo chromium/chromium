@@ -44,14 +44,21 @@ Additional notes:
   others will require specialists from the `unsafe-rust-in-chrome@google.com`
   group (see the ["Code Review Policy" above](#code-review-policy).  More
   details about audit criteria and the required expertise are explained in the
-  [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md).
+  [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md),
+  which also
+  (TODO: Land the [PR here](https://github.com/google/rust-crate-audits/pull/16))
+  provides guidance for conducting delta audits and/or auditing
+  conditionally-compiled code.
 * See
   [Cargo Vet documentation](https://mozilla.github.io/cargo-vet/recording-audits.html)
   for how to record the audit in `audits.toml`.
+  The `tools/crates/run_cargo_vet.py` may be used to invoke Chromium's copy of
+  `cargo-vet`.
 * Chromium uses both our own audits
   (stored in `third_party/rust/chromium_crates_io/supply-chain/audits.toml`)
   as well as audits imported from other parts of Google
   (e.g. Android, Fuchsia, etc.).  This means that adding a new crate does not
   necessarily require a new audit if the crate has already been audited by
-  other projects.
+  other projects (in this case, `cargo vet` will record the imported audit
+  in the `third_party/rust/chromium_crates_io/supply-chain/imports.lock` file).
 

@@ -44,8 +44,10 @@ to be done first - see the sections below.
 
 The changes in the auto-generated CL need to go through a security audit, which
 will ensure that `cargo vet` criteria (e.g. `ub-risk-0`, `safe-to-deploy`,
-etc.). still hold for the new versions.  The CL description specifies which
-criteria apply to the updated crates.
+etc.). still hold for the new versions.  The CL description specifies what are
+the _minimum_ criteria required for the updated crates (note that
+`supply-chain/audits.toml` can and should record a stricter certification if
+possible).
 See the `//docs/rust-unsafe.md` doc for details on how to audit and certify
 the new crate versions (this may require looping in `unsafe` Rust experts
 and/or cryptography experts).
@@ -70,8 +72,7 @@ the git branch for each update CL. There are some known corner cases where
   `third_party/rust/chromium_crates_io/vet_config.toml.hbs` and then run
   `tools/crates/run_gnrt.py vendor` to regenerate `supply-chain/config.toml`.
 * Update to a crate version that is already covered by `audits.toml` of other
-  projects that Chromium's `run_cargo_vet.py` imports.  In such case (but only
-  once https://crrev.com/c/5368743 lands) you may
+  projects that Chromium's `run_cargo_vet.py` imports.  In such case you may
   need to commit changes that `cargo vet` generates in
   `third_party/rust/chromium_crates_io/supply-chain/imports.lock`.
 
@@ -89,7 +90,12 @@ closest to `origin/main`):
       that the automated script has listed in the CL description (e.g. if some
       of the criteria are already covered by `audits.toml` imported from other
       projects).
+    - Also note that `cargo vet` will list the _minimum_ required criteria
+      (and `audits.toml` can and should record stricter certification if
+      possible).
 1. Follow the cargo vet instructions to inspect diffs and certify the results
+    - Note that special guidelines may apply to delta audits
+      (TODO: Land the [PR here](https://github.com/google/rust-crate-audits/pull/16)).
 1. `git add third_party/rust/chromium_crates_io/supply-chain`.
    `git commit -m 'cargo vet'`
 1. `git cl upload -m 'cargo vet'`
