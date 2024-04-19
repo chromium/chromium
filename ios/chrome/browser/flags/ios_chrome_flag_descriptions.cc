@@ -609,6 +609,11 @@ const char kIOSPasswordSignInUffName[] = "Password sign-in uff";
 const char kIOSPasswordSignInUffDescription[] =
     "Enables filling the username in username-first sign-in flows.";
 
+const char kIOSQuickDeleteName[] = "Quick Delete for iOS";
+const char kIOSQuickDeleteDescription[] =
+    "Enables a new way for users to more easily delete their browsing data in "
+    "iOS.";
+
 const char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";
 const char kNewTabPageFieldTrialDescription[] =

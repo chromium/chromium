@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/features.h"
@@ -1580,6 +1581,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIdentityDiscAccountSwitchName,
      flag_descriptions::kIdentityDiscAccountSwitchDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIdentityDiscAccountSwitch)},
+    {"ios-quick-delete", flag_descriptions::kIOSQuickDeleteName,
+     flag_descriptions::kIOSQuickDeleteDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSQuickDelete)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

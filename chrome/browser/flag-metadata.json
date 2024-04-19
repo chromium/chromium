@@ -5149,6 +5149,14 @@
     "expiry_milestone": 129
   },
   {
+    "name": "ios-quick-delete",
+    "owners": [
+      "fsenra@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "ios-shared-highlighting-color-change",
     "owners": [ "cheickcisse@google.com" ],
     "expiry_milestone": 95

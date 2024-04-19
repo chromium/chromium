@@ -523,6 +523,10 @@ extern const char kSyncWebauthnCredentialsDescription[];
 extern const char kIOSPasswordSignInUffName[];
 extern const char kIOSPasswordSignInUffDescription[];
 
+// Title and description for the flag to enable iOS Quick Delete feature.
+extern const char kIOSQuickDeleteName[];
+extern const char kIOSQuickDeleteDescription[];
+
 // Title and description for the flag to enable the Save to Drive feature.
 extern const char kIOSSaveToDriveName[];
 extern const char kIOSSaveToDriveDescription[];
