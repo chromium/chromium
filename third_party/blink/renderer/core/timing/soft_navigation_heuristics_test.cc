@@ -43,6 +43,12 @@ class SoftNavigationHeuristicsTest : public testing::Test {
     return ToScriptStateForMainWorld(page_holder_->GetDocument().GetFrame());
   }
 
+  bool IsDocumentTrackingSoftNavigations() {
+    return LocalDOMWindow::From(GetScriptStateForTest())
+        ->document()
+        ->IsTrackingSoftNavigationHeuristics();
+  }
+
  private:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_holder_;
@@ -63,11 +69,12 @@ TEST_F(SoftNavigationHeuristicsTest,
   auto* tracker = scheduler::TaskAttributionTracker::From(
       GetScriptStateForTest()->GetIsolate());
   ASSERT_TRUE(tracker);
-  // NextId() required so that the first task ID is non-zero (because we hash on
-  // key).
-  auto* task = tracker->CreateTaskAttributionInfoForTest(
-      scheduler::TaskAttributionId().NextId());
-  test_heuristics->OnCreateTaskScope(*task);
+  {
+    // Simulate a top-level event dispatch with no context to propagate.
+    std::optional<TaskScope> task_scope =
+        tracker->MaybeCreateTaskScopeForCallback(GetScriptStateForTest(),
+                                                 nullptr);
+  }
   ASSERT_TRUE(test_heuristics->GetInitialInteractionEncounteredForTest());
 }
 
@@ -145,16 +152,23 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   Persistent<scheduler::TaskAttributionInfo> root_task = nullptr;
   // Simulate a click.
   {
+    EXPECT_FALSE(IsDocumentTrackingSoftNavigations());
     SoftNavigationHeuristics::EventScope event_scope(
         heuristics->CreateEventScope(
             SoftNavigationHeuristics::EventScope::Type::kClick,
             /*is_new_interaction=*/true));
-    TaskScope task_scope = tracker->CreateTaskScope(
-        script_state, /*parent_task=*/nullptr, TaskScopeType::kCallback);
+
+    // Simulate a top-level event dispatch with no context to propagate.
+    std::optional<TaskScope> task_scope =
+        tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
+    // This won't create a new task scope because there's already one on the
+    // stack to propagate the soft navigation context, but it should notify
+    // `heuristics`.
+    EXPECT_FALSE(task_scope);
     root_task = tracker->RunningTask();
   }
   EXPECT_TRUE(root_task);
-  EXPECT_GT(heuristics->GetLastInteractionTaskIdForTest(), 0u);
+  EXPECT_TRUE(IsDocumentTrackingSoftNavigations());
 
   // Simulate a descendant task.
   Persistent<scheduler::TaskAttributionInfo> descendant_task = nullptr;
@@ -165,21 +179,23 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   }
   EXPECT_TRUE(descendant_task);
 
+  EXPECT_TRUE(IsDocumentTrackingSoftNavigations());
+  EXPECT_EQ(root_task.Get(), descendant_task.Get());
+
   root_task = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
   // The heuristics still should not have been reset since there is a live
   // root task, which is being held onto by its descendant task.
-  EXPECT_GT(heuristics->GetLastInteractionTaskIdForTest(), 0u);
+  EXPECT_TRUE(IsDocumentTrackingSoftNavigations());
 
   // Finally, this should allow the click task to be GCed, which should cause
   // the heuristics to be reset.
   descendant_task = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_EQ(heuristics->GetLastInteractionTaskIdForTest(), 0u);
+  EXPECT_FALSE(IsDocumentTrackingSoftNavigations());
 }
 
 TEST_F(SoftNavigationHeuristicsTest, NestedEventScopesAreMerged) {
-  auto current_task_id = scheduler::TaskAttributionId().NextId();
   auto* heuristics = CreateSoftNavigationHeuristicsForTest();
 
   SoftNavigationHeuristics::EventScope outer_event_scope(
@@ -190,26 +206,29 @@ TEST_F(SoftNavigationHeuristicsTest, NestedEventScopesAreMerged) {
       GetScriptStateForTest()->GetIsolate());
   ASSERT_TRUE(tracker);
 
-  auto* task1 = tracker->CreateTaskAttributionInfoForTest(current_task_id);
-  heuristics->OnCreateTaskScope(*task1);
-
-  scheduler::TaskAttributionIdType interaction_id1 =
-      heuristics->GetLastInteractionTaskIdForTest();
-  EXPECT_GT(interaction_id1, 0u);
-
-  current_task_id = current_task_id.NextId();
-  EXPECT_NE(current_task_id.value(), interaction_id1);
+  auto* script_state = GetScriptStateForTest();
+  SoftNavigationContext* context1 = nullptr;
+  {
+    std::optional<TaskScope> task_scope =
+        tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
+    context1 = tracker->RunningTask()->GetSoftNavigationContext();
+  }
+  EXPECT_TRUE(context1);
 
   SoftNavigationHeuristics::EventScope inner_event_scope(
       heuristics->CreateEventScope(
           SoftNavigationHeuristics::EventScope::Type::kNavigate,
           /*is_new_interaction=*/true));
-  auto* task2 = tracker->CreateTaskAttributionInfoForTest(current_task_id);
-  heuristics->OnCreateTaskScope(*task2);
 
-  scheduler::TaskAttributionIdType interaction_id2 =
-      heuristics->GetLastInteractionTaskIdForTest();
-  EXPECT_EQ(interaction_id1, interaction_id2);
+  SoftNavigationContext* context2 = nullptr;
+  {
+    std::optional<TaskScope> task_scope =
+        tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
+    context2 = tracker->RunningTask()->GetSoftNavigationContext();
+  }
+  EXPECT_TRUE(context2);
+
+  EXPECT_EQ(context1, context2);
 }
 
 }  // namespace blink

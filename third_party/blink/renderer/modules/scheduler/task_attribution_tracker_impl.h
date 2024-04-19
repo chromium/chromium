@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
@@ -18,6 +20,7 @@
 namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
+class SoftNavigationContext;
 }  // namespace blink
 
 namespace v8 {
@@ -45,18 +48,22 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
                             TaskScopeType type) override;
 
   TaskScope CreateTaskScope(ScriptState* script_state,
+                            SoftNavigationContext*) override;
+
+  TaskScope CreateTaskScope(ScriptState* script_state,
                             TaskAttributionInfo* task_state,
                             TaskScopeType type,
                             AbortSignal* abort_source,
                             DOMTaskSignal* priority_source) override;
 
+  std::optional<TaskScope> MaybeCreateTaskScopeForCallback(
+      ScriptState*,
+      TaskAttributionInfo* task_state) override;
+
   ObserverScope RegisterObserver(Observer* observer) override;
   void AddSameDocumentNavigationTask(TaskAttributionInfo* task) override;
   void ResetSameDocumentNavigationTasks() override;
   TaskAttributionInfo* CommitSameDocumentNavigation(TaskAttributionId) override;
-
-  TaskAttributionInfo* CreateTaskAttributionInfoForTest(
-      TaskAttributionId id) override;
 
  private:
   explicit TaskAttributionTrackerImpl(v8::Isolate*);

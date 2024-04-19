@@ -46,6 +46,8 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
       return ProtoType::TASK_SCOPE_REQUEST_IDLE_CALLBACK;
     case TaskAttributionTracker::TaskScopeType::kXMLHttpRequest:
       return ProtoType::TASK_SCOPE_XML_HTTP_REQUEST;
+    case TaskAttributionTracker::TaskScopeType::kSoftNavigation:
+      return ProtoType::TASK_SCOPE_SOFT_NAVIGATION;
   }
 }
 
@@ -83,6 +85,17 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
 
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     ScriptState* script_state,
+    SoftNavigationContext* soft_navigation_context) {
+  next_task_id_ = next_task_id_.NextId();
+  auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
+      next_task_id_, soft_navigation_context);
+  return CreateTaskScope(script_state, task_state,
+                         TaskScopeType::kSoftNavigation,
+                         /*abort_source=*/nullptr, /*priority_source=*/nullptr);
+}
+
+TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
+    ScriptState* script_state,
     TaskAttributionInfo* task_state,
     TaskScopeType type,
     AbortSignal* abort_source,
@@ -96,7 +109,8 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
   // state to begin propagating.
   if (!task_state) {
     next_task_id_ = next_task_id_.NextId();
-    task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(next_task_id_);
+    task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
+        next_task_id_, /*soft_navigation_contxt=*/nullptr);
   }
 
   ScriptWrappableTaskState* running_task_state = nullptr;
@@ -118,7 +132,12 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
 
   // Fire observer callbacks after updating the CPED to keep `RunningTask()` in
   // sync with what is passed to the observer.
-  if (observer_) {
+  //
+  // TODO(crbug.com/40942324): The purpose of the `Observer` mechanism is so the
+  // soft navigation layer can learn if an event ran while the scope is active,
+  // which is why we filter out soft navigation task scopes. It might be better
+  // to move event observation into event handling itself.
+  if (observer_ && type != TaskScopeType::kSoftNavigation) {
     observer_->OnCreateTaskScope(*current);
   }
 
@@ -133,6 +152,31 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
       });
 
   return TaskScope(this, script_state, previous_task_state);
+}
+
+std::optional<TaskAttributionTracker::TaskScope>
+TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
+    ScriptState* script_state,
+    TaskAttributionInfo* task_state) {
+  CHECK(script_state);
+
+  TaskAttributionInfo* current_task_state = RunningTask();
+  // Always create a `TaskScope` if there's `task_state` to propagate. Always
+  // create a `TaskScope` if there's no `current_task_state` to ensure there's a
+  // `TaskScope` for top-level JS execution.
+  if (task_state || !current_task_state) {
+    return CreateTaskScope(script_state, task_state, TaskScopeType::kCallback);
+  }
+
+  // Even though we don't need to create a `TaskScope`, we still need to notify
+  // the `observer_` since it relies on the callback to set up internal state.
+  // And the `observer_` might not have been notified previously, e.g. if
+  // the outermost `TaskScope` is for propagating soft navigation state.
+  if (observer_) {
+    observer_->OnCreateTaskScope(*current_task_state);
+  }
+
+  return std::nullopt;
 }
 
 void TaskAttributionTrackerImpl::OnTaskScopeDestroyed(
@@ -181,12 +225,6 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::CommitSameDocumentNavigation(
     }
   }
   return nullptr;
-}
-
-TaskAttributionInfo*
-TaskAttributionTrackerImpl::CreateTaskAttributionInfoForTest(
-    TaskAttributionId id) {
-  return MakeGarbageCollected<TaskAttributionInfoImpl>(id);
 }
 
 }  // namespace blink::scheduler

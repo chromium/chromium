@@ -39,6 +39,7 @@ message BlinkTaskScope {
     TASK_SCOPE_SCHEDULER_POST_TASK = 6;
     TASK_SCOPE_REQUEST_IDLE_CALLBACK = 7;
     TASK_SCOPE_XML_HTTP_REQUEST = 8;
+    TASK_SCOPE_SOFT_NAVIGATION = 9;
   }
   optional TaskScopeType type = 1;
   optional int64 scope_task_id = 2;

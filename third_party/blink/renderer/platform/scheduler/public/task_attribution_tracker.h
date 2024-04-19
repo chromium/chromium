@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_TASK_ATTRIBUTION_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_TASK_ATTRIBUTION_TRACKER_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/function_ref.h"
@@ -20,6 +21,7 @@ class AbortSignal;
 class DOMTaskSignal;
 class ScriptState;
 class ScriptWrappableTaskState;
+class SoftNavigationContext;
 }  // namespace blink
 
 namespace v8 {
@@ -45,6 +47,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     kSchedulerPostTask,
     kRequestIdleCallback,
     kXMLHttpRequest,
+    kSoftNavigation,
   };
 
   // `TaskScope` stores state for the current task, which is propagated to tasks
@@ -147,6 +150,10 @@ class PLATFORM_EXPORT TaskAttributionTracker {
                                     TaskAttributionInfo* task_state,
                                     TaskScopeType type) = 0;
 
+  // Create a new `TaskScope` to propagate the given `SoftNavigationContext`,
+  // initiating propagation for the context.
+  virtual TaskScope CreateTaskScope(ScriptState*, SoftNavigationContext*) = 0;
+
   // Creates a new `TaskScope` with web scheduling context. `task_state` will be
   // propagated to descendant tasks and continuations; `abort_source` and
   // `priority_source` will only be propagated to continuations.
@@ -155,6 +162,13 @@ class PLATFORM_EXPORT TaskAttributionTracker {
                                     TaskScopeType type,
                                     AbortSignal* abort_source,
                                     DOMTaskSignal* priority_source) = 0;
+
+  // Conditionally create a `TaskScope` for a generic v8 callback. A `TaskScope`
+  // is always created if `task_state` is non-null, and one is additionally
+  // created if there isn't an active `TaskScope`.
+  virtual std::optional<TaskScope> MaybeCreateTaskScopeForCallback(
+      ScriptState*,
+      TaskAttributionInfo* task_state) = 0;
 
   // Get the `TaskAttributionInfo` for the currently running task.
   virtual TaskAttributionInfo* RunningTask() const = 0;
@@ -170,9 +184,6 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   virtual void ResetSameDocumentNavigationTasks() = 0;
   virtual TaskAttributionInfo* CommitSameDocumentNavigation(
       TaskAttributionId) = 0;
-
-  virtual TaskAttributionInfo* CreateTaskAttributionInfoForTest(
-      TaskAttributionId id) = 0;
 
  protected:
   virtual void OnTaskScopeDestroyed(const TaskScope&) = 0;
