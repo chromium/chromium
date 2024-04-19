@@ -143,7 +143,8 @@ void AttachBrowserAgents(Browser* browser) {
     TabBasedIPHBrowserAgent::CreateForBrowser(browser);
   }
 
-  if (IsContextualPanelEnabled()) {
+  // Contextual Panel is non-OTR only.
+  if (!browser_is_off_record && IsContextualPanelEnabled()) {
     ContextualPanelBrowserAgent::CreateForBrowser(browser);
   }
 
