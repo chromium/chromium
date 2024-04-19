@@ -99,7 +99,7 @@ TEST_F(CastAuthUtilTest, VerifySuccess) {
   base::Time now = base::Time::Now();
   AuthResult result = VerifyCredentialsForTest(
       auth_response, signed_data, cast_certificate::CRLPolicy::CRL_OPTIONAL,
-      nullptr, nullptr, now);
+      nullptr, now);
   EXPECT_TRUE(result.success());
   EXPECT_EQ(static_cast<unsigned>(AuthResult::POLICY_NONE),
             result.channel_policies);
@@ -161,7 +161,7 @@ TEST_F(CastAuthUtilTest, VerifyUnsupportedDigest) {
   base::Time now = base::Time::Now();
   AuthResult result = VerifyCredentialsForTest(
       auth_response, signed_data, cast_certificate::CRLPolicy::CRL_OPTIONAL,
-      nullptr, nullptr, now);
+      nullptr, now);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_DIGEST_UNSUPPORTED, result.error_type);
   EXPECT_EQ(kFlagsSHA1AndCRLMissing, result.flags);
@@ -173,7 +173,7 @@ TEST_F(CastAuthUtilTest, VerifyBackwardsCompatibleDigest) {
   base::Time now = base::Time::Now();
   AuthResult result = VerifyCredentialsForTest(
       auth_response, signed_data, cast_certificate::CRLPolicy::CRL_OPTIONAL,
-      nullptr, nullptr, now);
+      nullptr, now);
   EXPECT_TRUE(result.success());
   EXPECT_EQ(kFlagsSHA1AndCRLMissing, result.flags);
 }
@@ -184,8 +184,7 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithFallback) {
   base::Time now = base::Time::Now();
   AuthResult result = VerifyCredentialsForTest(
       auth_response, signed_data,
-      cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, nullptr,
-      now);
+      cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, now);
   EXPECT_TRUE(result.success());
   EXPECT_EQ(static_cast<unsigned>(AuthResult::POLICY_NONE),
             result.channel_policies);
@@ -198,8 +197,7 @@ TEST_F(CastAuthUtilTest, VerifyCrlOptionalWithFallback) {
   base::Time now = base::Time::Now();
   AuthResult result = VerifyCredentialsForTest(
       auth_response, signed_data,
-      cast_certificate::CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK, nullptr, nullptr,
-      now);
+      cast_certificate::CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK, nullptr, now);
   EXPECT_TRUE(result.success());
   EXPECT_EQ(static_cast<unsigned>(AuthResult::POLICY_NONE),
             result.channel_policies);
@@ -212,8 +210,7 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithExpiredFallback) {
   base::Time now = base::Time::Now() + base::Seconds(12096000);  // 20 weeks
   AuthResult result = VerifyCredentialsForTest(
       auth_response, signed_data,
-      cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, nullptr,
-      now);
+      cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, now);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_FALLBACK_CRL_INVALID, result.error_type);
   EXPECT_EQ(kFlagsExpiredFallbackCRL, result.flags);
@@ -225,8 +222,7 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithNotExpiredFallback) {
   base::Time now = base::Time::Now() + base::Seconds(10);
   AuthResult result = VerifyCredentialsForTest(
       auth_response, signed_data,
-      cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, nullptr,
-      now);
+      cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, now);
   EXPECT_TRUE(result.success());
   EXPECT_EQ(static_cast<unsigned>(AuthResult::POLICY_NONE),
             result.channel_policies);
@@ -252,8 +248,7 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithInvalidFallbackCRL) {
   base::Time now = base::Time::Now() + base::Hours(100000000);
   AuthResult result = VerifyCredentialsForTest(
       auth_response, signed_data,
-      cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, nullptr,
-      now);
+      cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, now);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_CERT_NOT_SIGNED_BY_TRUSTED_CA, result.error_type);
   EXPECT_EQ(kFlagsInvalidFallbackCRL, result.flags);
@@ -321,8 +316,7 @@ TEST_F(CastAuthUtilTest, VerifyCrlOptionalWithInvalidFallbackCRL) {
   base::Time now = base::Time::Now() + base::Hours(100000000);
   AuthResult result = VerifyCredentialsForTest(
       auth_response, signed_data,
-      cast_certificate::CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK, nullptr, nullptr,
-      now);
+      cast_certificate::CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK, nullptr, now);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_CERT_NOT_SIGNED_BY_TRUSTED_CA, result.error_type);
   EXPECT_EQ(kFlagsInvalidFallbackCRL, result.flags);
@@ -441,7 +435,6 @@ AuthResult TestVerifyRevocation(
     const std::string& crl_bundle,
     const base::Time& verification_time,
     bool crl_required,
-    bssl::TrustStore* cast_trust_store,
     bssl::TrustStore* crl_trust_store) {
   AuthResponse response;
 
@@ -457,9 +450,8 @@ AuthResult TestVerifyRevocation(
       cast_certificate::CRLPolicy::CRL_REQUIRED;
   if (!crl_required && crl_bundle.empty())
     crl_policy = cast_certificate::CRLPolicy::CRL_OPTIONAL;
-  AuthResult result =
-      VerifyCredentialsForTest(response, "", crl_policy, cast_trust_store,
-                               crl_trust_store, verification_time);
+  AuthResult result = VerifyCredentialsForTest(
+      response, "", crl_policy, crl_trust_store, verification_time);
   // This test doesn't set the signature so it will just fail there.
   EXPECT_FALSE(result.success());
   return result;
@@ -467,10 +459,15 @@ AuthResult TestVerifyRevocation(
 
 // Runs a single test case.
 bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
-  std::unique_ptr<bssl::TrustStoreInMemory> cast_trust_store =
-      test_case.use_test_trust_anchors()
-          ? cast_certificate::testing::LoadTestCert("cast_test_root_ca.pem")
-          : nullptr;
+  std::unique_ptr<cast_certificate::testing::ScopedCastTrustStoreConfig>
+      scoped_cast_trust_store =
+          test_case.use_test_trust_anchors()
+              ? cast_certificate::testing::ScopedCastTrustStoreConfig::
+                    TestCertificates("cast_test_root_ca.pem")
+              : cast_certificate::testing::ScopedCastTrustStoreConfig::
+                    BuiltInCertificates();
+  CHECK(scoped_cast_trust_store)
+      << "Failed to create Cast trust store configuration";
   std::unique_ptr<bssl::TrustStoreInMemory> crl_trust_store =
       test_case.use_test_trust_anchors()
           ? cast_certificate::testing::LoadTestCert("cast_crl_test_root_ca.pem")
@@ -496,9 +493,9 @@ bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
   AuthResult result;
   switch (test_case.expected_result()) {
     case cast::certificate::PATH_VERIFICATION_FAILED:
-      result = TestVerifyRevocation(
-          certificate_chain, crl_bundle, verification_time, false,
-          cast_trust_store.get(), crl_trust_store.get());
+      result =
+          TestVerifyRevocation(certificate_chain, crl_bundle, verification_time,
+                               false, crl_trust_store.get());
       EXPECT_EQ(result.error_type,
                 AuthResult::ERROR_CERT_NOT_SIGNED_BY_TRUSTED_CA);
       return result.error_type ==
@@ -506,9 +503,9 @@ bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
     case cast::certificate::CRL_VERIFICATION_FAILED:
     // Fall-through intended.
     case cast::certificate::REVOCATION_CHECK_FAILED_WITHOUT_CRL:
-      result = TestVerifyRevocation(
-          certificate_chain, crl_bundle, verification_time, true,
-          cast_trust_store.get(), crl_trust_store.get());
+      result =
+          TestVerifyRevocation(certificate_chain, crl_bundle, verification_time,
+                               true, crl_trust_store.get());
       EXPECT_EQ(result.error_type, AuthResult::ERROR_CRL_INVALID);
       return result.error_type == AuthResult::ERROR_CRL_INVALID;
     case cast::certificate::CRL_EXPIRED_AFTER_INITIAL_VERIFICATION:
@@ -516,15 +513,15 @@ bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
       // certificate is verified.
       return true;
     case cast::certificate::REVOCATION_CHECK_FAILED:
-      result = TestVerifyRevocation(
-          certificate_chain, crl_bundle, verification_time, true,
-          cast_trust_store.get(), crl_trust_store.get());
+      result =
+          TestVerifyRevocation(certificate_chain, crl_bundle, verification_time,
+                               true, crl_trust_store.get());
       EXPECT_EQ(result.error_type, AuthResult::ERROR_CERT_REVOKED);
       return result.error_type == AuthResult::ERROR_CERT_REVOKED;
     case cast::certificate::SUCCESS:
-      result = TestVerifyRevocation(
-          certificate_chain, crl_bundle, verification_time, false,
-          cast_trust_store.get(), crl_trust_store.get());
+      result =
+          TestVerifyRevocation(certificate_chain, crl_bundle, verification_time,
+                               false, crl_trust_store.get());
       EXPECT_EQ(result.error_type, AuthResult::ERROR_SIGNED_BLOBS_MISMATCH);
       return result.error_type == AuthResult::ERROR_SIGNED_BLOBS_MISMATCH;
     case cast::certificate::UNSPECIFIED:

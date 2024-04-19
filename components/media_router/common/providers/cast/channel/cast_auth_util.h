@@ -140,7 +140,6 @@ AuthResult VerifyCredentialsForTest(
     const AuthResponse& response,
     const std::string& signature_input,
     const cast_certificate::CRLPolicy& crl_policy,
-    bssl::TrustStore* cast_trust_store,
     bssl::TrustStore* crl_trust_store,
     const base::Time& verification_time);
 
