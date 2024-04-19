@@ -111,7 +111,7 @@ class PassthroughAnimationDecoder
   AnimationFrames frames_;
 };
 
-class EnterpriseBadgeLayout : public views::LayoutManager {
+class EnterpriseBadgeLayout : public views::LayoutManagerBase {
  public:
   explicit EnterpriseBadgeLayout(int size) : size_(size) {}
 
@@ -120,18 +120,23 @@ class EnterpriseBadgeLayout : public views::LayoutManager {
 
   ~EnterpriseBadgeLayout() override = default;
 
-  // views::LayoutManager:
-  void Layout(views::View* host) override {
-    DCHECK_EQ(host->children().size(), 1U);
-    const gfx::Rect content_bounds(host->GetContentsBounds());
-    const int offset = content_bounds.width() - size_;
-    auto* child = host->children()[0].get();
-    child->SetPosition({offset, offset});
-    child->SetSize({size_, size_});
-  }
+  // views::LayoutManagerBase:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override {
+    DCHECK_EQ(host_view()->children().size(), 1U);
+    views::ProposedLayout layout;
+    layout.host_size = gfx::Size(size_, size_);
+    if (!size_bounds.is_fully_bounded()) {
+      return layout;
+    }
 
-  gfx::Size GetPreferredSize(const views::View* host) const override {
-    return gfx::Size(size_, size_);
+    const int offset =
+        size_bounds.width().value() - host_view()->GetInsets().width() - size_;
+    auto* child = host_view()->children()[0].get();
+    layout.child_layouts.emplace_back(child, true,
+                                      gfx::Rect(offset, offset, size_, size_));
+
+    return layout;
   }
 
  private:
