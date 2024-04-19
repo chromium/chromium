@@ -41,6 +41,7 @@ enum TabLaunchTypeAtCreation:int {
     FROM_RESTORE_TABS_UI = 20,
     FROM_OMNIBOX = 21,
     UNSET = 22,
+    FROM_SYNC_BACKGROUND = 23,
     // Add new values here and don't change existing values
     // as they are persisted across restarts. Changing existing
     // values will lead to backwards compatibility issues crbug.com/1286984.

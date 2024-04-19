@@ -4020,17 +4020,20 @@ chromium-metrics-reviews@google.com.
                  Chrome incognito tab"/>
     <variant name="ReadingList" summary="tabs opened from the reading list"/>
     <variant name="RecentTabs"
-        summary="tabs opened in backrgound from recent tabs"/>
+        summary="tabs opened in background from recent tabs"/>
     <variant name="Reparenting" summary="tabs opened from changing windows"/>
     <variant name="Restore" summary="tabs opened from restores"/>
     <variant name="SpeculativeBackgroundCreation"
         summary="tabs opened from CCT in the background"/>
     <variant name="StartSurface" summary="tabs opened from the start surface"/>
     <variant name="Startup" summary="tabs opened during the startup process"/>
+    <variant name="SyncBackground"
+        summary="tabs opened in the background by sync"/>
     <variant name="TabGroupUI" summary="tabs opened from Tab group UI"/>
     <variant name="TabSwitcherUI" summary="tabs opened from Tab Switcher UI"/>
     <variant name="TypeUnknown"
         summary="tabs opened from a different case than one's listed"/>
+    <variant name="Unset" summary="pre-warmed tabs without creation reason"/>
   </token>
 </histogram>
 

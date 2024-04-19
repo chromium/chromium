@@ -116,6 +116,8 @@ class TabModel {
     // Used for tab pre-warming where the reason for tab creation is not yet
     // known.
     UNSET,
+    // Used when creating a tab to keep synced tab groups up to date.
+    FROM_SYNC_BACKGROUND,
     // Must be last.
     SIZE
   };

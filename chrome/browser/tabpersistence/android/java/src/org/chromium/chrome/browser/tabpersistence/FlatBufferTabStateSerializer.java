@@ -208,6 +208,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchType.FROM_OMNIBOX;
             case TabLaunchTypeAtCreation.UNSET:
                 return TabLaunchType.UNSET;
+            case TabLaunchTypeAtCreation.FROM_SYNC_BACKGROUND:
+                return TabLaunchType.FROM_SYNC_BACKGROUND;
             case TabLaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case TabLaunchTypeAtCreation.UNKNOWN:
@@ -273,6 +275,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchTypeAtCreation.FROM_OMNIBOX;
             case TabLaunchType.UNSET:
                 return TabLaunchTypeAtCreation.UNSET;
+            case TabLaunchType.FROM_SYNC_BACKGROUND:
+                return TabLaunchTypeAtCreation.FROM_SYNC_BACKGROUND;
             case TabLaunchType.SIZE:
                 return TabLaunchTypeAtCreation.SIZE;
             default:

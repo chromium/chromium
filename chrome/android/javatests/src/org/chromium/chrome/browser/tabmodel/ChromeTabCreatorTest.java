@@ -206,6 +206,42 @@ public class ChromeTabCreatorTest {
                 });
     }
 
+    /** Verify that tabs opened in background when launch type is FROM_SYNC_BACKGROUND. */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTabWithSyncBackgroundFrozen() throws ExecutionException {
+        final String url = mTestServer.getURL(TEST_PATH);
+        final Tab bgTab =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(url),
+                                            TabLaunchType.FROM_SYNC_BACKGROUND,
+                                            null);
+                        });
+
+        // Verify that the background tab is not loading.
+        Assert.assertFalse(bgTab.isLoading());
+
+        // Switch tabs and verify that the tab is loaded as it gets foregrounded.
+        Runnable loadPage =
+                () -> {
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                TabModelUtils.setIndex(
+                                        sActivityTestRule.getActivity().getCurrentTabModel(),
+                                        indexOf(bgTab),
+                                        /* skipLoadingTab= */ false);
+                            });
+                };
+        ChromeTabUtils.waitForTabPageLoaded(bgTab, url, loadPage);
+        Assert.assertNotNull(bgTab.getView());
+    }
+
     private Intent createIntent(int tabIndex) {
         Intent intent = new Intent();
         intent.putExtra(IntentHandler.EXTRA_TAB_INDEX, tabIndex);

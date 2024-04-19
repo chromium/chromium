@@ -202,7 +202,8 @@ public class LayoutManagerImpl
                     || type == TabLaunchType.FROM_EXTERNAL_APP
                     || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT
                     || type == TabLaunchType.FROM_STARTUP
-                    || type == TabLaunchType.FROM_APP_WIDGET) {
+                    || type == TabLaunchType.FROM_APP_WIDGET
+                    || type == TabLaunchType.FROM_SYNC_BACKGROUND) {
                 return;
             }
 
@@ -226,6 +227,7 @@ public class LayoutManagerImpl
                                                 != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                                         && launchType != TabLaunchType.FROM_RECENT_TABS
                                         && launchType != TabLaunchType.FROM_RESTORE_TABS_UI
+                                        && launchType != TabLaunchType.FROM_SYNC_BACKGROUND
                                 || (!getTabModelSelector().isIncognitoSelected() && incognito);
                 float lastTapX = LocalizationUtils.isLayoutRtl() ? mHost.getWidth() * mPxToDp : 0.f;
                 float lastTapY = 0.f;

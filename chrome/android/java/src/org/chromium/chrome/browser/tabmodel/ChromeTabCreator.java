@@ -157,6 +157,10 @@ public class ChromeTabCreator extends TabCreator {
                 return "RestoreTabsUI";
             case TabLaunchType.FROM_OMNIBOX:
                 return "Omnibox";
+            case TabLaunchType.UNSET:
+                return "Unset";
+            case TabLaunchType.FROM_SYNC_BACKGROUND:
+                return "SyncBackground";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -332,7 +336,11 @@ public class ChromeTabCreator extends TabCreator {
                                 .build();
                 TabParentIntent.from(tab).set(parentIntent).setCurrentTab(selector::getCurrentTab);
                 webContents.resumeLoadingCreatedWebContents();
-            } else if (!openInForeground && SysUtils.isLowEndDevice()) {
+            } else if ((!openInForeground && SysUtils.isLowEndDevice())
+                    || type == TabLaunchType.FROM_SYNC_BACKGROUND) {
+                // For tab group sync we don't want to trigger a navigation until the user opens the
+                // tab so use the lazy load mechanism for this.
+
                 // On low memory devices the tabs opened in background are not loaded automatically
                 // to preserve resources (cpu, memory, strong renderer binding) for the foreground
                 // tab.
@@ -638,6 +646,7 @@ public class ChromeTabCreator extends TabCreator {
             case TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB:
             case TabLaunchType.FROM_APP_WIDGET:
             case TabLaunchType.FROM_READING_LIST:
+            case TabLaunchType.FROM_SYNC_BACKGROUND:
                 transition = PageTransition.AUTO_TOPLEVEL;
                 break;
             case TabLaunchType.FROM_LONGPRESS_FOREGROUND:
