@@ -48,9 +48,12 @@ void WebNNContextImpl::CreateBuffer(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
+  // The token is validated in mojo traits to be non-empty.
+  CHECK(!buffer_handle.is_empty());
+
   // It is illegal to create the same buffer twice, a buffer is uniquely
   // identified by its UnguessableToken.
-  if (IsWebNNBufferValid(buffer_handle)) {
+  if (buffer_impls_.contains(buffer_handle)) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
@@ -66,14 +69,6 @@ void WebNNContextImpl::CreateBuffer(
   // Associates a `WebNNBuffer` instance with this context so the WebNN service
   // can access the implementation.
   buffer_impls_.emplace(std::move(buffer_impl));
-}
-
-bool WebNNContextImpl::IsWebNNBufferValid(
-    const base::UnguessableToken& handle) const {
-  if (handle.is_empty()) {
-    return false;
-  }
-  return buffer_impls_.contains(handle);
 }
 
 void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(

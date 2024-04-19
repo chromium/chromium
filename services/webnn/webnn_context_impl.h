@@ -110,10 +110,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       buffer_impls_;
 
  private:
-  // Determines if a WebNNBuffer is still connected with this context so WebNN
-  // operations can use it.
-  bool IsWebNNBufferValid(const base::UnguessableToken& handle) const;
-
   // GraphsImpls which are stored on the context to allow graph
   // operations to use this context safely via a raw_ptr.
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraph> graph_impls_;
