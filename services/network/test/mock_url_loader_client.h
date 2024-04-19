@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PDF_BROWSER_MOCK_URL_LOADER_CLIENT_H_
-#define COMPONENTS_PDF_BROWSER_MOCK_URL_LOADER_CLIENT_H_
+#ifndef SERVICES_NETWORK_TEST_MOCK_URL_LOADER_CLIENT_H_
+#define SERVICES_NETWORK_TEST_MOCK_URL_LOADER_CLIENT_H_
 
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace pdf {
+namespace network {
 
 class MockURLLoaderClient : public network::mojom::URLLoaderClient {
  public:
@@ -50,6 +50,6 @@ class MockURLLoaderClient : public network::mojom::URLLoaderClient {
               (override));
 };
 
-}  // namespace pdf
+}  // namespace network
 
-#endif  // COMPONENTS_PDF_BROWSER_MOCK_URL_LOADER_CLIENT_H_
+#endif  // SERVICES_NETWORK_TEST_MOCK_URL_LOADER_CLIENT_H_

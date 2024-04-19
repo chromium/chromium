@@ -11,7 +11,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/pdf/browser/fake_pdf_stream_delegate.h"
-#include "components/pdf/browser/mock_url_loader_client.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/test/test_renderer_host.h"
@@ -19,6 +18,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/test/mock_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -26,6 +26,8 @@
 namespace pdf {
 
 namespace {
+
+using ::network::MockURLLoaderClient;
 
 using ::testing::NiceMock;
 

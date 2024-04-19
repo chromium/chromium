@@ -76,8 +76,6 @@ source_set("unit_tests") {
   sources = [
     "fake_pdf_stream_delegate.cc",
     "fake_pdf_stream_delegate.h",
-    "mock_url_loader_client.cc",
-    "mock_url_loader_client.h",
     "pdf_navigation_throttle_unittest.cc",
     "pdf_url_loader_request_interceptor_unittest.cc",
     "plugin_response_writer_unittest.cc",
@@ -92,6 +90,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
+    "//services/network:test_support",
     "//services/network/public/cpp:cpp_base",
     "//services/network/public/mojom",
     "//testing/gmock",

@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/pdf/browser/mock_url_loader_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -24,6 +23,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/mock_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -31,6 +31,8 @@
 namespace pdf {
 
 namespace {
+
+using ::network::MockURLLoaderClient;
 
 using ::testing::HasSubstr;
 using ::testing::NiceMock;

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/pdf/browser/mock_url_loader_client.h"
+#include "services/network/test/mock_url_loader_client.h"
 
-namespace pdf {
+namespace network {
 
 MockURLLoaderClient::MockURLLoaderClient() = default;
 MockURLLoaderClient::~MockURLLoaderClient() = default;
 
-}  // namespace pdf
+}  // namespace network
