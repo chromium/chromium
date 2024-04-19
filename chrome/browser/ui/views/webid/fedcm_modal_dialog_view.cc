@@ -102,7 +102,7 @@ void FedCmModalDialogView::ResizeAndFocusPopupWindow() {
   popup_window_->GetDelegate()->SetContentsBounds(
       popup_window_,
       ComputePopupWindowBounds(source_window_->GetContainerBounds()));
-  popup_window_->Focus();
+  popup_window_->GetDelegate()->ActivateContents(popup_window_);
 }
 
 void FedCmModalDialogView::WebContentsDestroyed() {

@@ -136,12 +136,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // Removes all child views and dangling pointers.
   void RemoveNonHeaderChildViews();
 
-  // Opens the use other account pop-up and disables the use other account
-  // button.
-  void OnUseOtherAccount(const GURL& idp_config_url,
-                         const GURL& idp_login_url,
-                         const ui::Event& event);
-
   // View containing the header.
   raw_ptr<views::View> header_view_ = nullptr;
 

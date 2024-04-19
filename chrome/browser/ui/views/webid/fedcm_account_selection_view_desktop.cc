@@ -781,6 +781,14 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     }
   }
 
+  // The modal should not be dismissed if it a use other account pop-up, which
+  // can only be triggered from an account selection sheet.
+  if (GetDialogType() == DialogType::MODAL &&
+      GetSheetType() == SheetType::ACCOUNT_SELECTION) {
+    notify_delegate_of_dismiss_ = false;
+    return popup_window_->ShowPopupWindow(url);
+  }
+
   // If this happens after ShowVerifyingSheet, notify_delegate_of_dismiss_ may
   // be false. However, if the user closes the popup, we do want to call
   // OnDismiss to ensure the request is cancelled, so set it to true here.

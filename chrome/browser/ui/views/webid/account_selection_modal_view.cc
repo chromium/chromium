@@ -383,7 +383,8 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   // TODO(crbug.com/324052630): Support add account with multi IDP API.
   if (idp_display_data_list[0].idp_metadata.supports_add_account) {
     use_other_account_callback = base::BindRepeating(
-        &AccountSelectionModalView::OnUseOtherAccount, base::Unretained(this),
+        &AccountSelectionViewBase::Observer::OnLoginToIdP,
+        base::Unretained(observer_),
         idp_display_data_list[0].idp_metadata.config_url,
         idp_display_data_list[0].idp_metadata.idp_login_url);
   }
@@ -393,13 +394,6 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   InitDialogWidget();
 
   // TODO(crbug.com/324052630): Connect with multi IDP API.
-}
-
-void AccountSelectionModalView::OnUseOtherAccount(const GURL& idp_config_url,
-                                                  const GURL& idp_login_url,
-                                                  const ui::Event& event) {
-  use_other_account_button_->SetEnabled(false);
-  observer_->OnLoginToIdP(idp_config_url, idp_login_url, event);
 }
 
 void AccountSelectionModalView::ShowVerifyingSheet(
@@ -511,8 +505,8 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
       std::nullopt;
   if (idp_display_data.idp_metadata.supports_add_account) {
     use_other_account_callback = base::BindRepeating(
-        &AccountSelectionModalView::OnUseOtherAccount, base::Unretained(this),
-        idp_display_data.idp_metadata.config_url,
+        &AccountSelectionViewBase::Observer::OnLoginToIdP,
+        base::Unretained(observer_), idp_display_data.idp_metadata.config_url,
         idp_display_data.idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
