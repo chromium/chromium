@@ -8660,7 +8660,7 @@
   {
     "name": "web-identity-digital-credentials",
     "owners": ["goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 135
   },
   {
     "name": "web-machine-learning-neural-network",
