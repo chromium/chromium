@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/cookies/cookies_fetcher_restore_util.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -12,6 +13,16 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace cookie_fetcher_restore_util {
+
+namespace {
+
+// Let's monitor just the success/failure rate of restoring cookies so we have
+// an easy metric to check if there are future issues.
+void TriedToRestoreCookieMetric(bool success) {
+  base::UmaHistogramBoolean("Cookie.AndroidOTRRestore", success);
+}
+
+}  // namespace
 
 // Returns the cookie service at the client end of the mojo pipe.
 network::mojom::CookieManager* GetCookieServiceClient() {
@@ -42,6 +53,7 @@ void CookiesFetcherRestoreCookiesImpl(
     jint source_port,
     jint source_type) {
   if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile()) {
+    TriedToRestoreCookieMetric(/*success=*/false);
     return;  // Don't create it. There is nothing to do.
   }
 
@@ -56,6 +68,7 @@ void CookiesFetcherRestoreCookiesImpl(
       serialized_cookie_partition_key = net::CookiePartitionKey::FromStorage(
           top_level_site, /*has_cross_site_ancestor=*/true);
   if (!serialized_cookie_partition_key.has_value()) {
+    TriedToRestoreCookieMetric(/*success=*/false);
     return;
   }
 
@@ -81,6 +94,7 @@ void CookiesFetcherRestoreCookiesImpl(
   // only used for incognito cookies which don't survive Chrome updates and
   // therefore should never be the "older" less strict variety.
   if (!cookie || !cookie->IsCanonical()) {
+    TriedToRestoreCookieMetric(/*success=*/false);
     return;
   }
 
@@ -92,6 +106,7 @@ void CookiesFetcherRestoreCookiesImpl(
           static_cast<net::CookieSourceScheme>(source_scheme)),
       net::CookieOptions::MakeAllInclusive(),
       network::mojom::CookieManager::SetCanonicalCookieCallback());
+  TriedToRestoreCookieMetric(/*success=*/true);
 }
 
 }  // namespace cookie_fetcher_restore_util

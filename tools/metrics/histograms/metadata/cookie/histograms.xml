@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Cookie.AndroidOTRRestore" enum="BooleanEnabled"
+    expires_after="2025-04-19">
+  <owner>arichiv@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Emits when a cookie restore is attempted by Android Incognito Mode session
+    restoration. This happens if an in-progress incognito session is killed by
+    the system (e.g., memory pressure) and not by the user.
+
+    The enum value is true when the cookie was restored properly and false if it
+    was rejected. Rejection should be rare as the cookies are directly written
+    out by the system.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.AvgCookieJarSizePerKey" units="kibibytes"
     expires_after="2024-09-15">
   <owner>dylancutler@google.com</owner>
