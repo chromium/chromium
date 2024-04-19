@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -271,6 +272,10 @@ void PrefHashFilter::FinalizeFilterOnLoad(
 
   std::move(post_filter_on_load_callback)
       .Run(std::move(pref_store_contents), prefs_altered);
+}
+
+base::WeakPtr<InterceptablePrefFilter> PrefHashFilter::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 // static

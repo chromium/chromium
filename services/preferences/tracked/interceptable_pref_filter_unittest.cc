@@ -8,13 +8,22 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-class TestInterceptablePrefFilter : public InterceptablePrefFilter {
+class TestInterceptablePrefFilter final : public InterceptablePrefFilter {
  public:
+  void FilterUpdate(const std::string& path) override {}
+
+  OnWriteCallbackPair FilterSerializeData(
+      base::Value::Dict& pref_store_contents) override {
+    return {};
+  }
+
+ private:
   void FinalizeFilterOnLoad(
       PostFilterOnLoadCallback post_filter_on_load_callback,
       base::Value::Dict pref_store_contents,
@@ -23,12 +32,11 @@ class TestInterceptablePrefFilter : public InterceptablePrefFilter {
         .Run(std::move(pref_store_contents), prefs_altered);
   }
 
-  void FilterUpdate(const std::string& path) override {}
-
-  OnWriteCallbackPair FilterSerializeData(
-      base::Value::Dict& pref_store_contents) override {
-    return {};
+  base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
+
+  base::WeakPtrFactory<InterceptablePrefFilter> weak_ptr_factory_{this};
 };
 
 void NoOpIntercept(InterceptablePrefFilter::FinalizeFilterOnLoadCallback
