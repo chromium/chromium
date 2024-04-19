@@ -207,9 +207,6 @@ inline ScriptWrappable* ToScriptWrappable(v8::Isolate* isolate,
 }
 
 PLATFORM_EXPORT const WrapperTypeInfo* ToWrapperTypeInfo(
-    const v8::TracedReference<v8::Object>& wrapper);
-
-PLATFORM_EXPORT const WrapperTypeInfo* ToWrapperTypeInfo(
     v8::Local<v8::Object> wrapper);
 
 }  // namespace blink

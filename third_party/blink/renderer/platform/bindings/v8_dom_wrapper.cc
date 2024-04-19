@@ -76,8 +76,12 @@ bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate, v8::Local<v8::Value> value) {
   if (object->InternalFieldCount() < kV8DefaultWrapperInternalFieldCount)
     return false;
 
+  // TODO(b/328117814): this is provisional until migration to new wrappers.
+  // ToWrapperTypeInfo() can't be used unless we're certainly dealing with
+  // a DOM wrapper object. Attempting to use it on a wrapper object from
+  // a parallel universe would result in a crash.
   const WrapperTypeInfo* untrusted_wrapper_type_info =
-      ToWrapperTypeInfo(object);
+      GetInternalField<WrapperTypeInfo, kV8DOMWrapperTypeIndex>(object);
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   if (!(untrusted_wrapper_type_info && per_isolate_data))
     return false;

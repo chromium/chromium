@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<script src="../../resources/js-test.js"></script>
+<body>
+<script>
+description('Tests that we do not crash when rejecting a promise with a gin wrapper.');
+
+window.jsTestIsAsync = true;
+(async () => {
+  const promise = new Promise((_, reject) => { reject(testRunner); })
+  // Finish async, so a an exception thrown by reject() above
+  // wont' throw us off.
+  Promise.resolve().then(() => finishJSTest());
+  await promise;
+})();
+
+</script>
+

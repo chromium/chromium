@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "gin/wrappable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -2378,6 +2379,42 @@ TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfigNullValues) {
   EXPECT_FALSE(new_config->container_size_.has_value());
   EXPECT_EQ(config->content_size_, new_config->content_size_);
   EXPECT_FALSE(new_config->content_size_.has_value());
+}
+
+namespace {
+
+class GinWrappable : public gin::Wrappable<GinWrappable> {
+ public:
+  static v8::Local<v8::Object> Create(v8::Isolate* isolate) {
+    auto* instance = new GinWrappable();
+    return instance->GetWrapper(isolate).ToLocalChecked();
+  }
+  ~GinWrappable() override = default;
+
+  static gin::WrapperInfo kWrapperInfo;
+
+ private:
+  GinWrappable() = default;
+};
+
+gin::WrapperInfo GinWrappable::kWrapperInfo = {gin::kEmbedderNativeGin};
+
+}  // namespace
+
+TEST(V8ScriptValueSerializerTest, CoexistWithGin) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  v8::Isolate* const isolate = scope.GetIsolate();
+  v8::Local<v8::Object> wrapper = GinWrappable::Create(isolate);
+  ExceptionState exception_state(
+      isolate, ExceptionContextType::kOperationInvoke, "Window", "postMessage");
+  scoped_refptr<SerializedScriptValue> serialized_script_value =
+      V8ScriptValueSerializer(scope.GetScriptState())
+          .Serialize(wrapper, exception_state);
+  // Serializing a gin value will throw an exception, which is fine.
+  // We just want to make sure it does not crash.
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_FALSE(serialized_script_value);
 }
 
 }  // namespace blink
