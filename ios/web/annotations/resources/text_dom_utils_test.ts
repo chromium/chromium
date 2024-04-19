@@ -6,7 +6,7 @@
  * @fileoverview Tests for text_dom_utils.ts.
  */
 
-import {hasNoIntentDetection, isValidNode, nextLeaf, previousLeaf} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {hasNoIntentDetection, isValidNode, nextLeaf, noFormatDetectionTypes, previousLeaf} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {expectEq, load, loadHead, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
 class TestDomUtils extends TestSuite {
@@ -67,12 +67,36 @@ class TestDomUtils extends TestSuite {
   }
 
   // Tests `hasNoIntentDetection`.
-  testhasNoIntentDetection() {
+  testHasNoIntentDetection() {
     expectEq(false, hasNoIntentDetection());
     loadHead(
         '  <meta name="chrome" content="nointentdetection">' +
         '  <meta name="chrome" content="intentdetection">');
     expectEq(true, hasNoIntentDetection());
+  }
+
+  // Tests `noFormatDetectionTypes`.
+  testHasNoFormatDetection() {
+    expectEq(false, noFormatDetectionTypes().has('telephone'));
+    loadHead('<meta name="format-detection" content="telephone=no">');
+    expectEq(true, noFormatDetectionTypes().has('telephone'));
+
+    loadHead(
+        '<meta name="format-detection" ' +
+        'content="telephone=no ,email= yes, date=no">');
+    expectEq(true, noFormatDetectionTypes().has('telephone'));
+    expectEq(false, noFormatDetectionTypes().has('email'));
+    expectEq(true, noFormatDetectionTypes().has('date'));
+    expectEq(false, noFormatDetectionTypes().has('address'));
+
+    loadHead(
+        '<meta name="format-detection" ' +
+        'content="telephone=no ,email= yes, date=no">' +
+        '<meta name="format-detection" content="Address=NO">');
+    expectEq(true, noFormatDetectionTypes().has('telephone'));
+    expectEq(false, noFormatDetectionTypes().has('email'));
+    expectEq(true, noFormatDetectionTypes().has('date'));
+    expectEq(true, noFormatDetectionTypes().has('address'));
   }
 }
 

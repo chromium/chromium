@@ -111,6 +111,25 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
     }
   }
 
+  NSTextCheckingType handled_types =
+      ios::provider::GetHandledIntentTypesForOneTap(web_state);
+  std::optional<bool> has_no_telephone = metadata.FindBool("wkNoTelephone");
+  if (has_no_telephone && has_no_telephone.value()) {
+    handled_types = handled_types & ~NSTextCheckingTypePhoneNumber;
+  }
+  std::optional<bool> has_no_email = metadata.FindBool("wkNoEmail");
+  if (has_no_email && has_no_email.value()) {
+    handled_types = handled_types & ~NSTextCheckingTypeLink;
+  }
+  std::optional<bool> has_no_address = metadata.FindBool("wkNoAddress");
+  if (has_no_address && has_no_address.value()) {
+    handled_types = handled_types & ~NSTextCheckingTypeAddress;
+  }
+  std::optional<bool> has_no_date = metadata.FindBool("wkNoDate");
+  if (has_no_date && has_no_date.value()) {
+    handled_types = handled_types & ~NSTextCheckingTypeDate;
+  }
+
   // Keep latest copy.
   metadata_ = std::make_unique<base::Value::Dict>(metadata.Clone());
 
@@ -125,8 +144,7 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ios::provider::ExtractTextAnnotationFromText,
-                     metadata.Clone(), text,
-                     ios::provider::GetHandledIntentTypesForOneTap(web_state),
+                     metadata.Clone(), text, handled_types,
                      ukm::GetSourceIdForWebStateDocument(web_state),
                      std::move(model_path)),
       base::BindOnce(&AnnotationsTabHelper::ApplyDeferredProcessing,

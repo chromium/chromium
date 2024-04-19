@@ -28,6 +28,17 @@ class AnnotationsTextObserver : public base::CheckedObserver {
   //   "".
   // String 'httpContentLanguage': value of content from
   //   <meta http-equiv="content-language" content="en"> or "".
+  // String 'wkNoTelephone': true if the page header contains webkit's:
+  //   <meta name="format-detection" content="telephone=no">
+  // String 'wkNoEmail': true if the page header contains webkit's:
+  //   <meta name="format-detection" content="email=no">
+  // String 'wkNoAddress': true if the page header contains webkit's:
+  //   <meta name="format-detection" content="address=no">
+  // String 'wkNoDate': true if the page header contains webkit's:
+  //   <meta name="format-detection" content="date=no">
+  // Note all type=equal pairs can be also be comma separated in a single
+  // content attribute in a meta tag. The check is case insensitive but the
+  // metadata is guaranteed lowercase.
   virtual void OnTextExtracted(WebState* web_state,
                                const std::string& text,
                                int seq_id,

@@ -58,6 +58,29 @@ function getMetaContentByHttpEquiv(httpEquiv: string): string {
   return '';
 }
 
+// Returns all types in meta tags 'format-detection', where the type is
+// assigned 'no'.
+function noFormatDetectionTypes(): Set<string> {
+  const metas = document.getElementsByTagName('meta');
+  let types = new Set<string>();
+  for (const meta of metas) {
+    if (meta.getAttribute('name') !== 'format-detection')
+      continue;
+    let content = meta.getAttribute('content');
+    if (!content)
+      continue;
+    let matches = content.toLowerCase().matchAll(/([a-z]+)\s*=\s*([a-z]+)/gi);
+    if (!matches)
+      continue;
+    for (let match of matches) {
+      if (match && match[2] === 'no' && match[1]) {
+        types.add(match[1]);
+      }
+    }
+  }
+  return types;
+}
+
 // Searches page elements for "nointentdetection" meta tag. Returns true if
 // "nointentdetection" meta tag is defined.
 function hasNoIntentDetection(): boolean {
@@ -155,6 +178,7 @@ export {
   TextWithSymbolIndex,
   Rect,
   getMetaContentByHttpEquiv,
+  noFormatDetectionTypes,
   hasNoIntentDetection,
   rectFromElement,
   isValidNode,

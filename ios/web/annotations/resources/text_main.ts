@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Interface used to monior and extract visible text on the page
+ * @fileoverview Interface used to monitor and extract visible text on the page
  * and pass it on to the annotations manager.
  */
 
@@ -12,7 +12,7 @@ import {TextClick} from '//ios/web/annotations/resources/text_click.js';
 import {annotationExternalData, annotationFullText} from '//ios/web/annotations/resources/text_decoration.js';
 import {TextDecorator} from '//ios/web/annotations/resources/text_decorator.js';
 import {TextDOMObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
-import {getMetaContentByHttpEquiv, hasNoIntentDetection, HTMLElementWithSymbolIndex, NodeWithSymbolIndex, rectFromElement} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {getMetaContentByHttpEquiv, hasNoIntentDetection, HTMLElementWithSymbolIndex, NodeWithSymbolIndex, noFormatDetectionTypes, rectFromElement} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {TextChunk, TextExtractor} from '//ios/web/annotations/resources/text_extractor.js';
 import {TextIntersectionObserver} from '//ios/web/annotations/resources/text_intersection_observer.js';
 import {TextStyler} from '//ios/web/annotations/resources/text_styler.js';
@@ -41,6 +41,7 @@ function textChunkConsumer(chunk: TextChunk): void {
   if (chunksInFlight.size === 1) {
     idleTaskTracker?.startActivityListeners();
   }
+  let disabledTypes = noFormatDetectionTypes();
   sendWebKitMessage('annotations', {
     command: 'annotations.extractedText',
     text: chunk.text,
@@ -48,6 +49,10 @@ function textChunkConsumer(chunk: TextChunk): void {
     metadata: {
       htmlLang: document.documentElement.lang,
       httpContentLanguage: getMetaContentByHttpEquiv('content-language'),
+      wkNoTelephone: disabledTypes.has('telephone'),
+      wkNoEmail: disabledTypes.has('email'),
+      wkNoAddress: disabledTypes.has('address'),
+      wkNoDate: disabledTypes.has('date'),
     },
   });
 }

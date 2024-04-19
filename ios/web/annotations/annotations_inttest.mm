@@ -32,6 +32,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 namespace web {
 
 namespace {
+// This is for cases where no message should be sent back from Js.
+constexpr base::TimeDelta kWaitForJsNotReturnTimeout = base::Milliseconds(500);
 
 const char kTestScriptName[] = "annotations_test";
 const char kNoViewportScriptName[] = "annotations";
@@ -400,7 +402,7 @@ TEST_F(AnnotationTextManagerNoViewportTest, ExtractNoText) {
                        "<p>Enjoy</p>"
                        "</body></html>"));
   ASSERT_TRUE(WaitForWebFramesCount(1));
-  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
     return observer()->seq_id() > seq_id;
   }));
   EXPECT_EQ("", observer()->extracted_text());
@@ -419,7 +421,7 @@ TEST_F(AnnotationTextManagerViewportTest, ExtractNoText) {
                        "<p>Enjoy</p>"
                        "</body></html>"));
   ASSERT_TRUE(WaitForWebFramesCount(1));
-  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
     return observer()->seq_id() > seq_id;
   }));
   EXPECT_EQ("", observer()->extracted_text());
@@ -459,10 +461,44 @@ TEST_F(AnnotationTextManagerViewportTest, CheckMetadata) {
                        "<p>Enjoy</p>"
                        "</body></html>"));
   ASSERT_TRUE(WaitForWebFramesCount(1));
-  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
     return observer()->seq_id() > seq_id;
   }));
   EXPECT_EQ("", observer()->extracted_text());
+}
+
+TEST_F(AnnotationTextManagerNoViewportTest, CheckWkMetadata) {
+  LoadHtmlAndExtractText(
+      "<html lang=\"fr\">"
+      "<head>"
+      "<meta name=\"format-detection\" content=\"telephone=no\"/>"
+      "</head>"
+      "<body>"
+      "<p>You'll find it on</p>"
+      "<p>Castro Street, <span>Mountain View</span>, CA</p>"
+      "<p>Enjoy</p>"
+      "</body></html>");
+  EXPECT_TRUE(observer()->metadata().FindBool("wkNoTelephone").value());
+}
+
+TEST_F(AnnotationTextManagerViewportTest, CheckWkMetadata) {
+  int seq_id = observer()->seq_id();
+
+  LoadHtmlAndExtractText(
+      "<html lang=\"fr\">"
+      "<head>"
+      "<meta name=\"format-detection\" content=\"telephone=no\"/>"
+      "</head>"
+      "<body>"
+      "<p>You'll find it on</p>"
+      "<p>Castro Street, <span>Mountain View</span>, CA</p>"
+      "<p>Enjoy</p>"
+      "</body></html>");
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->seq_id() > seq_id;
+  }));
+  EXPECT_TRUE(observer()->metadata().FindBool("wkNoTelephone").value());
 }
 
 TEST_F(AnnotationTextManagerNoViewportTest, CheckNoMetadata) {

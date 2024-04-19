@@ -123,6 +123,29 @@ function hasNoIntentDetection() {
   return false;
 }
 
+// Returns all types in meta tags 'format-detection', where the type is
+// assigned 'no'.
+function noFormatDetectionTypes(): Set<string> {
+  const metas = document.getElementsByTagName('meta');
+  let types = new Set<string>();
+  for (const meta of metas) {
+    if (meta.getAttribute('name') !== 'format-detection')
+      continue;
+    let content = meta.getAttribute('content');
+    if (!content)
+      continue;
+    let matches = content.toLowerCase().matchAll(/([a-z]+)\s*=\s*([a-z]+)/g);
+    if (!matches)
+      continue;
+    for (let match of matches) {
+      if (match && match[2] === 'no' && match[1]) {
+        types.add(match[1]);
+      }
+    }
+  }
+  return types;
+}
+
 /**
  * Searches page elements for "notranslate" meta tag. Returns true if
  * "notranslate" meta tag is defined.
@@ -188,6 +211,7 @@ function extractText(maxChars: number, seqId: number): void {
   if (decorations.length) {
     removeDecorations();
   }
+  let disabledTypes = noFormatDetectionTypes();
   sendWebKitMessage('annotations', {
     command: 'annotations.extractedText',
     text: getPageText(maxChars),
@@ -198,6 +222,10 @@ function extractText(maxChars: number, seqId: number): void {
       hasNoTranslate: hasNoTranslate(),
       htmlLang: document.documentElement.lang,
       httpContentLanguage: getMetaContentByHttpEquiv('content-language'),
+      wkNoTelephone: disabledTypes.has('telephone'),
+      wkNoEmail: disabledTypes.has('email'),
+      wkNoAddress: disabledTypes.has('address'),
+      wkNoDate: disabledTypes.has('date'),
     },
   });
 }
