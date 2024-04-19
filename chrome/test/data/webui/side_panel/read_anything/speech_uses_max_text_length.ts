@@ -8,8 +8,6 @@ import {assertEquals, assertGT, assertLT, assertNotEquals} from 'chrome-untruste
 
 import {suppressInnocuousErrors} from './common.js';
 
-// TODO: crbug.com/1474951 - Expose methods in TypeScript that allow us to
-// test a specific utterance more specifically.
 suite('SpeechUsesMaxTextLength', () => {
   let app: ReadAnythingElement;
   let maxSpeechLength: number;

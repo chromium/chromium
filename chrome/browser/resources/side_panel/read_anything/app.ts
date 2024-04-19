@@ -1184,7 +1184,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
-    message.voice = voice;
+    // This should only be false in tests where we can't properly construct an
+    // actual SpeechSynthesisVoice object even though the test voices pass the
+    // type checking of method signatures.
+    if (voice instanceof SpeechSynthesisVoice) {
+      message.voice = voice;
+    }
 
     const utteranceSettings = this.defaultUtteranceSettings();
     message.lang = utteranceSettings.lang;
