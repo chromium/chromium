@@ -416,6 +416,9 @@ class CORE_EXPORT ContentSecurityPolicy final
   // - https://*:*
   bool AllowFencedFrameOpaqueURL() const;
 
+  // Returns whether enforcing frame-ancestors CSP directives are present.
+  bool HasEnforceFrameAncestorsDirectives();
+
   void Count(WebFeature feature) const;
 
  private:

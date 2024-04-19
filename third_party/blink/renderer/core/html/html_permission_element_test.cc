@@ -663,17 +663,18 @@ class HTMLPemissionElementSimTest : public SimTest {
 };
 
 TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
-  SimRequest main_resource("https://example.com", "text/html");
-  LoadURL("https://example.com");
-  SimRequest first_iframe_resource("https://example.com/foo1.html",
+  SimRequest main_resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  SimRequest first_iframe_resource("https://example.test/foo1.html",
                                    "text/html");
-  SimRequest last_iframe_resource("https://example.com/foo2.html", "text/html");
+  SimRequest last_iframe_resource("https://example.test/foo2.html",
+                                  "text/html");
   main_resource.Complete(R"(
     <body>
-      <iframe src='https://example.com/foo1.html'
+      <iframe src='https://example.test/foo1.html'
         allow="camera 'none';microphone 'none';geolocation 'none'">
       </iframe>
-      <iframe src='https://example.com/foo2.html'
+      <iframe src='https://example.test/foo2.html'
         allow="camera *;microphone *;geolocation *">
       </iframe>
     </body>
@@ -833,8 +834,8 @@ class HTMLPemissionElementFencedFrameTest : public HTMLPemissionElementSimTest {
 TEST_F(HTMLPemissionElementFencedFrameTest, NotAllowedInFencedFrame) {
   InitializeFencedFrameRoot(
       blink::FencedFrame::DeprecatedFencedFrameMode::kDefault);
-  SimRequest resource("https://example.com", "text/html");
-  LoadURL("https://example.com");
+  SimRequest resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
   resource.Complete(R"(
     <body>
     </body>
@@ -849,6 +850,60 @@ TEST_F(HTMLPemissionElementFencedFrameTest, NotAllowedInFencedFrame) {
     permission_service()->set_pepc_registered_callback(
         base::BindOnce(&NotReachedForPEPCRegistered));
     base::RunLoop().RunUntilIdle();
+  }
+}
+
+TEST_F(HTMLPemissionElementSimTest, BlockedByMissingFrameAncestorsCSP) {
+  SimRequest::Params params;
+  params.response_http_headers = {
+      {"content-security-policy",
+       "frame-ancestors 'self' https://example.test"}};
+  SimRequest main_resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  SimRequest first_iframe_resource("https://cross-example.test/foo1.html",
+                                   "text/html");
+  SimRequest last_iframe_resource("https://cross-example.test/foo2.html",
+                                  "text/html", params);
+  main_resource.Complete(R"(
+    <body>
+      <iframe src='https://cross-example.test/foo1.html'
+        allow="camera *;microphone *;geolocation *">
+      </iframe>
+      <iframe src='https://cross-example.test/foo2.html'
+        allow="camera *;microphone *;geolocation *">
+      </iframe>
+    </body>
+  )");
+  first_iframe_resource.Finish();
+  last_iframe_resource.Finish();
+
+  auto* first_child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  auto* last_child_frame = To<WebLocalFrameImpl>(MainFrame().LastChild());
+  for (const char* permission : {"camera", "microphone", "geolocation"}) {
+    auto* permission_element = CreatePermissionElement(
+        *last_child_frame->GetFrame()->GetDocument(), permission);
+    RegistrationWaiter(permission_element).Wait();
+    auto& last_console_messages =
+        static_cast<frame_test_helpers::TestWebFrameClient*>(
+            last_child_frame->Client())
+            ->ConsoleMessages();
+    EXPECT_EQ(last_console_messages.size(), 0u);
+
+    CreatePermissionElement(*first_child_frame->GetFrame()->GetDocument(),
+                            permission);
+    permission_service()->set_pepc_registered_callback(
+        base::BindOnce(&NotReachedForPEPCRegistered));
+    base::RunLoop().RunUntilIdle();
+    // Should console log a error message due to missing 'frame-ancestors' CSP
+    auto& first_console_messages =
+        static_cast<frame_test_helpers::TestWebFrameClient*>(
+            first_child_frame->Client())
+            ->ConsoleMessages();
+    EXPECT_EQ(first_console_messages.size(), 1u);
+    EXPECT_TRUE(first_console_messages.front().Contains(
+        "is not allowed without the CSP 'frame-ancestors' directive present."));
+    first_console_messages.clear();
+    permission_service()->set_pepc_registered_callback(base::NullCallback());
   }
 }
 
@@ -883,8 +938,8 @@ class HTMLPemissionElementIntersectionTest
 
   void TestContainerStyleAffectsVisibility(CSSPropertyID property_name,
                                            const String& property_value) {
-    SimRequest main_resource("https://example.com/", "text/html");
-    LoadURL("https://example.com/");
+    SimRequest main_resource("https://example.test/", "text/html");
+    LoadURL("https://example.test/");
     main_resource.Complete(R"HTML(
     <div id='container'>
       <permission id='camera' type='camera'>
@@ -910,8 +965,8 @@ class HTMLPemissionElementIntersectionTest
 };
 
 TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
     <div id='heading' style='height: 100px;'></div>
     <permission id='camera' type='camera'>
@@ -945,8 +1000,8 @@ TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
 
 TEST_F(HTMLPemissionElementIntersectionTest,
        IntersectionChangedDisableEnableDisable) {
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
     <div id='cover' style='position: fixed; left: 0px; top: 100px; width: 100px; height: 100px;'></div>
     <permission id='camera' type='camera'>
@@ -1030,8 +1085,8 @@ class HTMLPemissionElementLayoutChangeTest
 };
 
 TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterMove) {
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
   <body>
     <permission
@@ -1055,8 +1110,8 @@ TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterMove) {
 }
 
 TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterResize) {
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
   <body>
     <permission
@@ -1077,12 +1132,12 @@ TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterResize) {
 }
 
 TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterMoveContainer) {
-  SimRequest main_resource("https://example.com/", "text/html");
-  SimRequest iframe_resource("https://example.com/foo.html", "text/html");
-  LoadURL("https://example.com/");
+  SimRequest main_resource("https://example.test/", "text/html");
+  SimRequest iframe_resource("https://example.test/foo.html", "text/html");
+  LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
   <body>
-      <iframe src='https://example.com/foo.html'
+      <iframe src='https://example.test/foo.html'
         allow="camera *">
       </iframe>
   </body>
@@ -1110,8 +1165,8 @@ TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterMoveContainer) {
 
 TEST_F(HTMLPemissionElementLayoutChangeTest,
        InvalidatePEPCAfterTransformContainer) {
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
     <div id='container'>
       <permission id='camera' type='camera'>

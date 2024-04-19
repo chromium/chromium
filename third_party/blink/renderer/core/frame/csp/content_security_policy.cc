@@ -1615,6 +1615,15 @@ bool ContentSecurityPolicy::AllowFencedFrameOpaqueURL() const {
   return true;
 }
 
+bool ContentSecurityPolicy::HasEnforceFrameAncestorsDirectives() {
+  return base::ranges::any_of(policies_, [](const auto& csp) {
+    return csp->header->type ==
+               network::mojom::ContentSecurityPolicyType::kEnforce &&
+           csp->directives.Contains(
+               network::mojom::CSPDirectiveName::FrameAncestors);
+  });
+}
+
 void ContentSecurityPolicy::Count(WebFeature feature) const {
   if (delegate_)
     delegate_->Count(feature);

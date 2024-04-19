@@ -81,6 +81,8 @@ class CORE_EXPORT HTMLPermissionElement final
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementFencedFrameTest,
                            NotAllowedInFencedFrame);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
+                           BlockedByMissingFrameAncestorsCSP);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
                            EnableClickingAfterDelay);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementLayoutChangeTest,
                            InvalidatePEPCAfterMove);

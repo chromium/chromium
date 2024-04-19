@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -302,6 +303,17 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
   if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
     AddConsoleError(
         String::Format("The permission '%s' is not allowed in fenced frame",
+                       GetType().Utf8().c_str()));
+    return;
+  }
+
+  if (GetDocument().GetFrame()->IsCrossOriginToOutermostMainFrame() &&
+      !GetExecutionContext()
+           ->GetContentSecurityPolicy()
+           ->HasEnforceFrameAncestorsDirectives()) {
+    AddConsoleError(
+        String::Format("The permission '%s' is not allowed without the CSP "
+                       "'frame-ancestors' directive present.",
                        GetType().Utf8().c_str()));
     return;
   }
