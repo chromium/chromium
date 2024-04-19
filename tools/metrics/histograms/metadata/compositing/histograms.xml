@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AccumulatedSequences">
+  <variant name="AllAnimations"
+      summary="its animations (e.g. comositor-driven animations, main-thread
+               driven animations, and raf-driven animations, etc.)"/>
+  <variant name="AllInteractions"
+      summary="its supported combinations of interaction types (e.g.
+               scrolling, pinching, etc.) and input device types (e.g.
+               touchscreen, touchpad, mousewheel, etc.)"/>
+</variants>
+
 <variants name="LCDTextDisallowedReasonDPI">
   <variant name="HighDPI"
       summary="In web pages where device scale factor is greater than or
@@ -31,13 +41,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SmoothnessSequence">
-  <variant name="AllAnimations"
-      summary="its animations (e.g. comositor-driven animations, main-thread
-               driven animations, and raf-driven animations, etc.)"/>
-  <variant name="AllInteractions"
-      summary="its supported combinations of interaction types (e.g.
-               scrolling, pinching, etc.) and input device types (e.g.
-               touchscreen, touchpad, mousewheel, etc.)"/>
   <variant name="CanvasAnimation" summary="canvas animations"/>
   <variant name="CompositorAnimation"
       summary="compositor thread driven animations"/>
@@ -56,7 +59,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SmoothnessThread">
-  <variant name=""/>
   <variant name="CompositorThread."/>
   <variant name="MainThread."/>
 </variants>
@@ -1178,6 +1180,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Graphics.Smoothness.Checkerboarding3.{Sequence}" units="%"
+    expires_after="2024-09-15">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of checkerboarded frames for a sequence by aggregating
+    all {Sequence}, where a sequence is a series of frames produced which
+    contain at least one of the aforementioned effects.
+
+    Checkerboarding is measured by tracking the number of times checkerboard
+    frames are displayed (as opposed to the number of checkerboard frames
+    produced), since the same checkerboard frame can be displayed more than
+    once.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+  </summary>
+  <token key="Sequence" variants="AccumulatedSequences"/>
+</histogram>
+
 <histogram name="Graphics.Smoothness.Checkerboarding3.{Thread}{Sequence}"
     units="%" expires_after="2024-09-15">
   <owner>jonross@chromium.org</owner>
@@ -1201,13 +1225,17 @@ chromium-metrics-reviews@google.com.
   <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>
 
-<histogram name="Graphics.Smoothness.Jank3.All{Type}" units="%"
+<histogram name="Graphics.Smoothness.Jank3.AllSequences" units="%"
     expires_after="2024-10-06">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    Tracks the percent of janks for a sequence by aggregating all its {Type}
+    Tracks the percent of janks for a sequence by aggregating all its animations
+    and interactions, where a sequence is a series of frames produced which
+    contain at least one of the animations/interactions. Such animations and
+    interactions encompass: Compositor-thread animations; Main-thread
+    animations; JS animations; scrolling; and pinch-gestures.
 
     Jank is measured by tracking the number of abrupt increases in frame
     presentation interval, divided by the total number of frames expected to be
@@ -1218,14 +1246,28 @@ chromium-metrics-reviews@google.com.
     frames (&gt;= 100). If there are sequences with fewer frames, then these are
     aggregated until there are enough frames to produce the metric.
   </summary>
-  <token key="Type">
-    <variant name="Sequences"
-        summary="animations and interactions, where a sequence is a series of
-                 frames produced which contain at least one of the
-                 animations/interactions. Such animations and interactions
-                 encompass: Compositor-thread animations; Main-thread
-                 animations; JS animations; scrolling; and pinch-gestures."/>
-  </token>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Jank3.{Sequence}" units="%"
+    expires_after="2024-10-06">
+  <owner>jonross@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of janks for a sequence by aggregating all {Sequence},
+    where a sequence is a series of frames produced which contain at least one
+    of the aforementioned effects.
+
+    Jank is measured by tracking the number of abrupt increases in frame
+    presentation interval, divided by the total number of frames expected to be
+    produced and displayed. The lower this number is, the less the smoothness
+    varies over time.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+  <token key="Sequence" variants="AccumulatedSequences"/>
 </histogram>
 
 <histogram name="Graphics.Smoothness.Jank3.{Thread}{Sequence}" units="%"
@@ -1297,6 +1339,31 @@ chromium-metrics-reviews@google.com.
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentDroppedFrames3.{Sequence}"
+    units="%" expires_after="2024-09-15">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of dropped frames for a sequence by aggregating all
+    {Sequence}, where a sequence is a series of frames produced which contain at
+    least one of the aforementioned effects.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother the experience.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+
+    This is a new implementation of the older
+    Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
+  </summary>
+  <token key="Sequence" variants="AccumulatedSequences"/>
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.{Thread}{Sequence}"
