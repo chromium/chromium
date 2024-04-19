@@ -7261,7 +7261,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LoadingPredictor.PredictorDatabaseFileSize" units="KB"
+<histogram name="LoadingPredictor.PredictorDatabaseFileSize" units="KiB"
     expires_after="2024-07-09">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
