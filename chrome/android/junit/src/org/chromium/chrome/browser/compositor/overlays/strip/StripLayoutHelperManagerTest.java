@@ -780,7 +780,7 @@ public class StripLayoutHelperManagerTest {
         List<VirtualView> views = new ArrayList<>();
         mStripLayoutHelperManager
                 .getTabSwitcherObserver()
-                .onStartedShowing(LayoutType.TAB_SWITCHER);
+                .onFinishedShowing(LayoutType.TAB_SWITCHER);
         mStripLayoutHelperManager.getVirtualViews(views);
         assertTrue("Views are empty when tab switcher is showing.", views.isEmpty());
 
