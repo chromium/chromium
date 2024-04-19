@@ -208,6 +208,7 @@ MetadataEntries Parser::GetMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (content_settings::features::kUseTestMetadata.Get() > 0) {
+    metadata_source_ = MetadataSource::kClient;
     return ToMetadataEntries(GenerateLargeTestMetadata());
   }
 
@@ -216,9 +217,11 @@ MetadataEntries Parser::GetMetadata() {
       net::features::kTpcdMetadataGrants, &params);
   if (has_feature_params &&
       params.find(kMetadataFeatureParamName) != params.end()) {
+    metadata_source_ = MetadataSource::kFeatureParams;
     return ParseMetadataFromFeatureParam(params);
   }
 
+  metadata_source_ = MetadataSource::kServer;
   // If no metadata are present within the Feature params, use the metadata
   // provided by the Component Updater if present.
   return metadata_.value_or(MetadataEntries());
@@ -244,12 +247,13 @@ MetadataEntries Parser::ParseMetadataFromFeatureParamForTesting(
 // End Parser testing methods impl.
 
 namespace helpers {
-void AddEntryToMetadata(Metadata& metadata,
-                        const std::string& primary_pattern_spec,
-                        const std::string& secondary_pattern_spec,
-                        const std::string& source,
-                        const std::optional<uint32_t>& dtrp,
-                        const std::optional<uint32_t>& dtrp_override) {
+MetadataEntry* AddEntryToMetadata(
+    Metadata& metadata,
+    const std::string& primary_pattern_spec,
+    const std::string& secondary_pattern_spec,
+    const std::string& source,
+    const std::optional<uint32_t>& dtrp,
+    const std::optional<uint32_t>& dtrp_override) {
   MetadataEntry* me = metadata.add_metadata_entries();
   me->set_primary_pattern_spec(primary_pattern_spec);
   me->set_secondary_pattern_spec(secondary_pattern_spec);
@@ -260,6 +264,7 @@ void AddEntryToMetadata(Metadata& metadata,
   if (dtrp_override.has_value()) {
     me->set_dtrp_override(dtrp_override.value());
   }
+  return me;
 }
 }  // namespace helpers
 }  // namespace tpcd::metadata
