@@ -60,10 +60,6 @@ BASE_DECLARE_FEATURE(kShadowKidsApiWithSafeSites);
 BASE_DECLARE_FEATURE(kMigrateAccountManagementSettingsToCapabilities);
 #endif
 
-// Sets kForceYouTubeRestrict to be applied according to parental controls set
-// on Family Link
-BASE_DECLARE_FEATURE(kRemoveForceAppliedYoutubeRestrictPolicy);
-
 // Uses PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable for
 // ClassifyUrl fetches.
 BASE_DECLARE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl);
