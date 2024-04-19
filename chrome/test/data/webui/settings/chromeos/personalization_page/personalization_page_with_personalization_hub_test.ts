@@ -12,10 +12,12 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.js';
 
-let personalizationPage: SettingsPersonalizationPageElement;
-let personalizationHubBrowserProxy: TestPersonalizationHubBrowserProxy;
-
 suite('<settings-personalization-page>', () => {
+  let personalizationPage: SettingsPersonalizationPageElement;
+  let personalizationHubBrowserProxy: TestPersonalizationHubBrowserProxy;
+  const shouldShowMultitaskingInPersonalization =
+      loadTimeData.getBoolean('shouldShowMultitaskingInPersonalization');
+
   async function createPersonalizationPage(): Promise<void> {
     personalizationPage =
         document.createElement('settings-personalization-page');
@@ -70,45 +72,41 @@ suite('<settings-personalization-page>', () => {
     await personalizationHubBrowserProxy.whenCalled('openPersonalizationHub');
   });
 
-  test(
-      'Multitasking settings subsection is visible with feature enabled',
-      async () => {
-        loadTimeData.overrideValues(
-            {shouldShowMultitaskingInPersonalization: true});
-        await createPersonalizationPage();
-        const multitaskingSettingsSubsection =
-            personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
-                '#snapWindowSuggestionsSubsection');
-        assertTrue(
-            isVisible(multitaskingSettingsSubsection),
-            'Multitasking settings subsection should be visible.');
-      });
+  if (shouldShowMultitaskingInPersonalization) {
+    test(
+        'Multitasking settings subsection is visible with feature enabled',
+        async () => {
+          await createPersonalizationPage();
+          const multitaskingSettingsSubsection =
+              personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
+                  '#snapWindowSuggestionsSubsection');
+          assertTrue(
+              isVisible(multitaskingSettingsSubsection),
+              'Multitasking settings subsection should be visible.');
+        });
 
-  test(
-      'Multitasking settings subsection is not visible with feature disabled',
-      async () => {
-        loadTimeData.overrideValues(
-            {shouldShowMultitaskingInPersonalization: false});
-        await createPersonalizationPage();
+    test('Multitasking settings subsection is deep-linkable', async () => {
+      await createPersonalizationPage();
+      await deepLinkToSetting(settingMojom.Setting.kSnapWindowSuggestions);
 
-        const multitaskingSettingsSubsection =
-            personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
-                '#snapWindowSuggestionsSubsection');
-        assertFalse(
-            isVisible(multitaskingSettingsSubsection),
-            'Multitasking settings subsection should not be visible.');
-      });
+      const multitaskingSettingsSubsection =
+          personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#snapWindowSuggestionsSubsection');
+      assertTrue(!!multitaskingSettingsSubsection);
+      await assertElementIsDeepLinked(multitaskingSettingsSubsection);
+    });
+  } else {
+    test(
+        'Multitasking settings subsection is not visible with feature disabled',
+        async () => {
+          await createPersonalizationPage();
 
-  test('Multitasking settings subsection is deep-linkable', async () => {
-    loadTimeData.overrideValues(
-        {shouldShowMultitaskingInPersonalization: true});
-    await createPersonalizationPage();
-    await deepLinkToSetting(settingMojom.Setting.kSnapWindowSuggestions);
-
-    const multitaskingSettingsSubsection =
-        personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#snapWindowSuggestionsSubsection');
-    assertTrue(!!multitaskingSettingsSubsection);
-    await assertElementIsDeepLinked(multitaskingSettingsSubsection);
-  });
+          const multitaskingSettingsSubsection =
+              personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
+                  '#snapWindowSuggestionsSubsection');
+          assertFalse(
+              isVisible(multitaskingSettingsSubsection),
+              'Multitasking settings subsection should not be visible.');
+        });
+  }
 });

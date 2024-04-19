@@ -1845,6 +1845,27 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ParentalControlsSettingsCard) {
       "parental_controls_page/parental_controls_settings_card_test.js");
 }
 
+class OSSettingsMochaTestRevampAndFasterSplitScreenDisabled
+    : public OSSettingsMochaTest {
+ public:
+  OSSettingsMochaTestRevampAndFasterSplitScreenDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/{},
+        /*disabled=*/{ash::features::kOsSettingsRevampWayfinding,
+                      ash::features::kFasterSplitScreenSetup});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampAndFasterSplitScreenDisabled,
+                       PersonalizationPageWithPersonalizationHub) {
+  RunSettingsTest(
+      "personalization_page/"
+      "personalization_page_with_personalization_hub_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        PersonalizationPageWithPersonalizationHub) {
   RunSettingsTest(
