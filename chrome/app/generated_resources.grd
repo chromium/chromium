@@ -13111,9 +13111,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON" desc="Button in the header of desktop user menu prompting users to confirm their sync settings.">
         Open settings
       </message>
-      <message name="IDS_SYNC_ERROR_USER_MENU_VERIFY_MESSAGE" translateable="false" desc="This is the text of a card that means the user needs to sign back in to Chrome in order to continue saving and using data (like passwords or payment methods) in their Google Account. This is an error message that appears when the user's sign-in credential has expired; to fix the issue, the user needs to sign back in. The tone should be straightforward and motivating.">
-        To keep using the passwords and more in your Google Account, verify it's you
-      </message>
 
       <if expr="chromeos_ash">
         <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">

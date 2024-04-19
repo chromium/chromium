@@ -710,18 +710,10 @@ void ProfileMenuView::BuildSyncInfo() {
   bool show_account_card = false;
 
   if (!account_info.IsEmpty()) {
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
-      description =
-          l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_VERIFY_MESSAGE);
-      button_text = l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON);
-    } else {
-      description =
-          l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE);
-      button_text = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
-      show_sync_badge = true;
-    }
+    description =
+        l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE);
+    button_text = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+    show_sync_badge = true;
   } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
                  switches::ExplicitBrowserSigninPhase::kExperimental) &&
              !account_info_for_promos.IsEmpty()) {
