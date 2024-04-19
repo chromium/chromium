@@ -47,6 +47,7 @@ namespace {
 const uint32_t kTestDownloadId = 47;
 const uint32_t kOtherDownloadId = 48;
 const uint32_t kCrazyDowloadId = 655;
+const uint32_t kUninitializedDowloadId = 963;
 const int64_t kTestDownloadTimeMsec = 84;
 const char kTestUrl[] = "http://test.test/foo";
 const uint64_t kTestDownloadLength = 1000;
@@ -190,6 +191,7 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
       other_item_.reset();
       test_item_.reset();
       zero_item_.reset();
+      uninitialized_item_.reset();
       dm_observer_ = nullptr;
     }
   }
@@ -239,16 +241,48 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
             Invoke(this, &DownloadMetadataManagerTestBase::GetAllDownloads));
   }
 
+  // Adds an uninitialized active download.
+  void AddUninitializedActiveItem() {
+    ASSERT_NE(nullptr, dm_observer_);
+    // Add the item under test.
+    uninitialized_item_ =
+        std::make_unique<NiceMock<download::MockDownloadItem>>();
+    ON_CALL(*uninitialized_item_, GetId())
+        .WillByDefault(Return(kUninitializedDowloadId));
+    ON_CALL(*uninitialized_item_, GetEndTime())
+        .WillByDefault(Return(base::Time::FromMillisecondsSinceUnixEpoch(
+            kTestDownloadEndTimeMs)));
+    ON_CALL(*uninitialized_item_, GetState())
+        .WillByDefault(Return(download::DownloadItem::COMPLETE));
+    content::DownloadItemUtils::AttachInfoForTesting(uninitialized_item_.get(),
+                                                     &profile_, nullptr);
+    dm_observer_->OnDownloadCreated(&download_manager_,
+                                    uninitialized_item_.get());
+
+    ON_CALL(download_manager_, GetUninitializedActiveDownloadsIfAny(_))
+        .WillByDefault(Invoke(this, &DownloadMetadataManagerTestBase::
+                                        GetUninitializedActiveDownloadsIfAny));
+  }
+
   // An implementation of the MockDownloadManager's
   // DownloadManager::GetAllDownloads method that returns all items.
   void GetAllDownloads(content::DownloadManager::DownloadVector* downloads) {
-    downloads->clear();
     if (test_item_)
       downloads->push_back(test_item_.get());
     if (other_item_)
       downloads->push_back(other_item_.get());
     if (zero_item_)
       downloads->push_back(zero_item_.get());
+  }
+
+  // An implementation of the MockDownloadManager's
+  // DownloadManager::GetUninitializedActiveDownloadsIfAny method that returns
+  // the uninitialized item.
+  void GetUninitializedActiveDownloadsIfAny(
+      content::DownloadManager::DownloadVector* downloads) {
+    if (uninitialized_item_) {
+      downloads->push_back(uninitialized_item_.get());
+    }
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -258,6 +292,7 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
   std::unique_ptr<download::MockDownloadItem> test_item_;
   std::unique_ptr<download::MockDownloadItem> other_item_;
   std::unique_ptr<download::MockDownloadItem> zero_item_;
+  std::unique_ptr<download::MockDownloadItem> uninitialized_item_;
 
   // The DownloadMetadataManager's content::DownloadManager::Observer. Captured
   // by download_manager_'s AddObserver action.
@@ -620,6 +655,20 @@ TEST_F(DownloadMetadataManagerTestBase, OpenItemWithZeroId) {
   // Open the zero-id item.
   zero_item_->NotifyObserversDownloadOpened();
 
+  ShutdownDownloadManager();
+}
+
+// Regression test for https://crbug.com/40072145, where observers weren't being
+// removed at shutdown from uninitialized active downloads.
+TEST_F(DownloadMetadataManagerTestBase, UninitializedActiveDownload) {
+  ASSERT_NO_FATAL_FAILURE(AddDownloadManager());
+  ASSERT_NO_FATAL_FAILURE(AddUninitializedActiveItem());
+
+  // Allow everything to load into steady-state.
+  RunAllTasks();
+
+  // There should be no crash when destroying the ManagerContext from it still
+  // observing a DownloadItem.
   ShutdownDownloadManager();
 }
 

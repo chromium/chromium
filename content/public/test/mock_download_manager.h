@@ -105,6 +105,8 @@ class MockDownloadManager : public DownloadManager {
   MOCK_METHOD0(GetDelegate, DownloadManagerDelegate*());
   MOCK_METHOD0(Shutdown, void());
   MOCK_METHOD1(GetAllDownloads, void(DownloadVector* downloads));
+  MOCK_METHOD1(GetUninitializedActiveDownloadsIfAny,
+               void(DownloadVector* downloads));
   MOCK_METHOD1(Init, bool(BrowserContext* browser_context));
   MOCK_METHOD3(RemoveDownloadsByURLAndTime,
                int(const base::RepeatingCallback<bool(const GURL&)>& url_filter,
