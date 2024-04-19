@@ -185,8 +185,9 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    */
   private computeDisplayName_(): string {
     if (this.model.embeddingOrigin &&
-        this.model.category === ContentSettingsTypes.COOKIES &&
-        this.model.origin.trim() === SITE_EXCEPTION_WILDCARD) {
+        ((this.model.category === ContentSettingsTypes.COOKIES &&
+          this.model.origin.trim() === SITE_EXCEPTION_WILDCARD) ||
+         this.model.category === ContentSettingsTypes.TRACKING_PROTECTION)) {
       return this.model.embeddingOrigin;
     }
     return this.model.displayName;
@@ -232,7 +233,8 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
           description = loadTimeData.getString(
               'siteSettingsCookiesThirdPartyExceptionLabel');
         }
-      } else {
+      } else if (
+          this.model.category !== ContentSettingsTypes.TRACKING_PROTECTION) {
         description = loadTimeData.getStringF(
             'embeddedOnHost', this.sanitizePort(this.model.embeddingOrigin));
       }

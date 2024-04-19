@@ -189,6 +189,26 @@ suite('SiteListEntry', function() {
     assertEquals('', siteDescription.textContent);
   });
 
+  // Verify that tracking protection exceptions don't have an embedding-origin
+  // description.
+  test('tracking protection exception', function() {
+    testElement.model = {
+      category: ContentSettingsTypes.TRACKING_PROTECTION,
+      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
+      displayName: '',
+      embeddingOrigin: 'http://example.com',
+      description: '',
+      enforcement: null,
+      incognito: false,
+      isEmbargoed: false,
+      origin: SITE_EXCEPTION_WILDCARD,
+      setting: ContentSetting.DEFAULT,
+    };
+    flush();
+    const siteDescription = testElement.$$('#siteDescription')!;
+    assertEquals('', siteDescription.textContent);
+  });
+
   // Verify that exceptions with both patterns have proper description for both
   // lists.
   test('cookies exception with both patterns set', function() {

@@ -1521,4 +1521,20 @@ suite('AddExceptionDialog', function() {
     assertEquals(primaryPattern, expectedPattern);
     assertEquals(secondaryPattern, SITE_EXCEPTION_WILDCARD);
   });
+
+  test('add tracking protection exception', async function() {
+    dialog.set('category', ContentSettingsTypes.TRACKING_PROTECTION);
+    flush();
+
+    // Enter a pattern and click the button.
+    const expectedPattern = 'foo-bar.com';
+    await inputText(expectedPattern);
+    dialog.$.add.click();
+
+    // The created exception has primary pattern wildcard.
+    const [primaryPattern, secondaryPattern] =
+        await browserProxy.whenCalled('setCategoryPermissionForPattern');
+    assertEquals(primaryPattern, SITE_EXCEPTION_WILDCARD);
+    assertEquals(secondaryPattern, expectedPattern);
+  });
 });

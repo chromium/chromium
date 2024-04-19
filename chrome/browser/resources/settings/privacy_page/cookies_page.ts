@@ -39,7 +39,6 @@ import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, CookieControlsMode} from '../site_settings/constants.js';
-import {CookiePrimarySetting} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {getTemplate} from './cookies_page.html.js';
 
@@ -78,14 +77,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         type: String,
         notify: true,
         value: '',
-      },
-
-      /**
-       * Primary cookie control states for use in bindings.
-       */
-      cookiePrimarySettingEnum_: {
-        type: Object,
-        value: CookiePrimarySetting,
       },
 
       /** Cookie control modes for use in bindings. */
