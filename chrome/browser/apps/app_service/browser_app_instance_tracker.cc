@@ -50,11 +50,22 @@ bool HaveSameWindowTreeHostLacros(aura::Window* window1,
   if (window1 == nullptr || window2 == nullptr) {
     return false;
   }
-  auto* host1 = views::DesktopWindowTreeHostLacros::From(window1->GetHost());
-  auto* host2 = views::DesktopWindowTreeHostLacros::From(window2->GetHost());
+  views::DesktopWindowTreeHostPlatform* host1 =
+      views::DesktopWindowTreeHostLacros::From(window1->GetHost());
+  views::DesktopWindowTreeHostPlatform* host2 =
+      views::DesktopWindowTreeHostLacros::From(window2->GetHost());
+
   if (host1 == nullptr || host2 == nullptr) {
     return false;
   } else {
+    // If the host is a window_tree_host for bubble, the associated browser is
+    // up in the window_parent() chain.
+    while (host1->window_parent()) {
+      host1 = host1->window_parent();
+    }
+    while (host2->window_parent()) {
+      host2 = host2->window_parent();
+    }
     return host1 == host2;
   }
 }
