@@ -1019,6 +1019,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB" desc="The iOS menu item for opening a link in another tab. Shorter than the desktop version [iOS only]">
         Open in New Tab
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP" desc="The iOS context menu item for opening a link in new tab group. [iOS only]">
+        Open in New Tab Group
+      </message>
        <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP" desc="The iOS context menu item for opening a link in a tab group. [iOS only]">
         Open in Tab Group
       </message>

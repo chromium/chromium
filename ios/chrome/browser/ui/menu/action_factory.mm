@@ -360,11 +360,16 @@
                                      block:block];
   return action;
 }
-- (UIAction*)actionToOpenLinkInNewGroupWithBlock:(ProceduralBlock)block {
+
+- (UIAction*)actionToOpenLinkInNewGroupWithBlock:(ProceduralBlock)block
+                                       inSubmenu:(BOOL)inSubmenu {
   UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
                                               kSymbolActionPointSize);
   NSString* title =
-      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP);
+      inSubmenu ? l10n_util::GetNSString(
+                      IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU)
+                : l10n_util::GetNSString(
+                      IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP);
   UIAction* action = [self actionWithTitle:title
                                      image:image
                                       type:MenuActionType::OpenLinkInNewGroup
@@ -470,7 +475,8 @@
         block(nil);
       }
     };
-    return [self actionToOpenLinkInNewGroupWithBlock:openInNewGroupBlock];
+    return [self actionToOpenLinkInNewGroupWithBlock:openInNewGroupBlock
+                                           inSubmenu:NO];
   }
 
   NSArray<UIMenuElement*>* groupsMenu = [self groupsMenuForGroups:groups
@@ -486,8 +492,11 @@
       block(nil);
     }
   };
-  NSArray<UIMenuElement*>* openInGroupMenuElements =
-      @[ [self actionToOpenLinkInNewGroupWithBlock:openInNewGroupBlock], menu ];
+  NSArray<UIMenuElement*>* openInGroupMenuElements = @[
+    [self actionToOpenLinkInNewGroupWithBlock:openInNewGroupBlock
+                                    inSubmenu:YES],
+    menu
+  ];
 
   UIImage* image = DefaultSymbolWithPointSize(kMoveTabToGroupActionSymbol,
                                               kSymbolActionPointSize);

@@ -171,6 +171,12 @@ id<GREYMatcher> OpenImageInNewTabButton() {
 // Matcher for the open link in new tab group button in the context menu.
 id<GREYMatcher> OpenLinkInNewGroupButton() {
   return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP);
+}
+
+// Matcher for the open link in group button in the context menu.
+id<GREYMatcher> OpenLinkInGroupButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
       IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP);
 }
 
@@ -528,9 +534,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP)]
+  [[EarlGrey selectElementWithMatcher:
+                 ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
@@ -712,7 +718,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
   LongPressElement(kInitialPageDestinationLinkId);
-  TapOnContextMenuButton(OpenLinkInNewGroupButton());
+  TapOnContextMenuButton(OpenLinkInGroupButton());
   TapOnContextMenuButton(OpenLinkInOneTabGroupButton());
 
   [ChromeEarlGrey waitForMainTabCount:3];

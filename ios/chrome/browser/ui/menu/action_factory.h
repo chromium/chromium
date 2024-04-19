@@ -139,8 +139,10 @@ class TabGroup;
                                            inSubmenu:(BOOL)inSubmenu
                                                block:(ProceduralBlock)block;
 
-// Creates a UIAction instance for opening  a link in new tab group
-- (UIAction*)actionToOpenLinkInNewGroupWithBlock:(ProceduralBlock)block;
+// Creates a UIAction instance for opening  a link in new tab group. `inSubmenu`
+// changes the string to be displayed.
+- (UIAction*)actionToOpenLinkInNewGroupWithBlock:(ProceduralBlock)block
+                                       inSubmenu:(BOOL)inSubmenu;
 
 #ifdef __cplusplus
 // Creates a UIMenu instance for adding a tab to an existing group or to a new
