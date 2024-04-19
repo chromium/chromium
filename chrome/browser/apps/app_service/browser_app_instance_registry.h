@@ -31,8 +31,6 @@
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/wm/public/activation_change_observer.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace aura {
 class Window;
@@ -47,8 +45,7 @@ class BrowserAppInstanceRegistry
     : public BrowserAppInstanceObserver,
       public crosapi::mojom::BrowserAppInstanceRegistry,
       public aura::EnvObserver,
-      public aura::WindowObserver,
-      public wm::ActivationChangeObserver {
+      public aura::WindowObserver {
  public:
   explicit BrowserAppInstanceRegistry(
       BrowserAppInstanceTracker& ash_instance_tracker);
@@ -60,14 +57,6 @@ class BrowserAppInstanceRegistry
   // Get a single browser window instance by ID (Ash or Lacros).
   const BrowserWindowInstance* GetBrowserWindowInstanceById(
       base::UnguessableToken id) const;
-
-  // Get all instances of apps that are hosted on |window| (Ash or Lacros).
-  const std::set<const BrowserAppInstance*> GetBrowserAppInstancesByWindow(
-      const aura::Window* window) const;
-
-  // Get a single instance that corresponds to |window|  (Ash or Lacros).
-  const BrowserWindowInstance* GetBrowserWindowInstanceByWindow(
-      const aura::Window* window) const;
 
   // Get a single window by instance ID (Ash or Lacros). Returns a nullptr if
   // instance identified by |id| does not exist.
@@ -190,13 +179,7 @@ class BrowserAppInstanceRegistry
   void OnWindowInitialized(aura::Window* window) override;
 
   // aura::WindowObserver overrides:
-  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
-
-  // wm::ActivationChangeObserver overrides:
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
 
  private:
   // Buffered Lacros instance events for windows that weren't available yet
@@ -223,8 +206,6 @@ class BrowserAppInstanceRegistry
 
   void OnControllerDisconnected();
 
-  void MaybeStartActivationObservation(aura::Window* window);
-
   const raw_ref<BrowserAppInstanceTracker> ash_instance_tracker_;
 
   // Lacros app instances.
@@ -234,8 +215,6 @@ class BrowserAppInstanceRegistry
   // Lacros browser window instances.
   BrowserAppInstanceMap<base::UnguessableToken, BrowserWindowInstance>
       lacros_window_instances_;
-
-  bool is_activation_observed_ = false;
 
   // Track all Aura windows belonging to Lacros. This is necessary to
   // synchronise crosapi events and Aura windows matching these events being
