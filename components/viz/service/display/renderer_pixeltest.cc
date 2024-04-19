@@ -5837,6 +5837,10 @@ class ColorTransformPixelTest
       GTEST_SKIP() << "Skipping tonemapped output";
     }
 
+    if (!dst_color_space_.IsSuitableForBlending()) {
+      GTEST_SKIP() << "Skipping color space not suitable for blending";
+    }
+
     gfx::Rect rect(this->device_viewport_size_);
     std::vector<uint8_t> input_colors(4 * rect.width() * rect.height(), 0);
     std::vector<SkColor> expected_output_colors(rect.width() * rect.height());

@@ -298,6 +298,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void SetScissorTestRect(const gfx::Rect& scissor_rect) = 0;
   // |render_pass_update_rect| is in render pass backing buffer space.
   virtual void BeginDrawingRenderPass(
+      const AggregatedRenderPass* render_pass,
       bool needs_clear,
       const gfx::Rect& render_pass_update_rect) = 0;
   // |clip_region| is a (possibly null) pointer to a quad in the same

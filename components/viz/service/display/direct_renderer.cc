@@ -707,7 +707,8 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   const gfx::Rect render_pass_update_rect = MoveFromDrawToWindowSpace(
       render_pass_requires_scissor ? render_pass_scissor_in_draw_space
                                    : surface_rect_in_draw_space);
-  BeginDrawingRenderPass(should_clear_surface, render_pass_update_rect);
+  BeginDrawingRenderPass(render_pass, should_clear_surface,
+                         render_pass_update_rect);
 
   if (is_root_render_pass)
     last_root_render_pass_scissor_rect_ = render_pass_scissor_in_draw_space;

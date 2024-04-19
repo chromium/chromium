@@ -383,6 +383,12 @@ BASE_FEATURE(kSnapshotEvictedRootSurface,
 const base::FeatureParam<double> kSnapshotEvictedRootSurfaceScale{
     &kSnapshotEvictedRootSurface, "scale", 0.4};
 
+// Do HDR color conversion per render pass update rect in renderer instead of
+// inserting a separate color conversion pass during surface aggregation.
+BASE_FEATURE(kColorConversionInRenderer,
+             "ColorConversionInRenderer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }

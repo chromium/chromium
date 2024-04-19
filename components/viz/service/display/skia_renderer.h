@@ -105,6 +105,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       const AggregatedRenderPassId render_pass_id) override;
   void SetScissorTestRect(const gfx::Rect& scissor_rect) override;
   void BeginDrawingRenderPass(
+    const AggregatedRenderPass* render_pass,
       bool needs_clear,
       const gfx::Rect& render_pass_update_rect) override;
   void DoDrawQuad(const DrawQuad* quad, const gfx::QuadF* draw_region) override;
@@ -543,6 +544,15 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   const bool is_using_raw_draw_;
 
   gfx::ColorConversionSkFilterCache color_filter_cache_;
+
+  // Returns true if we need to push a color conversion layer to correctly draw
+  // |render_pass|'s contents.
+  bool NeedsLayerForColorConversion(const AggregatedRenderPass* render_pass);
+
+  // A layer that may be pushed at the start of |BeginDrawingRenderPass| that is
+  // the size of the pass' update rect. Drawing done inside this layer is in a
+  // blend-friendly color space.
+  std::optional<SkAutoCanvasRestore> hdr_color_conversion_layer_reset_;
 
   bool UsingSkiaForDelegatedInk() const;
   uint32_t debug_tint_modulate_count_ = 0;

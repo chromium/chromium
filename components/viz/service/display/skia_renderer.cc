@@ -1490,7 +1490,43 @@ void SkiaRenderer::ClearFramebuffer() {
   }
 }
 
+bool SkiaRenderer::NeedsLayerForColorConversion(
+    const AggregatedRenderPass* render_pass) {
+  if (!base::FeatureList::IsEnabled(features::kColorConversionInRenderer)) {
+    // Color conversion is already handled by a dedicated render pass if it was
+    // needed.
+    return false;
+  }
+
+  if (!render_pass->ShouldDrawWithBlending()) {
+    // We don't need to be in a color space suitable for blending if we're not
+    // doing any blending.
+    return false;
+  }
+
+  const auto it = render_pass_backings_.find(render_pass->id);
+  if (it == render_pass_backings_.end()) {
+    // The render pass backing must be owned by the |render_pass_backings_|, the
+    // output surface. If it is owned by the latter, then we know we're drawing
+    // the root render pass.
+    CHECK(!output_surface_->capabilities().renderer_allocates_images);
+  }
+
+  // If the color space of the render pass backing is suitable for blending, we
+  // don't need to do any color conversion.
+  const gfx::ColorSpace& pass_color_space = it != render_pass_backings_.end()
+                                                ? it->second.color_space
+                                                : RootRenderPassColorSpace();
+  if (pass_color_space.IsSuitableForBlending()) {
+    return false;
+  }
+
+  CHECK(pass_color_space.IsHDR());
+  return true;
+}
+
 void SkiaRenderer::BeginDrawingRenderPass(
+    const AggregatedRenderPass* render_pass,
     bool needs_clear,
     const gfx::Rect& render_pass_update_rect) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
@@ -1500,6 +1536,23 @@ void SkiaRenderer::BeginDrawingRenderPass(
     EnsureScissorTestDisabled();
   } else {
     SetScissorTestRect(render_pass_update_rect);
+  }
+
+  if (NeedsLayerForColorConversion(render_pass)) {
+    CHECK(!hdr_color_conversion_layer_reset_.has_value());
+    hdr_color_conversion_layer_reset_.emplace(current_canvas_.get(),
+                                              /*do_save=*/true);
+
+    const SkRect layer_bounds = gfx::RectToSkRect(render_pass_update_rect);
+    const gfx::ColorSpace blend_color_space =
+        gfx::ColorSpace::CreateExtendedSRGB();
+    CHECK(blend_color_space.IsSuitableForBlending());
+    sk_sp<const SkColorSpace> color_space = blend_color_space.ToSkColorSpace();
+    current_canvas_->saveLayer(
+        SkCanvas::SaveLayerRec(&layer_bounds,
+                               /*paint=*/nullptr,
+                               /*backdrop=*/nullptr, color_space.get(),
+                               SkCanvas::SaveLayerFlagsSet::kF16ColorType));
   }
 
   if (needs_clear) {
@@ -3492,6 +3545,10 @@ void SkiaRenderer::FinishDrawingRenderPass() {
   // reason, it should only happen on the root render pass.
   if (is_root_render_pass && UsingSkiaForDelegatedInk())
     DrawDelegatedInkTrail();
+
+  // Pops a layer that is pushed at the start of |BeginDrawingRenderPass|. This
+  // applies color space conversion for HDR passes, if present.
+  hdr_color_conversion_layer_reset_.reset();
 
   current_canvas_ = nullptr;
   // Non-root render passes that are scheduled as overlays will be painted in

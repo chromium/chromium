@@ -2409,7 +2409,9 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     last_pass->damage_rect.Intersect(prewalk_damage_rect);
   }
 
-  AddColorConversionPass();
+  if (!base::FeatureList::IsEnabled(features::kColorConversionInRenderer)) {
+    AddColorConversionPass();
+  }
   AddRootReadbackPass();
 
   ProcessAddedAndRemovedSurfaces();
