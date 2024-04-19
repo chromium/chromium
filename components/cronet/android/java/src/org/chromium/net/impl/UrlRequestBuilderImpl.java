@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.util.Log;
-import android.util.Pair;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalUrlRequest;
@@ -14,8 +12,11 @@ import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlRequest;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 /** Implements {@link org.chromium.net.ExperimentalUrlRequest.Builder}. */
@@ -37,8 +38,8 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     // HTTP method (e.g. GET, POST etc).
     private String mMethod;
 
-    // List of request headers, stored as header field name and value pairs.
-    private final ArrayList<Pair<String, String>> mRequestHeaders = new ArrayList<>();
+    // List of request headers, stored as header field name and value map entries.
+    private final ArrayList<Map.Entry<String, String>> mRequestHeaders = new ArrayList<>();
     // Disable the cache for just this request.
     private boolean mDisableCache;
     // Disable connection migration for just this request.
@@ -108,12 +109,8 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
 
     @Override
     public UrlRequestBuilderImpl addHeader(String header, String value) {
-        if (header == null) {
-            throw new NullPointerException("Invalid header name.");
-        }
-        if (value == null) {
-            throw new NullPointerException("Invalid header value.");
-        }
+        Objects.requireNonNull(header, "Invalid header name.");
+        Objects.requireNonNull(value, "Invalid header value.");
         if (ACCEPT_ENCODING.equalsIgnoreCase(header)) {
             Log.i(
                     TAG,
@@ -123,7 +120,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
                     new Exception());
             return this;
         }
-        mRequestHeaders.add(Pair.create(header, value));
+        mRequestHeaders.add(new AbstractMap.SimpleEntry<>(header, value));
         return this;
     }
 
@@ -154,12 +151,8 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     @Override
     public UrlRequestBuilderImpl setUploadDataProvider(
             UploadDataProvider uploadDataProvider, Executor executor) {
-        if (uploadDataProvider == null) {
-            throw new NullPointerException("Invalid UploadDataProvider.");
-        }
-        if (executor == null) {
-            throw new NullPointerException("Invalid UploadDataProvider Executor.");
-        }
+        Objects.requireNonNull(uploadDataProvider, "Invalid UploadDataProvider.");
+        Objects.requireNonNull(executor, "Invalid UploadDataProvider Executor.");
         if (mMethod == null) {
             mMethod = "POST";
         }
@@ -176,9 +169,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
 
     @Override
     public UrlRequestBuilderImpl addRequestAnnotation(Object annotation) {
-        if (annotation == null) {
-            throw new NullPointerException("Invalid metrics annotation.");
-        }
+        Objects.requireNonNull(annotation, "Invalid metrics annotation.");
         if (mRequestAnnotations == null) {
             mRequestAnnotations = new ArrayList<>();
         }
@@ -217,34 +208,28 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     }
 
     @Override
-    public UrlRequestBase build() {
-        @SuppressLint("WrongConstant") // TODO(jbudorick): Remove this after rolling to the N SDK.
-        final UrlRequestBase request =
-                mCronetEngine.createRequest(
-                        mUrl,
-                        mCallback,
-                        mExecutor,
-                        mPriority,
-                        mRequestAnnotations,
-                        mDisableCache,
-                        mDisableConnectionMigration,
-                        mAllowDirectExecutor,
-                        mTrafficStatsTagSet,
-                        mTrafficStatsTag,
-                        mTrafficStatsUidSet,
-                        mTrafficStatsUid,
-                        mRequestFinishedListener,
-                        mIdempotency,
-                        mNetworkHandle);
-        if (mMethod != null) {
-            request.setHttpMethod(mMethod);
-        }
-        for (Pair<String, String> header : mRequestHeaders) {
-            request.addHeader(header.first, header.second);
-        }
-        if (mUploadDataProvider != null) {
-            request.setUploadDataProvider(mUploadDataProvider, mUploadDataProviderExecutor);
-        }
-        return request;
+    public ExperimentalUrlRequest build() {
+        // @SuppressLint("WrongConstant") // TODO(jbudorick): Remove this after rolling to the N
+        // SDK.
+        return mCronetEngine.createRequest(
+                mUrl,
+                mCallback,
+                mExecutor,
+                mPriority,
+                mRequestAnnotations,
+                mDisableCache,
+                mDisableConnectionMigration,
+                mAllowDirectExecutor,
+                mTrafficStatsTagSet,
+                mTrafficStatsTag,
+                mTrafficStatsUidSet,
+                mTrafficStatsUid,
+                mRequestFinishedListener,
+                mIdempotency,
+                mNetworkHandle,
+                mMethod == null ? "GET" : mMethod, // default to get if not set.
+                mRequestHeaders,
+                mUploadDataProvider,
+                mUploadDataProviderExecutor);
     }
 }

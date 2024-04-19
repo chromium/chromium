@@ -19,6 +19,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.net.CallbackException;
 import org.chromium.net.CronetException;
+import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.Idempotency;
 import org.chromium.net.InlineExecutionProhibitedException;
 import org.chromium.net.NetworkException;
@@ -43,17 +44,16 @@ import java.util.concurrent.RejectedExecutionException;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * UrlRequest using Chromium HTTP stack implementation. Could be accessed from
- * any thread on Executor. Cancel can be called from any thread.
- * All @CallByNative methods are called on native network thread
- * and post tasks with listener calls onto Executor. Upon return from listener
- * callback native request adapter is called on executive thread and posts
- * native tasks to native network thread. Because Cancel could be called from
- * any thread it is protected by mUrlRequestAdapterLock.
+ * UrlRequest using Chromium HTTP stack implementation. Could be accessed from any thread on
+ * Executor. Cancel can be called from any thread. All @CallByNative methods are called on native
+ * network thread and post tasks with listener calls onto Executor. Upon return from listener
+ * callback native request adapter is called on executive thread and posts native tasks to native
+ * network thread. Because Cancel could be called from any thread it is protected by
+ * mUrlRequestAdapterLock.
  */
 @JNINamespace("cronet")
 @VisibleForTesting
-public final class CronetUrlRequest extends UrlRequestBase {
+public final class CronetUrlRequest extends ExperimentalUrlRequest {
     private final boolean mAllowDirectExecutor;
 
     /* Native adapter object, owned by UrlRequest. */
@@ -88,8 +88,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
     private final String mInitialUrl;
     private final int mPriority;
     private final int mIdempotency;
-    private String mInitialMethod;
-    private final HeadersList mRequestHeaders = new HeadersList();
+    private final String mInitialMethod;
+    private final List<Map.Entry<String, String>> mRequestHeaders;
     private final Collection<Object> mRequestAnnotations;
     private final boolean mDisableCache;
     private final boolean mDisableConnectionMigration;
@@ -101,7 +101,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
     private final long mNetworkHandle;
     private final CronetLogger mLogger;
 
-    private CronetUploadDataStream mUploadDataStream;
+    private final CronetUploadDataStream mUploadDataStream;
 
     private UrlResponseInfoImpl mResponseInfo;
 
@@ -121,9 +121,6 @@ public final class CronetUrlRequest extends UrlRequestBase {
 
     @GuardedBy("mUrlRequestAdapterLock")
     private Runnable mOnDestroyedCallbackForTesting;
-
-    @VisibleForTesting
-    static final class HeadersList extends ArrayList<Map.Entry<String, String>> {}
 
     private final class OnReadCompletedRunnable implements Runnable {
         // Buffer passed back from current invocation of onReadCompleted.
@@ -166,7 +163,11 @@ public final class CronetUrlRequest extends UrlRequestBase {
             int trafficStatsUid,
             RequestFinishedInfo.Listener requestFinishedListener,
             int idempotency,
-            long networkHandle) {
+            long networkHandle,
+            String method,
+            ArrayList<Map.Entry<String, String>> requestHeaders,
+            UploadDataProvider uploadDataProvider,
+            Executor uploadDataProviderExecutor) {
         Objects.requireNonNull(url, "URL is required");
         Objects.requireNonNull(callback, "Listener is required");
         Objects.requireNonNull(executor, "Executor is required");
@@ -193,30 +194,13 @@ public final class CronetUrlRequest extends UrlRequestBase {
                         : null;
         mIdempotency = convertIdempotency(idempotency);
         mNetworkHandle = networkHandle;
-    }
-
-    @Override
-    public void setHttpMethod(String method) {
-        checkNotStarted();
-        Objects.requireNonNull(method, "Method is required.");
         mInitialMethod = method;
-    }
-
-    @Override
-    public void addHeader(String header, String value) {
-        checkNotStarted();
-        Objects.requireNonNull(header, "Invalid header name.");
-        Objects.requireNonNull(value, "Invalid header value.");
-        mRequestHeaders.add(new AbstractMap.SimpleImmutableEntry<String, String>(header, value));
-    }
-
-    @Override
-    public void setUploadDataProvider(UploadDataProvider uploadDataProvider, Executor executor) {
-        Objects.requireNonNull(uploadDataProvider, "Invalid UploadDataProvider.");
-        if (mInitialMethod == null) {
-            mInitialMethod = "POST";
-        }
-        mUploadDataStream = new CronetUploadDataStream(uploadDataProvider, executor, this);
+        mRequestHeaders = Collections.unmodifiableList(new ArrayList<>(requestHeaders));
+        mUploadDataStream =
+                uploadDataProvider == null
+                        ? null
+                        : new CronetUploadDataStream(
+                                uploadDataProvider, uploadDataProviderExecutor, this);
     }
 
     @Override
@@ -241,12 +225,9 @@ public final class CronetUrlRequest extends UrlRequestBase {
                                         mIdempotency,
                                         mNetworkHandle);
                 mRequestContext.onRequestStarted();
-                if (mInitialMethod != null) {
-                    if (!CronetUrlRequestJni.get()
-                            .setHttpMethod(
-                                    mUrlRequestAdapter, CronetUrlRequest.this, mInitialMethod)) {
-                        throw new IllegalArgumentException("Invalid http method " + mInitialMethod);
-                    }
+                if (!CronetUrlRequestJni.get()
+                        .setHttpMethod(mUrlRequestAdapter, CronetUrlRequest.this, mInitialMethod)) {
+                    throw new IllegalArgumentException("Invalid http method " + mInitialMethod);
                 }
 
                 boolean hasContentType = false;
@@ -491,11 +472,11 @@ public final class CronetUrlRequest extends UrlRequestBase {
     }
 
     /**
-     * Estimates the byte size of the headers in their on-wire format.
-     * We are not really interested in their specific size but something which is close enough.
+     * Estimates the byte size of the headers in their on-wire format. We are not really interested
+     * in their specific size but something which is close enough.
      */
     @VisibleForTesting
-    static long estimateHeadersSizeInBytes(HeadersList headers) {
+    static long estimateHeadersSizeInBytes(List<Map.Entry<String, String>> headers) {
         if (headers == null) return 0;
         long responseHeaderSizeInBytes = 0;
         for (Map.Entry<String, String> entry : headers) {
@@ -515,7 +496,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
             String negotiatedProtocol,
             String proxyServer,
             long receivedByteCount) {
-        HeadersList headersList = new HeadersList();
+        ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
         for (int i = 0; i < headers.length; i += 2) {
             headersList.add(
                     new AbstractMap.SimpleImmutableEntry<String, String>(
@@ -852,7 +833,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
                 new Runnable() {
                     @Override
                     public void run() {
-                        listener.onStatus(convertLoadState(loadState));
+                        listener.onStatus(UrlRequestUtil.convertLoadState(loadState));
                     }
                 };
         postTaskToExecutor(task);

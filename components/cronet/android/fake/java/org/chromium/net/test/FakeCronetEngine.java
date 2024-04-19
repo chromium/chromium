@@ -11,16 +11,17 @@ import androidx.annotation.GuardedBy;
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalBidirectionalStream;
+import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.NetworkQualityRttListener;
 import org.chromium.net.NetworkQualityThroughputListener;
 import org.chromium.net.RequestFinishedInfo;
+import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.impl.CronetEngineBase;
 import org.chromium.net.impl.CronetEngineBuilderImpl;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.ImplVersion;
 import org.chromium.net.impl.RefCountDelegate;
-import org.chromium.net.impl.UrlRequestBase;
 import org.chromium.net.impl.VersionSafeCallbacks;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -303,7 +305,7 @@ final class FakeCronetEngine extends CronetEngineBase {
     }
 
     @Override
-    protected UrlRequestBase createRequest(
+    protected ExperimentalUrlRequest createRequest(
             String url,
             UrlRequest.Callback callback,
             Executor userExecutor,
@@ -318,7 +320,11 @@ final class FakeCronetEngine extends CronetEngineBase {
             int trafficStatsUid,
             RequestFinishedInfo.Listener requestFinishedListener,
             int idempotency,
-            long networkHandle) {
+            long networkHandle,
+            String method,
+            ArrayList<Map.Entry<String, String>> requestHeaders,
+            UploadDataProvider uploadDataProvider,
+            Executor uploadDataProviderExecutor) {
         if (networkHandle != DEFAULT_NETWORK_HANDLE) {
             throw new UnsupportedOperationException(
                     "The multi-network API is not supported by the Fake implementation "
@@ -343,7 +349,11 @@ final class FakeCronetEngine extends CronetEngineBase {
                     trafficStatsUid,
                     mController,
                     this,
-                    connectionAnnotations);
+                    connectionAnnotations,
+                    method,
+                    requestHeaders,
+                    uploadDataProvider,
+                    uploadDataProviderExecutor);
         }
     }
 

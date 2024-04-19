@@ -51,12 +51,14 @@ import org.chromium.net.impl.CronetLogger.CronetVersion;
 
 import java.time.Duration;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -751,7 +753,7 @@ public final class CronetLoggerTest {
         headers = null;
         assertThat(CronetUrlRequest.estimateHeadersSizeInBytes(headers)).isEqualTo(0);
 
-        CronetUrlRequest.HeadersList headersList = new CronetUrlRequest.HeadersList();
+        ArrayList<Entry<String, String>> headersList = new ArrayList<>();
         assertThat(CronetUrlRequest.estimateHeadersSizeInBytes(headersList)).isEqualTo(0);
         headersList = null;
         assertThat(CronetUrlRequest.estimateHeadersSizeInBytes(headersList)).isEqualTo(0);
@@ -771,7 +773,7 @@ public final class CronetLoggerTest {
                 };
         assertThat(CronetUrlRequest.estimateHeadersSizeInBytes(headers)).isEqualTo(33);
 
-        CronetUrlRequest.HeadersList headersList = new CronetUrlRequest.HeadersList();
+        ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
         headersList.add(
                 new AbstractMap.SimpleImmutableEntry<String, String>(
                         "header1", "value1") // 7 + 6 = 13

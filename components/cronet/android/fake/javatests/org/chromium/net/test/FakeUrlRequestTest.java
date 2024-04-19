@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetException;
 import org.chromium.net.InlineExecutionProhibitedException;
@@ -51,6 +52,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Test functionality of FakeUrlRequest. */
+@Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 public class FakeUrlRequestTest {
     private CronetEngine mFakeCronetEngine;
@@ -193,44 +195,39 @@ public class FakeUrlRequestTest {
     @SmallTest
     public void testSetHttpMethodWhenNullFails() {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        FakeUrlRequest request =
-                (FakeUrlRequest)
-                        mFakeCronetEngine
-                                .newUrlRequestBuilder("url", callback, callback.getExecutor())
-                                .build();
-        // Check exception thrown for null method.
+        UrlRequest.Builder builder =
+                mFakeCronetEngine.newUrlRequestBuilder("url", callback, callback.getExecutor());
         NullPointerException e =
-                assertThrows(NullPointerException.class, () -> request.setHttpMethod(null));
+                assertThrows(NullPointerException.class, () -> builder.setHttpMethod(null).build());
         assertThat(e).hasMessageThat().isEqualTo("Method is required.");
     }
 
     @Test
     @SmallTest
     public void testSetHttpMethodWhenInvalidFails() {
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        FakeUrlRequest request =
-                (FakeUrlRequest)
-                        mFakeCronetEngine
-                                .newUrlRequestBuilder("url", callback, callback.getExecutor())
-                                .build();
-
-        // Check exception thrown for invalid method.
         String method = "BADMETHOD";
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest.Builder builder =
+                mFakeCronetEngine.newUrlRequestBuilder("url", callback, callback.getExecutor());
         IllegalArgumentException e =
-                assertThrows(IllegalArgumentException.class, () -> request.setHttpMethod(method));
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> builder.setHttpMethod(method).build());
         assertThat(e).hasMessageThat().isEqualTo("Invalid http method: " + method);
     }
 
     @Test
     @SmallTest
     public void testSetHttpMethodSetsMethodToCorrectMethod() {
+        String testMethod = "PUT";
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         FakeUrlRequest request =
                 (FakeUrlRequest)
                         mFakeCronetEngine
                                 .newUrlRequestBuilder("url", callback, callback.getExecutor())
+                                .setHttpMethod(testMethod)
                                 .build();
-        String testMethod = "PUT";
+
         // Use an atomic because it is set in an inner class. We do not actually need atomic for a
         // multi-threaded operation here.
         AtomicBoolean foundMethod = new AtomicBoolean();
@@ -250,9 +247,6 @@ public class FakeUrlRequestTest {
                     }
                 });
 
-        // Check no exception for correct method.
-        request.setHttpMethod(testMethod);
-
         // Run the request so that the ResponseMatcher we set is checked.
         request.start();
         callback.blockForDone();
@@ -263,15 +257,16 @@ public class FakeUrlRequestTest {
     @Test
     @SmallTest
     public void testAddHeader() {
+        String headerKey = "HEADERNAME";
+        String headerValue = "HEADERVALUE";
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         FakeUrlRequest request =
                 (FakeUrlRequest)
                         mFakeCronetEngine
                                 .newUrlRequestBuilder("TEST_URL", callback, callback.getExecutor())
+                                .addHeader(headerKey, headerValue)
                                 .build();
-        String headerKey = "HEADERNAME";
-        String headerValue = "HEADERVALUE";
-        request.addHeader(headerKey, headerValue);
+
         // Use an atomic because it is set in an inner class. We do not actually need atomic for a
         // multi-threaded operation here.
         AtomicBoolean foundEntry = new AtomicBoolean();
@@ -545,34 +540,6 @@ public class FakeUrlRequestTest {
 
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
         assertThat(request.isDone()).isTrue();
-    }
-
-    @Test
-    @SmallTest
-    public void testSetUploadDataProviderAfterStart() {
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        FakeUrlRequest request =
-                (FakeUrlRequest)
-                        mFakeCronetEngine
-                                .newUrlRequestBuilder("", callback, callback.getExecutor())
-                                .addHeader("Content-Type", "useless/string")
-                                .build();
-        String body = "body";
-        request.setUploadDataProvider(
-                UploadDataProviders.create(body.getBytes()), callback.getExecutor());
-        request.start();
-        // Must wait for the request to prevent a race in the State since it is reported in the
-        // error.
-        callback.blockForDone();
-
-        IllegalStateException e =
-                assertThrows(
-                        IllegalStateException.class,
-                        () ->
-                                request.setUploadDataProvider(
-                                        UploadDataProviders.create(body.getBytes()),
-                                        callback.getExecutor()));
-        assertThat(e).hasMessageThat().isEqualTo("Request is already started. State is: 7");
     }
 
     @Test

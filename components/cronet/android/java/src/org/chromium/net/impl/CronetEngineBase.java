@@ -11,11 +11,13 @@ import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.RequestFinishedInfo;
+import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlRequest;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -33,40 +35,37 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
     protected static final long DEFAULT_NETWORK_HANDLE = -1;
 
     /**
-     * Creates a {@link UrlRequest} object. All callbacks will
-     * be called on {@code executor}'s thread. {@code executor} must not run
-     * tasks on the current thread to prevent blocking networking operations
-     * and causing exceptions during shutdown.
+     * Creates a {@link UrlRequest} object. All callbacks will be called on {@code executor}'s
+     * thread. {@code executor} must not run tasks on the current thread to prevent blocking
+     * networking operations and causing exceptions during shutdown.
      *
      * @param url {@link URL} for the request.
      * @param callback callback object that gets invoked on different events.
      * @param executor {@link Executor} on which all callbacks will be invoked.
-     * @param priority priority of the request which should be one of the
-     *         {@link UrlRequest.Builder#REQUEST_PRIORITY_IDLE REQUEST_PRIORITY_*}
-     *         values.
-     * @param requestAnnotations Objects to pass on to
-     *        {@link org.chromium.net.RequestFinishedInfo.Listener}.
-     * @param disableCache disables cache for the request.
-     *         If context is not set up to use cache this param has no effect.
-     * @param disableConnectionMigration disables connection migration for this
-     *         request if it is enabled for the session.
-     * @param allowDirectExecutor whether executors used by this request are permitted
-     *         to execute submitted tasks inline.
+     * @param priority priority of the request which should be one of the {@link
+     *     UrlRequest.Builder#REQUEST_PRIORITY_IDLE REQUEST_PRIORITY_*} values.
+     * @param requestAnnotations Objects to pass on to {@link
+     *     org.chromium.net.RequestFinishedInfo.Listener}.
+     * @param disableCache disables cache for the request. If context is not set up to use cache
+     *     this param has no effect.
+     * @param disableConnectionMigration disables connection migration for this request if it is
+     *     enabled for the session.
+     * @param allowDirectExecutor whether executors used by this request are permitted to execute
+     *     submitted tasks inline.
      * @param trafficStatsTagSet {@code true} if {@code trafficStatsTag} represents a TrafficStats
-     *         tag to apply to sockets used to perform this request.
+     *     tag to apply to sockets used to perform this request.
      * @param trafficStatsTag TrafficStats tag to apply to sockets used to perform this request.
      * @param trafficStatsUidSet {@code true} if {@code trafficStatsUid} represents a UID to
-     *         attribute traffic used to perform this request.
+     *     attribute traffic used to perform this request.
      * @param trafficStatsUid UID to attribute traffic used to perform this request.
      * @param requestFinishedListener callback to get invoked with metrics when request is finished.
-     *        Set to {@code null} if not used.
-     * @param idempotency idempotency of the request which should be one of the
-     *         {@link ExperimentalUrlRequest.Builder#DEFAULT_IDEMPOTENCY IDEMPOTENT NOT_IDEMPOTENT}
-     *         values.
+     *     Set to {@code null} if not used.
+     * @param idempotency idempotency of the request which should be one of the {@link
+     *     ExperimentalUrlRequest.Builder#DEFAULT_IDEMPOTENCY IDEMPOTENT NOT_IDEMPOTENT} values.
      * @param network network to be used to send this request. Set to {@code null} if not specified.
      * @return new request.
      */
-    protected abstract UrlRequestBase createRequest(
+    protected abstract ExperimentalUrlRequest createRequest(
             String url,
             UrlRequest.Callback callback,
             Executor executor,
@@ -81,32 +80,33 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
             int trafficStatsUid,
             @Nullable RequestFinishedInfo.Listener requestFinishedListener,
             @Idempotency int idempotency,
-            long networkHandle);
+            long networkHandle,
+            String method,
+            ArrayList<Map.Entry<String, String>> requestHeaders,
+            UploadDataProvider uploadDataProvider,
+            Executor uploadDataProviderExecutor);
 
     /**
-     * Creates a {@link BidirectionalStream} object. {@code callback} methods will
-     * be invoked on {@code executor}. {@code executor} must not run
-     * tasks on the current thread to prevent blocking networking operations
-     * and causing exceptions during shutdown.
+     * Creates a {@link BidirectionalStream} object. {@code callback} methods will be invoked on
+     * {@code executor}. {@code executor} must not run tasks on the current thread to prevent
+     * blocking networking operations and causing exceptions during shutdown.
      *
      * @param url the URL for the stream
      * @param callback the object whose methods get invoked upon different events
      * @param executor the {@link Executor} on which all callbacks will be called
      * @param httpMethod the HTTP method to use for the stream
      * @param requestHeaders the list of request headers
-     * @param priority priority of the stream which should be one of the
-     *         {@link BidirectionalStream.Builder#STREAM_PRIORITY_IDLE STREAM_PRIORITY_*}
-     *         values.
-     * @param delayRequestHeadersUntilFirstFlush whether to delay sending request
-     *         headers until flush() is called, and try to combine them
-     *         with the next data frame.
-     * @param requestAnnotations Objects to pass on to
-     *       {@link org.chromium.net.RequestFinishedInfo.Listener}.
+     * @param priority priority of the stream which should be one of the {@link
+     *     BidirectionalStream.Builder#STREAM_PRIORITY_IDLE STREAM_PRIORITY_*} values.
+     * @param delayRequestHeadersUntilFirstFlush whether to delay sending request headers until
+     *     flush() is called, and try to combine them with the next data frame.
+     * @param requestAnnotations Objects to pass on to {@link
+     *     org.chromium.net.RequestFinishedInfo.Listener}.
      * @param trafficStatsTagSet {@code true} if {@code trafficStatsTag} represents a TrafficStats
-     *         tag to apply to sockets used to perform this request.
+     *     tag to apply to sockets used to perform this request.
      * @param trafficStatsTag TrafficStats tag to apply to sockets used to perform this request.
      * @param trafficStatsUidSet {@code true} if {@code trafficStatsUid} represents a UID to
-     *         attribute traffic used to perform this request.
+     *     attribute traffic used to perform this request.
      * @param trafficStatsUid UID to attribute traffic used to perform this request.
      * @param network network to be used to send this request. Set to {@code null} if not specified.
      * @return a new stream.

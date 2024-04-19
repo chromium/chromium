@@ -16,15 +16,18 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetException;
+import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.InlineExecutionProhibitedException;
 import org.chromium.net.NetworkException;
 import org.chromium.net.ThreadStatsUid;
 import org.chromium.net.UploadDataProvider;
+import org.chromium.net.UrlRequest;
 import org.chromium.net.UrlResponseInfo;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.JavaUrlRequestUtils.CheckedRunnable;
 import org.chromium.net.impl.JavaUrlRequestUtils.DirectPreventingExecutor;
 import org.chromium.net.impl.JavaUrlRequestUtils.State;
+import org.chromium.net.impl.VersionSafeCallbacks.UploadDataProviderWrapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
 
 /** Pure java UrlRequest, backed by {@link HttpURLConnection}. */
-final class JavaUrlRequest extends UrlRequestBase {
+final class JavaUrlRequest extends ExperimentalUrlRequest {
     private static final String X_ANDROID = "X-Android";
     private static final String X_ANDROID_SELECTED_TRANSPORT = "X-Android-Selected-Transport";
     private static final String TAG = JavaUrlRequest.class.getSimpleName();
@@ -68,9 +71,9 @@ final class JavaUrlRequest extends UrlRequestBase {
     private final List<String> mUrlChain = new ArrayList<>();
 
     /**
-     * This is the source of thread safety in this class - no other synchronization is performed.
-     * By compare-and-swapping from one state to another, we guarantee that operations aren't
-     * running concurrently. Only the winner of a CAS proceeds.
+     * This is the source of thread safety in this class - no other synchronization is performed. By
+     * compare-and-swapping from one state to another, we guarantee that operations aren't running
+     * concurrently. Only the winner of a CAS proceeds.
      *
      * <p>A caller can lose a CAS for three reasons - user error (two calls to read() without
      * waiting for the read to succeed), runtime error (network code or user code throws an
@@ -83,21 +86,21 @@ final class JavaUrlRequest extends UrlRequestBase {
     private final boolean mAllowDirectExecutor;
 
     /* These don't change with redirects */
-    private String mInitialMethod;
+    private final String mInitialMethod;
     private VersionSafeCallbacks.UploadDataProviderWrapper mUploadDataProvider;
     private Executor mUploadExecutor;
 
     /**
-     * Holds a subset of StatusValues - {@link State#STARTED} can represent
-     * {@link Status#SENDING_REQUEST} or {@link Status#WAITING_FOR_RESPONSE}. While the distinction
-     * isn't needed to implement the logic in this class, it is needed to implement
-     * {@link #getStatus(StatusListener)}.
+     * Holds a subset of StatusValues - {@link State#STARTED} can represent {@link
+     * Status#SENDING_REQUEST} or {@link Status#WAITING_FOR_RESPONSE}. While the distinction isn't
+     * needed to implement the logic in this class, it is needed to implement {@link
+     * #getStatus(StatusListener)}.
      *
      * <p>Concurrency notes - this value is not atomically updated with mState, so there is some
      * risk that we'd get an inconsistent snapshot of both - however, it also happens that this
      * value is only used with the STARTED state, so it's inconsequential.
      */
-    @StatusValues private volatile int mAdditionalStatusDetails = Status.INVALID;
+    @UrlRequestUtil.StatusValues private volatile int mAdditionalStatusDetails = Status.INVALID;
 
     /* These change with redirects. */
     private String mCurrentUrl;
@@ -186,7 +189,7 @@ final class JavaUrlRequest extends UrlRequestBase {
      */
     JavaUrlRequest(
             JavaCronetEngine engine,
-            Callback callback,
+            UrlRequest.Callback callback,
             final Executor executor,
             Executor userExecutor,
             String url,
@@ -196,7 +199,11 @@ final class JavaUrlRequest extends UrlRequestBase {
             int trafficStatsTag,
             final boolean trafficStatsUidSet,
             final int trafficStatsUid,
-            long networkHandle) {
+            long networkHandle,
+            String method,
+            ArrayList<Map.Entry<String, String>> requestHeaders,
+            UploadDataProvider uploadDataProvider,
+            Executor uploadDataProviderExecutor) {
         Objects.requireNonNull(url, "URL is required");
         Objects.requireNonNull(callback, "Listener is required");
         Objects.requireNonNull(executor, "Executor is required");
@@ -232,14 +239,17 @@ final class JavaUrlRequest extends UrlRequestBase {
         mCurrentUrl = url;
         mUserAgent = userAgent;
         mNetworkHandle = networkHandle;
+        mInitialMethod = checkedHttpMethod(method);
+        setHeaders(requestHeaders);
+        mUploadDataProvider = checkedUploadDataProvider(uploadDataProvider);
+        mUploadExecutor =
+                uploadDataProviderExecutor == null || mAllowDirectExecutor
+                        ? uploadDataProviderExecutor
+                        : new DirectPreventingExecutor(uploadDataProviderExecutor);
     }
 
-    @Override
-    public void setHttpMethod(String method) {
-        checkNotStarted();
-        if (method == null) {
-            throw new NullPointerException("Method is required.");
-        }
+    private static String checkedHttpMethod(String method) {
+        Objects.requireNonNull(method, "Method is required.");
         if ("OPTIONS".equalsIgnoreCase(method)
                 || "GET".equalsIgnoreCase(method)
                 || "HEAD".equalsIgnoreCase(method)
@@ -248,32 +258,23 @@ final class JavaUrlRequest extends UrlRequestBase {
                 || "DELETE".equalsIgnoreCase(method)
                 || "TRACE".equalsIgnoreCase(method)
                 || "PATCH".equalsIgnoreCase(method)) {
-            mInitialMethod = method;
+            return method;
         } else {
             throw new IllegalArgumentException("Invalid http method " + method);
         }
     }
 
-    private void checkNotStarted() {
-        @State int state = mState.get();
-        if (state != State.NOT_STARTED) {
-            throw new IllegalStateException("Request is already started. State is: " + state);
+    private void setHeaders(ArrayList<Map.Entry<String, String>> requestHeaders) {
+        for (Map.Entry<String, String> header : requestHeaders) {
+            if (!isValidHeaderName(header.getKey()) || header.getValue().contains("\r\n")) {
+                throw new IllegalArgumentException(
+                        "Invalid header with headername: " + header.getKey());
+            }
+            mRequestHeaders.put(header.getKey(), header.getValue());
         }
     }
 
-    @Override
-    public void addHeader(String header, String value) {
-        checkNotStarted();
-        if (!isValidHeaderName(header) || value.contains("\r\n")) {
-            throw new IllegalArgumentException("Invalid header with headername: " + header);
-        }
-        if (mRequestHeaders.containsKey(header)) {
-            mRequestHeaders.remove(header);
-        }
-        mRequestHeaders.put(header, value);
-    }
-
-    private boolean isValidHeaderName(String header) {
+    private static boolean isValidHeaderName(String header) {
         for (int i = 0; i < header.length(); i++) {
             char c = header.charAt(i);
             switch (c) {
@@ -304,26 +305,17 @@ final class JavaUrlRequest extends UrlRequestBase {
         return true;
     }
 
-    @Override
-    public void setUploadDataProvider(UploadDataProvider uploadDataProvider, Executor executor) {
+    private UploadDataProviderWrapper checkedUploadDataProvider(
+            UploadDataProvider uploadDataProvider) {
         if (uploadDataProvider == null) {
-            throw new NullPointerException("Invalid UploadDataProvider.");
+            return null;
         }
+
         if (!mRequestHeaders.containsKey("Content-Type")) {
             throw new IllegalArgumentException(
                     "Requests with upload data must have a Content-Type.");
         }
-        checkNotStarted();
-        if (mInitialMethod == null) {
-            mInitialMethod = "POST";
-        }
-        this.mUploadDataProvider =
-                new VersionSafeCallbacks.UploadDataProviderWrapper(uploadDataProvider);
-        if (mAllowDirectExecutor) {
-            this.mUploadExecutor = executor;
-        } else {
-            this.mUploadExecutor = new DirectPreventingExecutor(executor);
-        }
+        return new VersionSafeCallbacks.UploadDataProviderWrapper(uploadDataProvider);
     }
 
     private final class OutputStreamDataSink extends JavaUploadDataSinkBase {
@@ -630,9 +622,6 @@ final class JavaUrlRequest extends UrlRequestBase {
                                 mCurrentUrlConnection.setRequestProperty(
                                         entry.getKey(), entry.getValue());
                             }
-                            if (mInitialMethod == null) {
-                                mInitialMethod = "GET";
-                            }
                             mCurrentUrlConnection.setRequestMethod(mInitialMethod);
                             if (mUploadDataProvider != null) {
                                 mOutputStreamDataSink =
@@ -811,11 +800,11 @@ final class JavaUrlRequest extends UrlRequestBase {
     }
 
     @Override
-    public void getStatus(StatusListener listener) {
+    public void getStatus(UrlRequest.StatusListener listener) {
         @State int state = mState.get();
         int extraStatus = this.mAdditionalStatusDetails;
 
-        @StatusValues final int status;
+        @UrlRequestUtil.StatusValues final int status;
         switch (state) {
             case State.ERROR:
             case State.COMPLETE:
