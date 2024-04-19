@@ -688,6 +688,7 @@ void RecordFunctionKeyFromKeyCode(ui::KeyboardCode key_code,
   }
 }
 
+// TODO(dpad, b/329330990): Update to support FN key in this metric.
 void RecordRewritingToFunctionKeys(
     const KeyEvent& key_event,
     const EventRewriterAsh::MutableKeyState* rewritten_state) {
@@ -1872,131 +1873,36 @@ void EventRewriterAsh::RewriteFunctionKeys(const KeyEvent& key_event,
   KeyboardCapability::KeyboardTopRowLayout layout =
       keyboard_capability_->GetTopRowLayout(device_id);
 
-  const bool search_is_pressed = (state->flags & EF_COMMAND_DOWN) != 0;
-  const bool flip_remapping =
+  // The modifier to base rewriting on depends on if the keyboard uses an FN key
+  // or not.
+  const EventFlags flip_rewrite_modifier =
+      keyboard_capability_->HasFunctionKey(device_id) ? EF_FUNCTION_DOWN
+                                                      : EF_COMMAND_DOWN;
+  const bool flip_modifier_is_pressed =
+      (state->flags & flip_rewrite_modifier) != 0;
+  const bool should_flip_top_row_mapping =
       ShouldRewriteMetaTopRowKeyComboEvents(delegate_, device_id) &&
-      search_is_pressed;
+      flip_modifier_is_pressed;
   if (layout ==
       KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom) {
     if (RewriteTopRowKeysForCustomLayout(key_event, device_id,
-                                         search_is_pressed, state)) {
+                                         should_flip_top_row_mapping,
+                                         flip_rewrite_modifier, state)) {
       return;
     }
   } else if (layout == KeyboardCapability::KeyboardTopRowLayout::
                            kKbdTopRowLayoutWilco ||
              layout == KeyboardCapability::KeyboardTopRowLayout::
                            kKbdTopRowLayoutDrallion) {
-    if (RewriteTopRowKeysForLayoutWilco(key_event, device_id, search_is_pressed,
-                                        state, layout)) {
+    if (RewriteTopRowKeysForLayoutWilco(key_event, device_id,
+                                        should_flip_top_row_mapping,
+                                        flip_rewrite_modifier, state, layout)) {
       return;
     }
-  } else if ((state->key_code >= VKEY_F1) && (state->key_code <= VKEY_F12)) {
-    //  Search? Top Row  Rewrite Meta F-Key Result
-    //  ------- -------- ------------------ ------
-    //  No      Fn       Yes                Unchanged
-    //  No      System   Yes                Fn -> System
-    //  Yes     Fn       Yes                Fn -> System
-    //  Yes     System   Yes                Search+Fn -> Fn
-    //  No      Fn       No                 Unchanged
-    //  No      System   No                 Fn -> System
-    //  Yes     Fn       No                 Unchanged
-    //  Yes     System   No                 Unchanged
-    if (ForceTopRowAsFunctionKeys(device_id) == flip_remapping) {
-      // Rewrite the F1-F12 keys on a Chromebook keyboard to system keys.
-      // This is the original Chrome OS layout.
-      static const KeyboardRemapping kFkeysToSystemKeys1[] = {
-          {{EF_NONE, VKEY_F1},
-           {EF_NONE, DomCode::BROWSER_BACK, DomKey::BROWSER_BACK,
-            VKEY_BROWSER_BACK}},
-          {{EF_NONE, VKEY_F2},
-           {EF_NONE, DomCode::BROWSER_FORWARD, DomKey::BROWSER_FORWARD,
-            VKEY_BROWSER_FORWARD}},
-          {{EF_NONE, VKEY_F3},
-           {EF_NONE, DomCode::BROWSER_REFRESH, DomKey::BROWSER_REFRESH,
-            VKEY_BROWSER_REFRESH}},
-          {{EF_NONE, VKEY_F4},
-           {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE, VKEY_ZOOM}},
-          {{EF_NONE, VKEY_F5},
-           {EF_NONE, DomCode::SELECT_TASK, DomKey::LAUNCH_MY_COMPUTER,
-            VKEY_MEDIA_LAUNCH_APP1}},
-          {{EF_NONE, VKEY_F6},
-           {EF_NONE, DomCode::BRIGHTNESS_DOWN, DomKey::BRIGHTNESS_DOWN,
-            VKEY_BRIGHTNESS_DOWN}},
-          {{EF_NONE, VKEY_F7},
-           {EF_NONE, DomCode::BRIGHTNESS_UP, DomKey::BRIGHTNESS_UP,
-            VKEY_BRIGHTNESS_UP}},
-          {{EF_NONE, VKEY_F8},
-           {EF_NONE, DomCode::VOLUME_MUTE, DomKey::AUDIO_VOLUME_MUTE,
-            VKEY_VOLUME_MUTE}},
-          {{EF_NONE, VKEY_F9},
-           {EF_NONE, DomCode::VOLUME_DOWN, DomKey::AUDIO_VOLUME_DOWN,
-            VKEY_VOLUME_DOWN}},
-          {{EF_NONE, VKEY_F10},
-           {EF_NONE, DomCode::VOLUME_UP, DomKey::AUDIO_VOLUME_UP,
-            VKEY_VOLUME_UP}},
-      };
-      // The new layout with forward button removed and play/pause added.
-      static const KeyboardRemapping kFkeysToSystemKeys2[] = {
-          {{EF_NONE, VKEY_F1},
-           {EF_NONE, DomCode::BROWSER_BACK, DomKey::BROWSER_BACK,
-            VKEY_BROWSER_BACK}},
-          {{EF_NONE, VKEY_F2},
-           {EF_NONE, DomCode::BROWSER_REFRESH, DomKey::BROWSER_REFRESH,
-            VKEY_BROWSER_REFRESH}},
-          {{EF_NONE, VKEY_F3},
-           {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE, VKEY_ZOOM}},
-          {{EF_NONE, VKEY_F4},
-           {EF_NONE, DomCode::SELECT_TASK, DomKey::LAUNCH_MY_COMPUTER,
-            VKEY_MEDIA_LAUNCH_APP1}},
-          {{EF_NONE, VKEY_F5},
-           {EF_NONE, DomCode::BRIGHTNESS_DOWN, DomKey::BRIGHTNESS_DOWN,
-            VKEY_BRIGHTNESS_DOWN}},
-          {{EF_NONE, VKEY_F6},
-           {EF_NONE, DomCode::BRIGHTNESS_UP, DomKey::BRIGHTNESS_UP,
-            VKEY_BRIGHTNESS_UP}},
-          {{EF_NONE, VKEY_F7},
-           {EF_NONE, DomCode::MEDIA_PLAY_PAUSE, DomKey::MEDIA_PLAY_PAUSE,
-            VKEY_MEDIA_PLAY_PAUSE}},
-          {{EF_NONE, VKEY_F8},
-           {EF_NONE, DomCode::VOLUME_MUTE, DomKey::AUDIO_VOLUME_MUTE,
-            VKEY_VOLUME_MUTE}},
-          {{EF_NONE, VKEY_F9},
-           {EF_NONE, DomCode::VOLUME_DOWN, DomKey::AUDIO_VOLUME_DOWN,
-            VKEY_VOLUME_DOWN}},
-          {{EF_NONE, VKEY_F10},
-           {EF_NONE, DomCode::VOLUME_UP, DomKey::AUDIO_VOLUME_UP,
-            VKEY_VOLUME_UP}},
-      };
-
-      const KeyboardRemapping* mapping = nullptr;
-      size_t mappingSize = 0u;
-      switch (layout) {
-        case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2:
-          mapping = kFkeysToSystemKeys2;
-          mappingSize = std::size(kFkeysToSystemKeys2);
-          break;
-        case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1:
-        default:
-          mapping = kFkeysToSystemKeys1;
-          mappingSize = std::size(kFkeysToSystemKeys1);
-          break;
-      }
-
-      MutableKeyState incoming_without_command = *state;
-      incoming_without_command.flags &= ~EF_COMMAND_DOWN;
-      if (RewriteWithKeyboardRemappings(mapping, mappingSize,
-                                        incoming_without_command, state)) {
-        // If the remapping was not supposed to be flipped and search is
-        // pressed, the search flag must be added back.
-        if (!flip_remapping && search_is_pressed) {
-          state->flags |= EF_COMMAND_DOWN;
-        }
-        return;
-      }
-    } else if (flip_remapping) {
-      // If we were supposed to flip the remapping, that means we should remove
-      // the search flag.
-      state->flags &= ~EF_COMMAND_DOWN;
+  } else {
+    if (RewriteTopRowKeysForStandardLayouts(
+            key_event, device_id, should_flip_top_row_mapping,
+            flip_rewrite_modifier, flip_modifier_is_pressed, state, layout)) {
       return;
     }
   }
@@ -2316,16 +2222,13 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
 bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
     const KeyEvent& key_event,
     int device_id,
-    bool search_is_pressed,
+    bool should_flip_top_row_mapping,
+    EventFlags flip_rewrite_modifier,
     EventRewriterAsh::MutableKeyState* state) {
   // Incoming function keys are never remapped.
   if (IsCustomLayoutFunctionKey(key_event.key_code())) {
     return true;
   }
-
-  const bool flip_remapping =
-      ShouldRewriteMetaTopRowKeyComboEvents(delegate_, device_id) &&
-      search_is_pressed;
 
   const auto* scan_code_vector_ptr =
       keyboard_capability_->GetTopRowScanCodes(device_id);
@@ -2341,7 +2244,7 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
   // If the scan code appears in the top row mapping it is an action key.
   const bool is_action_key = (key_iter != scan_code_vector.end());
   if (is_action_key) {
-    if (flip_remapping != ForceTopRowAsFunctionKeys(device_id)) {
+    if (should_flip_top_row_mapping != ForceTopRowAsFunctionKeys(device_id)) {
       ApplyRemapping(kCustomTopRowLayoutFKeys[std::distance(
                          scan_code_vector.begin(), key_iter)],
                      state);
@@ -2349,8 +2252,8 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
 
     // Clear command/search key if pressed and we were supposed to perform a
     // remapping.
-    if (flip_remapping) {
-      state->flags &= ~EF_COMMAND_DOWN;
+    if (should_flip_top_row_mapping) {
+      state->flags &= ~flip_rewrite_modifier;
     }
 
     return true;
@@ -2386,7 +2289,8 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
 bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
     const KeyEvent& key_event,
     int device_id,
-    bool search_is_pressed,
+    bool should_flip_top_row_mapping,
+    EventFlags flip_rewrite_modifier,
     MutableKeyState* state,
     KeyboardCapability::KeyboardTopRowLayout layout) {
   // When the kernel issues an function key (Fn modifier help down) and the
@@ -2460,18 +2364,16 @@ bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
       {{EF_NONE, VKEY_PRIVACY_SCREEN_TOGGLE},
        {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
   };
-  const bool flip_remapping =
-      ShouldRewriteMetaTopRowKeyComboEvents(delegate_, device_id) &&
-      search_is_pressed;
-  MutableKeyState incoming_with_command_removed_if_neccessary = *state;
-  if (flip_remapping) {
-    incoming_with_command_removed_if_neccessary.flags &= ~EF_COMMAND_DOWN;
+  MutableKeyState incoming_with_modifier_removed_if_neccessary = *state;
+  if (should_flip_top_row_mapping) {
+    incoming_with_modifier_removed_if_neccessary.flags &=
+        ~flip_rewrite_modifier;
   }
 
   if ((state->key_code >= VKEY_F1) && (state->key_code <= VKEY_F12)) {
     // Incoming key code is a Fn key. Check if it needs to be mapped back to its
     // corresponding action key.
-    if (flip_remapping) {
+    if (should_flip_top_row_mapping) {
       // On some Drallion devices, F12 shares a key with privacy screen toggle.
       // Account for this before rewriting for Wilco 1.0 layout.
       if (layout == KeyboardCapability::KeyboardTopRowLayout::
@@ -2482,33 +2384,33 @@ bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
           state->code = DomCode::PRIVACY_SCREEN_TOGGLE;
         }
         // Clear command flag if the remapping should be flipped.
-        state->flags = (state->flags & ~EF_COMMAND_DOWN);
+        state->flags = (state->flags & ~flip_rewrite_modifier);
         return true;
       }
       return RewriteWithKeyboardRemappings(
           kFnkeysToActionKeys, std::size(kFnkeysToActionKeys),
-          incoming_with_command_removed_if_neccessary, state);
+          incoming_with_modifier_removed_if_neccessary, state);
     }
     return true;
   } else if (IsKeyCodeInMappings(state->key_code, kActionToFnKeys,
                                  std::size(kActionToFnKeys))) {
     // Incoming key code is an action key. Check if it needs to be mapped back
     // to its corresponding function key.
-    if (flip_remapping != ForceTopRowAsFunctionKeys(device_id)) {
+    if (should_flip_top_row_mapping != ForceTopRowAsFunctionKeys(device_id)) {
       // On Drallion, mirror mode toggle is on its own key so don't remap it.
       if (layout == KeyboardCapability::KeyboardTopRowLayout::
                         kKbdTopRowLayoutDrallion &&
           MatchKeyboardRemapping(*state, {EF_CONTROL_DOWN, VKEY_ZOOM})) {
         // Clear command flag before returning if the remapping should be
         // flipped.
-        if (flip_remapping) {
-          state->flags = (state->flags & ~EF_COMMAND_DOWN);
+        if (should_flip_top_row_mapping) {
+          state->flags = (state->flags & ~flip_rewrite_modifier);
         }
         return true;
       }
       return RewriteWithKeyboardRemappings(
           kActionToFnKeys, std::size(kActionToFnKeys),
-          incoming_with_command_removed_if_neccessary, state);
+          incoming_with_modifier_removed_if_neccessary, state);
     }
     // Remap Privacy Screen Toggle to F12 on Drallion devices that do not have
     // privacy screens.
@@ -2522,9 +2424,138 @@ bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
     }
     // If the mapping should be flipped when command is down, the flag needs to
     // be cleared.
-    if (flip_remapping) {
-      state->flags &= ~EF_COMMAND_DOWN;
+    if (should_flip_top_row_mapping) {
+      state->flags &= ~flip_rewrite_modifier;
     }
+    return true;
+  }
+
+  return false;
+}
+
+bool EventRewriterAsh::RewriteTopRowKeysForStandardLayouts(
+    const KeyEvent& key_event,
+    int device_id,
+    bool should_flip_top_row_mapping,
+    EventFlags flip_rewrite_modifier,
+    bool rewrite_modifier_is_pressed,
+    MutableKeyState* state,
+    KeyboardCapability::KeyboardTopRowLayout layout) {
+  // Rewrite the F1-F12 keys on a Chromebook keyboard to system keys.
+  // This is the original Chrome OS layout.
+  static const KeyboardRemapping kFkeysToSystemKeys1[] = {
+      {{EF_NONE, VKEY_F1},
+       {EF_NONE, DomCode::BROWSER_BACK, DomKey::BROWSER_BACK,
+        VKEY_BROWSER_BACK}},
+      {{EF_NONE, VKEY_F2},
+       {EF_NONE, DomCode::BROWSER_FORWARD, DomKey::BROWSER_FORWARD,
+        VKEY_BROWSER_FORWARD}},
+      {{EF_NONE, VKEY_F3},
+       {EF_NONE, DomCode::BROWSER_REFRESH, DomKey::BROWSER_REFRESH,
+        VKEY_BROWSER_REFRESH}},
+      {{EF_NONE, VKEY_F4},
+       {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE, VKEY_ZOOM}},
+      {{EF_NONE, VKEY_F5},
+       {EF_NONE, DomCode::SELECT_TASK, DomKey::LAUNCH_MY_COMPUTER,
+        VKEY_MEDIA_LAUNCH_APP1}},
+      {{EF_NONE, VKEY_F6},
+       {EF_NONE, DomCode::BRIGHTNESS_DOWN, DomKey::BRIGHTNESS_DOWN,
+        VKEY_BRIGHTNESS_DOWN}},
+      {{EF_NONE, VKEY_F7},
+       {EF_NONE, DomCode::BRIGHTNESS_UP, DomKey::BRIGHTNESS_UP,
+        VKEY_BRIGHTNESS_UP}},
+      {{EF_NONE, VKEY_F8},
+       {EF_NONE, DomCode::VOLUME_MUTE, DomKey::AUDIO_VOLUME_MUTE,
+        VKEY_VOLUME_MUTE}},
+      {{EF_NONE, VKEY_F9},
+       {EF_NONE, DomCode::VOLUME_DOWN, DomKey::AUDIO_VOLUME_DOWN,
+        VKEY_VOLUME_DOWN}},
+      {{EF_NONE, VKEY_F10},
+       {EF_NONE, DomCode::VOLUME_UP, DomKey::AUDIO_VOLUME_UP, VKEY_VOLUME_UP}},
+  };
+
+  // The new layout with forward button removed and play/pause added.
+  static const KeyboardRemapping kFkeysToSystemKeys2[] = {
+      {{EF_NONE, VKEY_F1},
+       {EF_NONE, DomCode::BROWSER_BACK, DomKey::BROWSER_BACK,
+        VKEY_BROWSER_BACK}},
+      {{EF_NONE, VKEY_F2},
+       {EF_NONE, DomCode::BROWSER_REFRESH, DomKey::BROWSER_REFRESH,
+        VKEY_BROWSER_REFRESH}},
+      {{EF_NONE, VKEY_F3},
+       {EF_NONE, DomCode::ZOOM_TOGGLE, DomKey::ZOOM_TOGGLE, VKEY_ZOOM}},
+      {{EF_NONE, VKEY_F4},
+       {EF_NONE, DomCode::SELECT_TASK, DomKey::LAUNCH_MY_COMPUTER,
+        VKEY_MEDIA_LAUNCH_APP1}},
+      {{EF_NONE, VKEY_F5},
+       {EF_NONE, DomCode::BRIGHTNESS_DOWN, DomKey::BRIGHTNESS_DOWN,
+        VKEY_BRIGHTNESS_DOWN}},
+      {{EF_NONE, VKEY_F6},
+       {EF_NONE, DomCode::BRIGHTNESS_UP, DomKey::BRIGHTNESS_UP,
+        VKEY_BRIGHTNESS_UP}},
+      {{EF_NONE, VKEY_F7},
+       {EF_NONE, DomCode::MEDIA_PLAY_PAUSE, DomKey::MEDIA_PLAY_PAUSE,
+        VKEY_MEDIA_PLAY_PAUSE}},
+      {{EF_NONE, VKEY_F8},
+       {EF_NONE, DomCode::VOLUME_MUTE, DomKey::AUDIO_VOLUME_MUTE,
+        VKEY_VOLUME_MUTE}},
+      {{EF_NONE, VKEY_F9},
+       {EF_NONE, DomCode::VOLUME_DOWN, DomKey::AUDIO_VOLUME_DOWN,
+        VKEY_VOLUME_DOWN}},
+      {{EF_NONE, VKEY_F10},
+       {EF_NONE, DomCode::VOLUME_UP, DomKey::AUDIO_VOLUME_UP, VKEY_VOLUME_UP}},
+  };
+
+  if ((state->key_code < VKEY_F1) || (state->key_code > VKEY_F12)) {
+    return false;
+  }
+
+  // F Keys should be rewritten to action keys if "top row are function keys" is
+  // disabled and we shouldn't flip the default due to a modifier key OR if "top
+  // row are function keys" is enabled and we should flip the default due to a
+  // modifier key.
+  //  Search? Top Row  Rewrite Meta F-Key Result
+  //  ------- -------- ------------------ ------
+  //  No      Fn       Yes                Unchanged
+  //  No      System   Yes                Fn -> System
+  //  Yes     Fn       Yes                Fn -> System
+  //  Yes     System   Yes                Search+Fn -> Fn
+  //  No      Fn       No                 Unchanged
+  //  No      System   No                 Fn -> System
+  //  Yes     Fn       No                 Unchanged
+  //  Yes     System   No                 Unchanged
+  const bool should_rewrite_to_action_keys =
+      (ForceTopRowAsFunctionKeys(device_id) == should_flip_top_row_mapping);
+  if (should_rewrite_to_action_keys) {
+    const KeyboardRemapping* mapping = nullptr;
+    size_t mappingSize = 0u;
+    switch (layout) {
+      case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2:
+        mapping = kFkeysToSystemKeys2;
+        mappingSize = std::size(kFkeysToSystemKeys2);
+        break;
+      case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1:
+      default:
+        mapping = kFkeysToSystemKeys1;
+        mappingSize = std::size(kFkeysToSystemKeys1);
+        break;
+    }
+
+    MutableKeyState incoming_without_flip_modifier = *state;
+    incoming_without_flip_modifier.flags &= ~flip_rewrite_modifier;
+    if (RewriteWithKeyboardRemappings(mapping, mappingSize,
+                                      incoming_without_flip_modifier, state)) {
+      // If the remapping was not supposed to be flipped and search is
+      // pressed, the search flag must be added back.
+      if (!should_flip_top_row_mapping && rewrite_modifier_is_pressed) {
+        state->flags |= flip_rewrite_modifier;
+      }
+      return true;
+    }
+  } else if (should_flip_top_row_mapping) {
+    // If we were supposed to flip the remapping, that means we should remove
+    // the search flag.
+    state->flags &= ~flip_rewrite_modifier;
     return true;
   }
 

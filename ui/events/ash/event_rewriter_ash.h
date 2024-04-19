@@ -332,14 +332,25 @@ class EventRewriterAsh : public EventRewriter {
   // support supplying a custom layout via sysfs.
   bool RewriteTopRowKeysForCustomLayout(const ui::KeyEvent& key_event,
                                         int device_id,
-                                        bool search_is_pressed,
+                                        bool flip_remapping,
+                                        EventFlags flip_remapping_flag,
                                         MutableKeyState* state);
 
   // Handle Fn/Action key remapping for Wilco keyboard layout.
   bool RewriteTopRowKeysForLayoutWilco(
       const KeyEvent& key_event,
       int device_id,
-      bool search_is_pressed,
+      bool flip_remapping,
+      EventFlags flip_remapping_flag,
+      MutableKeyState* state,
+      KeyboardCapability::KeyboardTopRowLayout layout);
+
+  bool RewriteTopRowKeysForStandardLayouts(
+      const KeyEvent& key_event,
+      int device_id,
+      bool flip_remapping,
+      EventFlags flip_remapping_flag,
+      bool rewrite_modifier_is_pressed,
       MutableKeyState* state,
       KeyboardCapability::KeyboardTopRowLayout layout);
 

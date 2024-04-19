@@ -13,6 +13,7 @@
 #include "ash/accessibility/sticky_keys/sticky_keys_overlay.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/test/mock_input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -462,6 +463,8 @@ struct TestKeyboard {
   const char* layout;
   ui::InputDeviceType type;
   bool has_custom_top_row;
+  bool has_assistant_key = false;
+  bool has_function_key = false;
 };
 constexpr TestKeyboard kInternalChromeKeyboard = {
     "Internal Keyboard",
@@ -474,6 +477,13 @@ constexpr TestKeyboard kInternalChromeCustomLayoutKeyboard = {
     kKbdDefaultCustomTopRowLayout,
     ui::INPUT_DEVICE_INTERNAL,
     /*has_custom_top_row=*/true,
+};
+constexpr TestKeyboard kInternalChromeSplitModifierLayoutKeyboard = {
+    "Internal Custom Layout Keyboard", kKbdDefaultCustomTopRowLayout,
+    ui::INPUT_DEVICE_INTERNAL,
+    /*has_custom_top_row=*/true,
+    /*has_assistant_key=*/true,
+    /*has_function_key=*/true,
 };
 constexpr TestKeyboard kExternalChromeKeyboard = {
     "External Chrome Keyboard",
@@ -519,9 +529,13 @@ constexpr TestKeyboard kNonAppleNonCustomLayoutKeyboardVariants[] = {
     kExternalGenericKeyboard,
 };
 constexpr TestKeyboard kAllKeyboardVariants[] = {
-    kInternalChromeKeyboard,  kInternalChromeCustomLayoutKeyboard,
-    kExternalChromeKeyboard,  kExternalChromeCustomLayoutKeyboard,
-    kExternalGenericKeyboard, kExternalAppleKeyboard,
+    kInternalChromeKeyboard,
+    kInternalChromeCustomLayoutKeyboard,
+    kInternalChromeSplitModifierLayoutKeyboard,
+    kExternalChromeKeyboard,
+    kExternalChromeCustomLayoutKeyboard,
+    kExternalGenericKeyboard,
+    kExternalAppleKeyboard,
 };
 
 // Wilco keyboard configs
@@ -783,8 +797,9 @@ class EventRewriterTestBase : public ChromeAshTestBase {
     TestEventRewriterContinuation continuation;
     event_rewriter_ash_->RewriteMouseButtonEventForTesting(
         event, continuation.weak_ptr_factory_.GetWeakPtr());
-    if (!continuation.rewritten_events.empty())
+    if (!continuation.rewritten_events.empty()) {
       return ui::MouseEvent(*continuation.rewritten_events[0]->AsMouseEvent());
+    }
     return ui::MouseEvent(event);
   }
 
@@ -812,11 +827,13 @@ class EventRewriterTestBase : public ChromeAshTestBase {
 
   void SetUpKeyboard(const TestKeyboard& test_keyboard) {
     // Add a fake device to udev.
-    const ui::KeyboardDevice keyboard(kKeyboardDeviceId, test_keyboard.type,
-                                      test_keyboard.name,
-                                      /*phys=*/"", base::FilePath(kKbdSysPath),
-                                      /*vendor=*/-1,
-                                      /*product=*/-1, /*version=*/-1);
+    const ui::KeyboardDevice keyboard(
+        kKeyboardDeviceId, test_keyboard.type, test_keyboard.name,
+        /*phys=*/"", base::FilePath(kKbdSysPath),
+        /*vendor=*/-1,
+        /*product=*/-1, /*version=*/-1,
+        /*has_assistant_key=*/test_keyboard.has_assistant_key,
+        /*has_function_key=*/test_keyboard.has_function_key);
 
     // Old CrOS keyboards supply an integer/enum as a sysfs property to identify
     // their layout type. New keyboards provide the mapping of scan codes to
@@ -2422,12 +2439,79 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayouts) {
     for (auto& unknown : unknowns) {
       unknown.scan_code = scan_code;
     }
+    auto unknowns_with_function = KeyUnknown::Typed(ui::EF_FUNCTION_DOWN);
+    for (auto& unknown : unknowns_with_function) {
+      unknown.scan_code = scan_code;
+    }
     auto expected_events = typed(ui::EF_NONE);
     for (auto& event : expected_events) {
       event.scan_code = scan_code;
     }
     EXPECT_EQ(expected_events, RunRewriter(unknowns, ui::EF_COMMAND_DOWN));
+
+    // With fn down, nothing should change since this keyboard uses Search based
+    // rewriting.
+    EXPECT_EQ(unknowns_with_function,
+              RunRewriter(unknowns, ui::EF_FUNCTION_DOWN));
   }
+}
+
+TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsWithFunction) {
+  scoped_feature_list_.InitAndEnableFeature(features::kModifierSplit);
+  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+
+  // On devices with custom layouts, scan codes that match the layout
+  // map get mapped to F-Keys based only on the scan code. The search
+  // key also gets treated as unpressed in the remapped event.
+  SetUpKeyboard({.name = "Internal Custom Layout Keyboard",
+                 .layout = "a1 a2 a3 a4 a5 a6 a7 a8 a9 aa ab ac ad ae af",
+                 .type = ui::INPUT_DEVICE_INTERNAL,
+                 .has_custom_top_row = true,
+                 .has_assistant_key = true,
+                 .has_function_key = true});
+
+  struct TestCase {
+    std::vector<TestKeyEvent> (*pressed)(ui::EventFlags);
+    uint32_t scan_code;
+  };
+  // Action -> F1..F15
+  for (const auto& [typed, scan_code] :
+       std::initializer_list<TestCase>{{KeyF1::Typed, 0xa1},
+                                       {KeyF2::Typed, 0xa2},
+                                       {KeyF3::Typed, 0xa3},
+                                       {KeyF4::Typed, 0xa4},
+                                       {KeyF5::Typed, 0xa5},
+                                       {KeyF6::Typed, 0xa6},
+                                       {KeyF7::Typed, 0xa7},
+                                       {KeyF8::Typed, 0xa8},
+                                       {KeyF9::Typed, 0xa9},
+                                       {KeyF10::Typed, 0xaa},
+                                       {KeyF11::Typed, 0xab},
+                                       {KeyF12::Typed, 0xac},
+                                       {KeyF13::Typed, 0xad},
+                                       {KeyF14::Typed, 0xae},
+                                       {KeyF15::Typed, 0xaf}}) {
+    auto unknowns = KeyUnknown::Typed();
+    for (auto& unknown : unknowns) {
+      unknown.scan_code = scan_code;
+    }
+    auto unknowns_with_search = KeyUnknown::Typed(ui::EF_COMMAND_DOWN);
+    for (auto& unknown : unknowns_with_search) {
+      unknown.scan_code = scan_code;
+    }
+    auto expected_events = typed(ui::EF_NONE);
+    for (auto& event : expected_events) {
+      event.scan_code = scan_code;
+    }
+    // Do not rewrite when search key is down since the keyboard should use the
+    // fn key.
+    EXPECT_EQ(unknowns_with_search, RunRewriter(unknowns, ui::EF_COMMAND_DOWN));
+
+    // Rewrite correctly with the fn key down.
+    EXPECT_EQ(expected_events, RunRewriter(unknowns, ui::EF_FUNCTION_DOWN));
+  }
+  scoped_feature_list_.Reset();
 }
 
 TEST_P(EventRewriterTest, TestRewriteFunctionKeysLayout2) {
