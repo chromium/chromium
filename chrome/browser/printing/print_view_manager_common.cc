@@ -17,7 +17,6 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -45,7 +44,7 @@ content::RenderFrameHost* GetRenderFrameHostToUse(
   // Pick the plugin frame host if `contents` is a PDF viewer guest. If using
   // OOPIF PDF viewer, pick the PDF extension frame host.
   content::RenderFrameHost* full_page_pdf_embedder_host =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+      chrome_pdf::features::IsOopifPdfEnabled()
           ? pdf_frame_util::FindFullPagePdfExtensionHost(contents)
           : GetFullPagePlugin(contents);
   content::RenderFrameHost* pdf_rfh = pdf_frame_util::FindPdfChildFrame(

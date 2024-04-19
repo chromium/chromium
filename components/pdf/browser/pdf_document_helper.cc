@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "components/pdf/browser/pdf_document_helper_client.h"
@@ -71,7 +70,7 @@ void PDFDocumentHelper::SetListener(
   }
 
   content::RenderFrameHost* pdf_host;
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+  if (chrome_pdf::features::IsOopifPdfEnabled()) {
     pdf_host = &render_frame_host();
   } else {
     content::RenderFrameHost* main_frame =
@@ -252,7 +251,7 @@ void PDFDocumentHelper::ExecuteCommand(int command_id, int event_flags) {
 
 void PDFDocumentHelper::RunContextMenu() {
   content::RenderFrameHost* focused_frame;
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+  if (chrome_pdf::features::IsOopifPdfEnabled()) {
     focused_frame = &render_frame_host();
   } else {
     focused_frame = GetWebContents().GetFocusedFrame();
@@ -331,7 +330,7 @@ void PDFDocumentHelper::SaveUrlAs(const GURL& url,
 
   // Save using the PDF embedder host.
   content::RenderFrameHost* rfh =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+      chrome_pdf::features::IsOopifPdfEnabled()
           ? pdf_frame_util::GetEmbedderHost(&render_frame_host())
           : GetWebContents().GetOuterWebContentsFrame();
   if (!rfh) {

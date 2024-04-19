@@ -42,4 +42,8 @@ BASE_FEATURE(kPdfXfaSupport,
 BASE_FEATURE(kPdfInk2, "PdfInk2", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+bool IsOopifPdfEnabled() {
+  return base::FeatureList::IsEnabled(kPdfOopif);
+}
+
 }  // namespace chrome_pdf::features

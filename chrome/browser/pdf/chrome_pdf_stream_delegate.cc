@@ -105,7 +105,7 @@ std::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
   content::WebContents* contents = navigation_handle.GetWebContents();
   base::WeakPtr<extensions::StreamContainer> stream;
   content::RenderFrameHost* embedder_parent_frame = embedder_frame->GetParent();
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+  if (chrome_pdf::features::IsOopifPdfEnabled()) {
     if (embedder_parent_frame) {
       // For the PDF viewer, the `embedder_frame` is the PDF extension frame.
       // The `StreamContainer` is stored using the PDF viewer's embedder frame,
@@ -193,7 +193,7 @@ ChromePdfStreamDelegate::GetStreamInfo(
 void ChromePdfStreamDelegate::OnPdfEmbedderSandboxed(int frame_tree_node_id) {
   // Clean up the stream for a sandboxed embedder frame, as sandboxed frames
   // should be unable to instantiate the PDF viewer.
-  CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
+  CHECK(chrome_pdf::features::IsOopifPdfEnabled());
 
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
@@ -218,7 +218,7 @@ bool ChromePdfStreamDelegate::ShouldAllowPdfFrameNavigation(
   // content frame.
 
   // OOPIF PDF viewer only.
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
     return true;
   }
 

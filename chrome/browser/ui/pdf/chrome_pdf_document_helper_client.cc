@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
 
-#include "base/feature_list.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -66,7 +65,7 @@ void ChromePDFDocumentHelperClient::OnSaveURL(content::WebContents* contents) {
 void ChromePDFDocumentHelperClient::SetPluginCanSave(
     content::RenderFrameHost* render_frame_host,
     bool can_save) {
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+  if (chrome_pdf::features::IsOopifPdfEnabled()) {
     auto* pdf_viewer_stream_manager =
         pdf::PdfViewerStreamManager::FromWebContents(
             content::WebContents::FromRenderFrameHost(render_frame_host));

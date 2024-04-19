@@ -7,7 +7,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
@@ -155,9 +154,8 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   const std::string internal_id = base::UnguessableToken::Create().ToString();
 
 #if BUILDFLAG(ENABLE_PDF)
-  const bool is_for_oopif_pdf =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      response_head->mime_type == pdf::kPDFMimeType;
+  const bool is_for_oopif_pdf = chrome_pdf::features::IsOopifPdfEnabled() &&
+                                response_head->mime_type == pdf::kPDFMimeType;
 #else
   constexpr bool is_for_oopif_pdf = false;
 #endif

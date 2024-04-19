@@ -204,7 +204,7 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
       // able to load the PDF Viewer. The PDF extension needs a
       // kPrivilegedExtension context to load, so the PDF extension frame is
       // added to the process map and shouldn't reach here.
-      if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+      if (chrome_pdf::features::IsOopifPdfEnabled()) {
         CHECK_NE(extension_id, extension_misc::kPdfExtensionId);
       }
 #endif  // BUILDFLAG(ENABLE_PDF)

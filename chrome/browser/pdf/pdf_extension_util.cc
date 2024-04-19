@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -66,9 +65,7 @@ void AddCommonStrings(base::Value::Dict* dict) {
             features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
   dict->Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
   dict->Set("pdfOopifEnabled",
-            base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
-                ? "pdfOopifEnabled"
-                : "");
+            chrome_pdf::features::IsOopifPdfEnabled() ? "pdfOopifEnabled" : "");
 }
 
 // Adds strings that are used only by the stand-alone PDF Viewer.
@@ -243,7 +240,7 @@ void AddAdditionalData(bool enable_printing,
 }
 
 bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {
-  CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
+  CHECK(chrome_pdf::features::IsOopifPdfEnabled());
 
   auto* pdf_viewer_stream_manager =
       pdf::PdfViewerStreamManager::FromRenderFrameHost(embedder_host);

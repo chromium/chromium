@@ -23,7 +23,6 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -148,7 +147,7 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
   if (is_guest) {
 #if BUILDFLAG(ENABLE_PDF)
     // Allow the PDF Viewer extension to load in guests.
-    if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+    if (chrome_pdf::features::IsOopifPdfEnabled() &&
         extension->id() == extension_misc::kPdfExtensionId) {
       *allowed = true;
       return true;

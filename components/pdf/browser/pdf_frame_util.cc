@@ -7,7 +7,6 @@
 #include <functional>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "components/pdf/common/constants.h"
 #include "components/pdf/common/pdf_util.h"
@@ -20,7 +19,7 @@ namespace pdf_frame_util {
 
 content::RenderFrameHost* FindFullPagePdfExtensionHost(
     content::WebContents* contents) {
-  CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
+  CHECK(chrome_pdf::features::IsOopifPdfEnabled());
 
   // MIME type associated with `contents` must be `application/pdf` for a
   // full-page PDF.
@@ -65,7 +64,7 @@ content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh) {
 
 content::RenderFrameHost* GetEmbedderHost(
     content::RenderFrameHost* content_host) {
-  CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
+  CHECK(chrome_pdf::features::IsOopifPdfEnabled());
 
   if (!content_host) {
     return nullptr;

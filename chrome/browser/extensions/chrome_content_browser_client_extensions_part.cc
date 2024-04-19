@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
@@ -82,7 +83,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -731,7 +731,7 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
   // appropriate API methods to it.
 #if BUILDFLAG(ENABLE_PDF)
   const bool is_oopif_pdf_extension =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      chrome_pdf::features::IsOopifPdfEnabled() &&
       extension->id() == extension_misc::kPdfExtensionId;
 #else
   constexpr bool is_oopif_pdf_extension = false;

@@ -791,7 +791,7 @@ Browser* FindNormalBrowser(const Profile* profile) {
 #if BUILDFLAG(ENABLE_PDF)
 // Returns true if the PDF viewer is handling the save, false otherwise.
 bool MaybePdfViewerHandlesSave(RenderFrameHost* frame_host) {
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) ||
+  if (!chrome_pdf::features::IsOopifPdfEnabled() ||
       !IsFrameInPdfViewer(frame_host)) {
     return false;
   }
@@ -2120,8 +2120,7 @@ void RenderViewContextMenu::AppendPluginItems() {
   bool is_full_page_pdf_viewer = false;
 #if BUILDFLAG(ENABLE_PDF)
   // Always append page items for full page PDF Viewers.
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      render_frame_host) {
+  if (chrome_pdf::features::IsOopifPdfEnabled() && render_frame_host) {
     // If the plugin is the PDF viewer, then `render_frame_host` will either be
     // the PDF extension host or the PDF content host.
     RenderFrameHost* extension_host =
@@ -4182,8 +4181,8 @@ void RenderViewContextMenu::ExecSaveAs() {
   RenderFrameHost* target_frame_host = nullptr;
 
 #if BUILDFLAG(ENABLE_PDF)
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      is_plugin && IsFrameInPdfViewer(frame_host)) {
+  if (chrome_pdf::features::IsOopifPdfEnabled() && is_plugin &&
+      IsFrameInPdfViewer(frame_host)) {
     // Give the PDF viewer a chance to handle the save.
     if (MaybePdfViewerHandlesSave(frame_host)) {
       return;
@@ -4600,7 +4599,7 @@ void RenderViewContextMenu::PluginActionAt(
   // frame. To trigger any plugin action, detect this child frame and trigger
   // the actions from there.
   content::RenderFrameHost* extension_rfh =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+      chrome_pdf::features::IsOopifPdfEnabled()
           ? pdf_frame_util::FindFullPagePdfExtensionHost(source_web_contents_)
           : source_web_contents_->GetPrimaryMainFrame();
   plugin_rfh = pdf_frame_util::FindPdfChildFrame(extension_rfh);

@@ -27,6 +27,10 @@ BASE_DECLARE_FEATURE(kPdfXfaSupport);
 BASE_DECLARE_FEATURE(kPdfInk2);
 #endif
 
+// Returns whether the OOPIF PDF viewer should be used, otherwise the GuestView
+// PDF viewer should be used.
+bool IsOopifPdfEnabled();
+
 }  // namespace chrome_pdf::features
 
 #endif  // PDF_PDF_FEATURES_H_

@@ -29,7 +29,6 @@
 #include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
 #include "components/pdf/common/pdf_util.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -581,7 +580,7 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
             }
 
 #if BUILDFLAG(ENABLE_PDF)
-            if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+            if (chrome_pdf::features::IsOopifPdfEnabled()) {
               // Don't expose any child frames of the PDF extension frame, such
               // as the PDF content frame.
               content::RenderFrameHost* parent = render_frame_host->GetParent();
