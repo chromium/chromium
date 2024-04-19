@@ -39,6 +39,10 @@ class HistoryEmbeddingsTabHelper
       base::Time timestamp,
       const GURL& url);
 
+  // content::WebContentsObserver:
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+
  private:
   explicit HistoryEmbeddingsTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HistoryEmbeddingsTabHelper>;
@@ -48,6 +52,12 @@ class HistoryEmbeddingsTabHelper
   history_embeddings::HistoryEmbeddingsService* GetHistoryEmbeddingsService();
   // `GetHistoryService()` may return nullptr.
   history::HistoryService* GetHistoryService();
+
+  // Data saved from the `HistoryTabHelper` call to
+  // `OnUpdatedHistoryForNavigation` which happens in `DidFinishNavigation`
+  // and precedes `DidFinishLoad`.
+  std::optional<base::Time> history_visit_time_;
+  std::optional<GURL> history_url_;
 
   // Task tracker for calls for the history service.
   base::CancelableTaskTracker task_tracker_;
