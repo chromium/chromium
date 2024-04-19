@@ -867,6 +867,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Renderer-enforced content settings are stored on a per-document basis.
   mojom::RendererContentSettingsPtr content_settings_;
+
+  // When document is fetched from service worker, we keep track of the body
+  // size for reporting in Navigation Timing encodedBodySize/decodedBodySize.
+  int64_t total_body_size_from_service_worker_ = 0;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

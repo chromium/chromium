@@ -341,6 +341,7 @@ struct SameSizeAsDocumentLoader
       modified_runtime_features;
   AtomicString cookie_deprecation_label;
   mojom::RendererContentSettingsPtr content_settings;
+  int64_t body_size_from_service_worker;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -1184,6 +1185,9 @@ void DocumentLoader::DecodedBodyDataReceived(
     base::span<const char> encoded_data) {
   // Decoding has already happened, we don't need the decoder anymore.
   parser_->SetDecoder(nullptr);
+  if (response_.WasFetchedViaServiceWorker()) {
+    total_body_size_from_service_worker_ += data.length();
+  }
 
   DecodedBodyData body_data(data, DocumentEncodingData(encoding_data),
                             encoded_data);
@@ -1250,6 +1254,14 @@ void DocumentLoader::BodyLoadingFinished(
     probe::DidFinishLoading(
         probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
         completion_time, total_encoded_data_length, total_decoded_body_length);
+
+    if (response_.WasFetchedViaServiceWorker()) {
+      // See https://w3c.github.io/ServiceWorker/#dom-fetchevent-respondwith
+      // in "chunk steps": there is no difference between encoded/decoded body
+      // size, as encoding is handled inside the service worker.
+      total_encoded_body_length = total_body_size_from_service_worker_;
+      total_decoded_body_length = total_body_size_from_service_worker_;
+    }
 
     DOMWindowPerformance::performance(*frame_->DomWindow())
         ->OnBodyLoadFinished(total_encoded_body_length,

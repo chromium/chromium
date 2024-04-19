@@ -71,7 +71,7 @@
       assert_greater_than(main_page_resource_timing.decodedBodySize, 0,
         'Corresponding resource timing emitted on parent page should have decodedBodySize larger than 0.');
 
-      assert_greater_than(main_page_resource_timing.encodedBodySize, navigationEntry.decodedBodySize,
+      assert_equals(main_page_resource_timing.encodedBodySize, navigationEntry.decodedBodySize,
         'Corresponding resource timing emitted on parent page should have equal decodedBodySize and \
         encodedBodySize.');
 
