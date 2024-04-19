@@ -810,12 +810,13 @@ crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthro
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/texture-video-transparent.html [ Failure ] # finder:disable-narrowing
 
-
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 
 crbug.com/1521117 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
+
+crbug.com/335857348 [ android android-pixel-4 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
 
 #####################
