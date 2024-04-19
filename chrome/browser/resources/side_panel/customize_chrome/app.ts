@@ -10,9 +10,9 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './appearance.js';
 import './cards.js';
 import './categories.js';
+import './customize_toolbar/toolbar.js';
 import './shortcuts.js';
 import './themes.js';
-import './toolbar.js';
 import './wallpaper_search/wallpaper_search.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';

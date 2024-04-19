@@ -22,11 +22,11 @@ build_webui("build") {
     "cards.ts",
     "categories.ts",
     "check_mark_wrapper.ts",
+    "customize_toolbar/toolbar.ts",
     "hover_button.ts",
     "shortcuts.ts",
     "themes.ts",
     "theme_snapshot.ts",
-    "toolbar.ts",
     "wallpaper_search/combobox/customize_chrome_combobox.ts",
     "wallpaper_search/wallpaper_search.ts",
     "wallpaper_search/wallpaper_search_tile.ts",
@@ -36,6 +36,7 @@ build_webui("build") {
     "chrome_cart_proxy.ts",
     "common.ts",
     "customize_chrome_api_proxy.ts",
+    "customize_toolbar/customize_toolbar_api_proxy.ts",
     "wallpaper_search/wallpaper_search_proxy.ts",
     "window_proxy.ts",
   ]
@@ -47,6 +48,7 @@ build_webui("build") {
   mojo_files = [
     "$root_gen_dir/chrome/browser/cart/chrome_cart.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom-webui.ts",
   ]
 

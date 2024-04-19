@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -298,6 +299,16 @@ void CustomizeChromeUI::BindInterface(
 }
 
 void CustomizeChromeUI::BindInterface(
+    mojo::PendingReceiver<
+        side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory>
+        receiver) {
+  if (customize_toolbar_handler_factory_receiver_.is_bound()) {
+    customize_toolbar_handler_factory_receiver_.reset();
+  }
+  customize_toolbar_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void CustomizeChromeUI::BindInterface(
     mojo::PendingReceiver<chrome_cart::mojom::CartHandler>
         pending_page_handler) {
   cart_handler_ = std::make_unique<CartHandler>(std::move(pending_page_handler),
@@ -416,4 +427,17 @@ void CustomizeChromeUI::CreateWallpaperSearchHandler(
   wallpaper_search_handler_ = std::make_unique<WallpaperSearchHandler>(
       std::move(handler), std::move(client), profile_, image_decoder_.get(),
       wallpaper_search_background_manager_.get(), id_);
+}
+
+void CustomizeChromeUI::CreateCustomizeToolbarHandler(
+    mojo::PendingRemote<
+        side_panel::customize_chrome::mojom::CustomizeToolbarClient> client,
+    mojo::PendingReceiver<
+        side_panel::customize_chrome::mojom::CustomizeToolbarHandler> handler) {
+  if (customize_toolbar_handler_) {
+    mojo::ReportBadMessage("Only allowed to create one Mojo pipe per WebUI.");
+    return;
+  }
+  customize_toolbar_handler_ = std::make_unique<CustomizeToolbarHandler>(
+      std::move(handler), std::move(client));
 }

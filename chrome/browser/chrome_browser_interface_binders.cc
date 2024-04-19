@@ -1371,6 +1371,12 @@ void PopulateChromeWebUIFrameBinders(
           side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory,
           CustomizeChromeUI>(map);
     }
+
+    if (features::IsToolbarPinningEnabled()) {
+      RegisterWebUIControllerInterfaceBinder<
+          side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory,
+          CustomizeChromeUI>(map);
+    }
   }
 
   if (user_notes::IsUserNotesEnabled()) {

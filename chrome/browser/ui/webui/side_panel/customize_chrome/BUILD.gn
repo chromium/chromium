@@ -9,6 +9,7 @@ assert(!is_android)
 mojom("mojo_bindings") {
   sources = [
     "customize_chrome.mojom",
+    "customize_toolbar/customize_toolbar.mojom",
     "wallpaper_search/wallpaper_search.mojom",
   ]
   webui_module_path = "/"
