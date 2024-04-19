@@ -512,8 +512,6 @@ Vector<uint8_t> EncodeGbShared(StringView string,
                                IsGbk is_gbk) {
   Vector<uint8_t> result;
   result.ReserveInitialCapacity(string.length());
-  const bool gb18030_2022_enabled =
-      base::FeatureList::IsEnabled(blink::features::kGb18030_2022Enabled);
 
   for (UChar32 code_point : string) {
     if (IsASCII(code_point)) {
@@ -529,7 +527,7 @@ Vector<uint8_t> EncodeGbShared(StringView string,
         result.push_back(0x80);
         continue;
       }
-    } else if (gb18030_2022_enabled) {
+    } else {
       if (auto encoded = Gb18030_2022Encode(code_point)) {
         result.push_back(*encoded >> 24);
         result.push_back(*encoded >> 16);
@@ -927,10 +925,7 @@ class EucKrDecoder : public TextCodecCJK::Decoder {
 // Note that the same decoder is used for GB18030 and GBK.
 class Gb18030Decoder : public TextCodecCJK::Decoder {
  public:
-  Gb18030Decoder() {
-    gb18030_2022_enabled_ =
-        base::FeatureList::IsEnabled(blink::features::kGb18030_2022Enabled);
-  }
+  Gb18030Decoder() = default;
 
   String Decode(const uint8_t* bytes,
                 wtf_size_t length,
@@ -967,11 +962,9 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
       uint8_t first = std::exchange(first_, 0x00);
       uint8_t second = std::exchange(second_, 0x00);
       uint8_t third = std::exchange(third_, 0x00);
-      if (gb18030_2022_enabled_) {
-        if (auto codePoint = Gb18030_2022Decode(first, second, third, byte)) {
-          result.Append(*codePoint);
-          return SawError::kNo;
-        }
+      if (auto codePoint = Gb18030_2022Decode(first, second, third, byte)) {
+        result.Append(*codePoint);
+        return SawError::kNo;
       }
       if (auto code_point = IndexGb18030RangesCodePoint(
               ((first - 0x81) * 10 * 126 * 10) + ((second - 0x30) * 10 * 126) +
@@ -1050,7 +1043,6 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
   // I do not think it is safe to keep the reference after
   // `TextCodecCJK::Decode` finishes.
   bool* saw_error_;
-  bool gb18030_2022_enabled_ = false;
 };
 
 }  // namespace

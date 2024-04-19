@@ -333,29 +333,27 @@ const Gb18030EncodeTable& EnsureGb18030EncodeTable() {
     DCHECK_EQ((*array)[6555], 0x3000);
   });
 
-  if (base::FeatureList::IsEnabled(blink::features::kGb18030_2022Enabled)) {
-    constexpr std::array<std::pair<size_t, UChar>, 18> kGb18030_2022Differences{
-        {{7182, 0xfe10},
-         {7183, 0xfe12},
-         {7184, 0xfe11},
-         {7185, 0xfe13},
-         {7186, 0xfe14},
-         {7187, 0xfe15},
-         {7188, 0xfe16},
-         {7201, 0xfe17},
-         {7202, 0xfe18},
-         {7208, 0xfe19},
-         {23775, 0x9fb4},
-         {23783, 0x9fb5},
-         {23788, 0x9fb6},
-         {23789, 0x9fb7},
-         {23795, 0x9fb8},
-         {23812, 0x9fb9},
-         {23829, 0x9fba},
-         {23845, 0x9fbb}}};
-    for (auto& pair : kGb18030_2022Differences) {
-      (*array)[pair.first] = pair.second;
-    }
+  constexpr std::array<std::pair<size_t, UChar>, 18> kGb18030_2022Differences{
+      {{7182, 0xfe10},
+       {7183, 0xfe12},
+       {7184, 0xfe11},
+       {7185, 0xfe13},
+       {7186, 0xfe14},
+       {7187, 0xfe15},
+       {7188, 0xfe16},
+       {7201, 0xfe17},
+       {7202, 0xfe18},
+       {7208, 0xfe19},
+       {23775, 0x9fb4},
+       {23783, 0x9fb5},
+       {23788, 0x9fb6},
+       {23789, 0x9fb7},
+       {23795, 0x9fb8},
+       {23812, 0x9fb9},
+       {23829, 0x9fba},
+       {23845, 0x9fbb}}};
+  for (auto& pair : kGb18030_2022Differences) {
+    (*array)[pair.first] = pair.second;
   }
 
   return *array;
