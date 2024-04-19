@@ -55,6 +55,9 @@ std::string GetURLWithoutScheme(const GURL& url) {
   config.features_enabled.push_back(omnibox::kDefaultTypedNavigationsToHttps);
   config.features_disabled.push_back(
       security_interstitials::features::kHttpsUpgrades);
+  // TODO(crbug.com/335821156): Investigate why rich inline triggers with
+  // test_HTTPWithSlowHTTPS_ShouldFallBack and remove this.
+  config.features_disabled.push_back(omnibox::kRichAutocompletion);
   return config;
 }
 
