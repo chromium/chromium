@@ -432,6 +432,14 @@ class XPy:
         subs['LLVM_BIN'] = quote_string(str(self._llvm_bins_path))
         subs['PACKAGE_VERSION'] = GetRustClangRevision()
 
+        # FIXME: Remove after next rust roll.
+        if RUST_REVISION == 'ab71ee7a9214c2793108a41efb065aa77aeb7326':
+            subs['CHANGELOG_SEEN'] = '''\
+# Suppress x.py warning about configuration changes
+changelog-seen = 2'''
+        else:
+            subs['CHANGELOG_SEEN'] = ''
+
         # ...and apply substitutions, writing to config.toml in Rust tree.
         with open(os.path.join(RUST_SRC_DIR, 'config.toml'), 'w') as output:
             output.write(template.substitute(subs))
