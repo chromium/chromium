@@ -604,6 +604,7 @@ crbug.com/1357064 [ android android-shield-android-tv no-passthrough ] conforman
 
 crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1175226 [ android android-pixel-4 no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/335857349 [ android android-pixel-4 no-passthrough ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 
 ## Pixel 6 ##
