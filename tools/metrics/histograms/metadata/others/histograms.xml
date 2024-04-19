@@ -4476,10 +4476,11 @@ chromium-metrics-reviews@google.com.
   <owner>agale@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
-    Whether the default browser app menu chip has been shown when the
-    ToolbarView is rendering the app menu and the default browser prompt is
-    eligible to be shown. This is emitted each time the type and severity of the
-    app menu is updated.
+    Whether the default browser app menu chip has been shown when it is eligible
+    to be shown. This is logged every time the ToolbarView renders the app menu
+    and the default browser prompt is eligible to be shown. This is a proxy for
+    how often the default chip gets pre-empted. This is emitted each time the
+    type and severity of the app menu is updated.
   </summary>
 </histogram>
 
