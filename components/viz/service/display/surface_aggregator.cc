@@ -2199,6 +2199,9 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   }
 
   for (const SurfaceId& surface_id : surface->active_referenced_surfaces()) {
+    // Referenced surfaces that haven't been prewalked yet are not embedded so
+    // don't contribute any pixels to the display. They will only be drawn if
+    // necessary to fulfill CopyOutputRequests.
     if (!contained_surfaces_.count(surface_id)) {
       result.undrawn_surfaces.insert(surface_id);
       ResolvedFrameData* undrawn_surface = GetResolvedFrame(surface_id);
