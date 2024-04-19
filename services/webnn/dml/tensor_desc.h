@@ -73,8 +73,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorDesc final {
   void MakeBroadcastCompatible(size_t minimum_rank,
                                base::span<const uint32_t> axes);
 
-  void SetTotalTensorSizeInBytes(uint64_t new_total_tensor_size_bytes);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescA);
   FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescB);
