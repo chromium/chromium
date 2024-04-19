@@ -3653,12 +3653,12 @@
   {
     "name": "enable-save-to-drive",
     "owners": [ "qpubert@google.com", "djean@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 128
   },
   {
     "name": "enable-save-to-photos",
     "owners": [ "qpubert@google.com", "djean@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 128
   },
   {
     "name": "enable-seamless-refresh-rate-switching",
@@ -5021,7 +5021,7 @@
   {
     "name": "intents-on-measurements",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 128
   },
   {
     "name": "intents-on-viewport",
