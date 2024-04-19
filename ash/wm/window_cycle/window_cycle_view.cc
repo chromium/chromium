@@ -171,21 +171,22 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   // `mirror_container_` may be larger than `this`. In this case, it will be
   // shifted along the x-axis when the user tabs through. It is a container
   // for the previews and has no rendered content.
-  mirror_container_ = AddChildView(std::make_unique<views::View>());
-  mirror_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  mirror_container_ = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetPaintToLayer(ui::LAYER_NOT_DRAWN)
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetInsideBorderInsets(gfx::Insets::TLBR(
+              is_interactive_alt_tab_mode_allowed
+                  ? kMirrorContainerVerticalPaddingDp
+                  : kInsideBorderVerticalPaddingDp,
+              WindowCycleView::kInsideBorderHorizontalPaddingDp,
+              kInsideBorderVerticalPaddingDp,
+              WindowCycleView::kInsideBorderHorizontalPaddingDp))
+          .SetBetweenChildSpacing(kBetweenChildPaddingDp)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+          .Build());
+  mirror_container_->AddObserver(this);
   mirror_container_->layer()->SetName("WindowCycleView/MirrorContainer");
-  views::BoxLayout* layout =
-      mirror_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::TLBR(is_interactive_alt_tab_mode_allowed
-                                ? kMirrorContainerVerticalPaddingDp
-                                : kInsideBorderVerticalPaddingDp,
-                            WindowCycleView::kInsideBorderHorizontalPaddingDp,
-                            kInsideBorderVerticalPaddingDp,
-                            WindowCycleView::kInsideBorderHorizontalPaddingDp),
-          kBetweenChildPaddingDp));
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
 
   if (is_interactive_alt_tab_mode_allowed) {
     tab_slider_ = AddChildView(std::make_unique<TabSlider>(/*max_tab_num=*/2));
@@ -263,8 +264,8 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   // than the views themselves is `kBetweenChildPaddingDp`.
   const gfx::Insets cycle_item_insets =
       cycle_views_.empty() ? gfx::Insets() : cycle_views_.front()->GetInsets();
-  layout->set_between_child_spacing(kBetweenChildPaddingDp -
-                                    cycle_item_insets.width());
+  mirror_container_->SetBetweenChildSpacing(kBetweenChildPaddingDp -
+                                            cycle_item_insets.width());
 
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation4);
@@ -473,6 +474,11 @@ void WindowCycleView::DestroyContents() {
   no_previews_list_.clear();
   target_window_ = nullptr;
   current_window_ = nullptr;
+  mirror_container_ = nullptr;
+  no_recent_items_label_ = nullptr;
+  tab_slider_ = nullptr;
+  all_desks_tab_slider_button_ = nullptr;
+  current_desk_tab_slider_button_ = nullptr;
   defer_widget_bounds_update_ = false;
   RemoveAllChildViews();
   OnFlingEnd();
@@ -681,23 +687,6 @@ void WindowCycleView::Layout(PassKey) {
         })));
   }
   mirror_container_->SetBoundsRect(content_container_bounds);
-
-  // If an element in `no_previews_list_` is no onscreen (its bounds in `this`
-  // coordinates intersects `this`), create the rest of its elements and
-  // remove it from the set.
-  const gfx::RectF local_bounds(GetLocalBounds());
-  for (auto it = no_previews_list_.begin(); it != no_previews_list_.end();) {
-    WindowMiniViewBase* view = *it;
-    gfx::RectF bounds(view->GetLocalBounds());
-    views::View::ConvertRectToTarget(view, this, &bounds);
-    if (bounds.Intersects(local_bounds)) {
-      view->SetShowPreview(/*show=*/true);
-      view->RefreshItemVisuals();
-      it = no_previews_list_.erase(it);
-    } else {
-      ++it;
-    }
-  }
 }
 
 void WindowCycleView::OnImplicitAnimationsCompleted() {
@@ -728,6 +717,26 @@ WindowMiniViewBase* WindowCycleView::GetCycleViewForWindow(
     }
   }
   return nullptr;
+}
+
+void WindowCycleView::OnViewBoundsChanged(views::View* observed_view) {
+  CHECK_EQ(mirror_container_.get(), observed_view);
+  // If an element in `no_previews_list_` is onscreen (its bounds in `this`
+  // coordinates intersects `this`), create the rest of its elements and
+  // remove it from the set.
+  const gfx::RectF local_bounds(GetLocalBounds());
+  for (auto it = no_previews_list_.begin(); it != no_previews_list_.end();) {
+    WindowMiniViewBase* view = *it;
+    gfx::RectF bounds(view->GetLocalBounds());
+    views::View::ConvertRectToTarget(view, this, &bounds);
+    if (bounds.Intersects(local_bounds)) {
+      view->SetShowPreview(true);
+      view->RefreshItemVisuals();
+      it = no_previews_list_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 BEGIN_METADATA(WindowCycleView)
