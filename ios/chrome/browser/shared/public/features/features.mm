@@ -76,6 +76,10 @@ const char kIOSDockingPromoNewUserInactiveThresholdHours[] =
     "IOSDockingPromoNewUserInactiveThresholdHours";
 const char kIOSDockingPromoOldUserInactiveThresholdHours[] =
     "IOSDockingPromoOldUserInactiveThresholdHours";
+const char kIOSDockingPromoNewUserInactiveThreshold[] =
+    "IOSDockingPromoNewUserInactiveThreshold";
+const char kIOSDockingPromoOldUserInactiveThreshold[] =
+    "IOSDockingPromoOldUserInactiveThreshold";
 
 BASE_FEATURE(kIOSDockingPromo,
              "IOSDockingPromo",
@@ -446,6 +450,20 @@ DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled() {
       base::GetFieldTrialParamByFeatureAsInt(
           kIOSDockingPromo, kIOSDockingPromoExperimentType,
           /*default_value=*/(int)DockingPromoDisplayTriggerArm::kAfterFRE));
+}
+
+const base::TimeDelta InactiveThresholdForNewUsersUntilDockingPromoShown() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kIOSDockingPromo, kIOSDockingPromoNewUserInactiveThreshold,
+      /*default_value=*/
+      base::Hours(HoursInactiveForNewUsersUntilShowingDockingPromo()));
+}
+
+const base::TimeDelta InactiveThresholdForOldUsersUntilDockingPromoShown() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kIOSDockingPromo, kIOSDockingPromoOldUserInactiveThreshold,
+      /*default_value=*/
+      base::Hours(HoursInactiveForOldUsersUntilShowingDockingPromo()));
 }
 
 int HoursInactiveForNewUsersUntilShowingDockingPromo() {

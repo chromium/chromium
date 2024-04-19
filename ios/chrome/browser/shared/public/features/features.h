@@ -63,12 +63,24 @@ BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 // A parameter representing the experimental arm for when the Docking Promo is
 // displayed: during the FRE, or after the FRE.
 extern const char kIOSDockingPromoExperimentType[];
+
 // A parameter representing how many hours of inactivity are required (for users
-// no older than 2 days) before the Docking Promo is shown.
+// no older than 2 days) before the Docking Promo is shown. This parameter is
+// only used if `kIOSDockingPromoNewUserInactiveThreshold` is not set.
 extern const char kIOSDockingPromoNewUserInactiveThresholdHours[];
+
 // A parameter representing how many hours of inactivity are required (for users
-// no older than 14 days) before the Docking Promo is shown.
+// no older than 14 days) before the Docking Promo is shown. This parameter is
+// only used if `kIOSDockingPromoOldUserInactiveThreshold` is not set.
 extern const char kIOSDockingPromoOldUserInactiveThresholdHours[];
+
+// Minimum duration of inactivity required before showing the Docking Promo to
+// new users (<= 2 days old).
+extern const char kIOSDockingPromoNewUserInactiveThreshold[];
+
+// Minimum duration of inactivity required before showing the Docking Promo to
+// old users (<= 14 days old).
+extern const char kIOSDockingPromoOldUserInactiveThreshold[];
 
 // Feature flag to enable the Docking Promo.
 BASE_DECLARE_FEATURE(kIOSDockingPromo);
@@ -100,6 +112,14 @@ int HoursInactiveForNewUsersUntilShowingDockingPromo();
 // For users no older than 14 days, how many hours of inactivity must pass
 // before showing the Docking Promo.
 int HoursInactiveForOldUsersUntilShowingDockingPromo();
+
+// Minimum inactivity duration (between app launches) before showing the Docking
+// Promo to new users.
+const base::TimeDelta InactiveThresholdForNewUsersUntilDockingPromoShown();
+
+// Minimum inactivity duration (between app launches) before showing the Docking
+// Promo to old users.
+const base::TimeDelta InactiveThresholdForOldUsersUntilDockingPromoShown();
 
 // Feature flag to enable the non-modal DB promo cooldown refactor separating
 // the cooldown periods for full screen and non-modal promos, as well as

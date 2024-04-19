@@ -9375,10 +9375,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_FFR_20240409",
+                    "name": "Enabled_FFR_20240419",
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
+                        "IOSDockingPromoNewUserInactiveThreshold": "24h",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "24",
+                        "IOSDockingPromoOldUserInactiveThreshold": "72h",
                         "IOSDockingPromoOldUserInactiveThresholdHours": "72"
                     },
                     "enable_features": [
@@ -9386,7 +9388,7 @@
                     ]
                 },
                 {
-                    "name": "Enabled_FRE_20240409",
+                    "name": "Enabled_FRE_20240419",
                     "params": {
                         "IOSDockingPromoExperimentType": "2"
                     },
@@ -9395,10 +9397,12 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Beta_FFR_20240409",
+                    "name": "Enabled_Beta_FFR_20240419",
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
+                        "IOSDockingPromoNewUserInactiveThreshold": "12h",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "12",
+                        "IOSDockingPromoOldUserInactiveThreshold": "24h",
                         "IOSDockingPromoOldUserInactiveThresholdHours": "24"
                     },
                     "enable_features": [
@@ -9406,7 +9410,7 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Beta_FRE_20240409",
+                    "name": "Enabled_Beta_FRE_20240419",
                     "params": {
                         "IOSDockingPromoExperimentType": "2"
                     },
@@ -9415,10 +9419,12 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Canary_Dev_FFR_20240409",
+                    "name": "Enabled_Canary_Dev_FFR_20240419",
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
+                        "IOSDockingPromoNewUserInactiveThreshold": "6h",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "6",
+                        "IOSDockingPromoOldUserInactiveThreshold": "12h",
                         "IOSDockingPromoOldUserInactiveThresholdHours": "12"
                     },
                     "enable_features": [
@@ -9426,7 +9432,7 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Canary_Dev_FRE_20240409",
+                    "name": "Enabled_Canary_Dev_FRE_20240419",
                     "params": {
                         "IOSDockingPromoExperimentType": "2"
                     },

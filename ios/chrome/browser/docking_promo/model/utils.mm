@@ -61,21 +61,17 @@ BOOL CanShowDockingPromo(base::TimeDelta time_since_last_foreground) {
     return NO;
   }
 
-  // For users no older than 2 days, whether they're active on their first day,
-  // but not their second day.
-  BOOL second_day_inactive =
+  BOOL should_show_promo_for_new_user =
       IsFirstRunRecent(base::Days(2) + base::Seconds(1)) &&
       (time_since_last_foreground >
-       base::Hours(HoursInactiveForNewUsersUntilShowingDockingPromo()));
+       InactiveThresholdForNewUsersUntilDockingPromoShown());
 
-  // For users no older than 14 days, whether they've been inactive for 3
-  // consecutive (or more) days.
-  BOOL three_or_more_days_inactive =
+  BOOL should_show_promo_for_old_user =
       IsFirstRunRecent(base::Days(14) + base::Seconds(1)) &&
       (time_since_last_foreground >
-       base::Hours(HoursInactiveForOldUsersUntilShowingDockingPromo()));
+       InactiveThresholdForOldUsersUntilDockingPromoShown());
 
-  return second_day_inactive || three_or_more_days_inactive;
+  return should_show_promo_for_new_user || should_show_promo_for_old_user;
 }
 
 std::optional<base::TimeDelta> MinTimeSinceLastForeground(
