@@ -56,8 +56,8 @@ export const PrefControlMixinInternal = dedupingMixin(
             },
 
             /**
-             * Represents if this element should be disabled or not. If `pref`
-             * exists, `isPrefEnforced` is considered.
+             * Represents if this element should be disabled or not. If
+             * `isPrefEnforced` is true, then `disabled` is always true.
              */
             disabled: {
               type: Boolean,
@@ -68,7 +68,7 @@ export const PrefControlMixinInternal = dedupingMixin(
         }
 
         static get observers() {
-          return ['syncPrefEnforcementToDisabled_(isPrefEnforced)'];
+          return ['syncPrefEnforcementToDisabled_(disabled, isPrefEnforced)'];
         }
 
         disabled: boolean;

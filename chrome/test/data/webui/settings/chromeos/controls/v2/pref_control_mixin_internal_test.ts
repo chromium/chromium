@@ -94,6 +94,19 @@ suite('PrefControlMixinInternal', () => {
       };
       assertTrue(testElement.disabled);
     });
+
+    test('cannot be overridden if pref is enforced', () => {
+      testElement.pref = {
+        ...fakePrefObject,
+        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      };
+      assertTrue(testElement.disabled);
+
+      // Attempt to force enable the element. Element should still be disabled
+      // since the pref is enforced.
+      testElement.disabled = false;
+      assertTrue(testElement.disabled);
+    });
   });
 
   suite('validatePref()', () => {
