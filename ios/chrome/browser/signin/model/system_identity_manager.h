@@ -219,8 +219,11 @@ class SystemIdentityManager {
   // Returns YES if the device status is blocked.
   virtual bool HandleMDMNotification(id<SystemIdentity> identity,
                                      id<RefreshAccessTokenError> error,
+                                     HandleMDMCallback callback);
+  virtual bool HandleMDMNotification(id<SystemIdentity> identity,
+                                     id<RefreshAccessTokenError> error,
                                      bool display,
-                                     HandleMDMCallback callback) = 0;
+                                     HandleMDMCallback callback);
 
   // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management) or not.
