@@ -1489,6 +1489,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const storedLanguagesPref = chrome.readingMode.getLanguagesEnabledInPref();
     this.enabledLanguagesInPref =
         storedLanguagesPref ? storedLanguagesPref : [];
+    for (const lang of this.enabledLanguagesInPref) {
+      this.installVoicePackIfPossible(lang);
+    }
   }
 
   private selectPreferredVoice_() {
@@ -1680,10 +1683,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // Kicks off a workflow to install a voice pack.
   // 1) Checks if Language Pack Manager supports a version of this voice/locale
-  // 2) If so, adds voice to installVoiceIfPossible set
+  // 2) If so, adds voice to installVoicePackIfPossible set
   // 3) Kicks off request GetVoicePackInfo to see if the voice is installed
   // 4) Upon response, if we see the voice is not installed and that it's in
-  // installVoiceIfPossible, then we trigger an install request
+  // installVoicePackIfPossible, then we trigger an install request
   private installVoicePackIfPossible(langOrLocale: string) {
     const langCodeForVoicePackManager =
         convertLangOrLocaleForVoicePackManager(langOrLocale);
