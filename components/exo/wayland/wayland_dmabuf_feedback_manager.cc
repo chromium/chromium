@@ -297,7 +297,8 @@ class WaylandDmabufSurfaceFeedbackResourceWrapper {
   void SetInert() { surface_feedback_ = nullptr; }
 
  private:
-  raw_ptr<WaylandDmabufSurfaceFeedback> surface_feedback_;
+  // Dangling when starting Borealis and Steam starts updating.
+  raw_ptr<WaylandDmabufSurfaceFeedback, DanglingUntriaged> surface_feedback_;
   raw_ptr<wl_resource> resource_;
 };
 
