@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/services/sharing/nearby/platform/ble_v2_gatt_server.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_server_socket.h"
 #include "components/cross_device/logging/logging.h"
@@ -288,8 +289,18 @@ std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
 
 std::unique_ptr<api::ble_v2::GattServer> BleV2Medium::StartGattServer(
     api::ble_v2::ServerGattConnectionCallback callback) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  bool is_dual_role_supported;
+  adapter_->IsLeScatternetDualRoleSupported(&is_dual_role_supported);
+  if (!is_dual_role_supported) {
+    return nullptr;
+  }
+
+  auto gatt_server = std::make_unique<BleV2GattServer>(adapter_);
+
+  // TODO(b/335753061): Revisit the design pattern of holding onto a
+  // `GattServer` pointer when Nearby Connections adjusts the BLE V2 APIs.
+  gatt_server_ = gatt_server->GetWeakPtr();
+  return gatt_server;
 }
 
 std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(

@@ -85,6 +85,7 @@ class FakeAdapter : public mojom::Adapter {
   bool powered_ = true;
   bool discoverable_ = false;
   bool discovering_ = false;
+  bool is_dual_role_supported_ = false;
 
  private:
   void OnAdvertisementDestroyed(const device::BluetoothUUID& service_uuid);

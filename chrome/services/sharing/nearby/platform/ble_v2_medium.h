@@ -17,6 +17,8 @@
 
 namespace nearby::chrome {
 
+class BleV2GattServer;
+
 // Concrete ble_v2::BleMedium implementation.
 // Productionized impl will also consumes bluetooth::mojom::Adapter methods.
 // Current skeleton has not added it yet.
@@ -114,6 +116,11 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
       const device::BluetoothUUID& bluetooth_service_uuid);
 
   mojo::SharedRemote<bluetooth::mojom::Adapter> adapter_;
+
+  // Only set in `StartGattServer()` if the LE Dual Scatternet role
+  // is supported on the device. This is used to trigger asynchronous GATT
+  // server registration in `StartAdvertising()`.
+  base::WeakPtr<BleV2GattServer> gatt_server_;
 
   // Only set while discovery is active.
   mojo::Remote<bluetooth::mojom::DiscoverySession> discovery_session_;

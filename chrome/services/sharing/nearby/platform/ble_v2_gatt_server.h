@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLE_V2_GATT_SERVER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_adapter.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -42,6 +43,10 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
       const nearby::ByteArray& new_value) override;
   void Stop() override;
 
+  base::WeakPtr<BleV2GattServer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   struct GattService {
     GattService();
@@ -71,6 +76,7 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
   mojo::SharedRemote<bluetooth::mojom::Adapter> adapter_remote_;
   mojo::Receiver<bluetooth::mojom::GattServiceObserver> gatt_service_observer_{
       this};
+  base::WeakPtrFactory<BleV2GattServer> weak_ptr_factory_{this};
 };
 
 }  // namespace nearby::chrome

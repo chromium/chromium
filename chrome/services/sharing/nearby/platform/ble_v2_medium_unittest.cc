@@ -440,4 +440,19 @@ TEST_F(BleV2MediumTest, IsExtendedAdvertisementsAvailable_FlagEnabled) {
   EXPECT_FALSE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
 }
 
+TEST_F(BleV2MediumTest, StartGattServer_DualRoleSupported) {
+  fake_adapter_->is_dual_role_supported_ = true;
+  auto gatt_server = ble_v2_medium_->StartGattServer({});
+  EXPECT_TRUE(gatt_server);
+
+  // Clean up ble_v2_medium_ to prevent dangling raw_ptr in unit tests.
+  ble_v2_medium_.reset();
+}
+
+TEST_F(BleV2MediumTest, StartGattServer_DualRoleNotSupported) {
+  fake_adapter_->is_dual_role_supported_ = false;
+  auto gatt_server = ble_v2_medium_->StartGattServer({});
+  EXPECT_FALSE(gatt_server);
+}
+
 }  // namespace nearby::chrome
