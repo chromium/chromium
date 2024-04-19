@@ -538,6 +538,7 @@ suite('SafeBrowsing', function() {
 
   test('safeBrowsingReportingToggle', async () => {
     page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
 
@@ -547,7 +548,7 @@ suite('SafeBrowsing', function() {
 
     // This could also be set to disabled, anything other than standard.
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await microtasksFinished();
     assertEquals(
         SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
     flush();
@@ -556,7 +557,7 @@ suite('SafeBrowsing', function() {
     assertTrue(page.prefs.safebrowsing.scout_reporting_enabled.value);
 
     page.$.safeBrowsingStandard.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await microtasksFinished();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
     flush();
@@ -568,6 +569,7 @@ suite('SafeBrowsing', function() {
       'SafeBrowsingRadio_ManuallyExpandedRemainExpandedOnRepeatSelection',
       async function() {
         page.$.safeBrowsingStandard.click();
+        await microtasksFinished();
         assertEquals(
             SafeBrowsingSetting.STANDARD,
             page.prefs.generated.safe_browsing.value);
@@ -577,7 +579,7 @@ suite('SafeBrowsing', function() {
         // Expanding another radio button should not collapse already expanded
         // option.
         page.$.safeBrowsingEnhanced.$.expandButton.click();
-        await page.$.safeBrowsingEnhanced.$.expandButton.updateComplete;
+        await microtasksFinished();
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
@@ -594,28 +596,23 @@ suite('SafeBrowsing', function() {
       'SafeBrowsingRadio_ManuallyExpandedRemainExpandedOnSelectedChanged',
       async function() {
         page.$.safeBrowsingStandard.click();
+        await microtasksFinished();
         assertEquals(
             SafeBrowsingSetting.STANDARD,
             page.prefs.generated.safe_browsing.value);
 
         page.$.safeBrowsingEnhanced.$.expandButton.click();
-        await page.$.safeBrowsingEnhanced.$.expandButton.updateComplete;
+        await microtasksFinished();
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
         page.$.safeBrowsingDisabled.click();
-        await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+        await microtasksFinished();
 
         // Previously selected option must remain opened.
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
-
-        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
-            .confirm.click();
-        flush();
-
-        // Wait for onDisableSafebrowsingDialogClose_ to finish.
-        await flushTasks();
+        await clickConfirmOnDisableSafebrowsingDialog(page);
 
         // The deselected option should become collapsed.
         assertFalse(page.$.safeBrowsingStandard.expanded);
@@ -624,23 +621,17 @@ suite('SafeBrowsing', function() {
 
   test('DisableSafebrowsingDialog_Confirm', async function() {
     page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
 
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await microtasksFinished();
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
-        .confirm.click();
-    flush();
-
-    // Wait for onDisableSafebrowsingDialogClose_ to finish.
-    await flushTasks();
-
-    assertFalse(isChildVisible(page, 'settings-simple-confirmation-dialog'));
+    await clickConfirmOnDisableSafebrowsingDialog(page);
 
     assertFalse(page.$.safeBrowsingEnhanced.checked);
     assertFalse(page.$.safeBrowsingStandard.checked);
@@ -651,24 +642,16 @@ suite('SafeBrowsing', function() {
 
   test('DisableSafebrowsingDialog_CancelFromEnhanced', async function() {
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await microtasksFinished();
     assertEquals(
         SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
 
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await microtasksFinished();
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingEnhanced.expanded);
-
-    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
-        .cancel.click();
-    flush();
-
-    // Wait for onDisableSafebrowsingDialogClose_ to finish.
-    await flushTasks();
-
-    assertFalse(isChildVisible(page, 'settings-simple-confirmation-dialog'));
+    await clickCancelOnDisableSafebrowsingDialog(page);
 
     assertTrue(page.$.safeBrowsingEnhanced.checked);
     assertFalse(page.$.safeBrowsingStandard.checked);
@@ -679,23 +662,16 @@ suite('SafeBrowsing', function() {
 
   test('DisableSafebrowsingDialog_CancelFromStandard', async function() {
     page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
 
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await microtasksFinished();
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
-
-    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
-        .cancel.click();
-    flush();
-
-    // Wait for onDisableSafebrowsingDialogClose_ to finish.
-    await flushTasks();
-
-    assertFalse(isChildVisible(page, 'settings-simple-confirmation-dialog'));
+    await clickCancelOnDisableSafebrowsingDialog(page);
 
     assertFalse(page.$.safeBrowsingEnhanced.checked);
     assertTrue(page.$.safeBrowsingStandard.checked);
@@ -726,20 +702,16 @@ suite('SafeBrowsing', function() {
 
   test('noControlSafeBrowsingReportingInDisabled', async function() {
     page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
 
     assertFalse(page.$.safeBrowsingReportingToggle.disabled);
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await microtasksFinished();
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
-        .confirm.click();
-    flush();
-
-    // Wait for onDisableSafebrowsingDialogClose_ to finish.
-    await flushTasks();
+    await clickConfirmOnDisableSafebrowsingDialog(page);
 
     assertTrue(page.$.safeBrowsingReportingToggle.disabled);
   });
@@ -754,12 +726,7 @@ suite('SafeBrowsing', function() {
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
-        .confirm.click();
-    flush();
-
-    // Wait for onDisableSafebrowsingDialogClose_ to finish.
-    await flushTasks();
+    await clickConfirmOnDisableSafebrowsingDialog(page);
 
     assertTrue(
         page.prefs.safebrowsing.scout_reporting_enabled.value === previous);
@@ -767,6 +734,7 @@ suite('SafeBrowsing', function() {
 
   test('noValueChangePasswordLeakSwitchToEnhanced', async () => {
     page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
     const previous = page.prefs.profile.password_manager_leak_detection.value;
 
     page.$.safeBrowsingEnhanced.click();
@@ -778,20 +746,16 @@ suite('SafeBrowsing', function() {
 
   test('noValuePasswordLeakSwitchToDisabled', async function() {
     page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
     const previous = page.prefs.profile.password_manager_leak_detection.value;
 
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await microtasksFinished();
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
-        .confirm.click();
-    flush();
-
-    // Wait for onDisableSafebrowsingDialogClose_ to finish.
-    await flushTasks();
+    await clickConfirmOnDisableSafebrowsingDialog(page);
 
     assertTrue(
         page.prefs.profile.password_manager_leak_detection.value === previous);
@@ -1099,3 +1063,27 @@ suite('SafeBrowsing', function() {
         page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
   });
 });
+
+async function clickCancelOnDisableSafebrowsingDialog(
+    page: SettingsSecurityPageElement) {
+  const confirmationDialog =
+      page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+  assertTrue(!!confirmationDialog);
+  const closePromise = eventToPromise('close', confirmationDialog);
+  confirmationDialog.$.cancel.click();
+  flush();
+  await closePromise;
+  await microtasksFinished();
+}
+
+async function clickConfirmOnDisableSafebrowsingDialog(
+    page: SettingsSecurityPageElement) {
+  const confirmationDialog =
+      page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+  assertTrue(!!confirmationDialog);
+  const closePromise = eventToPromise('close', confirmationDialog);
+  confirmationDialog.$.confirm.click();
+  flush();
+  await closePromise;
+  await microtasksFinished();
+}
