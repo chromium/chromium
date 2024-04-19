@@ -3707,6 +3707,7 @@ source_set("ash") {
     "//ash/webui/camera_app_ui",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/connectivity_diagnostics",
+    "//ash/webui/diagnostics_ui",
     "//ash/webui/eche_app_ui",
     "//ash/webui/file_manager:file_manager_ui",
     "//ash/webui/files_internals",
