@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySet
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsCoordinator;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillCreditCardEditor;
+import org.chromium.chrome.browser.autofill.settings.AutofillIbanEditor;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
@@ -642,6 +643,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     new ChromeIpProtectionDelegate(mProfile));
             ipProtectionSettingsFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
+        }
+        if (fragment instanceof AutofillIbanEditor) {
+            ((AutofillIbanEditor) fragment)
+                    .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
         }
     }
 

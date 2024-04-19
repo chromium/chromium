@@ -1039,6 +1039,9 @@
     <message name="IDS_AUTOFILL_CREDIT_CARD_DELETE_CONFIRMATION_TITLE" desc="Title for the confirmation dialog displayed when the user clicks on the delete button while editing card information." formatter_data="android_java">
       Delete card
     </message>
+    <message name="IDS_AUTOFILL_IBAN_DELETE_CONFIRMATION_TITLE" desc="Title for the confirmation dialog displayed when the user clicks on the delete button while editing the IBAN information." formatter_data="android_java">
+      Delete IBAN
+    </message>
     <message name="IDS_AUTOFILL_PAYMENT_METHOD_DELETE_CONFIRMATION_DESCRIPTION" desc="Description for the confirmation dialog displayed when the user clicks on the delete button while editing payment method information." formatter_data="android_java">
       This payment method will be deleted from this device
     </message>

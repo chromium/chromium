@@ -9,7 +9,6 @@ import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -23,28 +22,22 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.autofill.IbanRecordType;
 
 /**
  * This class creates a view for adding and editing a local IBAN. A local IBAN gets saved to the
  * user's device only.
  */
-public class AutofillLocalIbanEditor extends AutofillEditorBase implements ProfileDependentSetting {
+public class AutofillLocalIbanEditor extends AutofillIbanEditor {
     private static Callback<Fragment> sObserverForTest;
 
-    protected Iban mIban;
     protected Button mDoneButton;
     protected EditText mNickname;
     protected TextInputLayout mNicknameLabel;
     protected EditText mValue;
-
-    private Profile mProfile;
 
     @UsedByReflection("AutofillPaymentMethodsFragment.java")
     public AutofillLocalIbanEditor() {}
@@ -52,12 +45,8 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // TODO(b/309163678): Disable autofill for the fields.
         View v = super.onCreateView(inflater, container, savedInstanceState);
 
-        PersonalDataManager personalDataManager =
-                PersonalDataManagerFactory.getForProfile(mProfile);
-        mIban = personalDataManager.getIban(mGUID);
         mDoneButton = (Button) v.findViewById(R.id.button_primary);
         mNickname = (EditText) v.findViewById(R.id.iban_nickname_edit);
         mNicknameLabel = (TextInputLayout) v.findViewById(R.id.iban_nickname_label);
@@ -85,11 +74,6 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        // TODO(b/309163678): Update this once the AutofillIbanEditor class is added.
-    }
-
-    @Override
     public void afterTextChanged(Editable s) {
         updateSaveButtonEnabled();
     }
@@ -109,7 +93,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
                                 : IbanRecordType.LOCAL_IBAN,
                         /* value= */ mValue.getText().toString());
         PersonalDataManager personalDataManager =
-                PersonalDataManagerFactory.getForProfile(mProfile);
+                PersonalDataManagerFactory.getForProfile(getProfile());
         String guid = personalDataManager.addOrUpdateLocalIban(iban);
         // Return true if the GUID is non-empty (successful operation), and false if the GUID is
         // empty (unsuccessful).
@@ -118,7 +102,9 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
 
     @Override
     protected void deleteEntry() {
-        // TODO(b/309163615): User can delete existing IBANs from settings page.
+        if (mGUID != null) {
+            PersonalDataManagerFactory.getForProfile(getProfile()).deleteIban(mGUID);
+        }
     }
 
     @Override
@@ -149,12 +135,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     private void updateSaveButtonEnabled() {
         // Enable save button if IBAN value is valid.
         mDoneButton.setEnabled(
-                PersonalDataManagerFactory.getForProfile(mProfile)
+                PersonalDataManagerFactory.getForProfile(getProfile())
                         .isValidIban(mValue.getText().toString()));
-    }
-
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
     }
 }

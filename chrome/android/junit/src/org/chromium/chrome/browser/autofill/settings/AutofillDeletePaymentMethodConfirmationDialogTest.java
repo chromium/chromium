@@ -90,7 +90,10 @@ public class AutofillDeletePaymentMethodConfirmationDialogTest {
         public static Collection<Object[]> data() {
             return Arrays.asList(
                     new Object[][] {
-                        {R.string.autofill_credit_card_delete_confirmation_title}
+                        {
+                            R.string.autofill_credit_card_delete_confirmation_title,
+                            R.string.autofill_iban_delete_confirmation_title
+                        }
                     });
         }
 
