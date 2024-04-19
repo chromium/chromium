@@ -145,6 +145,7 @@ class PlatformKeysService : public KeyedService {
   virtual void GenerateSymKey(chromeos::platform_keys::TokenId token_id,
                               std::vector<uint8_t> key_id,
                               int key_size,
+                              chromeos::platform_keys::SymKeyType key_type,
                               GenerateKeyCallback callback) = 0;
 
   // Generates a RSA key pair with |modulus_length_bits|. |token_id| specifies
@@ -389,6 +390,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void GenerateSymKey(chromeos::platform_keys::TokenId token_id,
                       std::vector<uint8_t> key_id,
                       int key_size,
+                      chromeos::platform_keys::SymKeyType key_type,
                       GenerateKeyCallback callback) override;
   void GenerateRSAKey(chromeos::platform_keys::TokenId token_id,
                       unsigned int modulus_length_bits,

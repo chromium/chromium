@@ -73,6 +73,7 @@ using ::chromeos::platform_keys::KeyAttributeType;
 using ::chromeos::platform_keys::KeyType;
 using ::chromeos::platform_keys::OperationType;
 using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::SymKeyType;
 using ::chromeos::platform_keys::TokenId;
 using ::content::BrowserContext;
 using ::content::BrowserThread;
@@ -81,8 +82,7 @@ using ::content::BrowserThread;
 // generation.
 const unsigned int kMaxRSAModulusLengthBits = 2048;
 
-// Default encryption constants for operations with symmetric keys.
-const unsigned long kDefaultSymKeyGenType = CKM_AES_KEY_GEN;
+// Default signature length for signing with symmetric keys.
 const int kDefaultSymSignatureLength = 32;
 
 // Returns a vector containing bytes from `value` or an empty vector if `value`
@@ -173,45 +173,6 @@ void GetCertDatabase(std::optional<TokenId> token_id,
                                               std::move(callback), state));
 }
 
-class GenerateSymKeyState : public NSSOperationState {
- public:
-  GenerateSymKeyState(ServiceWeakPtr weak_ptr,
-                      std::vector<uint8_t> key_id,
-                      int key_size,
-                      GenerateKeyCallback callback)
-      : NSSOperationState(weak_ptr),
-        key_id_(std::move(key_id)),
-        key_size_(key_size),
-        callback_(std::move(callback)) {}
-
-  ~GenerateSymKeyState() override = default;
-
-  void OnError(const base::Location& from, Status status) override {
-    CallBack(from, key_id_, status);
-  }
-
-  void OnSuccess(const base::Location& from) {
-    CallBack(from, key_id_, Status::kSuccess);
-  }
-
-  const std::vector<uint8_t> key_id_;
-  const int key_size_;
-
- private:
-  void CallBack(const base::Location& from,
-                std::vector<uint8_t> key_id,
-                Status status) {
-    auto bound_callback =
-        base::BindOnce(std::move(callback_), std::move(key_id), status);
-    content::GetUIThreadTaskRunner({})->PostTask(
-        from, base::BindOnce(&NSSOperationState::RunCallback,
-                             std::move(bound_callback), service_weak_ptr_));
-  }
-
-  // Must be called on origin thread, therefore use CallBack().
-  GenerateKeyCallback callback_;
-};
-
 class GenerateRSAKeyState : public NSSOperationState {
  public:
   GenerateRSAKeyState(ServiceWeakPtr weak_ptr,
@@ -301,6 +262,52 @@ class GenerateECKeyState : public NSSOperationState {
         from, base::BindOnce(&RunCallBackIfCallableElseRunCleanUp,
                              std::move(success_callback),
                              std::move(cleanup_callback)));
+  }
+
+  // Must be called on origin thread, therefore use CallBack().
+  GenerateKeyCallback callback_;
+};
+
+class GenerateSymKeyState : public NSSOperationState {
+ public:
+  GenerateSymKeyState(ServiceWeakPtr weak_ptr,
+                      std::vector<uint8_t> key_id,
+                      int key_size,
+                      SymKeyType key_type,
+                      GenerateKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        key_id_(std::move(key_id)),
+        key_size_(key_size),
+        key_type_(key_type),
+        callback_(std::move(callback)) {}
+
+  ~GenerateSymKeyState() override = default;
+
+  void OnError(const base::Location& from, Status status) override {
+    CallBack(from, key_id_, status);
+  }
+
+  void OnSuccess(const base::Location& from) {
+    CallBack(from, key_id_, Status::kSuccess);
+  }
+
+  // This id is assigned to the newly created symmetric key.
+  const std::vector<uint8_t> key_id_;
+
+  const int key_size_;
+
+  // Type of the key that determines which operations are allowed for it.
+  const SymKeyType key_type_;
+
+ private:
+  void CallBack(const base::Location& from,
+                std::vector<uint8_t> key_id,
+                Status status) {
+    auto bound_callback =
+        base::BindOnce(std::move(callback_), std::move(key_id), status);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        from, base::BindOnce(&NSSOperationState::RunCallback,
+                             std::move(bound_callback), service_weak_ptr_));
   }
 
   // Must be called on origin thread, therefore use CallBack().
@@ -690,6 +697,7 @@ class RemoveSymKeyState : public NSSOperationState {
     CallBack(from, Status::kSuccess);
   }
 
+  // Symmetric key id.
   const std::vector<uint8_t> key_id_;
 
  private:
@@ -907,10 +915,24 @@ crypto::ScopedSECKEYPrivateKey GetPrivateKey(
 crypto::ScopedPK11SymKey GetSymKey(
     std::vector<uint8_t> key_id,
     PK11SlotInfo* slot,
-    CK_MECHANISM_TYPE type = kDefaultSymKeyGenType) {
+    std::optional<SymKeyType> key_type) {
   SECItem sec_key_id{siUTF8String, key_id.data(),
                      static_cast<unsigned int>(key_id.size())};
-  return crypto::ScopedPK11SymKey(PK11_FindFixedKey(slot, type, &sec_key_id,
+  CK_MECHANISM_TYPE mechanism_type;
+  if (!key_type) {
+    mechanism_type = CKM_GENERIC_SECRET_KEY_GEN;
+  } else {
+    switch (*key_type) {
+      case SymKeyType::kAesCbc:
+        mechanism_type = CKM_AES_CBC_PAD;
+        break;
+      case SymKeyType::kHmac:
+        mechanism_type = CKM_SHA256_HMAC;
+        break;
+    }
+  }
+  return crypto::ScopedPK11SymKey(PK11_FindFixedKey(slot, mechanism_type,
+                                                    &sec_key_id,
                                                     /*wincx=*/nullptr));
 }
 
@@ -932,12 +954,24 @@ void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
   std::vector<uint8_t> key_id = state->key_id_;
   SECItem sec_key_id{siUTF8String, key_id.data(),
                      static_cast<unsigned int>(key_id.size())};
-  CK_FLAGS op_flags = CKF_SIGN | CKF_ENCRYPT | CKF_DECRYPT;
+  CK_FLAGS op_flags;
+  CK_MECHANISM_TYPE key_type;
+
+  switch (state->key_type_) {
+    case SymKeyType::kAesCbc:
+      op_flags = CKF_ENCRYPT | CKF_DECRYPT;
+      key_type = CKM_AES_KEY_GEN;
+      break;
+    case SymKeyType::kHmac:
+      op_flags = CKF_SIGN;
+      key_type = CKM_SHA256_HMAC;
+      break;
+  }
 
   if (!PK11_TokenKeyGenWithFlags(
-          state->slot_.get(), kDefaultSymKeyGenType, /*param=*/nullptr,
-          state->key_size_, &sec_key_id, op_flags,
-          /*attrFlags=*/PK11_ATTR_TOKEN | PK11_ATTR_PRIVATE,
+          state->slot_.get(), key_type,
+          /*param=*/nullptr, state->key_size_, &sec_key_id, op_flags,
+          /*attr_flags=*/PK11_ATTR_TOKEN | PK11_ATTR_PRIVATE,
           /*wincx=*/nullptr)) {
     LOG(ERROR) << "Couldn't generate symmetric key.";
     state->OnError(FROM_HERE, Status::kErrorInternal);
@@ -1088,7 +1122,8 @@ void EncryptDecryptAESOnWorkerThread(
     return;
   }
 
-  crypto::ScopedPK11SymKey key = GetSymKey(state->key_id_, state->slot_.get());
+  crypto::ScopedPK11SymKey key =
+      GetSymKey(state->key_id_, state->slot_.get(), SymKeyType::kAesCbc);
   if (!key) {
     LOG(ERROR) << "Couldn't find the symmetric key.";
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1101,24 +1136,27 @@ void EncryptDecryptAESOnWorkerThread(
   std::vector<uint8_t> result(state->input_data_.size() + 16);
   unsigned int result_len = 0;
 
-  if (state->operation_type_ == OperationType::kEncrypt) {
-    if (PK11_Encrypt(key.get(), CKM_AES_CBC_PAD, &sec_iv, result.data(),
-                     &result_len, result.size(), state->input_data_.data(),
-                     state->input_data_.size()) != SECSuccess) {
-      LOG(ERROR) << "Encryption failed.";
-      state->OnError(FROM_HERE, Status::kErrorInternal);
-      return;
-    }
-  } else if (state->operation_type_ == OperationType::kDecrypt) {
-    if (PK11_Decrypt(key.get(), CKM_AES_CBC_PAD, &sec_iv, result.data(),
-                     &result_len, result.size(), state->input_data_.data(),
-                     state->input_data_.size()) != SECSuccess) {
-      LOG(ERROR) << "Decryption failed.";
-      state->OnError(FROM_HERE, Status::kErrorInternal);
-      return;
-    }
-  } else {
-    NOTREACHED();
+  switch (state->operation_type_) {
+    case OperationType::kEncrypt:
+      if (PK11_Encrypt(key.get(), PK11_GetMechanism(key.get()), &sec_iv,
+                       result.data(), &result_len, result.size(),
+                       state->input_data_.data(),
+                       state->input_data_.size()) != SECSuccess) {
+        LOG(ERROR) << "Encryption failed.";
+        state->OnError(FROM_HERE, Status::kErrorInternal);
+        return;
+      }
+      break;
+    case OperationType::kDecrypt:
+      if (PK11_Decrypt(key.get(), PK11_GetMechanism(key.get()), &sec_iv,
+                       result.data(), &result_len, result.size(),
+                       state->input_data_.data(),
+                       state->input_data_.size()) != SECSuccess) {
+        LOG(ERROR) << "Decryption failed.";
+        state->OnError(FROM_HERE, Status::kErrorInternal);
+        return;
+      }
+      break;
   }
 
   result.resize(result_len);
@@ -1335,7 +1373,8 @@ void SignSymOnWorkerThread(std::unique_ptr<SignSymState> state) {
     return;
   }
 
-  crypto::ScopedPK11SymKey key = GetSymKey(state->key_id_, state->slot_.get());
+  crypto::ScopedPK11SymKey key =
+      GetSymKey(state->key_id_, state->slot_.get(), SymKeyType::kHmac);
   if (!key) {
     LOG(ERROR) << "Couldn't find the symmetric key.";
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1349,7 +1388,7 @@ void SignSymOnWorkerThread(std::unique_ptr<SignSymState> state) {
   SECItem sec_data{siUTF8String, data.data(),
                    static_cast<unsigned int>(data.size())};
 
-  if (PK11_SignWithSymKey(key.get(), CKM_SHA256_HMAC,
+  if (PK11_SignWithSymKey(key.get(), PK11_GetMechanism(key.get()),
                           /*param=*/nullptr, &sec_signature,
                           &sec_data) != SECSuccess) {
     LOG(ERROR) << "Signing failed.";
@@ -1685,7 +1724,8 @@ void RemoveSymKeyOnWorkerThread(std::unique_ptr<RemoveSymKeyState> state) {
     return;
   }
 
-  crypto::ScopedPK11SymKey key = GetSymKey(state->key_id_, state->slot_.get());
+  crypto::ScopedPK11SymKey key =
+      GetSymKey(state->key_id_, state->slot_.get(), std::nullopt);
   if (!key) {
     LOG(ERROR) << "Couldn't find the symmetric key.";
     state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
@@ -1928,10 +1968,11 @@ void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
 void PlatformKeysServiceImpl::GenerateSymKey(TokenId token_id,
                                              std::vector<uint8_t> key_id,
                                              int key_size,
+                                             SymKeyType key_type,
                                              GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<GenerateSymKeyState>(
-      weak_factory_.GetWeakPtr(), std::move(key_id), key_size,
+      weak_factory_.GetWeakPtr(), std::move(key_id), key_size, key_type,
       std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
