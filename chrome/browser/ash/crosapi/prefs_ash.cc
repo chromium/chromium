@@ -324,6 +324,10 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       return State{local_state_, &local_state_registrar_,
                    AshPrefSource::kNormal,
                    prefs::kDnsOverHttpsEffectiveTemplatesChromeOS};
+    case mojom::PrefPath::kOverscrollHistoryNavigationEnabled:
+      return State{local_state_, &local_state_registrar_,
+                   AshPrefSource::kNormal,
+                   prefs::kOverscrollHistoryNavigationEnabled};
     case mojom::PrefPath::kDockedMagnifierEnabled:
     case mojom::PrefPath::kAccessibilityAutoclickEnabled:
     case mojom::PrefPath::kAccessibilityCaretHighlightEnabled:

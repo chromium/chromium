@@ -135,6 +135,8 @@ enum PrefPath {
   [MinVersion=18] kAccessibilityReducedAnimationsEnabled = 46,
   // M125: ash::prefs::kMahiEnabled
   [MinVersion=19] kMahiEnabled = 47,
+  // M126: prefs::kOverscrollHistoryNavigationEnabled
+  [MinVersion=20] kOverscrollHistoryNavigationEnabled = 48,
 };
 
 // Information about who or what is controlling a particular pref. This is used

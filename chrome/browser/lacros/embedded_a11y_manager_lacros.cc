@@ -118,6 +118,13 @@ void EmbeddedA11yManagerLacros::Init() {
           &EmbeddedA11yManagerLacros::OnReducedAnimationsEnabledChanged,
           weak_ptr_factory_.GetWeakPtr()));
 
+  overscroll_history_navigation_enabled_observer_ =
+      std::make_unique<CrosapiPrefObserver>(
+          crosapi::mojom::PrefPath::kOverscrollHistoryNavigationEnabled,
+          base::BindRepeating(&EmbeddedA11yManagerLacros::
+                                  OnOverscrollHistoryNavigationEnabledChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
+
   EmbeddedA11yExtensionLoader::GetInstance()->Init();
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -202,6 +209,14 @@ void EmbeddedA11yManagerLacros::UpdatePdfOcrEnabledOnProfile(Profile* profile) {
   }
 }
 
+void EmbeddedA11yManagerLacros::UpdateOverscrollHistoryNavigationEnabled() {
+  if (overscroll_history_navigation_enabled_.has_value()) {
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOverscrollHistoryNavigationEnabled,
+        overscroll_history_navigation_enabled_.value());
+  }
+}
+
 void EmbeddedA11yManagerLacros::OnChromeVoxEnabledChanged(base::Value value) {
   CHECK(value.is_bool());
   chromevox_enabled_ = value.GetBool();
@@ -248,6 +263,13 @@ void EmbeddedA11yManagerLacros::OnReducedAnimationsEnabledChanged(
     base::Value value) {
   CHECK(value.is_bool());
   gfx::Animation::SetPrefersReducedMotionForA11y(value.GetBool());
+}
+
+void EmbeddedA11yManagerLacros::OnOverscrollHistoryNavigationEnabledChanged(
+    base::Value value) {
+  CHECK(value.is_bool());
+  overscroll_history_navigation_enabled_ = value.GetBool();
+  UpdateOverscrollHistoryNavigationEnabled();
 }
 
 void EmbeddedA11yManagerLacros::OnFocusChangedInPage(
