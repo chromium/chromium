@@ -14,12 +14,12 @@ import java.util.List;
 /** Base class for data providers for the tab resumption module. */
 public abstract class TabResumptionDataProvider {
 
-    /** Strength of fetchSuggestions() results. */
+    /** Strength of fetchSuggestions() results. Inequality comparison is allowed. */
     @IntDef({ResultStrength.TENTATIVE, ResultStrength.STABLE, ResultStrength.FORCED_NULL})
     @interface ResultStrength {
-        // The result is tentative: Can only happen once, stable or forced-empty results may follow.
+        // The result is tentative: Tentative, stable, or forced-null results may follow.
         int TENTATIVE = 0;
-        // The result is stable: Stable or forced-empty results may follow.
+        // The result is stable: Stable or forced-null results may follow.
         int STABLE = 1;
         // Force results to null, e.g., due to setting changes (e.g., user logging out) that make
         // data unavailable.
@@ -49,7 +49,8 @@ public abstract class TabResumptionDataProvider {
      * suggestions are filtered and sorted, with the most relevant one appearing first.
      *
      * @param suggestionsCallback Callback to pass suggestions, whose values can be null. The
-     *     sequence of `strength` returned must match "(TENTATIVE)? (STABLE)* (FORCED_NULL)*".
+     *     sequence of `strength` must be monotonically increasing across multiple calls, i.e., must
+     *     match "(TENTATIVE)* (STABLE)* (FORCED_NULL)*".
      */
     public abstract void fetchSuggestions(Callback<SuggestionsResult> suggestionsCallback);
 

@@ -82,7 +82,7 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
             return;
         }
 
-        if (mStrength == ResultStrength.TENTATIVE) {
+        if (mStrength == ResultStrength.TENTATIVE && mTentativeSuggestionTime == 0) {
             mTentativeSuggestionTime = mDataSource.getCurrentTimeMs();
         }
         List<SuggestionEntry> suggestions = mDataSource.getSuggestions();

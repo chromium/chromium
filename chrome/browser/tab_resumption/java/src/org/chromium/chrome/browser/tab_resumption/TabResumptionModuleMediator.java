@@ -28,6 +28,55 @@ import java.util.concurrent.TimeUnit;
 
 /** The Mediator for the tab resumption module. */
 public class TabResumptionModuleMediator {
+
+    /** Helper to get module show / hide status, and notify ModuleDelegate when needed. */
+    private class ShowHideHelper {
+        // W.r.t. Magic Stack the module has 3 states: {INIT, SHOWN, GONE}.
+        //   * INIT: The initial state where the module is not shown, but has the potential to.
+        //   * SHOWN: The module is shown.
+        //   * GONE: The terminal state where the module is hidden *and remains so*.
+        // Transitions and how to trigger them via `mModuleDelegate`:
+        //   * INIT -> SHOWN: Call onDataReady() to show the module.
+        //   * INIT -> GONE: Call onDataFetchFailed() to hide the module. This is also triggered
+        //     by Magic Stack timeout if the module stays in INIT too long.
+        //   * SHOWN -> GONE: Call removeModule() to hide the already-shown module.
+        //
+        // The following variables are used to represent the state. Encoding:
+        //   INIT: mHasNotifiedShow = false, mHasNotifiedHide = false.
+        //   SHOWN: mHasNotifiedShow = true, mHasNotifiedHide = false.
+        //   GONE: mHasNotifiedShow = (any), mHasNotifiedHide = true.
+        boolean mHasNotifiedShow;
+        boolean mHasNotifiedHide;
+
+        /** Returns the current show / hide status (true = should show). */
+        boolean shouldShow() {
+            return mModuleShowConfig != null;
+        }
+
+        /**
+         * Updates the state machine and if needed, makes "best effort" ModuleDelegate calls so the
+         * module's shows / hide state reflects the logical show / hide status, while satisfying
+         * Magic Stack constraints (e.g., when a module hides it can no longer show).
+         */
+        void maybeNotifyModuleDelegate() {
+            if (mHasNotifiedHide) return; // Reached terminal state GONE.
+
+            if (shouldShow()) {
+                if (!mHasNotifiedShow) { // INIT -> SHOWN.
+                    mModuleDelegate.onDataReady(getModuleType(), mModel);
+                    mHasNotifiedShow = true;
+                }
+            } else {
+                if (mHasNotifiedShow) { // SHOWN -> GONE.
+                    mModuleDelegate.removeModule(getModuleType());
+                } else { // INIT -> GONE.
+                    mModuleDelegate.onDataFetchFailed(getModuleType());
+                }
+                mHasNotifiedHide = true;
+            }
+        }
+    }
+
     private static final int MAX_TILES_NUMBER = 2;
 
     // If TENTATIVE suggestions were received, and the following duration has elapsed without
@@ -38,18 +87,18 @@ public class TabResumptionModuleMediator {
     private final ModuleDelegate mModuleDelegate;
     private final PropertyModel mModel;
 
-    private final Handler mHandler = new Handler();
-
     protected final TabResumptionDataProvider mDataProvider;
     protected final UrlImageProvider mUrlImageProvider;
     protected final TabListFaviconProvider mFaviconProvider;
     protected final ThumbnailProvider mThumbnailProvider;
     protected final SuggestionClickCallbacks mSuggestionClickCallbacks;
+    private Handler mHandler;
 
     // Configuration of the tab resumption module if shown, or null if hidden. This is used for
-    // logging and for checking shown / hidden status.
+    // logging and for ShowHideHelper to check shown / hidden status.
     private @Nullable @ModuleShowConfig Integer mModuleShowConfig;
 
+    private final ShowHideHelper mShowHideHelper;
     private long mFirstLoadTime;
     private boolean mIsStable;
 
@@ -71,6 +120,7 @@ public class TabResumptionModuleMediator {
         mThumbnailProvider = thumbnailProvider;
         mSuggestionClickCallbacks = suggestionClickCallbacks;
         mModuleShowConfig = null;
+        mShowHideHelper = new ShowHideHelper();
 
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
         mModel.set(TabResumptionModuleProperties.FAVICON_PROVIDER, mFaviconProvider);
@@ -79,7 +129,10 @@ public class TabResumptionModuleMediator {
     }
 
     void destroy() {
-        mHandler.removeCallbacksAndMessages(null);
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
         // Activates if STABLE and FORCED_NULL results isn't seen, and timeout has triggered yet.
         // This includes the case where TENTATIVE tiles are quickly clicked by a user.
         ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, mModuleShowConfig);
@@ -100,17 +153,9 @@ public class TabResumptionModuleMediator {
         // callback which does the following:
         // * Compute SuggestionBundle, which can be "something" or "nothing".
         // * Hide the module if "nothing"; render and show the module if "something".
-        // * Invoke ModuleDelegate callbacks to communicate with Magic Stack.
-        //   * The module has 3 states: {INIT, SHOWN, GONE}.
-        //     * INIT: The initial state where the module is not shown, but has the potential to.
-        //     * SHOWN: The module is shown.
-        //     * GONE: The terminal state where the module is hidden *and remains so*.
-        //   * Transitions and how to trigger them:
-        //     * INIT -> SHOWN: Call onDataReady() to show the module.
-        //     * INIT -> GONE: Call onDataFetchFailed() to hide the module. This is also triggered
-        //       by Magic Stack timeout if the module stays in INIT too long.
-        //     * SHOWN -> GONE: Call removeModule() to hide the already-shown module.
-        // * Log the "stable" module state. The challenge is to determine when
+        // * Invoke ModuleDelegate callbacks to communicate with Magic Stack. This is largely
+        //   handled by `mShowHideHelper`. Refer to {INIT, SHOWN, GONE} states.
+        // * Log the "stable" module state. The challenge is to determine when this happens.
         //
         // `mDataProvider` can take noticeable time to get desired data (e.g., from Sync). Idly
         // waiting for data is undesirable since:
@@ -154,7 +199,7 @@ public class TabResumptionModuleMediator {
         // is handled by FORCED_NULL data.
 
         // Skip work if the module instance is irreversibly hidden.
-        if (mIsStable && mModuleShowConfig == null) {
+        if (mIsStable && !mShowHideHelper.shouldShow()) {
             return;
         }
 
@@ -255,46 +300,44 @@ public class TabResumptionModuleMediator {
                         ? makeSuggestionBundle(suggestions)
                         : null;
         @ModuleShowConfig Integer prevModuleShowConfig = mModuleShowConfig;
+        // This directly changes `mShowHideHelper` results.
         mModuleShowConfig = TabResumptionModuleMetricsUtils.computeModuleShowConfig(bundle);
-        boolean prevIsShown = (prevModuleShowConfig != null);
-        boolean isShown = (mModuleShowConfig != null);
 
         @ResultStrength int strength = result.strength;
         if (strength == ResultStrength.TENTATIVE) {
             setPropertiesAndTriggerRender(bundle);
-            // Start timeout to transition to STABLE and log.
-            mHandler.postDelayed(
-                    () -> {
-                        // Activates if STABLE is never encountered. In this case TENTATIVE
-                        // suggestions is considered stable.
-                        ensureStabilityAndLogMetrics(
-                                /* recordStabilityDelay= */ false, mModuleShowConfig);
-                    },
-                    STABILITY_TIMEOUT_MS);
+            // On first call, start timeout to transition to STABLE and log.
+            if (mHandler == null) {
+                mHandler = new Handler();
+                mHandler.postDelayed(
+                        () -> {
+                            // Activates if the only strength seen is TENTATIVE. In this case,
+                            // TENTATIVE suggestions is considered stable.
+                            ensureStabilityAndLogMetrics(
+                                    /* recordStabilityDelay= */ false, mModuleShowConfig);
+                            // Multiple TENTATIVE suggestions might have repeated attempts to show /
+                            // hide the module. Finalize if needed.
+                            mShowHideHelper.maybeNotifyModuleDelegate();
+                        },
+                        STABILITY_TIMEOUT_MS);
+            }
+            // Hiding is not permanent while TENTATIVE, so only notify to show.
+            if (mShowHideHelper.shouldShow()) {
+                mShowHideHelper.maybeNotifyModuleDelegate();
+            }
 
         } else if (strength == ResultStrength.STABLE) {
-            // Confirmed hidden: Don't show and enter terminal state.
-            if (!prevIsShown && !isShown) {
-                mModuleDelegate.onDataFetchFailed(getModuleType());
-            }
+            mShowHideHelper.maybeNotifyModuleDelegate();
             setPropertiesAndTriggerRender(bundle);
             ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ true, mModuleShowConfig);
 
         } else if (strength == ResultStrength.FORCED_NULL) {
-            assert !isShown;
-            // Activates if STABLE was never encountered. In this case TENTATIVE suggestions are
+            assert !mShowHideHelper.shouldShow();
+            mShowHideHelper.maybeNotifyModuleDelegate();
+            // Activates if STABLE was never encountered. In this case, TENTATIVE suggestions are
             // considered stable (therefore log `prevModuleShowConfig`).
             setPropertiesAndTriggerRender(bundle);
             ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, prevModuleShowConfig);
-        }
-
-        // If module show / hide status changes.
-        if (prevIsShown != isShown) {
-            if (isShown) { // Transition from hidden to shown: Explicitly show.
-                mModuleDelegate.onDataReady(getModuleType(), mModel);
-            } else { // Transition from shown to hidden: Remove and enter terminal state.
-                mModuleDelegate.removeModule(getModuleType());
-            }
         }
     }
 }
