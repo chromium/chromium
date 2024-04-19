@@ -31,6 +31,13 @@ enum WifiDirectOperationResult {
   kUnknownFailure,
 };
 
+struct WifiP2PCapabilities {
+  // Boolean indicating if the device is ready to create a P2P group.
+  bool is_owner_ready;
+  // Boolean indicating if the device is ready to connect to a P2P group.
+  bool is_client_ready;
+};
+
 // WifiDirectManager provides Wifi direct management methods. An instance of
 // this interface is owned in the browser process in Ash.
 interface WifiDirectManager {
@@ -62,6 +69,12 @@ interface WifiDirectManager {
   ConnectToWifiDirectGroup(string ssid, string password, uint32? frequency) =>
     (WifiDirectOperationResult result,
      pending_remote<WifiDirectConnection>? wifi_direct_connection);
+
+  // Fetches the current P2P capabilities of the devices, namely is the device
+  // ready to become a group owner and is the device ready to connect to an
+  // existing P2P group. The structure WifiP2PCapabilities will have two boolean
+  // flags indicating group and client readiness.
+  GetWifiP2PCapabilities() => (WifiP2PCapabilities capabilities);
 };
 
 // WifiDirectConnection represents an active Wifi direct group that was created

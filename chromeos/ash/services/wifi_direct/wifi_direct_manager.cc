@@ -82,6 +82,18 @@ void WifiDirectManager::ConnectToWifiDirectGroup(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void WifiDirectManager::GetWifiP2PCapabilities(
+    WifiDirectManager::GetWifiP2PCapabilitiesCallback callback) {
+  auto result = mojom::WifiP2PCapabilities::New();
+
+  result->is_owner_ready =
+      WifiP2PController::Get()->GetP2PCapabilities().is_owner_ready;
+  result->is_client_ready =
+      WifiP2PController::Get()->GetP2PCapabilities().is_client_ready;
+
+  std::move(callback).Run(std::move(result));
+}
+
 void WifiDirectManager::OnCreateOrConnectWifiDirectGroup(
     CreateWifiDirectGroupCallback callback,
     WifiP2PController::OperationResult result,

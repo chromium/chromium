@@ -19,7 +19,8 @@
 
 namespace ash::wifi_direct {
 
-using wifi_direct::mojom::WifiDirectOperationResult;
+using mojom::WifiDirectOperationResult;
+using mojom::WifiP2PCapabilitiesPtr;
 
 class WifiDirectManagerTest : public testing::Test {
  public:
@@ -69,6 +70,14 @@ class WifiDirectManagerTest : public testing::Test {
         ssid, passphrase, frequency, &test_result.result,
         &test_result.wifi_direct_connection);
     return test_result;
+  }
+
+  WifiP2PCapabilitiesPtr GetWifiP2PCapabilities() {
+    auto wifi_direct_manager_async_waiter =
+        mojom::WifiDirectManagerAsyncWaiter(wifi_direct_manager_.get());
+    WifiP2PCapabilitiesPtr result;
+    wifi_direct_manager_async_waiter.GetWifiP2PCapabilities(&result);
+    return result;
   }
 
   uint32_t GetFrequency(
@@ -154,6 +163,29 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupFailure_InvalidResult) {
   EXPECT_EQ(result_arguments.result,
             WifiDirectOperationResult::kInvalidResultCode);
   EXPECT_FALSE(result_arguments.wifi_direct_connection.is_valid());
+}
+
+TEST_F(WifiDirectManagerTest, GetWifiP2PCapabilities) {
+  auto capabilities_dict =
+      base::Value::Dict().Set(shill::kP2PCapabilitiesGroupReadinessProperty,
+                              shill::kP2PCapabilitiesGroupReadinessReady);
+  capabilities_dict.Set(shill::kP2PCapabilitiesClientReadinessProperty,
+                        shill::kP2PCapabilitiesClientReadinessReady);
+  ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
+      shill::kP2PCapabilitiesProperty, base::Value(capabilities_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetWifiP2PCapabilities()->is_client_ready);
+  EXPECT_TRUE(GetWifiP2PCapabilities()->is_owner_ready);
+
+  capabilities_dict.Set(shill::kP2PCapabilitiesClientReadinessProperty,
+                        shill::kP2PCapabilitiesClientReadinessNotReady);
+  ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
+      shill::kP2PCapabilitiesProperty, base::Value(capabilities_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(GetWifiP2PCapabilities()->is_client_ready);
+  EXPECT_TRUE(GetWifiP2PCapabilities()->is_owner_ready);
 }
 
 }  // namespace ash::wifi_direct

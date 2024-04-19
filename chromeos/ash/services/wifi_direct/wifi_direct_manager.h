@@ -48,6 +48,8 @@ class WifiDirectManager : public mojom::WifiDirectManager {
       std::optional<uint32_t> frequency,
       ConnectToWifiDirectGroupCallback callback) override;
 
+  void GetWifiP2PCapabilities(GetWifiP2PCapabilitiesCallback callback) override;
+
   size_t GetConnectionsCountForTesting() const;
   void FlushForTesting();
 
