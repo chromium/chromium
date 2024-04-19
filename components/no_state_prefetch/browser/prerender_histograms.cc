@@ -7,14 +7,11 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/format_macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_utils.h"
-#include "net/http/http_cache.h"
 
 namespace prerender {
 
@@ -26,8 +23,6 @@ std::string GetHistogramName(Origin origin, const std::string& name) {
 }
 
 }  // namespace
-
-PrerenderHistograms::PrerenderHistograms() {}
 
 std::string PrerenderHistograms::GetHistogramPrefix(Origin origin) {
   switch (origin) {
