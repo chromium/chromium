@@ -2808,6 +2808,8 @@ static_library("browser") {
       "android/contextualsearch/unhandled_tap_notifier_impl.h",
       "android/contextualsearch/unhandled_tap_web_contents_observer.cc",
       "android/contextualsearch/unhandled_tap_web_contents_observer.h",
+      "android/cookies/cookies_fetcher_restore_util.cc",
+      "android/cookies/cookies_fetcher_restore_util.h",
       "android/cookies/cookies_fetcher_util.cc",
       "android/customtabs/chrome_origin_verifier.cc",
       "android/customtabs/chrome_origin_verifier.h",

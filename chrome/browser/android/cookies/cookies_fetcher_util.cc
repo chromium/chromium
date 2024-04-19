@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/android/cookies/cookies_fetcher_restore_util.h"
 #include "chrome/browser/profiles/android/jni_headers/CookiesFetcher_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -21,16 +22,6 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
-
-// Returns the cookie service at the client end of the mojo pipe.
-network::mojom::CookieManager* GetCookieServiceClient() {
-  // Since restoring Incognito CCT session from cookies is not supported, it is
-  // safe to use the primary OTR profile here.
-  return ProfileManager::GetPrimaryUserProfile()
-      ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-      ->GetDefaultStoragePartition()
-      ->GetCookieManagerForBrowserProcess();
-}
 
 // Passes the fetched |cookies| to the application so that can be saved in a
 // file.
@@ -83,14 +74,11 @@ void JNI_CookiesFetcher_PersistCookies(JNIEnv* env) {
     return;
   }
 
-  GetCookieServiceClient()->GetAllCookies(
+  cookie_fetcher_restore_util::GetCookieServiceClient()->GetAllCookies(
       base::BindOnce(&OnCookiesFetchFinished));
 }
 
-// Creates and sets a canonical cookie for the off-the-record session (i.e.
-// incognito mode). It is a no-op for the standard session. Typically associated
-// with the #onResume of Android's activty lifecycle.
-static void JNI_CookiesFetcher_RestoreCookies(
+void JNI_CookiesFetcher_RestoreCookies(
     JNIEnv* env,
     const JavaParamRef<jstring>& name,
     const JavaParamRef<jstring>& value,
@@ -107,62 +95,8 @@ static void JNI_CookiesFetcher_RestoreCookies(
     const JavaParamRef<jstring>& partition_key,
     jint source_scheme,
     jint source_port) {
-  if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile())
-    return;  // Don't create it. There is nothing to do.
-
-  std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
-  std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
-
-  std::string top_level_site =
-      base::android::ConvertJavaStringToUTF8(env, partition_key);
-  if (top_level_site.empty()) {
-    return;
-  }
-  // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-  // implemented update this method utilize the ancestor bit.
-  base::expected<net::CookiePartitionKey, std::string>
-      serialized_cookie_partition_key =
-          net::CookiePartitionKey::FromUntrustedInput(top_level_site);
-  if (!serialized_cookie_partition_key.has_value()) {
-    return;
-  }
-
-  std::unique_ptr<net::CanonicalCookie> cookie =
-      net::CanonicalCookie::FromStorage(
-          base::android::ConvertJavaStringToUTF8(env, name),
-          base::android::ConvertJavaStringToUTF8(env, value), domain_str,
-          path_str,
-          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(creation)),
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::Microseconds(expiration)),
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::Microseconds(last_access)),
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::Microseconds(last_update)),
-          secure, httponly, static_cast<net::CookieSameSite>(same_site),
-          static_cast<net::CookiePriority>(priority),
-          serialized_cookie_partition_key.value(),
-          static_cast<net::CookieSourceScheme>(source_scheme), source_port);
-  // FromStorage() uses a less strict version of IsCanonical(), we need to check
-  // the stricter version as well here. This is safe because this function is
-  // only used for incognito cookies which don't survive Chrome updates and
-  // therefore should never be the "older" less strict variety.
-  if (!cookie || !cookie->IsCanonical())
-    return;
-
-  // Assume HTTPS - since the cookies are being restored from another store,
-  // they have already gone through the strict secure check.
-  //
-  // Similarly, permit samesite cookies to be imported.
-  net::CookieOptions options;
-  options.set_include_httponly();
-  options.set_same_site_cookie_context(
-      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-  options.set_do_not_update_access_time();
-  GetCookieServiceClient()->SetCanonicalCookie(
-      *cookie,
-      net::cookie_util::CookieDomainAndPathToURL(
-          domain_str, path_str,
-          static_cast<net::CookieSourceScheme>(source_scheme)),
-      options, network::mojom::CookieManager::SetCanonicalCookieCallback());
+  cookie_fetcher_restore_util::CookiesFetcherRestoreCookiesImpl(
+      env, name, value, domain, path, creation, expiration, last_access,
+      last_update, secure, httponly, same_site, priority, partition_key,
+      source_scheme, source_port);
 }
