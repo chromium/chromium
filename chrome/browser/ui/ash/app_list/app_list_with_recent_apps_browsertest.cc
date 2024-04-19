@@ -58,8 +58,7 @@ class AppListWithRecentAppBrowserTest
 };
 
 // TODO(crbug.com/335362001): Re-enable this test
-IN_PROC_BROWSER_TEST_F(AppListWithRecentAppBrowserTest,
-                       DISABLED_MouseClickAtRecentApp) {
+IN_PROC_BROWSER_TEST_F(AppListWithRecentAppBrowserTest, MouseClickAtRecentApp) {
   views::View* recent_app = app_list_test_api_.GetRecentAppAt(0);
   ASSERT_TRUE(recent_app);
   event_generator_->MoveMouseTo(recent_app->GetBoundsInScreen().CenterPoint());

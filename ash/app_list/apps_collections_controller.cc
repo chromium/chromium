@@ -57,6 +57,7 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
   }
 
   const auto* const session_controller = Shell::Get()->session_controller();
+
   if (const auto user_type = session_controller->GetUserType();
       user_type != user_manager::UserType::kRegular) {
     return false;
@@ -73,6 +74,12 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
   // NOTE: Currently only supported for the primary user profile. This is a
   // self-imposed restriction.
   if (!session_controller->IsUserPrimary()) {
+    return false;
+  }
+
+  // If the client was destroyed at this point, (i.e. in tests), return early to
+  // avoid segmentation fault.
+  if (!client_) {
     return false;
   }
 
