@@ -843,8 +843,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     this.stopSpeech(PauseActionSource.VOICE_PREVIEW);
 
-    const defaultUtteranceSettings = this.defaultUtteranceSettings();
+    // If there's no previewVoice, return after stopping the current preview
+    if (!event.detail) {
+      this.previewVoicePlaying = null;
+      return;
+    }
 
+    const defaultUtteranceSettings = this.defaultUtteranceSettings();
     // TODO(crbug.com/1474951): Finalize the default voice preview text.
     const utterance = new SpeechSynthesisUtterance(
         loadTimeData.getString('readingModeVoicePreviewText'));

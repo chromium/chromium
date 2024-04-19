@@ -44,6 +44,9 @@ interface VoiceDropdownItem {
   id: string;
 }
 
+// Events emitted from the voice selection menu to the app
+export const PLAY_PREVIEW_EVENT = 'preview-voice';
+
 // This string is not localized and will be in English, even for non-English
 // Natural voices.
 const NATURAL_STRING_IDENTIFIER = '(Natural)';
@@ -157,19 +160,13 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     // line is to make sure that the voice-selection callback is not triggered.
     event.stopImmediatePropagation();
 
-    const button = event.target as HTMLElement;
-    assert(button, 'no target for preview');
-
-    if (!event.model.item.previewPlaying) {
-      const previewVoice = event.model.item.voice;
-      this.dispatchEvent(new CustomEvent('preview-voice', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          previewVoice,
-        },
-      }));
-    }
+    const previewVoice = event.model.item.voice;
+    this.dispatchEvent(new CustomEvent(PLAY_PREVIEW_EVENT, {
+      bubbles: true,
+      composed: true,
+      detail: event.model.item.previewPlaying ? null
+                                              : { previewVoice },
+    }));
   }
 
   private openLanguageMenu_() {
@@ -234,7 +231,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       nameSuffix = ' ' + voiceName;
     }
     if (previewPlaying) {
-      return loadTimeData.getString('pauseLabel') + nameSuffix;
+      return loadTimeData.getString('stopLabel') + nameSuffix;
     } else {
       return loadTimeData.getString('playLabel') + nameSuffix;
     }
@@ -242,7 +239,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
 
   private previewIcon_(previewPlaying: boolean): string {
     if (previewPlaying) {
-      return 'read-anything-20:pause-circle';
+      return 'read-anything-20:stop-circle';
     } else {
       return 'read-anything-20:play-circle';
     }

@@ -7,6 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_m
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
+import {PLAY_PREVIEW_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -272,6 +273,30 @@ suite('VoiceSelectionMenuElement', () => {
       });
     });
 
+    suite('when preview button is clicked', () => {
+      let clickEmitted: boolean;
+
+      setup(() => {
+        clickEmitted = false;
+        document.addEventListener(
+            PLAY_PREVIEW_EVENT, () => clickEmitted = true);
+
+        // Display dropdown menu
+        voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
+        flush();
+      });
+
+      test('it emits play preview event', () => {
+        const previewButton =
+            getDropdownItemForVoice(availableVoices[0]!)
+                .querySelector<CrIconButtonElement>('#preview-icon')!;
+
+        previewButton!.click();
+        flush();
+        assertTrue(clickEmitted);
+      });
+    });
+
     suite('when preview starts playing', () => {
       setup(() => {
         // Display dropdown menu
@@ -292,14 +317,14 @@ suite('VoiceSelectionMenuElement', () => {
             getDropdownItemForVoice(previewVoice)
                 .querySelector<CrIconButtonElement>('#preview-icon')!;
 
-        // The play icon should flip to pause for the voice being previewed
+        // The play icon should flip to stop for the voice being previewed
         assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
         assertEquals(
-            playIconOfPreviewVoice.ironIcon, 'read-anything-20:pause-circle');
+            playIconOfPreviewVoice.ironIcon, 'read-anything-20:stop-circle');
         assertStringContains(
-            playIconOfPreviewVoice.title.toLowerCase(), 'pause');
+            playIconOfPreviewVoice.title.toLowerCase(), 'stop');
         assertStringContains(
-            playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'pause');
+            playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'stop');
         // The play icon should remain unchanged for the other buttons
         assertTrue(isPositionedOnPage(playIconVoice0));
         assertEquals(playIconVoice0.ironIcon, 'read-anything-20:play-circle');

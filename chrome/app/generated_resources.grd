@@ -9105,6 +9105,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_PAUSE_TOOLTIP" desc="Tooltip label for button that pauses speech in Read Aloud." translateable="false">
         Pause (k)
       </message>
+      <message name="IDS_READING_MODE_STOP_SPEECH" desc="Accessibility label for button that stops speech in Read Aloud." translateable="false">
+        Stop
+      </message>
       <message name="IDS_READING_MODE_NAVIGATE_PREVIOUS_SENTENCE" desc="Accessibility label for button that moves speech in Read Aloud to the previous sentence." translateable="false">
         Previous sentence
       </message>
