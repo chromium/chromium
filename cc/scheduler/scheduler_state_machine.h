@@ -64,11 +64,6 @@ class CC_EXPORT SchedulerStateMachine {
       MajorStateV2::BeginImplFrameState
       BeginImplFrameStateToProtozeroEnum(BeginImplFrameState state);
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // TODO(weiliangc): The histogram is used to understanding what type of
-  // deadline mode do we encounter in real world and is set to expire after
-  // 2022. The Enum can be changed after the histogram is removed.
   // The scheduler uses a deadline to wait for main thread updates before
   // submitting a compositor frame. BeginImplFrameDeadlineMode specifies when
   // the deadline should run.

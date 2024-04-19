@@ -30784,14 +30784,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Cast button in the HTML media element"/>
 </enum>
 
-<enum name="RendererSchedulerDeadlineMode">
-  <int value="0" label="None. Synchronous Compositor Only."/>
-  <int value="1" label="Immediate."/>
-  <int value="2" label="Regular."/>
-  <int value="3" label="Late."/>
-  <int value="4" label="Blocked. Synchronous Compositor Only."/>
-</enum>
-
 <enum name="RenderViewContextMenuItem">
   <int value="0" label="IDC_CONTENT_CONTEXT_CUSTOM_FIRST"/>
   <int value="1" label="IDC_EXTENSIONS_CONTEXT_CUSTOM_FIRST"/>

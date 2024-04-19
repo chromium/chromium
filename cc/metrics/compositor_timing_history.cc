@@ -31,9 +31,6 @@ class CompositorTimingHistory::UMAReporter {
   // Latency measurements
   virtual void AddBeginImplFrameLatency(base::TimeDelta delta) = 0;
   virtual void AddDrawDuration(base::TimeDelta duration) = 0;
-
-  virtual void AddImplFrameDeadlineType(
-      CompositorTimingHistory::DeadlineMode deadline_mode) = 0;
 };
 
 namespace {
@@ -332,12 +329,6 @@ class RendererUMAReporter : public CompositorTimingHistory::UMAReporter {
     UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Renderer.DrawDuration",
                                         duration);
   }
-
-  void AddImplFrameDeadlineType(
-      CompositorTimingHistory::DeadlineMode deadline_mode) override {
-    UMA_HISTOGRAM_ENUMERATION("Scheduling.Renderer.DeadlineMode",
-                              deadline_mode);
-  }
 };
 
 class BrowserUMAReporter : public CompositorTimingHistory::UMAReporter {
@@ -357,12 +348,6 @@ class BrowserUMAReporter : public CompositorTimingHistory::UMAReporter {
     UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Browser.DrawDuration",
                                         duration);
   }
-
-  void AddImplFrameDeadlineType(
-      CompositorTimingHistory::DeadlineMode deadline_mode) override {
-    // The browser compositor scheduler is synchronous and only has None (or
-    // Blocked as edges cases) for deadline mode.
-  }
 };
 
 class NullUMAReporter : public CompositorTimingHistory::UMAReporter {
@@ -371,8 +356,6 @@ class NullUMAReporter : public CompositorTimingHistory::UMAReporter {
   void AddDrawInterval(base::TimeDelta interval) override {}
   void AddBeginImplFrameLatency(base::TimeDelta delta) override {}
   void AddDrawDuration(base::TimeDelta duration) override {}
-  void AddImplFrameDeadlineType(
-      CompositorTimingHistory::DeadlineMode deadline_mode) override {}
 };
 
 }  // namespace
@@ -792,11 +775,6 @@ void CompositorTimingHistory::DidDraw() {
   draw_end_time_prev_ = draw_end_time;
 
   draw_start_time_ = base::TimeTicks();
-}
-
-void CompositorTimingHistory::RecordDeadlineMode(DeadlineMode deadline_mode) {
-  if (uma_reporter_)
-    uma_reporter_->AddImplFrameDeadlineType(deadline_mode);
 }
 
 void CompositorTimingHistory::ClearHistory() {

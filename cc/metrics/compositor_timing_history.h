@@ -13,7 +13,6 @@
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/scheduler/scheduler.h"
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -85,10 +84,6 @@ class CC_EXPORT CompositorTimingHistory {
   void WillDraw();
   void DidDraw();
   void WillInvalidateOnImplSide();
-
-  // Record the scheduler's deadline mode and send to UMA.
-  using DeadlineMode = SchedulerStateMachine::BeginImplFrameDeadlineMode;
-  void RecordDeadlineMode(DeadlineMode deadline_mode);
 
   base::TimeTicks begin_main_frame_sent_time() const {
     return begin_main_frame_sent_time_;

@@ -789,7 +789,6 @@ void Scheduler::OnBeginImplFrameDeadline() {
     //     order to wait for more user-input before starting the next commit.
     // * Creating a new OutputSurface will not occur during the deadline in
     //     order to allow the state machine to "settle" first.
-    compositor_timing_history_->RecordDeadlineMode(deadline_mode_);
     if (!settings_.using_synchronous_renderer_compositor) {
       compositor_timing_history_->WillFinishImplFrame(
           state_machine_.needs_redraw());

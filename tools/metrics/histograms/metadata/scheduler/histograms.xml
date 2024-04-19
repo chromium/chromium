@@ -111,17 +111,6 @@ chromium-metrics-reviews@google.com.
   <token key="NamedThread" variants="NamedThread"/>
 </histogram>
 
-<histogram name="Scheduling.Renderer.DeadlineMode"
-    enum="RendererSchedulerDeadlineMode" expires_after="2024-02-04">
-  <owner>weiliangc@chromium.org</owner>
-  <owner>chrome-gpu-metrics@chromium.org</owner>
-  <summary>
-    The type of deadline mode the Renderer's cc::Scheduler is in when the
-    scheduler enters the BeginImplFrame deadline. This emits immediately as the
-    scheduler enters the deadline.
-  </summary>
-</histogram>
-
 <histogram name="Scheduling.Renderer.DrawInterval2" units="microseconds"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
