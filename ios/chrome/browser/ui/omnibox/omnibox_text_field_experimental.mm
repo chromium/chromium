@@ -564,7 +564,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
   if ([self hasAutocompleteText]) {
     [self acceptAutocompleteText];
-  } else if (IsRichAutocompletionEnabled() && [self hasAdditionalText]) {
+  }
+  if (IsRichAutocompletionEnabled() && [self hasAdditionalText]) {
     [self handleUserInitiatedRemovalOfAdditionalText];
   }
 }
