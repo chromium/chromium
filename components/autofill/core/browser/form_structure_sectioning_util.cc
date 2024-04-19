@@ -75,15 +75,17 @@ void AssignCreditCardSections(
   auto first_cc_field = base::ranges::find_if(
       fields, [](const std::unique_ptr<AutofillField>& field) {
         return field->Type().group() == FieldTypeGroup::kCreditCard &&
-               !field->section;
+               !field->section();
       });
   if (first_cc_field == fields.end())
     return;
   Section cc_section =
       Section::FromFieldIdentifier(**first_cc_field, frame_token_ids);
   for (const auto& field : fields) {
-    if (field->Type().group() == FieldTypeGroup::kCreditCard && !field->section)
-      field->section = cc_section;
+    if (field->Type().group() == FieldTypeGroup::kCreditCard &&
+        !field->section()) {
+      field->set_section(cc_section);
+    }
   }
 }
 
@@ -95,7 +97,7 @@ void AssignAutocompleteSections(
           {.section = field->parsed_autocomplete->section,
            .mode = field->parsed_autocomplete->mode});
       if (autocomplete_section)
-        field->section = autocomplete_section;
+        field->set_section(autocomplete_section);
     }
   }
 }
@@ -107,22 +109,23 @@ void AssignFieldIdentifierSections(
     return;
   Section s = Section::FromFieldIdentifier(**section.begin(), frame_token_ids);
   for (const auto& field : section) {
-    if (!field->section && IsSectionable(*field))
-      field->section = s;
+    if (!field->section() && IsSectionable(*field)) {
+      field->set_section(s);
+    }
   }
 }
 
 void ExpandSections(base::span<const std::unique_ptr<AutofillField>> fields) {
   auto HasSection = [](auto& field) {
-    return IsSectionable(*field) && field->section;
+    return IsSectionable(*field) && field->section();
   };
   auto it = base::ranges::find_if(fields, HasSection);
   while (it != fields.end()) {
     auto end = base::ranges::find_if(it + 1, fields.end(), HasSection);
-    if (end != fields.end() && (*it)->section == (*end)->section) {
+    if (end != fields.end() && (*it)->section() == (*end)->section()) {
       for (auto& field : base::make_span(it + 1, end)) {
         if (IsSectionable(*field)) {
-          field->section = (*it)->section;
+          field->set_section((*it)->section());
         }
       }
     }
@@ -133,8 +136,9 @@ void ExpandSections(base::span<const std::unique_ptr<AutofillField>> fields) {
 bool BelongsToCurrentSection(const FieldTypeSet& seen_types,
                              const AutofillField& current_field,
                              const AutofillField& previous_field) {
-  if (current_field.section)
+  if (current_field.section()) {
     return !features::kAutofillSectioningModeCreateGaps.Get();
+  }
 
   const FieldType current_type = current_field.Type().GetStorableType();
   if (current_type == UNKNOWN_TYPE)
@@ -169,7 +173,7 @@ base::span<const std::unique_ptr<AutofillField>>::iterator
 FindBeginOfNextSection(
     base::span<const std::unique_ptr<AutofillField>>::iterator begin,
     base::span<const std::unique_ptr<AutofillField>>::iterator end) {
-  while (begin != end && ((*begin)->section || !(*begin)->IsFocusable())) {
+  while (begin != end && ((*begin)->section() || !(*begin)->IsFocusable())) {
     begin++;
   }
   return begin;
@@ -192,7 +196,7 @@ base::span<const std::unique_ptr<AutofillField>>::iterator FindEndOfNextSection(
         !BelongsToCurrentSection(seen_types, field, *prev_field)) {
       return it;
     }
-    if (!field.section) {
+    if (!field.section()) {
       seen_types.insert(field.Type().GetStorableType());
       prev_field = &field;
     }
@@ -204,7 +208,7 @@ base::span<const std::unique_ptr<AutofillField>>::iterator FindEndOfNextSection(
 
 void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
   for (const auto& field : fields)
-    field->section = Section();
+    field->set_section(Section());
 
   // Create a unique identifier based on the field for the section.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
@@ -236,7 +240,7 @@ void LogSectioningMetrics(
     if (!IsSectionable(*field) || !field->IsFieldFillable()) {
       continue;
     }
-    ++fields_per_section[field->section];
+    ++fields_per_section[field->section()];
   }
   AutofillMetrics::LogSectioningMetrics(fields_per_section);
   // UKM:
@@ -257,7 +261,7 @@ uint32_t ComputeSectioningSignature(
       continue;
     }
     size_t section_id =
-        section_ids.emplace(field->section, section_ids.size()).first->second;
+        section_ids.emplace(field->section(), section_ids.size()).first->second;
     signature << section_id;
   }
   return StrToHash32Bit(signature.str());

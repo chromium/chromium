@@ -149,7 +149,7 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
   const bool is_trigger_field =
       autofill_field.global_id() == trigger_field.global_id();
 
-  if (autofill_field.section != trigger_field.section) {
+  if (autofill_field.section() != trigger_field.section()) {
     return FieldFillingSkipReason::kNotInFilledSection;
   }
 
@@ -483,7 +483,7 @@ void FormFiller::FillOrPreviewForm(
   LOG_AF(buffer) << Tag{"table"};
 
   form_structure->RationalizePhoneNumbersInSection(
-      autofill_trigger_field->section);
+      autofill_trigger_field->section());
 
   // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime, which
   // may happen with refills.
@@ -553,7 +553,7 @@ void FormFiller::FillOrPreviewForm(
   CHECK_EQ(result_form.fields.size(), form_structure->field_count());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     // On the renderer, the section is used regardless of the autofill status.
-    result_form.fields[i].section = form_structure->field(i)->section;
+    result_form.fields[i].set_section(form_structure->field(i)->section());
   }
 
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =

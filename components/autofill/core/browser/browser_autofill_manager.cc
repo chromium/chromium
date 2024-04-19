@@ -2260,7 +2260,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   CHECK(form_structure && trigger_autofill_field);
   std::optional<FieldTypeSet> last_address_fields_to_fill_for_section =
       external_delegate_->GetLastFieldTypesToFillForSection(
-          trigger_autofill_field->section);
+          trigger_autofill_field->section());
   // Getting the filling-relevant fields so that suggestions are based only on
   // those fields. Function BrowserAutofillManager::GetFieldFillingSkipReasons
   // assumes that the passed FormData and FormStructure have the same size. If

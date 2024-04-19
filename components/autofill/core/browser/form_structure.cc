@@ -222,13 +222,13 @@ void FormStructure::DetermineHeuristicTypes(
   // The sections are mapped to consecutive natural numbers starting at 1.
   std::map<Section, size_t> section_id_map;
   for (const auto& field : fields_) {
-    if (!base::Contains(section_id_map, field->section)) {
+    if (!base::Contains(section_id_map, field->section())) {
       size_t next_section_id = section_id_map.size() + 1;
-      section_id_map[field->section] = next_section_id;
+      section_id_map[field->section()] = next_section_id;
     }
     field->AppendLogEventIfNotRepeated(RationalizationFieldLogEvent{
         .field_type = field->Type().GetStorableType(),
-        .section_id = section_id_map[field->section],
+        .section_id = section_id_map[field->section()],
         .type_changed = field->Type().GetStorableType() !=
                         field->ComputedType().GetStorableType(),
     });
@@ -293,7 +293,7 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
       annotated_field.overall_type = std::string(field->Type().ToStringView());
       annotated_field.parseable_name =
           base::UTF16ToUTF8(field->parseable_name());
-      annotated_field.section = field->section.ToString();
+      annotated_field.section = field->section().ToString();
       annotated_field.rank = field->rank();
       annotated_field.rank_in_signature_group =
           field->rank_in_signature_group();
@@ -559,7 +559,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         field->set_heuristic_type(s, cached_field->heuristic_type(s));
       }
       field->SetHtmlType(cached_field->html_type(), cached_field->html_mode());
-      field->section = cached_field->section;
+      field->set_section(cached_field->section());
       field->set_only_fill_when_focused(cached_field->only_fill_when_focused());
 
       // During import, the final field type is used to decide which
@@ -645,15 +645,16 @@ bool FormStructure::SetSectionsFromAutocompleteOrReset() {
   bool has_autocomplete = false;
   for (const auto& field : fields_) {
     if (!field->parsed_autocomplete) {
-      field->section = Section();
+      field->set_section(Section());
       continue;
     }
 
-    field->section = Section::FromAutocomplete(
+    field->set_section(Section::FromAutocomplete(
         {.section = field->parsed_autocomplete->section,
-         .mode = field->parsed_autocomplete->mode});
-    if (field->section)
+         .mode = field->parsed_autocomplete->mode}));
+    if (field->section()) {
       has_autocomplete = true;
+    }
   }
   return has_autocomplete;
 }
@@ -807,7 +808,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
         credit_card_section =
             Section::FromFieldIdentifier(*field, frame_token_ids);
       }
-      field->section = credit_card_section;
+      field->set_section(credit_card_section);
       continue;
     }
 
@@ -858,9 +859,9 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     // derived from the autocomplete attribute and its section is different than
     // the previous field's section.
     bool different_autocomplete_section_than_previous_field_section =
-        field->section.is_from_autocomplete() &&
+        field->section().is_from_autocomplete() &&
         (field_index == 0 ||
-         fields_[field_index - 1]->section != field->section);
+         fields_[field_index - 1]->section() != field->section());
 
     // Start a new section if the `current_type` was already seen or the section
     // is derived from the autocomplete attribute which is different than the
@@ -877,19 +878,19 @@ void FormStructure::IdentifySectionsWithNewMethod() {
       }
 
       if (!is_hidden_section &&
-          (!field->section.is_from_autocomplete() ||
+          (!field->section().is_from_autocomplete() ||
            different_autocomplete_section_than_previous_field_section)) {
         seen_types.clear();
       }
 
-      if (field->section.is_from_autocomplete() &&
+      if (field->section().is_from_autocomplete() &&
           !previous_autocomplete_section_present) {
         // If this field is the first field within the section with a defined
         // autocomplete section, then change the section attribute of all the
         // parsed fields in the current section to `field->section`.
         int i = static_cast<int>(field_index - 1);
-        while (i >= 0 && fields_[i]->section == current_section) {
-          fields_[i]->section = field->section;
+        while (i >= 0 && fields_[i]->section() == current_section) {
+          fields_[i]->set_section(field->section());
           i--;
         }
       }
@@ -899,11 +900,12 @@ void FormStructure::IdentifySectionsWithNewMethod() {
 
       // The section described in the autocomplete section attribute
       // overrides the value determined by the heuristic.
-      if (field->section.is_from_autocomplete())
-        current_section = field->section;
+      if (field->section().is_from_autocomplete()) {
+        current_section = field->section();
+      }
 
       previous_autocomplete_section_present =
-          field->section.is_from_autocomplete();
+          field->section().is_from_autocomplete();
     }
 
     // Only consider a type "seen" if it was not ignored. Some forms have
@@ -919,7 +921,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
       is_hidden_section = false;
     }
 
-    field->section = current_section;
+    field->set_section(current_section);
   }
 }
 
@@ -951,7 +953,7 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
         credit_card_section =
             Section::FromFieldIdentifier(*field, frame_token_ids);
       }
-      field->section = credit_card_section;
+      field->set_section(credit_card_section);
     }
   }
 
@@ -1045,7 +1047,7 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
         is_hidden_section = false;
       }
 
-      field->section = current_section;
+      field->set_section(current_section);
     }
   }
 }
@@ -1208,7 +1210,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
            << base::StrCat({type, " (heuristic: ", heuristic_type,
                             ", server: ", server_type, is_override,
                             html_type_description, ")"});
-    buffer << "\n  Section: " << field->section;
+    buffer << "\n  Section: " << field->section();
 
     constexpr size_t kMaxLabelSize = 100;
     const std::u16string truncated_label = field->label().substr(
@@ -1289,7 +1291,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Type:"
            << base::StrCat({type, " (heuristic: ", heuristic_type, ", server: ",
                             server_type, html_type_description, ")"});
-    buffer << Tr{} << "Section:" << field->section;
+    buffer << Tr{} << "Section:" << field->section();
 
     constexpr size_t kMaxLabelSize = 100;
     // TODO(crbug/1165780): Remove once shared labels are launched.

@@ -2000,7 +2000,7 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
 
   EXPECT_EQ(
       external_delegate().GetLastFieldTypesToFillForSection(
-          params.section.value_or(get_triggering_autofill_field()->section)),
+          params.section.value_or(get_triggering_autofill_field()->section())),
       params.expected_last_field_types_to_fill_for_section);
 }
 

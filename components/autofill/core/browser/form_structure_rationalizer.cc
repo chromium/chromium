@@ -570,7 +570,7 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
     AutofillField& previous_field = **(field - 1);
     if (previous_field.ComputedType().GetStorableType() !=
             ADDRESS_HOME_STREET_ADDRESS ||
-        previous_field.section != (*field)->section ||
+        previous_field.section() != (*field)->section() ||
         previous_field.server_type_prediction_is_override()) {
       continue;
     }
@@ -668,8 +668,9 @@ void FormStructureRationalizer::RationalizePhoneNumbersInSection(
     const Section& section) {
   std::vector<AutofillField*> fields;
   for (const auto& field : *fields_) {
-    if (field->section != section)
+    if (field->section() != section) {
       continue;
+    }
     fields.push_back(field.get());
   }
   rationalization_util::RationalizePhoneNumberFields(fields);
@@ -837,7 +838,8 @@ bool FormStructureRationalizer::FieldShouldBeRationalizedToCountry(
         GroupTypeOfFieldType(
             (*fields_)[field_index]->Type().GetStorableType()) ==
             FieldTypeGroup::kAddress &&
-        (*fields_)[field_index]->section == (*fields_)[upper_index]->section) {
+        (*fields_)[field_index]->section() ==
+            (*fields_)[upper_index]->section()) {
       return false;
     }
   }
@@ -868,8 +870,9 @@ void FormStructureRationalizer::RationalizeAddressStateCountry(
     // state and country. No rationalization needed.
     if (!sections_of_state_indexes->IsFinished() &&
         !sections_of_country_indexes->IsFinished() &&
-        (*fields_)[sections_of_state_indexes->CurrentIndex()]->section ==
-            (*fields_)[sections_of_country_indexes->CurrentIndex()]->section) {
+        (*fields_)[sections_of_state_indexes->CurrentIndex()]->section() ==
+            (*fields_)[sections_of_country_indexes->CurrentIndex()]
+                ->section()) {
       sections_of_state_indexes->WalkForwardToTheNextSection();
       sections_of_country_indexes->WalkForwardToTheNextSection();
       continue;
@@ -974,7 +977,7 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
                   .Empty() ||
               (*fields_)[sectioned_field_indexes_by_type[current_type]
                              .LastFieldIndex()]
-                      ->section != field.section);
+                      ->section() != field.section());
     }
   }
 

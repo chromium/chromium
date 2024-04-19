@@ -97,8 +97,8 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     field.set_label(base::UTF8ToUTF16(field_template.label));
     field.set_name(base::UTF8ToUTF16(field_template.name));
     if (!field_template.section.empty()) {
-      field.section = Section::FromAutocomplete(
-          {.section = std::string(field_template.section)});
+      field.set_section(Section::FromAutocomplete(
+          {.section = std::string(field_template.section)}));
     }
     field.set_form_control_type(field_template.form_control_type);
     field.is_focusable = field_template.is_focusable;
@@ -275,7 +275,7 @@ TEST_F(FormStructureRationalizerTest,
           {"Cell Phone", "cellPhoneNumber", PHONE_HOME_WHOLE_NUMBER},
       },
       /*run_heuristics=*/false);
-  Section s = form_structure->field(0)->section;
+  Section s = form_structure->field(0)->section();
   EXPECT_FALSE(test_api(*form_structure).phone_rationalized(s));
   form_structure->RationalizePhoneNumbersInSection(s);
   EXPECT_TRUE(test_api(*form_structure).phone_rationalized(s));

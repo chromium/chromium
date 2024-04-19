@@ -418,7 +418,7 @@ FormFieldData::FillData::FillData(const FormFieldData& field)
     : value(field.value()),
       renderer_id(field.renderer_id()),
       host_form_id(field.host_form_id),
-      section(field.section),
+      section(field.section()),
       is_autofilled(field.is_autofilled()),
       force_override(field.force_override) {}
 
@@ -695,7 +695,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
                                        : "");
   buffer << Tr{} << "Aria label:" << field.aria_label;
   buffer << Tr{} << "Aria description:" << field.aria_description;
-  buffer << Tr{} << "Section:" << field.section;
+  buffer << Tr{} << "Section:" << field.section();
   buffer << Tr{} << "Is focusable:" << field.is_focusable;
   buffer << Tr{} << "Is enabled:" << field.is_enabled;
   buffer << Tr{} << "Is readonly:" << field.is_readonly;

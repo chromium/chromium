@@ -522,7 +522,7 @@ bool WillFillCreditCardNumber(
       [&trigger_autofill_field,
        &IsFillableField](const std::unique_ptr<AutofillField>& autofill_field) {
         return autofill_field->Type().GetStorableType() == CREDIT_CARD_NUMBER &&
-               autofill_field->section == trigger_autofill_field.section &&
+               autofill_field->section() == trigger_autofill_field.section() &&
                IsFillableField(*autofill_field);
       };
 

@@ -885,7 +885,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     // filling granularity. The exact type is not important, what matters here
     // is that the user targeted one ONE field, i.e, field-by-field filling.
     last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
-                                                           ->section] = {
+                                                           ->section()] = {
         *suggestion.field_by_field_filling_type_used};
   }
   const bool is_triggering_field_address =
@@ -1002,7 +1002,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
     if (autofill_trigger_field &&
         kAutofillAddressSuggestions.contains(popup_item_id) && !is_preview) {
       last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
-                                                             ->section] =
+                                                             ->section()] =
           trigger_details.field_types_to_fill;
     }
   }

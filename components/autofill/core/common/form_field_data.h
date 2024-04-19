@@ -349,7 +349,8 @@ struct FormFieldData {
 
   // The unique identifier of the section (e.g. billing vs. shipping address)
   // of this field.
-  Section section;
+  const Section& section() const { return section_; }
+  void set_section(Section section) { section_ = std::move(section); }
 
   // The default value for text fields that have no maxlength attribute
   // specified. We choose the maximum 32 bit, rather than 64 bit, number because
@@ -450,6 +451,7 @@ struct FormFieldData {
   FormControlType form_control_type_ = FormControlType::kInputText;
   FieldRendererId renderer_id_;
   uint64_t max_length_ = std::numeric_limits<uint32_t>::max();
+  Section section_;
   bool is_autofilled_ = false;
 };
 
@@ -538,7 +540,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
     EXPECT_EQ(expected.css_classes, actual.css_classes);                       \
     EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());               \
     EXPECT_EQ(expected.is_user_edited, actual.is_user_edited);                 \
-    EXPECT_EQ(expected.section, actual.section);                               \
+    EXPECT_EQ(expected.section(), actual.section());                           \
     EXPECT_EQ(expected.check_status, actual.check_status);                     \
     EXPECT_EQ(expected.properties_mask, actual.properties_mask);               \
     EXPECT_EQ(expected.id_attribute(), actual.id_attribute());                 \

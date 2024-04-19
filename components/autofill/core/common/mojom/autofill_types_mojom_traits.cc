@@ -269,7 +269,7 @@ bool StructTraits<
     if (!data.ReadSection(&section)) {
       return false;
     }
-    out->section = std::move(section);
+    out->set_section(std::move(section));
   }
 
   out->properties_mask = data.properties_mask();

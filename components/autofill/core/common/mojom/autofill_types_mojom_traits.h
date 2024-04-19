@@ -277,7 +277,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
   }
 
   static const autofill::Section& section(const autofill::FormFieldData& r) {
-    return r.section;
+    return r.section();
   }
 
   static autofill::FormFieldData::CheckStatus check_status(

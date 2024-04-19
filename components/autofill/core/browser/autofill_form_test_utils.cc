@@ -218,7 +218,7 @@ void FormStructureTest::CheckFormStructureTestData(
     if (test_case.form_flags.section_count) {
       std::set<Section> section_names;
       for (const auto& field : *form_structure)
-        section_names.insert(field->section);
+        section_names.insert(field->section());
       EXPECT_EQ(*test_case.form_flags.section_count,
                 static_cast<int>(section_names.size()));
     }

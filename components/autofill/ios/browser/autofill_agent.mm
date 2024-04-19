@@ -559,7 +559,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
     base::Value::Dict fieldData;
     fieldData.Set("value", field.value());
-    fieldData.Set("section", field.section.ToString());
+    fieldData.Set("section", field.section().ToString());
     fieldsData.Set(NumberToString(field.renderer_id().value()),
                    std::move(fieldData));
   }

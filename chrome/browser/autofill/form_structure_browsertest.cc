@@ -113,8 +113,8 @@ std::string FormStructuresToString(
     std::string string_form;
     std::map<std::string, int> section_to_index;
     for (const auto& field : *form_structure) {
-      std::string section = field->section.ToString();
-      if (field->section.is_from_fieldidentifier()) {
+      std::string section = field->section().ToString();
+      if (field->section().is_from_fieldidentifier()) {
         // Normalize the section by replacing the unique but platform-dependent
         // integers in `field->section` with consecutive unique integers.
         // The section string is of the form "fieldname_id1_id2", where id1, id2

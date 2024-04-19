@@ -363,8 +363,8 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.user_input = u"TestTypedValue";
   input.bounds = gfx::RectF(1, 2, 10, 100);
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  input.section = Section::FromAutocomplete(
-      {.section = "autocomplete_section", .mode = HtmlFieldMode::kShipping});
+  input.set_section(Section::FromAutocomplete(
+      {.section = "autocomplete_section", .mode = HtmlFieldMode::kShipping}));
 
   EXPECT_FALSE(input.host_frame.is_empty());
   base::RunLoop loop;

@@ -77,7 +77,7 @@ std::vector<Section> GetSections(
   std::vector<Section> sections;
   sections.reserve(fields.size());
   for (const auto& field : fields)
-    sections.push_back(field->section);
+    sections.push_back(field->section());
   return sections;
 }
 

@@ -313,7 +313,7 @@ TEST_F(FormFillerTest, FillTriggeredSection) {
   // Assign different sections to the fields.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
   for (const std::unique_ptr<AutofillField>& field : form_structure->fields()) {
-    field->section = Section::FromFieldIdentifier(*field, frame_token_ids);
+    field->set_section(Section::FromFieldIdentifier(*field, frame_token_ids));
   }
 
   AutofillProfile profile = test::GetFullProfile();

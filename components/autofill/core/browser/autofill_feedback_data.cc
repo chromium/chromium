@@ -50,7 +50,7 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("serverTypeIsOverride",
                  field->server_type_prediction_is_override());
   field_data.Set("htmlType", FieldTypeToStringView(field->html_type()));
-  field_data.Set("section", field->section.ToString());
+  field_data.Set("section", field->section().ToString());
   field_data.Set("rank", base::NumberToString(field->rank()));
   field_data.Set("rankInSignatureGroup",
                  base::NumberToString(field->rank_in_signature_group()));

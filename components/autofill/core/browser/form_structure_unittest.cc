@@ -1047,7 +1047,7 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributeWithSections) {
   // sections.
   std::set<Section> section_names;
   for (size_t i = 0; i < 9; ++i) {
-    section_names.insert(form_structure.field(i)->section);
+    section_names.insert(form_structure.field(i)->section());
   }
   EXPECT_EQ(9U, section_names.size());
 }
@@ -1086,7 +1086,7 @@ TEST_F(FormStructureTestImpl,
   // section.
   std::set<Section> section_names;
   for (size_t i = 0; i < 6; ++i) {
-    section_names.insert(form_structure.field(i)->section);
+    section_names.insert(form_structure.field(i)->section());
   }
   EXPECT_EQ(1U, section_names.size());
 }
@@ -1113,7 +1113,7 @@ TEST_F(FormStructureTestImpl,
   // section.
   std::set<Section> section_names;
   for (size_t i = 0; i < 2; ++i) {
-    section_names.insert(form_structure.field(i)->section);
+    section_names.insert(form_structure.field(i)->section());
   }
   EXPECT_EQ(1U, section_names.size());
 }
@@ -1155,7 +1155,8 @@ TEST_F(FormStructureTestImpl,
   // form, we do not apply these usual heuristics.
   EXPECT_EQ(u"one", form_structure.field(0)->name());
   EXPECT_EQ(u"two", form_structure.field(3)->name());
-  EXPECT_EQ(form_structure.field(0)->section, form_structure.field(3)->section);
+  EXPECT_EQ(form_structure.field(0)->section(),
+            form_structure.field(3)->section());
 }
 
 TEST_F(FormStructureTestImpl, HeuristicsSample8) {
@@ -2377,12 +2378,12 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
 
   // Assert the correct number of fields.
   ASSERT_EQ(6U, form_structure.field_count());
-  EXPECT_EQ("fullName_0_11", form_structure.field(0)->section.ToString());
-  EXPECT_EQ("fullName_0_11", form_structure.field(1)->section.ToString());
-  EXPECT_EQ("fullName_0_11", form_structure.field(2)->section.ToString());
-  EXPECT_EQ("fullName_0_14", form_structure.field(3)->section.ToString());
-  EXPECT_EQ("fullName_0_14", form_structure.field(4)->section.ToString());
-  EXPECT_EQ("fullName_0_14", form_structure.field(5)->section.ToString());
+  EXPECT_EQ("fullName_0_11", form_structure.field(0)->section().ToString());
+  EXPECT_EQ("fullName_0_11", form_structure.field(1)->section().ToString());
+  EXPECT_EQ("fullName_0_11", form_structure.field(2)->section().ToString());
+  EXPECT_EQ("fullName_0_14", form_structure.field(3)->section().ToString());
+  EXPECT_EQ("fullName_0_14", form_structure.field(4)->section().ToString());
+  EXPECT_EQ("fullName_0_14", form_structure.field(5)->section().ToString());
 }
 
 // Tests that the immediate recurrence of the |PHONE_HOME_NUMBER| type does not
@@ -2424,13 +2425,13 @@ TEST_F(FormStructureTestImpl, NoSplitByRecurringPhoneFieldType) {
   // Assert the correct number of fields.
   ASSERT_EQ(7U, form_structure.field_count());
 
-  EXPECT_EQ("blue-billing", form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(2)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(3)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(4)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(5)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(6)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(0)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(1)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(2)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(3)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(4)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(5)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(6)->section().ToString());
 }
 
 // Tests that adjacent name field types are not split into different sections.
@@ -2462,12 +2463,17 @@ TEST_F(FormStructureTestImpl, NoSplitAdjacentNameFieldType) {
   // Assert the correct number of fields.
   ASSERT_EQ(6U, form_structure.field_count());
 
-  EXPECT_EQ(form_structure.field(0)->section, form_structure.field(1)->section);
-  EXPECT_EQ(form_structure.field(0)->section, form_structure.field(2)->section);
-  EXPECT_EQ(form_structure.field(0)->section, form_structure.field(3)->section);
-  EXPECT_EQ(form_structure.field(0)->section, form_structure.field(4)->section);
+  EXPECT_EQ(form_structure.field(0)->section(),
+            form_structure.field(1)->section());
+  EXPECT_EQ(form_structure.field(0)->section(),
+            form_structure.field(2)->section());
+  EXPECT_EQ(form_structure.field(0)->section(),
+            form_structure.field(3)->section());
+  EXPECT_EQ(form_structure.field(0)->section(),
+            form_structure.field(4)->section());
   // The non-adjacent name field should be split into a different section.
-  EXPECT_NE(form_structure.field(0)->section, form_structure.field(5)->section);
+  EXPECT_NE(form_structure.field(0)->section(),
+            form_structure.field(5)->section());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -2502,10 +2508,10 @@ TEST_F(FormStructureTestImpl, SplitByRecurringFieldType) {
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(2)->section.ToString());
-  EXPECT_EQ("country_2_14", form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(1)->section().ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(2)->section().ToString());
+  EXPECT_EQ("country_2_14", form_structure.field(3)->section().ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -2541,10 +2547,10 @@ TEST_F(FormStructureTestImpl,
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(2)->section.ToString());
-  EXPECT_EQ("country_2_14", form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(1)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(2)->section().ToString());
+  EXPECT_EQ("country_2_14", form_structure.field(3)->section().ToString());
 }  // namespace autofill
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -2579,10 +2585,10 @@ TEST_F(FormStructureTestImpl, SplitByNewAutocompleteSectionName) {
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(2)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(1)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(2)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(3)->section().ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -2618,10 +2624,10 @@ TEST_F(
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(2)->section.ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(1)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(2)->section().ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(3)->section().ToString());
 }
 
 // Tests if all the fields in the form belong to the same section when the
@@ -2648,8 +2654,8 @@ TEST_F(FormStructureTestImpl, FromEmptyAutocompleteSectionToDefinedOne) {
   // Assert the correct number of fields.
   ASSERT_EQ(2U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(1)->section().ToString());
 }
 
 // Tests if all the fields in the form belong to the same section when one of
@@ -2682,9 +2688,9 @@ TEST_F(FormStructureTestImpl,
   // Assert the correct number of fields.
   ASSERT_EQ(3U, form_structure.field_count());
 
-  EXPECT_EQ("-shipping", form_structure.field(0)->section.ToString());
-  EXPECT_EQ("-shipping", form_structure.field(1)->section.ToString());
-  EXPECT_EQ("-shipping", form_structure.field(2)->section.ToString());
+  EXPECT_EQ("-shipping", form_structure.field(0)->section().ToString());
+  EXPECT_EQ("-shipping", form_structure.field(1)->section().ToString());
+  EXPECT_EQ("-shipping", form_structure.field(2)->section().ToString());
 }
 
 TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {

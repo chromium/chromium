@@ -851,13 +851,13 @@ void ProcessServerPredictionsQueryResponse(
     // The sections are mapped to consecutive natural numbers starting at 1.
     std::map<Section, size_t> section_id_map;
     for (const auto& field : form->fields()) {
-      if (!base::Contains(section_id_map, field->section)) {
+      if (!base::Contains(section_id_map, field->section())) {
         size_t next_section_id = section_id_map.size() + 1;
-        section_id_map[field->section] = next_section_id;
+        section_id_map[field->section()] = next_section_id;
       }
       field->AppendLogEventIfNotRepeated(RationalizationFieldLogEvent{
           .field_type = field->Type().GetStorableType(),
-          .section_id = section_id_map[field->section],
+          .section_id = section_id_map[field->section()],
           .type_changed = field->Type().GetStorableType() !=
                           field->ComputedType().GetStorableType(),
       });

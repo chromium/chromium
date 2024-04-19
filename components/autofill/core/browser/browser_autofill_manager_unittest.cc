@@ -4963,11 +4963,11 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   // Although the heuristic types of the first two fields belongs to the address
   // section, the final fields' section should be based on the overall
   // prediction, therefore they should be grouped in one section.
-  const auto section = form_structure->field(0)->section;
-  EXPECT_EQ(section, form_structure->field(1)->section);
-  EXPECT_EQ(section, form_structure->field(2)->section);
-  EXPECT_EQ(section, form_structure->field(3)->section);
-  EXPECT_EQ(section, form_structure->field(4)->section);
+  const auto section = form_structure->field(0)->section();
+  EXPECT_EQ(section, form_structure->field(1)->section());
+  EXPECT_EQ(section, form_structure->field(2)->section());
+  EXPECT_EQ(section, form_structure->field(3)->section());
+  EXPECT_EQ(section, form_structure->field(4)->section());
 }
 
 // Test that the form signature for an uploaded form always matches the form
