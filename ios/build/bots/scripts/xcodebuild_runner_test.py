@@ -335,7 +335,7 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
               lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
     self.mock(xcode_util, 'using_xcode_15_or_higher', lambda: True)
-    self.mock(mac_util, 'stop_usbmuxd', lambda: None)
+    self.mock(mac_util, 'kill_usbmuxd', lambda: None)
     self.mock(xcode_util, 'xctest_path', lambda _: 'fake-path')
     self.mock(os.path, 'isfile', lambda _: True)
     self.mock(xcodebuild_runner.SimulatorParallelTestRunner,

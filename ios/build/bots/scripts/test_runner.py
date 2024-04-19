@@ -1173,7 +1173,7 @@ class DeviceTestRunner(TestRunner):
       LOGGER.warning(
           "Restarting usbmuxd to ensure device is re-paired to Xcode...")
       try:
-        mac_util.stop_usbmuxd()
+        mac_util.kill_usbmuxd()
       except subprocess.CalledProcessError as e:
         logging.exception('Unable to restart usbmuxd:')
         logging.error(e)

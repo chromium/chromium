@@ -38,6 +38,17 @@ def is_macos_13_or_higher():
       '13.0') <= distutils.version.LooseVersion(version())
 
 
+def kill_usbmuxd():
+  """kills the current usbmuxd process"""
+  cmd = [
+      'sudo',
+      '/usr/bin/killall',
+      '-v',
+      'usbmuxd',
+  ]
+  subprocess.check_call(cmd)
+
+
 def stop_usbmuxd():
   """stops the current usbmuxd process"""
   cmd = [
