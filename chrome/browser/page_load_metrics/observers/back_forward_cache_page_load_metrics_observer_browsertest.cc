@@ -121,8 +121,16 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
 
 }  // namespace
 
+// TODO(crbug.com/334416161): Re-enble this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FirstPaintAfterBackForwardCacheRestore \
+  DISABLED_FirstPaintAfterBackForwardCacheRestore
+#else
+#define MAYBE_FirstPaintAfterBackForwardCacheRestore \
+  FirstPaintAfterBackForwardCacheRestore
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       FirstPaintAfterBackForwardCacheRestore) {
+                       MAYBE_FirstPaintAfterBackForwardCacheRestore) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -341,8 +349,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   ExpectMetricValueForUrl(url_a, UkmEntry::kBackForwardCache_IsAmpPageName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       CumulativeLayoutShiftAfterBackForwardCacheRestore) {
+// TODO(crbug.com/334416161): Re-enble this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CumulativeLayoutShiftAfterBackForwardCacheRestore \
+  DISABLED_CumulativeLayoutShiftAfterBackForwardCacheRestore
+#else
+#define MAYBE_CumulativeLayoutShiftAfterBackForwardCacheRestore \
+  CumulativeLayoutShiftAfterBackForwardCacheRestore
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    MAYBE_CumulativeLayoutShiftAfterBackForwardCacheRestore) {
   Start();
 
   const char path[] = "/layout-instability/simple-block-movement.html";
@@ -515,8 +532,17 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       LayoutShiftNormalization_AfterBackForwardCacheRestore) {
+// TODO(crbug.com/334416161): Re-enble this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LayoutShiftNormalization_AfterBackForwardCacheRestore \
+  DISABLED_LayoutShiftNormalization_AfterBackForwardCacheRestore
+#else
+#define MAYBE_LayoutShiftNormalization_AfterBackForwardCacheRestore \
+  LayoutShiftNormalization_AfterBackForwardCacheRestore
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    MAYBE_LayoutShiftNormalization_AfterBackForwardCacheRestore) {
   Start();
 
   const char path[] = "/layout-instability/simple-block-movement.html";

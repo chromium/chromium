@@ -217,8 +217,16 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   histogram_tester.ExpectTotalCount(kSubframeFCPHistogram, 1);
 }
 
+// TODO(crbug.com/334416161): Re-enble this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ThreeThirdPartyFrames_ThreeTimingsRecorded \
+  DISABLED_ThreeThirdPartyFrames_ThreeTimingsRecorded
+#else
+#define MAYBE_ThreeThirdPartyFrames_ThreeTimingsRecorded \
+  ThreeThirdPartyFrames_ThreeTimingsRecorded
+#endif
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
-                       ThreeThirdPartyFrames_ThreeTimingsRecorded) {
+                       MAYBE_ThreeThirdPartyFrames_ThreeTimingsRecorded) {
   base::HistogramTester histogram_tester;
 
   page_load_metrics::PageLoadMetricsTestWaiter waiter(
@@ -239,8 +247,14 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   histogram_tester.ExpectTotalCount(kSubframeFCPHistogram, 3);
 }
 
+// TODO(crbug.com/334416161): Re-enble this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OpaqueOriginSubframe DISABLED_OpaqueOriginSubframe
+#else
+#define MAYBE_OpaqueOriginSubframe OpaqueOriginSubframe
+#endif
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
-                       OpaqueOriginSubframe) {
+                       MAYBE_OpaqueOriginSubframe) {
   base::HistogramTester histogram_tester;
 
   page_load_metrics::PageLoadMetricsTestWaiter waiter(

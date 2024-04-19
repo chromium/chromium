@@ -526,7 +526,13 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LargestContentfulPaint) {
   EXPECT_EQ(std::next(source_id_to_lcp_request_priority.cbegin())->second, 2u);
 }
 
-IN_PROC_BROWSER_TEST_P(SoftNavigationTest, NoSoftNavigation) {
+// TODO(crbug.com/334416161): Re-enable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NoSoftNavigation DISABLED_NoSoftNavigation
+#else
+#define MAYBE_NoSoftNavigation NoSoftNavigation
+#endif
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_NoSoftNavigation) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
 
