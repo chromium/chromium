@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ui/wm/core/window_util.h"
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/app_constants/constants.h"
@@ -43,7 +45,7 @@ BrowserAppInstance::BrowserAppInstance(base::UnguessableToken id,
       app_id(app_id),
       window(window),
       title(title),
-      is_browser_active(is_browser_active),
+      is_browser_active_deprecated(is_browser_active),
       is_web_contents_active(is_web_contents_active),
       browser_session_id(browser_session_id),
       restored_browser_session_id(restored_browser_session_id) {}
@@ -55,7 +57,7 @@ BrowserAppInstance::BrowserAppInstance(BrowserAppInstanceUpdate update,
       app_id(update.app_id),
       window(window),
       title(update.title),
-      is_browser_active(update.is_browser_active),
+      is_browser_active_deprecated(update.is_browser_active),
       is_web_contents_active(update.is_web_contents_active),
       browser_session_id(update.browser_session_id),
       restored_browser_session_id(update.restored_browser_session_id) {}
@@ -69,7 +71,7 @@ bool BrowserAppInstance::MaybeUpdate(aura::Window* new_window,
                                      uint32_t new_browser_session_id,
                                      uint32_t new_restored_browser_session_id) {
   if (window == new_window && title == new_title &&
-      is_browser_active == new_is_browser_active &&
+      is_browser_active_deprecated == new_is_browser_active &&
       is_web_contents_active == new_is_web_contents_active &&
       browser_session_id == new_browser_session_id &&
       restored_browser_session_id == new_restored_browser_session_id) {
@@ -77,7 +79,7 @@ bool BrowserAppInstance::MaybeUpdate(aura::Window* new_window,
   }
   window = new_window;
   title = std::move(new_title);
-  is_browser_active = new_is_browser_active;
+  is_browser_active_deprecated = new_is_browser_active;
   is_web_contents_active = new_is_web_contents_active;
   browser_session_id = new_browser_session_id;
   restored_browser_session_id = new_restored_browser_session_id;
@@ -91,11 +93,15 @@ BrowserAppInstanceUpdate BrowserAppInstance::ToUpdate() const {
   update.app_id = app_id;
   update.window_id = GetWindowUniqueId(window);
   update.title = title;
-  update.is_browser_active = is_browser_active;
+  update.is_browser_active = is_browser_active_deprecated;
   update.is_web_contents_active = is_web_contents_active;
   update.browser_session_id = browser_session_id;
   update.restored_browser_session_id = restored_browser_session_id;
   return update;
+}
+
+bool BrowserAppInstance::is_browser_active() const {
+  return wm::IsActiveWindow(window);
 }
 
 BrowserWindowInstance::BrowserWindowInstance(
@@ -112,7 +118,7 @@ BrowserWindowInstance::BrowserWindowInstance(
       restored_browser_session_id(restored_browser_session_id),
       is_incognito(is_incognito),
       lacros_profile_id(lacros_profile_id),
-      is_active(is_active) {}
+      is_active_deprecated(is_active) {}
 
 BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstanceUpdate update,
                                              aura::Window* window)
@@ -122,22 +128,22 @@ BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstanceUpdate update,
       restored_browser_session_id(update.restored_browser_session_id),
       is_incognito(update.is_incognito),
       lacros_profile_id(update.lacros_profile_id),
-      is_active(update.is_active) {}
+      is_active_deprecated(update.is_active) {}
 
 BrowserWindowInstance::~BrowserWindowInstance() = default;
 
 bool BrowserWindowInstance::MaybeUpdate(bool new_is_active) {
-  if (is_active == new_is_active) {
+  if (is_active_deprecated == new_is_active) {
     return false;
   }
-  is_active = new_is_active;
+  is_active_deprecated = new_is_active;
   return true;
 }
 
 BrowserWindowInstanceUpdate BrowserWindowInstance::ToUpdate() const {
   return BrowserWindowInstanceUpdate{id,
                                      GetWindowUniqueId(window),
-                                     is_active,
+                                     is_active_deprecated,
                                      browser_session_id,
                                      restored_browser_session_id,
                                      is_incognito,
@@ -151,5 +157,9 @@ std::string BrowserWindowInstance::GetAppId() const {
              : app_constants::kChromeAppId;
 }
 #endif
+
+bool BrowserWindowInstance::is_active() const {
+  return wm::IsActiveWindow(window);
+}
 
 }  // namespace apps

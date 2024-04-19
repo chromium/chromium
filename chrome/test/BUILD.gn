@@ -5589,6 +5589,7 @@ if (is_chromeos_lacros) {
 
     sources = [
       "../browser/accessibility/live_caption/live_caption_surface_browsertest.cc",
+      "../browser/apps/app_service/lacros_browser_shelf_lacros_browsertest.cc",
       "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
       "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_lacros_browsertest.cc",
       "../browser/chromeos/extensions/info_private_lacros_apitest.cc",
@@ -5758,6 +5759,7 @@ if (is_chromeos_lacros) {
       "//chromeos/ui/frame",
       "//chromeos/ui/frame:test_support",
       "//components/account_manager_core:test_support",
+      "//components/app_constants",
       "//components/captive_portal/content:content",
       "//components/captive_portal/core:buildflags",
       "//components/feature_engagement/public:public",

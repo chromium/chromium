@@ -44,6 +44,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/wm/core/window_util.h"
 
 using ::app_constants::kChromeAppId;
 using ::app_constants::kLacrosAppId;
@@ -278,7 +279,8 @@ class BrowserAppShelfControllerBrowserTest
         [&app_id](const apps::BrowserAppInstance& instance) {
           return instance.app_id == app_id;
         });
-    return app && app->is_browser_active && app->is_web_contents_active;
+    return app && wm::IsActiveWindow(app->window) &&
+           app->is_web_contents_active;
   }
 
   // Get unique titles of all app instances.

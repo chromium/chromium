@@ -62,7 +62,7 @@ void InstanceRegistryUpdater::OnBrowserWindowAdded(
 void InstanceRegistryUpdater::OnBrowserWindowUpdated(
     const BrowserWindowInstance& instance) {
   InstanceState state =
-      GetState(instance.window->IsVisible(), instance.is_active);
+      GetState(instance.window->IsVisible(), instance.is_active());
   OnInstance(instance.id, instance.GetAppId(), instance.window, state);
 }
 
@@ -81,7 +81,7 @@ void InstanceRegistryUpdater::OnBrowserAppUpdated(
     const BrowserAppInstance& instance) {
   InstanceState state =
       GetState(instance.window->IsVisible(),
-               instance.is_browser_active && instance.is_web_contents_active);
+               instance.is_browser_active() && instance.is_web_contents_active);
   OnInstance(instance.id, instance.app_id, instance.window, state);
 }
 
