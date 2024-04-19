@@ -66,11 +66,6 @@ void AffiliationPrefetcher::OnFacetsRemoved(std::vector<FacetURI> facets) {
   for (const FacetURI& facet_uri : facets) {
     if (facet_uri.is_valid()) {
       affiliation_service_->CancelPrefetch(facet_uri, base::Time::Max());
-      // TODO(b/328037758): Implement `TrimCacheForFacetURI` as part of
-      // `CancelPrefetch` and remove it from the API. Since now it's a
-      // responsibility of a source to call `OnFacetsAdded` first before
-      // invoking `OnFacetsRemoved`.
-      affiliation_service_->TrimCacheForFacetURI(facet_uri);
     }
   }
 }

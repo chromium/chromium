@@ -243,10 +243,6 @@ void AffiliationServiceImpl::KeepPrefetchForFacets(
                 std::move(facet_uris));
 }
 
-void AffiliationServiceImpl::TrimCacheForFacetURI(const FacetURI& facet_uri) {
-  PostToBackend(&AffiliationBackend::TrimCacheForFacetURI, facet_uri);
-}
-
 void AffiliationServiceImpl::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
   PostToBackend(&AffiliationBackend::TrimUnusedCache, std::move(facet_uris));
 }

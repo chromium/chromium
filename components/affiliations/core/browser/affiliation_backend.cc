@@ -115,8 +115,10 @@ void AffiliationBackend::CancelPrefetch(const FacetURI& facet_uri,
     return;
   facet_manager_it->second->CancelPrefetch(keep_fresh_until);
 
-  if (facet_manager_it->second->CanBeDiscarded())
+  if (facet_manager_it->second->CanBeDiscarded()) {
     facet_managers_.erase(facet_uri);
+    TrimCacheForFacetURI(facet_uri);
+  }
 }
 
 void AffiliationBackend::KeepPrefetchForFacets(

@@ -159,12 +159,8 @@ TEST_F(AffiliationPrefetcherTest,
   RunUntilIdle();
 
   FacetURI facet = FacetURI::FromCanonicalSpec("https://foo.com");
-  {
-    testing::InSequence in_sequence;
-    EXPECT_CALL(*mock_affiliation_service(),
-                CancelPrefetch(facet, base::Time::Max()));
-    EXPECT_CALL(*mock_affiliation_service(), TrimCacheForFacetURI(facet));
-  }
+  EXPECT_CALL(*mock_affiliation_service(),
+              CancelPrefetch(facet, base::Time::Max()));
 
   src_ptr->RemoveFacet(facet);
 }

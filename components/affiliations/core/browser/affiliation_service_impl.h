@@ -121,7 +121,6 @@ class AffiliationServiceImpl : public AffiliationService,
 
   void CancelPrefetch(const FacetURI& facet_uri,
                       const base::Time& keep_fresh_until) override;
-  void TrimCacheForFacetURI(const FacetURI& facet_uri) override;
   void KeepPrefetchForFacets(std::vector<FacetURI> facet_uris) override;
   void TrimUnusedCache(std::vector<FacetURI> facet_uris) override;
   void GetGroupingInfo(std::vector<FacetURI> facet_uris,
