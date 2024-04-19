@@ -474,6 +474,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Some CPUs have zero frequencies"/>
   <int value="3" label="All CPUs have zero frequencies"/>
   <int value="4" label="Success after retry"/>
+  <int value="5" label="Number of logical is larger than possible"/>
 </enum>
 
 <enum name="ChromeOSParseLacrosPath">

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
 
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -749,15 +750,24 @@ void PerfCollector::ParseCPUFrequencies(
     base::WeakPtr<PerfCollector> perf_collector,
     int attempt,
     int max_retries) {
-  const char kCPUMaxFreqPath[] =
-      "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq";
+  const char kCPUsDir[] = "/sys/devices/system/cpu/cpu%d";
+  const std::string kCPUMaxFreqPathRel = "/cpufreq/cpuinfo_max_freq";
   int num_cpus = base::SysInfo::NumberOfProcessors();
   int num_zeros = 0;
+  int num_found = 0;
   std::vector<uint32_t> frequencies_mhz;
   for (int i = 0; i < num_cpus; ++i) {
     std::string content;
     unsigned int frequency_khz = 0;
-    auto path = base::StringPrintf(kCPUMaxFreqPath, i);
+    auto path = base::StringPrintf(kCPUsDir, i);
+    if (base::PathExists(base::FilePath(path))) {
+      num_found++;
+    } else {
+      // We have seen the number of logical cores returned more than the
+      // actual count.
+      continue;
+    }
+    base::StrAppend(&path, {kCPUMaxFreqPathRel});
     if (ReadFileToString(base::FilePath(path), &content)) {
       DCHECK(!content.empty());
       base::StringToUint(content, &frequency_khz);
@@ -790,6 +800,9 @@ void PerfCollector::ParseCPUFrequencies(
   if (num_cpus == 0) {
     base::UmaHistogramEnumeration(kParseFrequenciesHistogramName,
                                   ParseFrequencyStatus::kNumCPUsIsZero);
+  } else if (num_found < num_cpus) {
+    base::UmaHistogramEnumeration(kParseFrequenciesHistogramName,
+                                  ParseFrequencyStatus::kNumCPUsMoreThanPossible);
   } else if (num_zeros == num_cpus) {
     base::UmaHistogramEnumeration(kParseFrequenciesHistogramName,
                                   ParseFrequencyStatus::kAllZeroCPUFrequencies);

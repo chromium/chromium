@@ -108,8 +108,9 @@ class PerfCollector : public internal::MetricCollector {
     kSomeZeroCPUFrequencies,
     kAllZeroCPUFrequencies,
     kSuccessOnRetry,
+    kNumCPUsMoreThanPossible,
     // Magic constant used by the histogram macros.
-    kMaxValue = kSuccessOnRetry,
+    kMaxValue = kNumCPUsMoreThanPossible,
   };
 
   // Extracts the |lacros_channel| and |lacros_version| from |lacros_path|.
