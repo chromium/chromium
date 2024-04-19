@@ -27,7 +27,8 @@
 namespace {
 
 class AutofillEditProfileBottomSheetTableViewControllerTest
-    : public LegacyChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest,
+      public ::testing::WithParamInterface<AutofillSaveProfilePromptMode> {
  protected:
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
@@ -45,11 +46,11 @@ class AutofillEditProfileBottomSheetTableViewControllerTest
     AutofillEditProfileBottomSheetTableViewController* viewController =
         [[AutofillEditProfileBottomSheetTableViewController alloc]
             initWithDelegate:nil
-               editSheetMode:AutofillSaveProfilePromptMode::kNewProfile];
+               editSheetMode:GetParam()];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
-                   userEmail:nil
+                   userEmail:@"test@gmail.com"
                   controller:viewController
                 settingsView:NO];
     viewController.handler = autofill_profile_edit_table_view_controller_;
@@ -102,9 +103,18 @@ class AutofillEditProfileBottomSheetTableViewControllerTest
   id delegate_mock_;
 };
 
-// Tests that there are no requirement checks for the profiles saved to sync.
-TEST_F(AutofillEditProfileBottomSheetTableViewControllerTest,
-       TestNoRequirements) {
+INSTANTIATE_TEST_SUITE_P(
+    /* No InstantiationName */,
+    AutofillEditProfileBottomSheetTableViewControllerTest,
+    testing::Values(AutofillSaveProfilePromptMode::kNewProfile,
+                    AutofillSaveProfilePromptMode::kUpdateProfile,
+                    AutofillSaveProfilePromptMode::kMigrateProfile));
+
+}  // namespace
+
+// Tests that there are requirement checks for the profiles to be saved.
+TEST_P(AutofillEditProfileBottomSheetTableViewControllerTest,
+       TestRequirements) {
   [autofill_profile_edit_table_view_controller_ setLine1Required:YES];
   [autofill_profile_edit_table_view_controller_ setCityRequired:YES];
   [autofill_profile_edit_table_view_controller_ setStateRequired:YES];
@@ -135,7 +145,6 @@ TEST_F(AutofillEditProfileBottomSheetTableViewControllerTest,
   city_item.textFieldValue = @"";
   [autofill_profile_edit_table_view_controller_
       tableViewItemDidChange:city_item];
-  EXPECT_EQ(button_item.enabled, YES);
+  EXPECT_EQ(button_item.enabled,
+            GetParam() != AutofillSaveProfilePromptMode::kMigrateProfile);
 }
-
-}  // namespace
