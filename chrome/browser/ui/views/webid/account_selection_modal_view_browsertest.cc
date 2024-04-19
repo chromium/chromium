@@ -50,6 +50,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         browser()->tab_strip_model()->GetActiveWebContents(),
         shared_url_loader_factory(), /*observer=*/nullptr,
         /*widget_observer=*/nullptr);
+
+    // Loading dialog is always shown first. All other dialogs reuse the header
+    // of this loading dialog.
+    TestLoadingDialog();
   }
 
  protected:
@@ -182,6 +186,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     views::Label* body_view = static_cast<views::Label*>(header_children[2]);
     ASSERT_TRUE(body_view);
     EXPECT_EQ(body_view->GetText(), kBodySignIn);
+    EXPECT_EQ(body_view->GetVisible(), expect_visible_body_label_);
   }
 
   void CheckButtonRow(views::View* button_row,
@@ -241,9 +246,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
   void TestSingleAccount(bool supports_add_account = false) {
-    // The single account dialog reuses the header from the loading dialog.
-    CreateAndShowLoadingDialog();
-
     const std::string kAccountSuffix = "suffix";
     content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
@@ -255,6 +257,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
+
+    expect_visible_body_label_ = true;
     PerformHeaderChecks(children[0]);
 
     views::View* account_rows = children[1];
@@ -269,15 +273,14 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
   void TestMultipleAccounts(bool supports_add_account = false) {
-    // The multiple accounts dialog reuses the header from the loading dialog.
-    CreateAndShowLoadingDialog();
-
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
     CreateAndShowMultiAccountPicker(kAccountSuffixes, supports_add_account);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
+
+    expect_visible_body_label_ = true;
     PerformHeaderChecks(children[0]);
 
     views::ScrollView* scroller = static_cast<views::ScrollView*>(children[1]);
@@ -314,6 +317,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         dialog()->children();
     // Order: Header, single account chooser, button row
     ASSERT_EQ(children.size(), 3u);
+
+    expect_visible_body_label_ = false;
     PerformHeaderChecks(children[0]);
 
     views::View* single_account_chooser = children[1];
@@ -395,6 +400,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
  private:
+  bool expect_visible_body_label_{true};
   ui::ImageModel idp_brand_icon_;
   raw_ptr<AccountSelectionModalView, DanglingUntriaged> dialog_;
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -428,9 +434,28 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
   TestRequestPermission();
 }
 
+// Tests that the single account dialog is rendered correctly, when it is
+// shown after the request permission dialog. This can happen when user clicks
+// on the "back" button.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       SingleAccountAfterRequestPermission) {
+  TestRequestPermission();
+  TestSingleAccount();
+}
+
+// Tests that the multiple accounts dialog is rendered correctly, when it is
+// shown after the request permission dialog. This can happen when user clicks
+// on the "back" button.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       MultipleAccountsAfterRequestPermission) {
+  TestRequestPermission();
+  TestMultipleAccounts();
+}
+
 // Tests that the loading dialog is rendered correctly.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, Loading) {
-  TestLoadingDialog();
+  // We always show the loading dialog at the creation of the modal.
+  CreateAccountSelectionModal();
 }
 
 // Tests that the verifying sheet is rendered correctly, when it is shown after
@@ -484,15 +509,13 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
 // Tests that the request permission dialog is rendered correctly, when it is
 // shown after the loading dialog for a non-returning user.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       RequestPermissionAfterLoadingNonReturningUser) {
-  TestLoadingDialog();
+                       RequestPermissionNonReturningUser) {
   TestRequestPermission(content::IdentityRequestAccount::LoginState::kSignUp);
 }
 
 // Tests that the request permission dialog is rendered correctly, when it is
 // shown after the loading dialog for a returning user.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       RequestPermissionAfterLoadingReturningUser) {
-  TestLoadingDialog();
+                       RequestPermissionReturningUser) {
   TestRequestPermission(content::IdentityRequestAccount::LoginState::kSignIn);
 }
