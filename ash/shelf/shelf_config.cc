@@ -212,36 +212,11 @@ void ShelfConfig::OnSessionStateChanged(session_manager::SessionState state) {
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
 }
 
-void ShelfConfig::OnDisplayTabletStateChanged(display::TabletState state) {
-  switch (state) {
-    case display::TabletState::kInClamshellMode:
-      break;
-    case display::TabletState::kEnteringTabletMode:
-      // Update the shelf config at the "starting" stage of the tablet mode
-      // transition, so that the shelf bounds are set and remains stable during
-      // the transition animation. Otherwise, updating the shelf bounds during
-      // the animation will lead to work-area bounds changes which lead to many
-      // re-layouts, hurting the animation's smoothness.
-      // https://crbug.com/1044316.
-      DCHECK(!in_tablet_mode_);
-      in_tablet_mode_ = true;
-
-      UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/true);
-      break;
-    case display::TabletState::kInTabletMode:
-      break;
-    case display::TabletState::kExitingTabletMode:
-      // Many events can lead to UpdateConfig being called as a result of
-      // kInClamshellMode event, therefore we need to listen to the "ending"
-      // stage rather than the "ended", so `in_tablet_mode_` gets updated
-      // correctly, and the shelf bounds are stabilized early so as not to have
-      // multiple unnecessary work-area bounds changes.
-      in_tablet_mode_ = false;
-
-      UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/true);
-
-      has_shown_elevated_app_bar_ = std::nullopt;
-      break;
+void ShelfConfig::UpdateForTabletMode(bool in_tablet_mode) {
+  in_tablet_mode_ = in_tablet_mode;
+  UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/true);
+  if (!in_tablet_mode_) {
+    has_shown_elevated_app_bar_ = std::nullopt;
   }
 }
 

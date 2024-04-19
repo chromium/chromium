@@ -447,18 +447,22 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
   EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
-  // When there is a window, a screenshot will be taken and entering tablet mode
-  // becomes asynchronous, but the display tablet state is synchronously
-  // updated.
+  // When there is a window, a screenshot will be taken before shelf enters
+  // tablet mode state.
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
 
   EXPECT_FALSE(GetTray()->GetVisible());
+  TabletMode::Waiter waiter(/*enable=*/true);
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(true);
+  EXPECT_FALSE(GetTray()->GetVisible());
+
+  waiter.Wait();
+
   EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 
-  // Disabling tablet mode is always synchronous.
+  // When disabling tablet mode, shelf state updates synchronously.
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(false);
   EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());

@@ -908,6 +908,13 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
     Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kExitingTabletMode);
 
+    // Many events can lead to shelf config updates as a result of
+    // kInClamshellMode event. Update the shelf config during "ending"
+    // stage rather than the "ended", so `in_tablet_mode_` gets updated
+    // correctly, and the shelf bounds are stabilized early so as not to have
+    // multiple unnecessary work-area bounds changes.
+    ShelfConfig::Get()->UpdateForTabletMode(/*in_tablet_mode=*/false);
+
     if (tablet_mode_window_manager_) {
       tablet_mode_window_manager_->Shutdown(
           TabletModeWindowManager::ShutdownReason::kExitTabletUIMode);
@@ -1166,6 +1173,18 @@ void TabletModeController::ResetPauser() {
 void TabletModeController::FinishInitTabletMode() {
   DCHECK_EQ(display::TabletState::kEnteringTabletMode,
             display::Screen::GetScreen()->GetTabletState());
+
+  // Transition shelf to tablet mode state, now that the screenshot for tablet
+  // mode transition was taken. Taking screenshot recreates shelf container
+  // layer, and uses the original layer - changing shelf state before the
+  // screenshot is taken would change the shelf appearance, and could cause
+  // issues where the original shelf widget layer is not re-painted correctly in
+  // response to a paint schedule for tablet mode state change.
+  // Update the shelf state befire initiating tablet mode window state changes
+  // to avoid negative impact of window work-area changes (due to changes in
+  // shelf bounds) during window state transition on the animation smoothness
+  // https://crbug.com/1044316.
+  ShelfConfig::Get()->UpdateForTabletMode(/*in_tablet_mode=*/true);
 
   tablet_mode_window_manager_ = std::make_unique<TabletModeWindowManager>();
   tablet_mode_window_manager_->Init();
