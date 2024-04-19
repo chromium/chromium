@@ -10,7 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -42,6 +46,13 @@ class TestMojomSearchController : public mojom::SearchController {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  void RunUntilSearch() {
+    base::RunLoop loop;
+    base::AutoReset<base::RepeatingClosure> quit_loop(&search_callback_,
+                                                      loop.QuitClosure());
+    loop.Run();
+  }
+
   void ProduceResults(
       mojom::SearchStatus status,
       std::optional<std::vector<mojom::SearchResultPtr>> results) {
@@ -56,7 +67,11 @@ class TestMojomSearchController : public mojom::SearchController {
 
     publisher_.reset();
     std::move(callback).Run(publisher_.BindNewEndpointAndPassReceiver());
+
+    search_callback_.Run();
   }
+
+  base::RepeatingClosure search_callback_ = base::DoNothing();
 
   mojo::Receiver<mojom::SearchController> receiver_{this};
   mojo::AssociatedRemote<mojom::SearchResultsPublisher> publisher_;
@@ -79,14 +94,15 @@ TEST_F(SearchControllerAshTest, CallbackNotCalledIfNotConnected) {
     TestMojomSearchController mojom_controller;
     controller =
         std::make_unique<SearchControllerAsh>(mojom_controller.BindToRemote());
-    // Run until idle to ensure that the controller binds the remote...
-    environment.RunUntilIdle();
-    // ...then destroy the receiver to disconnect it...
   }
-  // ...and ensure that the controller receives the disconnection.
-  environment.RunUntilIdle();
+  {
+    base::RunLoop loop;
+    controller->AddDisconnectHandler(
+        SearchControllerAsh::DisconnectCallback(base::DoNothing())
+            .Then(loop.QuitClosure()));
+    loop.Run();
+  }
   controller->Search(u"cat", future.GetRepeatingCallback());
-  environment.RunUntilIdle();
 
   EXPECT_FALSE(future.IsReady());
 }
@@ -97,12 +113,13 @@ TEST_F(SearchControllerAshTest, CallbackNotCalledIfBackendUnavailable) {
   TestMojomSearchController mojom_controller;
 
   SearchControllerAsh controller(mojom_controller.BindToRemote());
-  environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
-  environment.RunUntilIdle();
+  mojom_controller.RunUntilSearch();
   mojom_controller.ProduceResults(mojom::SearchStatus::kBackendUnavailable,
                                   std::nullopt);
-  environment.RunUntilIdle();
+  // Run until `controller.OnSearchResultsReceived()` is called.
+  // TODO: b/326147929 - Use a `QuitClosure` for this.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(future.IsReady());
 }
@@ -113,12 +130,14 @@ TEST_F(SearchControllerAshTest, CallbackNotCalledIfCancelled) {
   TestMojomSearchController mojom_controller;
 
   SearchControllerAsh controller(mojom_controller.BindToRemote());
-  environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
-  environment.RunUntilIdle();
+  mojom_controller.RunUntilSearch();
   mojom_controller.ProduceResults(mojom::SearchStatus::kBackendUnavailable,
                                   std::nullopt);
-  environment.RunUntilIdle();
+  // Run until `controller.OnSearchResultsReceived()` is called.
+  // TODO: b/326147929 - Use a `QuitClosure` for this.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(future.IsReady());
 }
 
@@ -128,9 +147,8 @@ TEST_F(SearchControllerAshTest, CallbackCalledWithEmptyResults) {
   TestMojomSearchController mojom_controller;
 
   SearchControllerAsh controller(mojom_controller.BindToRemote());
-  environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
-  environment.RunUntilIdle();
+  mojom_controller.RunUntilSearch();
   mojom_controller.ProduceResults(mojom::SearchStatus::kDone,
                                   std::vector<mojom::SearchResultPtr>());
 
@@ -145,9 +163,8 @@ TEST_F(SearchControllerAshTest,
   TestMojomSearchController mojom_controller;
 
   SearchControllerAsh controller(mojom_controller.BindToRemote());
-  environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
-  environment.RunUntilIdle();
+  mojom_controller.RunUntilSearch();
   std::vector<mojom::SearchResultPtr> results;
   {
     mojom::SearchResultPtr result = mojom::SearchResult::New();
@@ -182,9 +199,8 @@ TEST_F(SearchControllerAshTest, CallbackCalledWithMultipleResultsSeparately) {
   TestMojomSearchController mojom_controller;
 
   SearchControllerAsh controller(mojom_controller.BindToRemote());
-  environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
-  environment.RunUntilIdle();
+  mojom_controller.RunUntilSearch();
 
   {
     std::vector<mojom::SearchResultPtr> results;
@@ -224,9 +240,8 @@ TEST_F(SearchControllerAshTest, CallbackIsNotCalledWithInProgressResults) {
   TestMojomSearchController mojom_controller;
 
   SearchControllerAsh controller(mojom_controller.BindToRemote());
-  environment.RunUntilIdle();
   controller.Search(u"cat", future.GetRepeatingCallback());
-  environment.RunUntilIdle();
+  mojom_controller.RunUntilSearch();
 
   {
     std::vector<mojom::SearchResultPtr> results;
@@ -235,7 +250,9 @@ TEST_F(SearchControllerAshTest, CallbackIsNotCalledWithInProgressResults) {
     results.push_back(std::move(result));
     mojom_controller.ProduceResults(mojom::SearchStatus::kInProgress,
                                     std::move(results));
-    environment.RunUntilIdle();
+    // Run until `controller.OnSearchResultsReceived()` is run.
+    // TODO: b/326147929 - Use a `QuitClosure` for this.
+    base::RunLoop().RunUntilIdle();
 
     EXPECT_FALSE(future.IsReady());
   }
@@ -266,7 +283,7 @@ TEST_F(SearchControllerAshTest,
 
   controller.AddDisconnectHandler(future.GetCallback());
   mojom_controller.reset();
-  environment.RunUntilIdle();
+  ASSERT_TRUE(future.Wait()) << "Disconnect handler was never called";
   ASSERT_FALSE(controller.IsConnected());
 
   EXPECT_TRUE(future.IsReady());
@@ -286,7 +303,7 @@ TEST_F(SearchControllerAshTest,
   controller.AddDisconnectHandler(future_1.GetCallback());
   controller.AddDisconnectHandler(future_2.GetCallback());
   mojom_controller.reset();
-  environment.RunUntilIdle();
+  ASSERT_TRUE(future_2.Wait()) << "Disconnect handler was never called";
   ASSERT_FALSE(controller.IsConnected());
 
   base::WeakPtr<SearchControllerAsh> weak_controller_1 = future_1.Take();
@@ -311,7 +328,7 @@ TEST_F(SearchControllerAshTest, DisconnectHandlersAreCalledInAdditionOrder) {
       })));
   controller.AddDisconnectHandler(future_2.GetCallback());
   mojom_controller.reset();
-  environment.RunUntilIdle();
+  ASSERT_TRUE(future_2.Wait()) << "Disconnect handler was never called";
   ASSERT_FALSE(controller.IsConnected());
 
   // This also guarantees that the "first future called before second future"
@@ -327,7 +344,13 @@ TEST_F(SearchControllerAshTest,
   auto mojom_controller = std::make_unique<TestMojomSearchController>();
   SearchControllerAsh controller(mojom_controller->BindToRemote());
   mojom_controller.reset();
-  environment.RunUntilIdle();
+  {
+    base::RunLoop loop;
+    controller.AddDisconnectHandler(
+        SearchControllerAsh::DisconnectCallback(base::DoNothing())
+            .Then(loop.QuitClosure()));
+    loop.Run();
+  }
   ASSERT_FALSE(controller.IsConnected());
 
   controller.AddDisconnectHandler(future.GetCallback());
@@ -363,9 +386,7 @@ TEST_F(SearchControllerAshTest,
       }));
   controller->AddDisconnectHandler(future.GetCallback());
   mojom_controller.reset();
-  environment.RunUntilIdle();
 
-  EXPECT_TRUE(future.IsReady());
   base::WeakPtr<SearchControllerAsh> weak_controller = future.Take();
   EXPECT_FALSE(weak_controller);
 }
