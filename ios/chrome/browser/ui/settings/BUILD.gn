@@ -185,6 +185,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
+    "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/ui/settings/content_settings",
     "//ios/chrome/browser/ui/settings/default_browser",
     "//ios/chrome/browser/ui/settings/downloads",

@@ -107,6 +107,7 @@ source_set("privacy") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
+    "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/ui/settings/privacy/lockdown_mode",
     "//ios/chrome/browser/ui/settings/privacy/privacy_guide",
     "//ios/chrome/browser/ui/settings/utils",
