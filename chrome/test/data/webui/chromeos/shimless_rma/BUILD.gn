@@ -36,7 +36,7 @@ build_webui_tests("build_webui_tests") {
     "reimaging_device_information_page_test.ts",
     "reimaging_firmware_update_page_test.ts",
     "reimaging_provisioning_page_test.ts",
-    "repair_component_chip_test.js",
+    "repair_component_chip_test.ts",
     "shimless_3p_diag_test.js",
     "shimless_rma_app_test.ts",
     "wrapup_finalize_page_test.js",

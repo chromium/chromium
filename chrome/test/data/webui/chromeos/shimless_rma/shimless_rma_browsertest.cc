@@ -153,6 +153,10 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, ProvisioningPage) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, RepairComponentChip) {
+  RunTest("chromeos/shimless_rma/repair_component_chip_test.js", "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash
