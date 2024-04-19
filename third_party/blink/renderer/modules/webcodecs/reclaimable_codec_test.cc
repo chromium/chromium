@@ -68,7 +68,7 @@ class FakeReclaimableCodec final
 
 }  // namespace
 
-class BaseReclaimableCodecTest
+class ReclaimableCodecTest
     : public testing::TestWithParam<ReclaimableCodec::CodecType> {
  public:
   FakeReclaimableCodec* CreateCodec(ExecutionContext* context) {
@@ -84,74 +84,13 @@ class BaseReclaimableCodecTest
 
  private:
   bool is_gauge_threshold_set_ = false;
-};
-
-// Testing w/ flags allowing only reclamation of background codecs.
-class ReclaimBackgroundOnlyTest : public BaseReclaimableCodecTest {
- public:
-  ReclaimBackgroundOnlyTest() {
-    std::vector<base::test::FeatureRef> enabled_features{
-        kReclaimInactiveWebCodecs, kOnlyReclaimBackgroundWebCodecs};
-    std::vector<base::test::FeatureRef> disabled_features{};
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
- private:
   test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
-// Testing w/ flags allowing reclamation of both foreground and background
-// codecs.
-class ReclaimForegroundSameAsBackgroundTest : public BaseReclaimableCodecTest {
- public:
-  ReclaimForegroundSameAsBackgroundTest() {
-    std::vector<base::test::FeatureRef> enabled_features{
-        kReclaimInactiveWebCodecs};
-    std::vector<base::test::FeatureRef> disabled_features{
-        kOnlyReclaimBackgroundWebCodecs};
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
- private:
-  test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Testing kill-switch scenario w/ all flags disabled.
-class ReclaimDisabledTest : public BaseReclaimableCodecTest {
- public:
-  ReclaimDisabledTest() {
-    std::vector<base::test::FeatureRef> enabled_features{};
-    std::vector<base::test::FeatureRef> disabled_features{
-        kReclaimInactiveWebCodecs, kOnlyReclaimBackgroundWebCodecs};
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
- private:
-  test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-enum class TestParam {
-  // Instructs test to use SimulateLifecycleStateForTesting(kHidden) to simulate
-  // a backgrounding scenario.
-  kSimulateBackgrounding,
-  // Instructs test to expect that codec is already backgrounded and to refrain
-  // from simulating backgrounding as above.
-  kExpectAlreadyInBackground,
-};
-
-void TestBackgroundInactivityTimerStartStops(TestParam background_type,
-                                             FakeReclaimableCodec* codec) {
-  if (background_type == TestParam::kSimulateBackgrounding) {
-    EXPECT_FALSE(codec->is_backgrounded_for_testing());
-    codec->SimulateLifecycleStateForTesting(
-        scheduler::SchedulingLifecycleState::kHidden);
-  } else {
-    DCHECK_EQ(background_type, TestParam::kExpectAlreadyInBackground);
-    EXPECT_TRUE(codec->is_backgrounded_for_testing());
-  }
+void TestBackgroundInactivityTimerStartStops(FakeReclaimableCodec* codec) {
+  EXPECT_FALSE(codec->is_backgrounded_for_testing());
+  codec->SimulateLifecycleStateForTesting(
+      scheduler::SchedulingLifecycleState::kHidden);
 
   // Codecs should not be reclaimable for inactivity until pressure is exceeded.
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
@@ -176,16 +115,10 @@ void TestBackgroundInactivityTimerStartStops(TestParam background_type,
   EXPECT_TRUE(codec->IsReclamationTimerActiveForTesting());
 }
 
-void TestBackgroundInactivityTimerWorks(TestParam background_type,
-                                        FakeReclaimableCodec* codec) {
-  if (background_type == TestParam::kSimulateBackgrounding) {
-    EXPECT_FALSE(codec->is_backgrounded_for_testing());
-    codec->SimulateLifecycleStateForTesting(
-        scheduler::SchedulingLifecycleState::kHidden);
-  } else {
-    DCHECK_EQ(background_type, TestParam::kExpectAlreadyInBackground);
-    EXPECT_TRUE(codec->is_backgrounded_for_testing());
-  }
+void TestBackgroundInactivityTimerWorks(FakeReclaimableCodec* codec) {
+  EXPECT_FALSE(codec->is_backgrounded_for_testing());
+  codec->SimulateLifecycleStateForTesting(
+      scheduler::SchedulingLifecycleState::kHidden);
 
   // Codecs should not be reclaimable for inactivity until pressure is exceeded.
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
@@ -219,44 +152,23 @@ void TestBackgroundInactivityTimerWorks(TestParam background_type,
   codec->set_tick_clock_for_testing(base::DefaultTickClock::GetInstance());
 }
 
-TEST_P(ReclaimBackgroundOnlyTest, BackgroundInactivityTimerStartStops) {
+TEST_P(ReclaimableCodecTest, BackgroundInactivityTimerStartStops) {
   V8TestingScope v8_scope;
 
   // Only background reclamation permitted, so simulate backgrouding.
   TestBackgroundInactivityTimerStartStops(
-      TestParam::kSimulateBackgrounding,
       CreateCodec(v8_scope.GetExecutionContext()));
 }
 
-TEST_P(ReclaimBackgroundOnlyTest, BackgroundInactivityTimerWorks) {
+TEST_P(ReclaimableCodecTest, BackgroundInactivityTimerWorks) {
   V8TestingScope v8_scope;
 
   // Only background reclamation permitted, so simulate backgrouding.
   TestBackgroundInactivityTimerWorks(
-      TestParam::kSimulateBackgrounding,
       CreateCodec(v8_scope.GetExecutionContext()));
 }
 
-TEST_P(ReclaimForegroundSameAsBackgroundTest,
-       BackgroundInactivityTimerStartStops) {
-  V8TestingScope v8_scope;
-
-  // Foreground codecs are treated as always backgrounded w/ these feature flags
-  TestBackgroundInactivityTimerStartStops(
-      TestParam::kExpectAlreadyInBackground,
-      CreateCodec(v8_scope.GetExecutionContext()));
-}
-
-TEST_P(ReclaimForegroundSameAsBackgroundTest, BackgroundInactivityTimerWorks) {
-  V8TestingScope v8_scope;
-
-  // Foreground codecs are treated as always backgrounded w/ these feature flags
-  TestBackgroundInactivityTimerWorks(
-      TestParam::kExpectAlreadyInBackground,
-      CreateCodec(v8_scope.GetExecutionContext()));
-}
-
-TEST_P(ReclaimBackgroundOnlyTest, ForegroundInactivityTimerNeverStarts) {
+TEST_P(ReclaimableCodecTest, ForegroundInactivityTimerNeverStarts) {
   V8TestingScope v8_scope;
 
   auto* codec = CreateCodec(v8_scope.GetExecutionContext());
@@ -300,7 +212,7 @@ TEST_P(ReclaimBackgroundOnlyTest, ForegroundInactivityTimerNeverStarts) {
   codec->set_tick_clock_for_testing(base::DefaultTickClock::GetInstance());
 }
 
-TEST_P(ReclaimBackgroundOnlyTest, ForegroundCodecReclaimedOnceBackgrounded) {
+TEST_P(ReclaimableCodecTest, ForegroundCodecReclaimedOnceBackgrounded) {
   V8TestingScope v8_scope;
 
   auto* codec = CreateCodec(v8_scope.GetExecutionContext());
@@ -374,7 +286,7 @@ TEST_P(ReclaimBackgroundOnlyTest, ForegroundCodecReclaimedOnceBackgrounded) {
   codec->set_tick_clock_for_testing(base::DefaultTickClock::GetInstance());
 }
 
-TEST_P(ReclaimBackgroundOnlyTest, RepeatLifecycleEventsDontBreakState) {
+TEST_P(ReclaimableCodecTest, RepeatLifecycleEventsDontBreakState) {
   V8TestingScope v8_scope;
 
   auto* codec = CreateCodec(v8_scope.GetExecutionContext());
@@ -438,36 +350,7 @@ TEST_P(ReclaimBackgroundOnlyTest, RepeatLifecycleEventsDontBreakState) {
   codec->set_tick_clock_for_testing(base::DefaultTickClock::GetInstance());
 }
 
-TEST_P(ReclaimDisabledTest, ReclamationKillSwitch) {
-  V8TestingScope v8_scope;
-
-  auto* codec = CreateCodec(v8_scope.GetExecutionContext());
-
-  // Test codec should start in background when kOnlyReclaimBackgroundWebCodecs
-  // is disabled.
-  EXPECT_TRUE(codec->is_backgrounded_for_testing());
-
-  // Codecs should not be reclaimable until pressure is exceeded.
-  EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
-
-  base::SimpleTestTickClock tick_clock;
-  codec->set_tick_clock_for_testing(&tick_clock);
-
-  // Reclamation disabled, so pressure should not start the timer.
-  codec->SimulatePressureExceeded();
-  EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
-  EXPECT_FALSE(codec->reclaimed());
-
-  // Advancing any period should not be enough to reclaim the codec.
-  tick_clock.Advance(kTimerPeriod * 10);
-  EXPECT_FALSE(codec->reclaimed());
-
-  // Restore default tick clock since |codec| is a garbage collected object that
-  // may outlive the scope of this function.
-  codec->set_tick_clock_for_testing(base::DefaultTickClock::GetInstance());
-}
-
-TEST_P(ReclaimBackgroundOnlyTest, PressureChangesUpdateTimer) {
+TEST_P(ReclaimableCodecTest, PressureChangesUpdateTimer) {
   V8TestingScope v8_scope;
 
   auto* codec = CreateCodec(v8_scope.GetExecutionContext());
@@ -527,19 +410,7 @@ TEST_P(ReclaimBackgroundOnlyTest, PressureChangesUpdateTimer) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    ReclaimBackgroundOnlyTest,
-    testing::Values(ReclaimableCodec::CodecType::kDecoder,
-                    ReclaimableCodec::CodecType::kEncoder));
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ReclaimForegroundSameAsBackgroundTest,
-    testing::Values(ReclaimableCodec::CodecType::kDecoder,
-                    ReclaimableCodec::CodecType::kEncoder));
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ReclaimDisabledTest,
+    ReclaimableCodecTest,
     testing::Values(ReclaimableCodec::CodecType::kDecoder,
                     ReclaimableCodec::CodecType::kEncoder));
 

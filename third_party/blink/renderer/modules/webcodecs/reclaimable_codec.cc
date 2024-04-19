@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -15,14 +14,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
-BASE_FEATURE(kReclaimInactiveWebCodecs,
-             "ReclaimInactiveWebCodecs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOnlyReclaimBackgroundWebCodecs,
-             "OnlyReclaimBackgroundWebCodecs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::TimeDelta ReclaimableCodec::kInactivityReclamationThreshold;
 
@@ -36,16 +27,11 @@ ReclaimableCodec::ReclaimableCodec(CodecType type, ExecutionContext* context)
                       this,
                       &ReclaimableCodec::OnActivityTimerFired) {
   DCHECK(context);
-  if (base::FeatureList::IsEnabled(kOnlyReclaimBackgroundWebCodecs)) {
-    // Do this last, it will immediately re-enter via OnLifecycleStateChanged().
-    observer_handle_ = context->GetScheduler()->AddLifecycleObserver(
-        FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
-        WTF::BindRepeating(&ReclaimableCodec::OnLifecycleStateChanged,
-                           WrapWeakPersistent(this)));
-  } else {
-    // Pretend we're always in the background to _always_ reclaim.
-    is_backgrounded_ = true;
-  }
+  // Do this last, it will immediately re-enter via OnLifecycleStateChanged().
+  observer_handle_ = context->GetScheduler()->AddLifecycleObserver(
+      FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
+      WTF::BindRepeating(&ReclaimableCodec::OnLifecycleStateChanged,
+                         WrapWeakPersistent(this)));
 }
 
 void ReclaimableCodec::Trace(Visitor* visitor) const {
@@ -175,10 +161,8 @@ void ReclaimableCodec::StartIdleReclamationTimer() {
   if (activity_timer_.IsActive())
     return;
 
-  if (base::FeatureList::IsEnabled(kReclaimInactiveWebCodecs)) {
-    DVLOG(5) << __func__ << " Starting timer.";
-    activity_timer_.StartRepeating(inactivity_threshold_ / 2, FROM_HERE);
-  }
+  DVLOG(5) << __func__ << " Starting timer.";
+  activity_timer_.StartRepeating(inactivity_threshold_ / 2, FROM_HERE);
 }
 
 void ReclaimableCodec::StopIdleReclamationTimer() {
@@ -188,7 +172,6 @@ void ReclaimableCodec::StopIdleReclamationTimer() {
 }
 
 void ReclaimableCodec::OnActivityTimerFired(TimerBase*) {
-  DCHECK(base::FeatureList::IsEnabled(kReclaimInactiveWebCodecs));
   DCHECK(AreReclamationPreconditionsMet());
 
   auto time_inactive = tick_clock_->NowTicks() - last_activity_;

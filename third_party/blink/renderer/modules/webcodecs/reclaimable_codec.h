@@ -26,9 +26,6 @@ class CodecPressureManager;
 class DOMException;
 class ExecutionContext;
 
-MODULES_EXPORT BASE_DECLARE_FEATURE(kReclaimInactiveWebCodecs);
-MODULES_EXPORT BASE_DECLARE_FEATURE(kOnlyReclaimBackgroundWebCodecs);
-
 class MODULES_EXPORT ReclaimableCodec
     : public ExecutionContextLifecycleObserver {
   USING_PRE_FINALIZER(ReclaimableCodec, Dispose);
