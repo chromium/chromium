@@ -52,6 +52,10 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
         finished->has_passed, uuid, browser_context);
   }
 
+  if (finished->detail.is_null()) {
+    return nullptr;
+  }
+
   switch (finished->detail->which()) {
     case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kUnrecognizedArgument:
       LOG(WARNING) << "Got unknown routine detail";
