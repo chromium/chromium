@@ -1644,6 +1644,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   // Popup window activation is delayed until its opener exits fullscreen.
   EXPECT_EQ(browser(), browser_list->GetLastActive());
   ToggleTabFullscreen(/*enter_fullscreen=*/false);
+  ui_test_utils::BrowserActivationWaiter(popup).WaitForActivation();
   EXPECT_EQ(popup, browser_list->GetLastActive());
 }
 
@@ -1722,6 +1723,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   // Popup window activation is delayed until its opener exits fullscreen.
   EXPECT_EQ(browser(), browser_list->GetLastActive());
   ToggleTabFullscreen(/*enter_fullscreen=*/false);
+  ui_test_utils::BrowserActivationWaiter(popup).WaitForActivation();
   EXPECT_EQ(popup, browser_list->GetLastActive());
 }
 
