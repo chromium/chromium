@@ -297,12 +297,12 @@
       'android-arm64-pgo': 'official_android_arm64_pgo',
       'lacros-amd64-generic-pgo': 'official_lacros_amd64_pgo',
       'lacros-arm64-generic-pgo': 'official_lacros_arm64_pgo',
-      'linux-pgo': 'official_linux_pgo',
-      'mac-arm-pgo': 'official_mac_arm_pgo',
-      'mac-pgo': 'official_mac_pgo',
-      'win-arm64-pgo': 'official_win_arm64_pgo',
-      'win32-pgo': 'official_x86_pgo',
-      'win64-pgo': 'official_x64_pgo',
+      'linux-pgo': 'official_linux_pgo_with_symbols',
+      'mac-arm-pgo': 'official_mac_arm_pgo_with_symbols',
+      'mac-pgo': 'official_mac_pgo_with_symbols',
+      'win-arm64-pgo': 'official_win_arm64_pgo_with_symbols',
+      'win32-pgo': 'official_x86_pgo_with_symbols',
+      'win64-pgo': 'official_x64_pgo_with_symbols',
     },
 
     'tryserver.chromium.perf': {
@@ -764,12 +764,24 @@
       'official', 'reclient', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
+    'official_linux_pgo_with_symbols': [
+      'official', 'reclient', 'minimal_symbols', 'pgo_phase_1', 'release'
+    ],
+
     'official_mac_arm_pgo': [
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
+    'official_mac_arm_pgo_with_symbols': [
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release'
+    ],
+
     'official_mac_pgo': [
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_mac_pgo_with_symbols': [
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_minimal_symbols_android_arm64': [
@@ -870,13 +882,27 @@
       'official', 'reclient', 'arm64', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
+    'official_win_arm64_pgo_with_symbols': [
+      'official', 'reclient', 'arm64', 'minimal_symbols', 'pgo_phase_1', 'release'
+    ],
+
     'official_x64_pgo': [
       'official', 'reclient', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
+    'official_x64_pgo_with_symbols': [
+      'official', 'reclient', 'x64', 'minimal_symbols', 'pgo_phase_1', 'release'
+    ],
+
+
     'official_x86_pgo': [
       'official', 'reclient', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
+
+    'official_x86_pgo_with_symbols': [
+      'official', 'reclient', 'x86', 'minimal_symbols', 'pgo_phase_1', 'release'
+    ],
+
 
     'optimization_guide_android_arm64_rel': [
       'minimal_symbols', 'reclient', 'release', 'android', 'arm64',
