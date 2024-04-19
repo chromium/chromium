@@ -127,7 +127,7 @@ bool IsLaunchedByTrustedProcess() {
   }
 
   // Check if the caller's image path is allowlisted.
-  for (const std::string_view& apps_dir_env_var : kAppsDirectoryEnvVars) {
+  for (std::string_view apps_dir_env_var : kAppsDirectoryEnvVars) {
     std::string apps_dir_path_utf8;
     if (!environment->GetVar(apps_dir_env_var, &apps_dir_path_utf8)) {
       continue;

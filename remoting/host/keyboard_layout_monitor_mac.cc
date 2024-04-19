@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/apple/scoped_cftyperef.h"
@@ -207,7 +208,7 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
       }
 
       key_actions[shift_level].set_character(
-          base::UTF16ToUTF8(base::StringPiece16(
+          base::UTF16ToUTF8(std::u16string_view(
               reinterpret_cast<const char16_t*>(result_array), result_length)));
     }
 
