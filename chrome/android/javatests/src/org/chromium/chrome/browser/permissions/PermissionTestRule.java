@@ -135,12 +135,8 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                 new Statement() {
                     @Override
                     public void evaluate() throws Throwable {
-                        try {
-                            ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
-                            base.evaluate();
-                        } finally {
-                            ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
-                        }
+                        ModalDialogView.disableButtonTapProtectionForTesting();
+                        base.evaluate();
                     }
                 },
                 description);

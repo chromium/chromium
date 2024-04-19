@@ -20,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
@@ -38,9 +39,7 @@ import java.util.Set;
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
     private static final String TAG_PREFIX = "ModalDialogViewButton";
 
-    private static boolean sEnableButtonTapProtection = true;
-
-    private static long sCurrentTimeMsForTesting;
+    private static boolean sDisableButtonTapProtectionForTesting;
 
     private FadingEdgeScrollView mTitleScrollView;
 
@@ -143,7 +142,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     // Dialog buttons will not react to any tap event for a short period after this view is
     // displayed. This is to prevent potentially unintentional user interactions.
     private boolean isWithinButtonTapProtectionPeriod() {
-        if (!isButtonTapProtectionEnabled()) return false;
+        if (sDisableButtonTapProtectionForTesting) return false;
 
         // Not set by feature clients.
         if (mButtonTapProtectionDurationMs == 0) return false;
@@ -491,11 +490,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mButtonBar.setVisibility(defaultButtonBarVisible ? View.VISIBLE : View.GONE);
     }
 
-    private boolean isButtonTapProtectionEnabled() {
-        return sEnableButtonTapProtection;
-    }
-
-    public static void overrideEnableButtonTapProtectionForTesting(boolean enable) {
-        sEnableButtonTapProtection = enable;
+    public static void disableButtonTapProtectionForTesting() {
+        sDisableButtonTapProtectionForTesting = true;
+        ResettersForTesting.register(() -> sDisableButtonTapProtectionForTesting = false);
     }
 }

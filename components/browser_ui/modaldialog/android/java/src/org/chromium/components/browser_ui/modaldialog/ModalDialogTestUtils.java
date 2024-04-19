@@ -243,12 +243,4 @@ public class ModalDialogTestUtils {
                     return model;
                 });
     }
-
-    /**
-     * Enable/Disable the {@link ModalDialogProperties#BUTTON_TAP_PROTECTION_PERIOD_MS} feature.
-     * Defaults to true.
-     */
-    public static void overrideEnableButtonTapProtection(boolean enable) {
-        ModalDialogView.overrideEnableButtonTapProtectionForTesting(enable);
-    }
 }

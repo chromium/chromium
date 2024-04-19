@@ -44,7 +44,7 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
 
     @BeforeClass
     public static void beforeClass() {
-        ModalDialogView.overrideEnableButtonTapProtectionForTesting(false);
+        ModalDialogView.disableButtonTapProtectionForTesting();
     }
 
     @Override

@@ -41,7 +41,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -78,7 +78,7 @@ public class DownloadDialogIncognitoTest {
                                                 ModalDialogManager.ModalDialogType.APP);
                                     });
                 });
-        ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
+        ModalDialogView.disableButtonTapProtectionForTesting();
     }
 
     @Test

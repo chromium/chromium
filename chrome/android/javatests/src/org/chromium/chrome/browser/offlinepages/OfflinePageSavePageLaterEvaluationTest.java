@@ -25,7 +25,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Manual;
-import org.chromium.base.test.util.TimeoutScale;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.evaluation.OfflinePageEvaluationBridge;
 import org.chromium.chrome.browser.offlinepages.evaluation.OfflinePageEvaluationBridge.OfflinePageEvaluationObserver;
@@ -464,7 +463,6 @@ public class OfflinePageSavePageLaterEvaluationTest {
             File externalArchiveDir = getExternalArchiveDir();
             for (int i = 0; i < mRequestMetadata.size(); i++) {
                 RequestMetadata metadata = mRequestMetadata.valueAt(i);
-                long requestId = metadata.mId;
                 int status = metadata.mStatus;
                 String url = metadata.mUrl;
                 OfflinePageItem page = metadata.mPage;
@@ -538,15 +536,12 @@ public class OfflinePageSavePageLaterEvaluationTest {
 
     /**
      * The test is the entry point for all kinds of testing of SavePageLater. It is encouraged to
-     * use run_offline_page_evaluation_test.py to run this test. TimeoutScale is set to 4, in case
-     * we hit the hard limit for @Manual tests(10 hours) and gets killed. It expand the timeout to
-     * 10 * 4 hours. We won't be treating svelte devices differently so enable the feature which
-     * would let immediate processing also works on svelte devices. This flag will *not* affect
-     * normal devices.
+     * use run_offline_page_evaluation_test.py to run this test. We won't be treating svelte devices
+     * differently so enable the feature which would let immediate processing also works on svelte
+     * devices. This flag will *not* affect normal devices.
      */
     @Test
     @Manual
-    @TimeoutScale(4)
     @CommandLineFlags.Add({"enable-features=OfflinePagesSvelteConcurrentLoading"})
     @CommandLineFlags.Remove({"disable-features=OfflinePagesSvelteConcurrentLoading"})
     public void testFailureRate() throws IOException, InterruptedException {

@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -880,9 +881,11 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public static void interceptMoveTaskToBackForTesting() {
         sInterceptMoveTaskToBackForTesting = true;
         sBackInterceptedForTesting = false;
+        ResettersForTesting.register(() -> sInterceptMoveTaskToBackForTesting = false);
     }
 
     public static boolean wasMoveTaskToBackInterceptedForTesting() {
+        assert sInterceptMoveTaskToBackForTesting;
         return sBackInterceptedForTesting;
     }
 

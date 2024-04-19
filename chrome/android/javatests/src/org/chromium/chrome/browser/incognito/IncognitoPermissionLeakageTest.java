@@ -48,7 +48,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
@@ -94,12 +94,11 @@ public class IncognitoPermissionLeakageTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
-        ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
+        ModalDialogView.disableButtonTapProtectionForTesting();
     }
 
     @After
     public void tearDown() {
-        ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
     }
