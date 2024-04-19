@@ -19,51 +19,57 @@ import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxPrefs} from '../prefs.js';
 
+interface Offsets {
+  brailleOffset: number;
+  textOffset: number;
+}
+
+type TextToDisplay = [text: string, braille: string];
+
 /**
  * Interface that allows clients to listen for changes to the braille captions.
+ * TODO(anastasi): convert this to an interface once all implementers are in
+ *     TypeScript.
  */
-export class BrailleCaptionsListener {
+export abstract class BrailleCaptionsListener {
   /** Called when the braille captions state changes. */
-  onBrailleCaptionsStateChanged() {}
+  abstract onBrailleCaptionsStateChanged(): void;
 }
 
 export class BrailleCaptionsBackground {
-  /** @param {!BrailleCaptionsListener} listener */
-  constructor(listener) {
-    /** @private {!BrailleCaptionsListener} */
+  static instance: BrailleCaptionsBackground;
+
+  private listener_: BrailleCaptionsListener;
+
+  constructor(listener: BrailleCaptionsListener) {
     this.listener_ = listener;
   }
 
-  /**
-   * Called once to initialize the class.
-   * @param {!BrailleCaptionsListener} listener
-   */
-  static init(listener) {
+  /** Called once to initialize the class. */
+  static init(listener: BrailleCaptionsListener): void {
     BrailleCaptionsBackground.instance =
         new BrailleCaptionsBackground(listener);
   }
 
-  /**
-   * Returns whether the braille captions feature is enabled.
-   * @return {boolean}
-   */
-  static isEnabled() {
+  /** Returns whether the braille captions feature is enabled. */
+  static isEnabled(): boolean {
     return Boolean(LocalStorage.get(PREF_KEY));
   }
 
   /**
-   * @param {string} text Text of the shown braille.
-   * @param {ArrayBuffer} cells Braille cells shown on the display.
-   * @param {Array<number>} brailleToText Map of Braille letters to the first
+   * @param text Text of the shown braille.
+   * @param cells Braille cells shown on the display.
+   * @param brailleToText Map of Braille letters to the first
    *     index of corresponding text letter.
-   * @param {{brailleOffset: number, textOffset: number}} offsetsForSlices
+   * @param offsetsForSlices
    *    Offsets to use for calculating indices. The element is the braille
    * offset, the second is the text offset.
-   * @param {number} rows Number of rows to display.
-   * @param {number} columns Number of columns to display.
+   * @param rows Number of rows to display.
+   * @param columns Number of columns to display.
    */
   static setContent(
-      text, cells, brailleToText, offsetsForSlices, rows, columns) {
+      text: string, cells: ArrayBuffer, brailleToText: number[],
+      offsetsForSlices: Offsets, rows: number, columns: number): void {
     // Convert the cells to Unicode braille pattern characters.
     const byteBuf = new Uint8Array(cells);
     let brailleChars = '';
@@ -79,11 +85,12 @@ export class BrailleCaptionsBackground {
   }
 
   /**
-   * @param {ArrayBuffer} cells Braille cells shown on the display.
-   * @param {number} rows Number of rows to display.
-   * @param {number} columns Number of columns to display.
+   * @param cells Braille cells shown on the display.
+   * @param rows Number of rows to display.
+   * @param columns Number of columns to display.
    */
-  static setImageContent(cells, rows, columns) {
+  static setImageContent(
+      cells: ArrayBuffer, rows: number, columns: number): void {
     // Convert the cells to Unicode braille pattern characters.
     const byteBuf = new Uint8Array(cells);
     let brailleChars = '';
@@ -99,22 +106,23 @@ export class BrailleCaptionsBackground {
   }
 
   /**
-   * @param {string} brailleChars Braille characters shown on the display.
-   * @param {string} text Text of the shown braille.
-   * @param {Array<number>} brailleToText Map of Braille cells to the first
-   *     index of corresponding text letter.
-   * @param {{brailleOffset: number, textOffset: number}} offsets
-   *    Offsets to use for calculating indices. The element is the braille
-   * offset, the second is the text offset.
-   * @return {Array} The groups of braille and texts to be displayed.
+   * @param brailleChars Braille characters shown on the display.
+   * @param text Text of the shown braille.
+   * @param brailleToText Map of Braille cells to the first index of
+   *     corresponding text letter.
+   * @param offsets Offsets to use for calculating indices. The element is the
+   *     braille offset, the second is the text offset.
+   * @return The groups of braille and texts to be displayed.
    */
-  static groupBrailleAndText(brailleChars, text, brailleToText, offsets) {
+  static groupBrailleAndText(
+      brailleChars: string, text: string, brailleToText: number[],
+      offsets: Offsets): TextToDisplay[] {
     let brailleBuf = '';
-    const groups = [];
+    const groups: TextToDisplay[] = [];
     let textIndex = 0;
     const brailleOffset = offsets.brailleOffset;
     const textOffset = offsets.textOffset;
-    const calculateTextIndex = index =>
+    const calculateTextIndex = (index: number): number =>
         brailleToText[index + brailleOffset] - textOffset;
 
     for (let i = 0; i < brailleChars.length; ++i) {
@@ -137,9 +145,9 @@ export class BrailleCaptionsBackground {
 
   /**
    * Sets whether the overlay should be active.
-   * @param {boolean} newValue The new value of the active flag.
+   * @param newValue The new value of the active flag.
    */
-  static setActive(newValue) {
+  static setActive(newValue: boolean): void {
     const oldValue = BrailleCaptionsBackground.isEnabled();
     ChromeVoxPrefs.instance.setPref(PREF_KEY, newValue);
     if (oldValue !== newValue) {
@@ -156,9 +164,8 @@ export class BrailleCaptionsBackground {
    * Asynchronously returns a display state representing the state of the
    * captions feature. This is used when no actual hardware display is
    * connected.
-   * @return {!BrailleDisplayState}
    */
-  static getVirtualDisplayState() {
+  static getVirtualDisplayState(): BrailleDisplayState {
     if (BrailleCaptionsBackground.isEnabled()) {
       const rows = SettingsManager.getNumber('virtualBrailleRows');
       const columns = SettingsManager.getNumber('virtualBrailleColumns');
@@ -180,22 +187,15 @@ export class BrailleCaptionsBackground {
   }
 }
 
-/** @type {BrailleCaptionsBackground} */
-BrailleCaptionsBackground.instance;
-
 // Local to module.
 
-/**
- * Key set in local storage when this feature is enabled.
- * @const
- */
+/** Key set in local storage when this feature is enabled. */
 const PREF_KEY = 'brailleCaptions';
 
 /**
  * Unicode block of braille pattern characters.  A braille pattern is formed
  * from this value with the low order 8 bits set to the bits representing
  * the dots as per the ISO 11548-1 standard.
- * @const
  */
 const BRAILLE_UNICODE_BLOCK_START = 0x2800;
 
