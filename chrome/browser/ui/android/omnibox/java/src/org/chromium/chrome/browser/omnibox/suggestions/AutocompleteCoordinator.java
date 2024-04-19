@@ -19,7 +19,6 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -72,16 +71,11 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     private final @NonNull Callback<Profile> mProfileChangeCallback;
     private final @NonNull AutocompleteMediator mMediator;
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final @NonNull OmniboxSuggestionsDropdownAdapter mAdapter;
+    private final @NonNull PreWarmingRecycledViewPool mRecycledViewPool;
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
     private @NonNull ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
             new ObserverList<>();
-    private OmniboxSuggestionsDropdownAdapter mAdapter;
-    private Context mContext;
-    private boolean mUrlHasFocus;
-    private OneshotSupplierImpl<OmniboxSuggestionsDropdownAdapter> mAdapterSupplier =
-            new OneshotSupplierImpl<>();
-    private PreWarmingRecycledViewPool mRecycledViewPool;
-    private final boolean mForcePhoneStyleOmnibox;
 
     public AutocompleteCoordinator(
             @NonNull ViewGroup parent,
@@ -104,8 +98,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         mParent = parent;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         Context context = parent.getContext();
-        mContext = context;
-        mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
 
         PropertyModel listModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
         ModelList listItems = new ModelList();
@@ -149,7 +141,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 this::dropdownOverscrolledToTop);
 
         ViewProvider<SuggestionListViewHolder> viewProvider =
-                createViewProvider(context, listItems);
+                createViewProvider(context, listItems, forcePhoneStyleOmnibox);
         viewProvider.whenLoaded(
                 (holder) -> {
                     mDropdown = holder.dropdown;
@@ -183,7 +175,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     }
 
     private ViewProvider<SuggestionListViewHolder> createViewProvider(
-            Context context, MVCListAdapter.ModelList modelList) {
+            Context context, MVCListAdapter.ModelList modelList, boolean forcePhoneStyleOmnibox) {
         return new ViewProvider<SuggestionListViewHolder>() {
             private List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
             private SuggestionListViewHolder mHolder;
@@ -192,9 +184,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             public void inflate() {
                 OmniboxSuggestionsDropdown dropdown =
                         new OmniboxSuggestionsDropdown(
-                                context, mRecycledViewPool, mForcePhoneStyleOmnibox);
+                                context, mRecycledViewPool, forcePhoneStyleOmnibox);
 
-                dropdown.getViewGroup().setClipToPadding(false);
                 dropdown.setAdapter(mAdapter);
 
                 ViewGroup container =
@@ -295,7 +286,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
-        mUrlHasFocus = hasFocus;
         mMediator.onOmniboxSessionStateChange(hasFocus);
     }
 
@@ -466,7 +456,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     }
 
     public @NonNull ModalDialogManager getModalDialogManagerForTest() {
-        assert mModalDialogManagerSupplier.hasValue();
         return mModalDialogManagerSupplier.get();
     }
 
