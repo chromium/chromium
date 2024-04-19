@@ -44,16 +44,14 @@ void ProportionallySizedView::SetPreferredWidth(int width) {
   PreferredSizeChanged();
 }
 
-gfx::Size ProportionallySizedView::CalculatePreferredSize(
-    const SizeBounds& available_size) const {
-  if (available_size.width().is_bounded()) {
-    int w = available_size.width().value();
-    return gfx::Size(w, w * factor_);
-  } else if (preferred_width_ >= 0) {
-    return gfx::Size(preferred_width_, preferred_width_ * factor_);
-  } else {
-    return View::CalculatePreferredSize(available_size);
-  }
+int ProportionallySizedView::GetHeightForWidth(int w) const {
+  return w * factor_;
+}
+
+gfx::Size ProportionallySizedView::CalculatePreferredSize() const {
+  if (preferred_width_ >= 0)
+    return gfx::Size(preferred_width_, GetHeightForWidth(preferred_width_));
+  return View::CalculatePreferredSize();
 }
 
 BEGIN_METADATA(ProportionallySizedView)
