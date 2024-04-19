@@ -115,9 +115,11 @@ PickerSearchRequest::PickerSearchRequest(
     HandleCategorySearchResults(
         PickerCategorySearch(available_categories, query));
 
-    // Editor results are currently synchronous.
-    editor_search_start_ = base::TimeTicks::Now();
-    HandleEditorSearchResults(PickerEditorSearch(query));
+    if (base::Contains(available_categories, PickerCategory::kEditor)) {
+      // Editor results are currently synchronous.
+      editor_search_start_ = base::TimeTicks::Now();
+      HandleEditorSearchResults(PickerEditorSearch(query));
+    }
   }
 }
 

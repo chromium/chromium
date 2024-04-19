@@ -1212,6 +1212,20 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromEditorSearch) {
       &client(), &emoji_search(), kAllCategories);
 }
 
+TEST_F(PickerSearchRequestTest,
+       DoNotShowResultsFromEditorSearchIfNotAvailable) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback, Call(PickerSearchSource::kEditor, _, _))
+      .Times(0);
+
+  PickerSearchRequest request(
+      u"quick brown fox jumped over lazy dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), {});
+}
+
 TEST_F(PickerSearchRequestTest, RecordsEditorMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
