@@ -58,7 +58,9 @@ public class UrlImageProvider {
                 context);
     }
 
-    public void destroy() {}
+    public void destroy() {
+        mLargeIconBridge.destroy();
+    }
 
     /**
      * Asynchronously fetches a large favicon for a URL, and passes it to `callback`. If

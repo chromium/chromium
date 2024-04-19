@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +42,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageCallback;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -62,14 +60,11 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     private static final String TAB_TITLE = "Tab Title";
     private static final int TAB_ID = 11;
 
-    @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
-    @Mock private TabListFaviconProvider mFaviconProvider;
     @Mock private ThumbnailProvider mThumbnailProvider;
     @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
-    @Captor private ArgumentCaptor<Callback<Drawable>> mFaviconProviderCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mThumbnailProviderCaptor;
     @Captor private ArgumentCaptor<UrlImageCallback> mFetchImageCallbackCaptor;
 
@@ -124,7 +119,6 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         mSuggestionBundle = new SuggestionBundle(CURRENT_TIME_MS);
         mModuleView.setUrlImageProvider(mUrlImageProvider);
         mModuleView.setClickCallbacks(mClickCallbacks);
-        mModuleView.setFaviconProvider(mFaviconProvider);
         mModuleView.setThumbnailProvider(mThumbnailProvider);
         mTileContainerView = mModuleView.getTileContainerViewForTesting();
     }
@@ -219,11 +213,9 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertEquals(1, mTileContainerView.getChildCount());
 
         // Capture call to fetch favicon.
-        verify(mFaviconProvider, atLeastOnce())
-                .getFaviconDrawableForUrlAsync(
-                        eq(mTab.getUrl()),
-                        eq(/* isIncognito= */ false),
-                        mFaviconProviderCaptor.capture());
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchImageForUrl(
+                        mFetchImagePageUrlCaptor.capture(), mFetchImageCallbackCaptor.capture());
 
         // Capture call to fetch tab thumbnail.
         verify(mThumbnailProvider, atLeastOnce())
@@ -249,14 +241,14 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         .getIconDrawableForTesting());
 
         // Provide test image, and check that it's shown as icon.
-        BitmapDrawable expectedDrawable = new BitmapDrawable();
-        mFaviconProviderCaptor.getAllValues().get(0).onResult(expectedDrawable);
+        Bitmap expectedBitmap = makeBitmap(48, 48);
+        mFetchImageCallbackCaptor.getAllValues().get(0).onBitmap(expectedBitmap);
         BitmapDrawable drawable =
                 (BitmapDrawable)
                         ((ImageView) localTileView.findViewById(R.id.tab_favicon_view))
                                 .getDrawable();
         Assert.assertNotNull(drawable);
-        Assert.assertEquals(expectedDrawable, drawable);
+        Assert.assertEquals(expectedBitmap, drawable.getBitmap());
 
         mThumbnailProviderCaptor.getAllValues().get(0).onResult(makeBitmap(64, 64));
         // Verifies that the placeholder icon drawable is removed after setting a foreground bitmap.

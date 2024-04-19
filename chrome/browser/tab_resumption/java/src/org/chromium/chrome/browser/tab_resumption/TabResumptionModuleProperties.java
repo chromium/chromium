@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab_resumption;
 
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -14,8 +13,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 interface TabResumptionModuleProperties {
     WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<UrlImageProvider> URL_IMAGE_PROVIDER =
-            new WritableObjectPropertyKey();
-    WritableObjectPropertyKey<TabListFaviconProvider> FAVICON_PROVIDER =
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<ThumbnailProvider> THUMBNAIL_PROVIDER =
             new WritableObjectPropertyKey();
@@ -28,7 +25,6 @@ interface TabResumptionModuleProperties {
             new PropertyKey[] {
                 IS_VISIBLE,
                 URL_IMAGE_PROVIDER,
-                FAVICON_PROVIDER,
                 THUMBNAIL_PROVIDER,
                 CLICK_CALLBACK,
                 SUGGESTION_BUNDLE,

@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -33,7 +32,6 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull TabResumptionDataProvider dataProvider,
             @NonNull UrlImageProvider urlImageProvider,
-            @NonNull TabListFaviconProvider faviconProvider,
             @NonNull ThumbnailProvider thumbnailProvider) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
@@ -59,7 +57,6 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
                         mModel,
                         mDataProvider,
                         mUrlImageProvider,
-                        faviconProvider,
                         thumbnailProvider,
                         wrappedClickCallbacks);
         mDataProvider.setStatusChangedCallback(this::showModule);

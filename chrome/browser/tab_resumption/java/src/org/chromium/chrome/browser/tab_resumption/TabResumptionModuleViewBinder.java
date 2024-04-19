@@ -19,9 +19,6 @@ class TabResumptionModuleViewBinder {
         } else if (TabResumptionModuleProperties.URL_IMAGE_PROVIDER == propertyKey) {
             moduleView.setUrlImageProvider(
                     model.get(TabResumptionModuleProperties.URL_IMAGE_PROVIDER));
-        } else if (TabResumptionModuleProperties.FAVICON_PROVIDER == propertyKey) {
-            moduleView.setFaviconProvider(
-                    model.get(TabResumptionModuleProperties.FAVICON_PROVIDER));
         } else if (TabResumptionModuleProperties.THUMBNAIL_PROVIDER == propertyKey) {
             moduleView.setThumbnailProvider(
                     model.get(TabResumptionModuleProperties.THUMBNAIL_PROVIDER));

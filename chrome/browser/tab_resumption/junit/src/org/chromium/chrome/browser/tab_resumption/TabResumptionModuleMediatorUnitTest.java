@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -55,7 +54,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
-    @Mock private TabListFaviconProvider mFaviconProvider;
     @Mock private ThumbnailProvider mThumbnailProvider;
     @Mock private SuggestionClickCallbacks mClickCallbacks;
 
@@ -80,7 +78,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         mModel,
                         mDataProvider,
                         mUrlImageProvider,
-                        mFaviconProvider,
                         mThumbnailProvider,
                         mClickCallbacks) {
                     @Override
@@ -92,8 +89,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
         Assert.assertEquals(
                 mUrlImageProvider, mModel.get(TabResumptionModuleProperties.URL_IMAGE_PROVIDER));
-        Assert.assertEquals(
-                mFaviconProvider, mModel.get(TabResumptionModuleProperties.FAVICON_PROVIDER));
         Assert.assertEquals(
                 mThumbnailProvider, mModel.get(TabResumptionModuleProperties.THUMBNAIL_PROVIDER));
         // `mClickCallback` may get wrapped, so just check for non-null.

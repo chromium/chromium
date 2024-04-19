@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 
 /** The view containing suggestion tiles on the tab resumption module. */
@@ -61,7 +60,6 @@ public class TabResumptionTileContainerView extends LinearLayout {
     public String renderAllTiles(
             SuggestionBundle bundle,
             UrlImageProvider urlImageProvider,
-            TabListFaviconProvider faviconProvider,
             ThumbnailProvider thumbnailProvider,
             SuggestionClickCallbacks suggestionClickCallbacks) {
         removeAllViews();
@@ -89,7 +87,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                         this,
                                         (LocalTabSuggestionEntry) entry,
                                         bundle.referenceTimeMs,
-                                        faviconProvider,
+                                        urlImageProvider,
                                         thumbnailProvider,
                                         suggestionClickCallbacks)
                                 + ". ";
@@ -155,7 +153,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
             ViewGroup parentView,
             LocalTabSuggestionEntry localTabEntry,
             long referenceTimeMs,
-            TabListFaviconProvider faviconProvider,
+            UrlImageProvider urlImageProvider,
             ThumbnailProvider thumbnailProvider,
             SuggestionClickCallbacks suggestionClickCallback) {
         Tab tab = localTabEntry.tab;
@@ -177,11 +175,11 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         TabResumptionModuleUtils.getDomainUrl(tab.getUrl()));
         tileView.setUrl(postInfoText);
         tileView.setTitle(tab.getTitle());
-        faviconProvider.getFaviconDrawableForUrlAsync(
+        urlImageProvider.fetchImageForUrl(
                 tab.getUrl(),
-                false,
-                (Drawable favicon) -> {
-                    tileView.setFavicon(favicon);
+                (Bitmap bitmap) -> {
+                    Drawable urlDrawable = new BitmapDrawable(res, bitmap);
+                    tileView.setFavicon(urlDrawable);
                 });
         thumbnailProvider.getTabThumbnailWithCallback(
                 tab.getId(),
@@ -205,20 +203,12 @@ public class TabResumptionTileContainerView extends LinearLayout {
             SuggestionEntry entry,
             UrlImageProvider urlImageProvider,
             TabResumptionTileView tileView) {
-        Drawable storedUrlDrawable = entry.getUrlDrawable();
-        if (storedUrlDrawable != null) {
-            // Use stored Drawable if available.
-            tileView.setImageDrawable(storedUrlDrawable);
-        } else {
-            // Otherwise fetch URL image, convert to Drawable, then use and store.
-            urlImageProvider.fetchImageForUrl(
-                    entry.url,
-                    (Bitmap bitmap) -> {
-                        Resources res = getContext().getResources();
-                        Drawable urlDrawable = new BitmapDrawable(res, bitmap);
-                        entry.setUrlDrawable(urlDrawable);
-                        tileView.setImageDrawable(urlDrawable);
-                    });
-        }
+        urlImageProvider.fetchImageForUrl(
+                entry.url,
+                (Bitmap bitmap) -> {
+                    Resources res = getContext().getResources();
+                    Drawable urlDrawable = new BitmapDrawable(res, bitmap);
+                    tileView.setImageDrawable(urlDrawable);
+                });
     }
 }

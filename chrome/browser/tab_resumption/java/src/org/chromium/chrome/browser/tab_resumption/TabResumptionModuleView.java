@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 
 /**
@@ -21,7 +20,6 @@ import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 public class TabResumptionModuleView extends LinearLayout {
     private TabResumptionTileContainerView mTileContainerView;
     private UrlImageProvider mUrlImageProvider;
-    private TabListFaviconProvider mFaviconProvider;
     private ThumbnailProvider mThumbnailProvider;
     private SuggestionClickCallbacks mClickCallbacks;
     private SuggestionBundle mBundle;
@@ -46,11 +44,6 @@ public class TabResumptionModuleView extends LinearLayout {
 
     void setUrlImageProvider(UrlImageProvider urlImageProvider) {
         mUrlImageProvider = urlImageProvider;
-        renderIfReady();
-    }
-
-    void setFaviconProvider(TabListFaviconProvider faviconProvider) {
-        mFaviconProvider = faviconProvider;
         renderIfReady();
     }
 
@@ -85,7 +78,6 @@ public class TabResumptionModuleView extends LinearLayout {
         if (mIsSuggestionBundleReady
                 && mUrlImageProvider != null
                 && mClickCallbacks != null
-                && mFaviconProvider != null
                 && mThumbnailProvider != null) {
             if (mBundle == null) {
                 mTileContainerView.removeAllViews();
@@ -93,11 +85,7 @@ public class TabResumptionModuleView extends LinearLayout {
             } else {
                 mAllTilesTexts =
                         mTileContainerView.renderAllTiles(
-                                mBundle,
-                                mUrlImageProvider,
-                                mFaviconProvider,
-                                mThumbnailProvider,
-                                mClickCallbacks);
+                                mBundle, mUrlImageProvider, mThumbnailProvider, mClickCallbacks);
             }
             setContentDescriptionOfTabResumption();
         }

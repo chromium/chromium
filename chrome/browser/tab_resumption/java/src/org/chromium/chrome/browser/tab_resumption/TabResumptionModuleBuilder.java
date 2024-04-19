@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,7 +32,6 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
     // providers to reduce resource use, and ref-counted to ensure proper resource management.
     private ForeignSessionTabResumptionDataSource mForeignSessionTabResumptionDataSource;
     private int mForeignSessionTabResumptionDataSourceRefCount;
-    private TabListFaviconProvider mFaviconProvider;
 
     public TabResumptionModuleBuilder(
             @NonNull Context context,
@@ -68,15 +66,6 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                         mForeignSessionTabResumptionDataSource, this::removeRefToDataSource);
         // TODO(b/332588018): Uses TabListFaviconProvider to replace UrlImageProvider.
         UrlImageProvider urlImageProvider = new UrlImageProvider(profile, mContext);
-        if (mFaviconProvider == null) {
-            mFaviconProvider =
-                    new TabListFaviconProvider(
-                            mContext,
-                            false,
-                            org.chromium.chrome.browser.tab_ui.R.dimen
-                                    .favicon_corner_radius_polished);
-            mFaviconProvider.initWithNative(profile);
-        }
 
         assert mTabContentManagerSupplier.hasValue();
         TabResumptionModuleCoordinator coordinator =
@@ -85,7 +74,6 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                         moduleDelegate,
                         dataProvider,
                         urlImageProvider,
-                        mFaviconProvider,
                         getThumbnailProvider(mTabContentManagerSupplier.get()));
         onModuleBuiltCallback.onResult(coordinator);
         return true;
