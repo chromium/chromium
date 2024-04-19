@@ -255,6 +255,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     return id;
   }
 
+  int GetWordLength(int index) {
+    return model_->GetNextWordHighlightLength(index);
+  }
+
   std::vector<ui::AXNodeID> GetCurrentText() {
     return model_->GetCurrentText();
   }
@@ -1576,8 +1580,7 @@ TEST_F(ReadAnythingAppModelTest, GetNextWord_ReturnsCorrectIndex) {
   EXPECT_EQ(segment.substr(0, index), first_word);
 }
 
-TEST_F(ReadAnythingAppModelTest,
-       GetNextWord_OnlyOneWord_ReturnsCorrectIndex) {
+TEST_F(ReadAnythingAppModelTest, GetNextWord_OnlyOneWord_ReturnsCorrectIndex) {
   const std::u16string word = u"Happiness";
 
   size_t index = GetNextWord(word);
@@ -2021,4 +2024,54 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
                                             sentence2.length() + 1),
             ui::kInvalidAXNodeID);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetNextWordHighlightLength_ReturnsCorrectLength) {
+  std::u16string word1 = u"Stretch ";
+  std::u16string word2 = u"out ";
+  std::u16string word3 = u"with ";
+  std::u16string word4 = u"the ";
+  std::u16string word5 = u"wind ";
+  std::u16string word6 = u"behind ";
+  std::u16string word7 = u"you.";
+  std::u16string sentence =
+      word1 + word2 + word3 + word4 + word5 + word6 + word7;
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence);
+
+  update.nodes = {static_text1};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities,
+  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(1), ui::kInvalidAXNodeID);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Throughout first word.
+  EXPECT_EQ(GetWordLength(0), (int)word1.length());
+  EXPECT_EQ(GetWordLength(2), (int)word1.length() - 2);
+  EXPECT_EQ(GetWordLength((int)word1.length()) - 2, 2);
+
+  // Throughout third word.
+  int third_word_index = sentence.find(word3);
+  EXPECT_EQ(GetWordLength(third_word_index), (int)word3.length());
+  EXPECT_EQ(GetWordLength(third_word_index + 2), (int)word3.length() - 2);
+
+  int last_word_index = sentence.find(word7);
+  EXPECT_EQ(GetWordLength(last_word_index), (int)word7.length());
+  EXPECT_EQ(GetWordLength(last_word_index + 2), (int)word7.length() - 2);
+
+  // Boundary testing.
+  EXPECT_EQ(GetWordLength(-5), 0);
+  EXPECT_EQ(GetWordLength(sentence.length()), 0);
+  EXPECT_EQ(GetWordLength(sentence.length() + 1), 0);
 }

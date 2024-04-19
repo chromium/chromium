@@ -1658,3 +1658,26 @@ ui::AXNodeID ReadAnythingAppModel::GetNodeIdForCurrentSegmentIndex(
   // invalid id.
   return ui::kInvalidAXNodeID;
 }
+
+int ReadAnythingAppModel::GetNextWordHighlightLength(int start_index) {
+  // If the granularity index isn't valid, return 0.
+  if (processed_granularity_index_ >=
+          processed_granularities_on_current_page_.size() ||
+      start_index < 0) {
+    // 0 is returned to correspond to a 0-length or empty string.
+    return 0;
+  }
+
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+      processed_granularities_on_current_page_[processed_granularity_index_];
+  if (start_index > (int)current_granularity.text.length()) {
+    return 0;
+  }
+  // Get the remaining text in the current granularity that occurs after the
+  // starting index.
+  std::u16string current_text = current_granularity.text.substr(start_index);
+
+  // Get the word length of the next word following the index.
+  int word_length = GetNextWord(current_text);
+  return word_length;
+}

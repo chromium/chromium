@@ -312,6 +312,16 @@ class ReadAnythingAppModel {
   // and for index=17-29 will return "207"
   ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index) const;
 
+  // Starting at the given index, return the length of the next word in the
+  // current granularity.
+  // e.g. if the current granularity is "I've come to talk with you again."...
+  // A start index of "0" will return "3" to correspond to "I've"
+  // And a start index of "10" will return "2" to correspond to "to."
+  // This method is only forward-looking, so if an index is in the middle of a
+  // current word, the remaining length for that word will be returned.
+  // e.g. "1" will return "2" to "'ve"
+  int GetNextWordHighlightLength(int start_index);
+
   // PDF handling.
   void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }
   bool is_pdf() const { return is_pdf_; }
