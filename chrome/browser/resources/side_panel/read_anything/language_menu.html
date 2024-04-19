@@ -94,8 +94,7 @@
     </cr-input>
   </div>
   <div slot="body" class="language-menu-body">
-    <!-- TODO(b/333785012): Add initial-counts to the dom-repeats here. -->
-    <template is="dom-repeat"
+    <template is="dom-repeat" initial-count="30"
         items="[[computeAvailableLanguages_(availableVoices,
           localeToDisplayName, languageSearchValue_,
           enabledLanguagesInPref)]]">
