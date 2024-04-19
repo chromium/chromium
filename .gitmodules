@@ -336,6 +336,9 @@
 [submodule "third_party/libavif/src"]
 	path = third_party/libavif/src
 	url = https://chromium.googlesource.com/external/github.com/AOMediaCodec/libavif
+[submodule "third_party/crabbyavif/src"]
+	path = third_party/crabbyavif/src
+	url = https://chromium.googlesource.com/external/github.com/webmproject/CrabbyAvif
 [submodule "third_party/libavifinfo/src"]
 	path = third_party/libavifinfo/src
 	url = https://aomedia.googlesource.com/libavifinfo

@@ -1,0 +1,186 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_bindgen("crabbyavif_dav1d_bindings") {
+  header = "src/sys/dav1d-sys/wrapper.h"
+  deps = [ "//third_party/dav1d:dav1d_headers" ]
+  configs = [ "//third_party/dav1d:dav1d_config" ]
+  bindgen_flags = [
+    "no-doc-comments",
+    "generate=functions,types,vars,methods,constructors,destructors",
+    "allowlist-item=dav1d_close",
+    "allowlist-item=dav1d_data_unref",
+    "allowlist-item=dav1d_data_wrap",
+    "allowlist-item=dav1d_default_settings",
+    "allowlist-item=dav1d_error",
+    "allowlist-item=dav1d_get_picture",
+    "allowlist-item=dav1d_open",
+    "allowlist-item=dav1d_picture_unref",
+    "allowlist-item=dav1d_send_data",
+  ]
+}
+
+rust_static_library("crabbyavif_dav1d_sys") {
+  crate_root = "src/sys/dav1d-sys/src/lib.rs"
+  # This is a wrapper interface to a C library. So unsafe has to be allowed.
+  allow_unsafe = true
+  crate_name = "dav1d_sys"
+
+  sources = [ "src/sys/dav1d-sys/src/lib.rs" ]
+
+  deps = [ ":crabbyavif_dav1d_bindings" ]
+
+  _bindgen_output = get_target_outputs(":crabbyavif_dav1d_bindings")
+  inputs = _bindgen_output
+  rustenv = [ "CRABBYAVIF_DAV1D_BINDINGS_RS=" +
+              rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
+}
+
+rust_bindgen("crabbyavif_libyuv_bindings") {
+  header = "src/sys/libyuv-sys/wrapper.h"
+  configs = [ "//third_party/libyuv:libyuv_config" ]
+  bindgen_flags = [
+    "no-doc-comments",
+    "generate=functions,types,vars,methods,constructors,destructors",
+    "allowlist-item=ARGBAttenuate",
+    "allowlist-item=ARGBUnattenuate",
+    "allowlist-item=Convert16To8Plane",
+    "allowlist-item=FilterMode",
+    "allowlist-item=FilterMode_kFilterBilinear",
+    "allowlist-item=FilterMode_kFilterBox",
+    "allowlist-item=FilterMode_kFilterNone",
+    "allowlist-item=HalfFloatPlane",
+    "allowlist-item=I010AlphaToARGBMatrix",
+    "allowlist-item=I010AlphaToARGBMatrixFilter",
+    "allowlist-item=I010ToARGBMatrix",
+    "allowlist-item=I010ToARGBMatrixFilter",
+    "allowlist-item=I012ToARGBMatrix",
+    "allowlist-item=I210AlphaToARGBMatrix",
+    "allowlist-item=I210AlphaToARGBMatrixFilter",
+    "allowlist-item=I210ToARGBMatrix",
+    "allowlist-item=I210ToARGBMatrixFilter",
+    "allowlist-item=I400ToARGBMatrix",
+    "allowlist-item=I410AlphaToARGBMatrix",
+    "allowlist-item=I410ToARGBMatrix",
+    "allowlist-item=I420AlphaToARGBMatrix",
+    "allowlist-item=I420AlphaToARGBMatrixFilter",
+    "allowlist-item=I420ToARGBMatrix",
+    "allowlist-item=I420ToARGBMatrixFilter",
+    "allowlist-item=I420ToRGB24Matrix",
+    "allowlist-item=I420ToRGB24MatrixFilter",
+    "allowlist-item=I420ToRGB565Matrix",
+    "allowlist-item=I420ToRGBAMatrix",
+    "allowlist-item=I422AlphaToARGBMatrix",
+    "allowlist-item=I422AlphaToARGBMatrixFilter",
+    "allowlist-item=I422ToARGBMatrix",
+    "allowlist-item=I422ToARGBMatrixFilter",
+    "allowlist-item=I422ToRGB24MatrixFilter",
+    "allowlist-item=I422ToRGB565Matrix",
+    "allowlist-item=I422ToRGBAMatrix",
+    "allowlist-item=I444AlphaToARGBMatrix",
+    "allowlist-item=I444ToARGBMatrix",
+    "allowlist-item=I444ToRGB24Matrix",
+    "allowlist-item=ScalePlane",
+    "allowlist-item=ScalePlane_12",
+    "allowlist-item=YuvConstants",
+    "allowlist-item=kYuv2020Constants",
+    "allowlist-item=kYuvF709Constants",
+    "allowlist-item=kYuvH709Constants",
+    "allowlist-item=kYuvI601Constants",
+    "allowlist-item=kYuvJPEGConstants",
+    "allowlist-item=kYuvV2020Constants",
+    "allowlist-item=kYvu2020Constants",
+    "allowlist-item=kYvuF709Constants",
+    "allowlist-item=kYvuH709Constants",
+    "allowlist-item=kYvuI601Constants",
+    "allowlist-item=kYvuJPEGConstants",
+    "allowlist-item=kYvuV2020Constants",
+  ]
+}
+
+rust_static_library("crabbyavif_libyuv_sys") {
+  crate_root = "src/sys/libyuv-sys/src/lib.rs"
+  # This is a wrapper interface to a C++ library. So unsafe has to be allowed.
+  allow_unsafe = true
+  crate_name = "libyuv_sys"
+
+  sources = [ "src/sys/libyuv-sys/src/lib.rs" ]
+
+  deps = [ ":crabbyavif_libyuv_bindings" ]
+
+  _bindgen_output = get_target_outputs(":crabbyavif_libyuv_bindings")
+  inputs = _bindgen_output
+  rustenv = [ "CRABBYAVIF_LIBYUV_BINDINGS_RS=" +
+              rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
+}
+
+rust_static_library("crabbyavif") {
+  crate_root = "src/src/lib.rs"
+  # This library exposes a C API and uses a couple of C/C++ libraries. So unsafe
+  # has to be allowed in order to allow those. The core library itself does not
+  # contain any unsafe Rust.
+  allow_unsafe = true
+
+  sources = [
+    "src/src/capi/decoder.rs",
+    "src/src/capi/gainmap.rs",
+    "src/src/capi/image.rs",
+    "src/src/capi/io.rs",
+    "src/src/capi/mod.rs",
+    "src/src/capi/reformat.rs",
+    "src/src/capi/types.rs",
+    "src/src/capi/utils.rs",
+    "src/src/codecs/dav1d.rs",
+    "src/src/codecs/mod.rs",
+    "src/src/decoder/gainmap.rs",
+    "src/src/decoder/item.rs",
+    "src/src/decoder/mod.rs",
+    "src/src/decoder/tile.rs",
+    "src/src/decoder/track.rs",
+    "src/src/image.rs",
+    "src/src/internal_utils/io.rs",
+    "src/src/internal_utils/mod.rs",
+    "src/src/internal_utils/pixels.rs",
+    "src/src/internal_utils/stream.rs",
+    "src/src/lib.rs",
+    "src/src/parser/exif.rs",
+    "src/src/parser/mod.rs",
+    "src/src/parser/mp4box.rs",
+    "src/src/parser/obu.rs",
+    "src/src/reformat/alpha.rs",
+    "src/src/reformat/coeffs.rs",
+    "src/src/reformat/libyuv.rs",
+    "src/src/reformat/mod.rs",
+    "src/src/reformat/rgb.rs",
+    "src/src/reformat/rgb_impl.rs",
+    "src/src/reformat/scale.rs",
+    "src/src/utils/clap.rs",
+    "src/src/utils/mod.rs",
+    "src/src/utils/raw.rs",
+    "src/src/utils/y4m.rs",
+  ]
+
+  features = [
+    "dav1d",
+    "libyuv",
+    "capi",
+  ]
+
+  public_deps = [ ":header_files" ]
+  deps = [
+    ":crabbyavif_dav1d_sys",
+    ":crabbyavif_libyuv_sys",
+    "//third_party/dav1d",
+    "//third_party/libyuv",
+    "//third_party/rust/libc/v0_2:lib",
+  ]
+}
+
+source_set("header_files") {
+  visibility = [ ":*" ]
+  sources = [ "src/include/avif/avif.h" ]
+}

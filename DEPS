@@ -449,6 +449,10 @@ vars = {
   # and whatever else without interference from each other.
   'libavif_revision': '43ec9ace31c6ca11efddddb61b94b744450d46e2',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling crabbyavif
+  # and whatever else without interference from each other.
+  'crabbyavif_revision': '3d69b5961d3fee2b1789266f2c6b7d7e0b96c8d8',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libavifinfo
   # and whatever else without interference from each other.
   'libavifinfo_revision': 'b496868f7c3fd17dfeeecc0364fe37e19edd548a',
@@ -1465,6 +1469,9 @@ deps = {
 
   'src/third_party/libavif/src':
     Var('chromium_git') + '/external/github.com/AOMediaCodec/libavif.git' + '@' + Var('libavif_revision'),
+
+  'src/third_party/crabbyavif/src':
+    Var('chromium_git') + '/external/github.com/webmproject/CrabbyAvif.git' + '@' + Var('crabbyavif_revision'),
 
   'src/third_party/libavifinfo/src':
     Var('aomedia_git') + '/libavifinfo.git' + '@' + Var('libavifinfo_revision'),
