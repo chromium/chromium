@@ -87,6 +87,11 @@ class ReportControllerTestBase : public testing::Test {
     GetFakeSessionManagerClient()->set_psm_device_active_secret(
         utils::kFakeHighEntropySeed);
 
+    // Set hardware class and activate date field, which are dependencies.
+    statistics_provider_.SetMachineStatistic(system::kHardwareClassKey,
+                                             "FAKE_HW_CLASS");
+    statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
+                                             "2000-01");
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
     ReportController::RegisterPrefs(local_state_.registry());
 
