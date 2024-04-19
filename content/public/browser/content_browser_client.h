@@ -1627,6 +1627,9 @@ class CONTENT_EXPORT ContentBrowserClient {
       sandbox::mojom::Sandbox sandbox_type,
       AppContainerFlags flags);
 
+  // Returns the AppContainer ID for sandboxed processes to use.
+  virtual std::string GetAppContainerId();
+
   // Returns true if renderer App Container should be disabled.
   // This is called on the UI thread.
   virtual bool IsRendererAppContainerDisabled();

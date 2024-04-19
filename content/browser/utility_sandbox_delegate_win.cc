@@ -119,10 +119,6 @@ bool PrintBackendInitializeConfig(sandbox::TargetConfig* config) {
 }
 #endif
 
-std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
-  return base::WideToUTF8(cmd_line.GetProgram().value());
-}
-
 bool IconReaderInitializeConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
 
@@ -202,7 +198,8 @@ bool XrCompositingInitializeConfig(sandbox::TargetConfig* config,
   if (result != sandbox::SBOX_ALL_OK)
     return false;
 
-  std::string appcontainer_id = UtilityAppContainerId(cmd_line);
+  std::string appcontainer_id =
+      GetContentClient()->browser()->GetAppContainerId();
   result = sandbox::policy::SandboxWin::AddAppContainerProfileToConfig(
       cmd_line, sandbox_type, appcontainer_id, config);
   if (result != sandbox::SBOX_ALL_OK)
@@ -262,13 +259,13 @@ bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
     case sandbox::mojom::Sandbox::kXrCompositing:
-      *appcontainer_id = UtilityAppContainerId(cmd_line_);
+      *appcontainer_id = GetContentClient()->browser()->GetAppContainerId();
       return true;
 #if BUILDFLAG(ENABLE_PRINTING)
     case sandbox::mojom::Sandbox::kPrintCompositor:
       if (base::FeatureList::IsEnabled(
               sandbox::policy::features::kPrintCompositorLPAC)) {
-        *appcontainer_id = UtilityAppContainerId(cmd_line_);
+        *appcontainer_id = GetContentClient()->browser()->GetAppContainerId();
         return true;
       }
       return false;

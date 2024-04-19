@@ -9,11 +9,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
@@ -941,6 +943,11 @@ std::wstring ContentBrowserClient::GetAppContainerSidForSandboxType(
   return std::wstring(
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
       L"924012148-129201922");
+}
+
+std::string ContentBrowserClient::GetAppContainerId() {
+  return base::WideToUTF8(
+      base::CommandLine::ForCurrentProcess()->GetProgram().value());
 }
 
 bool ContentBrowserClient::IsRendererAppContainerDisabled() {

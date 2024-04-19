@@ -28,6 +28,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -179,7 +180,9 @@ ChromeTestLauncherDelegate::GetUserDataDirectoryCommandLineSwitch() {
 
 // Acts like normal ChromeContentBrowserClient but injects a test TaskTracker to
 // watch for long-running tasks and produce a useful timeout message in order to
-// find the cause of flaky timeout tests.
+// find the cause of flaky timeout tests. On Windows, this client also overrides
+// the GetAppContainerId to add a test-specific suffix to avoid hitting a race
+// condition in CreateAppContainerProfile.
 class BrowserTestChromeContentBrowserClient
     : public ChromeContentBrowserClient {
  public:
@@ -187,6 +190,18 @@ class BrowserTestChromeContentBrowserClient
     base::test::TaskEnvironment::CreateThreadPool();
     return true;
   }
+
+#if BUILDFLAG(IS_WIN)
+  std::string GetAppContainerId() override {
+    base::FilePath path = base::PathService::CheckedGet(chrome::DIR_USER_DATA);
+    // Multiple tests running at the same time from the same binary might try to
+    // race each other to create the AppContainer profile for sandboxed
+    // processes. To avoid this hitting in tests, append the data dir so they
+    // are all unique for each test instance. See https://crbug.com/40223285.
+    return base::StrCat({ContentBrowserClient::GetAppContainerId(),
+                         base::WideToUTF8(path.value())});
+  }
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // A replacement ChromeContentUtilityClient that binds the
