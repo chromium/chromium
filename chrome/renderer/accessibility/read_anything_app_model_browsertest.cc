@@ -1585,6 +1585,47 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_EQ(word.substr(0, index), word);
 }
 
+TEST_F(ReadAnythingAppModelTest,
+       GetNextSentence_NotPDF_DoesNotFilterReturnCharacters) {
+  const std::u16string sentence =
+      u"Hello, this is\n a sentence \r with line breaks.";
+
+  size_t index = GetNextSentence(sentence);
+  EXPECT_EQ(index, sentence.find('\n') + 2);
+  EXPECT_EQ(sentence.substr(0, index), u"Hello, this is\n ");
+
+  std::u16string next_sentence = sentence.substr(index);
+  index = GetNextSentence(next_sentence);
+  EXPECT_EQ(index, next_sentence.find('\r') + 2);
+  EXPECT_EQ(next_sentence.substr(0, index), u"a sentence \r ");
+
+  next_sentence = next_sentence.substr(index);
+  index = GetNextSentence(next_sentence);
+  EXPECT_EQ(index, next_sentence.length());
+  EXPECT_EQ(next_sentence.substr(0, index), u"with line breaks.");
+}
+
+TEST_F(ReadAnythingAppModelTest, GetNextSentence_PDF_FiltersReturnCharacters) {
+  set_is_pdf(true);
+  const std::u16string sentence =
+      u"Hello, this is\n a sentence \r with line breaks.";
+
+  size_t index = GetNextSentence(sentence);
+  EXPECT_EQ(index, sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), sentence);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetNextSentence_PDF_DoesNotFilterReturnCharactersAtEndOfSentence) {
+  set_is_pdf(true);
+  const std::u16string sentence =
+      u"Hello, this is a sentence with line breaks.\r\n";
+
+  size_t index = GetNextSentence(sentence);
+  EXPECT_EQ(index, sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), sentence);
+}
+
 TEST_F(ReadAnythingAppModelTest, GetNextValidPosition) {
   std::u16string sentence1 = u"This is a sentence.";
   std::u16string sentence2 = u"This is another sentence.";

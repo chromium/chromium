@@ -5,6 +5,7 @@
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
 #include <cstddef>
+#include <regex>
 #include <string>
 
 #include "base/check.h"
@@ -1161,7 +1162,24 @@ std::string ReadAnythingAppModel::GetHeadingHtmlTagForPDF(
 }
 
 int ReadAnythingAppModel::GetNextSentence(const std::u16string& text) {
-  return GetNextGranularity(text, ax::mojom::TextBoundary::kSentenceStart);
+    std::u16string filtered_string(text);
+    // When we receive text from a pdf node, there are return characters at each
+    // visual line break in the page. If these aren't filtered before calling
+    // GetNextGranularity on the text, text part of the same sentence will be
+    // read as separate segments, which causes speech to sound choppy.
+    // e.g. without filtering
+    // 'This is a long sentence with \n\r a line break.'
+    // will read and highlight "This is a long sentence with" and "a line break"
+    // separately.
+    if (is_pdf() && filtered_string.size() > 0) {
+      size_t pos = filtered_string.find_first_of(u"\n\r");
+      while (pos != std::string::npos && pos < filtered_string.size() - 2) {
+        filtered_string.replace(pos, 1, u" ");
+        pos = filtered_string.find_first_of(u"\n\r");
+      }
+  }
+  return GetNextGranularity(filtered_string,
+                            ax::mojom::TextBoundary::kSentenceStart);
 }
 
 int ReadAnythingAppModel::GetNextWord(const std::u16string& text) {
