@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] directory role == computedrole list
-  assert_equals: <ul role="directory" id="directory" data-expectedrole="list" data-testname="directory role == computedrole list" class="ex"><li>x</li></ul> expected "list" but got "directory"
-[FAIL] div w/directory role == computedrole list
-  assert_equals: <div role="directory" id="div" data-expectedrole="list" data-testname="div w/directory role == computedrole list" class="ex"><div role="listitem">x</div></div> expected "list" but got "directory"
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
 Harness: the test ran to completion.

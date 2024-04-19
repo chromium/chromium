@@ -1,2 +1,2 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXList AXSubrole=AXContentList AXRoleDescription='directory'
+++AXList AXSubrole=AXContentList AXRoleDescription='content list'

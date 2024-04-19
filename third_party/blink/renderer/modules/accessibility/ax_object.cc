@@ -299,7 +299,7 @@ const RoleEntry kAriaRoles[] = {
     {"definition", ax::mojom::blink::Role::kDefinition},
     {"deletion", ax::mojom::blink::Role::kContentDeletion},
     {"dialog", ax::mojom::blink::Role::kDialog},
-    {"directory", ax::mojom::blink::Role::kDirectory},
+    {"directory", ax::mojom::blink::Role::kList},
     // -------------------------------------------------
     // DPub Roles:
     // www.w3.org/TR/dpub-aam-1.0/#mapping_role_table
