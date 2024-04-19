@@ -326,6 +326,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   base::IDMap<IPC::Listener*> listeners_;
   bool shutdown_requested_;
   bool fast_shutdown_started_;
+  bool within_process_died_observer_ = false;
+  bool delayed_cleanup_ = false;
   bool deletion_callback_called_;
   bool is_for_guests_only_;
   bool is_process_backgrounded_;

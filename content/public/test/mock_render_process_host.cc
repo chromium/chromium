@@ -114,8 +114,14 @@ void MockRenderProcessHost::SimulateRenderProcessExit(
   termination_info.renderer_has_visible_clients = VisibleClientCount() > 0;
 #endif
 
+  within_process_died_observer_ = true;
   for (auto& observer : observers_)
     observer.RenderProcessExited(this, termination_info);
+  within_process_died_observer_ = false;
+
+  if (delayed_cleanup_) {
+    Cleanup();
+  }
 }
 
 void MockRenderProcessHost::SimulateReady() {
@@ -290,6 +296,12 @@ MockRenderProcessHost::RegisterBlockStateChangedCallback(
 }
 
 void MockRenderProcessHost::Cleanup() {
+  if (within_process_died_observer_) {
+    delayed_cleanup_ = true;
+    return;
+  }
+  delayed_cleanup_ = false;
+
   if (listeners_.IsEmpty() && !deletion_callback_called_) {
     if (IsInitializedAndNotDead()) {
       ChildProcessTerminationInfo termination_info;
