@@ -271,7 +271,8 @@ std::optional<content::IdentityRequestAccount> ParseAccount(
   return content::IdentityRequestAccount(
       *id, *email, *name, given_name ? *given_name : "",
       picture ? GURL(*picture) : GURL(), std::move(account_hints),
-      std::move(domain_hints), std::move(labels), approved_value);
+      std::move(domain_hints), std::move(labels), approved_value,
+      /*browser_trusted_login_state=*/LoginState::kSignUp);
 }
 
 // Parses accounts from given Value. Returns true if parse is successful and

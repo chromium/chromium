@@ -405,6 +405,14 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   // This might change if we choose to integrate auto re-authn with button mode.
   CHECK(dialog_widget_);
 
+  // When a user signs in to the IdP with a returning account while the loading
+  // modal is shown, we can exit without updating the UI.
+  if (account.browser_trusted_login_state != Account::LoginState::kSignUp &&
+      has_progress_bar_) {
+    InitDialogWidget();
+    return;
+  }
+
   AddProgressBar();
 
   // Disable account chooser.

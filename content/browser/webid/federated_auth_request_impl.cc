@@ -2054,6 +2054,24 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
     account.login_state = login_state;
   }
 
+  // Populate the accounts' browser trusted login state. This bit may be useful
+  // to widget flow in the future and we can drop the condition if needed. So
+  // far the bit for the widget flow will always be kSignUp.
+  if (rp_mode_ == RpMode::kButton) {
+    for (auto& account : accounts) {
+      account.browser_trusted_login_state = LoginState::kSignUp;
+      if (webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+              render_frame_host(), /*provider_url=*/idp_config_url,
+              GetEmbeddingOrigin(), origin(), account.id, permission_delegate_,
+              api_permission_delegate_)) {
+        // At this moment we can trust login_state even though it's controlled
+        // by IdP. If it's kSignUp, it could mean that the browser's sharing
+        // permission is obsolete.
+        account.browser_trusted_login_state = account.login_state.value();
+      }
+    }
+  }
+
   // Now that the login states have been computed, order accounts so that the
   // returning accounts go first and the other accounts go afterwards. Since the
   // number of accounts is likely very small, sorting by login_state should be

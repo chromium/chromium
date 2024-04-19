@@ -1366,6 +1366,134 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountModal) {
               testing::ElementsAre(kAccountId1, kAccountId2));
 }
 
+// Test the use another account flow in a modal, resulting in no permission UI
+// if it's a returning account.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       UseAnotherAccountModalForReturningAccount) {
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  // Emulate the user clicking "use another account button".
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Emulate user completing the sign-in flow and IdP prompts closing the
+  // pop-up window and sending new accounts.
+  controller->CloseModalDialog();
+
+  IdentityProviderDisplayData idp_data2 = CreateIdentityProviderDisplayData(
+      {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
+  // The new account would be kAccountId2 whose login state is kSignIn.
+  std::vector<content::IdentityRequestAccount> new_accounts = {
+      {kAccountId2, "", "", "", GURL(),
+       /*login_hints=*/std::vector<std::string>(),
+       /*domain_hints=*/std::vector<std::string>(),
+       /*labels=*/std::vector<std::string>(), LoginState::kSignIn,
+       LoginState::kSignIn}};
+  content::IdentityProviderData new_idp_data = {
+      kIdpEtldPlusOne,
+      new_accounts,
+      content::IdentityProviderMetadata(),
+      content::ClientMetadata(GURL(), GURL(), GURL()),
+      blink::mojom::RpContext::kSignIn,
+      /*request_permission=*/true,
+      /*has_login_status_mismatch=*/false};
+
+  Show(*controller, idp_data2.accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kButton, new_idp_data);
+
+  // The permission UI is skipped.
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+}
+
+// Test the logged-out LoginStatus flow in a modal, resulting in no permission
+// UI if it's a returning account.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       LoginStatusLoggedOutModalForReturningAccount) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowLoadingDialog();
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  // Emulate the login to IdP flow.
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Emulate user completing the sign-in flow and IdP prompts closing the
+  // pop-up window and sending new accounts.
+  controller->CloseModalDialog();
+
+  std::vector<content::IdentityRequestAccount> new_accounts = {
+      {kAccountId1, "", "", "", GURL(),
+       /*login_hints=*/std::vector<std::string>(),
+       /*domain_hints=*/std::vector<std::string>(),
+       /*labels=*/std::vector<std::string>(),
+       /*login_state=*/LoginState::kSignIn,
+       /*browser_trusted_login_state=*/LoginState::kSignIn}};
+  content::IdentityProviderData new_idp_data = {
+      kIdpEtldPlusOne,
+      new_accounts,
+      content::IdentityProviderMetadata(),
+      content::ClientMetadata(GURL(), GURL(), GURL()),
+      blink::mojom::RpContext::kSignIn,
+      /*request_permission=*/true,
+      /*has_login_status_mismatch=*/false};
+
+  Show(*controller, new_accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kButton, new_idp_data);
+
+  // The permission UI is skipped.
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+}
+
+// Test the browser trusted login state controls whether to skip the permissions
+// UI when in conflict with login state.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       BrowserTrustedLoginStateTakesPrecedenceOverLoginState) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowLoadingDialog();
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  // Emulate the login to IdP flow.
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Emulate user completing the sign-in flow and IdP prompts closing the
+  // pop-up window and sending new accounts.
+  controller->CloseModalDialog();
+
+  std::vector<content::IdentityRequestAccount> new_accounts = {
+      {kAccountId1, "", "", "", GURL(),
+       /*login_hints=*/std::vector<std::string>(),
+       /*domain_hints=*/std::vector<std::string>(),
+       /*labels=*/std::vector<std::string>(),
+       /*login_state=*/LoginState::kSignIn,
+       /*browser_trusted_login_state=*/LoginState::kSignUp}};
+  content::IdentityProviderData new_idp_data = {
+      kIdpEtldPlusOne,
+      new_accounts,
+      content::IdentityProviderMetadata(),
+      content::ClientMetadata(GURL(), GURL(), GURL()),
+      blink::mojom::RpContext::kSignIn,
+      /*request_permission=*/true,
+      /*has_login_status_mismatch=*/false};
+
+  Show(*controller, new_accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kButton, new_idp_data);
+
+  // The permission UI is NOT skipped.
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            account_selection_view_->sheet_type_);
+}
+
 // Test user triggering the use another account flow then closing the pop-up
 // from the use another account flow should dismiss the widget.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
