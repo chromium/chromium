@@ -880,9 +880,11 @@ void PhysicalFragment::AddOutlineRectsForCursor(
     }
     switch (item.Type()) {
       case FragmentItem::kLine: {
-        AddOutlineRectsForDescendant(
-            {item.LineBoxFragment(), item.OffsetInContainerFragment()},
-            collector, additional_offset, outline_type, containing_block);
+        if (item.LineBoxFragment()) {
+          AddOutlineRectsForDescendant(
+              {item.LineBoxFragment(), item.OffsetInContainerFragment()},
+              collector, additional_offset, outline_type, containing_block);
+        }
         break;
       }
       case FragmentItem::kGeneratedText:
