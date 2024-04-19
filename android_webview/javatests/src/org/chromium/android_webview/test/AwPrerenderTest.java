@@ -495,6 +495,68 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 shouldOverrideUrlLoadingHelper.requestHeaders());
     }
 
+    // Tests that subframe navigation of prerendered page emits shouldInterceptRequest with
+    // Sec-Purpose header.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testSubframeOfPrerenderedPageAndShouldInterceptRequest() throws Throwable {
+        String subframeUrl1 = mTestServer.getURL("/android_webview/test/data/hello_world.html?q=1");
+        String subframeUrl2 = mTestServer.getURL("/android_webview/test/data/hello_world.html?q=2");
+        String prerenderUrl =
+                mTestServer.getURL(
+                        "/android_webview/test/data/prerender.html?iframeSrc="
+                                .concat(subframeUrl1));
+
+        final TestAwContentsClient.ShouldInterceptRequestHelper helper =
+                mContentsClient.getShouldInterceptRequestHelper();
+
+        {
+            helper.clearUrls();
+            int callCount = helper.getCallCount();
+            injectSpeculationRulesAndWait(prerenderUrl);
+            helper.waitForCallback(callCount);
+            Assert.assertEquals(helper.getUrls(), Arrays.asList(prerenderUrl));
+            AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(prerenderUrl);
+            Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+        }
+
+        {
+            helper.clearUrls();
+            int callCount = helper.getCallCount();
+            helper.waitForCallback(callCount);
+            Assert.assertEquals(helper.getUrls(), Arrays.asList(subframeUrl1));
+            AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(subframeUrl1);
+            // Subframe navigation of prerendered page also has a Sec-Purpose header.
+            Assert.assertEquals(request.requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
+        }
+
+        {
+            int callCount = helper.getCallCount();
+            activatePage(prerenderUrl);
+            Assert.assertEquals(
+                    "Prerender activation navigation doesn't trigger shouldInterceptRequest",
+                    helper.getCallCount(),
+                    callCount);
+        }
+
+        {
+            helper.clearUrls();
+            int callCount = helper.getCallCount();
+            final String script = String.format("createIframe('%s');", subframeUrl2);
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    mAwContents, mContentsClient, script);
+            helper.waitForCallback(callCount);
+            Assert.assertEquals(helper.getUrls(), Arrays.asList(subframeUrl2));
+            AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(subframeUrl2);
+            // Subframe navigation of the activated page doesn't have a Sec-Purpose header.
+            Assert.assertNotNull(request.requestHeaders);
+            Assert.assertNull(request.requestHeaders.get("Sec-Purpose"));
+        }
+    }
+
     // Tests postMessage() from JS to Java during prerendering are deferred until activation.
     // TODO(crbug.com/41490450): Test postMessage() from iframes.
     @Test

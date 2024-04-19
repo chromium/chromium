@@ -1,6 +1,20 @@
 <html>
+  <body>
+  </body>
   <script>
     // Objects starting with the "aw" prefix are injected by AwPrerenderTest.
+
+    function createIframe(url) {
+      const iframe = document.createElement("iframe");
+      iframe.setAttribute("src", url);
+      document.body.appendChild(iframe);
+    }
+
+    const params = new URLSearchParams(document.location.search);
+    const iframeSrc = params.get("iframeSrc");
+    if (iframeSrc !== null) {
+      createIframe(iframeSrc);
+    }
 
     function wasActivated() {
       return self.performance?.getEntriesByType?.('navigation')[0]?.activationStart > 0;
