@@ -561,7 +561,16 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
 
       const std::string client_tag_of_local_password =
           GetClientTag(*local_form_entity_data);
-      client_tags_of_local_passwords.insert(client_tag_of_local_password);
+      const bool local_client_tag_is_unique =
+          client_tags_of_local_passwords.insert(client_tag_of_local_password)
+              .second;
+
+      if (!local_client_tag_is_unique) {
+        // The client tag should uniquely identify local passwords. If there are
+        // two local passwords with the same client tag, it must be a corrupt
+        // state that cannot be synced.
+        continue;
+      }
 
       if (client_tag_to_remote_entity_change_map.count(
               client_tag_of_local_password) == 0) {

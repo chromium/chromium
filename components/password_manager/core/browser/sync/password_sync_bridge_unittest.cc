@@ -2062,4 +2062,38 @@ TEST_F(PasswordSyncBridgeTest,
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 }
 
+TEST_F(PasswordSyncBridgeTest, ShouldIgnoreDuplicateClientTagsInLocalStorage) {
+  const int kPrimaryKey1 = 1000;
+  const int kPrimaryKey2 = 1001;
+  const PasswordForm form1 = MakePasswordForm(kSignonRealm1, kPrimaryKey1);
+  const PasswordForm form2 = MakePasswordForm(kSignonRealm1, kPrimaryKey2);
+
+  fake_db()->AddLoginWithPrimaryKey(form1);
+  fake_db()->AddLoginWithPrimaryKey(form2);
+
+  // The two local passwords share the same client tag hash.
+  ASSERT_EQ(SpecificsToEntity(
+                SpecificsFromPassword(form1, sync_pb::PasswordSpecificsData()))
+                .client_tag_hash,
+            SpecificsToEntity(
+                SpecificsFromPassword(form2, sync_pb::PasswordSpecificsData()))
+                .client_tag_hash);
+
+  const sync_pb::PasswordSpecifics specifics =
+      CreateSpecificsWithSignonRealm(kSignonRealm1);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      /*storage_key=*/"", SpecificsToEntity(specifics)));
+
+  // UpdateStorageKey() should be called for exactly one of them, but not the
+  // other.
+  EXPECT_CALL(mock_processor(), UpdateStorageKey(_, _, _));
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+
+  std::optional<syncer::ModelError> error = bridge()->MergeFullSyncData(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
+  EXPECT_FALSE(error);
+}
+
 }  // namespace password_manager
