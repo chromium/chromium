@@ -21,7 +21,7 @@ import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
-import {mojoVoicePackStatusToVoicePackStatusEnum} from './voice_language_util.js';
+import {convertLangOrLocaleForVoicePackManager, mojoVoicePackStatusToVoicePackStatusEnum} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -606,6 +606,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (this.pendingImageRequest_ &&
         this.pendingImageRequest_.nodeId === nodeId) {
       this.pendingImageRequest_.resolver(dataurl);
+    }
+  }
+
+  private sendGetVoicePackInfoRequest(langOrLocale: string) {
+    const langOrLocaleForPackManager =
+        convertLangOrLocaleForVoicePackManager(langOrLocale);
+    if (langOrLocaleForPackManager) {
+      chrome.readingMode.sendGetVoicePackInfoRequest(
+          langOrLocaleForPackManager);
     }
   }
 

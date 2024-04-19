@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_util.js';
 
-import {mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_util.js';
+import {convertLangOrLocaleForVoicePackManager, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_util.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('voice and language utils', () => {
@@ -38,5 +38,33 @@ suite('voice and language utils', () => {
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kUnsupportedPlatform')),
         VoicePackStatus.ERROR);
+  });
+
+  test('convertLangOrLocaleForVoicePackManager', () => {
+    // Converts to locale when necessary
+    assertEquals(convertLangOrLocaleForVoicePackManager('en'), 'en-us');
+    assertEquals(convertLangOrLocaleForVoicePackManager('es'), 'es-es');
+    assertEquals(convertLangOrLocaleForVoicePackManager('pt'), 'pt-br');
+
+    // Converts to base language when necessary
+    assertEquals(convertLangOrLocaleForVoicePackManager('fr-FR'), 'fr');
+    assertEquals(convertLangOrLocaleForVoicePackManager('fr-Bf'), 'fr');
+
+
+    // Converts from unsupported locale to supported locale when necessary
+    assertEquals(convertLangOrLocaleForVoicePackManager('en-UK'), 'en-us');
+    assertEquals(convertLangOrLocaleForVoicePackManager('es-MX'), 'es-es');
+
+    // Keeps base language when necessary
+    assertEquals(convertLangOrLocaleForVoicePackManager('nl'), 'nl');
+    assertEquals(convertLangOrLocaleForVoicePackManager('yue'), 'yue');
+
+    // Keeps locale when necesseary
+    assertEquals(convertLangOrLocaleForVoicePackManager('en-GB'), 'en-gb');
+    assertEquals(convertLangOrLocaleForVoicePackManager('es-es'), 'es-es');
+    assertEquals(convertLangOrLocaleForVoicePackManager('pt-Br'), 'pt-br');
+
+    // Unsupported languages are undefined
+    assertEquals(convertLangOrLocaleForVoicePackManager('cn'), undefined);
   });
 });
