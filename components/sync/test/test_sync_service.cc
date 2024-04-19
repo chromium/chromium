@@ -311,10 +311,6 @@ void TestSyncService::StopAndClear() {
   SetSignedInWithoutSyncFeature();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // TODO(crbug.com/40946404): Strictly speaking SyncServiceImpl enters
-  // START_DEFERRED for a very short time interval, until the task posted from
-  // TryStart() is processed. It is simplified here because INITIALIZING takes
-  // significantly longer.
   SetTransportState(TransportState::INITIALIZING);
 }
 

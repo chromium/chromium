@@ -1998,16 +1998,6 @@ TEST_F(
 
   SignInWithoutSyncConsent();
 
-  ASSERT_EQ(SyncService::TransportState::START_DEFERRED,
-            service()->GetTransportState());
-
-  // START_DEFERRED is very short-lived upon sign-in, so it doesn't matter
-  // much what the API returns (added here for documentation purposes).
-  EXPECT_EQ(ModelTypeSet(),
-            service()->GetTypesWithPendingDownloadForInitialSync());
-
-  base::RunLoop().RunUntilIdle();
-
   ASSERT_EQ(SyncService::TransportState::INITIALIZING,
             service()->GetTransportState());
 
@@ -2017,7 +2007,9 @@ TEST_F(
             service()->GetTypesWithPendingDownloadForInitialSync());
 
   // Once fully initialized, it is delegated to DataTypeManager.
+  base::RunLoop().RunUntilIdle();
   engine()->TriggerInitializationCompletion(/*success=*/true);
+
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_EQ(ModelTypeSet(),
@@ -2034,16 +2026,6 @@ TEST_F(SyncServiceImplTest,
   service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
-  ASSERT_EQ(SyncService::TransportState::START_DEFERRED,
-            service()->GetTransportState());
-
-  // START_DEFERRED is very short-lived upon sign-in, so it doesn't matter
-  // much what the API returns (added here for documentation purposes).
-  EXPECT_EQ(ModelTypeSet(),
-            service()->GetTypesWithPendingDownloadForInitialSync());
-
-  base::RunLoop().RunUntilIdle();
-
   ASSERT_EQ(SyncService::TransportState::INITIALIZING,
             service()->GetTransportState());
 
@@ -2053,7 +2035,9 @@ TEST_F(SyncServiceImplTest,
             service()->GetTypesWithPendingDownloadForInitialSync());
 
   // Once fully initialized, it is delegated to DataTypeManager.
+  base::RunLoop().RunUntilIdle();
   engine()->TriggerInitializationCompletion(/*success=*/true);
+
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_EQ(ModelTypeSet(),

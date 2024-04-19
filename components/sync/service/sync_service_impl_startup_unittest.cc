@@ -697,6 +697,8 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // Prevent one model initialization, to test TransportState::CONFIGURING.
   SignInWithSyncConsent();
   SetSyncFeatureEnabledPrefs();
+  // Deferred startup is only possible if first sync completed earlier.
+  component_factory()->set_first_time_sync_configure_done(true);
   component_factory()->AllowFakeEngineInitCompletion(false);
   CreateSyncService({SESSIONS});
   get_controller(SESSIONS)->model()->EnableManualModelStart();

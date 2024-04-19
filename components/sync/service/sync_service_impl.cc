@@ -834,10 +834,21 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
   }
 
   if (!engine_) {
-    // Starting the engine is allowed but didn't happen. Either this was
-    // deferred, or the service is shutting down and there's no sense in
-    // restarting. For the second case, doesn't matter much what to return.
-    return TransportState::START_DEFERRED;
+    // Starting the engine is allowed but didn't happen. There are three
+    // possible scenarios:
+    // 1) Startup was deferred, in which case it can take noticeably long until
+    //  . the engine initializes. This case can be distinguished by checking if
+    //  . `deferring_first_start_since_` is set.
+    // 2) Startup is about to happen because SyncServiceImpl::TryStart() was
+    //  . invoked, but the posted task to run SyncServiceImpl::TryStartImpl()
+    //  . hasn't been processed yet.
+    // 3) The service is shutting down.
+    //
+    // This function reports TransportState::START_DEFERRED only for the first,
+    // which is the only real deferred case.
+    return deferring_first_start_since_.is_null()
+               ? TransportState::INITIALIZING
+               : TransportState::START_DEFERRED;
   }
 
   if (!engine_->IsInitialized() || !data_type_manager_) {
@@ -1481,17 +1492,15 @@ ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
 ModelTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(data_type_manager_);
 
   if (GetTransportState() == TransportState::INITIALIZING &&
-      engine_->GetBirthday().empty()) {
+      !sync_client_->GetSyncApiComponentFactory()
+           ->HasTransportDataIncludingFirstSync()) {
     // The engine is initializing for the very first sync (usually after
     // sign-in). In this case all types are reported as pending download,
     // optimistically assuming datatype preconditions will be met.
     return GetPreferredDataTypes();
-  }
-
-  if (!data_type_manager_) {
-    return ModelTypeSet();
   }
 
   // Persistent auth errors lead to PAUSED, which implies
