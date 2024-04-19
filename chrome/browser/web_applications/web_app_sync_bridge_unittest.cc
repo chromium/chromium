@@ -30,7 +30,6 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -1246,6 +1245,45 @@ TEST_F(WebAppSyncBridgeTest, InstallAppsFromSyncAndPendingInstallation) {
   StartWebAppProvider();
 
   run_loop.Run();
+}
+
+// Tests that non user installable apps can also be removed by the
+// WebAppSyncBridge during system startup, if `is_uninstalling` is set to true.
+// Test for crbug.com/335253048, by using kSystem to mock that behavior. Since
+// System Web Apps are only on Ash chrome, kPolicy is used instead on Lacro
+TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
+  AppsList system_apps;
+
+  // This app should be uninstalled, since the `is_uninstalling` field is set.
+  std::unique_ptr<WebApp> app1 =
+      test::CreateWebApp(GURL("https://example.com/app1"));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  app1->AddSource(WebAppManagement::kPolicy);
+#else
+  app1->AddSource(WebAppManagement::kSystem);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  app1->SetIsUninstalling(/*is_uninstalling=*/true);
+  const webapps::AppId app_id1 = app1->app_id();
+  system_apps.push_back(std::move(app1));
+
+  // This app will not be uninstalled.
+  std::unique_ptr<WebApp> app2 =
+      test::CreateWebApp(GURL("https://example.com/app2"));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  app2->AddSource(WebAppManagement::kPolicy);
+#else
+  app2->AddSource(WebAppManagement::kSystem);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  const webapps::AppId app_id2 = app2->app_id();
+  system_apps.push_back(std::move(app2));
+
+  Registry registry;
+  InsertAppsListIntoRegistry(&registry, system_apps);
+  database_factory().WriteRegistry(registry);
+  StartWebAppProvider();
+
+  EXPECT_FALSE(registrar().IsInstalled(app_id1));
+  EXPECT_TRUE(registrar().IsInstalled(app_id2));
 }
 
 // Tests that OnWebAppsWillBeUpdatedFromSync observer notification is called

@@ -301,6 +301,21 @@ class WebAppCommandScheduler {
       UninstallAllUserInstalledWebAppsCommand::Callback callback,
       const base::Location& location = FROM_HERE);
 
+  // Completely removes the web_app from the database by removing all management
+  // types. Since this is a very destructive operation, prefer invoking
+  // RemoveInstallUrlMaybeUninstall(), RemoveInstallManagementMaybeUninstall(),
+  // RemoveUserUninstallableManagements() or UninstallAllUserInstalledWebApps()
+  // instead.
+  // Currently, only the WebAppSyncBridge is allowed to invoke this for
+  // uninstalling web apps, since it is safe to assume that apps marked with
+  // `is_uninstalling` set to true can be fully removed from the registry.
+  void RemoveAllManagementTypesAndUninstall(
+      base::PassKey<WebAppSyncBridge>,
+      const webapps::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallJob::Callback callback,
+      const base::Location& location = FROM_HERE);
+
   // Schedules a command that updates run on os login to provided `login_mode`
   // for a web app.
   void SetRunOnOsLoginMode(const webapps::AppId& app_id,
