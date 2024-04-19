@@ -75,6 +75,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
 
     private static Integer sMaxInstancesForTesting;
+    private static Integer sInstanceCountForTesting;
 
     private final boolean mMultiInstanceApi31Enabled;
     private static Boolean sMultiInstanceApi31EnabledForTesting;
@@ -400,6 +401,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return The number of Chrome instances that can switch to or launch.
      */
     public static int getInstanceCount() {
+        if (sInstanceCountForTesting != null) return sInstanceCountForTesting;
         int count = 0;
         for (int i = 0; i < getMaxInstances(); ++i) {
             if (MultiInstanceManagerApi31.instanceEntryExists(i) && isRestorableInstance(i)) {
@@ -839,6 +841,11 @@ public class MultiWindowUtils implements ActivityStateListener {
         var oldValue = sInstance;
         sInstance = instance;
         ResettersForTesting.register(() -> sInstance = oldValue);
+    }
+
+    public static void setInstanceCountForTesting(int instanceCount) {
+        sInstanceCountForTesting = instanceCount;
+        ResettersForTesting.register(() -> sInstanceCountForTesting = null);
     }
 
     public static void setMaxInstancesForTesting(int maxInstances) {

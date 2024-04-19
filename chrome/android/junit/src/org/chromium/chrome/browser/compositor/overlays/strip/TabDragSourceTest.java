@@ -84,6 +84,7 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DropDataAndroid;
+import org.chromium.ui.widget.ToastManager;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -207,6 +208,7 @@ public class TabDragSourceTest {
         }
         mSourceInstance.setManufacturerAllowlistForTesting(null);
         ShadowToast.reset();
+        ToastManager.resetForTesting();
     }
 
     @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
@@ -376,7 +378,7 @@ public class TabDragSourceTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void test_startTabDragAction_returnTrueForNonSplitScreenTabTearingWithMultipleTabs() {
+    public void test_startTabDragAction_FullScreenTabTearingWithMultipleTabs() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
         mSourceInstance.setManufacturerAllowlistForTesting(new HashSet<>());
@@ -405,7 +407,7 @@ public class TabDragSourceTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void test_startTabDragAction_returnFalseForNonSplitScreenTabTearingWithOneTab() {
+    public void test_startTabDragAction_FullScreenTabTearingWithOneTab() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
         mSourceInstance.setManufacturerAllowlistForTesting(new HashSet<>());
@@ -420,6 +422,67 @@ public class TabDragSourceTest {
                         DRAG_START_POINT,
                         TAB_POSITION_X,
                         TAB_WIDTH));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
+    public void test_startTabDragAction_FullScreenTabTearingWithMaxChromeInstances() {
+        // Set params.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
+        mSourceInstance.setManufacturerAllowlistForTesting(new HashSet<>());
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+        MultiWindowUtils.setInstanceCountForTesting(5);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+
+        // Verify.
+        assertTrue(
+                "Tab drag should start.",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH));
+        var dropDataCaptor = ArgumentCaptor.forClass(ChromeDropDataAndroid.class);
+        verify(mDragDropDelegate)
+                .startDragAndDrop(
+                        eq(mTabsToolbarView),
+                        any(DragShadowBuilder.class),
+                        dropDataCaptor.capture());
+        assertFalse(
+                "DropData.allowTabTearing value is incorrect.",
+                dropDataCaptor.getValue().allowTabTearing);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
+    public void test_startTabDragAction_SplitScreenTabTearingWithMaxChromeInstances() {
+        // Set params.
+        mSourceInstance.setManufacturerAllowlistForTesting(new HashSet<>());
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+        MultiWindowUtils.setInstanceCountForTesting(5);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+
+        // Verify.
+        assertTrue(
+                "Tab drag should start.",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH));
+        var dropDataCaptor = ArgumentCaptor.forClass(ChromeDropDataAndroid.class);
+        verify(mDragDropDelegate)
+                .startDragAndDrop(
+                        eq(mTabsToolbarView),
+                        any(DragShadowBuilder.class),
+                        dropDataCaptor.capture());
+        assertFalse(
+                "DropData.allowTabTearing value is incorrect.",
+                dropDataCaptor.getValue().allowTabTearing);
     }
 
     @Test
@@ -625,6 +688,35 @@ public class TabDragSourceTest {
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
+    public void test_onDrag_unhandledDropOutside_maxChromeInstances() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.DragDrop.Tab.FromStrip.Result",
+                                DragDropTabResult.IGNORED_MAX_INSTANCES)
+                        .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
+                        .build();
+
+        MultiWindowUtils.setInstanceCountForTesting(5);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+
+        new DragEventInvoker().dragExit(mSourceInstance).end(false);
+
+        assertNotNull(ShadowToast.getLatestToast());
+        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
+        String actualText = textView == null ? "" : textView.getText().toString();
+        assertEquals(
+                "Text for toast shown does not match.",
+                ContextUtils.getApplicationContext().getString(R.string.max_number_of_windows),
+                actualText);
+        histogramExpectation.assertExpected();
     }
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario D.1 */
