@@ -765,10 +765,14 @@ constexpr MessageInfo kTrackDescriptor = {kTrackDescriptorIndices,
 constexpr int kTraceUuidIndices[] = {1, 2, -1};
 constexpr MessageInfo kTraceUuid = {kTraceUuidIndices, nullptr};
 
+// Proto Message: ChromeTrigger
+constexpr int kChromeTriggerIndices[] = {2, -1};
+constexpr MessageInfo kChromeTrigger = {kChromeTriggerIndices, nullptr};
+
 // Proto Message: TracePacket
-constexpr int kTracePacketIndices[] = {6,  8,  10, 11, 12, 13, 35,
-                                       36, 41, 42, 43, 44, 51, 54,
-                                       56, 58, 59, 60, 87, 89, -1};
+constexpr int kTracePacketIndices[] = {6,  8,  10, 11, 12,  13, 35, 36,
+                                       41, 42, 43, 44, 51,  54, 56, 58,
+                                       59, 60, 87, 89, 109, -1};
 constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     &kClockSnapshot,
     nullptr,
@@ -789,7 +793,8 @@ constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     &kTracePacketDefaults,
     &kTrackDescriptor,
     nullptr,
-    &kTraceUuid};
+    &kTraceUuid,
+    &kChromeTrigger};
 constexpr MessageInfo kTracePacket = {kTracePacketIndices,
                                       kTracePacketComplexMessages};
 
