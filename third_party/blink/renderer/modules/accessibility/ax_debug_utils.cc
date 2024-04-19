@@ -147,7 +147,7 @@ void CheckTreeConsistency(
             if (included_state_stale) {
               msg << "\n  Included state was stale.";
             }
-            msg << "\n  Parent: " << obj->CachedParentObject();
+            msg << "\n  Parent: " << obj->ParentObject();
           }
         }
       }

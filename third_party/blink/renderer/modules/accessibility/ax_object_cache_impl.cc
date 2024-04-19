@@ -973,9 +973,8 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
       << "Detached AXNodeObject in map: "
       << "AXID#" << ax_id << " LayoutObject=" << layout_object;
 
-  if (result->CachedParentObject()) {
-    DCHECK(!parent_for_repair ||
-           parent_for_repair == result->CachedParentObject())
+  if (result->ParentObject()) {
+    DCHECK(!parent_for_repair || parent_for_repair == result->ParentObject())
         << "If there is both a previous parent, and a parent supplied for "
            "repair, they must match.";
   } else if (parent_for_repair) {
@@ -1100,7 +1099,7 @@ AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
   Node* child = LayoutTreeBuilderTraversal::FirstChild(map);
   while (child) {
     if (AXObject* ax_child = Get(child)) {
-      if (AXObject* ax_image = ax_child->CachedParentObject()) {
+      if (AXObject* ax_image = ax_child->ParentObject()) {
         if (ax_image->IsDetached()) {
           return nullptr;
         }
@@ -1557,9 +1556,9 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
     // parent before AddChildren() executes. There should be no previous parent.
     DCHECK(parent->RoleValue() == ax::mojom::blink::Role::kStaticText ||
            parent->RoleValue() == ax::mojom::blink::Role::kLineBreak);
-    DCHECK(!obj->CachedParentObject() || obj->CachedParentObject() == parent)
+    DCHECK(!obj->ParentObject() || obj->ParentObject() == parent)
         << "Mismatched old and new parent:" << "\n* Old parent: "
-        << obj->CachedParentObject() << "\n* New parent: " << parent;
+        << obj->ParentObject() << "\n* New parent: " << parent;
     DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
         << "Unexpected parent of inline text box: " << parent->RoleValue();
 #endif
@@ -1646,7 +1645,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
 #endif
 
   if (!has_been_disposed_) {
-    if (notify_parent) {
+    if (notify_parent && !obj->IsMissingParent()) {
       ChildrenChangedOnAncestorOf(obj);
     }
     // TODO(aleventhal) This is for web tests only, in order to record MarkDirty
@@ -1927,7 +1926,7 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
   // When removing children, use the cached children to avoid creating a child
   // just to destroy it.
   for (AXObject* ax_included_child : object->CachedChildrenIncludingIgnored()) {
-    if (ax_included_child->CachedParentObject() != object) {
+    if (ax_included_child->ParentObjectIfPresent() != object) {
       continue;
     }
     if (ui::CanHaveInlineTextBoxChildren(object->RoleValue())) {
@@ -1948,7 +1947,7 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
   // notify_parent param in Remove(), which would be queued, and it needs to
   // happen immediately.
   AXObject* parent_to_notify =
-      notify_parent ? object->CachedParentObject() : nullptr;
+      notify_parent ? object->ParentObjectIfPresent() : nullptr;
   if (remove_root) {
     Remove(object, /* notify_parent */ false);
   }
@@ -2240,7 +2239,7 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object,
 
   if (visibility_or_inertness_changed) {
     ChildrenChanged(ax_object);
-    ChildrenChanged(ax_object->CachedParentObject());
+    ChildrenChanged(ax_object->ParentObject());
   }
   MarkAXObjectDirty(ax_object);
 }
@@ -2623,7 +2622,7 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
 
   AXObject* obj = Get(node);
   CHECK(obj);
-  CHECK(obj->CachedParentObject());
+  CHECK(obj->ParentObject());
 
   MaybeNewRelationTarget(*node, obj);
 
@@ -2659,10 +2658,10 @@ void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
   // Any ancestor up to the first included ancestor can contain the now-detached
   // child in it's cached children, and therefore must update children.
   if (processing_deferred_events_) {
-    ChildrenChangedWithCleanLayout(obj->CachedParentObject());
+    ChildrenChangedWithCleanLayout(obj->ParentObjectIfPresent());
     return;
   }
-  AXObject* ax_ancestor = ChildrenChanged(obj->CachedParentObject());
+  AXObject* ax_ancestor = ChildrenChanged(obj->ParentObject());
   if (!ax_ancestor) {
     return;
   }
@@ -2672,8 +2671,7 @@ void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
          "serialization, because the ancestor may have already been "
          "visited. Reaching this line indicates that AXObjectCacheImpl did "
          "not handle a signal and call ChildrenChanged() earlier."
-      << "\nChild: " << obj << "\nParent: "
-      << obj->CachedParentObject()
+      << "\nChild: " << obj << "\nParent: " << obj->ParentObject()
       << "\nAncestor: " << ax_ancestor;
 }
 
@@ -2730,7 +2728,7 @@ AXObject* AXObjectCacheImpl::InvalidateChildren(AXObject* obj) {
       break;
     }
 
-    ancestor = ancestor->CachedParentObject();
+    ancestor = ancestor->ParentObject();
   }
 
   // Only process ChildrenChanged() events on the included ancestor. This allows
@@ -4345,7 +4343,7 @@ AXObject* AXObjectCacheImpl::GetOrCreateValidationMessageObject() {
     if (message_ax_object->IsMissingParent()) {
       message_ax_object->SetParent(Root());  // Reattach to parent (root).
     } else {
-      DCHECK(message_ax_object->CachedParentObject() == Root());
+      DCHECK(message_ax_object->ParentObject() == Root());
     }
   } else {
     if (IsFrozen()) {
@@ -4387,7 +4385,7 @@ AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid() {
           AXObject* message = GetOrCreateValidationMessageObject();
           CHECK(message);
           CHECK(!message->IsDetached());
-          CHECK_EQ(message->CachedParentObject(), Root());
+          CHECK_EQ(message->ParentObject(), Root());
           return message;
         }
       }
@@ -4492,8 +4490,8 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
   // If the ignored state changes, the parent's children may have changed.
   if (AXObject* obj = Get(&node)) {
     if (!obj->IsDetached()) {
-      if (obj->CachedParentObject()) {
-        ChildrenChanged(obj->CachedParentObject());
+      if (obj->ParentObject()) {
+        ChildrenChanged(obj->ParentObject());
         // ChildrenChanged() can cause the obj to be detached.
         if (obj->IsDetached()) {
           return;

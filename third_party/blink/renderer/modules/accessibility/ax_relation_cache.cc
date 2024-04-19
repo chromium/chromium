@@ -359,7 +359,7 @@ static bool ContainsCycle(AXObject* owner, Node& child_node) {
   // Walk up the parents of the owner object, make sure that this child
   // doesn't appear there, as that would create a cycle.
   for (AXObject* ancestor = owner; ancestor;
-       ancestor = ancestor->CachedParentObject()) {
+       ancestor = ancestor->ParentObject()) {
     if (ancestor->GetNode() == &child_node) {
       return true;
     }
@@ -537,9 +537,11 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
 
     // Now detach the object from its original parent and call childrenChanged
     // on the original parent so that it can recompute its list of children.
-    AXObject* original_parent = added_child->CachedParentObject();
+    AXObject* original_parent = added_child->ParentObjectIfPresent();
     if (original_parent != owner) {
-      added_child->DetachFromParent();
+      if (original_parent) {
+        added_child->DetachFromParent();
+      }
       added_child->SetParent(const_cast<AXObject*>(owner));
       if (original_parent) {
         ChildrenChangedWithCleanLayout(original_parent);
@@ -550,7 +552,7 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
         // - AccessibilityEventsSubtreeReparentedViaAriaOwns2/linux
         // TODO(crbug.com/1299031) Find out why this is necessary.
         object_cache_->MarkAXObjectDirtyWithCleanLayout(
-            original_parent->CachedParentObject());
+            original_parent->ParentObject());
       }
       // Now that we're replacing the parent, we need to update cached values
       // for the added child's subtree, because some cached values are inherited
@@ -1020,9 +1022,11 @@ Node* AXRelationCache::LabelChanged(HTMLLabelElement& label) {
 void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
   // TODO Replace with AXObjectCacheImpl::RepairIncludedParentsChildren().
   DCHECK(child);
-  if (child->IsDetached())
+  if (child->IsDetached()) {
     return;
-  AXObject* old_parent = child->CachedParentObject();
+  }
+
+  AXObject* old_parent = child->ParentObjectIfPresent();
   if (object_cache_->IsProcessingDeferredEvents()) {
     if (AXObject* new_parent =
             object_cache_->RestoreParentOrPruneWithCleanLayout(child)) {

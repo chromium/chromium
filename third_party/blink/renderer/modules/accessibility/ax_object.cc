@@ -656,7 +656,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
   AXObject* ancestor = this;
 
   while (true) {
-    ancestor = ancestor->CachedParentObject();
+    ancestor = ancestor->ParentObject();
     if (!ancestor) {
       break;
     }
@@ -681,8 +681,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
   // are found, this is a bug.
   if (!AXObjectCache().UpdatingTree()) {
     bool fail = false;
-    for (auto* obj = CachedParentObject(); obj;
-         obj = obj->CachedParentObject()) {
+    for (auto* obj = ParentObject(); obj; obj = obj->ParentObject()) {
       if (obj->CachedIsIncludedInTree() &&
           !obj->has_dirty_descendants_) {
         fail = true;
@@ -783,9 +782,14 @@ void AXObject::Detach() {
   }
 #endif
 
-  // Clear any children and call DetachFromParent() on them so that
-  // no children are left with dangling pointers to their parent.
-  ClearChildren();
+  if (AXObjectCache().HasBeenDisposed()) {
+    // Shutting down a11y, just clear the children.
+    children_.clear();
+  } else {
+    // Clear children and call DetachFromParent() on them so that
+    // no children are left with dangling pointers to their parent.
+    ClearChildren();
+  }
 
   parent_ = nullptr;
   ax_object_cache_ = nullptr;
@@ -2682,13 +2686,13 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // possible to create these internal roles / platform mappings with a listitem
   // (native or ARIA) inside of a doc-bibliography or doc-endnotes section.
   if (role_ == ax::mojom::blink::Role::kListItem) {
-    AXObject* ancestor = CachedParentObject();
+    AXObject* ancestor = ParentObject();
     if (ancestor && ancestor->RoleValue() == ax::mojom::blink::Role::kList) {
       // Go up to the root, or next list, checking to see if the list item is
       // inside an endnote or bibliography section. If it is, remap the role.
       // The remapping does not occur for list items multiple levels deep.
       while (true) {
-        ancestor = ancestor->CachedParentObject();
+        ancestor = ancestor->ParentObject();
         if (!ancestor)
           break;
         ax::mojom::blink::Role ancestor_role = ancestor->RoleValue();
@@ -2950,7 +2954,7 @@ bool AXObject::IsNonAtomicTextField() const {
 AXObject* AXObject::GetTextFieldAncestor() {
   AXObject* ancestor = this;
   while (ancestor && !ancestor->IsTextField()) {
-    ancestor = ancestor->CachedParentObject();
+    ancestor = ancestor->ParentObject();
   }
   return ancestor;
 }
@@ -3101,8 +3105,8 @@ bool AXObject::IsIgnored() {
         << "\nThe Detach() method sets cached_is_ignored_ to true, but "
            "something has recomputed it.";
   }
-  if (!cached_is_ignored_ && IsA<Document>(GetNode()) && CachedParentObject() &&
-      CachedParentObject()->IsMenuList()) {
+  if (!cached_is_ignored_ && IsA<Document>(GetNode()) && ParentObject() &&
+      ParentObject()->IsMenuList()) {
     NOTREACHED() << "The menulist popup's document must be ignored.";
   }
 #endif
@@ -3122,20 +3126,16 @@ bool AXObject::IsIgnoredButIncludedInTree() {
 
 // IsIncludedInTree should be true for all nodes that should be
 // included in the tree, even if they are ignored
+bool AXObject::CachedIsIncludedInTree() const {
+  return !cached_is_ignored_ || cached_is_ignored_but_included_in_tree_;
+}
+
 bool AXObject::IsIncludedInTree() const {
-  if (!IsIgnored() || IsIgnoredButIncludedInTree()) {
-    return true;
-  }
-  DCHECK(!IsDetached());
-  return false;
+  return CachedIsIncludedInTree();
 }
 
 bool AXObject::IsIncludedInTree() {
   return !IsIgnored() || IsIgnoredButIncludedInTree();
-}
-
-bool AXObject::CachedIsIncludedInTree() {
- return const_cast<const AXObject*>(this)->IsIncludedInTree();
 }
 
 void AXObject::CheckCanAccessCachedValues() const {
@@ -3314,7 +3314,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // may misfire.
   if (RoleValue() != ax::mojom::blink::Role::kInlineTextBox) {
     if (notify_included_in_tree_changed) {
-      if (AXObject* parent = CachedParentObject()) {
+      if (AXObject* parent = ParentObject()) {
         SANITIZER_CHECK(!AXObjectCache().IsFrozen())
             << "Objects cannot change their inclusion state during "
                "serialization:\n"
@@ -4190,7 +4190,7 @@ ax::mojom::blink::Role AXObject::DetermineRoleValue() {
   DCHECK(!IsDetached());
   // Check parent object to work around circularity issues during AXObject::Init
   // (DetermineRoleValue is called there but before the parent is set).
-  if (CachedParentObject()) {
+  if (ParentObject()) {
     DCHECK(GetDocument());
     DCHECK(GetDocument()->Lifecycle().GetState() >=
            DocumentLifecycle::kLayoutClean)
@@ -4862,8 +4862,7 @@ void AXObject::CheckSubtreeIsForLabelOrDescription(const AXObject* obj) const {
       // display locking (content-visibility: auto) status, as this may be the
       // only chance to do that, and it's safe to do now.
       AXObject* ax_child_from_node = obj->AXObjectCache().Get(child_node);
-      if (ax_child_from_node &&
-          ax_child_from_node->CachedParentObject() == this) {
+      if (ax_child_from_node && ax_child_from_node->ParentObject() == this) {
         children.insert(ax_child_from_node);
       }
     }
@@ -6057,8 +6056,8 @@ void AXObject::CheckIncludedObjectConnectedToRoot() const {
   const AXObject* included_child = this;
   const AXObject* ancestor = nullptr;
   const AXObject* included_parent = nullptr;
-  for (ancestor = CachedParentObject(); ancestor;
-       ancestor = ancestor->CachedParentObject()) {
+  for (ancestor = ParentObject(); ancestor;
+       ancestor = ancestor->ParentObject()) {
     if (ancestor->IsIncludedInTree()) {
       included_parent = ancestor;
       if (included_parent->CachedChildrenIncludingIgnored().Find(
@@ -6150,8 +6149,7 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
   }
 
   // Image map children are entirely dependent on the parent image.
-  if (CachedParentObject() &&
-      IsA<HTMLImageElement>(CachedParentObject()->GetNode())) {
+  if (ParentObject() && IsA<HTMLImageElement>(ParentObject()->GetNode())) {
     return true;
   }
 
@@ -6232,7 +6230,7 @@ void AXObject::ClearChildren() {
     // also be a descendant (unlike children_, parent_ does not skip levels).
     // Another case where the parent is not the same is when the child has been
     // reparented using aria-owns.
-    if (child->CachedParentObject() == this) {
+    if (child->ParentObjectIfPresent() == this) {
       child->DetachFromParent();
     }
   }
@@ -6283,7 +6281,7 @@ void AXObject::ClearChildren() {
     // only chance to do that, and it's safe to do now.
     AXObject* ax_child_from_node = AXObjectCache().Get(child_node);
     if (ax_child_from_node &&
-        ax_child_from_node->CachedParentObject() == this) {
+        ax_child_from_node->ParentObjectIfPresent() == this) {
       ax_child_from_node->DetachFromParent();
     }
   }
@@ -6323,7 +6321,7 @@ void AXObject::ChildrenChangedWithCleanLayout() {
   // external/wpt/accessibility/crashtests/delayed-ignored-change.html/
   // In this case, first ancestor that's still included in the tree will used.
   if (!IsIncludedInTree()) {
-    if (AXObject* ax_parent = CachedParentObject()) {
+    if (AXObject* ax_parent = ParentObject()) {
       ax_parent->ChildrenChangedWithCleanLayout();
       return;
     }
@@ -8106,7 +8104,7 @@ String AXObject::ToString(bool verbose) const {
     const AXObject* included_parent = parent_;
     while (included_parent &&
            !included_parent->IsIncludedInTree()) {
-      included_parent = included_parent->CachedParentObject();
+      included_parent = included_parent->ParentObjectIfPresent();
     }
     if (included_parent) {
       if (!included_parent->HasDirtyDescendants() && children_dirty_) {

@@ -176,7 +176,7 @@ AXObject* AXMenuList::GetOrCreateMockPopupChild() {
         ax::mojom::blink::Role::kMenuListPopup, this);
     CHECK(popup_);
     CHECK(!popup_->IsDetached());
-    CHECK_EQ(popup_->CachedParentObject(), this);
+    CHECK_EQ(popup_->ParentObject(), this);
     CHECK(popup_->IsMenuListPopup());
   }
 

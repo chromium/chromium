@@ -512,7 +512,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // elements are, etc.
   bool IsIncludedInTree() const;
   bool IsIncludedInTree();
-  bool CachedIsIncludedInTree();
+  bool CachedIsIncludedInTree() const;
 
   // Whether objects are ignored, i.e. hidden from the AT.
   bool IsIgnored() const;
@@ -1178,16 +1178,17 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Doesn't work with nodes that are accessibility ignored.
   AXObject* UnignoredPreviousInPreOrder() const;
 
-  // Get or create the parent of this object.
+  // Get the parent of this object.
   //
-  // Works for all nodes, and may return nodes that are accessibility ignored,
+  // Works for all nodes, and may return nodes that are ignored,
   // including nodes that might not be in the tree.
+  // - ParentObject() asserts that the parent is not missing (unless the root).
+  // - ParentObjectIfPresent() returns null if the parent is missing.
+  // Both methods return null for the root.
+  // Most callers should use ParentObject(), but ParentObjectIfPresent() can be
+  // helpful when parent-child relations are being constructed or torn down.
   AXObject* ParentObject() const;
-
-  // Get the parent of this object if it has already been created.
-  // Works for all nodes, and may return nodes that are accessibility ignored,
-  // including nodes that might not be in the tree.
-  AXObject* CachedParentObject() const { return parent_.Get(); }
+  AXObject* ParentObjectIfPresent() const { return parent_; }
 
   // Get the current unignored children without refreshing them, even if
   // children_dirty_ aka NeedsToUpdateChildren() is true.

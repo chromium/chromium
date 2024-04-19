@@ -5526,7 +5526,7 @@ void AXNodeObject::AddNodeChild(Node* node) {
 
 #if DCHECK_IS_ON()
   AXObject* ax_cached_parent =
-      ax_child ? ax_child->CachedParentObject() : nullptr;
+      ax_child ? ax_child->ParentObjectIfPresent() : nullptr;
   size_t num_children_before_add = children_.size();
 #endif
 
@@ -5564,7 +5564,7 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
   if (IsA<HTMLAreaElement>(child_node)) {
     AXObject* ancestor = this;
     while (ancestor && !IsA<HTMLImageElement>(ancestor->GetNode()))
-      ancestor = ancestor->CachedParentObject();
+      ancestor = ancestor->ParentObject();
     DCHECK(ancestor && IsA<HTMLImageElement>(ancestor->GetNode()))
         << "Area elements can only be added by image parents: " << child
         << " had a parent of " << this;
