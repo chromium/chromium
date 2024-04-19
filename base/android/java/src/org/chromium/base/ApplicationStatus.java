@@ -7,7 +7,9 @@ package org.chromium.base;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
+import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.Window;
 
 import androidx.annotation.AnyThread;
@@ -18,6 +20,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.BuildConfig;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -317,17 +321,55 @@ public class ApplicationStatus {
                 });
 
         application.registerActivityLifecycleCallbacks(
-                new ActivityLifecycleCallbacksAdapter() {
+                new ActivityLifecycleCallbacks() {
                     @Override
-                    public void onStateChanged(Activity activity, @ActivityState int newState) {
-                        if (newState == ActivityState.CREATED) {
-                            Window.Callback callback = activity.getWindow().getCallback();
-                            activity.getWindow()
-                                    .setCallback(createWindowCallbackProxy(activity, callback));
-                        } else {
+                    public void onActivityCreated(
+                            final Activity activity, Bundle savedInstanceState) {
+                        onStateChange(activity, ActivityState.CREATED);
+                        Window.Callback callback = activity.getWindow().getCallback();
+                        activity.getWindow()
+                                .setCallback(createWindowCallbackProxy(activity, callback));
+                    }
+
+                    @Override
+                    public void onActivityDestroyed(Activity activity) {
+                        onStateChange(activity, ActivityState.DESTROYED);
+                        checkCallback(activity);
+                    }
+
+                    @Override
+                    public void onActivityPaused(Activity activity) {
+                        onStateChange(activity, ActivityState.PAUSED);
+                        checkCallback(activity);
+                    }
+
+                    @Override
+                    public void onActivityResumed(Activity activity) {
+                        onStateChange(activity, ActivityState.RESUMED);
+                        checkCallback(activity);
+                    }
+
+                    @Override
+                    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+                        checkCallback(activity);
+                    }
+
+                    @Override
+                    public void onActivityStarted(Activity activity) {
+                        onStateChange(activity, ActivityState.STARTED);
+                        checkCallback(activity);
+                    }
+
+                    @Override
+                    public void onActivityStopped(Activity activity) {
+                        onStateChange(activity, ActivityState.STOPPED);
+                        checkCallback(activity);
+                    }
+
+                    private void checkCallback(Activity activity) {
+                        if (BuildConfig.ENABLE_ASSERTS) {
                             assert reachesWindowCallback(activity.getWindow().getCallback());
                         }
-                        onStateChange(activity, newState);
                     }
                 });
     }
@@ -645,10 +687,8 @@ public class ApplicationStatus {
 
         ActivityInfo info = sActivityInfo.get(activity);
         assert info != null
-                : String.format(
-                        "Found untracked Activity: %s isDestroyed=%s isFinishing=%s",
-                        activity, activity.isDestroyed(), activity.isFinishing());
-        assert info.getStatus() != ActivityState.DESTROYED : activity.toString();
+                : "destroyed: " + activity.isDestroyed() + " finishing: " + activity.isFinishing();
+        assert info.getStatus() != ActivityState.DESTROYED;
         info.getListeners().addObserver(listener);
     }
 
