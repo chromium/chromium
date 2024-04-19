@@ -138,8 +138,8 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
           ASSERT_TRUE(page_node);
           auto* helper = PageDiscardingHelper::GetFromGraph(graph);
           ASSERT_TRUE(helper);
-          helper->ImmediatelyDiscardSpecificPage(
-              page_node.get(), discard_reason,
+          helper->ImmediatelyDiscardMultiplePages(
+              {page_node.get()}, discard_reason,
               base::BindLambdaForTesting([&](bool success) {
                 EXPECT_EQ(success, expected_result);
                 run_loop.Quit();

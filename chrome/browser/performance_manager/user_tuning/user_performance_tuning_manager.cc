@@ -278,8 +278,8 @@ void UserPerformanceTuningManager::DiscardPageForTesting(
             if (page_node) {
               performance_manager::policies::PageDiscardingHelper::GetFromGraph(
                   graph)
-                  ->ImmediatelyDiscardSpecificPage(
-                      page_node.get(),
+                  ->ImmediatelyDiscardMultiplePages(
+                      {page_node.get()},
                       ::mojom::LifecycleUnitDiscardReason::PROACTIVE,
                       base::DoNothingWithBoundArgs(std::move(quit_closure)));
             }

@@ -12,9 +12,14 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/task/bind_post_task.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/user_tuning/cpu_health_tracker.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -56,6 +61,34 @@ void PerformanceDetectionManager::RemoveActionableTabsObserver(
   for (auto& [resource_type, observer_list] : actionable_tab_observers_) {
     observer_list.RemoveObserver(o);
   }
+}
+
+void PerformanceDetectionManager::DiscardTabs(
+    std::vector<resource_attribution::PageContext> tabs,
+    base::OnceCallback<void(bool)> post_discard_cb) {
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::vector<resource_attribution::PageContext> tabs,
+             base::OnceCallback<void(bool)> post_discard_cb, Graph* graph) {
+            std::vector<const PageNode*> eligible_nodes;
+            for (resource_attribution::PageContext context : tabs) {
+              const PageNode* page_node = context.GetPageNode();
+              if (page_node) {
+                eligible_nodes.emplace_back(page_node);
+              }
+            }
+            policies::PageDiscardingHelper* const helper =
+                policies::PageDiscardingHelper::GetFromGraph(graph);
+            helper->ImmediatelyDiscardMultiplePages(
+                eligible_nodes, ::mojom::LifecycleUnitDiscardReason::PROACTIVE,
+                std::move(post_discard_cb));
+          },
+          std::move(tabs),
+          post_discard_cb.is_null()
+              ? base::DoNothing()
+              : base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                                   std::move(post_discard_cb))));
 }
 
 // static

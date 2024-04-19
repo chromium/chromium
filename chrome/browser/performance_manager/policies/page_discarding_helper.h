@@ -145,8 +145,8 @@ class PageDiscardingHelper : public GraphOwned,
       base::TimeDelta minimum_time_in_background =
           kNonVisiblePagesUrgentProtectionTime);
 
-  void ImmediatelyDiscardSpecificPage(
-      const PageNode* page_node,
+  void ImmediatelyDiscardMultiplePages(
+      const std::vector<const PageNode*>& page_nodes,
       DiscardReason discard_reason,
       base::OnceCallback<void(bool)> post_discard_cb = base::DoNothing());
 

@@ -222,24 +222,31 @@ void PageDiscardingHelper::DiscardMultiplePages(
                      discard_reason, minimum_time_in_background));
 }
 
-void PageDiscardingHelper::ImmediatelyDiscardSpecificPage(
-    const PageNode* page_node,
+void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
+    const std::vector<const PageNode*>& page_nodes,
     DiscardReason discard_reason,
     base::OnceCallback<void(bool)> post_discard_cb) {
-  // Pass 0 TimeDelta to bypass the minimum time in background check.
-  if (CanDiscard(page_node, discard_reason,
-                 /*minimum_time_in_background=*/base::TimeDelta()) ==
-      CanDiscardResult::kEligible) {
+  std::vector<const PageNode*> eligible_nodes;
+  for (const PageNode* node : page_nodes) {
+    // Pass 0 TimeDelta to bypass the minimum time in background check.
+    if (CanDiscard(node, discard_reason,
+                   /*minimum_time_in_background=*/base::TimeDelta()) ==
+        CanDiscardResult::kEligible) {
+      eligible_nodes.emplace_back(node);
+    }
+  }
+
+  if (eligible_nodes.empty()) {
+    std::move(post_discard_cb).Run(false);
+  } else {
     page_discarder_->DiscardPageNodes(
-        {page_node}, discard_reason,
+        std::move(eligible_nodes), discard_reason,
         base::BindOnce(
             [](base::OnceCallback<void(bool)> callback,
                const std::vector<PageDiscarder::DiscardEvent>& discard_events) {
               std::move(callback).Run(discard_events.size() > 0);
             },
             std::move(post_discard_cb)));
-  } else {
-    std::move(post_discard_cb).Run(false);
   }
 }
 

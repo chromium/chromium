@@ -201,8 +201,8 @@ void MemorySaverModePolicy::DiscardPageTimerCallback(
     StartDiscardTimerIfEnabled(
         tab_handle, requested_time_before_discard - elapsed_not_suspended);
   } else {
-    PageDiscardingHelper::GetFromGraph(graph_)->ImmediatelyDiscardSpecificPage(
-        tab_handle->page_node(),
+    PageDiscardingHelper::GetFromGraph(graph_)->ImmediatelyDiscardMultiplePages(
+        {tab_handle->page_node()},
         PageDiscardingHelper::DiscardReason::PROACTIVE);
   }
 }
