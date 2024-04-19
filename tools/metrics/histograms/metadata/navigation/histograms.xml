@@ -1412,6 +1412,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Prefetch.CompressedBodySize" units="KB"
+    expires_after="2024-10-18">
+  <owner>ricea@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
+  <summary>
+    Records the size of the response body for prefetch responses that had a
+    non-trivial Content-Encoding. This is logged once per successfully completed
+    compressed response in PrefetchManager::OnPrefetchFinished(). A response is
+    considered compressed when the decoded body length is larger than the
+    encoded body length. Compare to Navigation.Prefetch.UncompressedBodySize.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Prefetch.IsHttps" enum="Boolean"
     expires_after="2024-10-17">
   <owner>ricea@chromium.org</owner>
@@ -1445,6 +1458,20 @@ chromium-metrics-reviews@google.com.
     Measures the length of the queue of prefetch jobs at the beginning of
     PrefetchManager processing this queue to execute jobs. Recorded each time
     that PrefetchManager processes the queue of pending jobs.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Prefetch.UncompressedBodySize" units="KB"
+    expires_after="2024-10-18">
+  <owner>ricea@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
+  <summary>
+    Records the size of the response body for prefetch responses that did not
+    use HTTP Content-Encoding compression. This is logged once per successfully
+    completed uncompressed response in PrefetchManager::OnPrefetchFinished(). A
+    response is considered compressed when the decoded body length is larger
+    than the encoded body length. Compare to
+    Navigation.Prefetch.CompressedBodySize.
   </summary>
 </histogram>
 
