@@ -1718,7 +1718,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
       Os usuários não poderão mudar ou substituir essa configuração.
 
       Observação: essa política faz com que o cabeçalho X-GoogApps-Allowed-Domains seja anexado a todas as solicitações HTTP e HTTPS de todos os domínios google.com, como descrito em https://support.google.com/a/answer/1668854.</translation>
-<translation id="2282174652047982960">Sempre usar o cliente DNS integrado quando disponível</translation>
 <translation id="2288506601233091655">Não permitir a exclusão do histórico de trabalhos de impressão</translation>
 <translation id="2289688405312849186">Principal "user@realm" do usuário. O marcador <ph name="LOGIN_ID_PLACEHOLDER" /> é substituído pelo nome de usuário "user". O marcador <ph name="LOGIN_EMAIL_PLACEHOLDER" /> é substituído pelo principal completo "user@realm".</translation>
 <translation id="2290270645214705008">Se esta política for definida como "Desativada", o serviço de host de acesso remoto não poderá ser iniciado nem configurado para aceitar conexões de entrada.  Esta política não afeta situações de suporte remoto.
@@ -3728,13 +3727,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
       Se a política for definida como 2, os anúncios serão bloqueados em sites com anúncios invasivos.</translation>
 <translation id="3876564097829884243">Ativar o recurso EphemeralNetworkPolicies.</translation>
 <translation id="3877517141460819966">Modo de autenticação de segundo fator integrado</translation>
-<translation id="3877908683993837673">Esta política controla qual pilha de software é usada para se comunicar com o servidor DNS: o cliente DNS do sistema operacional ou o integrado do <ph name="PRODUCT_NAME" />. A política não afeta qual servidor DNS vai ser usado. Se, por exemplo, o sistema operacional estiver configurado para usar um servidor DNS empresarial, o mesmo servidor será usado pelo cliente DNS integrado. Ela também não controla como o DNS sobre HTTPS é usado. O <ph name="PRODUCT_NAME" /> sempre vai usar o resolvedor integrado para solicitações DNS sobre HTTPS. Consulte a política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para informações sobre como controlar o DNS sobre HTTPS.
-
-      Se a política for ativada, o cliente DNS integrado será usado, quando disponível.
-
-      Se ela for desativada, o cliente DNS integrado vai ser usado apenas quando o DNS sobre HTTPS estiver em uso.
-
-      Se esta política for deixada sem definição, o cliente DNS integrado será ativado por padrão no <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (quando não houver uma VPN ou um DNS particular ativos) e <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Configurar a lista de apps da Web de instalação forçada</translation>
 <translation id="3879700444818346084">Desativar a importação de senhas salvas na primeira execução</translation>
 <translation id="388237772682176890">O uso dessa política foi suspenso no M53 e removido no M54, porque a compatibilidade com o SPDY/3.1 foi removida.
@@ -7233,7 +7225,6 @@ Se deixada sem definição, a frequência padrão de 15 minutos será usada.</tr
 <translation id="6558013557780651644">Atraso antes de executar ações de inatividade</translation>
 <translation id="6558812160831988140">Relatórios de uso do app</translation>
 <translation id="6559057113164934677">Não permitir que nenhum site acesse minha câmera e meu microfone</translation>
-<translation id="65591220958874949">Usar o cliente DNS integrado no Windows, macOS, Android e ChromeOS</translation>
 <translation id="6559221564468029245">Se a política for definida como "Ativada" ou não for definida, o usuário não será considerado inativo quando o dispositivo estiver tocando áudio. Isso impede que o tempo limite de inatividade seja atingido e que as ações correspondentes sejam realizadas. No entanto, o escurecimento, o desligamento e o bloqueio de tela ainda serão realizados após os limites de tempo configurados, independentemente da atividade de áudio.
 
       Se a política for definida como "Desativada", o sistema poderá considerar os usuários inativos, independentemente da atividade de áudio.</translation>

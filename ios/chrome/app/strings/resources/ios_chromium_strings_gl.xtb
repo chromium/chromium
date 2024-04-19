@@ -28,6 +28,7 @@
 <translation id="1707458603865303524">Utiliza Chromium sempre que toques ligazóns en mensaxes ou noutras aplicacións.</translation>
 <translation id="1722370509450468186">O contrasinal gardarase na túa Conta (<ph name="EMAIL" />).</translation>
 <translation id="1791845338122684020">Abre a páxina do teu historial de Chromium.</translation>
+<translation id="1811860791247653035">Para beneficiarte da personalización e doutras funcións, inclúe Chromium en <ph name="FEATURE_NAME_1" /> e <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium verificou que <ph name="ISSUER" /> emitiu o certificado deste sitio web.</translation>
 <translation id="1843424232666537147">Chromium inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -89,6 +90,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="3639997914391704523">Chromium pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google.</translation>
 <translation id="3688710892786762883">Chromium detectará os números de seguimento dos paquetes nos sitios que visites e mostrarache a información actualizada na páxina Nova pestana. Os teus datos compartiranse con Google para poder fornecer esta función e mellorar a experiencia de compra para todo o mundo.</translation>
 <translation id="372658070733623520">Para usar e gardar os datos de Chromium na túa Conta de Google, verifica a túa identidade.</translation>
+<translation id="3728124580182886854">Vincula Chromium e outros servizos de Google se queres para beneficiarte da personalización, entre outras cousas</translation>
 <translation id="3780779443901618967">Analiza máis datos de sitios que a protección estándar para avisarte sobre os sitios perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chromium.</translation>
 <translation id="3784369638459513223">Abre unha nova pestana do modo de incógnito en Chromium.</translation>
 <translation id="3805899903892079518">Chromium non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>

@@ -68,7 +68,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacija u Play trgovini</translation>
 <translation id="1225748608451425081">Vaš Chromebook je zaključan zbog poznatog problema. Moći ćete se ponovo prijaviti nakon: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Zaustavi odabir</translation>
-<translation id="1230853660706736937">Pretražite tekst na slikama i pogledajte pregled slika</translation>
+<translation id="1230853660706736937">Pretražujte tekst unutar slika i pogledajte preglede slika</translation>
 <translation id="1235458158152011030">Poznate mreže</translation>
 <translation id="1239161794459865856">Funkcija <ph name="FEATURE_NAME" /> je povezana.</translation>
 <translation id="1240638468526743569">Aplikacija</translation>
@@ -129,6 +129,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1420408895951708260">Uključite ili isključite Noćno svjetlo. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1435537621343861112">Nije moguće pokrenuti diktiranje. Mikrofon je isključen.</translation>
+<translation id="1448963928642384376">Žarišne točke vašeg uređaja</translation>
 <translation id="1455242230282523554">Prikaži postavke jezika</translation>
 <translation id="1460620680449458626">Zvuk je isključen.</translation>
 <translation id="14648076227129703">Ovo omogućava pristup kameri za aplikacije <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> te sve aplikacije i web lokacije s odobrenjem za nju</translation>
@@ -161,6 +162,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1569384531973824928">Ovo dozvoljava pristup kameri i mikrofonu za sve aplikacije i web lokacije s odobrenjima za njih. Možda ćete morati osvježiti web stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="1571697193564730395">Uključi/isključi funkciju Ne ometaj. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Umanjite kada je povećalo uključeno</translation>
+<translation id="1582946770779745370">Dostupna je kontrolna tabla igre. Bilo kada pritisnite <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, a zatim <ph name="LAUNCHER_KEY_NAME" /> + g da otvorite</translation>
 <translation id="1586324912145647027">Idite na 1. radnu površinu od 8</translation>
 <translation id="158838227375272121">Web lokacija Google Učionice</translation>
 <translation id="1589090746204042747">Pristupiti svim aktivnostima u ovoj sesiji</translation>
@@ -716,13 +718,13 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3824784079442479685">Ovo dozvoljava pristup kameri za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web lokacije s odobrenjem za nju. Možda ćete morati osvježiti web stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="3826099427150913765">Prebaci na lozinku</translation>
 <translation id="383058930331066723">Način rada uštede baterije je uključen</translation>
-<translation id="3831226344927851293">Zatvorite prikaz vodiča</translation>
+<translation id="3831226344927851293">Izlaz iz prikaza vodiča</translation>
 <translation id="383629559565718788">Prikaži postavke tastature</translation>
 <translation id="384082539148746321">Izbrisati šablon?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, a zatim <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> ili <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94 / 5</translation>
 <translation id="3846575436967432996">Informacije o mreži nisu dostupne</translation>
-<translation id="3848526302597027234">pristupiti sljedećim dopuštenjima:</translation>
+<translation id="3848526302597027234">Pristupite sljedećim odobrenjima:</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3859364108019690">Nije moguće prenositi aplikacije</translation>

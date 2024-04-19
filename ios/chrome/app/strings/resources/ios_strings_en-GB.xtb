@@ -301,7 +301,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2604176749896001318">Update your browser</translation>
 <translation id="2609008503159898744">Close all tabs?</translation>
 <translation id="261305050785128654">Let websites know the languages that you speak. They'll show content in those languages, when possible.</translation>
-<translation id="2613747923081026172">Create group</translation>
 <translation id="2617210333344098964">Move address to account</translation>
 <translation id="261739049332372104">To get updates about content that matters to you, turn on notifications in your iOS settings.</translation>
 <translation id="2625189173221582860">Password copied</translation>
@@ -843,6 +842,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5407969256130905701">Discard changes</translation>
 <translation id="5414763847370083940">You'll get an alert if the price drops on any site.</translation>
 <translation id="5416022985862681400">Last 7 days</translation>
+<translation id="5416455648658732408">Move to tab group</translation>
 <translation id="5423269318075950257">Track price</translation>
 <translation id="543338862236136125">Edit password</translation>
 <translation id="5433691172869980887">Username copied</translation>
@@ -1107,6 +1107,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6647441008198474441">URLs that you visit are sent to Google to predict what sites you might visit next</translation>
 <translation id="6656103420185847513">Edit Folder</translation>
 <translation id="6657585470893396449">Password</translation>
+<translation id="6659660757330712663">You can swipe the toolbar to switch between tabs.</translation>
 <translation id="6668619169535738264">Edit bookmark</translation>
 <translation id="6672241253012342409">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
@@ -1327,6 +1328,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7856733331829174190">Couldn't download</translation>
 <translation id="7859704718976024901">Browsing history</translation>
+<translation id="7860900259978879139">Remove from group</translation>
 <translation id="7866501058614003444">This parcel has been successfully untracked.</translation>
 <translation id="7866872729285243843">To get your reading list on all your devices, turn on 'Reading list' in Settings.</translation>
 <translation id="7866993391592926595">Hiding this card will turn off package tracking and remove all your data</translation>
@@ -1414,9 +1416,11 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8273982424131314219">You'll fill info into <ph name="URL" /></translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Skip</translation>
+<translation id="8282657446819506217">Open in tab group</translation>
 <translation id="828291969289324795">{count,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="8283172974887967105">Set…</translation>
 <translation id="8286036467436129157">Sign In</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> notifications turned off</translation>
 <translation id="8292843446079898078">Receive price drop alerts for products that you track.</translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
 <translation id="8299613349954694191">Open an Incognito tab to browse the web privately.</translation>
@@ -1424,6 +1428,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8313645224014086262">Save file</translation>
 <translation id="8319076807703933069">New search</translation>
 <translation id="8328777765163860529">Close All</translation>
+<translation id="8343286328361420468">Turn off notifications for <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
 <translation id="834783239627985533">Most-visited sites</translation>
 <translation id="8358401059263985056">Turn on notifications</translation>

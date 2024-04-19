@@ -702,7 +702,9 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
 <translation id="473775607612524610">Oppdater</translation>
+<translation id="4738065825338914557">Melder av …</translation>
 <translation id="4738836084190194332">Sist synkronisert: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Filtrer etter app</translation>
 <translation id="4741753828624614066">Du får bedre forslag i adressefeltet</translation>
 <translation id="4742970037960872810">Fjern markering</translation>
 <translation id="4749960740855309258">Åpne en ny fane</translation>
@@ -786,6 +788,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5099845111805573968">Når du velger nettsted for datamaskiner én gang, brukes innstillingen for nettstedet hver gang du besøker det</translation>
 <translation id="5102401324271069229">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing</translation>
 <translation id="510275257476243843">1 time igjen</translation>
+<translation id="5114895953710637392">Arket for appfiltrering er lukket.</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interesser</translation>
 <translation id="5122378528687922675">Spør forelderen din (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />) hvis du trenger hjelp</translation>
@@ -904,7 +907,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="5752232708629533680">Del kun GIF</translation>
 <translation id="5754350196967618083">Kan ikke oppdatere Discover</translation>
 <translation id="5755162682436943950">Logget av. Åpner dialogboksen for å logge på og slå på synkronisering.</translation>
-<translation id="5759897675466110265">Virker ikke nettstedet? Prøv å tillate informasjonskapsler fra tredjeparter midlertidig</translation>
 <translation id="5763382633136178763">Inkognitofaner</translation>
 <translation id="5763514718066511291">Trykk for å kopiere nettadressen for denne appen</translation>
 <translation id="5765517223145864268">Fortell oss om opplevelsen din. Eller <ph name="BEGIN_LINK" />endre innstillingene<ph name="END_LINK" />.</translation>
@@ -1139,6 +1141,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="685850645784703949">Discover fra Google – av</translation>
 <translation id="686366188661646310">Vil du slette passordet?</translation>
 <translation id="6864459304226931083">Last ned bildet</translation>
+<translation id="686490460830618322">Ark for appfiltrering</translation>
 <translation id="6865313869410766144">Skjemadata lagret med autofyll</translation>
 <translation id="6867400383614725881">Ny inkognitofane</translation>
 <translation id="6869056123412990582">datamaskin</translation>
@@ -1206,6 +1209,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7177466738963138057">Du kan endre dette senere i Innstillinger</translation>
 <translation id="7177873915659574692">Kan ikke opprette QR-kode. Nettadressen er lengre enn <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
+<translation id="7183517696921903380">Arket for appfiltrering er åpnet.</translation>
 <translation id="7183693674623539380">Fanegruppe – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Kontroller hvordan nettleserloggen brukes med de andre dataene dine i Google-tjenester</translation>
 <translation id="7187993566681480880">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
@@ -1332,6 +1336,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7780645209293383778">Knytter disse dataene til Google-kontoen din midlertidig når du er pålogget, slik at du er beskyttet i alle Google-appene</translation>
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="7798392620021911922">Gjenopprettet <ph name="TAB_COUNT" /> faner</translation>
+<translation id="780287761701992588">Få bokmerker, passord med mer på alle enhetene dine</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7808889146555843082">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" />. Endre passordet eller slett kontoen på <ph name="SITE" /> for å beskytte den mot andre.</translation>
 <translation id="7810647596859435254">Åpne med…</translation>

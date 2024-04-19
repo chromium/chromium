@@ -1983,6 +1983,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4809079943450490359">Gailuaren administratzailearen argibideak:</translation>
 <translation id="4811450222531576619">Lortu haren iturburuari eta bertan jorratzen den gaiari buruzko informazio gehiago</translation>
 <translation id="4813512666221746211">Sareko errorea</translation>
+<translation id="4814114628197290459">Ezabatu IBANa</translation>
 <translation id="4816492930507672669">Egokitu orrira</translation>
 <translation id="4819347708020428563">Ikuspegi lehenetsian editatu nahi dituzu oharpenak?</translation>
 <translation id="4822493756793346865">Sareko denden azken 90 egunetako datuetan daude oinarrituta ohiko prezioak.</translation>
@@ -3342,7 +3343,6 @@ Xehetasun gehiago:
 <translation id="7442725080345379071">Laranja argia</translation>
 <translation id="7444046173054089907">Blokeatuta dago webgune hau</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Gaur blokeatuko dira berriro cookieak}=1{Bihar blokeatuko dira berriro cookieak}other{# egun barru blokeatuko dira berriro cookieak}}</translation>
-<translation id="7445762425076701745">Ezin da guztiz baliozkotu konektatuta zauden zerbitzariaren identitatea. Zure sarean soilik balio duen izena erabiltzen du konektatua zauden zerbitzariak eta, beraz, kanpoko autoritate ziurtagiri-emaileek ezin dute horren jabetza baliozkotu. Autoritate ziurtagiri-emaile batzuek, hala ere, izen horietarako ziurtagiriak jaulkiko dituztenez, ezinezkoa da ziurtatzea nahi duzun webgunera edo erasotzaile batera konektatuta zauden.</translation>
 <translation id="7447234474237738389">Arropa-zerbitzuak</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Sinkronizazioa kudeatzeko botoia: aktiba ezazu Chrome-ren ezarpenetara joan, eta sinkronizatzen den informazioa kudeatzeko</translation>

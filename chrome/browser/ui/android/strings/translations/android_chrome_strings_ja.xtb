@@ -703,7 +703,9 @@
 <translation id="4732120983431207637">スタック アンワインダー</translation>
 <translation id="4736934858538408121">仮想カード</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="4738065825338914557">登録を解除しています...</translation>
 <translation id="4738836084190194332">最終同期: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">アプリでフィルタ</translation>
 <translation id="4741753828624614066">アドレスバーにより関連性の高い候補が表示されます</translation>
 <translation id="4742970037960872810">テキストの選択を解除</translation>
 <translation id="4749960740855309258">新しいタブを開く</translation>
@@ -787,6 +789,7 @@
 <translation id="5099845111805573968">PC 版サイトを選択すると、次回以降のアクセス時も同じ設定が適用されます</translation>
 <translation id="5102401324271069229">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
 <translation id="510275257476243843">残り 1 時間</translation>
+<translation id="5114895953710637392">アプリのフィルタシートが閉じています。</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> に移動</translation>
 <translation id="5118713593561876160">興味 / 関心</translation>
 <translation id="5122378528687922675">わからないことがあるときは、保護者の方（<ph name="PARENT_NAME_1" /> または <ph name="PARENT_NAME_2" />）に聞いてください</translation>
@@ -905,7 +908,6 @@
 <translation id="5752232708629533680">GIF のみ共有</translation>
 <translation id="5754350196967618083">おすすめの記事を更新できません</translation>
 <translation id="5755162682436943950">ログアウトしています。ログインして同期をオンにするダイアログを開きます。</translation>
-<translation id="5759897675466110265">サイトが動作していない場合 サードパーティ Cookie を一時的に許可してみてください</translation>
 <translation id="5763382633136178763">シークレット タブ</translation>
 <translation id="5763514718066511291">タップすると、このアプリの URL がコピーされます</translation>
 <translation id="5765517223145864268">ご意見、ご感想をぜひお聞かせください。<ph name="BEGIN_LINK" />設定を変更する<ph name="END_LINK" />こともできます。</translation>
@@ -1140,6 +1142,7 @@
 <translation id="685850645784703949">Discover by Google - オフ</translation>
 <translation id="686366188661646310">パスワードを削除しますか？</translation>
 <translation id="6864459304226931083">画像をダウンロード</translation>
+<translation id="686490460830618322">アプリのフィルタシート</translation>
 <translation id="6865313869410766144">自動入力フォームのデータ</translation>
 <translation id="6867400383614725881">新しいシークレット タブ</translation>
 <translation id="6869056123412990582">パソコン</translation>
@@ -1207,6 +1210,7 @@
 <translation id="7177466738963138057">これは後から [設定] で変更できます</translation>
 <translation id="7177873915659574692">QR コードを作成できません。URL が <ph name="CHARACTER_LIMIT" /> 文字を超えています。</translation>
 <translation id="7180611975245234373">更新</translation>
+<translation id="7183517696921903380">アプリのフィルタシートが開いています。</translation>
 <translation id="7183693674623539380">タブグループ - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理する</translation>
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
@@ -1333,6 +1337,7 @@
 <translation id="7780645209293383778">ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> 個のタブを復元しました</translation>
+<translation id="780287761701992588">すべてのデバイスで同じブックマーク、パスワード、その他の設定を利用する</translation>
 <translation id="780301667611848630">キャンセル</translation>
 <translation id="7808889146555843082">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません。セキュリティを確保するため、パスワードを変更するか、<ph name="SITE" /> のアカウントを削除してください。</translation>
 <translation id="7810647596859435254">アプリで開く…</translation>

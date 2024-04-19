@@ -904,7 +904,6 @@
 <translation id="5752232708629533680">GIF පමණක් බෙදා ගන්න</translation>
 <translation id="5754350196967618083">Discover නැවුම් කිරීමට නොහැකිය</translation>
 <translation id="5755162682436943950">වරනය විය. පුරනය වීමට සහ සමමුහුර්ත කිරීම ක්‍රියාත්මක කිරීමට සංවාදය විවෘත කරයි.</translation>
-<translation id="5759897675466110265">අඩවිය ක්‍රියා නොකරන්නේ ද? තෙවන පාර්ශ්ව කුකීස් සඳහා තාවකාලිකව ඉඩ දීමට උත්සාහ කරන්න</translation>
 <translation id="5763382633136178763">Incognito ටැබ</translation>
 <translation id="5763514718066511291">මෙම යෙදුම සඳහා URL පිටපත් කිරීමට තට්ටු කරන්න</translation>
 <translation id="5765517223145864268">ඔබගේ අත්දැකීම ගැන අපට කියන්න. හෝ <ph name="BEGIN_LINK" />ඔබගේ සැකසීම් වෙනස් කරන්න<ph name="END_LINK" />.</translation>
@@ -1052,6 +1051,7 @@
 <translation id="6477928892249167417">මෙම අඩවි ඔබට වැදගත් බව පෙනේ:</translation>
 <translation id="6481963882741794338">පුද්ගලායන සහ වෙනත් අරමුණු සඳහා Chrome සහ වෙනත් Google සේවා සම්බන්‍ධ කරන්න</translation>
 <translation id="6482749332252372425">ආචනය ඉඩ නොමැති වීම නිසා <ph name="FILE_NAME" /> බාගැනීම අසාර්ථක විය.</translation>
+<translation id="6495590690749880440">පටිති සමූහය විවෘත කරන්න ද?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ගොනුව බාගන්නා ලදී}one{බාගැනීම් #ක් සම්පූර්ණයි}other{බාගැනීම් #ක් සම්පූර්ණයි}}</translation>
 <translation id="6508722015517270189">Chrome යළි අරඹන්න</translation>
 <translation id="6518133107902771759">තහවුරු කරන්න</translation>

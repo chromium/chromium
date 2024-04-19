@@ -198,6 +198,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
 <translation id="4106587138345390261">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
 <translation id="4110895483821904099">Set up your new Chrome profile</translation>
+<translation id="4111566860456076004">Chrome can't verify where this extension comes from, and it might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="4128488089242627000">Chrome runs faster and features that use JavaScript should work as designed (recommended)</translation>
 <translation id="4147555960264124640">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installing...</translation>
@@ -248,6 +249,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4793679854893018356">Learn how Chrome keeps you safe</translation>
 <translation id="4828579605166583682">Google Chrome is trying to replace existing passwords. Type in your Windows password to allow this.</translation>
 <translation id="4842397268809523050">Chrome OS Flex could not sync your data because sync is not available for your domain.</translation>
+<translation id="4862446263930606916">Your organisation can see and manage browsing data in your work profile, such as your bookmarks, history and passwords. It can't see browsing data in personal Chrome profiles.</translation>
 <translation id="4873692836499071887">To get future Google Chrome updates, you'll need macOS 11 or later. This computer is using macOS 10.15.</translation>
 <translation id="4873783916118289636">Review key privacy and security controls in Chrome</translation>
 <translation id="4891791193823137474">Let Google Chrome run in the background</translation>
@@ -496,6 +498,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8999117580775242387">When HTTPS isn't available, Chrome will use an insecure connection without warning you</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
+<translation id="9024318700713112071">Set Chrome as your default</translation>
 <translation id="9053892488859122171">Chrome OS Flex system</translation>
 <translation id="9090566250983691233">Learn why Chrome blocks some files</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>

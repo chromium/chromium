@@ -173,6 +173,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}other{Chromium # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}}</translation>
 <translation id="4118474109249235144">Chromium Inkognito</translation>
 <translation id="4148957013307229264">O‘rnatilmoqda..</translation>
+<translation id="4149336151887611710">Tashkilotingiz ish profilingizda saqlangan brauzerning ishlashi haqida axborotlarni (masalan, bukmarklar, tarix va parollar) koʻrish va boshqarish imkoniyatiga ega boʻladi. Shaxsiy Chromium profillaridagi brauzerning ishlashi haqida axborotlarni koʻra olmaydi.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish - Chromium</translation>
 <translation id="421369550622382712">Chromium uchun zo‘r ilovalar, o‘yinlar va kengaytmalar bilan tanishing.</translation>
 <translation id="4216212958613226427">Chromium UI interfeysi hozir shu tilda</translation>
@@ -401,6 +402,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7867198900892795913">Chromium brauzerining so‘nggi versiyasini o‘rnatib bo‘lmadi. Xavfsizlik sozlamalariga kiritilgan tuzatishlar va yangi funksiyalardan bahramand bo‘la olmaysiz.</translation>
 <translation id="7872446069773932638">Yuklab olinmoqda... <ph name="SECONDS" /> soniya qoldi.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Maʼlumotlaringizni qanday boshqarish mumkin:<ph name="END_BOLD" /> Maxfliylikni himoya qilish maqsadida biz 4 haftadan uzoq saqlangan qiziqishlarni avtomatik oʻchiramiz. Sahifalar takroriy ochilganida qiziqish roʻyxatda yana chiqishi mumkin. Yoki Chromium foydalanmasligini istasangiz, qiziqishlarni olib tashlashingiz mumkin.</translation>
+<translation id="7888981273428720788">Chromiumni asosiy brauzer etib belgilang</translation>
 <translation id="7937630085815544518">Avvallari siz Chromium‘ga <ph name="USER_EMAIL_ADDRESS" /> hisobidan kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
 <translation id="7975919845073681630">Chromium takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
 <translation id="7997934263947464652">Nomaʼlum manbalar kengaytmalari, ilovalari va mavzulari qurilmangizni zararlashi mumkin. Chromium ularni faqat <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> orqali oʻrnatishni tavsiya qiladi</translation>

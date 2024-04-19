@@ -129,6 +129,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1420408895951708260">Yövalo päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Kyllä</translation>
 <translation id="1435537621343861112">Sanelua ei voi aloittaa. Mikrofoni ei ole päällä.</translation>
+<translation id="1448963928642384376">Laitehotspotit</translation>
 <translation id="1455242230282523554">Näytä kieliasetukset</translation>
 <translation id="1460620680449458626">Äänet on mykistetty.</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on kameralupa, saavat käyttää kameraa</translation>
@@ -161,6 +162,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1569384531973824928">Sallii pääsyn kaikille sovelluksille ja verkkosivustoille, joilla on kamera- ja mikrofonilupa. Sinun on ehkä päivitettävä verkkosivu tai käynnistettävä sovellus uudelleen.</translation>
 <translation id="1571697193564730395">Älä häiritse ‑tila päälle tai pois. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Loitonna, kun suurennus on päällä</translation>
+<translation id="1582946770779745370">Pelipaneeli saatavilla. Avaa se milloin tahansa painamalla <ph name="LAUNCHER_KEY_NAME" /> + vaihto + Esc ja sitten <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1586324912145647027">Avaa jokin työpöydistä 1–8</translation>
 <translation id="158838227375272121">Google Classroom ‑verkkosivusto</translation>
 <translation id="1589090746204042747">nähdä kaikki tämän käyttökerran toimintosi</translation>

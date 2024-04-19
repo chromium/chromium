@@ -136,6 +136,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1243027604378859286">Forfatter:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Overtøj</translation>
+<translation id="1253096324252841344">Betal med <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkroniseret)</translation>
 <translation id="1255086252236620440">Foodprocessorer</translation>
 <translation id="1256368399071562588">&lt;p&gt;Hvis du forsøger at besøge et website, og det ikke åbnes, kan du starte med at prøve at rette fejlen med følgende fejlfindingstrin:&lt;/p&gt;
@@ -1510,6 +1511,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="385489333361351399">Kamera- og fotoudstyr</translation>
 <translation id="3858027520442213535">Opdater dato og tid</translation>
 <translation id="3858860766373142691">Navn</translation>
+<translation id="3865339060090354361">Se vilkårene for <ph name="CREDIT_CARD_NAME" /> her</translation>
 <translation id="3872834068356954457">Videnskab</translation>
 <translation id="3875783148670536197">Vis mig hvordan</translation>
 <translation id="3880456882942693779">Kunst og underholdning</translation>
@@ -1985,6 +1987,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4809079943450490359">Vejledninger fra din enhedsadministrator:</translation>
 <translation id="4811450222531576619">Få flere oplysninger om sidens kilde og emne</translation>
 <translation id="4813512666221746211">Netværksfejl</translation>
+<translation id="4814114628197290459">Slet IBAN</translation>
 <translation id="4816492930507672669">Tilpas til siden</translation>
 <translation id="4819347708020428563">Vil du redigere annoteringer i standardvisningen?</translation>
 <translation id="4822493756793346865">Normalpriser er baseret på butikker fra hele internettet over de seneste 90 dage.</translation>
@@ -2349,6 +2352,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="553377674408670169">Jobs inden for uddannelse</translation>
 <translation id="5536214594743852365">Vis sektionen "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Konvolut Chou 2</translation>
+<translation id="5538270463355278784">automatisk fuld skærm</translation>
 <translation id="5539243836947087108">Flåde</translation>
 <translation id="5540224163453853">Den anmodede artikel blev ikke fundet.</translation>
 <translation id="5540969246441091044">Ridning</translation>
@@ -2713,6 +2717,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at administrere de filer, du har downloadet i Chrome</translation>
 <translation id="6254436959401408446">Der er ikke nok hukommelse til at åbne denne side</translation>
 <translation id="625463612687472648">Tillad ikke længere</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Når du foretager køb i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som en valgmulighed}one{Når du foretager køb i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som en valgmulighed}other{Når du foretager køb i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som valgmuligheder}}</translation>
 <translation id="6259156558325130047">&amp;Annuller fortryd omarrangering</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-bogmærker</translation>
 <translation id="6264376385120300461">Download alligevel</translation>
@@ -3343,7 +3348,6 @@ Yderligere oplysninger:
 <translation id="7442725080345379071">Lys orange</translation>
 <translation id="7444046173054089907">Dette website er blokeret</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies blokeres igen fra i dag}=1{Cookies blokeres igen fra i morgen}one{Cookies blokeres igen om # dag}other{Cookies blokeres igen om # dage}}</translation>
-<translation id="7445762425076701745">Identiteten på den server, som du er tilknyttet, kan ikke bekræftes. Du er tilknyttet en server via et navn, der kun er gyldigt i dit netværk, og som en ekstern certifikatautoritet derfor ikke har mulighed for at bekræfte ejerskabet på. Da enkelte certifikatautoriteter alligevel udsteder certifikater for disse navne, kan vi på ingen måde sikre, at du er tilknyttet det tilsigtede website og ikke til en forbryder.</translation>
 <translation id="7447234474237738389">Beklædningstjenester</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Knappen Administrer synkronisering, aktivér for at administrere, hvilke oplysninger der skal synkroniseres, i Chrome-indstillingerne</translation>
@@ -3847,6 +3851,7 @@ Yderligere oplysninger:
 <translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="8380941800586852976">Farlig</translation>
 <translation id="8381674639488873545">Disse opkrævninger kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automatisk fuld skærm</translation>
 <translation id="838307841291975086">Stationcars</translation>
 <translation id="8389532092404711541">Normalt <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Ombyggede biler og sportsvogne</translation>

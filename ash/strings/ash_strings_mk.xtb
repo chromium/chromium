@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, апликација од Play Store</translation>
 <translation id="1225748608451425081">Вашиот Chromebook е заклучен поради познат проблем. Ќе може да се најавите по: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Сопрете со избирање</translation>
+<translation id="1230853660706736937">Пребарувајте текст на слики и гледајте прегледи на слики</translation>
 <translation id="1235458158152011030">Познати мрежи</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> е поврзана.</translation>
 <translation id="1240638468526743569">Некоја апликација</translation>
@@ -128,6 +129,7 @@
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Не може да започне „Диктирање“. Микрофонот е исклучен.</translation>
+<translation id="1448963928642384376">Точки на пристап на вашиот уред</translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
 <translation id="14648076227129703">Ова дозволува пристап до камерата за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и сите апликации и веб-сајтови со дозвола за камерата</translation>
@@ -160,6 +162,7 @@
 <translation id="1569384531973824928">Ова овозможува пристап за сите апликации и веб-сајтови со дозволи за камерата и микрофонот. Можеби ќе треба да ја освежите веб-страницата или да ја рестартирате апликацијата.</translation>
 <translation id="1571697193564730395">Вклучи/исклучи „Не вознемирувај“. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Одзумирајте кога е вклучена лупата</translation>
+<translation id="1582946770779745370">Достапна е „Контролна табла за игри“. За да ја отворите, притиснете <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, па <ph name="LAUNCHER_KEY_NAME" /> + G кога сакате</translation>
 <translation id="1586324912145647027">Одете на работната површина 1 до 8</translation>
 <translation id="158838227375272121">Веб-сајт на Google Classroom</translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
@@ -716,11 +719,13 @@
 <translation id="3824784079442479685">Ова овозможува пристап до камерата за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозвола за камерата. Можеби ќе треба да ја освежите веб-страницата или да ја рестартирате апликацијата.</translation>
 <translation id="3826099427150913765">Префрли на лозинка</translation>
 <translation id="383058930331066723">Режимот „Штедач на батерија“ е вклучен</translation>
+<translation id="3831226344927851293">Излези од „Приказ на упатство“</translation>
 <translation id="383629559565718788">Прикажи ги поставките за тастатура</translation>
 <translation id="384082539148746321">Да се избрише шаблонот?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, а потоа <ph name="KEY_ONE" /> или <ph name="KEY_TWO" /> или <ph name="KEY_THREE" /> или <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94/5</translation>
 <translation id="3846575436967432996">Нема достапни информации за мрежа</translation>
+<translation id="3848526302597027234">да пристапува до следниве дозволи:</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Почеток</translation>
 <translation id="3859364108019690">Не може да се стримуваат апликации</translation>

@@ -1691,7 +1691,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       Gli utenti non possono modificare o ignorare questa impostazione.
 
       Nota: questo criterio comporta l'aggiunta dell'intestazione X-GoogApps-Allowed-Domains a tutte le richieste HTTP e HTTPS inviate a tutti i domini google.com, come descritto all'indirizzo https://support.google.com/a/answer/1668854.</translation>
-<translation id="2282174652047982960">Utilizza sempre il client DNS integrato se disponibile</translation>
 <translation id="2288506601233091655">Non consentire l'eliminazione della cronologia dei processi di stampa</translation>
 <translation id="2289688405312849186">Entità utente "utente@realm". Il segnaposto <ph name="LOGIN_ID_PLACEHOLDER" /> viene sostituito dal nome utente "utente". Il segnaposto <ph name="LOGIN_EMAIL_PLACEHOLDER" /> viene sostituito dall'entità completa "utente@realm".</translation>
 <translation id="2290270645214705008">Se questo criterio viene impostato su Disattivato, non è possibile avviare o configurare il servizio host di accesso remoto per accettare le connessioni in arrivo.  Questo criterio non influisce sugli scenari di assistenza remota.
@@ -2097,6 +2096,10 @@ NOTA: questo criterio presentava un valore predefinito documentato erroneamente 
       Se il criterio non viene configurato, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
+<translation id="2585535930727399201">Le estensioni aziendali possono aggiungere log a un file di log di sistema tramite l'API chrome.systemLog.
+
+Se il criterio viene attivato, i log saranno mantenuti nel file di log di sistema per un periodo di tempo limitato.
+Se il criterio viene disattivato o se non viene configurato, i log non possono essere aggiunti al file di log di sistema. Ciò significa che i log non verranno mantenuti tra le sessioni.</translation>
 <translation id="2586117300379904732">Consenti wakelock per la gestione dell'alimentazione</translation>
 <translation id="2586231026319371211">L'ora nel formato di tempo reale di 24 ore locale.</translation>
 <translation id="2587719089023392205">Imposta <ph name="PRODUCT_NAME" /> come browser predefinito</translation>
@@ -3647,13 +3650,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       Se il criterio viene impostato su 2, gli annunci sono bloccati sui siti con annunci invasivi.</translation>
 <translation id="3876564097829884243">Attiva la funzionalità EphemeralNetworkPolicies.</translation>
 <translation id="3877517141460819966">Modalità di autenticazione a due fattori integrata</translation>
-<translation id="3877908683993837673">Questo criterio consente di controllare quale stack software viene utilizzato per comunicare con il server DNS: il client DNS del sistema operativo o quello integrato di <ph name="PRODUCT_NAME" />. Questo criterio non influisce sui server DNS utilizzati: se, ad esempio, il sistema operativo viene configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Non consente nemmeno di controllare se viene utilizzato il protocollo DNS-over-HTTPS; <ph name="PRODUCT_NAME" /> userà sempre il resolver integrato per le richieste DNS-over-HTTPS. Per informazioni relative al controllo del protocollo DNS-over-HTTPS, consulta il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
-
-      Se il criterio viene impostato su Attivato, viene utilizzato il client DNS integrato, se disponibile.
-
-      Se viene impostato su Disattivato, il client DNS integrato viene utilizzato soltanto quando viene usato il protocollo DNS-over-HTTPS.
-
-      Se il criterio non viene configurato, il client DNS integrato viene attivato per impostazione predefinita su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (nel caso in cui non siano attivi né il DNS privato né la VPN) e <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Configura l'elenco delle app web con installazione forzata</translation>
 <translation id="3879700444818346084">Disabilita l'importazione delle password salvate alla prima esecuzione</translation>
 <translation id="388237772682176890">Questa norma è stata ritirata in M53 e rimossa in M54 perché è stato rimosso il supporto di SPDY/3.1.
@@ -6230,6 +6226,11 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
 
       Se viene impostato su Falso o se non viene configurato, i siti possono inviare moduli WebAssembly solo a finestre e worker nella stessa origine.</translation>
 <translation id="6008497706608447728">Elenco di domini bloccati del servizio SSO mobile</translation>
+<translation id="6009419785187615211">Questo criterio consente di stabilire il trattamento dei moduli non sicuri (i moduli inviati tramite HTTP) incorporati in siti protetti (HTTPS) nel browser.
+       Se il criterio viene attivato o non viene configurato, viene mostrato un avviso a pagina intera quando viene inviato un modulo non sicuro. Viene inoltre mostrato un fumetto di avviso accanto ai campi dei moduli quando vengono selezionati e la compilazione automatica viene disattivata per questi moduli.
+       Se il criterio viene disattivato, non vengono mostrati avvisi per i moduli non sicuri e la compilazione automatica funzionerà normalmente.
+
+       Questo criterio è stato pensato per essere rimosso in Chrome 130.</translation>
 <translation id="6011193465932186973">Impronta</translation>
 <translation id="6011969832398368671">Consenti ai siti di richiedere all'utente l'accesso di scrittura di file e directory</translation>
 <translation id="601234435141599215">Consenti il port forwarding nelle macchine virtuali Linux</translation>
@@ -7026,7 +7027,6 @@ Se il criterio non viene configurato, viene applicata la frequenza predefinita d
 <translation id="6558013557780651644">Ritardo prima dell'esecuzione di azioni in caso di inattività</translation>
 <translation id="6558812160831988140">Generazione di report sull'utilizzo delle app</translation>
 <translation id="6559057113164934677">Non consentire ad alcun sito di accedere alla fotocamera e al microfono</translation>
-<translation id="65591220958874949">Utilizza il client DNS integrato su Windows, macOS, Android e ChromeOS</translation>
 <translation id="6559221564468029245">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente non viene considerato inattivo durante la riproduzione di audio. In questo modo non viene raggiunto il timeout di inattività e non viene compiuta l'azione per l'inattività. Tuttavia, lo schermo viene ancora oscurato, spento e bloccato dopo i timeout configurati, nonostante l'attività audio.
 
       Se il criterio viene impostato su Disattivato, il sistema può considerare gli utenti inattivi nonostante l'attività audio.</translation>

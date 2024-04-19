@@ -1987,6 +1987,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4809079943450490359">Uputstva administratora uređaja:</translation>
 <translation id="4811450222531576619">Saznajte više o njenom izvoru i temi</translation>
 <translation id="4813512666221746211">Greška na mreži</translation>
+<translation id="4814114628197290459">Izbrišite IBAN</translation>
 <translation id="4816492930507672669">Uklopi u stranicu</translation>
 <translation id="4819347708020428563">Želite li da izmenite komentare u podrazumevanom prikazu?</translation>
 <translation id="4822493756793346865">Uobičajene cene se zasnivaju na informacijama iz prodavnica širom veba tokom poslednjih 90 dana.</translation>
@@ -3347,7 +3348,6 @@ Dodatni detalji:
 <translation id="7442725080345379071">Svetlonarandžasta</translation>
 <translation id="7444046173054089907">Ovaj sajt je blokiran</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Kolačići će danas biti ponovo blokirani}=1{Kolačići će sutra biti ponovo blokirani}one{# dan dok se kolačići ponovo ne blokiraju}few{# dana dok se kolačići ponovo ne blokiraju}other{# dana dok se kolačići ponovo ne blokiraju}}</translation>
-<translation id="7445762425076701745">Nije moguće u potpunosti potvrditi identitet servera sa kojim ste povezani. Povezani ste sa serverom koji koristi naziv koji je važeći samo u vašoj mreži, a kojem spoljni autoritet za izdavanje sertifikata ne može da proveri vlasništvo. Budući da neki autoriteti za izdavanje sertifikata uprkos tome izdaju sertifikate za ove nazive, ni na koji način ne možete da budete sigurni da ste povezani sa željenim veb-sajtom, a ne sa napadačem.</translation>
 <translation id="7447234474237738389">Konfekcijske usluge</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Dugme Upravljaj sinhronizacijom, aktivirajte ga da biste upravljali time koje informacije sinhronizujete u podešavanjima Chrome-a</translation>

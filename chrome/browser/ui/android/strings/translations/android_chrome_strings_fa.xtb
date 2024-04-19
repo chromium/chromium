@@ -702,7 +702,9 @@
 <translation id="4732120983431207637">گره‌گشای پشته</translation>
 <translation id="4736934858538408121">کارت مجازی</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
+<translation id="4738065825338914557">درحال لغو اشتراک…</translation>
 <translation id="4738836084190194332">آخرین همگام‌سازی: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">فیلتر کردن براساس برنامه</translation>
 <translation id="4741753828624614066">پیشنهادهای بهبودیافته‌ای در نوار نشانی دریافت خواهید کرد</translation>
 <translation id="4742970037960872810">برداشتن برجسته‌سازی</translation>
 <translation id="4749960740855309258">باز کردن برگه جدید</translation>
@@ -786,6 +788,7 @@
 <translation id="5099845111805573968">وقتی سایت ویژه رایانه را یک‌بار انتخاب کنید، هربار که از آن سایت بازدید کنید این تنظیم اعمال می‌شود</translation>
 <translation id="5102401324271069229">‏اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chrome ممکن است نشانی‌های وب را به‌همراه بخش‌های کوچکی از محتوای صفحه به «مرور ایمن» ارسال کند</translation>
 <translation id="510275257476243843">۱ ساعت باقی‌مانده است</translation>
+<translation id="5114895953710637392">برگ فیلتر کردن برنامه بسته شد.</translation>
 <translation id="5115811374190515607">به <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">علایق</translation>
 <translation id="5122378528687922675">اگر به راهنمایی نیاز داشتید، از ولی خود کمک بگیرید (<ph name="PARENT_NAME_1" /> یا <ph name="PARENT_NAME_2" />)</translation>
@@ -904,7 +907,6 @@
 <translation id="5752232708629533680">‏فقط هم‌رسانی GIF</translation>
 <translation id="5754350196967618083">«یافته‌ها» بازآوری نمی‌شود</translation>
 <translation id="5755162682436943950">از سیستم خارج شده‌اید. کادر گفتگوی ورود به سیستم و روشن کردن همگام‌سازی را باز می‌کند.</translation>
-<translation id="5759897675466110265">سایت کار نمی‌کند؟ کوکی‌های شخص ثالث را موقتاً مجاز کنید</translation>
 <translation id="5763382633136178763">برگه‌های ناشناس</translation>
 <translation id="5763514718066511291">برای کپی کردن نشانی وب این برنامه ضربه بزنید</translation>
 <translation id="5765517223145864268">درباره تجربه‌تان به ما بگویید. یا <ph name="BEGIN_LINK" />تنظیماتتان را تغییر دهید<ph name="END_LINK" />.</translation>
@@ -1139,6 +1141,7 @@
 <translation id="685850645784703949">‏«یافته‌ها» از Google - خاموش</translation>
 <translation id="686366188661646310">گذرواژه حذف شود؟</translation>
 <translation id="6864459304226931083">بارگیری تصویر</translation>
+<translation id="686490460830618322">برگ فیلتر کردن برنامه</translation>
 <translation id="6865313869410766144">تکمیل خودکار داده‌های فرم</translation>
 <translation id="6867400383614725881">برگه ناشناس جدید</translation>
 <translation id="6869056123412990582">رایانه</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7177466738963138057">می‌توانید بعداً این مورد را در تنظیمات تغییر دهید</translation>
 <translation id="7177873915659574692">رمزینه پاسخ‌سریع ایجاد نمی‌شود. نشانی وب بیشتر از <ph name="CHARACTER_LIMIT" /> نویسه دارد.</translation>
 <translation id="7180611975245234373">بازآوری</translation>
+<translation id="7183517696921903380">برگ فیلتر کردن برنامه باز شد.</translation>
 <translation id="7183693674623539380">گروه برگه - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">‏کنترل کنید چگونه از سابقه مرور شما با دیگر داده‌هایتان از همه سرویس‌های Google استفاده شود</translation>
 <translation id="7187993566681480880">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود.</translation>
@@ -1332,6 +1336,7 @@
 <translation id="7780645209293383778">‏اگر به سیستم وارد شده باشید، این داده‌ها را موقتاً به «حساب Google» شما پیوند می‌دهد تا در برنامه‌های Google از شما محافظت شود</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> برگه بازیابی شد</translation>
+<translation id="780287761701992588">نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7808889146555843082">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نمی‌شود. برای ایمن نگه‌داشتن گذرواژه‌تان، آن را تغییر دهید یا حساب‌تان را در <ph name="SITE" /> حذف کنید.</translation>
 <translation id="7810647596859435254">باز کردن با…</translation>

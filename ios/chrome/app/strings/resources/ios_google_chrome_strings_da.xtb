@@ -123,6 +123,7 @@ Vær opmærksom på følgende:
 <translation id="4633328489441962921">Chrome kan ikke søge efter opdateringer</translation>
 <translation id="4636900170638246267">Log ind på dette website og Chrome.</translation>
 <translation id="4761869838909035636">Kør Chrome-sikkerhedstjekket</translation>
+<translation id="4798859546468762093">For at få personlig tilpasning og andre funktioner skal du medtage Chrome i <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto.
 
@@ -179,6 +180,7 @@ Vær opmærksom på følgende:
 <translation id="6389317667633680932">Se nye funktioner, der hjælper dig med at få mest muligt ud af Chrome.</translation>
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="6427126399757991875">Din organisation konfigurerer Chrome...</translation>
+<translation id="6481963882741794338">Tilknyt Chrome og andre Google-tjenester med henblik på personlig tilpasning og andre formål</translation>
 <translation id="6484712497741564393">Logget ind som <ph name="EMAIL" />.
 
 Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at bruge og gemme Chrome-data på din Google-konto.</translation>

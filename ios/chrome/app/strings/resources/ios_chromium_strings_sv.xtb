@@ -28,6 +28,7 @@
 <translation id="1707458603865303524">Använd Chromium varje gång du trycker på länkar i meddelanden eller andra appar.</translation>
 <translation id="1722370509450468186">Lösenordet sparas i kontot (<ph name="EMAIL" />).</translation>
 <translation id="1791845338122684020">Öppnar historiksidan för Chromium.</translation>
+<translation id="1811860791247653035">Om du vill få tillgång till anpassning och andra funktioner kan du ta med Chromium i <ph name="FEATURE_NAME_1" /> och <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium har verifierat att <ph name="ISSUER" /> har utfärdat webbplatsens certifikat.</translation>
 <translation id="1843424232666537147">I Chromium finns det funktioner som du kan använda för att hantera dina internetuppgifter och inläsningshastigheten för webbsidor.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -89,6 +90,7 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3639997914391704523">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="3688710892786762883">Chromium identifierar försändelsens spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelsen på sidan Ny flik. Din data delas med Google för att tillhandahålla den här funktionen och förbättra Shopping för alla.</translation>
 <translation id="372658070733623520">Verifiera din identitet för att använda och spara Chromium-data i ditt Google-konto.</translation>
+<translation id="3728124580182886854">Länka Chromium och andra tjänster från Google för anpassning och andra syften</translation>
 <translation id="3780779443901618967">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chromium-varningar.</translation>
 <translation id="3784369638459513223">Öppnar en ny inkognitoflik i Chromium.</translation>
 <translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>

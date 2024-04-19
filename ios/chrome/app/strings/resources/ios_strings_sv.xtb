@@ -301,7 +301,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2604176749896001318">Uppdatera webbläsaren</translation>
 <translation id="2609008503159898744">Vill du stänga alla flikar?</translation>
 <translation id="261305050785128654">Visa webbplatser vilka språk du talar. Om möjligt visas innehåll på de språken.</translation>
-<translation id="2613747923081026172">Skapa grupp</translation>
 <translation id="2617210333344098964">Flytta adressen till kontot</translation>
 <translation id="261739049332372104">Aktivera aviseringar i iOS-inställningarna om du vill få uppdateringar om innehåll som är viktigt för dig.</translation>
 <translation id="2625189173221582860">Lösenordet har kopierats</translation>
@@ -843,6 +842,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5407969256130905701">Ignorera ändringar</translation>
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
 <translation id="5416022985862681400">Senaste 7 dagarna</translation>
+<translation id="5416455648658732408">Flytta till flikgrupp</translation>
 <translation id="5423269318075950257">Bevaka pris</translation>
 <translation id="543338862236136125">Redigera lösenord</translation>
 <translation id="5433691172869980887">Användarnamnet har kopierats</translation>
@@ -1038,6 +1038,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6363526231572697780">Inget användarnamn</translation>
 <translation id="6366190659675876144">Standardskydd</translation>
 <translation id="6366663624406569102">Logga ut och inaktivera synkronisering</translation>
+<translation id="6368038301482806847">Välj en sökmotor i listan.</translation>
 <translation id="6374469231428023295">Försök igen</translation>
 <translation id="6377118281273296434">Säkerhet på webbplatsen</translation>
 <translation id="6383719166112032471">Öppna plats …</translation>
@@ -1196,6 +1197,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7161230316646448869">Synkronisera bokmärken, historik med mera på alla dina enheter</translation>
 <translation id="7162168282402939716">Lås upp inkognitoflikar med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Inställningar</translation>
+<translation id="7186568385131859684">Styr hur webbhistoriken används tillsammans med din andra data i Googles tjänster</translation>
 <translation id="7189598951263744875">Dela ...</translation>
 <translation id="719133302483559673">Hantera dina intressen och inställningar.</translation>
 <translation id="7192050974311852563">Starta loggning</translation>
@@ -1239,6 +1241,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7438481509621345350">Nu visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bokmärke har sparats i {title}}other{Bokmärken har sparats i {title}}}</translation>
 <translation id="7454057999980797137">Delstat/county</translation>
+<translation id="7458706065921255639">Anpassning och länkning</translation>
 <translation id="745899714366929493">Heldag</translation>
 <translation id="7459628154744868585">Utökat skydd är aktiverat</translation>
 <translation id="7465351360025415755">Få innehåll som är viktigt för dig</translation>
@@ -1324,6 +1327,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7856733331829174190">Nedladdning misslyckades</translation>
 <translation id="7859704718976024901">Webbhistorik</translation>
+<translation id="7860900259978879139">Ta bort från gruppen</translation>
 <translation id="7866501058614003444">Det här paketet spåras inte längre.</translation>
 <translation id="7866872729285243843">Aktivera Läslista i inställningarna om du vill få tillgång till din läslista på alla dina enheter.</translation>
 <translation id="7866993391592926595">Om du döljer det här kortet inaktiveras spårning av försändelser och all din data tas bort</translation>
@@ -1411,9 +1415,11 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8273982424131314219">Uppgifterna fylls i på <ph name="URL" /></translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hoppa över</translation>
+<translation id="8282657446819506217">Öppna i flikgrupp</translation>
 <translation id="828291969289324795">{count,plural, =1{Lägg till fliken i en ny grupp}other{Lägg till flikarna i en ny grupp}}</translation>
 <translation id="8283172974887967105">Ange …</translation>
 <translation id="8286036467436129157">Logga in</translation>
+<translation id="8289930144142009940">Aviseringar för <ph name="FEATURE_NAME" /> har inaktiverats</translation>
 <translation id="8292843446079898078">Få aviseringar om prissänkningar för produkter du bevakar.</translation>
 <translation id="8299417921174340354">Du måste ställa in ett lösenord på enheten innan du kan använda lösenord här.</translation>
 <translation id="8299613349954694191">Öppna en inkognitoflik om du vill surfa privat på webben.</translation>
@@ -1421,6 +1427,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8313645224014086262">Spara fil</translation>
 <translation id="8319076807703933069">Ny sökning</translation>
 <translation id="8328777765163860529">Stäng alla</translation>
+<translation id="8343286328361420468">Inaktivera aviseringar för <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
 <translation id="834783239627985533">Mest besökta webbplatser</translation>
 <translation id="8358401059263985056">Aktivera aviseringar</translation>

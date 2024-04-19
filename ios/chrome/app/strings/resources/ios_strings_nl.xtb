@@ -301,7 +301,6 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2604176749896001318">Je browser updaten</translation>
 <translation id="2609008503159898744">Alle tabbladen sluiten?</translation>
 <translation id="261305050785128654">Laat websites weten welke talen je spreekt. Waar mogelijk tonen ze content in die talen.</translation>
-<translation id="2613747923081026172">Groep maken</translation>
 <translation id="2617210333344098964">Adres verplaatsen naar account</translation>
 <translation id="261739049332372104">Als je updates wilt krijgen over content die belangrijk voor je is, zet je meldingen aan via je iOS-instellingen.</translation>
 <translation id="2625189173221582860">Wachtwoord gekopieerd</translation>
@@ -843,6 +842,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5407969256130905701">Wijzigingen niet opslaan</translation>
 <translation id="5414763847370083940">Je krijgt een melding als de prijs op een site daalt.</translation>
 <translation id="5416022985862681400">Afgelopen 7 dagen</translation>
+<translation id="5416455648658732408">Verplaatsen naar tabbladgroep</translation>
 <translation id="5423269318075950257">Prijs volgen</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
 <translation id="5433691172869980887">Gebruikersnaam gekopieerd</translation>
@@ -1107,6 +1107,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="6647441008198474441">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat</translation>
 <translation id="6656103420185847513">Map bewerken</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
+<translation id="6659660757330712663">Je kunt over de werkbalk swipen om van tabblad te wisselen.</translation>
 <translation id="6668619169535738264">Bookmark bewerken</translation>
 <translation id="6672241253012342409">Sites kunnen cookies gebruiken om de browsefunctionaliteit te verbeteren, bijvoorbeeld door je ingelogd te houden of door artikelen in je winkelwagen te onthouden.
 
@@ -1327,6 +1328,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7853202427316060426">Activiteit</translation>
 <translation id="7856733331829174190">Kan niet downloaden</translation>
 <translation id="7859704718976024901">Browsegeschiedenis</translation>
+<translation id="7860900259978879139">Uit groep verwijderen</translation>
 <translation id="7866501058614003444">Dit pakket wordt niet meer gevolgd.</translation>
 <translation id="7866872729285243843">Als je je leeslijst op al je apparaten wilt krijgen, zet je Leeslijst aan in de instellingen.</translation>
 <translation id="7866993391592926595">Als je deze kaart verbergt, wordt verzendstatus bijhouden uitgezet en worden al je gegevens verwijderd</translation>
@@ -1414,9 +1416,11 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8273982424131314219">Je vult informatie in op <ph name="URL" /></translation>
 <translation id="8281781826761538115">Standaard - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Overslaan</translation>
+<translation id="8282657446819506217">Openen in tabbladgroep</translation>
 <translation id="828291969289324795">{count,plural, =1{Tabblad toevoegen aan nieuwe groep}other{Tabbladen toevoegen aan nieuwe groep}}</translation>
 <translation id="8283172974887967105">Instellen…</translation>
 <translation id="8286036467436129157">Inloggen</translation>
+<translation id="8289930144142009940">Meldingen voor <ph name="FEATURE_NAME" /> staan uit</translation>
 <translation id="8292843446079898078">Krijg meldingen over prijsdalingen voor producten die je volgt.</translation>
 <translation id="8299417921174340354">Als je wachtwoorden wilt gebruiken, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="8299613349954694191">Open een incognitotabblad om privé op internet te browsen.</translation>
@@ -1424,6 +1428,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8313645224014086262">Bestand opslaan</translation>
 <translation id="8319076807703933069">Nieuwe zoekopdracht</translation>
 <translation id="8328777765163860529">Alles sluiten</translation>
+<translation id="8343286328361420468">Meldingen uitzetten voor <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Maak een back-up van je gegevens en gebruik deze op elk apparaat.</translation>
 <translation id="834783239627985533">Meest bezochte sites</translation>
 <translation id="8358401059263985056">Meldingen aanzetten</translation>

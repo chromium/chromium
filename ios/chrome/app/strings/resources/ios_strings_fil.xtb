@@ -102,6 +102,7 @@
 <translation id="152234381334907219">Hindi Kailanman Na-save</translation>
 <translation id="1523341279170789507">Payagan ang Lahat ng Cookies</translation>
 <translation id="1524563461097350801">Hindi, Salamat na lang</translation>
+<translation id="1539173178539798367">I-hide ang I-delete ang Data mula sa Pag-browse</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="1545749641540134597">I-scan ang QR Code</translation>
 <translation id="1552525382687785070">Na-disable ng Iyong Administrator ang Pag-sync</translation>
@@ -301,7 +302,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2604176749896001318">I-update ang Iyong Browser</translation>
 <translation id="2609008503159898744">Isara ang Lahat ng Tab?</translation>
 <translation id="261305050785128654">Ipaalam sa mga website ang mga wikang sinasalita mo. Kapag posible, magpapakita ang mga ito ng content na nasa mga wikang iyon.</translation>
-<translation id="2613747923081026172">Gumawa ng pangkat</translation>
 <translation id="2617210333344098964">Ilipat ang Address sa Account</translation>
 <translation id="261739049332372104">Para makatanggap ng mga update tungkol sa content na mahalaga sa iyo, i-on ang notification sa mga setting ng iOS mo.</translation>
 <translation id="2625189173221582860">Nakopya ang password</translation>
@@ -321,6 +321,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 
 <ph name="DSE_NAME" /> ang iyong search engine. Tingnan ang mga tagubilin nito para sa pag-delete sa iyong history ng paghahanap, kung naaangkop.</translation>
 <translation id="2697526135132990015">Mag-sign Out at I-clear ang Data</translation>
+<translation id="269819437389494246">Makikita mo ang mga page na binisita mo o made-delete mo ang mga ito sa iyong history</translation>
 <translation id="2700241355396984822">Mga opsyon para Magtakda ng Mga Pahintulot</translation>
 <translation id="2702801445560668637">Listahan ng Babasahin</translation>
 <translation id="2704606927547763573">Kinopya</translation>
@@ -394,6 +395,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="3039722182465315531">Huwag Mag-sign In</translation>
 <translation id="3053332585453689122">Ipapadala sa Ligtas na Pag-browse sa Google ang mga URL na binibisita mo at maliit na sample ng content ng page, mga download, aktibidad ng extension, at impormasyon ng system para suriin kung mapaminsala ang mga ito.</translation>
 <translation id="3054631738875941048">Itago ang Idagdag sa Listahan ng Babasahin</translation>
+<translation id="3064295814838126921">Dine-delete ang data mula sa pag-browse...</translation>
 <translation id="3074499504015191586">Isalin ang Buong Page</translation>
 <translation id="3076846064362030967">Hindi ka masa-sign out sa iyong Google Account. Posibleng ma-save sa iyong Google Account ang <ph name="BEGIN_LINK" />iba pang anyo ng aktibidad<ph name="END_LINK" /> kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.
 
@@ -859,6 +861,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5490005495580364134">I-block ang Lahat ng Cookies (Hindi Inirerekomenda)</translation>
 <translation id="5497202150450073388">Sinubukang I-deliver. Susubukan ulit</translation>
 <translation id="5511959326926949696">Pinakamaigting na opsyonal na proteksyon para sa iyong browser. Dapat lang itong gamitin kung naniniwala kang posibleng tina-target ka ng isang napakabihasang cyberattack.</translation>
+<translation id="5512759250809559631">Menu → History → I-delete ang Data mula sa Pag-browse</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> (na) oras na ang nakalipas</translation>
 <translation id="5525269841082836315">Lumikha ng Passphrase</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} mahinang password}one{{COUNT} mahinang password}other{{COUNT} na mahinang password}}</translation>
@@ -934,6 +937,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5859715514067755465">I-forward</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
+<translation id="5889333064153755823">I-delete ang Data mula sa Pag-browse</translation>
 <translation id="5896576662943111387">Ginawa para sa iOS</translation>
 <translation id="5897749768294722429">Para mabilis na makabalik sa mga site na binisita mo, i-sync ang iyong mga tab at history.</translation>
 <translation id="5897956970858271241">Bisitahin ang Kinopyang Link</translation>
@@ -1031,6 +1035,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6346549652287021269">Magsimula ng Bagong Download?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Made-delete ang address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}one{Made-delete ang mga address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}other{Made-delete ang mga address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}}</translation>
 <translation id="634878792104344809">I-sync ang iyong password, history, at higit pa sa lahat ng device mo</translation>
+<translation id="6351658970066645919">I-delete ang Data mula sa Pag-browse</translation>
 <translation id="63519665078626091">Para gamitin ang Web Inspector, kumonekta sa Safari sa iyong computer gamit ang isang cable at i-access ang iyong iPad mula sa menu ng Mag-develop. Puwede mong i-enable ang menu ng mag-develop sa seksyong Advanced ng mga setting ng Safari sa iyong computer.</translation>
 <translation id="6355820205320395730">Madaling hulaan ang mahihinang password. Tiyaking malalakas na password ang gagawin mo. <ph name="BEGIN_LINK" />Tumingin pa ng mga tip sa seguridad.<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Tapos na</translation>
@@ -1152,6 +1157,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="687135068089457384">Ipakita ang Mga Setting</translation>
 <translation id="6873263987691478642">Split View</translation>
 <translation id="6882836635272038266">Karaniwang proteksyon laban sa mga website, download, at extension na kilalang mapanganib.</translation>
+<translation id="6887173972066406796">Kumpirmahin ang Pag-delete ng Data mula sa Pag-browse</translation>
 <translation id="6888009575607455378">Sigurado ka bang gusto mong i-discard ang iyong mga pagbabago?</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6897187120838603299">Ise-save sa iyong device ang password mo.</translation>
@@ -1346,6 +1352,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7930998711684428189">Binibigyan ka ng babala kung malalantad ang mga password sa paglabag sa data.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">I-export Password...</translation>
+<translation id="7939856641500914040">I-delete ang Data mula sa Pag-browse…</translation>
 <translation id="794799177247607889">Ihinto ang Pag-log</translation>
 <translation id="7959441099968534758">PUMUNTA SA FEED</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>

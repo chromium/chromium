@@ -68,6 +68,7 @@
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />، تطبيق من "متجر Play"</translation>
 <translation id="1225748608451425081">‏تم قفل جهاز Chromebook بسبب مشكلة معروفة. ستتمكّن من تسجيل الدخول بعد: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">إيقاف التحديد</translation>
+<translation id="1230853660706736937">البحث عن نصوص ضمن الصور والاطّلاع على معاينات الصور</translation>
 <translation id="1235458158152011030">الشبكات المعروفة</translation>
 <translation id="1239161794459865856">ميزة <ph name="FEATURE_NAME" /> متصلة.</translation>
 <translation id="1240638468526743569">تطبيق</translation>
@@ -128,6 +129,7 @@
 <translation id="1420408895951708260">يمكنك تبديل "الإضاءة الليلية". <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="1435537621343861112">يتعذّر بدء الإملاء بسبب إيقاف الميكروفون.</translation>
+<translation id="1448963928642384376">نقاط الاتصال في جهازك</translation>
 <translation id="1455242230282523554">عرض إعدادات اللغة</translation>
 <translation id="1460620680449458626">تم كتم الصوت.</translation>
 <translation id="14648076227129703">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من "<ph name="APP1_NAME" />" و"<ph name="APP2_NAME" />" وجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
@@ -718,11 +720,13 @@
 <translation id="3824784079442479685">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا لتطبيق "<ph name="APP_NAME" />" ولجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن. قد تحتاج إلى إعادة تحميل صفحة الويب أو إعادة تشغيل التطبيق.</translation>
 <translation id="3826099427150913765">التبديل إلى كلمة المرور</translation>
 <translation id="383058930331066723">وضع "توفير شحن البطارية" مفعَّل.</translation>
+<translation id="3831226344927851293">الخروج من عرض الدليل التوجيهي</translation>
 <translation id="383629559565718788">عرض إعدادات لوحة المفاتيح</translation>
 <translation id="384082539148746321">هل تريد حذف النموذج؟</translation>
 <translation id="3844627820291068572">‏‫‎<ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />، ثم <ph name="KEY_ONE" /> أو <ph name="KEY_TWO" /> أو <ph name="KEY_THREE" /> أو <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">‫50+94/5</translation>
 <translation id="3846575436967432996">لا توجد معلومات متاحة حول الشبكة</translation>
+<translation id="3848526302597027234">الحصول على الأذونات التالية:</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="385300504083504382">البداية</translation>
 <translation id="3859364108019690">يتعذّر بث محتوى التطبيقات</translation>

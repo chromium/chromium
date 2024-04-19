@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}}</translation>
 <translation id="2569352796411618312">सुझाव: आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल ही में इस्तेमाल नहीं हुआ है. क्या आप उन्हें बंद करना चाहते हैं?</translation>
-<translation id="2613747923081026172">समूह बनाएं</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="266935134738038806">साइट पर जाएं</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> घंटे पहले बनाया गया}one{<ph name="NUM_HOURS_MANY" /> घंटे पहले बनाया गया}other{<ph name="NUM_HOURS_MANY" /> घंटे पहले बनाया गया}}</translation>

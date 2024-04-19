@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 탭 그룹을 접습니다.}}</translation>
 <translation id="2569352796411618312">추천: 최근 사용하지 않은 탭이 <ph name="NUMBER_OF_TABS" />개 있습니다. 탭을 닫으시겠습니까?</translation>
-<translation id="2613747923081026172">그룹 만들기</translation>
 <translation id="2662028055331606429">평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점</translation>
 <translation id="266935134738038806">사이트 방문</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" />시간 전 생성됨}other{<ph name="NUM_HOURS_MANY" />시간 전 생성됨}}</translation>

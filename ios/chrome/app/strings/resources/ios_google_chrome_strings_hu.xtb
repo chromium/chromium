@@ -123,6 +123,7 @@ Megjegyzések:
 <translation id="4633328489441962921">A Chrome nem tud frissítéseket keresni</translation>
 <translation id="4636900170638246267">Jelentkezzen be erre a webhelyre és a Chrome-ba.</translation>
 <translation id="4761869838909035636">A Chrome biztonsági ellenőrzésének futtatása</translation>
+<translation id="4798859546468762093">A személyre szabás és az egyéb funkciók használatához vegye fel a Chrome-ot a következők közé: <ph name="FEATURE_NAME_1" /> és <ph name="FEATURE_NAME_2" />.</translation>
 <translation id="4819268619367838612">Az alkalmazás továbbfejlesztése érdekében a Chrome elküldi a használati és az összeomlási adatokat a Google-nak. <ph name="BEGIN_LINK" />Kezelés<ph name="END_LINK" />.</translation>
 <translation id="4831642696589369971">A Chrome egyes adatait még nem mentette a rendszer a Google-fiókjába.
 
@@ -179,6 +180,7 @@ Megjegyzések:
 <translation id="6389317667633680932">Fedezze fel az új funkciókat, amelyek segítségével a legtöbbet hozhatja ki a Chrome-ból.</translation>
 <translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="6427126399757991875">A szervezete beállítja a Chrome-ot…</translation>
+<translation id="6481963882741794338">A Chrome és más Google-szolgáltatások összekapcsolása személyre szabási és egyéb célokból</translation>
 <translation id="6484712497741564393">Bejelentkezve a következőként: <ph name="EMAIL" />.
 
 Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókjában Chrome-adatokat szeretne használni és menteni.</translation>

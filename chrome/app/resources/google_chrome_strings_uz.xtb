@@ -246,6 +246,7 @@
 <translation id="4793679854893018356">Chrome qanday qilib sizni himoya qilishi haqida batafsil</translation>
 <translation id="4828579605166583682">Google Chrome joriy parollarni almashtirishga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="4842397268809523050">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromeOS Flex maʼlumotlaringizni sinxronlay olmadi.</translation>
+<translation id="4862446263930606916">Tashkilotingiz ish profilingizda saqlangan brauzerning ishlashi haqida axborotlarni (masalan, bukmarklar, tarix va parollar) koʻrish va boshqarish imkoniyatiga ega boʻladi. Shaxsiy Chrome profillaridagi brauzerning ishlashi haqida axborotlarni koʻra olmaydi.</translation>
 <translation id="4873692836499071887">Google Chrome yangilanishlari macOS 11 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.15.</translation>
 <translation id="4873783916118289636">Chrome ichida asosiy maxfiylik va xavfsizlik boshqaruvini tekshiring</translation>
 <translation id="4891791193823137474">Google Chrome fonda ishlashiga ruxsat</translation>
@@ -494,6 +495,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8989968390305463310">Ochgan saytlaringiz tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chrome har oyda qiziqishlaringizni avtomatik oʻchiradi. Qiziqishlar ularni olib tashlamaguningizga qadar yangilanishi mumkin.</translation>
 <translation id="8999117580775242387">HTTPS mavjud boʻlmasa, Chrome sizni ogohlantirmasdan himoyalanmagan ulanishdan foydalanadi.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome uchun yangilanish mavjud}=1{Chrome uchun yangilanish mavjud}other{Chrome uchun yangilanish mavjud (# kun)}}</translation>
+<translation id="9024318700713112071">Chromeni birlamchi brauzer etib belgilang.</translation>
 <translation id="9053892488859122171">ChromeOS Flex tizimi</translation>
 <translation id="9090566250983691233">Chrome ayrim fayllarni nega bloklashi haqida</translation>
 <translation id="911206726377975832">Brauzer faoliyati haqidagi ma’lumotlar ham tozalansinmi?</translation>

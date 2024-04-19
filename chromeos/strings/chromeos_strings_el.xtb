@@ -381,6 +381,7 @@
 <translation id="3170673040743561620">Τοποθετήστε το έγγραφό σας στον σαρωτή</translation>
 <translation id="3174321110679064523">Ταπετσαρία Από την αυγή μέχρι να νυχτώσει</translation>
 <translation id="3178532070248519384">αβάν γκαρντ</translation>
+<translation id="3182676044300231689">Πληκτρολογήστε μια οδηγία όπως "να αποπνέει περισσότερη σιγουριά"</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="319101249942218879">Η εικόνα avatar άλλαξε</translation>
 <translation id="3192947282887913208">Αρχεία ήχου</translation>
@@ -586,6 +587,7 @@
 <translation id="4394049700291259645">Απενεργοποίηση</translation>
 <translation id="439429847087949098">Επανεκκίνηση <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">προσαρμογή πληκτρολογίου</translation>
+<translation id="439946595190720558">Αυτό το φόντο δημιουργήθηκε με AI χρησιμοποιώντας το παρακάτω κείμενο: "<ph name="PROMPT" />."</translation>
 <translation id="4415951057168511744">Τρέχον avatar</translation>
 <translation id="4417830657741848074">Ο διαχειριστής έχει ρυθμίσει ορισμένες εφαρμογές έτσι ώστε να ξεκινούν αυτόματα. Δεν μπορείτε να κλείσετε ορισμένες από αυτές τις εφαρμογές.</translation>
 <translation id="4422041425070339732">κάτω βέλος</translation>
@@ -1034,6 +1036,7 @@
 <translation id="6905724422583748843">Επιστροφή σε <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Το καπάκι του σαρωτή είναι ανοικτό. Κλείστε το καπάκι και δοκιμάστε ξανά.</translation>
 <translation id="6911383237894364323">Δεν είναι δυνατή η σύνδεση σε διακομιστές πολυμέσων.</translation>
+<translation id="6930597342185648547">Πληροφορίες για το φόντο</translation>
 <translation id="6939766318048400022">Καφετέρια</translation>
 <translation id="6943893908656559156">Απομακρυσμένη ταυτότητα (προαιρετικό)</translation>
 <translation id="6953137545147683679">χρυσό</translation>

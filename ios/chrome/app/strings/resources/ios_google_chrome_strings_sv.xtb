@@ -123,6 +123,7 @@ Tänk på detta:
 <translation id="4633328489441962921">Chrome kan inte söka efter uppdateringar</translation>
 <translation id="4636900170638246267">Logga in på den här webbplatsen och i Chrome.</translation>
 <translation id="4761869838909035636">Kör säkerhetskontroll i Chrome</translation>
+<translation id="4798859546468762093">Om du vill få tillgång till anpassning och andra funktioner kan du ta med Chrome i <ph name="FEATURE_NAME_1" /> och <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
 
@@ -179,6 +180,7 @@ Tänk på detta:
 <translation id="6389317667633680932">Utforska nya funktioner som hjälper dig att få ut så mycket som möjligt av Chrome.</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6427126399757991875">Organisationen konfigurerar Chrome …</translation>
+<translation id="6481963882741794338">Länka Chrome och andra tjänster från Google för anpassning och andra syften</translation>
 <translation id="6484712497741564393">Inloggad som <ph name="EMAIL" />.
 
 Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chrome-data i ditt Google-konto.</translation>

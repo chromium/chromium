@@ -198,6 +198,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4053720452172726777">Personnaliser et gérer Google Chrome</translation>
 <translation id="4106587138345390261">Chrome explore de nouvelles fonctionnalités qui permettent aux sites d'offrir la même expérience de navigation tout en recourant dans une moindre mesure à vos renseignements personnels</translation>
 <translation id="4110895483821904099">Configurer votre nouveau profil Chrome</translation>
+<translation id="4111566860456076004">Chrome ne peut pas vérifier l'origine de cette extension et elle peut s'avérer dangereuse. Retirez-la de Chrome afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="4128488089242627000">Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu (recommandé)</translation>
 <translation id="4147555960264124640">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Google Chrome. Vos données de Google Chrome, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installation...</translation>
@@ -248,6 +249,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4793679854893018356">Découvrez comment Chrome assure votre sécurité</translation>
 <translation id="4828579605166583682">Google Chrome essaie de remplacer les mots de passe existants. Tapez votre mot de passe Windows pour autoriser cela.</translation>
 <translation id="4842397268809523050">Chrome OS Flex n'a pas pu synchroniser vos données parce que cette fonctionnalité n'est pas offerte pour votre domaine.</translation>
+<translation id="4862446263930606916">Votre organisation peut consulter et gérer les données de navigation dans votre profil professionnel, comme vos favoris, votre historique et vos mots de passe. Elle ne peut pas consulter les données de navigation dans les profils Chrome personnels.</translation>
 <translation id="4873692836499071887">Vous devez disposer de macOS 11 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Cet ordinateur fonctionne sous macOS 10.15.</translation>
 <translation id="4873783916118289636">Passez en revue les principaux paramètres de confidentialité et de sécurité dans Chrome</translation>
 <translation id="4891791193823137474">Laisser Google Chrome s'exécuter en arrière-plan</translation>
@@ -496,6 +498,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8989968390305463310">Votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chrome supprime automatiquement et de façon continue vos centres d'intérêt chaque mois. Les centres d'intérêt peuvent être actualisés à moins que vous ne les retiriez.</translation>
 <translation id="8999117580775242387">Lorsque le protocole HTTPS n'est pas accessible, Chrome utilisera une connexion non sécurisée sans vous avertir</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est proposée}=1{Une mise à jour de Chrome est proposée}one{Une mise à jour de Chrome est proposée depuis # jour}other{Une mise à jour de Chrome est proposée depuis # jours}}</translation>
+<translation id="9024318700713112071">Définir Chrome comme navigateur par défaut</translation>
 <translation id="9053892488859122171">Système Chrome OS Flex</translation>
 <translation id="9090566250983691233">Découvrir pourquoi Chrome bloque certains fichiers</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation?</translation>

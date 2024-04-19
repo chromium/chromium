@@ -199,6 +199,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4053720452172726777">Personaliza y controla Google Chrome</translation>
 <translation id="4106587138345390261">Chrome está explorando nuevas funciones que permitan a los sitios ofrecer la misma experiencia de navegación usando menos información tuya.</translation>
 <translation id="4110895483821904099">Configura tu nuevo perfil de Chrome</translation>
+<translation id="4111566860456076004">Chrome no puede verificar el origen de esta extensión y podría no ser segura. Elimínala de Chrome para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="4128488089242627000">Chrome se ejecuta más rápido y las funciones que usan JavaScript deberían funcionar según lo previsto (opción recomendada)</translation>
 <translation id="4147555960264124640">Vas a iniciar sesión con una cuenta gestionada, lo que significa que proporcionarás a su administrador control sobre tu perfil de Google Chrome. Tus datos de Chrome como, por ejemplo, tus aplicaciones, tus marcadores, tu historial, tus contraseñas y otras opciones se vincularán de forma permanente a la cuenta <ph name="USER_NAME" />. Podrás eliminar estos datos a través del Panel de control de cuentas de Google, pero no podrás asociar estos datos a otra cuenta. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Instalando...</translation>
@@ -217,9 +218,11 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4293420128516039005">Inicia sesión para sincronizar y personalizar Chrome en todos tus dispositivos</translation>
 <translation id="430327780270213103">Permitir que la extensión muestre solicitudes de acceso en la barra de herramientas de Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
+<translation id="4329315893554541805">Para disfrutar de personalización y otras funciones, incluye Chrome en Actividad en la Web y en Aplicaciones y en los servicios de Google vinculados</translation>
 <translation id="4334294535648607276">Descarga completa.</translation>
 <translation id="4335235004908507846">Chrome puede protegerte frente a brechas de seguridad de datos, extensiones dañinas y mucho más</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> se ha añadido a Chrome</translation>
+<translation id="4348548358339558429">Para disfrutar de personalización, incluye Chrome en Actividad en la Web y en Aplicaciones</translation>
 <translation id="436060642166082913">Chrome ha bloqueado esta descarga porque el archivo puede dañar tus cuentas personales y de redes sociales</translation>
 <translation id="4384570495110188418">Chrome no puede comprobar tus contraseñas porque no has iniciado sesión</translation>
 <translation id="4389991535395284064">Cuando navegues en modo Incógnito, Chrome te avisará antes de cargar un sitio usando una conexión no segura</translation>
@@ -247,6 +250,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4793679854893018356">Descubre cómo te protege Chrome</translation>
 <translation id="4828579605166583682">Google Chrome está intentando reemplazar las contraseñas. Introduce tu contraseña de Windows para permitirlo.</translation>
 <translation id="4842397268809523050">ChromeOS Flex no ha podido sincronizar tus datos porque la función de sincronización no está disponible para tu dominio.</translation>
+<translation id="4862446263930606916">Tu organización puede ver y gestionar los datos de navegación de tu perfil de trabajo, como los marcadores, el historial y las contraseñas. No puede ver los datos de navegación de los perfiles personales de Chrome.</translation>
 <translation id="4873692836499071887">Para recibir futuras actualizaciones de Google Chrome, necesitarás macOS 11 o una versión posterior. Este ordenador usa macOS 10.15.</translation>
 <translation id="4873783916118289636">Revisa los controles principales de privacidad y de seguridad en Chrome</translation>
 <translation id="4891791193823137474">Permitir que Google Chrome se ejecute en segundo plano</translation>
@@ -336,7 +340,9 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Tu organización cerrará Chrome automáticamente cuando lleve 1 minuto sin usarse. Los datos de navegación se eliminarán. Esto podría incluir el historial, los datos de Autocompletar y las descargas.}other{Tu organización cerrará Chrome automáticamente cuando lleve # minutos sin usarse. Los datos de navegación se eliminarán. Esto podría incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
 <translation id="6418662306461808273">¿Cambiar a un perfil de Chrome?</translation>
+<translation id="6481963882741794338">Vincula Chrome y otros servicios de Google con fines de personalización y otros propósitos</translation>
 <translation id="648319183876919572">Navegación segura mejorada te protege de forma más eficaz de los sitios web y las descargas peligrosos</translation>
+<translation id="6489302989675808168">Activado • Chrome no puede verificar el origen de esta extensión</translation>
 <translation id="6493527311031785448">Google Chrome está intentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome se ha cerrado automáticamente</translation>
 <translation id="6506909944137591434">Chrome necesita el permiso de la cámara para crear un mapa 3D de tu entorno</translation>
@@ -361,6 +367,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.1.</translation>
 <translation id="6943584222992551122">Los datos de navegación de este usuario se eliminarán del dispositivo. Para recuperar los datos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
+<translation id="6944202724043006419">Chrome necesita comprender la escena y tener permiso de seguimiento de las manos para iniciar una sesión inmersiva</translation>
 <translation id="6967962315388095737">Regla entrante para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome se ha actualizado, pero llevas al menos 30 días sin utilizarlo.</translation>
 <translation id="7011190694940573312">No se ha podido realizar la instalación porque esta versión del sistema operativo no es compatible.</translation>
@@ -395,6 +402,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="7477130805345743099">Chrome te avisará antes de cargar un sitio usando una conexión no segura</translation>
 <translation id="7481213027396403996">Consigue la seguridad más potente de Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7572537927358445944">Desactivado • Chrome no puede verificar el origen de esta extensión</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
@@ -483,6 +491,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8823341990149967727">Chrome no está actualizado</translation>
 <translation id="8825634023950448068">Para proteger tu privacidad, eliminamos automáticamente tus intereses que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, es posible que un interés vuelva a aparecer en la lista. Además, si Chrome se equivoca o no quieres ver ciertos anuncios, puedes eliminar un interés.</translation>
 <translation id="8834965163890861871">Google Chrome está intentando cambiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome te recomienda que la elimines}other{Chrome te recomienda que las elimines}}</translation>
 <translation id="8862326446509486874">No dispones de los derechos necesarios para la instalación en el sistema. Intenta ejecutar de nuevo el programa de instalación como administrador.</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
@@ -490,6 +499,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8989968390305463310">Tu historial de navegación influye en los anuncios que ves y en los intereses que se estiman abajo. Para proteger tu privacidad, Chrome elimina automáticamente tus intereses cada mes. Los intereses se actualizan a menos que los elimines.</translation>
 <translation id="8999117580775242387">Si HTTPS no está disponible, Chrome usará una conexión no segura sin avisarte</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible desde hace # días}}</translation>
+<translation id="9024318700713112071">Establecer Chrome como navegador predeterminado</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
 <translation id="9090566250983691233">Averigua por qué bloquea Chrome algunos archivos</translation>
 <translation id="911206726377975832">¿Quieres borrar también los datos de navegación?</translation>

@@ -301,7 +301,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2604176749896001318">Aggiorna il browser</translation>
 <translation id="2609008503159898744">Chiudere tutte le schede?</translation>
 <translation id="261305050785128654">Fai conoscere ai siti web le lingue che parli. Se possibile, verranno mostrati contenuti in queste lingue.</translation>
-<translation id="2613747923081026172">Crea gruppo</translation>
 <translation id="2617210333344098964">Sposta indirizzo nell'account</translation>
 <translation id="261739049332372104">Per ricevere aggiornamenti sui contenuti che ti interessano, attiva la notifica nelle impostazioni di iOS.</translation>
 <translation id="2625189173221582860">Password copiata</translation>
@@ -843,6 +842,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5407969256130905701">Annulla modifiche</translation>
 <translation id="5414763847370083940">Riceverai un avviso se il prezzo calerà su qualsiasi sito.</translation>
 <translation id="5416022985862681400">Ultimi 7 giorni</translation>
+<translation id="5416455648658732408">Sposta in gruppo di schede</translation>
 <translation id="5423269318075950257">Monitora prezzo</translation>
 <translation id="543338862236136125">Modifica password</translation>
 <translation id="5433691172869980887">Nome utente copiato</translation>
@@ -1107,6 +1107,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
 <translation id="6656103420185847513">Modifica cartella</translation>
 <translation id="6657585470893396449">Password</translation>
+<translation id="6659660757330712663">Puoi far scorrere la barra degli strumenti per passare da una scheda all'altra.</translation>
 <translation id="6668619169535738264">Modifica preferito</translation>
 <translation id="6672241253012342409">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.
 
@@ -1322,11 +1323,12 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7839985698273989086">Pagina offline</translation>
 <translation id="7839994177130598711">I membri del tuo gruppo Famiglia ora possono utilizzare il tuo nome utente e la tua password quando usano Gestore delle password di Google per accedere a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Gli elementi selezionati verranno rimossi.</translation>
-<translation id="7845466610722898">Mostra Elenco di lettura</translation>
+<translation id="7845466610722898">Mostra elenco di lettura</translation>
 <translation id="784551991304901159">Per visualizzare i contenuti, seleziona Attiva dal menu</translation>
 <translation id="7853202427316060426">Attività</translation>
 <translation id="7856733331829174190">Download non riuscito</translation>
 <translation id="7859704718976024901">Cronologia di navigazione</translation>
+<translation id="7860900259978879139">Rimuovi dal gruppo</translation>
 <translation id="7866501058614003444">Il monitoraggio del pacchetto è stato annullato.</translation>
 <translation id="7866872729285243843">Per visualizzare il tuo elenco di lettura su tutti i dispositivi, attiva "Elenco di lettura" nelle Impostazioni.</translation>
 <translation id="7866993391592926595">Se nascondi questa scheda, il tracciamento dei pacchi verrà disattivato e verranno rimossi tutti i tuoi dati</translation>
@@ -1414,9 +1416,11 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8273982424131314219">Inserirai i dati su <ph name="URL" /></translation>
 <translation id="8281781826761538115">Predefinita - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Salta</translation>
+<translation id="8282657446819506217">Apri in gruppo di schede</translation>
 <translation id="828291969289324795">{count,plural, =1{Aggiungi scheda a nuovo gruppo}other{Aggiungi schede a nuovo gruppo}}</translation>
 <translation id="8283172974887967105">Imposta…</translation>
 <translation id="8286036467436129157">Accedi</translation>
+<translation id="8289930144142009940">Notifiche di <ph name="FEATURE_NAME" /> disattivate</translation>
 <translation id="8292843446079898078">Ricevi avvisi relativi ai cali di prezzo per i prodotti che monitori.</translation>
 <translation id="8299417921174340354">Per utilizzare le password, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="8299613349954694191">Apri una scheda di navigazione in incognito per navigare sul Web in privato.</translation>
@@ -1424,6 +1428,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8313645224014086262">Salva file</translation>
 <translation id="8319076807703933069">Nuova ricerca</translation>
 <translation id="8328777765163860529">Chiudi tutte</translation>
+<translation id="8343286328361420468">Disattiva notifiche per <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo.</translation>
 <translation id="834783239627985533">Siti più visitati</translation>
 <translation id="8358401059263985056">Attiva le notifiche</translation>

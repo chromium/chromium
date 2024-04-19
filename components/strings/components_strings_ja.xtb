@@ -1987,6 +1987,7 @@
 <translation id="4809079943450490359">デバイス管理者からの指示:</translation>
 <translation id="4811450222531576619">ソースとトピックの詳細</translation>
 <translation id="4813512666221746211">ネットワーク エラー</translation>
+<translation id="4814114628197290459">IBAN の削除</translation>
 <translation id="4816492930507672669">ページサイズに合わせる</translation>
 <translation id="4819347708020428563">デフォルト表示でメモを編集しますか？</translation>
 <translation id="4822493756793346865">一般的な価格帯は、ウェブ上のショップから過去 90 日間の価格情報を収集し、算出しています。</translation>
@@ -2947,6 +2948,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Google アカウントでデバイスを探します</translation>
 <translation id="6695428916538794739">アクション映画、アドベンチャー映画</translation>
 <translation id="6696424331653607346">旅行ガイド、旅行記</translation>
+<translation id="6698097747703777657">コードが届かない場合は、<ph name="BEGIN_LINK" />新しいコードを取得<ph name="END_LINK" />してください</translation>
 <translation id="6698381487523150993">作成:</translation>
 <translation id="67007264085648978">シークバー</translation>
 <translation id="6702851555558236418">オーディオ、音楽ソフトウェア</translation>
@@ -3347,7 +3349,6 @@
 <translation id="7442725080345379071">ライトオレンジ</translation>
 <translation id="7444046173054089907">このサイトはブロックされています</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{今日、Cookie を再びブロックします}=1{明日、Cookie を再びブロックします}other{Cookie を再びブロックするまであと # 日です}}</translation>
-<translation id="7445762425076701745">接続してるサーバーの身元について、十分な検証ができません。接続しているサーバーは、そのネットワーク内でのみ有効な名前を使用しており、外部認証局がその所有権を検証する方法はありません。こうした名前で証明書を発行する認証局もあるので、接続先が意図したウェブサイトか、悪意のあるユーザーのサイトかは確認できません。</translation>
 <translation id="7447234474237738389">服飾サービス</translation>
 <translation id="7447625772313191651"><ph name="NAME" />（<ph name="WIDTH" />x<ph name="HEIGHT" /> mm）</translation>
 <translation id="7450577240311017924">[同期を管理] ボタンです。実行すると、Chrome の設定で同期する情報を管理できます</translation>

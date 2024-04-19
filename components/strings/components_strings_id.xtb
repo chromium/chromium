@@ -1987,6 +1987,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4809079943450490359">Petunjuk dari administrator perangkat Anda:</translation>
 <translation id="4811450222531576619">Pelajari sumber dan topik halaman ini</translation>
 <translation id="4813512666221746211">Kesalahan jaringan</translation>
+<translation id="4814114628197290459">Hapus IBAN</translation>
 <translation id="4816492930507672669">Paskan dengan halaman</translation>
 <translation id="4819347708020428563">Edit anotasi dalam tampilan default?</translation>
 <translation id="4822493756793346865">Harga standar didasarkan pada berbagai toko di web selama 90 hari terakhir.</translation>
@@ -2945,6 +2946,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk Menemukan perangkat Anda di Akun Google</translation>
 <translation id="6695428916538794739">Film Aksi &amp; Petualangan</translation>
 <translation id="6696424331653607346">Panduan &amp; Catatan Perjalanan</translation>
+<translation id="6698097747703777657">Tidak menerima kode? <ph name="BEGIN_LINK" />Dapatkan kode baru<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Dibuat:</translation>
 <translation id="67007264085648978">Scrubber waktu</translation>
 <translation id="6702851555558236418">Software Audio &amp; Musik</translation>
@@ -3343,7 +3345,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7442725080345379071">Oranye Muda</translation>
 <translation id="7444046173054089907">Situs ini diblokir</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie akan diblokir lagi hari ini}=1{Cookie akan diblokir lagi besok}other{# hari sebelum cookie diblokir lagi}}</translation>
-<translation id="7445762425076701745">Identitas server yang Anda sambungkan tidak dapat divalidasi sepenuhnya. Anda terhubung ke server menggunakan nama yang hanya valid dalam jaringan Anda, yang mana otoritas sertifikat eksternal sama sekali tidak dapat memvalidasi kepemilikannya. Karena sejumlah otoritas sertifikat akan tetap menerbitkan sertifikat untuk nama tersebut, tidak dapat dipastikan apakah Anda akan terhubung ke situs web yang dimaksudkan dan bahwa tidak akan ada penyerang.</translation>
 <translation id="7447234474237738389">Layanan Pakaian</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Tombol Kelola sinkronisasi, aktifkan untuk mengelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>

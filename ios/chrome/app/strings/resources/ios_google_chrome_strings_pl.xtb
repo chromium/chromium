@@ -123,6 +123,7 @@ Pamiętaj, że:
 <translation id="4633328489441962921">Chrome nie może sprawdzić dostępności aktualizacji</translation>
 <translation id="4636900170638246267">Zaloguj się w na tej stronie i w Chrome.</translation>
 <translation id="4761869838909035636">Uruchom kontrolę zabezpieczeń Chrome</translation>
+<translation id="4798859546468762093">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chrome w funkcjach: <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Aby pomóc nam ulepszać aplikację, Chrome wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google.
 
@@ -179,6 +180,7 @@ Pamiętaj, że:
 <translation id="6389317667633680932">Poznaj nowe funkcje, które pomogą Ci w pełni wykorzystać możliwości Chrome.</translation>
 <translation id="6412673304250309937">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="6427126399757991875">Twoja organizacja konfiguruje Chrome…</translation>
+<translation id="6481963882741794338">Połącz Chrome i inne usługi Google na potrzeby personalizacji oraz w innych celach</translation>
 <translation id="6484712497741564393">Zalogowano jako <ph name="EMAIL" />.
 
 Dane zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Podaj to hasło, aby korzystać z danych Chrome i zapisywać je na swoim koncie Google.</translation>

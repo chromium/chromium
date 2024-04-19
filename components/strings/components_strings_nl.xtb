@@ -1982,6 +1982,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4809079943450490359">Instructies van de beheerder van je apparaat:</translation>
 <translation id="4811450222531576619">Meer informatie over de bron en het onderwerp</translation>
 <translation id="4813512666221746211">Netwerkfout</translation>
+<translation id="4814114628197290459">IBAN verwijderen</translation>
 <translation id="4816492930507672669">Aanpassen aan pagina</translation>
 <translation id="4819347708020428563">Annotaties bewerken in standaardweergave?</translation>
 <translation id="4822493756793346865">De gebruikelijke prijzen zijn gebaseerd op winkels op het web in de afgelopen 90 dagen.</translation>
@@ -2103,6 +2104,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5043480802608081735">Link die je hebt gekopieerd</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
+<translation id="5048293684454354469">Advertentieonderwerpen zijn maar een van de vele factoren die een site kan gebruiken om advertenties te personaliseren. Ook zonder advertentieonderwerpen kunnen sites je nog steeds advertenties tonen, maar die zijn dan misschien minder gepersonaliseerd. Ontdek meer over hoe je <ph name="BEGIN_LINK" />je advertentieprivacy beheert<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Actieve onderwerpen</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Als je dit bestand wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}other{Als je deze bestanden wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}}</translation>
 <translation id="505757197798929356">Waarom wil je dit openen? (vereist)</translation>
@@ -2321,6 +2323,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
     <ph name="LINE_BREAK" />
     Neem contact op met je systeembeheerder.</translation>
 <translation id="549333378215107354">Grootte 3</translation>
+<translation id="5496804587179176046">Beveiligingscodes opslaan, op dit moment zijn er geen beveiligingscodes opgeslagen</translation>
 <translation id="550365051221576010">Alles invullen</translation>
 <translation id="5508443345185481044">Camera's en camcorders</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2939,6 +2942,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om in het Google-account naar je apparaat te zoeken</translation>
 <translation id="6695428916538794739">Actie- en avonturenfilms</translation>
 <translation id="6696424331653607346">Reisgidsen en reisverslagen</translation>
+<translation id="6698097747703777657">Heb je de code niet gekregen? <ph name="BEGIN_LINK" />Nieuwe code ophalen<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Gemaakt:</translation>
 <translation id="67007264085648978">Schuifbalk voor tijd</translation>
 <translation id="6702851555558236418">Audio- en muzieksoftware</translation>
@@ -3339,7 +3343,6 @@ Aanvullende informatie:
 <translation id="7442725080345379071">Lichtoranje</translation>
 <translation id="7444046173054089907">Deze site is geblokkeerd</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies worden vandaag weer geblokkeerd}=1{Cookies worden morgen weer geblokkeerd}other{# dagen tot cookies weer worden geblokkeerd}}</translation>
-<translation id="7445762425076701745">De identiteit van de server waarmee je verbinding maakt, kan niet volledig worden geverifieerd. Je hebt verbinding gemaakt met een server die een naam gebruikt die alleen binnen je netwerk geldig is. Een externe certificeringsinstantie kan hiervoor nooit het eigendom verifiëren. Aangezien sommige certificeringsinstanties toch certificaten voor deze namen verlenen, kun je nooit zeker weten of je verbinding hebt met de bedoelde website en niet met een aanvaller.</translation>
 <translation id="7447234474237738389">Confectieateliers</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Knop Synchronisatie beheren. Activeer deze om de informatie die je synchroniseert te beheren in de Chrome-instellingen.</translation>

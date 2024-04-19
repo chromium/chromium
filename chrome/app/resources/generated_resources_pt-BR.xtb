@@ -1249,6 +1249,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1915734383465415025">Número da loja</translation>
 <translation id="1916260783734263714">Guia atual</translation>
 <translation id="1916502483199172559">Avatar vermelho padrão</translation>
+<translation id="1916770123977586577">Para aplicar as configurações atualizadas a este site, recarregue a página</translation>
 <translation id="1918127774159128277">Atualizar capabilities do Wi-Fi Direct</translation>
 <translation id="1918141783557917887">&amp;Menor</translation>
 <translation id="1919872106782726755">Para configurar a impressão digital, peça para a criança tocar no sensor no canto superior direito do teclado, ao lado do botão liga/desliga. Os dados de impressão digital da criança são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
@@ -2564,7 +2565,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2877467134191447552">Você pode incluir contas adicionais para acessar sites e apps.</translation>
 <translation id="2878782256107578644">Verificação em andamento, abrir agora?</translation>
 <translation id="2878889940310164513">Adicionar rede celular...</translation>
-<translation id="2879594947768634665">NOVAS GUIAS</translation>
 <translation id="288042212351694283">Acessar seus dispositivos Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Quando você clicar na extensão</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> será reiniciado e redefinido temporariamente</translation>
@@ -7407,7 +7407,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6673898378497337661">aumentar brilho do teclado</translation>
 <translation id="6674571176963658787">Para iniciar a sincronização, digite a senha longa</translation>
 <translation id="6675665718701918026">Dispositivo apontador conectado</translation>
-<translation id="6675985668044425385">Se um site não funciona como esperado, ative os cookies de terceiros usando a opção "Proteção antirrastreamento" na barra de endereço.</translation>
 <translation id="6676212663108450937">Recomendamos o uso de fones de ouvido para treinar sua voz</translation>
 <translation id="667752334740867460">Recebendo informações do Wi-Fi…</translation>
 <translation id="6678717876183468697">URL de consulta</translation>
@@ -8950,7 +8949,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7848892492535275379"><ph name="CREDENTIAL_TYPE" /> de <ph name="USER_EMAIL" /></translation>
 <translation id="7849264908733290972">Abrir &amp;imagem em uma nova guia</translation>
 <translation id="784934925303690534">Período</translation>
-<translation id="7849656116606005620">Lembrete: a Proteção antirrastreamento está ativada</translation>
 <translation id="7850320739366109486">Não Perturbe</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Ao autorizar que seus dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar no ChromeOS. Esses relatórios podem incluir informações como falhas do ChromeOS, quais recursos e quanta memória você normalmente usa, e dados de uso e diagnóstico do app Android. Alguns dados agregados também ajudarão apps do Google e nossos parceiros, como os desenvolvedores Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ative ou desative esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" />
@@ -9823,7 +9821,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8497219075884839166">Utilitários do Windows</translation>
 <translation id="8498214519255567734">Facilita olhar para a tela ou ler com pouca luz</translation>
 <translation id="8499083585497694743">Ativar microfone</translation>
-<translation id="8499951261760185742">Se um site que você visita não está funcionando como esperado, tente permitir o uso de cookies de terceiros temporariamente. Isso reduzirá a proteção, mas os recursos do site provavelmente vão funcionar conforme o esperado.</translation>
 <translation id="8500044868721690197">Este site foi impedido de controlar e reprogramar seus dispositivos MIDI.</translation>
 <translation id="8502536196501630039">Para usar apps do Google Play, primeiro você precisa restaurar seus apps. Alguns dados podem ter sido perdidos.</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>

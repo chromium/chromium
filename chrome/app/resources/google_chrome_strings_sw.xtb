@@ -249,6 +249,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4793679854893018356">Pata maelezo ya jinsi Chrome inavyohakikisha usalama wako</translation>
 <translation id="4828579605166583682">Google Chrome inajaribu kubadilisha manenosiri yaliyopo. Andika nenosiri lako la Windows ili uiruhusu.</translation>
 <translation id="4842397268809523050">ChromeOS Flex haikuweza kusawazisha data yako kwa sababu usawazishaji haupatikani katika kikoa chako.</translation>
+<translation id="4862446263930606916">Shirika lako linaweza kuona na kudhibiti data ya kuvinjari katika wasifu wako wa kazini, kama vile alamisho, historia na manenosiri yako. Haliwezi kuona data ya kuvinjari katika wasifu wa binafsi kwenye Chrome.</translation>
 <translation id="4873692836499071887">Utahitaji toleo la macOS 11 au toleo jipya zaidi ili upate masasisho ya Google Chrome ya siku zijazo Kompyuta hii inatumia toleo la macOS 10.15.</translation>
 <translation id="4873783916118289636">Kagua vidhibiti muhimu vya faragha na usalama katika Chrome</translation>
 <translation id="4891791193823137474">Ruhusu Google Chrome iendeshe katika mandharinyuma</translation>
@@ -497,6 +498,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8989968390305463310">Historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta kiotomatiki mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi. Mambo yanayokuvutia yanaweza kuonyeshwa upya isipokuwa ukiyaondoa.</translation>
 <translation id="8999117580775242387">Wakati kiendelezi cha HTTPS hakipatikani, Chrome itatumia muunganisho usio salama bila kukutahadharisha</translation>
 <translation id="8999208279178790196">{0,plural, =0{Sasisho la Chrome linapatikana}=1{Sasisho la Chrome linapatikana}other{Sasisho la Chrome limekuwepo kwa siku #}}</translation>
+<translation id="9024318700713112071">Ifanye Chrome iwe kivinjari chako chaguomsingi</translation>
 <translation id="9053892488859122171">Mfumo wa ChromeOS Flex</translation>
 <translation id="9090566250983691233">Fahamu kwa nini Chrome huzuia baadhi ya faili</translation>
 <translation id="911206726377975832">Futa historia yako ya kuvinjari pia?</translation>

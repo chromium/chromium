@@ -175,6 +175,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="4095980151185649725">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="4118474109249235144">Modalità di navigazione in incognito di Chromium</translation>
 <translation id="4148957013307229264">Installazione...</translation>
+<translation id="4149336151887611710">La tua organizzazione può vedere e gestire i dati di navigazione nel tuo profilo di lavoro, ad esempio i preferiti, la cronologia e le password. Non può vedere i dati di navigazione nei profili Chromium personali.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Accesso rete - Chromium</translation>
 <translation id="421369550622382712">Scopri app, giochi, estensioni e temi straordinari per Chromium.</translation>
 <translation id="4216212958613226427">Questa lingua è utilizzata per la UI di Chromium</translation>
@@ -402,6 +403,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7867198900892795913">Non è stato possibile aggiornare Chromium alla versione più recente, quindi non potrai utilizzare le nuove funzioni e gli aggiornamenti di sicurezza.</translation>
 <translation id="7872446069773932638">Download in corso… Secondi rimanenti: <ph name="SECONDS" /></translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati:<ph name="END_BOLD" /> per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chromium prenda in considerazione.</translation>
+<translation id="7888981273428720788">Imposta Chromium come browser predefinito</translation>
 <translation id="7937630085815544518">Hai eseguito l'accesso a Chromium come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7975919845073681630">Questa è un'installazione secondaria, di conseguenza Chromium non può essere impostato come browser predefinito.</translation>
 <translation id="7997934263947464652">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chromium consiglia di installare questi elementi soltanto dal <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -414,6 +416,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="8166782796394721554">Attiva la protezione aggiuntiva nel motore JavaScript e WebAssembly di Chromium</translation>
 <translation id="81770708095080097">Questo file è pericoloso, pertanto è stato bloccato da Chromium.</translation>
+<translation id="8232193495299001329">Chromium non può verificare la provenienza dell'estensione. Potrebbe non essere sicura. Rimuovila da Chromium in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le informazioni personali.</translation>
 <translation id="8248265253516264921">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="8266560134891435528">Chromium non può controllare le tue password perché non hai effettuato l'accesso</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ti avvisa<ph name="END_LINK" /> in caso di siti e download non sicuri</translation>

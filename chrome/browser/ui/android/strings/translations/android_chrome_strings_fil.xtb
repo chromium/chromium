@@ -174,10 +174,12 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1933845786846280168">Napiling Tab</translation>
 <translation id="1943432128510653496">I-save ang mga password</translation>
 <translation id="1944535645109964458">Walang available na passkey</translation>
+<translation id="1957557050935255529">Nilo-load ang PDF…</translation>
 <translation id="1959679933317802873">Naghihintay ng content</translation>
 <translation id="1960290143419248813">Hindi na sinusuportahan ang mga update sa Chrome para sa bersyong ito ng Android.</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="1966710179511230534">Paki-update ang iyong mga detalye sa pag-sign in.</translation>
+<translation id="1969037871259811890">Hindi ka masa-sign out sa Google Account mo kapag nag-delete ka ng iyong data mula sa pag-browse. Para magawa ito, <ph name="BEGIN_LINK1" />mag-sign out sa Chrome<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">Panatilihin</translation>
 <translation id="1973912524893600642">Panatilihin ang Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
@@ -338,6 +340,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Nagsuri 1 araw ang nakalipas}one{Nagsuri # araw ang nakalipas}other{Nagsuri # na araw ang nakalipas}}</translation>
 <translation id="2842985007712546952">Pangunahing folder</translation>
 <translation id="2853415089995957805">Nagpi-preload ang Chrome ng mga page na malamang na bisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
+<translation id="2855243985454069333">Dine-delete ang history sa lahat ng naka-sync na device</translation>
 <translation id="2856503607207334158">Pumalya ang pag-sign in</translation>
 <translation id="2860954141821109167">Tiyaking may naka-enable na phone app sa device na ito</translation>
 <translation id="2861923151411510142">Hindi na magiging available ang ilang feature ng Chrome</translation>
@@ -706,6 +709,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4738836084190194332">Huling na-sync: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">I-filter ayon sa app</translation>
 <translation id="4741753828624614066">Makakakuha ka ng mas magagandang suhestiyon sa address bar</translation>
+<translation id="4742795653798179840">Na-delete na ang data sa Chrome</translation>
 <translation id="4742970037960872810">Alisin ang highlight</translation>
 <translation id="4749960740855309258">Magbukas ng bagong tab</translation>
 <translation id="4750356170202299988">Content para sa kabataan</translation>
@@ -907,7 +911,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="5752232708629533680">Ibahagi lang ang GIF</translation>
 <translation id="5754350196967618083">Hindi ma-refresh ang Discover</translation>
 <translation id="5755162682436943950">Naka-sign out. Binubuksan ang dialog para mag-sign in at i-on ang pag-sync.</translation>
-<translation id="5759897675466110265">Hindi gumagana ang site? Subukang pansamantalang payagan ang third-party na cookies</translation>
 <translation id="5763382633136178763">Mga tab na incognito</translation>
 <translation id="5763514718066511291">I-tap upang kopyahin ang URL para sa app na ito</translation>
 <translation id="5765517223145864268">Sabihin sa amin ang iyong karanasan. O <ph name="BEGIN_LINK" />baguhin ang iyong mga setting<ph name="END_LINK" />.</translation>
@@ -922,6 +925,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="5814749351757353073">Makipagsabayan sa mga paborito mong site</translation>
 <translation id="5822875253699806474">Para mabilis na makabalik sa mga site na binisita mo, i-sync ang iyong mga tab at history</translation>
+<translation id="5828921839638612740">Puwede mong i-delete ang data sa Mga Setting ng Chrome</translation>
 <translation id="5829586821381540080">Na-save sa <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5833984609253377421">Ibahagi ang link</translation>
@@ -1113,6 +1117,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6715020873764921614">Gusto mo pa rin bang i-download ang <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Kumonekta gamit ang QR code?</translation>
 <translation id="6723740634201835758">Sa iyong Google Account</translation>
+<translation id="6734310707649923383">Makikita mo ang mga page na binisita mo o made-delete mo ang mga ito sa iyong history</translation>
 <translation id="6738867403308150051">Nagda-download...</translation>
 <translation id="67404633032079629">Posibleng hindi lumabas dito ang ilan sa iyong history sa web. Para makita ang buong history sa web, i-tap ang Buksan ang buong history sa Chrome.</translation>
 <translation id="674388916582496364">Karaniwan para sa mga binibisita mong site na tandaan ang mga bagay na kinawiwilihan mo, para ma-personalize ang iyong karanasan. Puwede ring mag-store ang mga site sa Chrome ng impormasyon tungkol sa iyong mga interes.</translation>
@@ -1248,6 +1253,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Ibahagi ang 1 piniling item}one{Ibahagi ang # piniling item}other{Ibahagi ang # na piniling item}}</translation>
 <translation id="7359002509206457351">I-access ang mga paraan ng pagbabayad</translation>
 <translation id="7363349185727752629">Isang gabay tungkol sa iyong mga opsyon sa privacy</translation>
+<translation id="7364103838544876661">Higit pang opsyon sa pag-delete ng data mula sa pag-browse</translation>
 <translation id="7375125077091615385">Uri:</translation>
 <translation id="7376560087009844242">Kapag nagsama ka ng mas maraming text ng isang page, posibleng makakita ka ng mas magagandang resulta kapag ginagamit mo ang Pindutin para Maghanap. Puwede mong bisitahin ang <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" /> anumang oras para baguhin ito.</translation>
 <translation id="7379900596734708416">Available ang Madilim na tema para sa mga site</translation>
@@ -1437,6 +1443,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8215740705341534369">Side sheet</translation>
 <translation id="8218622182176210845">Pamahalaan ang iyong account</translation>
 <translation id="8221401890884589479">Puwede kang mag-block ng mga site na ayaw mo. Awtomatiko ring ide-delete ng Chrome ang mga site sa listahang mahigit 30 araw na. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">Dine-delete ang data mula sa pag-browse</translation>
 <translation id="8223642481677794647">Menu ng feed card</translation>
 <translation id="8236097722223016103">Idagdag sa mga bookmark</translation>
 <translation id="8237871086242677046">Bottom sheet ng mga insight ng page</translation>
@@ -1468,6 +1475,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8413126021676339697">Ipakita ang buong history</translation>
 <translation id="8413795581997394485">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kapag bumisita ka sa isang site, magpapadala ang Chrome ng na-obfuscate na bahagi ng URL sa Google sa pamamagitan ng server ng privacy na nagha-hide ng IP address. Kung may gagawing kahina-hinala ang isang site, ipapadala rin ang mga buong URL at bahagi ng content page.</translation>
 <translation id="8414396119627470038">Mag-sign in sa <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8419144699778179708">Dine-delete ang history, kasama ang nasa box para sa paghahanap</translation>
 <translation id="8419244640277402268">Isama</translation>
 <translation id="8422250855136581222">Walang tab sa device na ito</translation>
 <translation id="8424781820952413435">Naipadala na ang page. Para makita ito, buksan ang Chrome sa iyong <ph name="DEVICE_TYPE" /></translation>
@@ -1631,16 +1639,19 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="926205370408745186">Alisin sa Digital Wellness ang iyong aktibidad sa Chrome</translation>
 <translation id="927968626442779827">Gamitin ang Lite mode sa Google Chrome</translation>
 <translation id="928550791203542716">Sinusubaybayan ang <ph name="SITE_NAME" /></translation>
+<translation id="930124987204876019">I-delete ang history, cookies, data ng site, cache…</translation>
 <translation id="93533588269984624">Mada-download ang lahat ng password sa iyong device at maaalis ang mga ito sa <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ilagay ang passphrase</translation>
 <translation id="952301137339791907">Nakabukas ang bottom sheet ng mga insight ng page</translation>
 <translation id="95817756606698420">Maaaring gamitin ng Chrome ang <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para sa paghahanap sa China. Maaari mo itong baguhin sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
+<translation id="961856697154696964">I-delete ang browsing data</translation>
 <translation id="96681097142096641">Tingnan ang pinasimpleng page?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> (na) minuto na lang ang natitira</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Isara ang lahat ng tab</translation>
 <translation id="987264212798334818">Pangkalahatan</translation>
+<translation id="988091779042748639">Para i-delete ang history ng pag-browse sa Incognito mula sa iyong device, isara ang lahat ng tab na Incognito.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> (na) tab</translation>
 <translation id="993520549480398880">Mag-clear din ng mga bookmark, history, at higit pa sa kotseng ito</translation>
 <translation id="996149300115483134">Nakasara ang menu ng feed card</translation>

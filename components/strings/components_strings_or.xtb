@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">ଲେଖକ:</translation>
 <translation id="1247030632403369975">ଆଲୁମିନିୟମ</translation>
 <translation id="1252209483516427155">ଆଉଟୱେର</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ସିଙ୍କ୍ କରାଯାଇଛି)</translation>
 <translation id="1255086252236620440">ଖାଦ୍ୟ ମିକ୍ସର</translation>
 <translation id="1256368399071562588">&lt;p&gt;ଯଦି ଆପଣ କୌଣସି ୱେବ୍‌ସାଇଟ୍‌କୁ ଖୋଲିବାକୁ ଚାହୁଁଛନ୍ତି ଏବଂ ଏହା ଖୋଲୁନାହିଁ, ତେବେ ପ୍ରଥମେ ନିମ୍ନରେ ଦିଆଯାଇଥିବା ସମସ୍ୟା ନିବାରଣ ସୋପାନ ସାହାଯ୍ୟରେ ତ୍ରୁଟିର ସମାଧାନ କରନ୍ତୁ:&lt;/p&gt;
@@ -1507,6 +1508,7 @@
 <translation id="385489333361351399">କେମେରା ଏବଂ ଫଟୋ ଇକ୍ୟୁପମେଣ୍ଟ</translation>
 <translation id="3858027520442213535">ତାରିଖ ଓ ସମୟ ଅପ୍‌ଡେଟ୍‌ କରନ୍ତୁ</translation>
 <translation id="3858860766373142691">ନାମ</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> ପାଇଁ ଏଠାରେ ସର୍ତ୍ତାବଳୀକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="3872834068356954457">ବିଜ୍ଞାନ</translation>
 <translation id="3875783148670536197">କିପରି କରାଯାଏ ତାହା ମୋତେ ଦେଖାନ୍ତୁ</translation>
 <translation id="3880456882942693779">କଳା ଓ ମନୋରଞ୍ଜନ</translation>
@@ -1982,6 +1984,7 @@
 <translation id="4809079943450490359">ଆପଣଙ୍କ ଡିଭାଇସ୍ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଠାରୁ ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକ:</translation>
 <translation id="4811450222531576619">ଏହାର ସୋର୍ସ ଏବଂ ବିଷୟ ସମ୍ବନ୍ଧରେ ଜାଣନ୍ତୁ</translation>
 <translation id="4813512666221746211">ନେଟ୍‌ୱର୍କ ତ୍ରୁଟି</translation>
+<translation id="4814114628197290459">IBANକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="4816492930507672669">ପୃଷ୍ଠାରେ ଖାପ ଖୁଆନ୍ତୁ</translation>
 <translation id="4819347708020428563">ଡିଫଲ୍ଟ ଭ୍ୟୁରେ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବେ?</translation>
 <translation id="4822493756793346865">ସାଧାରଣ ମୂଲ୍ୟଗୁଡ଼ିକ ଗତ 90 ଦିନରେ ସମଗ୍ର ୱେବର ଷ୍ଟୋରଗୁଡ଼ିକ ଉପରେ ଆଧାରିତ ଅଟେ।</translation>
@@ -2103,6 +2106,7 @@
 <translation id="5040262127954254034">ଗୋପନୀୟତା</translation>
 <translation id="5043480802608081735">ଆପଣ କପି କରିଥିବା ଲିଙ୍କ୍</translation>
 <translation id="5045550434625856497">ଭୁଲ ପାସୱାର୍ଡ</translation>
+<translation id="5048293684454354469">ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଏକ ସାଇଟ ବ୍ୟବହାର କରିପାରୁଥିବା ଅନେକ ଜିନିଷ ମଧ୍ୟରୁ ବିଜ୍ଞାପନ ବିଷୟ କେବଳ ଗୋଟିଏ ଅଟେ। ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକ ବିନା ମଧ୍ୟ ସାଇଟଗୁଡ଼ିକ ଏବେ ବି ଆପଣଙ୍କୁ ବିଜ୍ଞାପନଗୁଡ଼ିକ ଦେଖାଇପାରିବ କିନ୍ତୁ ସେଗୁଡ଼ିକ କମ ପର୍ସନାଲାଇଜ ହୋଇଥାଇପାରେ। <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ବିଜ୍ଞାପନ ଗୋପନୀୟତାକୁ ପରିଚାଳନା କରିବା<ph name="LINK_END" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
 <translation id="5052517576853118371">ସକ୍ରିୟ ବିଷୟଗୁଡ଼ିକ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share ବ୍ୟବହାର କରି ଏହି ଫାଇଲ ପଠାଇବା ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ (<ph name="DISK_SPACE_SIZE" />) ସ୍ପେସ ଖାଲି କରନ୍ତୁ}other{Nearby Share ବ୍ୟବହାର କରି ଏହି ଫାଇଲଗୁଡ଼ିକୁ ପଠାଇବା ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ (<ph name="DISK_SPACE_SIZE" />) ସ୍ପେସ ଖାଲି କରନ୍ତୁ}}</translation>
 <translation id="505757197798929356">ଖୋଲିବାର କାରଣ ପ୍ରଦାନ କରନ୍ତୁ (ଆବଶ୍ୟକ)</translation>
@@ -2321,6 +2325,7 @@
     <ph name="LINE_BREAK" />
     ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ବ୍ୟବସ୍ଥାପକଙ୍କୁ ଯୋଗାଯୋଗ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="549333378215107354">ଆକାର 3</translation>
+<translation id="5496804587179176046">ସୁରକ୍ଷା କୋଡ ସେଭ କରନ୍ତୁ, ବର୍ତ୍ତମାନ କୌଣସି ସୁରକ୍ଷା କୋଡ ସେଭ ହୋଇନାହିଁ</translation>
 <translation id="550365051221576010">ସବୁକିଛି ପୂରଣ କରନ୍ତୁ</translation>
 <translation id="5508443345185481044">କ୍ୟାମେରା ଏବଂ କ୍ୟାମକର୍ଡରଗୁଡ଼ିକ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2344,6 +2349,7 @@
 <translation id="553377674408670169">ଶିକ୍ଷାଭିତ୍ତିକ ଚାକିରି</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" ବିଭାଗ ଦେଖାନ୍ତୁ</translation>
 <translation id="553782666181800029">ଏନଭେଲପ ଚାଉ 2</translation>
+<translation id="5538270463355278784">ସ୍ୱତଃ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ</translation>
 <translation id="5539243836947087108">ରାଫ୍ଟ</translation>
 <translation id="5540224163453853">ଅନୁରୋଧ କରାଯାଇଥିବା ଲେଖାଟି ମିଳିଲା ନାହିଁ।</translation>
 <translation id="5540969246441091044">ଅଶ୍ଵାରୋହଣ</translation>
@@ -2707,6 +2713,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeରେ ଆପଣ ଡାଉନଲୋଡ୍ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="6254436959401408446">ଏହି ପୃଷ୍ଠା ଖୋଲିବା ପାଇଁ ପର୍ଯ୍ୟାପ୍ତ ମେମୋରୀ ନାହିଁ</translation>
 <translation id="625463612687472648">ଅନୁମତି ଦେବା ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ, <ph name="FINANCIAL_ACCOUNT_TYPES" />କୁ ଏକ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ}other{ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ, <ph name="FINANCIAL_ACCOUNT_TYPES" />କୁ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ}}</translation>
 <translation id="6259156558325130047">&amp;ରି-ଡୁକୁ ପୁନଃକ୍ରମରେ ରଖନ୍ତୁ</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ବୁକମାର୍କଗୁଡ଼ିକ</translation>
 <translation id="6264376385120300461">ଯେ କୌଣସି ମତେ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -2937,6 +2944,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ ଡିଭାଇସ ଖୋଜିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="6695428916538794739">ଆକ୍ସନ ଏବଂ ଆଡଭେଞ୍ଚର ମୁଭିଗୁଡ଼ିକ</translation>
 <translation id="6696424331653607346">ଟ୍ରାଭେଲ ଗାଇଡ ଏବଂ ଟ୍ରାଭେଲଗଗୁଡ଼ିକ</translation>
+<translation id="6698097747703777657">ଆପଣଙ୍କ କୋଡ ପାଇନାହାଁନ୍ତି? <ph name="BEGIN_LINK" />ନୂଆ କୋଡ ପାଆନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ସୃଷ୍ଟିହେଲା:</translation>
 <translation id="67007264085648978">ଟାଇମ ସ୍କ୍ରବର</translation>
 <translation id="6702851555558236418">ଅଡିଓ ଏବଂ ମ୍ୟୁଜିକ ସଫ୍ଟୱେର</translation>
@@ -3337,7 +3345,6 @@
 <translation id="7442725080345379071">ହାଲ୍‍କା କମଳା</translation>
 <translation id="7444046173054089907">ଏହି ସାଇଟ୍‌କୁ ବ୍ଲକ୍‌ କରାଯାଇଛି</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{କୁକୀଗୁଡ଼ିକୁ ଆଜି ପୁଣି ବ୍ଲକ କରାଯିବ}=1{କୁକୀଗୁଡ଼ିକୁ କାଲି ପୁଣି ବ୍ଲକ କରାଯିବ}other{କୁକୀଗୁଡ଼ିକୁ # ଦିନରେ ପୁଣି ବ୍ଲକ କରାଯିବ}}</translation>
-<translation id="7445762425076701745">ଯେଉଁ ସର୍ଭର୍‌ ସହ ଆପଣ ସଂଯୁକ୍ତ ଅଛନ୍ତି ତାହାର ପରିଚୟ ପୂର୍ଣ୍ଣ ଭାବେ ବୈଧ କରାଯାଇପାରିବ ନାହିଁ ଆପଣ କେବଳ ଆପଣଙ୍କର ନେଟ୍‌ୱର୍କରେ ବୈଧ ଥିବା ନାମର ବ୍ୟବହାର କରି ଏକ ସର୍ଭର୍‌ ସହ ସଂଯୁକ୍ତ ଅଛନ୍ତି ଯାହାର ମାଲିକାନାକୁ ବିଧିସିଦ୍ଧ କରିବାକୁ ଏକ ଏକ୍ସଟର୍ନଲ୍‌ ସାର୍ଟିଫିକେଟ୍‌ କର୍ତ୍ତୃପକ୍ଷଙ୍କର କୌଣସି ଉପାୟ ନଥାଏ। ଯେପରି କିଛି ସାର୍ଟିଫିକେଟ୍‌ କର୍ତ୍ତୁପକ୍ଷ ଏହା ସତ୍ତ୍ୱେ ଏହି ନାମଗୁଡ଼ିକ ପାଇଁ ସାର୍ଟିଫିକେଟ୍‌ ଜାରି କରିଦେବେ, ଆପଣଙ୍କୁ ଏହା ସୁନିଶ୍ଚିତ କରିବାକୁ କୌଣସି ଉପାୟ ନାହିଁ ଯେ ଆପଣ ଇଚ୍ଛାକୃତ ଭାବେ ଏକ ୱେବ୍‌ସାଇଟ୍‌ ସହ ସଂଯୁକ୍ତ ଅଛନ୍ତି ଏବଂ ଏକ ଆକ୍ରମଣକାରୀ ସହ ନୁହେଁ।</translation>
 <translation id="7447234474237738389">ପୋଷାକ ସେବା</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ମିମି)</translation>
 <translation id="7450577240311017924">'ସିଙ୍କ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ଆପଣ କେଉଁ ସୂଚନା ସିଙ୍କ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -3841,6 +3848,7 @@
 <translation id="8378714024927312812">ଆପଣଙ୍କର ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="8380941800586852976">ବିପଜ୍ଜନକ</translation>
 <translation id="8381674639488873545">ଏହି ଶୁଳ୍କଗୁଡ଼ିକ ଗୋଟିଏ ଥର କିମ୍ବା ବାରମ୍ବାର ଲାଗୁ ହୋ‍ଇପାରେ ଏବଂ ସ୍ପଷ୍ଟ ହୋ‍ଇନପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">ସ୍ୱତଃ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ</translation>
 <translation id="838307841291975086">ଷ୍ଟେସନ ୱାଗନଗୁଡ଼ିକ</translation>
 <translation id="8389532092404711541">ସାଧାରଣତଃ <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">କଷ୍ଟମ ଏବଂ ପରଫରମାନ୍ସ ଗାଡ଼ିଗୁଡ଼ିକ</translation>

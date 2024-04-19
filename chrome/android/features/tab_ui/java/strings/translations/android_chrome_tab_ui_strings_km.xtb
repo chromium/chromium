@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{បង្រួម​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង។}other{បង្រួម​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង។}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{បង្រួមផ្ទាំង <ph name="TABS_COUNT_ONE" />។}other{បង្រួមក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" />ផ្ទាំង។}}</translation>
 <translation id="2569352796411618312">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> របស់អ្នក​មិនត្រូវបាន​ប្រើទេ​នាពេល​ថ្មីៗនេះ។ បិទផ្ទាំង​ទាំងនោះឬ?</translation>
-<translation id="2613747923081026172">បង្កើត​ក្រុម</translation>
 <translation id="2662028055331606429">ការវាយតម្លៃដោយដាក់ផ្កាយ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">ចូលមើលគេហទំព័រ</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{បានបង្កើត <ph name="NUM_HOURS_ONE" /> ម៉ោងមុន}other{បានបង្កើត <ph name="NUM_HOURS_MANY" /> ម៉ោងមុន}}</translation>

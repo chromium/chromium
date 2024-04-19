@@ -68,6 +68,7 @@
 <translation id="1218444235442067213">Праграма Крамы Play (<ph name="APP_NAME" />)</translation>
 <translation id="1225748608451425081">Chromebook заблакіраваны з-за вядомай праблемы. Вы зможаце ўвайсці праз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Спыніць выбар</translation>
+<translation id="1230853660706736937">Пошук тэксту на відарысах і перадпрагляд відарысаў</translation>
 <translation id="1235458158152011030">Вядомыя сеткі</translation>
 <translation id="1239161794459865856">Функцыя "<ph name="FEATURE_NAME" />" падключана.</translation>
 <translation id="1240638468526743569">адна з праграм</translation>
@@ -715,11 +716,13 @@
 <translation id="3824784079442479685">Доступ да камеры атрымае праграма "<ph name="APP_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру. Магчыма, трэба будзе абнавіць вэб-старонку або перазапусціць праграму.</translation>
 <translation id="3826099427150913765">Пераключыцца на пароль</translation>
 <translation id="383058930331066723">Рэжым энергазберажэння ўключаны</translation>
+<translation id="3831226344927851293">Выйсці з рэжыму навучання</translation>
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
 <translation id="384082539148746321">Выдаліць шаблон?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, затым <ph name="KEY_ONE" />, або <ph name="KEY_TWO" />, або <ph name="KEY_THREE" />, або <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94 / 5</translation>
 <translation id="3846575436967432996">Няма даступнай інфармацыі пра сетку</translation>
+<translation id="3848526302597027234">Мець доступ да наступных дазволаў:</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">У пачатак</translation>
 <translation id="3859364108019690">Не ўдаецца перадаць праграмы плынню</translation>

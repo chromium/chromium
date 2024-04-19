@@ -150,6 +150,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="3702352323269013324">Más información sobre la personalización de anuncios en Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Tu administrador pide que reinicies Chromium para aplicar esta actualización}=1{Tu administrador pide que reinicies Chromium para aplicar esta actualización La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chromium para aplicar esta actualización Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
 <translation id="3713809861844741608">Abrir enlace en una pes&amp;taña nueva de Chromium</translation>
+<translation id="3728124580182886854">Vincula Chromium y otros servicios de Google con fines de personalización y otros propósitos</translation>
 <translation id="3788675262216168505">Gestionar perfiles de Chromium</translation>
 <translation id="378917192836375108">Chromium te permite hacer clic en un número de teléfono en la Web y llamar mediante Skype.</translation>
 <translation id="3790262771324122253">Averigua por qué bloquea Chromium algunas descargas</translation>
@@ -176,6 +177,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="4095980151185649725">{COUNT,plural, =1{Tu organización cerrará Chromium automáticamente cuando lleve 1 minuto sin usarse. Los datos de navegación se eliminarán. Esto podría incluir el historial, los datos de Autocompletar y las descargas.}other{Tu organización cerrará Chromium automáticamente cuando lleve # minutos sin usarse. Los datos de navegación se eliminarán. Esto podría incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
 <translation id="4118474109249235144">Chromium en Incógnito</translation>
 <translation id="4148957013307229264">Instalando...</translation>
+<translation id="4149336151887611710">Tu organización puede ver y gestionar los datos de navegación de tu perfil de trabajo, como los marcadores, el historial y las contraseñas. No puede ver los datos de navegación de los perfiles personales de Chromium.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" />, inicio de sesión en la red, Chromium</translation>
 <translation id="421369550622382712">Descubre aplicaciones, juegos, extensiones y temas increíbles para Chromium.</translation>
 <translation id="4216212958613226427">La UI de Chromium se muestra en este idioma</translation>
@@ -231,6 +233,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5352361688875342522">Otros perfiles de Chromium</translation>
 <translation id="5358375970380395591">Vas a iniciar sesión con una cuenta gestionada, lo que significa que proporcionarás a su administrador control sobre tu perfil de Chromium. Tus datos de Chromium como, por ejemplo, tus aplicaciones, tus marcadores, tu historial, tus contraseñas y otras opciones se vincularán de forma permanente a la cuenta <ph name="USER_NAME" />. Podrás eliminar estos datos a través del Panel de control de cuentas de Google, pero no podrás asociarlos a otra cuenta. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5377622451696208284">Para disfrutar de personalización, incluye Chromium en Actividad en la Web y en Aplicaciones</translation>
 <translation id="5383439451358640070">Averigua por qué bloquea Chromium algunos archivos</translation>
 <translation id="5386450000063123300">Actualizando Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permitir el inicio de sesión en Chromium</translation>
@@ -274,6 +277,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="608006075545470555">Añadir perfil de trabajo a este navegador</translation>
 <translation id="6096348254544841612">Personaliza y controla Chromium. Hay una actualización disponible.</translation>
 <translation id="6102072151902574948">Si se activa esta opción, Chromium ahorrará batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y la velocidad de fotogramas de los vídeos.</translation>
+<translation id="6107893135096467929">Activado • Chromium no puede verificar el origen de esta extensión</translation>
 <translation id="6119438414301547735">Permitir que la extensión muestre solicitudes de acceso en la barra de herramientas de Chromium</translation>
 <translation id="6120345080069858279">Chromium guardará esta contraseña en tu cuenta de Google para que no tengas que recordarla.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> es peligroso, por lo que Chromium lo ha bloqueado.</translation>
@@ -308,6 +312,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="6403826409255603130">Chromium es un navegador web que ejecuta páginas web y aplicaciones a gran velocidad. Es rápido, estable y fácil de utilizar. Chromium te permite navegar en la Web de forma más segura, ya que incluye protección contra malware y phishing.</translation>
 <translation id="6442900851116057561">Reiniciar ChromiumOS</translation>
 <translation id="6443470774889161065">Chromium precarga más páginas de las que probablemente visites para que se carguen más rápido si accedes a ellas</translation>
+<translation id="645458117210240797">Desactivado • Chromium no puede verificar el origen de esta extensión</translation>
 <translation id="6455857529632101747">Te damos la bienvenida a los perfiles de Chromium</translation>
 <translation id="6475912303565314141">También controla qué página se muestra al iniciar Chromium.</translation>
 <translation id="648319183876919572">Navegación segura mejorada te protege de forma más eficaz de los sitios web y las descargas peligrosos</translation>
@@ -330,6 +335,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="6717134281241384636">No se puede utilizar tu perfil porque procede de una versión de Chromium más actualizada.
 
 Es posible que algunas funciones no estén disponibles. Especifica un directorio de perfil diferente o utiliza una versión más actualizada de Chromium.</translation>
+<translation id="6729124504294600478">Para disfrutar de personalización y otras funciones, incluye Chromium en Actividad en la Web y en Aplicaciones y en los servicios de Google vinculados</translation>
 <translation id="6734291798041940871">Chromium ya está instalado para todos los usuarios en tu ordenador.</translation>
 <translation id="673636774878526923">Para acceder a tus cosas de Chromium en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
 <translation id="67706546131546258">Chromium recomienda analizar este archivo porque puede que sea peligroso.</translation>
@@ -358,9 +364,11 @@ Es posible que algunas funciones no estén disponibles. Especifica un directorio
 <translation id="718435575166326686">Chromium necesita el permiso de la cámara para este sitio</translation>
 <translation id="7196312274710523067">No se ha podido iniciar Chromium. Inténtalo de nuevo.</translation>
 <translation id="7197677400338048821">Chromium no puede comprobar tus contraseñas. Vuelve a intentarlo en 24 horas.</translation>
+<translation id="7198365860059291213">Chromium necesita comprender la escena y tener el permiso de seguimiento de las manos para iniciar una sesión inmersiva</translation>
 <translation id="7213407614656404070">Usa Chromium siempre que hagas clic en enlaces de mensajes, documentos y otras aplicaciones</translation>
 <translation id="7223968959479464213">Administrador de tareas - Chromium</translation>
 <translation id="7246575524853130370">Tus intereses estimados por Chromium</translation>
+<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium te recomienda que la elimines}other{Chromium te recomienda que las elimines}}</translation>
 <translation id="7309928523159922338">La medición de anuncios permite a los sitios que visitas pedir a Chromium información que les ayude a medir el rendimiento de sus anuncios. La medición de anuncios restringe el seguimiento entre sitios al transferir la menor cantidad de información posible entre ellos.</translation>
 <translation id="731795002583552498">Actualizando Chromium</translation>
 <translation id="7318036098707714271">Tu archivo de preferencias está dañado o no es válido.
@@ -398,6 +406,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7867198900892795913">No se ha podido actualizar Chromium a la versión más reciente, por lo que no disfrutas de las últimas funciones y correcciones de seguridad.</translation>
 <translation id="7872446069773932638">Descargando... Segundos restantes: <ph name="SECONDS" />.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> para proteger tu privacidad, eliminamos automáticamente tus intereses que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, es posible que un interés vuelva a aparecer en la lista. También puedes eliminar los intereses que no quieras que Chromium tenga en cuenta.</translation>
+<translation id="7888981273428720788">Establecer Chromium como navegador predeterminado</translation>
 <translation id="7937630085815544518">Habías iniciado sesión en Chromium como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>
 <translation id="7975919845073681630">Esta instalación de Chromium es secundaria, por lo que no se puede establecer como navegador predeterminado.</translation>
 <translation id="7997934263947464652">Las extensiones, las aplicaciones y los temas de fuentes desconocidas pueden dañar tu dispositivo. Chromium recomienda instalarlos únicamente desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
@@ -410,6 +419,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8166782796394721554">Activa la protección adicional en el motor de JavaScript y WebAssembly de Chromium</translation>
 <translation id="81770708095080097">Este archivo es peligroso, por lo que Chromium lo ha bloqueado.</translation>
+<translation id="8232193495299001329">Chromium no puede verificar el origen de esta extensión y podría no ser segura. Elimínala de Chromium para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="8248265253516264921">Si una imagen no tiene ninguna descripción útil, Chromium intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>
 <translation id="8266560134891435528">Chromium no puede comprobar tus contraseñas porque no has iniciado sesión</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium te advierte<ph name="END_LINK" /> sobre sitios y descargas no seguros</translation>

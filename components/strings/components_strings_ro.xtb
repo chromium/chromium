@@ -1987,6 +1987,7 @@
 <translation id="4809079943450490359">Instrucțiuni de la administratorul dispozitivului:</translation>
 <translation id="4811450222531576619">Află despre sursă și subiect</translation>
 <translation id="4813512666221746211">Eroare de rețea</translation>
+<translation id="4814114628197290459">Șterge codul IBAN</translation>
 <translation id="4816492930507672669">Încadrați în pagină</translation>
 <translation id="4819347708020428563">Editezi adnotările în afișarea prestabilită?</translation>
 <translation id="4822493756793346865">Prețurile standard se bazează pe magazine de pe web din ultimele 90 de zile.</translation>
@@ -3347,7 +3348,6 @@ Detalii suplimentare:
 <translation id="7442725080345379071">Portocaliu deschis</translation>
 <translation id="7444046173054089907">Acest site este blocat</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie-urile vor fi blocate din nou astăzi}=1{Cookie-urile vor fi blocate din nou mâine}few{# zile până când cookie-urile vor fi blocate din nou}other{# de zile până când cookie-urile vor fi blocate din nou}}</translation>
-<translation id="7445762425076701745">Identitatea serverului la care te-ai conectat nu poate fi validată complet. Ești conectat(ă) la un server folosind un nume valid numai în rețeaua ta, pentru care o autoritate de certificare externă nu are nici o modalitate de a-l valida. Deoarece unele autorități de certificare vor emite certificate pentru aceste nume oricum, nu există nicio modalitate de a te asigura că ești conectat(ă) la site-ul corect și nu la un atacator.</translation>
 <translation id="7447234474237738389">Servicii pentru îmbrăcăminte</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Butonul Gestionează sincronizarea, activează pentru a gestiona informațiile de sincronizat din setările Chrome</translation>

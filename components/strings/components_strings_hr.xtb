@@ -1986,6 +1986,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4809079943450490359">Upute administratora uređaja:</translation>
 <translation id="4811450222531576619">Saznajte više o njenom izvoru i temi</translation>
 <translation id="4813512666221746211">Pogreška mreže</translation>
+<translation id="4814114628197290459">Izbrišite IBAN</translation>
 <translation id="4816492930507672669">Prilagodi stranici</translation>
 <translation id="4819347708020428563">Želite li urediti napomene u zadanom prikazu?</translation>
 <translation id="4822493756793346865">Uobičajene cijene temelje se na trgovinama na cijelom webu u posljednjih 90 dana.</translation>
@@ -2107,6 +2108,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5040262127954254034">Privatnost</translation>
 <translation id="5043480802608081735">Veza koju ste kopirali</translation>
 <translation id="5045550434625856497">Pogrešna zaporka</translation>
+<translation id="5048293684454354469">Teme oglasa samo su jedna od mnogih mogućnosti koje web-lokacija može upotrebljavati za personalizaciju oglasa. Čak i bez tema oglasa, web-lokacije vam i dalje mogu prikazivati oglase, no oni bi mogli biti manje personalizirani. Saznajte više o <ph name="BEGIN_LINK" />upravljanju zaštitom privatnosti u online oglašavanju<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Aktivne teme</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da biste poslali tu datoteku pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
 <translation id="505757197798929356">Navedite razlog otvaranja (obavezno)</translation>
@@ -2325,6 +2327,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
     <ph name="LINE_BREAK" />
     Pokušajte se obratiti administratoru sustava.</translation>
 <translation id="549333378215107354">Veličina 3</translation>
+<translation id="5496804587179176046">Spremite sigurnosne kodove, trenutačno nije spremljen nijedan sigurnosni kôd</translation>
 <translation id="550365051221576010">Ispunite sve</translation>
 <translation id="5508443345185481044">Fotoaparati i kamere</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2944,6 +2947,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste pronašli svoj uređaj na Google računu</translation>
 <translation id="6695428916538794739">Akcijski i avanturistički filmovi</translation>
 <translation id="6696424331653607346">Vodiči za putovanja i putni blogovi</translation>
+<translation id="6698097747703777657">Niste primili kôd? <ph name="BEGIN_LINK" />Zatražite novi kôd<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Autor/ica:</translation>
 <translation id="67007264085648978">Klizač za vrijeme</translation>
 <translation id="6702851555558236418">Audiosoftver i glazbeni softver</translation>
@@ -3344,7 +3348,6 @@ Dodatne pojedinosti:
 <translation id="7442725080345379071">Svijetlonarančasta</translation>
 <translation id="7444046173054089907">Ova je web-lokacija blokirana</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Kolačići će se danas ponovno blokirati}=1{Kolačići će se sutra ponovno blokirati}one{Kolačići će se ponovo blokirati za # dan}few{Kolačići će se ponovo blokirati za # dana}other{Kolačići će se ponovo blokirati za # dana}}</translation>
-<translation id="7445762425076701745">Identitet poslužitelja s kojim ste se povezali ne može se u potpunosti potvrditi. Povezali ste se s poslužiteljem upotrebom imena koje je valjano samo unutar vaše mreže, a za koje vanjsko tijelo za izdavanje certifikata nikako ne može potvrditi vlasništvo. Budući da postoje tijela za izdavanje certifikata koja će izdati certifikat za ta imena bez obzira na sve, nema načina da budete sigurni da ste povezani sa željenom web-lokacijom, a ne s napadačem.</translation>
 <translation id="7447234474237738389">Kemijske čistionice i krojačke radnje</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Gumb Upravljaj sinkronizacijom, aktivirajte ga za upravljanje podacima koje želite sinkronizirati u postavkama Chromea</translation>

@@ -301,7 +301,6 @@
 <translation id="2604176749896001318">更新瀏覽器</translation>
 <translation id="2609008503159898744">要關閉所有分頁嗎？</translation>
 <translation id="261305050785128654">如果網站知道你使用哪些語言，就會盡可能以這些語言顯示內容。</translation>
-<translation id="2613747923081026172">建立群組</translation>
 <translation id="2617210333344098964">將地址移至帳戶</translation>
 <translation id="261739049332372104">如要取得你關注內容的最新消息，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="2625189173221582860">已複製密碼</translation>
@@ -1039,6 +1038,7 @@
 <translation id="6363526231572697780">沒有使用者名稱</translation>
 <translation id="6366190659675876144">標準保護功能</translation>
 <translation id="6366663624406569102">登出並關閉同步功能</translation>
+<translation id="6368038301482806847">從清單中選擇搜尋引擎。</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6377118281273296434">網站安全性</translation>
 <translation id="6383719166112032471">開啟位置…</translation>
@@ -1107,6 +1107,7 @@
 <translation id="6647441008198474441">系統會將您瀏覽的網址傳送至 Google，以便預測您接下來可能會瀏覽的網站</translation>
 <translation id="6656103420185847513">編輯資料夾</translation>
 <translation id="6657585470893396449">密碼</translation>
+<translation id="6659660757330712663">在工具列上滑動即可切換分頁。</translation>
 <translation id="6668619169535738264">編輯書籤</translation>
 <translation id="6672241253012342409">網站可使用 Cookie 來改善瀏覽體驗，例如讓您保持登入狀態或記住購物車中的商品。
 
@@ -1197,6 +1198,7 @@
 <translation id="7161230316646448869">將您的書籤、記錄等資料同步至所有裝置</translation>
 <translation id="7162168282402939716">用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁</translation>
 <translation id="7173114856073700355">開啟設定</translation>
+<translation id="7186568385131859684">控管在各項 Google 服務中將瀏覽記錄和其他資料搭配使用的方式</translation>
 <translation id="7189598951263744875">分享…</translation>
 <translation id="719133302483559673">管理興趣和偏好設定。</translation>
 <translation id="7192050974311852563">開始記錄</translation>
@@ -1240,6 +1242,7 @@
 <translation id="7438481509621345350">您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
 <translation id="7451023311965289370">{count,plural, =1{書籤已儲存至「{title}」}other{書籤已儲存至「{title}」}}</translation>
 <translation id="7454057999980797137">州/省/郡/縣</translation>
+<translation id="7458706065921255639">個人化與連結</translation>
 <translation id="745899714366929493">全日</translation>
 <translation id="7459628154744868585">已開啟「強化保護功能」</translation>
 <translation id="7465351360025415755">取得你關注的內容</translation>

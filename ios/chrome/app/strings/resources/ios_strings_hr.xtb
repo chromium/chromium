@@ -301,7 +301,6 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2604176749896001318">Ažurirajte preglednik</translation>
 <translation id="2609008503159898744">Zatvoriti sve kartice?</translation>
 <translation id="261305050785128654">Neka web-lokacije znaju koje jezike govorite. Prikazivat će sadržaj na tim jezicima kad je to moguće.</translation>
-<translation id="2613747923081026172">Izradi grupu</translation>
 <translation id="2617210333344098964">Premještanje adrese na račun</translation>
 <translation id="261739049332372104">Da biste primali novosti o sadržaju koji vam je važan, uključite obavijesti u postavkama iOS-a.</translation>
 <translation id="2625189173221582860">Zaporka je kopirana</translation>
@@ -843,6 +842,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5407969256130905701">Odbaci promjene</translation>
 <translation id="5414763847370083940">Dobit ćete upozorenje ako se cijena snizi na bilo kojoj web-lokaciji.</translation>
 <translation id="5416022985862681400">Posljednjih sedam dana</translation>
+<translation id="5416455648658732408">Premjesti u grupu kartica</translation>
 <translation id="5423269318075950257">Praćenje cijene</translation>
 <translation id="543338862236136125">Uredite zaporku</translation>
 <translation id="5433691172869980887">Korisničko je ime kopirano</translation>
@@ -1107,6 +1107,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="6647441008198474441">URL-ovi koje posjećujete šalju se Googleu kako bi se predvidjelo koje biste web-lokacije mogli posjetiti sljedeće</translation>
 <translation id="6656103420185847513">Uređivanje mape</translation>
 <translation id="6657585470893396449">Zaporka</translation>
+<translation id="6659660757330712663">Možete prijeći prstom po alatnoj traci da biste se prebacivali između kartica.</translation>
 <translation id="6668619169535738264">Uredi oznaku</translation>
 <translation id="6672241253012342409">Web-lokacije mogu upotrebljavati kolačiće za poboljšanje vašeg doživljaja pregledavanja, primjerice da biste ostali prijavljeni ili da bi stavke u vašoj košarici ostale zapamćene.
 
@@ -1327,6 +1328,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7856733331829174190">Preuzimanje nije moguće</translation>
 <translation id="7859704718976024901">Povijest pregledavanja</translation>
+<translation id="7860900259978879139">Ukloni iz grupe</translation>
 <translation id="7866501058614003444">Praćenje paketa uspješno je poništeno.</translation>
 <translation id="7866872729285243843">Da biste dobili popis za čitanje na svim svojim uređajima, u postavkama uključite popis za čitanje.</translation>
 <translation id="7866993391592926595">Ako sakrijete tu karticu, isključit će se praćenje paketa i ukloniti svi vaši podaci</translation>
@@ -1414,9 +1416,11 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8273982424131314219">Unijet ćete podatke u <ph name="URL" /></translation>
 <translation id="8281781826761538115">Zadano – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskoči</translation>
+<translation id="8282657446819506217">Otvori u grupi kartica</translation>
 <translation id="828291969289324795">{count,plural, =1{Dodaj karticu novoj grupi}one{Dodaj kartice novoj grupi}few{Dodaj kartice novoj grupi}other{Dodaj kartice novoj grupi}}</translation>
 <translation id="8283172974887967105">Postavi…</translation>
 <translation id="8286036467436129157">Prijava</translation>
+<translation id="8289930144142009940">Isključene su obavijesti značajke <ph name="FEATURE_NAME" /></translation>
 <translation id="8292843446079898078">Primajte upozorenja o padu cijena za proizvode koje pratite.</translation>
 <translation id="8299417921174340354">Da biste koristili zaporke, najprije morate postaviti šifru na uređaju.</translation>
 <translation id="8299613349954694191">Otvorite anonimnu karticu da biste pregledavali web privatno.</translation>
@@ -1424,6 +1428,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8313645224014086262">Spremite datoteku</translation>
 <translation id="8319076807703933069">Novo pretraživanje</translation>
 <translation id="8328777765163860529">Zatvori sve</translation>
+<translation id="8343286328361420468">Isključi obavijesti za značajku <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Sigurnosno kopirajte svoje sadržaje i upotrebljavajte ih na bilo kojem uređaju.</translation>
 <translation id="834783239627985533">Najposjećenije web-lokacije</translation>
 <translation id="8358401059263985056">Uključi obavijesti</translation>

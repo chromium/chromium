@@ -28,6 +28,7 @@
 <translation id="1707458603865303524">‏שימוש ב-Chromium בכל פעם שמקישים על קישורים בהודעות או באפליקציות אחרות.</translation>
 <translation id="1722370509450468186">הסיסמה שלך תישמר בחשבון (<ph name="EMAIL" />).</translation>
 <translation id="1791845338122684020">‏פתיחת הדף 'היסטוריה' ב-Chromium.</translation>
+<translation id="1811860791247653035">‏כדי להשתמש בהתאמה אישית ובתכונות אחרות, צריך לכלול את Chromium ב<ph name="FEATURE_NAME_1" /> וב<ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">‏Chromium אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
 <translation id="1843424232666537147">‏Chromium כולל תכונות שעוזרות לך לנהל את נתוני האינטרנט ואת המהירות שבה אפשר לטעון דפים.
 <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
@@ -89,6 +90,7 @@
 <translation id="3639997914391704523">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="3688710892786762883">‏Chromium יזהה מספרי מעקב אחר חבילות באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. כדי שניתן יהיה לספק את התכונה הזו, וגם לשפר את שופינג לכולם, הנתונים שלך ישותפו עם Google.</translation>
 <translation id="372658070733623520">‏כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך לאמת את הזהות שלך.</translation>
+<translation id="3728124580182886854">‏אפשר לקשר את Chromium לשירותי Google אחרים לצורך התאמה אישית ולמטרות אחרות</translation>
 <translation id="3780779443901618967">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chromium.</translation>
 <translation id="3784369638459513223">‏פתיחת כרטיסייה פרטית חדשה ב-Chromium.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>

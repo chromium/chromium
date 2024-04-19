@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Palos grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë.}other{Palos grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Palos <ph name="TABS_COUNT_ONE" /> skedë.}other{Palos grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="2569352796411618312">Sugjerim: <ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
-<translation id="2613747923081026172">Krijo një grup</translation>
 <translation id="2662028055331606429">Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Vizito sajtin</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Krijuar <ph name="NUM_HOURS_ONE" /> orë më parë}other{Krijuar <ph name="NUM_HOURS_MANY" /> orë më parë}}</translation>

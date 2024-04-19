@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো সংকোচন কৰক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো সংকোচন কৰক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো সংকোচন কৰক।}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব সংকোচন কৰক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}}</translation>
 <translation id="2569352796411618312">পৰামৰ্শ: শেহতীয়াকৈ আপোনাৰ <ph name="NUMBER_OF_TABS" /> টা টেব ব্যৱহাৰ কৰা হোৱা নাই। সেইকেইটা বন্ধ কৰিবনে?</translation>
-<translation id="2613747923081026172">গোট সৃষ্টি কৰক</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন</translation>
 <translation id="266935134738038806">ছাইটটোলৈ যাওক</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ঘণ্টা পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_HOURS_MANY" /> ঘণ্টা পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_HOURS_MANY" /> ঘণ্টা পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
@@ -49,6 +48,7 @@
 <translation id="3996880007329611795">জাননী পাওক</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> দিন পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_DAYS_MANY" /> দিন পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_DAYS_MANY" /> দিন পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}one{<ph name="TITLE_OF_GROUP" /> গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}other{<ph name="TITLE_OF_GROUP" /> গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}}</translation>
 <translation id="4159784952369912983">বেঙুনীয়া</translation>
 <translation id="4212246570487010370">ব্ৰাউজ কৰা অব্যাহত ৰাখক</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো বিস্তাৰ কৰক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো বিস্তাৰ কৰক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো বিস্তাৰ কৰক।}}</translation>
@@ -72,6 +72,7 @@
 <translation id="5490235265819901748">টেবৰ গোটটো বিস্তাৰ কৰা হৈছে</translation>
 <translation id="5494920125229734069">সকলো বাছনি কৰক</translation>
 <translation id="5545379293264651575">পৰ্যালোচনা নকৰাকৈ বন্ধ কৰক</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}one{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}other{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}}</translation>
 <translation id="5556417849629758491">ষ্ট’ৰৰ তথ্য চাওক, বিকল্পটো স্ক্ৰীনখনৰ প্ৰায় শীৰ্ষত আছে</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeৰ পৰা <ph name="TABS_COUNT_ONE" /> টা লিংক}one{Chromeৰ পৰা <ph name="TABS_COUNT_MANY" /> টা লিংক}other{Chromeৰ পৰা <ph name="TABS_COUNT_MANY" /> টা লিংক}}</translation>
 <translation id="575494663145460764">মূল্য কমাৰ সতৰ্কবাৰ্তা পাবলৈ বিচাৰেনে?</translation>
@@ -113,6 +114,7 @@
 <translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7966321538264951561">পৰামৰ্শসমূহ বাতিল কৰক।</translation>
 <translation id="8029301326595421733">এই দোকানৰ বিষয়ে তথ্য পূৰ্ণ স্ক্ৰীনত দেখুওৱা হৈছে</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}one{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}other{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}}</translation>
 <translation id="8205266828577616993">টেবটো ওপৰলৈ নিয়ক</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব বন্ধ কৰক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}}</translation>
 <translation id="8398929769197326728">নতুন ফ’ল্ডাৰ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -125,6 +127,7 @@
 <translation id="9090098097337832354">এই দোকানৰ বিষয়ে তথ্য দেখুওৱা বন্ধ হৈছে</translation>
 <translation id="9150694013019234766">স্ক্রীণৰ একেবাৰে তলৰ কাষত থকা টেবৰ গোটৰ টেবসমূহ সলনা সলনিকৈ ব্যৱহাৰ কৰক</translation>
 <translation id="9169594135889675189">গোটত নতুন টেব যোগ কৰক</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}one{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}other{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}}</translation>
 <translation id="955558140275419384">এই সম্পাদকটো দি বিশৃংখলতা নাইকীয়া কৰিবলৈ আৰ্কাইভ কৰা আটাইবোৰ টেব পৰ্যালোচনা কৰক।</translation>
 <translation id="959682366969460160">সংগঠিত হৈ থাকক</translation>
 <translation id="992256792861109788">গুলপীয়া</translation>

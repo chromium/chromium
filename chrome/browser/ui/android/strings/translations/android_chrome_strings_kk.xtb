@@ -702,7 +702,9 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Виртуалдық карта</translation>
 <translation id="473775607612524610">Жаңарту</translation>
+<translation id="4738065825338914557">Жазылым тоқтатылып жатыр…</translation>
 <translation id="4738836084190194332">Соңғы синхрондалған уақыты: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Қолданба бойынша іріктеу</translation>
 <translation id="4741753828624614066">Мекенжай жолағында жақсартылған ұсыныстар аласыз.</translation>
 <translation id="4742970037960872810">Ерекшелемеу</translation>
 <translation id="4749960740855309258">Жаңа қойынды ашу</translation>
@@ -786,6 +788,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5099845111805573968">"Компьютерге арналған сайт" режимін бір рет таңдаған соң, бұл параметр осы сайтты ашқан сайын қолданылады.</translation>
 <translation id="5102401324271069229">Егер сайт құпия сөзіңізді ұрлағысы келсе немесе зиянды файлды жүктеп алсаңыз, Chrome браузері URL мекенжайларын, бет контенті бөліктерін Safe Browsing қызметіне жіберуі мүмкін.</translation>
 <translation id="510275257476243843">1 сағат қалды</translation>
+<translation id="5114895953710637392">Қолданба бойынша іріктеу парағы жабылды.</translation>
 <translation id="5115811374190515607">жаңа орны: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Қызығушылықтар</translation>
 <translation id="5122378528687922675">Көмек қажет болса, ата-анаңыздан (<ph name="PARENT_NAME_1" /> немесе <ph name="PARENT_NAME_2" />) сұраңыз</translation>
@@ -904,7 +907,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5752232708629533680">Тек GIF бөлісу</translation>
 <translation id="5754350196967618083">Discover жаңартылмады</translation>
 <translation id="5755162682436943950">Аккаунттан шыққансыз. Кіру және синхрондауды қосу үшін диалогтік терезені ашады.</translation>
-<translation id="5759897675466110265">Сайт жұмыс істемей ме? Үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз.</translation>
 <translation id="5763382633136178763">Инкогнито қойындылары</translation>
 <translation id="5763514718066511291">Бұл қолданбаның URL мекенжайын көшіру үшін түртіңіз</translation>
 <translation id="5765517223145864268">Пайдалану кезіндегі әсеріңіз туралы айтып беріңіз. Немесе <ph name="BEGIN_LINK" /> параметрлерді өзгертіңіз<ph name="END_LINK" />.</translation>
@@ -1139,6 +1141,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="685850645784703949">Google ұсынатын Discover – өшірулі</translation>
 <translation id="686366188661646310">Құпия сөз жойылсын ба?</translation>
 <translation id="6864459304226931083">Суретті жүктеп алу</translation>
+<translation id="686490460830618322">Қолданба бойынша іріктеу парағы</translation>
 <translation id="6865313869410766144">Нысан деректерін автотолтыру</translation>
 <translation id="6867400383614725881">Жаңа инкогнито қойындысы</translation>
 <translation id="6869056123412990582">компьютер</translation>
@@ -1206,6 +1209,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7177466738963138057">Мұны кейінірек "Параметрлер" бөлімінде өзгертуге болады</translation>
 <translation id="7177873915659574692">QR кодын жасау мүмкін емес. URL мекенжайының ұзындығы <ph name="CHARACTER_LIMIT" /> таңба шегінен асып кеткен.</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
+<translation id="7183517696921903380">Қолданба бойынша іріктеу парағы ашылды.</translation>
 <translation id="7183693674623539380">Қойындылар тобы – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Google қызметтерінде браузерді қолдану тарихыңыз басқа деректеріңізбен қалай қолданылатынын басқарыңыз.</translation>
 <translation id="7187993566681480880">Аккаунтқа кірген болсаңыз, сізді Chrome браузерінде қорғайды және басқа Google қолданбаларында қауіпсіздігіңізді жақсартуға пайдаланылуы мүмкін.</translation>
@@ -1332,6 +1336,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7780645209293383778">Google қолданбаларында сізді қорғау үшін, аккаунтқа кіріп отырғанда деректер мен аккаунтты уақытша байланыстырады.</translation>
 <translation id="7791543448312431591">Қосу</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> қойынды қалпына келтірілді.</translation>
+<translation id="780287761701992588">Бетбелгілер, құпия сөздер және т.б. барлық құрылғыда болады.</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7808889146555843082">Құпия сөзді жойсаңыз, <ph name="SITE" /> сайтындағы аккаунтыңыз жойылмайды. Деректерді қорғау үшін құпия сөзіңізді өзгертіңіз немесе <ph name="SITE" /> сайтындағы аккаунтты жойыңыз.</translation>
 <translation id="7810647596859435254">Ашу әдісі…</translation>

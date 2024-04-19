@@ -1983,6 +1983,7 @@
 <translation id="4809079943450490359">Cihaz adminindən təlimatlar:</translation>
 <translation id="4811450222531576619">Onun mənbəyi və mövzusu haqqında məlumat əldə edin</translation>
 <translation id="4813512666221746211">Şəbəkə xətası</translation>
+<translation id="4814114628197290459">Silin: IBAN</translation>
 <translation id="4816492930507672669">Səhifəyə uyğunlaşsın</translation>
 <translation id="4819347708020428563">Annotasiyalar defolt görünüşdə redaktə edilsin?</translation>
 <translation id="4822493756793346865">Tipik qiymətlər son 90 günü əhatə edir və veb-mağazalara əsaslanır.</translation>
@@ -3343,7 +3344,6 @@
 <translation id="7442725080345379071">Açıq-narıncı</translation>
 <translation id="7444046173054089907">Bu sayt blok edilib</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Kukilər bu gün yenidən bloklanacaq}=1{Kukilər sabah yenidən bloklanacaq}other{Kukilərin yenidən bloklanmasına # gün qalıb}}</translation>
-<translation id="7445762425076701745">Qoşulduğunuz serverin kimliyi tam təyin oluna bilmir. Yalnız şəbəkəniz daxilində etibarlı olan adı istifadə edən serverə qoşulmusunuz. Bəzi sertifikat buraxanlar bu adlar üçün sertifikarlar buraxaclaqlar, məqsədinizdə olan sayta qoşulduğunuzu, həmin saytın hücumçu olmadığını müəyyən etmək olmur.</translation>
 <translation id="7447234474237738389">Geyim xidmətləri</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">"Sinxronlaşdırmanı idarə edin" düyməsi, aktivləşdirərək sinxronlaşdıracağınız məlumatları Chrome ayarlarında idarə edin</translation>

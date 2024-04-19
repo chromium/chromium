@@ -301,7 +301,6 @@
 <translation id="2604176749896001318">ඔබේ බ්‍රව්සරය යාවත්කාලීන කරන්න</translation>
 <translation id="2609008503159898744">සියලු පටිති වසන්න ද?</translation>
 <translation id="261305050785128654">ඔබ කතා කරන භාෂා වෙබ් අඩවිවලට දැන ගැනීමට සලස්වන්න. ඔවුන් හැකි විට, එම භාෂාවලින් අන්තර්ගත පෙන්වයි.</translation>
-<translation id="2613747923081026172">කණ්ඩායම සාදන්න</translation>
 <translation id="2617210333344098964">ලිපිනය ගිණුම වෙත ගෙන යන්න</translation>
 <translation id="261739049332372104">ඔබට වැදගත් වන අන්තර්ගතය පිළිබඳ යාවත්කාලීන ලබා ගැනීමට, ඔබේ iOS සැකසීම් තුළ දැනුම්දීම ක්‍රියාත්මක කරන්න.</translation>
 <translation id="2625189173221582860">මුරපදය පිටපත් කරන ලදී</translation>
@@ -843,6 +842,7 @@
 <translation id="5407969256130905701">වෙනස්කම් ඉවත ලන්න</translation>
 <translation id="5414763847370083940">ඕනෑම අඩවියක මිල අඩු වුවහොත් ඔබට ඇඟවීමක් ලැබෙනු ඇත.</translation>
 <translation id="5416022985862681400">අන්තිම දින 7</translation>
+<translation id="5416455648658732408">පටිති සමූහය වෙත යන්න</translation>
 <translation id="5423269318075950257">මිල හඹා යන්න</translation>
 <translation id="543338862236136125">මුරපදය සංස්කරණ කරන්න</translation>
 <translation id="5433691172869980887">පරිශීලක නම පිටපත් කරන ලදී</translation>
@@ -1327,6 +1327,7 @@
 <translation id="7853202427316060426">ක්‍රියාකාරකම</translation>
 <translation id="7856733331829174190">බාගැනීමට නොහැකි විය</translation>
 <translation id="7859704718976024901">බ්‍රවුස් කිරීමේ ඉතිහාසය</translation>
+<translation id="7860900259978879139">සමූහයෙන් ඉවත් කරන්න</translation>
 <translation id="7866501058614003444">මෙම පැකේජය සාර්ථකව නිරීක්ෂණය නොකරන ලදි.</translation>
 <translation id="7866872729285243843">ඔබේ සියලු උපාංග මත ඔබේ කියවීම් ලැයිස්තුව ලබා ගැනීම සඳහා, සැකසීම් තුළ "කියවීමේ ලැයිස්තුව" ක්‍රියාත්මක කරන්න.</translation>
 <translation id="7866993391592926595">මෙම කාඩ්පත සැඟවීම පැකේජ ලුහුබැඳීම ක්‍රියා විරහිත කර ඔබේ සියලු දත්ත ඉවත් කරනු ඇත</translation>
@@ -1414,9 +1415,11 @@
 <translation id="8273982424131314219">ඔබ <ph name="URL" /> වෙත තතු පුරවනු ඇත</translation>
 <translation id="8281781826761538115">පෙරනිමි - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>
+<translation id="8282657446819506217">පටිති සමූහය තුළ විවෘත කරන්න</translation>
 <translation id="828291969289324795">{count,plural, =1{නව සමූහයට පටිත්ත එක් කරන්න}one{නව සමූහයට පටිති එක් කරන්න}other{නව සමූහයට පටිති එක් කරන්න}}</translation>
 <translation id="8283172974887967105">සකසන්න…</translation>
 <translation id="8286036467436129157">පුරන්න</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> දැනුම්දීම් ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="8292843446079898078">ඔබ නිරික්සුම් කරන නිෂ්පාදන සඳහා මිල පහළ යාමේ ඇඟවීම් ලබන්න.</translation>
 <translation id="8299417921174340354">මුරපද භාවිත කිරීමට, ඔබ පළමුව ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="8299613349954694191">වෙබය පෞද්ගලිකව බ්‍රවුස් කිරීමට අප්‍රකට ටැබයක් විවෘත කරන්න.</translation>
@@ -1424,6 +1427,7 @@
 <translation id="8313645224014086262">ගොනුව සුරකින්න</translation>
 <translation id="8319076807703933069">අලුත් සෙවීම</translation>
 <translation id="8328777765163860529">සියල්ල වසන්න</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" /> සඳහා දැනුම්දීම් ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="8343993175958086504">ඔබේ දේවල් උපස්ථ කර එය ඕනෑම උපාංගයක භාවිතා කරන්න.</translation>
 <translation id="834783239627985533">වැඩියෙන් පැමිණි අඩවි</translation>
 <translation id="8358401059263985056">දැනුම්දීම් සක්‍රීය කරන්න</translation>

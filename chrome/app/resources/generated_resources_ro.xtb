@@ -1239,6 +1239,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1915734383465415025">Numărul magazinului</translation>
 <translation id="1916260783734263714">Fila actuală</translation>
 <translation id="1916502483199172559">Avatar roșu prestabilit</translation>
+<translation id="1916770123977586577">Ca să aplici setările actualizate pentru acest site, reîncarcă pagina</translation>
 <translation id="1918127774159128277">Actualizează capacitățile Wi-Fi Direct</translation>
 <translation id="1918141783557917887">&amp;Mai mic</translation>
 <translation id="1919872106782726755">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă în colțul din dreapta sus al tastaturii, lângă butonul de pornire. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
@@ -2553,7 +2554,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2877467134191447552">Poți să adaugi conturi suplimentare pentru a accesa site-uri și aplicații.</translation>
 <translation id="2878782256107578644">Scanare în desfășurare, deschizi acum?</translation>
 <translation id="2878889940310164513">Adaugă o rețea de date mobile...</translation>
-<translation id="2879594947768634665">FILE NOI</translation>
 <translation id="288042212351694283">Accesează dispozitivele Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Când dai clic pe extensie</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> va reporni și se va reseta imediat</translation>
@@ -7416,7 +7416,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6673898378497337661">mărește luminozitatea tastaturii</translation>
 <translation id="6674571176963658787">Pentru a porni sincronizarea, introdu expresia de acces</translation>
 <translation id="6675665718701918026">Dispozitivul de indicat este conectat</translation>
-<translation id="6675985668044425385">Dacă un site nu funcționează conform așteptărilor, poți activa cookie-urile terță parte pentru acesta, folosind opțiunea Protecție împotriva urmăririi din bara de adrese.</translation>
 <translation id="6676212663108450937">Îți recomandăm să folosești căștile când îți antrenezi vocea</translation>
 <translation id="667752334740867460">Se primesc informații despre Wi-Fi...</translation>
 <translation id="6678717876183468697">Adresa URL a interogării</translation>
@@ -8960,7 +8959,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7848892492535275379"><ph name="CREDENTIAL_TYPE" /> pentru <ph name="USER_EMAIL" /></translation>
 <translation id="7849264908733290972">Deschide &amp;imaginea într-o filă nouă</translation>
 <translation id="784934925303690534">Interval de timp</translation>
-<translation id="7849656116606005620">Memento: Protecția împotriva urmăririi este activată</translation>
 <translation id="7850320739366109486">Nu deranja</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Dacă permiți ca dispozitivele cu sistem de operare Chrome să trimită rapoarte automate, ne ajuți să stabilim o ordine a priorităților privind remedierile și îmbunătățirile pentru sistemul de operare Chrome. Aceste rapoarte pot include aspecte precum situațiile în care se blochează sistemul de operare Chrome, ce funcții folosești, câtă memorie utilizezi de obicei și date de diagnosticare și de utilizare despre aplicațiile pentru Android. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Poți să acorzi sau să anulezi oricând permisiunea pentru aceste rapoarte în setările dispozitivului cu sistem de operare Chrome. Dacă ești administratorul unui domeniu, poți să modifici această setare în consola de administrare.<ph name="END_PARAGRAPH2" />
@@ -9833,7 +9831,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8497219075884839166">Utilitare Windows</translation>
 <translation id="8498214519255567734">Mai multă comoditate când privești ecranul sau citești într-o lumină slabă</translation>
 <translation id="8499083585497694743">Activează sunetul microfonului</translation>
-<translation id="8499951261760185742">Dacă un site pe care îl accesezi nu funcționează conform așteptărilor, permite temporar cookie-urile terță parte pentru site-ul respectiv. Aceasta va însemna mai puțină protecție, dar mai multe șanse ca funcțiile site-ului să ruleze conform așteptărilor.</translation>
 <translation id="8500044868721690197">Acest site a fost blocat, astfel că nu poate controla și reprograma dispozitivele MIDI</translation>
 <translation id="8502536196501630039">Ca să folosești aplicații din Google Play, trebuie mai întâi să restabilești aplicațiile. Este posibil ca unele date să se fi pierdut.</translation>
 <translation id="8503813439785031346">Nume de utilizator</translation>

@@ -214,9 +214,11 @@
 <translation id="4293420128516039005">Log masuk untuk menyegerakkan dan memperibadikan Chrome pada semua peranti anda</translation>
 <translation id="430327780270213103">Benarkan sambungan menunjukkan permintaan akses pada bar alat Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
+<translation id="4329315893554541805">Untuk mendapatkan pemeribadian dan ciri lain, sertakan Chrome dalam Aktiviti Web &amp; Apl dan perkhidmatan Google terpaut</translation>
 <translation id="4334294535648607276">Muat turun selesai.</translation>
 <translation id="4335235004908507846">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, sambungan tidak elok dan pelbagai lagi</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> telah ditambahkan pada Chrome</translation>
+<translation id="4348548358339558429">Untuk mendapatkan pemeribadian, sertakan Chrome dalam Aktiviti Web &amp; Apl</translation>
 <translation id="436060642166082913">Chrome menyekat muat turun ini kerana fail tersebut boleh membahayakan akaun peribadi dan rangkaian sosial anda</translation>
 <translation id="4384570495110188418">Chrome tidak dapat menyemak kata laluan anda kerana anda tidak log masuk</translation>
 <translation id="4389991535395284064">Apabila menyemak imbas dalam Mod Inkognito, Chrome akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
@@ -330,7 +332,9 @@
 <translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="6418662306461808273">Tukar kepada profil Chrome yang sedia ada?</translation>
+<translation id="6481963882741794338">Pautkan Chrome dan perkhidmatan Google lain untuk pemeribadian dan tujuan lain</translation>
 <translation id="648319183876919572">Penyemakan Imbas Selamat Dipertingkatkan melakukan lebih banyak lagi untuk melindungi anda daripada laman web dan muat turun berbahaya</translation>
+<translation id="6489302989675808168">Hidupkan • Chrome tidak dapat mengesahkan tempat asal sambungan ini</translation>
 <translation id="6493527311031785448">Google Chrome cuba <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome ditutup secara automatik</translation>
 <translation id="6506909944137591434">Chrome memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
@@ -355,6 +359,7 @@
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 8.1.</translation>
 <translation id="6943584222992551122">Data semakan imbas orang ini akan dipadamkan daripada peranti ini. Untuk memulihkan data itu, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
+<translation id="6944202724043006419">Chrome memerlukan pemahaman latar dan kebenaran penjejakan tangan untuk memulakan sesi yang mengasyikkan</translation>
 <translation id="6967962315388095737">Peraturan masuk bagi Google Chrome Beta untuk membenarkan trafik mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome telah dikemas kini, tetapi anda belum menggunakannya untuk sekurang-kurangnya 30 hari.</translation>
 <translation id="7011190694940573312">Pemasangan gagal kerana versi sistem operasi ini tidak disokong.</translation>
@@ -389,6 +394,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7477130805345743099">Chrome akan memberi anda amaran sebelum memuatkan sebarang laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="7481213027396403996">Dapatkan keselamatan Chrome yang paling kukuh</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7572537927358445944">Matikan • Chrome tidak dapat mengesahkan tempat asal sambungan ini</translation>
 <translation id="7583399374488819119">Pemasang <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Selamat Datang ke Chrome</translation>
@@ -477,6 +483,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8823341990149967727">Chrome sudah Usang</translation>
 <translation id="8825634023950448068">Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Jika Chrome tersilap atau anda tidak mahu melihat iklan tertentu, anda boleh mengalih keluar minat itu.</translation>
 <translation id="8834965163890861871">Google Chrome cuba mengedit kata laluan. Taip kata laluan Windows anda untuk membenarkan tindakan ini.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut}other{Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut}}</translation>
 <translation id="8862326446509486874">Anda tidak mempunyai hak wajar untuk pemasangan peringkat sistem. Cuba jalankan pemasang semula sebagai Pentadbir.</translation>
 <translation id="8914504000324227558">Lancarkan semula Chrome</translation>
 <translation id="8922193594870374009">Untuk menghantar nombor daripada <ph name="ORIGIN" /> ke telefon Android anda, log masuk ke Chrome pada kedua-dua peranti.</translation>

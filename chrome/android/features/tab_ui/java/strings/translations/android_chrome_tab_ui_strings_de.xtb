@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab minimieren.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
 <translation id="2569352796411618312">Vorschlag: <ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
-<translation id="2613747923081026172">Gruppe erstellen</translation>
 <translation id="2662028055331606429">Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Zur Website</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Vor <ph name="NUM_HOURS_ONE" /> Stunde erstellt}other{Vor <ph name="NUM_HOURS_MANY" /> Stunden erstellt}}</translation>

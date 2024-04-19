@@ -1721,7 +1721,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
       Pengguna tidak dapat mengubah atau mengganti setelan ini.
 
       Catatan: Kebijakan ini menyebabkan header X-GoogApps-Allowed-Domains ditambahkan ke semua permintaan HTTP dan HTTPS di semua domain google.com, seperti yang dijelaskan di https://support.google.com/a/answer/1668854.</translation>
-<translation id="2282174652047982960">Selalu gunakan klien DNS standar jika ada</translation>
 <translation id="2288506601233091655">Jangan izinkan histori tugas pencetakan dihapus</translation>
 <translation id="2289688405312849186">Akun utama pengguna 'user@realm'. Placeholder <ph name="LOGIN_ID_PLACEHOLDER" /> diganti dengan nama pengguna 'user'. Placeholder <ph name="LOGIN_EMAIL_PLACEHOLDER" /> diganti dengan akun utama penuh 'user@realm'.</translation>
 <translation id="2290270645214705008">Jika kebijakan ini disetel ke Nonaktif, layanan host akses jarak jauh tidak dapat dimulai atau dikonfigurasi untuk menerima koneksi masuk.  Kebijakan ini tidak memengaruhi skenario dukungan jarak jauh.
@@ -2152,6 +2151,10 @@ CATATAN: Kebijakan ini salah didokumentasikan di M117, yaitu dengan setelan defa
       Jika kebijakan ini tidak disetel, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
+<translation id="2585535930727399201">Ekstensi perusahaan dapat menambahkan log melalui API chrome.systemLog ke file log sistem.
+
+Jika kebijakan disetel ke Aktif, log akan disimpan dalam file log sistem selama jangka waktu terbatas.
+Jika kebijakan disetel ke Nonaktif atau tidak disetel, log tidak akan dapat ditambahkan ke file log sistem, yang berarti log tidak akan disimpan di antara sesi.</translation>
 <translation id="2586117300379904732">Izinkan penguncian layar saat aktif untuk pengelolaan daya</translation>
 <translation id="2586231026319371211">Waktu disesuaikan dengan format jam lokal 24 jam.</translation>
 <translation id="2587719089023392205">Setel <ph name="PRODUCT_NAME" /> sebagai Browser Default</translation>
@@ -3740,13 +3743,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
       Jika kebijakan disetel ke 2, iklan akan diblokir di situs yang menayangkan iklan mengganggu.</translation>
 <translation id="3876564097829884243">Aktifkan fitur EphemeralNetworkPolicies.</translation>
 <translation id="3877517141460819966">Mode autentikasi faktor kedua yang terintegrasi</translation>
-<translation id="3877908683993837673">Kebijakan ini mengontrol stack software yang digunakan untuk berkomunikasi dengan server DNS: klien DNS Sistem Operasi, atau klien DNS bawaan dari <ph name="PRODUCT_NAME" />. Kebijakan ini tidak memengaruhi server DNS mana yang digunakan: misalnya, jika sistem operasi dikonfigurasi untuk menggunakan server DNS perusahaan, server yang sama tersebut akan digunakan oleh klien DNS bawaan. Kebijakan ini juga tidak akan mengontrol jika DNS-over-HTTPS digunakan; <ph name="PRODUCT_NAME" /> akan selalu menggunakan resolver bawaan untuk permintaan DNS-over-HTTPS. Lihat kebijakan <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> untuk mengetahui informasi mengenai pengontrolan DNS-over-HTTPS.
-
-      Jika kebijakan ini disetel ke Aktif, klien DNS bawaan akan digunakan, jika tersedia.
-
-      Jika kebijakan ini disetel ke Nonaktif, klien DNS bawaan hanya akan digunakan jika DNS-over-HTTPS sedang digunakan.
-
-      Jika kebijakan ini tidak disetel, klien DNS bawaan akan diaktifkan secara default di <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (jika DNS Pribadi atau VPN tidak diaktifkan), dan <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Konfigurasi daftar Aplikasi Web yang diinstal otomatis</translation>
 <translation id="3879700444818346084">Nonaktifkan impor sandi tersimpan saat browser pertama kali dijalankan</translation>
 <translation id="388237772682176890">Kebijakan ini sudah tidak digunakan di M53 dan dihapus di M54, karena dukungan SPDY/3.1 telah dihapus.
@@ -6420,6 +6416,11 @@ pengguna tidak dapat mengubah atau menggantinya.</translation>
 
       Jika disetel ke Salah (False) atau tidak disetel, situs hanya dapat mengirim modul WebAssembly ke jendela dan pekerja di asal yang sama.</translation>
 <translation id="6008497706608447728">Daftar domain yang diblokir Layanan SSO Mengambang</translation>
+<translation id="6009419785187615211">Kebijakan ini akan mengontrol perlakuan terhadap formulir tidak aman (formulir yang dikirim melalui HTTP) yang disematkan di situs (HTTPS) aman dalam browser.
+       Jika kebijakan ini diaktifkan atau tidak disetel, peringatan akan ditampilkan dalam halaman penuh saat formulir tidak aman dikirimkan. Selain itu, balon peringatan akan ditampilkan di sebelah kolom formulir saat kolom diklik, dan fitur isi otomatis akan dinonaktifkan untuk formulir tersebut.
+       Jika kebijakan ini dinonaktifkan, peringatan tidak akan ditampilkan untuk formulir tidak aman, dan fitur isi otomatis akan berfungsi seperti biasa.
+
+       Kebijakan ini akan dihapus di Chrome 130.</translation>
 <translation id="6011193465932186973">Sidik jari</translation>
 <translation id="6011969832398368671">Izinkan situs meminta pengguna memberikan akses tulis ke file dan direktori</translation>
 <translation id="601234435141599215">Izinkan penerusan port ke mesin virtual Linux</translation>
@@ -7253,7 +7254,6 @@ Jika tidak disetel, interval default 15 menit akan berlaku.</translation>
 <translation id="6558013557780651644">Penundaan sebelum menjalankan tindakan tidak ada aktivitas</translation>
 <translation id="6558812160831988140">Pelaporan penggunaan aplikasi</translation>
 <translation id="6559057113164934677">Jangan izinkan situs apa pun mengakses kamera dan mikrofon</translation>
-<translation id="65591220958874949">Gunakan klien DNS bawaan di Windows, macOS, Android, dan Chrome OS</translation>
 <translation id="6559221564468029245">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna tidak akan dianggap tidak ada aktivitas saat audio diputar. Hal ini mencegah tercapainya waktu tunggu tidak ada aktivitas dan mencegah diambilnya tindakan tidak ada aktivitas. Namun, peredupan layar, penonaktifan layar, dan penguncian layar akan tetap terjadi setelah waktu tunggu yang dikonfigurasi tercapai, meski terdapat aktivitas audio.
 
       Jika kebijakan disetel ke Nonaktif, sistem akan dapat menganggap pengguna tidak ada aktivitas meski terdapat aktivitas audio.</translation>

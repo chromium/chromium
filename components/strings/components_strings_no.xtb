@@ -1987,6 +1987,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4809079943450490359">Veiledning fra enhetsadministratoren din:</translation>
 <translation id="4811450222531576619">Finn ut mer om kilden og emnet</translation>
 <translation id="4813512666221746211">Nettverksfeil</translation>
+<translation id="4814114628197290459">Slett IBAN</translation>
 <translation id="4816492930507672669">Tilpass til siden</translation>
 <translation id="4819347708020428563">Vil du redigere annoteringer i standardvisningen?</translation>
 <translation id="4822493756793346865">Vanlige priser er basert på butikker fra hele nettet de siste 90 dagene.</translation>
@@ -2947,6 +2948,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å finne enheten din i Google-kontoen</translation>
 <translation id="6695428916538794739">Action- og eventyrfilmer</translation>
 <translation id="6696424331653607346">Reisebøker og reiseskildringer</translation>
+<translation id="6698097747703777657">Har du ikke mottatt noen kode? <ph name="BEGIN_LINK" />Få en ny kode<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Opprettet:</translation>
 <translation id="67007264085648978">Tidslinje</translation>
 <translation id="6702851555558236418">Programvare for lyd og musikk</translation>
@@ -3346,7 +3348,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7442725080345379071">Lys oransje</translation>
 <translation id="7444046173054089907">Dette nettstedet er blokkert</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Informasjonskapsler blir blokkert igjen i dag}=1{Informasjonskapsler blir blokkert igjen i morgen}other{# dager til informasjonskapsler blir blokkert igjen}}</translation>
-<translation id="7445762425076701745">Identiteten til tjernen du er tilkoblet kan ikke valideres. Du er tilkoblet en tjener som bruker et navn som kun er gyldig i ditt nettverk, som en ekstern sertifiseringsinstans ikke har noen mulighet til å validere eierskap for. Siden enkelte sertifiseringsinstanser likevel utsteder sertifikater for disse navnene, er det umulig å sikre at du er tilkoblet ønsket nettsted og ikke en angriper.</translation>
 <translation id="7447234474237738389">Klestjenester</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Knappen «Administrer synkronisering» – aktiver for å administrere hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>

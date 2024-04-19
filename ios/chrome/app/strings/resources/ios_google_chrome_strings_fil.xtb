@@ -118,10 +118,12 @@ Mga bagay na dapat isaalang-alang:
 <translation id="417201473131094001">Hindi sinusuportahan sa Chrome Canary</translation>
 <translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
 <translation id="4251174643044751591">Bubuksan ang Page ng Setting ng Mga Paraan ng Pagbabayad sa Chrome.</translation>
+<translation id="4286914711740227883">I-delete ang Data mula sa Pag-browse sa Chrome</translation>
 <translation id="4453284704333523777">Pamahalaan ang Mga Setting ng Chrome</translation>
 <translation id="4523886039239821078">Nagiging dahilan ang ilang add-on ng pag-crash ng Chrome. Paki-uninstall.</translation>
 <translation id="4633328489441962921">Hindi matingnan ng Chrome kung may mga update</translation>
 <translation id="4636900170638246267">Mag-sign in sa site na ito at sa Chrome.</translation>
+<translation id="4742795653798179840">Na-delete na ang data sa Chrome</translation>
 <translation id="4761869838909035636">Magpatakbo ng Pag-check sa Kaligtasan sa Chrome</translation>
 <translation id="4798859546468762093">Para makuha ang pag-personalize at iba pang feature, isama ang Chrome sa <ph name="FEATURE_NAME_1" /> at <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para makatulong na mapaganda ang app, nagpapadala ang Chrome ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
@@ -132,6 +134,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="4840404732697892756">Masusuri ng Google Password Manager ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Matutulungan ka ng Chrome na subaybayan ang package na ito sa Page ng Bagong Tab.}one{Matutulungan ka ng Chrome na subaybayan ang mga package na ito sa Page ng Bagong Tab.}other{Matutulungan ka ng Chrome na subaybayan ang mga package na ito sa Page ng Bagong Tab.}}</translation>
 <translation id="4903674399067644695">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chrome.</translation>
+<translation id="4919069428879420545">I-delete ang Data mula sa Pag-browse sa Chrome.</translation>
 <translation id="49200511069271369">Pinapamahalaan ng iyong organisasyong <ph name="DOMAIN" /> ang account kung saan ka nagsa-sign in at kung paano magagamit ang Chrome. Puwedeng i-set up o paghigpitan ng iyong administrator ang ilang partikular na feature.</translation>
 <translation id="498985224078955265">Para ipadala ang tab na ito sa ibang device, mag-sign in sa Chrome sa dalawang device.</translation>
 <translation id="5030102366287574140">Makakatulong ang Chrome na panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa.</translation>

@@ -68,6 +68,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app från Play Butik</translation>
 <translation id="1225748608451425081">Chromebook har låsts på grund av ett känt problem. Du kan logga in om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Sluta markera</translation>
+<translation id="1230853660706736937">Sök efter text i bilder och se förhandsgranskningar av bilder</translation>
 <translation id="1235458158152011030">Kända nätverk</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> har anslutits.</translation>
 <translation id="1240638468526743569">En app</translation>
@@ -160,6 +161,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1569384531973824928">Detta ger åtkomst för alla appar och webbplatser med kamera- och mikrofonbehörighet. Du kan behöva uppdatera webbsidan eller starta om appen.</translation>
 <translation id="1571697193564730395">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zooma ut när skärmförstoring är aktiverat</translation>
+<translation id="1582946770779745370">Spelöversikt är tillgänglig. Tryck på <ph name="LAUNCHER_KEY_NAME" /> + Skift + Escape och sedan på <ph name="LAUNCHER_KEY_NAME" /> + g när som helst för att öppna den</translation>
 <translation id="1586324912145647027">Öppna skrivbord 1 till 8</translation>
 <translation id="158838227375272121">Webbplats för Google Classroom</translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
@@ -715,11 +717,13 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3824784079442479685">Detta ger kameraåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med kamerabehörighet. Du kan behöva uppdatera webbsidan eller starta om appen.</translation>
 <translation id="3826099427150913765">Byt till lösenord</translation>
 <translation id="383058930331066723">Batterisparläget är aktiverat</translation>
+<translation id="3831226344927851293">Stäng guidevyn</translation>
 <translation id="383629559565718788">Visa tangentbordsinställningar</translation>
 <translation id="384082539148746321">Vill du radera mallen?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> följt av <ph name="KEY_ONE" /> eller <ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /> eller <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94/5</translation>
 <translation id="3846575436967432996">Det finns ingen nätverksinformation</translation>
+<translation id="3848526302597027234">Åtkomst till följande behörigheter:</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="385300504083504382">Början</translation>
 <translation id="3859364108019690">Det gick inte att streama appar</translation>

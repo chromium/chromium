@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Fechar grupo de guias "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_ONE" /> guia.}one{Fechar <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Fechar <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
-<translation id="2613747923081026172">Criar grupo</translation>
 <translation id="2662028055331606429">Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar o site</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Criado há <ph name="NUM_HOURS_ONE" /> hora}one{Criado há <ph name="NUM_HOURS_MANY" /> hora}other{Criado há <ph name="NUM_HOURS_MANY" /> horas}}</translation>

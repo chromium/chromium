@@ -301,7 +301,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2604176749896001318">Aktualizujte prohlížeč</translation>
 <translation id="2609008503159898744">Zavřít všechny karty?</translation>
 <translation id="261305050785128654">Sdělte webům, kterými jazyky mluvíte. Pokud to bude možné, zobrazí obsah v těchto jazycích.</translation>
-<translation id="2613747923081026172">Vytvořit skupinu</translation>
 <translation id="2617210333344098964">Přesunout adresu do účtu</translation>
 <translation id="261739049332372104">Pokud chcete dostávat aktuální informace o obsahu, který je pro vás důležitý, zapněte v nastavení systému iOS oznámení.</translation>
 <translation id="2625189173221582860">Heslo bylo zkopírováno</translation>
@@ -1038,6 +1037,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6363526231572697780">Žádné uživatelské jméno</translation>
 <translation id="6366190659675876144">Standardní ochrana</translation>
 <translation id="6366663624406569102">Odhlásit a vypnout synchronizaci</translation>
+<translation id="6368038301482806847">Vyberte vyhledávač ze seznamu.</translation>
 <translation id="6374469231428023295">Zkusit znovu</translation>
 <translation id="6377118281273296434">Zabezpečení webu</translation>
 <translation id="6383719166112032471">Otevřít umístění…</translation>
@@ -1196,6 +1196,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7161230316646448869">Vaše hesla, historie a další údaje na všech zařízeních</translation>
 <translation id="7162168282402939716">Odemknout anonymní karty pomocí <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Otevřít nastavení</translation>
+<translation id="7186568385131859684">Mějte pod kontrolou, jak se historie prohlížení používá s vašimi dalšími daty ve službách Google</translation>
 <translation id="7189598951263744875">Sdílet...</translation>
 <translation id="719133302483559673">Spravujte své zájmy a preference.</translation>
 <translation id="7192050974311852563">Začít protokolovat</translation>
@@ -1239,6 +1240,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7438481509621345350">Když otevřete novou kartu, budou se teď zobrazovat články z webu <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Záložka byla uložena do složky {title}}few{Záložky byly uloženy do složky {title}}many{Záložky byly uloženy do složky {title}}other{Záložky byly uloženy do složky {title}}}</translation>
 <translation id="7454057999980797137">Stát / země</translation>
+<translation id="7458706065921255639">Personalizace a propojení</translation>
 <translation id="745899714366929493">Celý den</translation>
 <translation id="7459628154744868585">Je zapnutá vylepšená ochrana</translation>
 <translation id="7465351360025415755">Sledujte obsah, který vás zajímá</translation>

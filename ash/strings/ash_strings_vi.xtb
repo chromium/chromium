@@ -68,6 +68,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Ứng dụng Cửa hàng Play</translation>
 <translation id="1225748608451425081">Chromebook của bạn đã bị khóa do một vấn đề đã biết. Bạn có thể đăng nhập sau: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Dừng chọn</translation>
+<translation id="1230853660706736937">Tìm kiếm văn bản trong hình ảnh và xem bản xem trước của hình ảnh</translation>
 <translation id="1235458158152011030">Mạng đã biết</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> đã kết nối.</translation>
 <translation id="1240638468526743569">Một ứng dụng</translation>
@@ -128,6 +129,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1420408895951708260">Bật/tắt chế độ Ánh sáng đêm. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Có</translation>
 <translation id="1435537621343861112">Không thể bắt đầu nhập bằng giọng nói. Micrô hiện đang tắt.</translation>
+<translation id="1448963928642384376">Điểm phát sóng trên thiết bị của bạn</translation>
 <translation id="1455242230282523554">Hiển thị các tùy chọn cài đặt ngôn ngữ</translation>
 <translation id="1460620680449458626">Đang tắt tiếng.</translation>
 <translation id="14648076227129703">Điều này cho phép sử dụng máy ảnh đối với <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> và tất cả ứng dụng cũng như trang web có quyền sử dụng máy ảnh</translation>
@@ -160,6 +162,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1569384531973824928">Nếu bạn bật, tất cả ứng dụng và trang web có quyền truy cập máy ảnh và micrô sẽ có thể sử dụng máy ảnh và micrô. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="1571697193564730395">Bật/tắt chế độ Không làm phiền. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Thu nhỏ khi kính lúp đang bật</translation>
+<translation id="1582946770779745370">Hiện bạn đã có thể sử dụng Trang tổng quan trò chơi. Nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape rồi nhấn <ph name="LAUNCHER_KEY_NAME" /> + g bất cứ lúc nào để mở</translation>
 <translation id="1586324912145647027">Chuyển đến không gian làm việc từ 1 đến 8</translation>
 <translation id="158838227375272121">Trang web Google Lớp học</translation>
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
@@ -715,11 +718,13 @@ Hãy sạc thiết bị.</translation>
 <translation id="3824784079442479685">Nếu bạn bật, <ph name="APP_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh sẽ có thể sử dụng máy ảnh. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="3826099427150913765">Chuyển sang mật khẩu</translation>
 <translation id="383058930331066723">Chế độ trình tiết kiệm pin đang bật</translation>
+<translation id="3831226344927851293">Thoát chế độ xem hướng dẫn</translation>
 <translation id="383629559565718788">Hiển thị các tùy chọn cài đặt bàn phím</translation>
 <translation id="384082539148746321">Bạn muốn xoá mẫu?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> rồi đến <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> hoặc <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Không có thông tin mạng</translation>
+<translation id="3848526302597027234">Có quyền truy cập vào:</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="385300504083504382">Phần đầu</translation>
 <translation id="3859364108019690">Không thể truyền trực tuyến các ứng dụng</translation>

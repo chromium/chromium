@@ -136,6 +136,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Oberbekleidung</translation>
+<translation id="1253096324252841344">Mit <ph name="FINANCIAL_ACCOUNT_TYPES" /> zahlen</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisiert)</translation>
 <translation id="1255086252236620440">Handrührgeräte</translation>
 <translation id="1256368399071562588">&lt;p&gt;Wenn du eine bestimmte Website nicht aufrufen kannst, versuche zuerst, das Problem folgendermaßen zu beheben:&lt;/p&gt;
@@ -1508,6 +1509,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="385489333361351399">Kamera- und Fotoausrüstung</translation>
 <translation id="3858027520442213535">Datum und Uhrzeit aktualisieren</translation>
 <translation id="3858860766373142691">Name</translation>
+<translation id="3865339060090354361">Hier findest du die Nutzungsbedingungen für <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Wissenschaft</translation>
 <translation id="3875783148670536197">Zeigen</translation>
 <translation id="3880456882942693779">Kunst und Unterhaltung</translation>
@@ -1983,6 +1985,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4809079943450490359">Anweisungen des Geräteadministrators:</translation>
 <translation id="4811450222531576619">Informationen zur Quelle und zum Thema</translation>
 <translation id="4813512666221746211">Netzwerkfehler</translation>
+<translation id="4814114628197290459">IBAN löschen</translation>
 <translation id="4816492930507672669">An Seite anpassen</translation>
 <translation id="4819347708020428563">Anmerkungen in der Standardansicht bearbeiten?</translation>
 <translation id="4822493756793346865">Normalpreise basieren auf Daten von Onlineshops der letzten 90 Tage.</translation>
@@ -2104,6 +2107,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5040262127954254034">Datenschutz</translation>
 <translation id="5043480802608081735">Von dir kopierter Link</translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
+<translation id="5048293684454354469">Werbethemen sind nur eine von vielen Möglichkeiten, um Werbung auf einer Website zu personalisieren. Websites können dir auch ohne Werbethemen Werbung zeigen. Diese ist aber möglicherweise weniger interessant für dich. <ph name="BEGIN_LINK" />Weitere Informationen zum Verwalten des Datenschutzes bei Werbung<ph name="LINK_END" /></translation>
 <translation id="5052517576853118371">Aktive Themen</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Damit du diese Datei mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}other{Damit du diese Dateien mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}}</translation>
 <translation id="505757197798929356">Gib den Grund für das Öffnen an (erforderlich)</translation>
@@ -2322,6 +2326,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
     <ph name="LINE_BREAK" />
     Wende dich an deinen Systemadministrator.</translation>
 <translation id="549333378215107354">Größe 3</translation>
+<translation id="5496804587179176046">Sicherheitscodes speichern, aktuell sind keine Sicherheitscodes gespeichert</translation>
 <translation id="550365051221576010">Alles ausfüllen</translation>
 <translation id="5508443345185481044">Kameras und Camcorder</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2345,6 +2350,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="553377674408670169">Lehrtätigkeiten</translation>
 <translation id="5536214594743852365">Abschnitt "<ph name="SECTION" />" einblenden</translation>
 <translation id="553782666181800029">Umschlag Chou 2</translation>
+<translation id="5538270463355278784">automatischer Vollbildmodus</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">Der gewünschte Artikel wurde nicht gefunden.</translation>
 <translation id="5540969246441091044">Reitsport</translation>
@@ -2709,6 +2715,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in Chrome heruntergeladene Dateien zu verwalten</translation>
 <translation id="6254436959401408446">Nicht genügend Speicher, um diese Seite zu öffnen</translation>
 <translation id="625463612687472648">Nicht mehr zulassen</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Wenn du in Chrome einkaufst, wird die Option <ph name="FINANCIAL_ACCOUNT_TYPES" /> angezeigt}other{Wenn du in Chrome einkaufst, werden die Optionen <ph name="FINANCIAL_ACCOUNT_TYPES" /> angezeigt}}</translation>
 <translation id="6259156558325130047">&amp;Neu anordnen rückgängig machen</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-Lesezeichen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
@@ -2939,6 +2946,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um dein Gerät im Google-Konto zu finden</translation>
 <translation id="6695428916538794739">Action- und Abenteuerfilme</translation>
 <translation id="6696424331653607346">Reiseführer und -berichte</translation>
+<translation id="6698097747703777657">Du hast den Code nicht erhalten? <ph name="BEGIN_LINK" />Neuen Code anfordern<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Erstellt:</translation>
 <translation id="67007264085648978">Zeitachse</translation>
 <translation id="6702851555558236418">Audio- und Musik-Software</translation>
@@ -3339,7 +3347,6 @@ Weitere Details:
 <translation id="7442725080345379071">Helles Orange</translation>
 <translation id="7444046173054089907">Diese Website ist blockiert</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies werden heute wieder blockiert}=1{Cookies werden morgen wieder blockiert}other{Noch # Tage, bis Cookies wieder blockiert werden}}</translation>
-<translation id="7445762425076701745">Die Identität des Servers, mit dem du verbunden bist, kann nicht vollständig überprüft werden. Du bist mit einem Server verbunden, dessen Name nur innerhalb deines Netzwerks gültig ist und dessen Eigentümerschaft von einer externen Zertifizierungsstelle nicht überprüft werden kann. Da einige Zertifizierungsstellen ungeachtet dessen dennoch Zertifikate für diese Namen ausstellen, gibt es keine Möglichkeit, sicherzustellen, dass du mit der gewünschten Website und nicht mit einem Angreifer verbunden bist.</translation>
 <translation id="7447234474237738389">Bekleidungsdienstleistungen</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> mm × <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Schaltfläche „Synchronisierung verwalten“ – aktivieren, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
@@ -3843,6 +3850,7 @@ Weitere Details:
 <translation id="8378714024927312812">Von deiner Organisation verwaltet</translation>
 <translation id="8380941800586852976">Schädlich</translation>
 <translation id="8381674639488873545">Diese Kosten können einmalig oder wiederkehrend sein und sind vielleicht nicht klar zu erkennen. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automatischer Vollbildmodus</translation>
 <translation id="838307841291975086">Kombis</translation>
 <translation id="8389532092404711541">In der Regel <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Autotuning</translation>

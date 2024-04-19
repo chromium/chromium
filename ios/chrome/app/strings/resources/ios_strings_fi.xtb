@@ -301,7 +301,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2604176749896001318">Päivitä selain</translation>
 <translation id="2609008503159898744">Suljetaanko kaikki välilehdet?</translation>
 <translation id="261305050785128654">Kerro sivustoille, mitä kieliä osaat. Ne näyttävät mahdollisuuksien mukaan sisältöä kyseisillä kielillä.</translation>
-<translation id="2613747923081026172">Luo ryhmä</translation>
 <translation id="2617210333344098964">Siirrä osoite tilille</translation>
 <translation id="261739049332372104">Jos haluat saada ilmoituksia sinulle tärkeästä sisällöstä, laita ilmoitukset päälle iOS-asetuksista.</translation>
 <translation id="2625189173221582860">Salasana kopioitu</translation>
@@ -843,6 +842,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5407969256130905701">Hylkää muutokset</translation>
 <translation id="5414763847370083940">Saat ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="5416022985862681400">Viimeiset 7 päivää</translation>
+<translation id="5416455648658732408">Siirrä välilehtiryhmään</translation>
 <translation id="5423269318075950257">Hintaseuranta</translation>
 <translation id="543338862236136125">Muokkaa salasanaa</translation>
 <translation id="5433691172869980887">Käyttäjänimi kopioitu</translation>
@@ -1107,6 +1107,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="6647441008198474441">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida</translation>
 <translation id="6656103420185847513">Muokkaa kansiota</translation>
 <translation id="6657585470893396449">Salasana</translation>
+<translation id="6659660757330712663">Voit siirtyä välilehdestä toiseen pyyhkäisemällä yläpalkkia.</translation>
 <translation id="6668619169535738264">Muokkaa kirjanmerkkiä</translation>
 <translation id="6672241253012342409">Sivustot voivat käyttää evästeitä selauskokemuksesi parantamiseen, esimerkiksi pitää sinut kirjautuneena tai muistaa ostoskorisi sisällön.
 
@@ -1327,6 +1328,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7853202427316060426">Tapahtumat</translation>
 <translation id="7856733331829174190">Lataus epäonnistui</translation>
 <translation id="7859704718976024901">Selaushistoria</translation>
+<translation id="7860900259978879139">Poista ryhmästä</translation>
 <translation id="7866501058614003444">Paketin seuranta on lopetettu.</translation>
 <translation id="7866872729285243843">Jos haluat käyttää lukulistaa kaikilla laitteillasi, laita Lukulista päälle asetuksista.</translation>
 <translation id="7866993391592926595">Tämän kortin piilottaminen laittaa lähetyksen seurannan pois päältä ja poistaa kaiken datan</translation>
@@ -1414,9 +1416,11 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8273982424131314219">Täytä tiedot täällä: <ph name="URL" /></translation>
 <translation id="8281781826761538115">Oletus – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ohita</translation>
+<translation id="8282657446819506217">Avaa välilehtiryhmässä</translation>
 <translation id="828291969289324795">{count,plural, =1{Lisää välilehti uuteen ryhmään}other{Lisää välilehtiä uuteen ryhmään}}</translation>
 <translation id="8283172974887967105">Valitse…</translation>
 <translation id="8286036467436129157">Kirjaudu sisään</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" />: ilmoitukset laitettu pois päältä</translation>
 <translation id="8292843446079898078">Tilaa hinnanlaskuilmoitukset seuraamistasi tuotteista.</translation>
 <translation id="8299417921174340354">Salasanojen käyttöä varten sinun on ensin asetettava laitteellesi tunnuskoodi.</translation>
 <translation id="8299613349954694191">Selaa verkkoa yksityisesti avaamalla incognito-välilehden.</translation>
@@ -1424,6 +1428,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8313645224014086262">Tallenna tiedosto</translation>
 <translation id="8319076807703933069">Uusi haku</translation>
 <translation id="8328777765163860529">Sulje kaikki</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" />: laita ilmoitukset pois päältä</translation>
 <translation id="8343993175958086504">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella.</translation>
 <translation id="834783239627985533">Useimmin avatut sivustot</translation>
 <translation id="8358401059263985056">Laita ilmoitukset päälle</translation>

@@ -1987,6 +1987,7 @@
 <translation id="4809079943450490359">기기 관리자가 제공하는 지침:</translation>
 <translation id="4811450222531576619">출처와 주제에 관해 자세히 알아보기</translation>
 <translation id="4813512666221746211">네트워크 오류</translation>
+<translation id="4814114628197290459">IBAN 삭제</translation>
 <translation id="4816492930507672669">페이지 맞춤</translation>
 <translation id="4819347708020428563">기본 뷰에서 주석을 수정할까요?</translation>
 <translation id="4822493756793346865">일반적인 가격은 지난 90일 동안의 웹 스토어를 기반으로 합니다.</translation>
@@ -2947,6 +2948,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google 계정에서 기기를 찾으려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="6695428916538794739">액션 및 어드벤처 영화</translation>
 <translation id="6696424331653607346">여행 가이드 및 여행 방송</translation>
+<translation id="6698097747703777657">코드를 받지 못하셨나요? <ph name="BEGIN_LINK" />새 코드 받기<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">생성됨:</translation>
 <translation id="67007264085648978">시간 슬라이더</translation>
 <translation id="6702851555558236418">오디오 및 음악 소프트웨어</translation>
@@ -3346,7 +3348,6 @@
 <translation id="7442725080345379071">연한 주황색</translation>
 <translation id="7444046173054089907">차단된 사이트</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{오늘 쿠키가 다시 차단됩니다.}=1{내일 쿠키가 다시 차단됩니다.}other{#일 후 쿠키가 다시 차단됩니다.}}</translation>
-<translation id="7445762425076701745">연결하려는 서버 ID를 확인할 수 없습니다. 외부 인증 기관에서 소유권을 확인할 수 없으므로 네트워크에서 유효한 이름을 사용하여 서버에 연결됩니다. 일부 인증 기관에서는 이러한 이름에 대해 관계없이 인증서를 발급하기 때문에 공격자가 아니라 의도한 웹사이트에 연결되어 있는지 확인할 수 없습니다.</translation>
 <translation id="7447234474237738389">의류 서비스</translation>
 <translation id="7447625772313191651"><ph name="NAME" />(<ph name="WIDTH" />x<ph name="HEIGHT" />mm)</translation>
 <translation id="7450577240311017924">동기화 관리 버튼, Chrome 설정에서 내가 동기화하는 정보를 관리하려면 활성화하세요.</translation>

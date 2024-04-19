@@ -136,6 +136,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Aluminio</translation>
 <translation id="1252209483516427155">Roupa exterior</translation>
+<translation id="1253096324252841344">Pagar con <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> e <ph name="TYPE_2" /> (sincronizado)</translation>
 <translation id="1255086252236620440">Batedores</translation>
 <translation id="1256368399071562588">&lt;p&gt;Se tentas visitar un sitio web e non abre, proba estes pasos para solucionar problemas:&lt;/p&gt;
@@ -1510,6 +1511,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="385489333361351399">Equipo de fotografía e cámara</translation>
 <translation id="3858027520442213535">Actualizar data e hora</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3865339060090354361">Consulta as condicións de <ph name="CREDIT_CARD_NAME" /> aquí</translation>
 <translation id="3872834068356954457">Ciencia</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
 <translation id="3880456882942693779">Arte e entretemento</translation>
@@ -1985,6 +1987,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4809079943450490359">Instrucións do administrador do teu dispositivo:</translation>
 <translation id="4811450222531576619">Obtén información sobre esta fonte e este tema</translation>
 <translation id="4813512666221746211">Erro de rede</translation>
+<translation id="4814114628197290459">Eliminar o IBAN</translation>
 <translation id="4816492930507672669">Axustar á páxina</translation>
 <translation id="4819347708020428563">Queres editar as anotacións na vista predeterminada?</translation>
 <translation id="4822493756793346865">Os prezos habituais baséanse en datos procedentes de tendas da Web recompilados ao longo dos últimos 90 días.</translation>
@@ -2106,6 +2109,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5043480802608081735">Ligazón que copiaches</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
+<translation id="5048293684454354469">O tema dos anuncios é só unha das moitas opcións que poden usar os sitios para personalizar os anuncios. Mesmo sen temas, os sitios poden seguir mostrándoche anuncios, pero é posible que sexan menos personalizados. Máis información sobre <ph name="BEGIN_LINK" />como xestionar a privacidade nos anuncios<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Temas activos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}other{Para enviar estes ficheiros usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}}</translation>
 <translation id="505757197798929356">Indica o motivo polo que queres abrir o ficheiro (obrigatorio)</translation>
@@ -2324,6 +2328,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     <ph name="LINE_BREAK" />
     Tenta pórte en contacto coa persoa que administra o sistema.</translation>
 <translation id="549333378215107354">Tamaño 3</translation>
+<translation id="5496804587179176046">Garda códigos de seguranza. Actualmente non hai ningún gardado</translation>
 <translation id="550365051221576010">Cubrir todo</translation>
 <translation id="5508443345185481044">Cámaras e videocámaras</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2347,6 +2352,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="553377674408670169">Postos na educación</translation>
 <translation id="5536214594743852365">Mostrar a sección <ph name="SECTION" /></translation>
 <translation id="553782666181800029">Sobre Chou 2</translation>
+<translation id="5538270463355278784">pantalla completa automática</translation>
 <translation id="5539243836947087108">Balsa</translation>
 <translation id="5540224163453853">Non se puido atopar o artigo solicitado.</translation>
 <translation id="5540969246441091044">Equitación</translation>
@@ -2711,6 +2717,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar os ficheiros que descargaches en Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="6254436959401408446">Non hai memoria suficiente para abrir esta páxina</translation>
 <translation id="625463612687472648">Deixar de permitir</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Cando fagas compras en Chrome, busca <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opción}other{Cando fagas compras en Chrome, busca <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opcións}}</translation>
 <translation id="6259156558325130047">&amp;Refacer o cambio de orde</translation>
 <translation id="6263376278284652872">Marcadores de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
@@ -2941,6 +2948,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para acceder á función da Conta de Google Localizar o meu dispositivo, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="6695428916538794739">Películas de acción e aventuras</translation>
 <translation id="6696424331653607346">Guías e diarios de viaxe</translation>
+<translation id="6698097747703777657">Non recibiches o código? <ph name="BEGIN_LINK" />Xerar un novo código<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creada:</translation>
 <translation id="67007264085648978">Control desprazable da barra de tempo</translation>
 <translation id="6702851555558236418">Software de música e audio</translation>
@@ -3341,7 +3349,6 @@ Detalles adicionais:
 <translation id="7442725080345379071">Laranxa claro</translation>
 <translation id="7444046173054089907">Este sitio está bloqueado</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{As cookies volveranse bloquear hoxe}=1{As cookies volveranse bloquear mañá}other{Faltan # días para que se volvan bloquear as cookies}}</translation>
-<translation id="7445762425076701745">A identidade do servidor ao que estás conectado non se pode validar por completo. Estás conectado a un servidor mediante un nome que só é válido na túa rede, cuxa propiedade non pode validar unha autoridade de certificados externa. En calquera caso, como algunhas autoridades de certificados emitirán certificados para estes nomes, non hai maneira de garantir que esteas conectado ao sitio web desexado e non ao dun hacker.</translation>
 <translation id="7447234474237738389">Servizos de confección</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Botón para xestionar a sincronización. Actívao para xestionar na configuración de Chrome a información que se sincroniza</translation>
@@ -3845,6 +3852,7 @@ Detalles adicionais:
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>
 <translation id="8380941800586852976">Perigoso</translation>
 <translation id="8381674639488873545">Estes cargos poden ser únicos ou periódicos e quizais non se indiquen de forma evidente. <ph name="BEGIN_LINK" />Mostrar de todas formas<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">pantalla completa automática</translation>
 <translation id="838307841291975086">Vehículos familiares</translation>
 <translation id="8389532092404711541">Prezo habitual: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Vehículos personalizados e de alto rendemento</translation>

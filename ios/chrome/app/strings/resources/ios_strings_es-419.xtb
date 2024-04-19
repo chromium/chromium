@@ -301,7 +301,6 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2604176749896001318">Actualiza tu navegador</translation>
 <translation id="2609008503159898744">¿Quieres cerrar todas las pestañas?</translation>
 <translation id="261305050785128654">Permite que los sitios web sepan los idiomas en los que hablas. De ser posible, los sitios mostrarán contenido en esos idiomas.</translation>
-<translation id="2613747923081026172">Crear grupo</translation>
 <translation id="2617210333344098964">Mover la dirección a la cuenta</translation>
 <translation id="261739049332372104">Para recibir actualizaciones sobre el contenido que te interesa, activa las notificaciones en la configuración de iOS.</translation>
 <translation id="2625189173221582860">Se copió la contraseña</translation>
@@ -843,6 +842,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5407969256130905701">Descartar cambios</translation>
 <translation id="5414763847370083940">Recibirás una alerta si el precio disminuye en algún sitio.</translation>
 <translation id="5416022985862681400">Últimos 7 días</translation>
+<translation id="5416455648658732408">Mover al grupo de pestañas</translation>
 <translation id="5423269318075950257">Seguimiento de precios</translation>
 <translation id="543338862236136125">Editar contraseña</translation>
 <translation id="5433691172869980887">Se copió el nombre de usuario</translation>
@@ -1038,6 +1038,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6363526231572697780">Sin nombre de usuario</translation>
 <translation id="6366190659675876144">Protección estándar</translation>
 <translation id="6366663624406569102">Salir y desactivar la sincronización</translation>
+<translation id="6368038301482806847">Elige un motor de búsqueda de la lista.</translation>
 <translation id="6374469231428023295">Volver a intentar</translation>
 <translation id="6377118281273296434">Seguridad del sitio</translation>
 <translation id="6383719166112032471">Abrir ubicación…</translation>
@@ -1196,6 +1197,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7161230316646448869">Sincroniza tus favoritos, historial y más en todos los dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Abrir la configuración</translation>
+<translation id="7186568385131859684">Controla cómo se usa el historial de navegación con tus otros datos en los servicios de Google</translation>
 <translation id="7189598951263744875">Compartir...</translation>
 <translation id="719133302483559673">Administra tus intereses y preferencias.</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
@@ -1239,6 +1241,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7438481509621345350">Ahora, cuando abras una nueva pestaña, verás historias de <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Se guardó el favorito en "{title}"}other{Se guardaron los favoritos en "{title}"}}</translation>
 <translation id="7454057999980797137">Estado/condado</translation>
+<translation id="7458706065921255639">Personalización y vinculación</translation>
 <translation id="745899714366929493">Todo el día</translation>
 <translation id="7459628154744868585">Se activó la Protección mejorada</translation>
 <translation id="7465351360025415755">Recibe contenido que te interesa</translation>
@@ -1324,6 +1327,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7856733331829174190">No se pudo descargar</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
+<translation id="7860900259978879139">Quitar del grupo</translation>
 <translation id="7866501058614003444">Se anuló correctamente el seguimiento de este paquete.</translation>
 <translation id="7866872729285243843">Para obtener tu Lista de lectura en todos tus dispositivos, activa "Lista de lectura" en la configuración.</translation>
 <translation id="7866993391592926595">Si ocultas esta tarjeta, se desactivará el seguimiento de paquetes y se quitarán todos tus datos</translation>
@@ -1411,9 +1415,11 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8273982424131314219">Completarás la información en <ph name="URL" /></translation>
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omitir</translation>
+<translation id="8282657446819506217">Abrir en el grupo de pestañas</translation>
 <translation id="828291969289324795">{count,plural, =1{Agregar pestaña a un grupo nuevo}other{Agregar pestañas a un grupo nuevo}}</translation>
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8286036467436129157">Acceder</translation>
+<translation id="8289930144142009940">Se desactivaron las notificaciones de <ph name="FEATURE_NAME" /></translation>
 <translation id="8292843446079898078">Recibe alertas de reducción de precio para los productos que sigues.</translation>
 <translation id="8299417921174340354">Para usar contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="8299613349954694191">Abre una pestaña de incógnito para navegar por la Web de forma privada.</translation>
@@ -1421,6 +1427,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8313645224014086262">Guardar archivo</translation>
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8328777765163860529">Cerrar todas</translation>
+<translation id="8343286328361420468">Desactivar las notificaciones para <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
 <translation id="834783239627985533">Sitios más visitados</translation>
 <translation id="8358401059263985056">Activar notificaciones</translation>

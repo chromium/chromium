@@ -1983,6 +1983,7 @@
 <translation id="4809079943450490359">您的设备管理员温馨提示：</translation>
 <translation id="4811450222531576619">了解其来源和主题</translation>
 <translation id="4813512666221746211">网络错误</translation>
+<translation id="4814114628197290459">删除 IBAN</translation>
 <translation id="4816492930507672669">适合页面大小</translation>
 <translation id="4819347708020428563">在默认视图中修改注释？</translation>
 <translation id="4822493756793346865">一般价格是基于过去 90 天网上各个商店中的价格得出的。</translation>
@@ -2942,6 +2943,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 账号中查找您的设备</translation>
 <translation id="6695428916538794739">动作片与冒险片</translation>
 <translation id="6696424331653607346">旅行指南与游记</translation>
+<translation id="6698097747703777657">没收到验证码？<ph name="BEGIN_LINK" />获取新验证码<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">创建时间：</translation>
 <translation id="67007264085648978">时间滑块</translation>
 <translation id="6702851555558236418">音频与音乐软件</translation>
@@ -3342,7 +3344,6 @@
 <translation id="7442725080345379071">浅橙色</translation>
 <translation id="7444046173054089907">此网站已被屏蔽</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie 将于今天被再次屏蔽}=1{Cookie 将于明天被再次屏蔽}other{Cookie 将于 # 天后被再次屏蔽}}</translation>
-<translation id="7445762425076701745">无法完全验证您所连接到的服务器的身份。您在连接服务器时使用的服务器名称仅在您的网络中有效，而外部证书授权中心无法验证该名称的所有权。由于一些证书授权中心仍然会为这些名称颁发证书，因此无法确保您连接到想要访问的网站而不是攻击网站。</translation>
 <translation id="7447234474237738389">衣着服务</translation>
 <translation id="7447625772313191651"><ph name="NAME" />（<ph name="WIDTH" /> x <ph name="HEIGHT" /> 毫米）</translation>
 <translation id="7450577240311017924">“管理同步数据”按钮，激活它即可在 Chrome 设置中管理您要同步的信息</translation>

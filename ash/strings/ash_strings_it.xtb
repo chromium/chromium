@@ -129,6 +129,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1420408895951708260">Attiva/disattiva luminosità notturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1435537621343861112">Impossibile avviare la dettatura. Il microfono è disattivato.</translation>
+<translation id="1448963928642384376">Hotspot del dispositivo</translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
 <translation id="1460620680449458626">Il volume è disattivato.</translation>
 <translation id="14648076227129703">Consente l'accesso alla fotocamera per <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
@@ -161,6 +162,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1569384531973824928">Consente l'accesso per tutte le app e tutti i siti web che hanno le autorizzazioni di accesso al microfono e alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="1571697193564730395">Attiva/disattiva Non disturbare. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Diminuisci lo zoom quando la lente d'ingrandimento è attiva</translation>
+<translation id="1582946770779745370">Pannello di gioco disponibile. Premi <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Esc, quindi <ph name="LAUNCHER_KEY_NAME" /> + G in qualsiasi momento per aprire</translation>
 <translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="158838227375272121">Sito web Google Classroom</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>

@@ -1983,6 +1983,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4809079943450490359">Pokyny od správcu vášho zariadenia:</translation>
 <translation id="4811450222531576619">Ďalšie informácie o príslušnom zdroji a téme</translation>
 <translation id="4813512666221746211">Chyba siete</translation>
+<translation id="4814114628197290459">Odstrániť IBAN</translation>
 <translation id="4816492930507672669">Prispôsobiť stránke</translation>
 <translation id="4819347708020428563">Chcete upraviť poznámky v predvolenom zobrazení?</translation>
 <translation id="4822493756793346865">Bežné ceny sú založené na údajoch obchodov na internete za posledných 90 dní.</translation>
@@ -2104,6 +2105,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5040262127954254034">Ochrana súkromia</translation>
 <translation id="5043480802608081735">Skopírovaný odkaz</translation>
 <translation id="5045550434625856497">Nesprávne heslo</translation>
+<translation id="5048293684454354469">Témy reklám sú len jednou z mnohých možností, pomocou ktorých môže web prispôsobovať reklamy. Aj keď nie sú témy reklám povolené, weby vám stále môžu zobrazovať reklamy, ktoré však môžu byť menej prispôsobené. Prečítajte si viac o <ph name="BEGIN_LINK" />správe ochrany súkromia pri reklamách<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Aktívne témy</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ak chcete tento súbor poslať pomocou Zdieľania nablízku, uvoľnite vo svojom zariadení priestor (<ph name="DISK_SPACE_SIZE" />)}few{Ak chcete tieto súbory poslať pomocou Zdieľania nablízku, uvoľnite vo svojom zariadení priestor (<ph name="DISK_SPACE_SIZE" />)}many{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{Ak chcete tieto súbory poslať pomocou Zdieľania nablízku, uvoľnite vo svojom zariadení priestor (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">Poskytnite dôvod otvorenia (povinné)</translation>
@@ -2322,6 +2324,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
     <ph name="LINE_BREAK" />
     Skúste kontaktovať správcu systému.</translation>
 <translation id="549333378215107354">Veľkosť 3</translation>
+<translation id="5496804587179176046">Ukladať bezpečnostné kódy, momentálne nie sú uložené žiadne</translation>
 <translation id="550365051221576010">Vyplniť všetko</translation>
 <translation id="5508443345185481044">Fotoaparáty a kamery</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2940,6 +2943,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter nájdite svoje zariadenie v účte Google</translation>
 <translation id="6695428916538794739">Akčné a dobrodružné filmy</translation>
 <translation id="6696424331653607346">Turistickí sprievodcovia a cestopisy</translation>
+<translation id="6698097747703777657">Nedostali ste kód? <ph name="BEGIN_LINK" />Získať nový kód<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Vytvorené:</translation>
 <translation id="67007264085648978">Posúvač času</translation>
 <translation id="6702851555558236418">Zvukový a hudobný softvér</translation>
@@ -3340,7 +3344,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7442725080345379071">Svetlooranžová</translation>
 <translation id="7444046173054089907">Tento web je blokovaný</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Súbory cookie budú dnes znova blokované}=1{Súbory cookie budú zajtra znova blokované}few{Do opätovného blokovania súborov cookie zostávajú # dni}many{Do opätovného blokovania súborov cookie zostáva # dňa}other{Do opätovného blokovania súborov cookie zostáva # dní}}</translation>
-<translation id="7445762425076701745">Identita servera, ku ktorému ste pripojení, sa nedá úplne overiť. Ste pripojení k serveru, ktorý používa názov platný iba v rámci vašej siete. Externá certifikačná autorita nemôže vlastníctvo názvu nijakým spôsobom overiť. Niektoré certifikačné autority však vydajú certifikát aj pre takéto názvy, a preto sa nedá zaručiť, že ste pripojení k požadovaným webovým stránkam a nie k stránkam útočníka.</translation>
 <translation id="7447234474237738389">Služby starostlivosti o odevy</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Tlačidlo Spravovať synchronizáciu, ktorého aktivovaním môžete v nastaveniach Chromu spravovať, aké údaje sa budú synchronizovať</translation>

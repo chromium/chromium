@@ -123,6 +123,7 @@ Wichtige Hinweise:
 <translation id="4633328489441962921">Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4636900170638246267">Melde dich bei dieser Website und in Chrome an.</translation>
 <translation id="4761869838909035636">Chrome-Sicherheitscheck ausführen</translation>
+<translation id="4798859546468762093">Zur Personalisierung und für andere Funktionen musst du Chrome in „<ph name="FEATURE_NAME_1" />“ und „<ph name="FEATURE_NAME_2" />“ aufnehmen</translation>
 <translation id="4819268619367838612">Chrome sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.
 
@@ -179,6 +180,7 @@ Wichtige Hinweise:
 <translation id="6389317667633680932">Entdecke neue Funktionen, mit denen du Chrome noch besser nutzen kannst.</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6427126399757991875">Deine Organisation richtet Chrome ein…</translation>
+<translation id="6481963882741794338">Chrome und andere Google-Dienste zur Personalisierung und für andere Zwecke verknüpfen</translation>
 <translation id="6484712497741564393">Angemeldet als <ph name="EMAIL" />.
 
 Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>

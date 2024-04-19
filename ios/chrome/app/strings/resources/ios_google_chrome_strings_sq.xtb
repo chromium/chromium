@@ -122,6 +122,7 @@ Gjëra për të pasur parasysh:
 <translation id="4633328489441962921">Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="4636900170638246267">Identifikohu në këtë sajt dhe në Chrome.</translation>
 <translation id="4761869838909035636">Ekzekuto "Kontrollin e sigurisë" të Chrome</translation>
+<translation id="4798859546468762093">Për të marrë personalizimin dhe veçoritë e tjera, përfshi Chrome tek "<ph name="FEATURE_NAME_1" />" dhe te "<ph name="FEATURE_NAME_2" />"</translation>
 <translation id="4819268619367838612">Për të ndihmuar në përmirësimin e aplikacionit, Chrome dërgon të dhëna të përdorimit dhe të ndërprerjeve aksidentale te Google. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Disa nga të dhënat e tua të Chrome nuk janë ruajtur ende në "Llogarinë tënde të Google".
 
@@ -178,6 +179,7 @@ Gjëra për të pasur parasysh:
 <translation id="6389317667633680932">Eksploro veçori të reja që të ndihmojnë të përfitosh sa më shumë nga Chrome.</translation>
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="6427126399757991875">Organizata jote po konfiguron Chrome...</translation>
+<translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
 <translation id="6484712497741564393">Identifikuar si <ph name="EMAIL" />.
 
 Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google".</translation>

@@ -1987,6 +1987,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4809079943450490359">Juhised seadme administraatorilt:</translation>
 <translation id="4811450222531576619">Teave selle allika ja teema kohta</translation>
 <translation id="4813512666221746211">Võrgu viga</translation>
+<translation id="4814114628197290459">IBAN-i kustutamine</translation>
 <translation id="4816492930507672669">Sobita lehele</translation>
 <translation id="4819347708020428563">Kas muuta märkusi vaikekuval?</translation>
 <translation id="4822493756793346865">Tavalised hinnad põhinevad veebipoodide viimase 90 päeva teabel.</translation>
@@ -2947,6 +2948,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma seadme leidmiseks Google'i kontol vajutage tabulaatorit ja siis sisestusklahvi.</translation>
 <translation id="6695428916538794739">Märuli- ja seiklusfilmid</translation>
 <translation id="6696424331653607346">Reisijuhid ja reisikirjad</translation>
+<translation id="6698097747703777657">Kas te ei saanud koodi? <ph name="BEGIN_LINK" />Hankige uus kood<ph name="END_LINK" />.</translation>
 <translation id="6698381487523150993">Loodud:</translation>
 <translation id="67007264085648978">Ajakursor</translation>
 <translation id="6702851555558236418">Heli- ja muusikatarkvara</translation>
@@ -3347,7 +3349,6 @@ Lisateave:
 <translation id="7442725080345379071">Heleoranž</translation>
 <translation id="7444046173054089907">See sait on blokeeritud</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Küpsisefailid blokeeritakse täna uuesti}=1{Küpsisefailid blokeeritakse homme uuesti}other{# päeva, kuni küpsisefailid uuesti blokeeritakse}}</translation>
-<translation id="7445762425076701745">Serveri identiteeti, millega olete ühenduses, ei saa täielikult valideerida. Olete ühenduses serveriga nime abil, mis kehtib ainult teie võrgus, mistõttu ei saa väline sertifitseerimisorgan selle omandiõigust valideerida. Kuna mõni sertifitseerimisorgan väljastab sertifikaate hoolimata nende nimedest, puudub igasugune võimalus tagada, et olete ühenduses soovitud veebisaidi, mitte ründajaga.</translation>
 <translation id="7447234474237738389">Rõivaste teenused</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Nupp Sünkroonimise haldamine, aktiveerige nupp, et Chrome'i seadetes sünkroonitavat teavet hallata</translation>

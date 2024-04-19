@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Réduisez <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}other{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
-<translation id="2613747923081026172">Créer un groupe</translation>
 <translation id="2662028055331606429">Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Accéder au site</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Créé il y a <ph name="NUM_HOURS_ONE" /> heure}one{Créé il y a <ph name="NUM_HOURS_MANY" /> heure}other{Créé il y a <ph name="NUM_HOURS_MANY" /> heures}}</translation>

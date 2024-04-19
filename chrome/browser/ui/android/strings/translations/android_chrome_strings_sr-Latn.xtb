@@ -702,7 +702,9 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuelna kartica</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
+<translation id="4738065825338914557">Otkazuje se prijava…</translation>
 <translation id="4738836084190194332">Poslednja sinhronizacija: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Filtriraj prema aplikaciji</translation>
 <translation id="4741753828624614066">Dobijaćete poboljšane predloge na traci za adresu</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>
 <translation id="4749960740855309258">Otvorite novu karticu</translation>
@@ -786,6 +788,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5099845111805573968">Kada jednom izaberete verziju sajta za računar, podešavanje se primenjuje na sajt svaki put kada ga posetite</translation>
 <translation id="5102401324271069229">Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetni fajl, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje</translation>
 <translation id="510275257476243843">Još 1 sat</translation>
+<translation id="5114895953710637392">Tabela sa filterima aplikacija je zatvorena.</translation>
 <translation id="5115811374190515607">u <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interesovanja</translation>
 <translation id="5122378528687922675">Ako ti treba pomoć, pitaj roditelja (<ph name="PARENT_NAME_1" /> ili <ph name="PARENT_NAME_2" />)</translation>
@@ -904,7 +907,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="5752232708629533680">Delite samo GIF</translation>
 <translation id="5754350196967618083">Osvežavanje Discover-a nije uspelo</translation>
 <translation id="5755162682436943950">Odjavljeni ste. Otvara dijalog za prijavljivanje i uključivanje sinhronizacije.</translation>
-<translation id="5759897675466110265">Da li sajt ne radi? Privremeno dozvolite kolačiće treće strane</translation>
 <translation id="5763382633136178763">Kartice bez arhiviranja</translation>
 <translation id="5763514718066511291">Dodirnite da biste kopirali URL za ovu aplikaciju</translation>
 <translation id="5765517223145864268">Recite nam nešto o svom doživljaju. Ili <ph name="BEGIN_LINK" />promenite podešavanja<ph name="END_LINK" />.</translation>
@@ -1139,6 +1141,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="685850645784703949">Google Discover – isključeno</translation>
 <translation id="686366188661646310">Želite da izbrišete lozinku?</translation>
 <translation id="6864459304226931083">Preuzmi sliku</translation>
+<translation id="686490460830618322">Tabela sa filterima aplikacija</translation>
 <translation id="6865313869410766144">Podaci Automatskog popunjavanja za obrasce</translation>
 <translation id="6867400383614725881">Nova kartica bez arhiviranja</translation>
 <translation id="6869056123412990582">računaru</translation>
@@ -1206,6 +1209,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7177466738963138057">To možete da promenite kasnije u podešavanjima</translation>
 <translation id="7177873915659574692">Pravljenje QR koda nije uspelo. URL premašuje ograničenje za broj znakova (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="7180611975245234373">Osveži</translation>
+<translation id="7183517696921903380">Tabela sa filterima aplikacija je otvorena.</translation>
 <translation id="7183693674623539380">Grupa kartica – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Kontrolišite kako se istorija pregledanja koristi sa drugim podacima u svim Google uslugama</translation>
 <translation id="7187993566681480880">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
@@ -1332,6 +1336,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7780645209293383778">Privremeno povezuje te podatke sa Google nalogom kada ste prijavljeni da biste bili zaštićeni u svim Google aplikacijama.</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Vraćene kartice: <ph name="TAB_COUNT" /></translation>
+<translation id="780287761701992588">Pristupajte obeleživačima, lozinkama i drugom sadržaju na svim uređajima</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7808889146555843082">Brisanjem ove lozinke nećete izbrisati nalog na <ph name="SITE" />. Promenite lozinku ili izbrišite nalog na <ph name="SITE" /> da biste ga zaštitili od drugih.</translation>
 <translation id="7810647596859435254">Otvori pomoću…</translation>

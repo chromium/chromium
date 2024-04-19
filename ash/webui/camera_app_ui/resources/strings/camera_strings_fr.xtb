@@ -108,6 +108,7 @@
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5976160379964388480">Autres</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
+<translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6197807149213783179">Enregistrer les métadonnées</translation>
 <translation id="6233780560267770709">3 par 3</translation>
 <translation id="6243827288366940320">Ratio optimal</translation>
@@ -161,6 +162,7 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="8609951387004618906">Ouvrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Couper le son du micro. Le son est désormais coupé.</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8730621377337864115">OK</translation>
 <translation id="8732462232047530626">Prévisualiser les métadonnées</translation>
 <translation id="874854738381978209">Réseau Wi-Fi détecté.</translation>

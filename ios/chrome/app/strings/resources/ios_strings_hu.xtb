@@ -301,7 +301,6 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2604176749896001318">Böngésző frissítése</translation>
 <translation id="2609008503159898744">Bezárja az összes lapot?</translation>
 <translation id="261305050785128654">A webhelyek megismerhetik az Ön által beszélt nyelveket. Lehetőség szerint ezeken a nyelveken jelenítik meg a tartalmakat.</translation>
-<translation id="2613747923081026172">Csoport létrehozása</translation>
 <translation id="2617210333344098964">Cím áthelyezése fiókba</translation>
 <translation id="261739049332372104">Ha értesítéseket szeretne kapni az Önnek fontos tartalmakról, kapcsolja be az értesítéseket az iOS beállításaiban.</translation>
 <translation id="2625189173221582860">Jelszó vágólapra másolva</translation>
@@ -843,6 +842,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="5407969256130905701">Módosítások elvetése</translation>
 <translation id="5414763847370083940">Ha bármelyik webhelyen csökken az ár, Ön értesítést kap róla.</translation>
 <translation id="5416022985862681400">Legutóbbi 7 nap</translation>
+<translation id="5416455648658732408">Áthelyezés lapcsoportba</translation>
 <translation id="5423269318075950257">Ár nyomon követése</translation>
 <translation id="543338862236136125">Jelszó módosítása</translation>
 <translation id="5433691172869980887">Felhasználónév vágólapra másolva</translation>
@@ -1038,6 +1038,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6363526231572697780">Nincs felhasználónév</translation>
 <translation id="6366190659675876144">Normál védelem</translation>
 <translation id="6366663624406569102">Kijelentkezés, és a szinkronizálás kikapcsolása</translation>
+<translation id="6368038301482806847">Válasszon a listán szereplő keresőmotorok közül.</translation>
 <translation id="6374469231428023295">Próbálja újra</translation>
 <translation id="6377118281273296434">Webhelybiztonság</translation>
 <translation id="6383719166112032471">Hely megnyitása…</translation>
@@ -1196,6 +1197,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7161230316646448869">Könyvjelzők, előzmények és egyebek szinkronizálása valamennyi eszközén</translation>
 <translation id="7162168282402939716">Inkognitó lapok zárolásának feloldása a következővel: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Beállítások megnyitása</translation>
+<translation id="7186568385131859684">Annak vezérlése, hogy a böngészési előzmények hogyan használhatók az Ön egyéb adataival a Google-szolgáltatásokban</translation>
 <translation id="7189598951263744875">Megosztás...</translation>
 <translation id="719133302483559673">Érdeklődési körök és preferenciák kezelése.</translation>
 <translation id="7192050974311852563">Naplózás indítása</translation>
@@ -1239,6 +1241,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7438481509621345350">Új lap megnyitásakor látni fogja a(z) <ph name="CHANNEL_NAME" /> webhely történeteit.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Könyvjelző mentve ide: „{title}”}other{Könyvjelzők mentve ide: „{title}”}}</translation>
 <translation id="7454057999980797137">Állam/megye</translation>
+<translation id="7458706065921255639">Személyre szabás és összekapcsolás</translation>
 <translation id="745899714366929493">Egész nap</translation>
 <translation id="7459628154744868585">A Speciális védelem be van kapcsolva</translation>
 <translation id="7465351360025415755">Hozzájuthat az Önnek fontos tartalmakhoz</translation>
@@ -1324,6 +1327,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7853202427316060426">Aktivitás</translation>
 <translation id="7856733331829174190">Nem sikerült letölteni</translation>
 <translation id="7859704718976024901">Böngészési előzmények</translation>
+<translation id="7860900259978879139">Eltávolítás a csoportból</translation>
 <translation id="7866501058614003444">A csomag nyomon követése sikeresen visszavonva.</translation>
 <translation id="7866872729285243843">Ha az összes eszközén szeretné elérni az olvasólistát, kapcsolja be a beállítások között az „Olvasólista” funkciót.</translation>
 <translation id="7866993391592926595">A kártya elrejtésével kikapcsolja a csomagkövetést, és eltávolítja az összes adatát</translation>
@@ -1411,9 +1415,11 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8273982424131314219">Ezzel kitölti az adatait a(z) <ph name="URL" /> webhelyen</translation>
 <translation id="8281781826761538115">Alapértelmezett – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Kihagyás</translation>
+<translation id="8282657446819506217">Megnyitás lapcsoportban</translation>
 <translation id="828291969289324795">{count,plural, =1{Lap hozzáadása új csoporthoz}other{Lapok hozzáadása új csoporthoz}}</translation>
 <translation id="8283172974887967105">Beállítás…</translation>
 <translation id="8286036467436129157">Bejelentkezés</translation>
+<translation id="8289930144142009940">A következőhöz tartozó értesítések kikapcsolva: <ph name="FEATURE_NAME" /></translation>
 <translation id="8292843446079898078">Árcsökkenési értesítéseket kaphat az Ön által nyomon követett termékekkel kapcsolatban.</translation>
 <translation id="8299417921174340354">A jelszavak használatához előbb be kell állítania az eszközön a biztonsági kódot.</translation>
 <translation id="8299613349954694191">Nyisson meg egy inkognitó lapot a privát böngészéshez.</translation>
@@ -1421,6 +1427,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8313645224014086262">Fájl mentése</translation>
 <translation id="8319076807703933069">Új keresés</translation>
 <translation id="8328777765163860529">Összes bezárása</translation>
+<translation id="8343286328361420468">A következőhöz tartozó értesítések kikapcsolása: <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Biztonsági másolatot készíthet adatairól, és bármely eszközön használatja őket.</translation>
 <translation id="834783239627985533">Leggyakrabban felkeresett webhelyek</translation>
 <translation id="8358401059263985056">Értesítések bekapcsolása</translation>

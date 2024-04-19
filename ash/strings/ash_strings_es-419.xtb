@@ -68,6 +68,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app de Play Store</translation>
 <translation id="1225748608451425081">Tu Chromebook está bloqueada debido a un problema conocido. Tiempo restante para volver a acceder: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Dejar de seleccionar</translation>
+<translation id="1230853660706736937">Buscar texto dentro de imágenes y obtener vistas previas de imágenes</translation>
 <translation id="1235458158152011030">Redes conocidas</translation>
 <translation id="1239161794459865856">Se conectó <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">Una app</translation>
@@ -160,6 +161,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1569384531973824928">Esto permite el acceso a todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="1571697193564730395">Activa o desactiva la función No interrumpir. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
+<translation id="1582946770779745370">Panel de juego disponible. Presiona <ph name="LAUNCHER_KEY_NAME" /> + Mayúsculas + Escape y, luego, <ph name="LAUNCHER_KEY_NAME" /> + g en cualquier momento para abrirlo</translation>
 <translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
 <translation id="158838227375272121">Sitio web de Google Classroom</translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
@@ -716,11 +718,13 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3824784079442479685">Permite el acceso a la cámara para <ph name="APP_NAME" /> y todas las apps y sitios web con el permiso correspondiente. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="3826099427150913765">Cambiar a contraseña</translation>
 <translation id="383058930331066723">El modo de Ahorro de batería está activado</translation>
+<translation id="3831226344927851293">Salir de la vista del instructivo</translation>
 <translation id="383629559565718788">Mostrar la configuración del teclado</translation>
 <translation id="384082539148746321">¿Deseas borrar la plantilla?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, luego, <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94/5</translation>
 <translation id="3846575436967432996">No hay información de red disponible.</translation>
+<translation id="3848526302597027234">Acceder a los siguientes permisos:</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="385300504083504382">Inicio</translation>
 <translation id="3859364108019690">No se pueden transmitir apps</translation>

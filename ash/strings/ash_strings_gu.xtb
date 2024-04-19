@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ઍપ</translation>
 <translation id="1225748608451425081">એક જાણીતી સમસ્યાને કારણે તમારું Chromebook લૉક થઈ ગયું છે. અહીં જણાવેલા સમય પછી તમે સાઇન ઇન કરી શકશો: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">પસંદ કરવાનું બંધ કરો</translation>
+<translation id="1230853660706736937">છબીઓમાં જ ટેક્સ્ટ શોધો અને છબીના પ્રીવ્યૂ જુઓ</translation>
 <translation id="1235458158152011030">જાણીતા નેટવર્ક્સ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> કનેક્ટ કરેલું છે.</translation>
 <translation id="1240638468526743569">ઍપ</translation>
@@ -128,6 +129,7 @@
 <translation id="1420408895951708260">રાત્રિ પ્રકાશને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">હા</translation>
 <translation id="1435537621343861112">ડિક્ટેશન શરુ કરી શકતા નથી. તમારું માઇક બંધ છે.</translation>
+<translation id="1448963928642384376">તમારા ડિવાઇસના હૉટસ્પૉટ</translation>
 <translation id="1455242230282523554">ભાષા સેટિંગ બતાવો</translation>
 <translation id="1460620680449458626">વૉલ્યૂમ મ્યૂટ કરેલું છે.</translation>
 <translation id="14648076227129703">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
@@ -160,6 +162,7 @@
 <translation id="1569384531973824928">આમ કરવાથી કૅમેરા અને માઇક્રોફોનની પરવાનગીઓ ધરાવતી બધી ઍપ તથા વેબસાઇટ માટે, ઍક્સેસની મંજૂરી આપવામાં આવે છે. તમારે વેેબપેજ રિફ્રેશ કરવાની અથવા ઍપ ફરી શરૂ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="1571697193564730395">'ખલેલ પાડશો નહીં' બટનને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">મેગ્નિફાયર ચાલુ હોય, ત્યારે નાનું કરો</translation>
+<translation id="1582946770779745370">ગેમ ડૅશબોર્ડ ઉપલબ્ધ છે. કોઈપણ સમયે ખોલવા માટે, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, પછી <ph name="LAUNCHER_KEY_NAME" /> + g દબાવો</translation>
 <translation id="1586324912145647027">ડેસ્ક 1 થી 8 પર જાઓ</translation>
 <translation id="158838227375272121">Google Classroomની વેબસાઇટ</translation>
 <translation id="1589090746204042747">આ સત્રમાં તમારી બધી પ્રવૃત્તિને ઍક્સેસ કરો</translation>
@@ -715,11 +718,13 @@
 <translation id="3824784079442479685">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે. તમારે વેેબપેજ રિફ્રેશ કરવાની અથવા ઍપ ફરી શરૂ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="3826099427150913765">પાસવર્ડ પર સ્વિચ કરો</translation>
 <translation id="383058930331066723">બૅટરી સેવર મોડ ચાલુ છે</translation>
+<translation id="3831226344927851293">ટ્યૂટૉરિઅલ વ્યૂમાંથી બહાર નીકળો</translation>
 <translation id="383629559565718788">કીબોર્ડ સેટિંગ બતાવો</translation>
 <translation id="384082539148746321">નમૂનો ડિલીટ કરીએ?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" /> પછી <ph name="KEY_ONE" /> અથવા <ph name="KEY_TWO" /> અથવા <ph name="KEY_THREE" /> અથવા <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">કોઈ નેટવર્ક માહિતી ઉપલબ્ધ નથી</translation>
+<translation id="3848526302597027234">નીચેની પરવાનગીઓ ઍક્સેસ કરો:</translation>
 <translation id="385051799172605136">પાછળ</translation>
 <translation id="385300504083504382">શરૂઆત</translation>
 <translation id="3859364108019690">ઍપ સ્ટ્રીમ કરી શકતા નથી</translation>

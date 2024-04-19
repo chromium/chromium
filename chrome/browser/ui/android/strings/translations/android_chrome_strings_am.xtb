@@ -702,7 +702,9 @@
 <translation id="4732120983431207637">ድርድር ወደ ኋላ ማጠንጠኛ</translation>
 <translation id="4736934858538408121">ምናባዊ ካርድ</translation>
 <translation id="473775607612524610">አዘምን</translation>
+<translation id="4738065825338914557">ከደንበኝነት ምዝገባ በመውጣት ላይ…</translation>
 <translation id="4738836084190194332">የተመሳሰለበት የመጨረሻው ጊዜ፦ <ph name="WHEN" /></translation>
+<translation id="474121291218385686">በመተግበሪያ አጣራ</translation>
 <translation id="4741753828624614066">በአድራሻ አሞሌው ውስጥ የተሻሻሉ የአስተያየትጥቆማዎችን ያገኛሉ</translation>
 <translation id="4742970037960872810">ማድመቂያውን አስወግድ</translation>
 <translation id="4749960740855309258">አዲስ ትር ክፈት</translation>
@@ -786,6 +788,7 @@
 <translation id="5099845111805573968">አንድ ጊዜ የዴስክቶፕ ጣቢያን ሲመርጡ ጣቢያውን በጎበኙ ቁጥር ቅንብሩ በጣቢያው ላይ ተግባራዊ ይሆናል</translation>
 <translation id="5102401324271069229">አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ካወረደ Chrome የገጽ ይዘትን ክፍሎችም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ ሊልክ ይችላል</translation>
 <translation id="510275257476243843">1 ሰዓት ይቀራል</translation>
+<translation id="5114895953710637392">የመተግበሪያ ማጣሪያ ሉህ ተዘግቷል።</translation>
 <translation id="5115811374190515607">ወደ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">ዝንባሌዎች</translation>
 <translation id="5122378528687922675">እገዛ ካስፈለገዎት ወላጅዎን ይጠይቁ (<ph name="PARENT_NAME_1" /> ወይም <ph name="PARENT_NAME_2" />)</translation>
@@ -904,7 +907,6 @@
 <translation id="5752232708629533680">GIFን ብቻ ያጋሩ</translation>
 <translation id="5754350196967618083">Discoverን ዳግም ማደስ አይቻልም</translation>
 <translation id="5755162682436943950">ዘግተው ወጥተዋል። ለመግባት እና ማስመርን ለማብራት መገናኛን ይከፍታል።</translation>
-<translation id="5759897675466110265">ጣቢያው እየሠራ አይደለም? በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ</translation>
 <translation id="5763382633136178763">ማንነት የማያሳውቁ ትሮች</translation>
 <translation id="5763514718066511291">የዚህ መተግበሪያ ዩአርኤል ለመቅዳት መታ ያድርጉ</translation>
 <translation id="5765517223145864268">ስለተሞክሮዎ ይንገሩን። ወይም <ph name="BEGIN_LINK" />ቅንብሮችዎን ይቀይሩ<ph name="END_LINK" />።</translation>
@@ -1139,6 +1141,7 @@
 <translation id="685850645784703949">ምርምር በGoogle - ጠፍቷል</translation>
 <translation id="686366188661646310">የይለፍ ቃል ይሰረዝ?</translation>
 <translation id="6864459304226931083">ምስል አውርድ</translation>
+<translation id="686490460830618322">የመተግበሪያ ማጣሪያ ሉህ</translation>
 <translation id="6865313869410766144">የራስ-ሙላ ቅጽ ውሂብ</translation>
 <translation id="6867400383614725881">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="6869056123412990582">ኮምፒውተር</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7177466738963138057">ይሄንን በኋላ ቅንብሮች ውስጥ ሊለውጡት ይችላሉ</translation>
 <translation id="7177873915659574692">የQR ኮድ መፍጠር አልተቻለም። ዩአርኤል ከ<ph name="CHARACTER_LIMIT" /> ቁምፊዎች ይበልጣል።</translation>
 <translation id="7180611975245234373">አድስ</translation>
+<translation id="7183517696921903380">የመተግበሪያ ማጣሪያ ሉህ ተከፍቷል።</translation>
 <translation id="7183693674623539380">የትር ቡድን - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">በመላ የGoogle አገልግሎቶች ውስጥ ከሌላ ውሂብዎ ጋር የአሰሳ ታሪክ እንዴት ጥቅም ላይ እንደሚውል ይቆጣጠሩ</translation>
 <translation id="7187993566681480880">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ሥራ ላይ ሊውል ይችላል።</translation>
@@ -1332,6 +1336,7 @@
 <translation id="7780645209293383778">እርስዎን በመላው የGoogle መተግበሪያዎች ላይ ለመጠበቅ ይህን ውሂብ ለጊዜው ከGoogle መለያዎ ጋር ያገናኘዋል</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="7798392620021911922">ወደነበሩበት የተመለሱ <ph name="TAB_COUNT" /> ትሮች</translation>
+<translation id="780287761701992588">የእርስዎን እልባቶች፣ የይለፍ ቃላት እና ሌሎችን በሁሉም መሣሪያዎችዎ ላይ ያግኙ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
 <translation id="7808889146555843082">ይህን የይለፍ ቃል መሰረዝ <ph name="SITE" /> ላይ መለያዎን አይሰርዘውም። መለያዎን ከሌሎች ለመጠበቅ የይለፍ ቃልዎን ይቀይሩት ወይም <ph name="SITE" /> ላይ መለያዎን ይሰርዙት።</translation>
 <translation id="7810647596859435254">ክፈት በ…</translation>

@@ -1987,6 +1987,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4809079943450490359">Cyfarwyddiadau gan weinyddwr eich dyfais:</translation>
 <translation id="4811450222531576619">Dysgu am ei ffynhonnell a'i bwnc</translation>
 <translation id="4813512666221746211">Gwall rhwydwaith</translation>
+<translation id="4814114628197290459">Dileu IBAN</translation>
 <translation id="4816492930507672669">Ffitio i'r dudalen</translation>
 <translation id="4819347708020428563">Golygu anodiadau yn y wedd ddiofyn?</translation>
 <translation id="4822493756793346865">Mae prisiau nodweddiadol yn seiliedig ar siopau ar draws y we dros y 90 diwrnod diwethaf.</translation>
@@ -2947,6 +2948,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i ddod o hyd i'ch dyfais yn y Cyfrif Google</translation>
 <translation id="6695428916538794739">Ffilmiau Cyffro ac Antur</translation>
 <translation id="6696424331653607346">Arweinlyfrau Teithio a Theithluniau</translation>
+<translation id="6698097747703777657">Heb dderbyn eich cod? <ph name="BEGIN_LINK" />Cael cod newydd<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Crëwyd:</translation>
 <translation id="67007264085648978">Sgwriwr amser</translation>
 <translation id="6702851555558236418">Meddalwedd Sain a Cherddoriaeth</translation>
@@ -3347,7 +3349,6 @@ Manylion ychwanegol:
 <translation id="7442725080345379071">Oren Golau</translation>
 <translation id="7444046173054089907">Mae'r wefan hon wedi'i rhwystro</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Bydd cwcis yn cael eu rhwystro eto heddiw}=1{Bydd cwcis yn cael eu rhwystro eto yfory}two{# ddiwrnod nes bydd cwcis yn cael eu rhwystro eto}few{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}many{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}other{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}}</translation>
-<translation id="7445762425076701745">Ni ellir dilysu yn llawn hunaniaeth y gweinydd rydych wedi'ch cysylltu ag ef. Rydych wedi'ch cysylltu â gweinydd gan ddefnyddio enw sy'n ddilys yn eich rhwydwaith yn unig, nad oes gan awdurdod tystysgrif allanol unrhyw ffordd i ddilysu perchnogaeth ohono. Gan y bydd rhai awdurdodau tystysgrifau yn cyhoeddi tystysgrifau ar gyfer yr enwau hyn beth bynnag, nid oes unrhyw ffordd i sicrhau eich bod wedi'ch cysylltu â'r wefan a fwriadwyd ac nid ymosodwr.</translation>
 <translation id="7447234474237738389">Gwasanaethau Dillad</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Botwm rheoli cysoni, gweithredwch i reoli pa wybodaeth rydych chi'n ei chysoni yng ngosodiadau Chrome</translation>

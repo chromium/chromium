@@ -129,6 +129,7 @@
 <translation id="1420408895951708260">روشن/خاموش کردن «نور شب». <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">بله</translation>
 <translation id="1435537621343861112">دیکته شروع نشد. میکروفون خاموش است.</translation>
+<translation id="1448963928642384376">نقطه‌های اتصال دستگاه شما</translation>
 <translation id="1455242230282523554">نمایش تنظیمات زبان</translation>
 <translation id="1460620680449458626">دکمه میزان صدا صامت است.</translation>
 <translation id="14648076227129703">با این کار، دسترسی به دوربین برای <ph name="APP1_NAME" />، <ph name="APP2_NAME" />، و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
@@ -1231,7 +1232,7 @@
 <translation id="573413375004481890">این دستگاه از همه نمایشگرهایتان پشتیبانی نمی‌کند، بنابراین ارتباط یک نمایشگر قطع شده است</translation>
 <translation id="5740328398383587084">هم‌رسانی با اطراف</translation>
 <translation id="574392208103952083">متوسط</translation>
-<translation id="5744083938413354016">کشیدن با ضربه زدن</translation>
+<translation id="5744083938413354016">کشیدن با ضربه</translation>
 <translation id="5745612484876805746">«نور شب» هنگام غروب آفتاب به‌طور خودکار روشن می‌شود</translation>
 <translation id="5750765938512549687">بلوتوث خاموش است</translation>
 <translation id="5760866832697883462">متصل کردن <ph name="NAME" /></translation>

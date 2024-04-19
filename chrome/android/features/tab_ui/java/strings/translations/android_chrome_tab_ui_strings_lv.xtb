@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir cilne “<ph name="TABS_COUNT_ONE" />”.}zero{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sakļaut <ph name="TABS_COUNT_ONE" /> cilni.}zero{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="2569352796411618312">Ieteikums: vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>
-<translation id="2613747923081026172">Izveidot grupu</translation>
 <translation id="2662028055331606429">Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Apmeklēt vietni</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Izveidots pirms <ph name="NUM_HOURS_ONE" /> stundas}zero{Izveidota pirms <ph name="NUM_HOURS_MANY" /> stundām}one{Izveidota pirms <ph name="NUM_HOURS_MANY" /> stundas}other{Izveidota pirms <ph name="NUM_HOURS_MANY" /> stundām}}</translation>

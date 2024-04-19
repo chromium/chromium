@@ -301,7 +301,6 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 <translation id="2604176749896001318">Buyekeza Ibhrawuza Yakho</translation>
 <translation id="2609008503159898744">Vala Wonke Amathebhu?</translation>
 <translation id="261305050785128654">Yazisa amawebhusayithi ngezilimi ozikhulumayo. Azobonisa okuqukethwe ngalezo zilimi, uma kungenzeka.</translation>
-<translation id="2613747923081026172">Dala iqembu</translation>
 <translation id="2617210333344098964">Hambisa Ikheli ku-Akhawunti</translation>
 <translation id="261739049332372104">Ukuze uthole okwakamuva ngokuqukethwe okunenzuzo kuwe, vula isaziso kumasethingi akho we-iOS.</translation>
 <translation id="2625189173221582860">Iphasiwedi ikopishiwe</translation>
@@ -843,6 +842,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="5407969256130905701">Lahla izinguquko</translation>
 <translation id="5414763847370083940">Uzothola isexwayiso uma intengo yehla kunoma yiliphi isayithi.</translation>
 <translation id="5416022985862681400">Izinsuku ezingu-7 zokugcina</translation>
+<translation id="5416455648658732408">Hambisa Eqenjini Lethebhu</translation>
 <translation id="5423269318075950257">Landelela Intengo</translation>
 <translation id="543338862236136125">Hlela iphasiwedi</translation>
 <translation id="5433691172869980887">Igama lomsebenzisi likopishiwe</translation>
@@ -1327,6 +1327,7 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="7853202427316060426">Umsebenzi</translation>
 <translation id="7856733331829174190">Ayikwazanga ukulanda</translation>
 <translation id="7859704718976024901">Umlando wokuphequlula</translation>
+<translation id="7860900259978879139">Susa Eqenjini</translation>
 <translation id="7866501058614003444">Le phakheji isuswe ukulandelelwa ngempumelelo.</translation>
 <translation id="7866872729285243843">Ukuze uthole uhlu lokufunda kuwo wonke amadivayisi akho, vula okuthi “Uhlu Lokufunda” kumasethingi.</translation>
 <translation id="7866993391592926595">Ukufihla Leli Khadi Kuzocisha Ukulandela Iphakheji Kuphinde Kususe Yonke Idatha Yakho</translation>
@@ -1414,9 +1415,11 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8273982424131314219">Uzogcwalisa ulwazi ku-<ph name="URL" /></translation>
 <translation id="8281781826761538115">Okuzenzakalelayo - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Yeqa</translation>
+<translation id="8282657446819506217">Vula Kuqembu Lethebhu</translation>
 <translation id="828291969289324795">{count,plural, =1{Engeza Ithebhu Eqenjini Elisha}one{Engeza Amathebhu Eqenjini Elisha}other{Engeza Amathebhu Eqenjini Elisha}}</translation>
 <translation id="8283172974887967105">Setha…</translation>
 <translation id="8286036467436129157">Ngena Ngemvume</translation>
+<translation id="8289930144142009940">Izaziso ze-<ph name="FEATURE_NAME" /> zivaliwe</translation>
 <translation id="8292843446079898078">Thola izexwayiso zokwehla kwentengo yemikhiqizo oyilandelelayo.</translation>
 <translation id="8299417921174340354">Ukuze usebenzise amaphasiwedi, kuzomele uqale usethe ikhodi yokudlula kudivayisi yakho.</translation>
 <translation id="8299613349954694191">Vula i ithebhu ye-incognito ukuze uphequlule iwebhu ngokuyimfihlo.</translation>
@@ -1424,6 +1427,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8313645224014086262">Londoloza ifayela</translation>
 <translation id="8319076807703933069">Ukusesha okusha</translation>
 <translation id="8328777765163860529">Vala konke</translation>
+<translation id="8343286328361420468">Vala Izaziso ze-<ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Yenza isipele izinto zakho futhi uzisebenzise kunoma iyiphi idivayisi.</translation>
 <translation id="834783239627985533">Amasayithi Avakashelwe Kaningi</translation>
 <translation id="8358401059263985056">Vula Izaziso</translation>

@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> ଟାବ ଥିବା <ph name="TABS_COUNT_ONE" /> ଟାବ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TITLE_OF_GROUP" />ଟି ଟାବ୍ ଥିବା <ph name="TABS_COUNT_MANY" /> ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
 <translation id="2569352796411618312">ପ୍ରସ୍ତାବ: ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
-<translation id="2613747923081026172">ଗୋଷ୍ଠୀ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ</translation>
 <translation id="266935134738038806">ସାଇଟକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_HOURS_MANY" /> ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>

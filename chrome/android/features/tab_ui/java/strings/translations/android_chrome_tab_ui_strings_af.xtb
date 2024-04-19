@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="2569352796411618312">Voorstel: <ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
-<translation id="2613747923081026172">Skep groep</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />-gradering</translation>
 <translation id="266935134738038806">Besoek werf</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> uur gelede geskep}other{<ph name="NUM_HOURS_MANY" /> uur gelede geskep}}</translation>

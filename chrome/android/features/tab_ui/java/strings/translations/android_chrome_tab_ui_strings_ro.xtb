@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă.}few{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file.}other{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Restrânge <ph name="TABS_COUNT_ONE" /> filă.}few{Restrânge grupul de file cu <ph name="TABS_COUNT_MANY" /> file.}other{Restrânge grupul de file cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="2569352796411618312">Sugestie: <ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
-<translation id="2613747923081026172">Creează grupul</translation>
 <translation id="2662028055331606429">Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Accesează site-ul</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creat acum <ph name="NUM_HOURS_ONE" /> oră}few{Creat acum <ph name="NUM_HOURS_MANY" /> ore}other{Creat acum <ph name="NUM_HOURS_MANY" /> de ore}}</translation>

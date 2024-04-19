@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> табтай <ph name="TITLE_OF_GROUP" /> табын бүлгийг хураах.}other{<ph name="TABS_COUNT_MANY" /> табтай <ph name="TITLE_OF_GROUP" /> табын бүлгийг хураах.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> табыг хураах.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий бүлэг табыг хураах.}}</translation>
 <translation id="2569352796411618312">Зөвлөмж: Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
-<translation id="2613747923081026172">Бүлэг үүсгэх</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ</translation>
 <translation id="266935134738038806">Сайтад зочлох</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> цагийн өмнө үүсгэсэн}other{<ph name="NUM_HOURS_MANY" /> цагийн өмнө үүсгэсэн}}</translation>
@@ -49,6 +48,7 @@
 <translation id="3996880007329611795">Мэдэгдэл авах</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> хоногийн өмнө үүсгэсэн}other{<ph name="NUM_DAYS_MANY" /> хоногийн өмнө үүсгэсэн}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг хаана уу.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг хаана уу.}}</translation>
 <translation id="4159784952369912983">Нил ягаан</translation>
 <translation id="4212246570487010370">Тасралтгүй үзэх</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб бүхий <ph name="TITLE_OF_GROUP" />-н бүлгийг дэлгэх.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий <ph name="TITLE_OF_GROUP" />-н бүлгийг дэлгэх.}}</translation>
@@ -72,6 +72,7 @@
 <translation id="5490235265819901748">Бүлэг табыг дэлгэсэн</translation>
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="5545379293264651575">Хянахгүйгээр хаах</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг хаана уу.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг хаана уу.}}</translation>
 <translation id="5556417849629758491">Дэлгэцийн дээд хэсгийн ойролцоо боломжтой дэлгүүрийн мэдээллийг үзэх сонголт</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-н <ph name="TABS_COUNT_ONE" /> холбоос}other{Chrome-н <ph name="TABS_COUNT_MANY" /> холбоос}}</translation>
 <translation id="575494663145460764">Үнэ бууралтын сэрэмжлүүлэг авах уу?</translation>
@@ -113,6 +114,7 @@
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7966321538264951561">Зөвлөмжийг үл хэрэгсэх.</translation>
 <translation id="8029301326595421733">Энэ дэлгүүрийн талаарх мэдээллийг бүтэн өндөртэйгээр нээсэн</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг дэлгэнэ үү.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг дэлгэнэ үү.}}</translation>
 <translation id="8205266828577616993">Табыг дээш зөөх</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -125,6 +127,7 @@
 <translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
 <translation id="9150694013019234766">Дэлгэцийн доод хэсгийн ойролцоо байгаа табын бүлгээсээ таб хооронд сэлгэнэ үү</translation>
 <translation id="9169594135889675189">Бүлэгт шинэ таб нэмэх</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}}</translation>
 <translation id="955558140275419384">Энэ засварлагчид орсноор архивласан бүх табд устгавал зохих табууд байгаа эсэхийг нь шалгана уу.</translation>
 <translation id="959682366969460160">Зохион байгуулалттай болох</translation>
 <translation id="992256792861109788">Ягаан</translation>

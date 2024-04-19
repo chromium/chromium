@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">מחבר:</translation>
 <translation id="1247030632403369975">Aluminum</translation>
 <translation id="1252209483516427155">ביגוד עליון</translation>
+<translation id="1253096324252841344">תשלום באמצעות <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (מסונכרנים)</translation>
 <translation id="1255086252236620440">מיקסרים</translation>
 <translation id="1256368399071562588">‏&lt;p&gt;אם ניסית להיכנס לאתר והוא לא נפתח, קודם יש לנסות לפתור את הבעיה בעזרת השלבים הבאים:&lt;/p&gt;
@@ -1510,6 +1511,7 @@
 <translation id="385489333361351399">ציוד צילום ומצלמות</translation>
 <translation id="3858027520442213535">עדכון התאריך והשעה</translation>
 <translation id="3858860766373142691">שם</translation>
+<translation id="3865339060090354361">אפשר לעיין כאן בתנאים של <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">מדע</translation>
 <translation id="3875783148670536197">איך עושים זאת?</translation>
 <translation id="3880456882942693779">אומנויות ובידור</translation>
@@ -1989,6 +1991,7 @@ Del</translation>
 <translation id="4809079943450490359">הוראות ממנהל המכשיר שלך:</translation>
 <translation id="4811450222531576619">מידע על המקור והנושא שלו</translation>
 <translation id="4813512666221746211">שגיאת רשת</translation>
+<translation id="4814114628197290459">‏מחיקת מספר IBAN</translation>
 <translation id="4816492930507672669">התאמה לדף</translation>
 <translation id="4819347708020428563">לערוך את ההערות בתצוגת ברירת מחדל?</translation>
 <translation id="4822493756793346865">המחירים האופייניים מבוססים על חנויות מרחבי האינטרנט במהלך 90 הימים האחרונים.</translation>
@@ -2110,6 +2113,7 @@ Del</translation>
 <translation id="5040262127954254034">פרטיות</translation>
 <translation id="5043480802608081735">קישור שהעתקת</translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
+<translation id="5048293684454354469">השימוש בנושאי מודעות הוא רק שיטה אחת מבין שיטות רבות שמאפשרות לאתרים להתאים אישית את המודעות. בלי השימוש בנושאי מודעות, עדיין יוצגו לך מודעות באתרים, אבל אולי הן יהיו פחות רלוונטיות לך. <ph name="BEGIN_LINK" />מידע נוסף על קביעת ההגדרות לפרטיות בפרסום<ph name="LINK_END" /></translation>
 <translation id="5052517576853118371">נושאים פעילים</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{כדי לשלוח את הקובץ הזה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}one{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}two{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}other{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}}</translation>
 <translation id="505757197798929356">יש לציין את הסיבה לפתיחה (חובה)</translation>
@@ -2329,6 +2333,7 @@ Del</translation>
 <ph name="LINE_BREAK" />
 יש לנסות ליצור קשר עם מנהל המערכת.</translation>
 <translation id="549333378215107354">גודל 3</translation>
+<translation id="5496804587179176046">שמירה של קודי אבטחה, כרגע לא שמורים קודי אבטחה</translation>
 <translation id="550365051221576010">מילוי כל הפרטים</translation>
 <translation id="5508443345185481044">מצלמות וידאו וסטילס</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2352,6 +2357,7 @@ Del</translation>
 <translation id="553377674408670169">משרות בתחום החינוך</translation>
 <translation id="5536214594743852365">הצגת הקטע "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">‏מעטפה – Chou 2</translation>
+<translation id="5538270463355278784">הצגה אוטומטית במסך מלא</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">לא ניתן היה למצוא את הפריט המבוקש.</translation>
 <translation id="5540969246441091044">רכיבת סוסים</translation>
@@ -2716,6 +2722,7 @@ Del</translation>
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לנהל קבצים שהורדת ב-Chrome</translation>
 <translation id="6254436959401408446">אין מספיק זיכרון כדי לפתוח את הדף</translation>
 <translation id="625463612687472648">ביטול ההרשאה</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{‏כשמבצעים רכישות ב-Chrome, צריך להתייחס אל <ph name="FINANCIAL_ACCOUNT_TYPES" /> כאפשרות}one{‏כשמבצעים רכישות ב-Chrome, צריך להתייחס אל <ph name="FINANCIAL_ACCOUNT_TYPES" /> כחלק מהאפשרויות}two{‏כשמבצעים רכישות ב-Chrome, צריך להתייחס אל <ph name="FINANCIAL_ACCOUNT_TYPES" /> כחלק מהאפשרויות}other{‏כשמבצעים רכישות ב-Chrome, צריך להתייחס אל <ph name="FINANCIAL_ACCOUNT_TYPES" /> כחלק מהאפשרויות}}</translation>
 <translation id="6259156558325130047">&amp;ביצוע מחדש של שינוי סדר</translation>
 <translation id="6263376278284652872">סימניות <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">להוריד בכל זאת</translation>
@@ -3346,7 +3353,6 @@ Del</translation>
 <translation id="7442725080345379071">כתום בהיר</translation>
 <translation id="7444046173054089907">האתר הזה חסום</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{‏קובצי cookie ייחסמו היום שוב}=1{‏קובצי cookie ייחסמו מחר שוב}one{‏יש עוד # ימים עד שקובצי cookie ייחסמו שוב}two{‏יש עוד יומיים עד שקובצי cookie ייחסמו שוב}other{‏יש עוד # ימים עד שקובצי cookie ייחסמו שוב}}</translation>
-<translation id="7445762425076701745">לא ניתן לאמת לגמרי את הזהות של השרת שאליו התחברת. התחברת לשרת באמצעות שם שקיים רק ברשת שלך, ושלרשות אישורים חיצונית אין דרך לאמת את בעלותך עליו. מכיוון שחלק מרשויות האישורים ינפיקו אישורים לשמות אלה ללא קשר, אין דרך להבטיח שהתחברת לאתר המיועד ואינך גורם תוקף.</translation>
 <translation id="7447234474237738389">שירותי ביגוד</translation>
 <translation id="7447625772313191651">‏<ph name="NAME" /> ‏(<ph name="WIDTH" />x<ph name="HEIGHT" /> מ"מ)</translation>
 <translation id="7450577240311017924">‏הלחצן לניהול הסנכרון, מפעילים אותו כדי לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
@@ -3850,6 +3856,7 @@ Del</translation>
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
 <translation id="8380941800586852976">מסוכן</translation>
 <translation id="8381674639488873545">החיובים האלה יכולים להיות חד פעמיים או חוזרים, והם לא תמיד מוצגים בצורה בולטת. <ph name="BEGIN_LINK" />אני רוצה להמשיך בכל זאת<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">הצגה אוטומטית במסך מלא</translation>
 <translation id="838307841291975086">מכוניות סטיישן</translation>
 <translation id="8389532092404711541">בדרך כלל <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">כלי רכב משופרים ובהתאמה אישית</translation>

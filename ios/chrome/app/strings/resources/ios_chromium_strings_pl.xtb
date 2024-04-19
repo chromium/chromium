@@ -28,6 +28,7 @@
 <translation id="1707458603865303524">Używaj Chromium zawsze wtedy, gdy klikasz linki w wiadomościach lub w innych aplikacjach.</translation>
 <translation id="1722370509450468186">Hasło zostanie zapisane na Twoim koncie (<ph name="EMAIL" />).</translation>
 <translation id="1791845338122684020">Otwiera stronę historii Chromium.</translation>
+<translation id="1811860791247653035">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chromium w funkcjach <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium sprawdził, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">W Chromium są funkcje, które pomogą Ci zarządzać szybkością wczytywania stron internetowych oraz danymi przesyłanymi przez sieć.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -89,6 +90,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="3639997914391704523">Chromium może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="3688710892786762883">Chromium wykryje numery śledzenia przesyłek w odwiedzanych przez Ciebie witrynach i wyświetli aktualne informacje o przesyłkach na stronie Nowa karta. Aby ta funkcja mogła działać, Twoje dane będą udostępniane Google. Pozwoli to też na ulepszanie Zakupów Google.</translation>
 <translation id="372658070733623520">Aby móc zapisywać dane z Chromium na koncie Google i ich używać, potwierdź swoją tożsamość.</translation>
+<translation id="3728124580182886854">Połącz Chromium i inne usługi Google na potrzeby personalizacji i innych celów</translation>
 <translation id="3780779443901618967">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chromium.</translation>
 <translation id="3784369638459513223">Otwiera nową kartę incognito w Chromium.</translation>
 <translation id="3805899903892079518">Chromium nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>

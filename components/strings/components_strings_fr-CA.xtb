@@ -1987,6 +1987,7 @@
 <translation id="4809079943450490359">Instructions de l'administrateur de votre appareil :</translation>
 <translation id="4811450222531576619">En savoir plus sur sa source et son sujet</translation>
 <translation id="4813512666221746211">Erreur réseau</translation>
+<translation id="4814114628197290459">Supprimer l'IBAN</translation>
 <translation id="4816492930507672669">Ajuster à la page</translation>
 <translation id="4819347708020428563">Modifier les annotations dans la vue par défaut?</translation>
 <translation id="4822493756793346865">Les prix habituels sont obtenus en fonction des magasins sur le Web au cours des trois derniers mois.</translation>
@@ -2108,6 +2109,7 @@
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="5043480802608081735">Le lien que vous avez copié</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
+<translation id="5048293684454354469">Les sujets d'annonces ne sont qu'un des nombreux moyens qu'un site peut utiliser pour personnaliser les annonces. Même sans sujets d'annonces, les sites peuvent toujours vous montrer des annonces. Celles-ci pourraient toutefois moins vous intéresser. Apprenez-en davantage sur la <ph name="BEGIN_LINK" />gestion de la confidentialité de vos annonces<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Sujets actifs</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pour envoyer ce fichier au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour envoyer ce fichier au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour envoyer ces fichiers au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
 <translation id="505757197798929356">Fournir la raison de l'ouverture (obligatoire)</translation>
@@ -2326,6 +2328,7 @@
     <ph name="LINE_BREAK" />
     Essayez de communiquer avec votre administrateur système.</translation>
 <translation id="549333378215107354">Taille 3</translation>
+<translation id="5496804587179176046">Enregistrer des codes de sécurité, aucun code de sécurité actuellement enregistré</translation>
 <translation id="550365051221576010">Tout remplir</translation>
 <translation id="5508443345185481044">Appareils photo et caméras</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2945,6 +2948,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour utiliser la fonctionnalité Localiser mon appareil dans le compte Google</translation>
 <translation id="6695428916538794739">Films d'action et d'aventure</translation>
 <translation id="6696424331653607346">Guides et récits de voyage</translation>
+<translation id="6698097747703777657">Vous n'avez pas reçu de code? <ph name="BEGIN_LINK" />Obtenir un nouveau code<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Créé :</translation>
 <translation id="67007264085648978">Curseur de progression chronologique</translation>
 <translation id="6702851555558236418">Logiciels audio et de musique</translation>
@@ -3345,7 +3349,6 @@ Détails supplémentaires :
 <translation id="7442725080345379071">Orange clair</translation>
 <translation id="7444046173054089907">Ce site est bloqué</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Les témoins seront bloqués à nouveau aujourd'hui}=1{Les témoins seront bloqués à nouveau demain}one{# jour jusqu'à ce que les témoins soient bloqués à nouveau}other{# jours jusqu'à ce que les témoins soient bloqués à nouveau}}</translation>
-<translation id="7445762425076701745">Il n'est pas possible de valider entièrement l'identité du serveur auquel vous êtes connecté. Le nom utilisé pour cette connexion n'est valide que sur votre réseau et aucune autorité de certification externe ne peut en vérifier la propriété. Certaines autorités de certification délivrent tout de même des certificats pour ces types de noms. Par conséquent, nous ne sommes pas en mesure de vérifier que vous êtes connecté au site voulu et non à un site malveillant.</translation>
 <translation id="7447234474237738389">Services d'habillement</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> mm x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Bouton Gérer la synchronisation, activez-le pour gérer les informations que vous synchronisez dans les paramètres de Chrome</translation>

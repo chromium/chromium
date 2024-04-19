@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Συμπτύξτε την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /> με την καρτέλα <ph name="TABS_COUNT_ONE" />.}other{Συμπτύξτε την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /> με τις καρτέλες <ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="2569352796411618312">Πρόταση: <ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
-<translation id="2613747923081026172">Δημιουργία ομάδας</translation>
 <translation id="2662028055331606429">Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Μετάβαση στον ιστότοπο</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_HOURS_ONE" /> ώρα}other{Δημιουργήθηκε πριν από <ph name="NUM_HOURS_MANY" /> ώρες}}</translation>

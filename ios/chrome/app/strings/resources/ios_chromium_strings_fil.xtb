@@ -73,6 +73,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="2918709798697875261">Hinihiling sa iyo ng organisasyon mo na manatiling naka-sign out sa Chromium.</translation>
 <translation id="2942241131342758843">Gamitin ang Chromium bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
 <translation id="2977470724722393594">Napapanahon ang Chromium</translation>
+<translation id="3044857325852340337">Na-delete na ang data sa Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Matutulungan ka ng Chromium na subaybayan ang package na ito sa Page ng Bagong Tab.}one{Matutulungan ka ng Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}other{Matutulungan ka ng Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}}</translation>
 <translation id="3102849287235003384">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK" />mag-sign out sa Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Maghanap Gamit ang Boses sa Chromium</translation>
@@ -124,6 +125,7 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="4633738821577273991">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chromium na ito</translation>
 <translation id="4638625642619341392">I-download ang Chromium dito.</translation>
 <translation id="4654936625574199632">Para makatulong na mapaganda ang app, nagpapadala ang Chromium ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">I-delete ang Data mula sa Pag-browse sa Chromium</translation>
 <translation id="4681781466797808448">I-on ang scanner ng Chromium</translation>
 <translation id="4736424910885271643">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chromium sa device na ito</translation>
 <translation id="4773487571745795781">Na-off mo ang pag-sign in sa Chromium.</translation>
@@ -191,6 +193,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="6324041800010509197">Bisitahin ang Tab Grid sa Chromium</translation>
 <translation id="6325378625795868881">Gamitin ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe at iba pang app.</translation>
 <translation id="632825460376924298">Payagan ang Pag-sign In sa Chromium</translation>
+<translation id="6332129548244419716">I-delete ang Data mula sa Pag-browse sa Chromium.</translation>
 <translation id="6337530241089703714">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito</translation>
 <translation id="6348483005826990855">3. Piliin ang Chromium</translation>
 <translation id="6383607155624074112">Mas mabilis na i-access ang Chromium mula sa Dock ng iyong Home Screen</translation>

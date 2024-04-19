@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="2569352796411618312">הצעה: <ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
-<translation id="2613747923081026172">יצירת קבוצה</translation>
 <translation id="2662028055331606429">דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">כניסה לאתר</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{נוצרה לפני שעה (<ph name="NUM_HOURS_ONE" />)}one{נוצרה לפני <ph name="NUM_HOURS_MANY" /> שעות}two{נוצרה לפני שעתיים (<ph name="NUM_HOURS_MANY" />)}other{נוצרה לפני <ph name="NUM_HOURS_MANY" /> שעות}}</translation>

@@ -123,6 +123,7 @@ Points à prendre en compte :
 <translation id="4633328489441962921">Chrome ne parvient pas à rechercher les mises à jour</translation>
 <translation id="4636900170638246267">Connectez-vous à ce site et à Chrome.</translation>
 <translation id="4761869838909035636">Effectuer un contrôle de sécurité de Chrome</translation>
+<translation id="4798859546468762093">Pour bénéficier de la personnalisation et d'autres fonctionnalités, ajoutez Chrome à l'<ph name="FEATURE_NAME_1" /> ainsi qu'aux <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Pour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google.
 
@@ -179,6 +180,7 @@ Points à prendre en compte :
 <translation id="6389317667633680932">Découvrez les nouvelles fonctionnalités qui vous aideront à exploiter tout le potentiel de Chrome.</translation>
 <translation id="6412673304250309937">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="6427126399757991875">Votre organisation configure Chrome…</translation>
+<translation id="6481963882741794338">Associez Chrome et d'autres services Google à des fins de personnalisation et autres</translation>
 <translation id="6484712497741564393">Connecté en tant que <ph name="EMAIL" />.
 
 Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>

@@ -301,7 +301,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2604176749896001318">Përditëso shfletuesin</translation>
 <translation id="2609008503159898744">Të mbyllen të gjitha skedat?</translation>
 <translation id="261305050785128654">Tregoju uebsajteve se çfarë gjuhësh flet. Ato do të të shfaqin përmbajtje në ato gjuhë, kur është e mundur.</translation>
-<translation id="2613747923081026172">Krijo një grup</translation>
 <translation id="2617210333344098964">Zhvendos adresën te llogaria</translation>
 <translation id="261739049332372104">Për të marrë përditësime për përmbajtje që kanë rëndësi për ty, aktivizo njoftimet te cilësimet e tua të iOS.</translation>
 <translation id="2625189173221582860">Fjalëkalimi u kopjua</translation>
@@ -843,6 +842,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5407969256130905701">Hiq ndryshimet</translation>
 <translation id="5414763847370083940">Do të marrësh një sinjalizim nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="5416022985862681400">7 ditët e fundit</translation>
+<translation id="5416455648658732408">Zhvendose te grupi i skedave</translation>
 <translation id="5423269318075950257">Monitoro çmimin</translation>
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
 <translation id="5433691172869980887">Emri i përdoruesit u kopjua</translation>
@@ -1038,6 +1038,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6363526231572697780">Nuk ka emër përdoruesi</translation>
 <translation id="6366190659675876144">Mbrojtja standarde</translation>
 <translation id="6366663624406569102">Dil dhe çaktivizo sinkronizimin</translation>
+<translation id="6368038301482806847">Zgjidh një motor kërkimi nga lista.</translation>
 <translation id="6374469231428023295">Provo përsëri</translation>
 <translation id="6377118281273296434">Siguria e sajtit</translation>
 <translation id="6383719166112032471">Hap vendndodhjen…</translation>
@@ -1196,6 +1197,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7161230316646448869">Sinkronizo faqeshënuesit, historikun etj. në të gjitha pajisjet</translation>
 <translation id="7162168282402939716">Shkyç skedat "e fshehta" me <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Hap cilësimet</translation>
+<translation id="7186568385131859684">Kontrollo se si përdoret historiku i shfletimit me të dhënat e tua të tjera nëpër shërbimet e Google</translation>
 <translation id="7189598951263744875">Ndaj...</translation>
 <translation id="719133302483559673">Menaxho interesat dhe preferencat e tua.</translation>
 <translation id="7192050974311852563">Fillo regjistrimin</translation>
@@ -1239,6 +1241,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7438481509621345350">Tani do të shikosh histori nga <ph name="CHANNEL_NAME" /> kur të hapësh një skedë të re.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Faqeshënuesi u ruajt te "{title}"}other{Faqeshënuesit u ruajtën te "{title}"}}</translation>
 <translation id="7454057999980797137">Shteti / Qarku</translation>
+<translation id="7458706065921255639">Personalizimi dhe lidhja</translation>
 <translation id="745899714366929493">Gjithë ditën</translation>
 <translation id="7459628154744868585">Mbrojtja e përmirësuar është aktive</translation>
 <translation id="7465351360025415755">Merr përmbajtje që kanë rëndësi për ty</translation>
@@ -1324,6 +1327,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7856733331829174190">Nuk mundi të shkarkohej</translation>
 <translation id="7859704718976024901">Historiku i shfletimit</translation>
+<translation id="7860900259978879139">Hiq nga grupi</translation>
 <translation id="7866501058614003444">Gjurmimi i kësaj pakete u anulua me sukses.</translation>
 <translation id="7866872729285243843">Për të marrë listën tënde të leximit në të gjitha pajisjet e tua, aktivizo "Listën e leximit" te cilësimet.</translation>
 <translation id="7866993391592926595">Fshehja e kësaj karte do të çaktivizojë gjurmimin e paketës dhe do të heqë të gjitha të dhënat e tua</translation>
@@ -1411,9 +1415,11 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8273982424131314219">Do të plotësosh informacionet në <ph name="URL" /></translation>
 <translation id="8281781826761538115">Parazgjedhja - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Kapërce</translation>
+<translation id="8282657446819506217">Hape në grupin e skedave</translation>
 <translation id="828291969289324795">{count,plural, =1{Shto një skedë te grupi i ri}other{Shto skeda te grupi i ri}}</translation>
 <translation id="8283172974887967105">Cakto…</translation>
 <translation id="8286036467436129157">Identifikohu</translation>
+<translation id="8289930144142009940">Njoftimet për "<ph name="FEATURE_NAME" />" janë çaktivizuar</translation>
 <translation id="8292843446079898078">Merr sinjalizime për uljet e çmimeve për produktet që monitoron.</translation>
 <translation id="8299417921174340354">Për të përdorur fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="8299613349954694191">Hap një skedë "të fshehtë" për të shfletuar në mënyrë private në ueb.</translation>
@@ -1421,6 +1427,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8313645224014086262">Ruaj skedarin</translation>
 <translation id="8319076807703933069">Kërkim i ri</translation>
 <translation id="8328777765163860529">Mbylli të gjitha</translation>
+<translation id="8343286328361420468">Çaktivizo njoftimet për "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
 <translation id="834783239627985533">Sajtet më të vizituara</translation>
 <translation id="8358401059263985056">Aktivizo njoftimet</translation>

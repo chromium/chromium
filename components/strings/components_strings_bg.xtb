@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1247030632403369975">Алуминий</translation>
 <translation id="1252209483516427155">Горни дрехи</translation>
+<translation id="1253096324252841344">Плащане чрез <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронизирани)</translation>
 <translation id="1255086252236620440">Миксери за храна</translation>
 <translation id="1256368399071562588">&lt;p&gt;Ако опитате да посетите уебсайт и той не се отваря, първо, пробвайте да изпълните следните стъпки за отстраняване на неизправности:&lt;/p&gt;
@@ -1510,6 +1511,7 @@
 <translation id="385489333361351399">Оборудване за фотоапарати и видеокамери</translation>
 <translation id="3858027520442213535">Актуализиране на датата и часа</translation>
 <translation id="3858860766373142691">Име</translation>
+<translation id="3865339060090354361">Вижте условията за <ph name="CREDIT_CARD_NAME" /> тук</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Покажете ми как</translation>
 <translation id="3880456882942693779">Изкуство и развлечения</translation>
@@ -1985,6 +1987,7 @@
 <translation id="4809079943450490359">Инструкции от администратора на устройството ви:</translation>
 <translation id="4811450222531576619">Научете за съответния източник и тема</translation>
 <translation id="4813512666221746211">Грешка в мрежата</translation>
+<translation id="4814114628197290459">Изтриване на IBAN</translation>
 <translation id="4816492930507672669">Да се побере в страницата</translation>
 <translation id="4819347708020428563">Искате ли да редактирате поясненията в стандартния изглед?</translation>
 <translation id="4822493756793346865">Обичайните цени са въз основа на магазините в мрежата през последните 90 дни.</translation>
@@ -2106,6 +2109,7 @@
 <translation id="5040262127954254034">Поверителност</translation>
 <translation id="5043480802608081735">Копирана от вас връзка</translation>
 <translation id="5045550434625856497">Грешна парола</translation>
+<translation id="5048293684454354469">Рекламните теми са само едно от многото неща, чрез които даден сайт може да персонализира рекламите. Дори и без рекламни теми сайтовете пак могат да ви показват реклами, но е възможно те да не са толкова персонализирани. Научете повече за <ph name="BEGIN_LINK" />управлението на поверителността при рекламите<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Активни теми</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{За да изпратите този файл чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
 <translation id="505757197798929356">Посочете причина за отварянето (задължително)</translation>
@@ -2324,6 +2328,7 @@
 <ph name="LINE_BREAK" />
 Опитайте да се свържете със системния си администратор.</translation>
 <translation id="549333378215107354">Размер 3</translation>
+<translation id="5496804587179176046">Запазване на кодовете за сигурност (понастоящем няма запазени)</translation>
 <translation id="550365051221576010">Попълване на всичко</translation>
 <translation id="5508443345185481044">Фотоапарати и видеокамери</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2347,6 +2352,7 @@
 <translation id="553377674408670169">Работни места в сферата на образованието</translation>
 <translation id="5536214594743852365">Показване на секцията „<ph name="SECTION" />“</translation>
 <translation id="553782666181800029">Плик Chou 2</translation>
+<translation id="5538270463355278784">автоматичен цял екран</translation>
 <translation id="5539243836947087108">Подложка</translation>
 <translation id="5540224163453853">Заявената статия не можа да бъде намерена.</translation>
 <translation id="5540969246441091044">Конни спортове</translation>
@@ -2711,6 +2717,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате файловете, които сте изтеглили с Chrome</translation>
 <translation id="6254436959401408446">Няма достатъчно памет за отваряне на тази страница</translation>
 <translation id="625463612687472648">Оттегляне на разрешението</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Когато извършвате покупки в Chrome, ще виждате <ph name="FINANCIAL_ACCOUNT_TYPES" /> като опция}other{Когато извършвате покупки в Chrome, ще виждате <ph name="FINANCIAL_ACCOUNT_TYPES" /> като опции}}</translation>
 <translation id="6259156558325130047">&amp;Възстановяване на пренареждането</translation>
 <translation id="6263376278284652872">Отметки от <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Изтегляне въпреки това</translation>
@@ -2941,6 +2948,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да преминете към „Намиране на устройството ми“ в профила ви Google</translation>
 <translation id="6695428916538794739">Екшън и приключенски филми</translation>
 <translation id="6696424331653607346">Туристически справочници и пътеводители</translation>
+<translation id="6698097747703777657">Не получихте кода си? <ph name="BEGIN_LINK" />Получаване на нов код<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Създадено:</translation>
 <translation id="67007264085648978">Времеви плъзгач</translation>
 <translation id="6702851555558236418">Софтуер за музика и аудиозаписи</translation>
@@ -3341,7 +3349,6 @@
 <translation id="7442725080345379071">светлооранжево</translation>
 <translation id="7444046173054089907">Този сайт е блокиран</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{„Бисквитките“ ще бъдат блокирани отново днес}=1{„Бисквитките“ ще бъдат блокирани отново утре}other{# дни до повторното блокиране на „бисквитките“}}</translation>
-<translation id="7445762425076701745">Идентичността на сървъра, към който сте свързани, не може да бъде потвърдена изцяло. Свързани сте към сървър чрез име, което е валидно само във вашата мрежа и чиято собственост няма начин да се потвърди от външен сертифициращ орган. Тъй като някои сертифициращи органи въпреки това издават сертификати за такива имена, не е възможно да се гарантира, че сте свързани към желания сайт, а не към атакуващ.</translation>
 <translation id="7447234474237738389">Услуги за облекло</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
 <translation id="7450577240311017924">Бутон „Управление на синхронизирането“. Активирайте, за да управлявате данните, които да се синхронизират, в настройките на Chrome</translation>
@@ -3845,6 +3852,7 @@
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Тези таксувания може да са еднократни или периодични и е възможно да не са явни. <ph name="BEGIN_LINK" />Показване въпреки това<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Автоматичен цял екран</translation>
 <translation id="838307841291975086">Комби</translation>
 <translation id="8389532092404711541">Обикновено <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Персонализирани превозни средства и такива с подобрени технически характеристики</translation>

@@ -217,9 +217,11 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4293420128516039005">Po přihlášení si budete moci Chrome synchronizovat a upravit na různých zařízeních</translation>
 <translation id="430327780270213103">Povolit rozšíření zobrazovat na liště prohlížeče Chrome žádosti o přístup</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
+<translation id="4329315893554541805">Pokud chcete získat personalizaci a další funkce, zahrňte Chrome do Aktivity na webu a v aplikacích a do propojených služeb Google</translation>
 <translation id="4334294535648607276">Stahování bylo dokončeno.</translation>
 <translation id="4335235004908507846">Chrome vás pomáhá chránit před porušeními zabezpečení údajů, škodlivými rozšířeními a dalšími hrozbami</translation>
 <translation id="4343195214584226067">Do Chromu bylo přidáno rozšíření <ph name="EXTENSION_NAME" /></translation>
+<translation id="4348548358339558429">Pokud chcete získat personalizaci, zahrňte Chrome do Aktivity na webu a v aplikacích</translation>
 <translation id="436060642166082913">Chrome toto stahování zablokoval, protože tento soubor může poškodit vaše osobní účty a účty na sociálních sítích</translation>
 <translation id="4384570495110188418">Chrome nemůže zkontrolovat vaše hesla, protože nejste přihlášeni</translation>
 <translation id="4389991535395284064">Při procházení v anonymním režimu vás prohlížeč Chrome před načtením webu pomocí nezabezpečeného připojení upozorní</translation>
@@ -336,7 +338,9 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Vaše organizace Chrome po 1 minutě nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}few{Vaše organizace Chrome po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}many{Vaše organizace Chrome po # minuty nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}other{Vaše organizace Chrome po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}}</translation>
 <translation id="6418662306461808273">Přepnout na stávající profil Chrome?</translation>
+<translation id="6481963882741794338">Propojte Chrome a další služby Google pro personalizaci a další účely</translation>
 <translation id="648319183876919572">Vylepšené Bezpečné prohlížení vás chrání před nebezpečnými weby a soubory ke stažení</translation>
+<translation id="6489302989675808168">Zapnuto • Chrome nedokáže ověřit, odkud toto rozšíření pochází</translation>
 <translation id="6493527311031785448">Google Chrome se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome byl automaticky ukončen</translation>
 <translation id="6506909944137591434">K vytvoření 3D mapy vašeho okolí potřebuje Chrome přístup k fotoaparátu</translation>
@@ -361,6 +365,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6933858244219479645">Systém ChromeOS</translation>
 <translation id="6938166777909186039">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.1.</translation>
 <translation id="6943584222992551122">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
+<translation id="6944202724043006419">K zahájení imerzivní relace potřebuje Chrome oprávnění k pochopení scény a sledování rukou</translation>
 <translation id="6967962315388095737">Pravidlo příchozího provozu pro aplikaci Google Chrome Beta, které povolí provoz mDNS.</translation>
 <translation id="6989339256997917931">Prohlížeč Google Chrome byl aktualizován, ale minimálně po 30 dnů jste jej nepoužili.</translation>
 <translation id="7011190694940573312">Instalace se nezdařila, protože tato verze operačního systému není podporována.</translation>
@@ -395,6 +400,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7477130805345743099">Před načtením jakéhokoli webu pomocí nezabezpečeného připojení vás Chrome upozorní</translation>
 <translation id="7481213027396403996">Aktivujte si v Chromu maximální zabezpečení</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7572537927358445944">Vypnuto • Chrome nedokáže ověřit, odkud toto rozšíření pochází</translation>
 <translation id="7583399374488819119">instalační program prohlížeče <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Vítá vás Chrome</translation>
@@ -483,6 +489,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8823341990149967727">Chrome je zastaralý</translation>
 <translation id="8825634023950448068">Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud Chrome zájem neodhadne správně nebo pokud některé reklamy nechcete vídat, můžete zájem odstranit.</translation>
 <translation id="8834965163890861871">Google Chrome se pokouší upravit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome vám doporučuje odstranit ho}few{Chrome vám doporučuje odstranit je}many{Chrome vám doporučuje odstranit je}other{Chrome vám doporučuje odstranit je}}</translation>
 <translation id="8862326446509486874">Nemáte práva nutná k provádění instalací na úrovni systému. Zkuste spustit instalační program jako správce.</translation>
 <translation id="8914504000324227558">Znovu spustit Chrome</translation>
 <translation id="8922193594870374009">Chcete-li poslat číslo z webu <ph name="ORIGIN" /> na svůj telefon Android, v obou zařízeních se přihlaste do Chromu.</translation>

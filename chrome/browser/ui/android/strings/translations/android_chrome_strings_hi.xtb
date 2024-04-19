@@ -899,7 +899,6 @@
 <translation id="5752232708629533680">सिर्फ़ GIF शेयर करें</translation>
 <translation id="5754350196967618083">'डिस्कवर' को रीफ़्रेश नहीं किया जा सकता</translation>
 <translation id="5755162682436943950">साइन आउट किया गया. यह बटन, साइन इन करने और सिंक की सुविधा चालू करने के लिए, डायलॉग बॉक्स खोलता है.</translation>
-<translation id="5759897675466110265">साइट काम नहीं कर रही है? तीसरे पक्ष की कुकी को कुछ समय के लिए अनुमति देकर देखें</translation>
 <translation id="5763382633136178763">गुप्त टैब</translation>
 <translation id="5763514718066511291">इस ऐप्लिकेशन का यूआरएल कॉपी करने के लिए टैप करें</translation>
 <translation id="5765517223145864268">हमें अपने अनुभव के बारे में बताएं. या <ph name="BEGIN_LINK" />अपनी सेटिंग में बदलाव करें<ph name="END_LINK" />.</translation>
@@ -1046,6 +1045,7 @@
 <translation id="6475951671322991020">वीडियो डाउनलोड करें</translation>
 <translation id="6477928892249167417">ये साइटें शायद आपके लिए अहम हैं:</translation>
 <translation id="6482749332252372425">मेमोरी स्‍थान कम होने के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
+<translation id="6495590690749880440">क्या आपको टैब ग्रुप खोलना है?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{फ़ाइल डाउनलोड हो गई है}one{# डाउनलोड पूरा हुआ}other{# डाउनलोड पूरे हुए}}</translation>
 <translation id="6508722015517270189">Chrome को फिर से शुरू करें</translation>
 <translation id="6518133107902771759">पुष्टि करें</translation>

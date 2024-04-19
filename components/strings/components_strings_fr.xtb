@@ -136,6 +136,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1243027604378859286">Auteur :</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Vêtements d'extérieur</translation>
+<translation id="1253096324252841344">Payer avec <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisés)</translation>
 <translation id="1255086252236620440">Batteurs mixeurs</translation>
 <translation id="1256368399071562588">&lt;p&gt;Si vous ne parvenez pas à ouvrir un site Web dans Chrome, essayez d'abord de corriger le problème en suivant ces étapes :&lt;/p&gt;
@@ -1510,6 +1511,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="385489333361351399">Équipement photo et vidéo</translation>
 <translation id="3858027520442213535">Mettre à jour la date et l'heure</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3865339060090354361">Voir ici les conditions d'utilisation de <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Sciences</translation>
 <translation id="3875783148670536197">Démonstration</translation>
 <translation id="3880456882942693779">Arts et divertissements</translation>
@@ -1985,6 +1987,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4809079943450490359">Instructions de l'administrateur de votre appareil :</translation>
 <translation id="4811450222531576619">En savoir plus sur sa source et son thème</translation>
 <translation id="4813512666221746211">Erreur réseau.</translation>
+<translation id="4814114628197290459">Supprimer l'IBAN</translation>
 <translation id="4816492930507672669">Ajuster à la page</translation>
 <translation id="4819347708020428563">Modifier les annotations dans la vue par défaut ?</translation>
 <translation id="4822493756793346865">Les prix habituels sont basés sur ceux de magasins du Web au cours des 90 derniers jours.</translation>
@@ -2347,6 +2350,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="553377674408670169">Emplois dans l'enseignement</translation>
 <translation id="5536214594743852365">Afficher la section "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Enveloppe Chou 2</translation>
+<translation id="5538270463355278784">Plein écran automatique</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">Impossible de trouver l'article demandé.</translation>
 <translation id="5540969246441091044">Équitation</translation>
@@ -2711,6 +2715,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="6254436959401408446">Mémoire insuffisante pour ouvrir cette page</translation>
 <translation id="625463612687472648">Retirer l'autorisation</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Lorsque vous effectuez des achats sur Chrome, l'option <ph name="FINANCIAL_ACCOUNT_TYPES" /> s'affiche}one{Lorsque vous effectuez des achats sur Chrome, l'option <ph name="FINANCIAL_ACCOUNT_TYPES" /> s'affiche}other{Lorsque vous effectuez des achats sur Chrome, les options <ph name="FINANCIAL_ACCOUNT_TYPES" /> s'affichent}}</translation>
 <translation id="6259156558325130047">&amp;Rétablir la réorganisation</translation>
 <translation id="6263376278284652872">Favoris de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
@@ -2941,6 +2946,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour accéder à Localiser votre appareil dans le compte Google</translation>
 <translation id="6695428916538794739">Films d'action et d'aventure</translation>
 <translation id="6696424331653607346">Guides et carnets de voyage</translation>
+<translation id="6698097747703777657">Vous n'avez pas reçu votre code ? <ph name="BEGIN_LINK" />Obtenez-en un nouveau.<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Créé :</translation>
 <translation id="67007264085648978">Curseur de durée</translation>
 <translation id="6702851555558236418">Logiciels audio et musicaux</translation>
@@ -3342,7 +3348,6 @@ Informations supplémentaires :
 <translation id="7442725080345379071">Orange clair</translation>
 <translation id="7444046173054089907">Ce site est bloqué</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Les cookies seront de nouveau bloqués aujourd'hui}=1{Les cookies seront de nouveau bloqués demain}one{Les cookies seront de nouveau bloqués dans # jour}other{Les cookies seront de nouveau bloqués dans # jours}}</translation>
-<translation id="7445762425076701745">Impossible de valider entièrement l'identité du serveur auquel vous êtes connecté. Le nom utilisé pour cette connexion n'est valide que sur votre réseau et aucune autorité de certification externe ne peut en vérifier la propriété. Certaines autorités de certification délivrent tout de même des certificats pour ces types de nom, par conséquent nous ne sommes pas en mesure de vérifier que vous êtes connecté au site voulu et non à un site malveillant.</translation>
 <translation id="7447234474237738389">Services d'habillement</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Bouton "Gérer la synchronisation" à activer pour gérer les infos que vous synchronisez dans les paramètres Chrome</translation>
@@ -3846,6 +3851,7 @@ Informations supplémentaires :
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8380941800586852976">Dangereux</translation>
 <translation id="8381674639488873545">Il peut s'agir de frais uniques ou récurrents qui ne sont pas toujours clairement signalés. <ph name="BEGIN_LINK" />Je souhaite accéder malgré tout à ce site<ph name="END_LINK" />.</translation>
+<translation id="8382097126743287270">Plein écran automatique</translation>
 <translation id="838307841291975086">Breaks</translation>
 <translation id="8389532092404711541">Prix habituel : <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Véhicules puissants et personnalisés</translation>

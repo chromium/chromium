@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Зохиогч:</translation>
 <translation id="1247030632403369975">Хөнгөн цагаан</translation>
 <translation id="1252209483516427155">Гадуур хувцас</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" />-р төлөх</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синк хийсэн)</translation>
 <translation id="1255086252236620440">Хүнсний холигчид</translation>
 <translation id="1256368399071562588">&lt;p&gt;Хэрэв та вебсайтад зочлохоор оролдох үед нээгдэхгүй байвал эдгээр асуудал шийдэх алхмыг дагаж алдааг засахаар оролдоно уу:&lt;/p&gt;
@@ -1511,6 +1512,7 @@
 <translation id="385489333361351399">Камер болон зургийн хэрэгсэл</translation>
 <translation id="3858027520442213535">Огноо болон цагийг шинэчлэх</translation>
 <translation id="3858860766373142691">Нэр</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" />-н нөхцөлүүдийг эндээс харна уу</translation>
 <translation id="3872834068356954457">Шинжлэх ухаан</translation>
 <translation id="3875783148670536197">Надад хэрхэн хийхийг харуулна уу</translation>
 <translation id="3880456882942693779">Урлаг, энтертэйнмент</translation>
@@ -1986,6 +1988,7 @@
 <translation id="4809079943450490359">Таны төхөөрөмжийн администраторын зааварчилгаа:</translation>
 <translation id="4811450222531576619">Үүний эх сурвалж болон сэдвийн талаар мэдэж авах</translation>
 <translation id="4813512666221746211">Сүлжээний алдаа</translation>
+<translation id="4814114628197290459">Олон улсын банк акаунтны дугаарыг устгах</translation>
 <translation id="4816492930507672669">Хуудсанд тааруулах</translation>
 <translation id="4819347708020428563">Тэмдэглэгээг өгөгдмөлөөр харахаар засах уу?</translation>
 <translation id="4822493756793346865">Ердийн үнийг сүүлийн 90 хоногийн хугацаанд веб дээрх дэлгүүрүүдэд тулгуурласан.</translation>
@@ -2107,6 +2110,7 @@
 <translation id="5040262127954254034">Нууцлал</translation>
 <translation id="5043480802608081735">Таны хуулсан холбоос</translation>
 <translation id="5045550434625856497">Буруу нууц үг</translation>
+<translation id="5048293684454354469">Зарын сэдвүүд нь сайтын зарыг хувийн болгоход ашиглаж болох олон зүйлийн ердөө нэг нь юм. Сайтууд зарын сэдэвгүйгээр ч танд зар харуулах боломжтой хэвээр хэдий ч тэдгээр нь илүү бага хувийн болгосон байж магадгүй. <ph name="BEGIN_LINK" />Зарын нууцлалаа удирдах<ph name="LINK_END" /> талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="5052517576853118371">Идэвхтэй сэдвүүд</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ойролцоо хуваалцахыг ашиглан энэ файлыг илгээхийн тулд төхөөрөмж дээрээ сул зай (<ph name="DISK_SPACE_SIZE" />) гаргана уу}other{Ойролцоо хуваалцахыг ашиглан эдгээр файлыг илгээхийн тулд төхөөрөмж дээрээ сул зай (<ph name="DISK_SPACE_SIZE" />) гаргана уу}}</translation>
 <translation id="505757197798929356">Нээж буй шалтгаанаар хангана уу (шаардлагатай)</translation>
@@ -2325,6 +2329,7 @@
     <ph name="LINE_BREAK" />
     Та системийн админтайгаа холбогдоно уу.</translation>
 <translation id="549333378215107354">Хэмжээ 3</translation>
+<translation id="5496804587179176046">Хамгаалалтын кодыг хадгална уу, одоогоор хадгалсан хамгаалалтын код байхгүй байна</translation>
 <translation id="550365051221576010">Бүгдийг бөглөх</translation>
 <translation id="5508443345185481044">Камер, видео камерууд</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2348,6 +2353,7 @@
 <translation id="553377674408670169">Боловсролын ажлын байрууд</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" хэсгийг харуулах</translation>
 <translation id="553782666181800029">Чоу дугтуй 2</translation>
+<translation id="5538270463355278784">автомат бүтэн дэлгэц</translation>
 <translation id="5539243836947087108">Тавцан</translation>
 <translation id="5540224163453853">Хүссэн өгүүлэлийг олж чадсангүй.</translation>
 <translation id="5540969246441091044">Морь унах</translation>
@@ -2711,6 +2717,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-д татсан файлуудаа удирдахын тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="6254436959401408446">Энэ хуудсыг нээхэд санах ойн багтаамж хүрэлцэхгүй байна</translation>
 <translation id="625463612687472648">Зөвшөөрөхийг болих</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Та Chrome дээрээс худалдан авалт хийхдээ <ph name="FINANCIAL_ACCOUNT_TYPES" />-г сонголт болгон харна уу}other{Та Chrome дээрээс худалдан авалт хийхдээ <ph name="FINANCIAL_ACCOUNT_TYPES" />-г сонголт болгон харна уу}}</translation>
 <translation id="6259156558325130047">&amp; Дахин эрэмбэлэх үйлдлийг дахин хийх</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> хавчуургууд</translation>
 <translation id="6264376385120300461">Ямартай ч татах</translation>
@@ -2941,6 +2948,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Бүртгэлээс төхөөрөмжөө олохын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="6695428916538794739">Тулаант, адал явдалт кинонууд</translation>
 <translation id="6696424331653607346">Аяллын хөтөч, аяллын тэмдэглэлүүд</translation>
+<translation id="6698097747703777657">Та кодоо хүлээн аваагүй юү? <ph name="BEGIN_LINK" />Шинэ код авах<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Үүсгэсэн:</translation>
 <translation id="67007264085648978">Хугацаа гүйлгэгч</translation>
 <translation id="6702851555558236418">Аудио, хөгжмийн программ хангамж</translation>
@@ -3341,7 +3349,6 @@
 <translation id="7442725080345379071">Цайвар улбар шар</translation>
 <translation id="7444046173054089907">Энэ сайтыг блоклосон байна</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Күүкинүүдийг өнөөдөр дахин блоклоно}=1{Күүкинүүдийг маргааш дахин блоклоно}other{Күүкинүүдийг дахин блоклох хүртэл # хоног үлдсэн}}</translation>
-<translation id="7445762425076701745">Таны холбогдсон байгаа серверийн Хувийн мэдээллийг бүрэн батлах боломжгүй. Та зөвхөн таны сүлжээнд хүчин төгөлдөр нэрийг ашиглан сервер уруу холбогддог бөгөөд энэ нь хөндлөнгийн гэрчилгээ нь эзэмшлийг батлах ямар ч боломжгүй гэсэн үг юм. Зарим гэрчилгээнүүдийн эрх нь эдгээр нэрүүдэд гэрчилгээ гаргаж өгдөг хэдий ч таныг зорьж буй вебсайт руугаа мөн халдагч бус сүлжээ рүү холбогдсон гэдгийг батлах ямар ч арга байхгүй юм.</translation>
 <translation id="7447234474237738389">Хувцасны үйлчилгээнүүд</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
 <translation id="7450577240311017924">Синк хийхийг удирдах товчлуур, Chrome-н тохиргоонд ямар мэдээлэл синк хийхээ удирдахын тулд идэвхжүүлнэ үү</translation>
@@ -3845,6 +3852,7 @@
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>
 <translation id="8380941800586852976">Аюултай</translation>
 <translation id="8381674639488873545">Эдгээр тодорхойгүй төлбөр нь нэг удаагийнх эсвэл хэд хэдэн удаагийнх байж болзошгүй. <ph name="BEGIN_LINK" />Ямар ч байсан харуулах<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Автомат бүтэн дэлгэц</translation>
 <translation id="838307841291975086">Тэвштэй суудлын машинууд</translation>
 <translation id="8389532092404711541">Дунджаар <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Захиалгат, өндөр хүчин чадалтай тээврийн хэрэгслүүд</translation>

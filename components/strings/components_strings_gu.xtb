@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">લેખક:</translation>
 <translation id="1247030632403369975">એલ્યુમિનિયમ</translation>
 <translation id="1252209483516427155">બહાર પહેરવાનો પોશાક</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> વડે ચુકવણી કરો</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (સમન્વયિત)</translation>
 <translation id="1255086252236620440">ભોજન મિક્સર</translation>
 <translation id="1256368399071562588">&lt;p&gt;જો તમે કોઈ વેબસાઇટની મુલાકાત લેવાનો પ્રયાસ કરો અને તે ન ખૂલે, તો પહેલા સમસ્યા નિવારણના આ પગલાં લઈને સમસ્યા ઉકેલવાનો પ્રયાસ કરો:&lt;/p&gt;
@@ -1510,6 +1511,7 @@
 <translation id="385489333361351399">કૅમેરા અને ફોટો સંબંધિત સાધન</translation>
 <translation id="3858027520442213535">તારીખ અને સમય અપડેટ કરો</translation>
 <translation id="3858860766373142691">નામ</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> માટેની શરતો અહીં જુઓ</translation>
 <translation id="3872834068356954457">વિજ્ઞાન</translation>
 <translation id="3875783148670536197">મને બતાવો કે કેવી રીતે</translation>
 <translation id="3880456882942693779">આર્ટ અને મનોરંજન</translation>
@@ -1985,6 +1987,7 @@
 <translation id="4809079943450490359">તમારા ડિવાઇસ વ્યવસ્થાપક તરફથી સૂચનાઓ</translation>
 <translation id="4811450222531576619">તેના સૉર્સ અને વિષય વિશે જાણો</translation>
 <translation id="4813512666221746211">નેટવર્ક ભૂલ</translation>
+<translation id="4814114628197290459">IBAN ડિલીટ કરો</translation>
 <translation id="4816492930507672669">પેજ જેટલું ફિટ કરો</translation>
 <translation id="4819347708020428563">ટીકાટિપ્પણીમાં ફેરફાર કરીને ડિફૉલ્ટ વ્યૂ પસંદ કરીએ?</translation>
 <translation id="4822493756793346865">સામાન્ય કિંમતો છેલ્લા 90 દિવસમાં સમગ્ર વેબ પરના સ્ટોરમાં ઉપલબ્ધ માહિતી પર આધારિત છે.</translation>
@@ -2106,6 +2109,7 @@
 <translation id="5040262127954254034">પ્રાઇવસી</translation>
 <translation id="5043480802608081735">તમે કૉપિ કરેલી લિંક</translation>
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
+<translation id="5048293684454354469">કોઈ સાઇટ જાહેરાતોને મનગમતી બનાવવા માટે ઉપયોગમાં લઈ શકે એવી ઘણી બાબતોમાંથી જાહેરાતના વિષયો માત્ર એક પરિમાણ છે. જાહેરાતના વિષયો વિના પણ, સાઇટ હજુ પણ તમને જાહેરાતો બતાવી શકે છે પરંતુ તે તમને ઓછી મનગમતી હોઈ શકે છે. <ph name="BEGIN_LINK" />તમારી જાહેરાત સંબંધિત પ્રાઇવસીને મેનેજ કરવા<ph name="LINK_END" /> વિશે વધુ જાણો.</translation>
 <translation id="5052517576853118371">સક્રિય વિષયો</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}one{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}other{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલો મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}}</translation>
 <translation id="505757197798929356">ખોલવાનું કારણ આપો (આવશ્યક છે)</translation>
@@ -2324,6 +2328,7 @@
     <ph name="LINE_BREAK" />
     તમારા સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="549333378215107354">કદ 3</translation>
+<translation id="5496804587179176046">સિક્યુરિટી કોડ સાચવો, હાલમાં કોઈ સિક્યુરિટી કોડ સાચવેલો નથી</translation>
 <translation id="550365051221576010">બધું ભરો</translation>
 <translation id="5508443345185481044">કૅમેરા અને કૅમકોર્ડર</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2347,6 +2352,7 @@
 <translation id="553377674408670169">શિક્ષણ ક્ષેત્રમાં નોકરીઓ</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" વિભાગ બતાવો</translation>
 <translation id="553782666181800029">એન્વલપ ચોઉ 2</translation>
+<translation id="5538270463355278784">ઑટોમૅટિક પૂર્ણ સ્ક્રીન</translation>
 <translation id="5539243836947087108">રાફ્ટ</translation>
 <translation id="5540224163453853">વિનંતી કરેલ લેખ શોધી શકાયો નથી.</translation>
 <translation id="5540969246441091044">અશ્વારોહણ</translation>
@@ -2711,6 +2717,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં તમે ડાઉનલોડ કરેલી ફાઇલો મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="6254436959401408446">આ પેજ ખોલવા માટે પૂરતી મેમરી નથી</translation>
 <translation id="625463612687472648">મંજૂરી આપવાનું રોકો</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{જ્યારે તમે Chrome પર ખરીદી કરો, ત્યારે <ph name="FINANCIAL_ACCOUNT_TYPES" />ને વિકલ્પ તરીકે જુઓ}one{જ્યારે તમે Chrome પર ખરીદી કરો, ત્યારે <ph name="FINANCIAL_ACCOUNT_TYPES" />ને વિકલ્પ તરીકે જુઓ}other{જ્યારે તમે Chrome પર ખરીદી કરો, ત્યારે <ph name="FINANCIAL_ACCOUNT_TYPES" />ને વિકલ્પો તરીકે જુઓ}}</translation>
 <translation id="6259156558325130047">&amp;પુનઃક્રમાંકિત કરવું ફરી કરો</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> બુકમાર્ક</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
@@ -2941,6 +2948,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google એકાઉન્ટ વડે 'તમારું ડિવાઇસ શોધો' સુવિધાનો ઉપયોગ કરવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
 <translation id="6695428916538794739">ઍક્શન અને સાહસવાળી મૂવી</translation>
 <translation id="6696424331653607346">મુસાફરીની માર્ગદર્શિકાઓ અને પ્રવાસવર્ણન</translation>
+<translation id="6698097747703777657">શું તમારો કોડ નથી મળ્યો? <ph name="BEGIN_LINK" />નવો કોડ મેળવો<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">બનાવેલા:</translation>
 <translation id="67007264085648978">સમય સ્ક્રબર</translation>
 <translation id="6702851555558236418">ઑડિયો અને મ્યુઝિક સૉફ્ટવેર</translation>
@@ -3341,7 +3349,6 @@
 <translation id="7442725080345379071">આછો નારંગી</translation>
 <translation id="7444046173054089907">આ સાઇટ અવરોધિત છે</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{કુકીને આજે ફરીથી બ્લૉક કરવામાં આવશે}=1{કુકીને આવતીકાલે ફરીથી બ્લૉક કરવામાં આવશે}one{# દિવસમાં કુકીને ફરીથી બ્લૉક કરવામાં આવશે}other{# દિવસમાં કુકીને ફરીથી બ્લૉક કરવામાં આવશે}}</translation>
-<translation id="7445762425076701745">તમે જે સર્વરથી કનેક્ટ છો તેની ઓળખ સંપૂર્ણ રૂપે માન્ય કરી શકાતી નથી. તમે જે નામનો ઉપયોગ કરીને સર્વરથી કનેક્ટ છો, તે ફક્ત તમારા નેટવર્કની અંતર્ગત જ માન્ય છે, જેના બાહ્ય પ્રમાણપત્ર અધિકારીને માલિકીને માન્ય કરવાની કોઈ રીત નથી. આના પર ધ્યાન આપ્યાં વગર કેટલાક પ્રમાણપત્ર અધિકારીઓ આ નામો માટે પ્રમાણપત્ર બહાર પાડશે, તેથી તમે ઇચ્છિત વેબસાઇટથી કનેક્ટ છો કોઈ હુમલાખોરથી નહીં, તેની ખાતરી કરવાની કોઈ રીત નથી.</translation>
 <translation id="7447234474237738389">પોશાક સેવાઓ</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> મિલીમીટર)</translation>
 <translation id="7450577240311017924">'સિંક મેનેજ કરો' બટન, Chrome સેટિંગમાં તમે જે માહિતી સિંક કરવા ઇચ્છતા હો, તે મેનેજ કરવા માટે સક્રિય કરો</translation>
@@ -3845,6 +3852,7 @@
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8380941800586852976">જોખમી</translation>
 <translation id="8381674639488873545">આ શુલ્ક એક વખત લાગે અથવા પુનરાવર્તિત હોઈ શકે અને તેનો સ્પષ્ટ ખ્યાલ ન આવે તેમ પણ બને. <ph name="BEGIN_LINK" />તો પણ બતાવો<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">ઑટોમૅટિક પૂર્ણ સ્ક્રીન</translation>
 <translation id="838307841291975086">સ્ટેશન વૅગન</translation>
 <translation id="8389532092404711541">સામાન્ય રીતે <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">કસ્ટમાઇઝ કરેલા અને ખાસ પર્ફોર્મન્સવાળા વાહનો</translation>

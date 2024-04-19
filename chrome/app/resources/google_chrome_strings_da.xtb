@@ -213,9 +213,11 @@
 <translation id="4293420128516039005">Log ind for at synkronisere og personligt tilpasse Chrome på alle dine enheder</translation>
 <translation id="430327780270213103">Tillad, at udvidelsen viser adgangsanmodninger på Chrome-værktøjslinjen</translation>
 <translation id="4328355335528187361">Udviklerversionen af Google Chrome (mDNS-In)</translation>
+<translation id="4329315893554541805">For at få personlig tilpasning og andre funktioner skal du medtage Chrome i Web- og appaktivitet og tilknyttede Google-tjenester</translation>
 <translation id="4334294535648607276">Download fuldført.</translation>
 <translation id="4335235004908507846">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, farlige udvidelser og meget mere</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> er føjet til Chrome</translation>
+<translation id="4348548358339558429">Medtag Chrome i Web- og appaktivitet for at få personlig tilpasning</translation>
 <translation id="436060642166082913">Chrome har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk</translation>
 <translation id="4384570495110188418">Chrome kan ikke tjekke dine adgangskoder, da du ikke er logget ind</translation>
 <translation id="4389991535395284064">Når du browser i inkognitotilstand, advarer Chrome dig, inden et website indlæses via en usikker forbindelse</translation>
@@ -329,7 +331,9 @@
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Din organisation lukker automatisk Chrome, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}one{Din organisation lukker automatisk Chrome, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}other{Din organisation lukker automatisk Chrome, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}}</translation>
 <translation id="6418662306461808273">Vil du skifte til den eksisterende Chrome-profil?</translation>
+<translation id="6481963882741794338">Tilknyt Chrome og andre Google-tjenester med henblik på personlig tilpasning og andre formål</translation>
 <translation id="648319183876919572">Udvidet beskyttet browsing gør mere for at beskytte dig mod skadelige websites og downloads</translation>
+<translation id="6489302989675808168">Til • Chrome kan ikke verificere, hvor denne udvidelse kommer fra</translation>
 <translation id="6493527311031785448">Google Chrome forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome blev automatisk lukket</translation>
 <translation id="6506909944137591434">Chrome skal have adgangstilladelse til kamera for at oprette et 3D-kort over dine omgivelser</translation>
@@ -354,6 +358,7 @@
 <translation id="6933858244219479645">ChromeOS-system</translation>
 <translation id="6938166777909186039">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 8.1.</translation>
 <translation id="6943584222992551122">Brugerens browserdata slettes fra denne enhed. Log ind på Chrome som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
+<translation id="6944202724043006419">Chrome skal have adgangstilladelse til omgivelsesforståelse og registrering af håndbevægelser for at starte en session i maksimaltilstand</translation>
 <translation id="6967962315388095737">Indgående regel for Google Chrome beta om at tillade mDNS-trafik.</translation>
 <translation id="6989339256997917931">Google Chrome er blevet opdateret, men du har ikke brugt den i 30 dage.</translation>
 <translation id="7011190694940573312">Installationen mislykkedes, fordi denne version af operativsystemet ikke understøttes.</translation>
@@ -388,6 +393,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7477130805345743099">Chrome advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>
+<translation id="7572537927358445944">Fra • Chrome kan ikke verificere, hvor denne udvidelse kommer fra</translation>
 <translation id="7583399374488819119">Installationsprogram til <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
@@ -476,6 +482,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8823341990149967727">Chrome er forældet</translation>
 <translation id="8825634023950448068">Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Hvis Chrome tager fejl, eller du ikke vil se visse annoncer, kan du fjerne en interesse.</translation>
 <translation id="8834965163890861871">Google Chrome forsøger at redigere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome anbefaler, at du fjerner den}one{Chrome anbefaler, at du fjerner den}other{Chrome anbefaler, at du fjerner dem}}</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>

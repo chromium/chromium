@@ -245,6 +245,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1178601482396475810">Upravljajte sinhronizacijom uređaja</translation>
 <translation id="117916940443676133">Bezbednosni ključ nije zaštićen PIN-om. Da biste upravljali podacima za prijavljivanje, prvo napravite PIN.</translation>
+<translation id="1179902906564467236">Pratite uputstva na telefonu ili koristite aplikaciju kamere</translation>
 <translation id="118057123461613219">Ogromne uštede</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -658,6 +659,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1500801317528437432">Saznajte više o nepodržanim Chrome aplikacijama</translation>
 <translation id="1501480321619201731">Izbriši grupu</translation>
 <translation id="1503392482221435031">Automatski šalje statistiku korišćenja Google-u. Možete da uključite ili isključite izveštaje o otkazivanju u podešavanjima uređaja.</translation>
+<translation id="1503556098270577657">Prijavili ste se na <ph name="USER_EMAIL" /> pomoću Android telefona</translation>
 <translation id="150411034776756821">Ukloni <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Deljeni direktorijumi su dostupni u Windows-u na <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">izveze lozinke</translation>
@@ -1237,6 +1239,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1915734383465415025">Broj prodavnice</translation>
 <translation id="1916260783734263714">Aktuelna kartica</translation>
 <translation id="1916502483199172559">Podrazumevani crveni avatar</translation>
+<translation id="1916770123977586577">Da biste primenili ažurirana podešavanja na ovom sajtu, učitajte stranicu ponovo</translation>
 <translation id="1918127774159128277">Osveži mogućnosti WiFi Direct-a</translation>
 <translation id="1918141783557917887">&amp;Manje</translation>
 <translation id="1919872106782726755">Da biste podesili otisak prsta, neka dete dodirne senzor za otisak prsta u gornjem desnom uglu tastature, pored dugmeta za uključivanje. Podaci o otisku prsta deteta se bezbedno čuvaju isključivo na ovom <ph name="DEVICE_TYPE" /> uređaju.</translation>
@@ -2550,7 +2553,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2877467134191447552">Možete da dodate još naloga da biste pristupali veb-sajtovima i aplikacijama.</translation>
 <translation id="2878782256107578644">Skeniranje je u toku, želite li da otvorite odmah?</translation>
 <translation id="2878889940310164513">Dodajte mobilni telefon...</translation>
-<translation id="2879594947768634665">NOVE KARTICE</translation>
 <translation id="288042212351694283">Pristup univerzalnim uređajima za 2. faktor</translation>
 <translation id="2881076733170862447">Kada kliknete na dodatak</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> će se odmah ponovo pokrenuti i resetovati</translation>
@@ -5571,6 +5573,10 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5235050375939235066">Želite li da deinstalirate aplikaciju?</translation>
 <translation id="523505283826916779">Podešavanja pristupačnosti</translation>
 <translation id="5235750401727657667">Zamenite stranicu koja se prikaže kad otvorite novu karticu</translation>
+<translation id="5237124927415201087">Lako podesite <ph name="DEVICE_TYPE" /> pomoću telefona. Možete da dodate WiFi i Google nalog bez ručnog unošenja lozinki.
+    <ph name="BR" />
+    <ph name="BR" />
+    Vidljivo kao <ph name="DEVICE_TYPE" />...</translation>
 <translation id="523862956770478816">Dozvole za sajtove</translation>
 <translation id="5240931875940563122">Prijavi me pomoću Android telefona</translation>
 <translation id="5242724311594467048">Želite li da omogućite „<ph name="EXTENSION_NAME" />“?</translation>
@@ -7415,7 +7421,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6673898378497337661">povećajte osvetljenost tastature</translation>
 <translation id="6674571176963658787">Da biste pokrenuli sinhronizaciju, unesite pristupnu frazu</translation>
 <translation id="6675665718701918026">Pokazivački uređaj je povezan</translation>
-<translation id="6675985668044425385">Ako sajt ne radi na očekivani način, možete da omogućite kolačiće treće strane za njega pomoću opcije Zaštita od praćenja na traci za adresu.</translation>
 <translation id="6676212663108450937">Preporučujemo vam da koristite slušalice tokom uvežbavanja glasovnog modela</translation>
 <translation id="667752334740867460">Primaju se informacije o WiFi mreži...</translation>
 <translation id="6678717876183468697">URL upita</translation>
@@ -8886,6 +8891,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Ne dozvoljavaj sajtovima da zaključavaju tastaturu</translation>
 <translation id="7789963078219276159">Pozadina početne stranice je promenjena u: <ph name="CATEGORY" />.</translation>
+<translation id="7790689625219600437">Optičko prepoznavanje znakova u PDF formatu</translation>
 <translation id="7791269138074599214">Metod unosa</translation>
 <translation id="7791429245559955092">Ova aplikacija će biti instalirana na Chrome profilu koji se trenutno koristi</translation>
 <translation id="7791436592012979144">Obrnuto skrolovanje je omogućeno</translation>
@@ -8959,7 +8965,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7848892492535275379"><ph name="CREDENTIAL_TYPE" /> za <ph name="USER_EMAIL" /></translation>
 <translation id="7849264908733290972">Otvori &amp;sliku na novoj kartici</translation>
 <translation id="784934925303690534">Vremenski opseg</translation>
-<translation id="7849656116606005620">Podsetnik: Zaštita od praćenja je uključena</translation>
 <translation id="7850320739366109486">Ne uznemiravaj</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite da nam Chrome OS uređaji šalju automatske izveštaje, pomažete nam da odredimo prioritet za stvari koje treba da popravimo i poboljšamo u Chrome OS-u. Ovi izveštaji mogu da obuhvataju stvari kao što su otkazivanja Chrome OS-a, funkcije koje koristite, količina memorije koju obično koristite i dijagnostika i podaci o korišćenju za Android aplikacije. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ove izveštaje možete da pokrenete ili zaustavite u svakom trenutku u podešavanjima Chrome OS uređaja. Ako ste administrator domena, možete da promenite ovo podešavanje na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
@@ -9832,7 +9837,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8497219075884839166">Windows uslužni programi</translation>
 <translation id="8498214519255567734">Omogućava da lakše pregledate sadržaj ekrana ili da čitate pri prigušenom svetlu</translation>
 <translation id="8499083585497694743">Uključi zvuk mikrofona</translation>
-<translation id="8499951261760185742">Ako sajt koji posećujete ne radi na očekivani način, probajte da privremeno dozvolite kolačiće treće strane za taj sajt. To znači manje zaštite, ali je veća verovatnoća da će funkcije sajta raditi na očekivani način.</translation>
 <translation id="8500044868721690197">Ovom sajtu je onemogućeno da kontroliše i reprogramira MIDI uređaje</translation>
 <translation id="8502536196501630039">Da biste koristili aplikacije sa Google Play-a, prvo morate da vratite aplikacije. Neki podaci su možda izgubljeni.</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
@@ -10820,6 +10824,10 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="940212040923880623">&amp;Pronađi i izmeni</translation>
 <translation id="942296794412775122">Uključi/isključi mikrofon</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deli Chrome karticu i zvuk.</translation>
+<translation id="943673863723789781">Lako podesite <ph name="DEVICE_TYPE" /> pomoću telefona. Možete da dodate Google nalog bez ručnog unošenja lozinke.
+    <ph name="BR" />
+    <ph name="BR" />
+    Vidljivo kao <ph name="DEVICE_TYPE" />...</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="947156494302904893">Sajtovi koje posećujete mogu da potvrde da ste stvarna osoba, a ne bot</translation>
 <translation id="947329552760389097">&amp;Proveri elemente</translation>

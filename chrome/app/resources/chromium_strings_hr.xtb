@@ -175,6 +175,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="4095980151185649725">{COUNT,plural, =1{Kad se Chromium ne koristi jednu minutu, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}one{Kad se Chromium ne koristi # minutu, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}few{Kad se Chromium ne koristi # minute, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}other{Kad se Chromium ne koristi # minuta, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}}</translation>
 <translation id="4118474109249235144">Chromiumov anonimni način</translation>
 <translation id="4148957013307229264">Instaliranje...</translation>
+<translation id="4149336151887611710">Vaša organizacija može vidjeti podatke o pregledavanju na vašem poslovnom profilu, kao što su oznake, povijest i zaporke, te upravljati njima. Ne može vidjeti podatke o pregledavanju na osobnim profilima na Chromiumu.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Prijava na mrežu – Chromium</translation>
 <translation id="421369550622382712">Otkrijte sjajne aplikacije, igre, proširenja i teme za Chromium.</translation>
 <translation id="4216212958613226427">Taj se jezik koristi za prikaz korisničkog sučelja Chromiuma</translation>
@@ -403,6 +404,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7867198900892795913">Chromium se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
 <translation id="7872446069773932638">Preuzimanje... Još <ph name="SECONDS" /> s</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima<ph name="END_BOLD" />: da bismo zaštitili vašu privatnost, automatski brišemo vaše interese starije od četiri tjedna. Tijekom vašeg daljnjeg pregledavanja neki se interes može ponovo pojaviti na popisu. Možete i ukloniti interese za koje ne želite da ih Chromium razmatra.</translation>
+<translation id="7888981273428720788">Postavite Chromium kao zadani preglednik</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chromium kao <ph name="USER_EMAIL_ADDRESS" />. Prijavite se ponovo istim računom.</translation>
 <translation id="7975919845073681630">Ovo je sekundarna instalacija Chromiuma, pa on ne može biti vaš zadani preglednik.</translation>
 <translation id="7997934263947464652">Proširenja, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chromium preporučuje da ih instalirate samo s usluge <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -415,6 +417,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="813913629614996137">Pokretanje...</translation>
 <translation id="8166782796394721554">Uključite dodatnu zaštitu u Chromiumovom alatu za JavaScript i WebAssembly</translation>
 <translation id="81770708095080097">Datoteka je opasna i Chromium ju je blokirao.</translation>
+<translation id="8232193495299001329">Chromium ne može provjeriti odakle dolazi ovo proširenje, pa bi moglo biti nesigurno. Uklonite ga iz Chromiuma kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući osobne podatke.</translation>
 <translation id="8248265253516264921">Ako slika nema koristan opis, Chromium će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu. To možete isključiti u bilo kojem trenutku u postavkama.</translation>
 <translation id="8266560134891435528">Chromium ne može provjeriti vaše zaporke jer niste prijavljeni</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vas upozorava<ph name="END_LINK" /> na nesigurne web-lokacije i preuzimanja</translation>

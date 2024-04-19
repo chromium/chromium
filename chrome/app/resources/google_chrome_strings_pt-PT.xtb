@@ -246,6 +246,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4793679854893018356">Saiba como o Chrome mantém a sua segurança</translation>
 <translation id="4828579605166583682">O Google Chrome está a tentar substituir as palavras-passe existentes. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="4842397268809523050">O ChromeOS Flex não conseguiu sincronizar os dados porque a sincronização não está disponível para o seu domínio.</translation>
+<translation id="4862446263930606916">A sua organização pode ver e gerir os dados de navegação no seu perfil de trabalho, como os marcadores, o histórico e as palavras-passe. Não consegue ver dados de navegação em perfis pessoais do Chrome.</translation>
 <translation id="4873692836499071887">Para receber atualizações futuras do Google Chrome, precisa do macOS 11 ou posterior. Este computador está a usar o macOS 10.15.</translation>
 <translation id="4873783916118289636">Reveja os principais controlos de privacidade e segurança no Chrome</translation>
 <translation id="4891791193823137474">Permitir que o Google Chrome seja executado em segundo plano</translation>
@@ -490,6 +491,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8989968390305463310">O seu histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina automaticamente os seus interesses todos os meses. Os interesses podem ser atualizados, a menos que os remova.</translation>
 <translation id="8999117580775242387">Quando o HTTPS não está disponível, o Chrome usa uma ligação insegura sem lhe enviar um aviso</translation>
 <translation id="8999208279178790196">{0,plural, =0{Está disponível uma atualização do Chrome}=1{Está disponível uma atualização do Chrome}other{Está disponível uma atualização do Chrome há # dias}}</translation>
+<translation id="9024318700713112071">Definir o Chrome como o navegador predefinido</translation>
 <translation id="9053892488859122171">Sistema do ChromeOS Flex</translation>
 <translation id="9090566250983691233">Saiba por que motivo o Chrome bloqueia alguns ficheiros</translation>
 <translation id="911206726377975832">Eliminar também os seus dados de navegação?</translation>

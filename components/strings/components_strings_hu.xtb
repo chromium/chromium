@@ -136,6 +136,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1243027604378859286">Szerző:</translation>
 <translation id="1247030632403369975">Alumínium</translation>
 <translation id="1252209483516427155">Kinti viselet</translation>
+<translation id="1253096324252841344">Fizetés a következővel: <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (szinkronizálva)</translation>
 <translation id="1255086252236620440">Robotgépek</translation>
 <translation id="1256368399071562588">&lt;p&gt;Ha nem nyílik meg a felkeresni kívánt webhely, először próbálja meg kijavítani a hibát a következő problémamegoldó lépések végrehajtásával:&lt;/p&gt;
@@ -1508,6 +1509,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="385489333361351399">Fotós és videós felszerelések</translation>
 <translation id="3858027520442213535">Dátum és idő frissítése</translation>
 <translation id="3858860766373142691">Név</translation>
+<translation id="3865339060090354361">Itt tekintheti meg a következő általános szerződési feltételeit: <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Természettudományok</translation>
 <translation id="3875783148670536197">Bemutató</translation>
 <translation id="3880456882942693779">Művészet és szórakoztatás</translation>
@@ -1983,6 +1985,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4809079943450490359">Utasítások az eszköz rendszergazdájától:</translation>
 <translation id="4811450222531576619">További információ a forrásról és a témáról</translation>
 <translation id="4813512666221746211">Hálózati hiba</translation>
+<translation id="4814114628197290459">IBAN törlése</translation>
 <translation id="4816492930507672669">Igazítás az oldalmérethez</translation>
 <translation id="4819347708020428563">Szeretné a jelöléseket az alapértelmezett nézetben szerkeszteni?</translation>
 <translation id="4822493756793346865">A szokásos árak az interneten megtalálható üzletek árain alapulnak, és az elmúlt 90 napból származnak.</translation>
@@ -2104,6 +2107,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5040262127954254034">Adatvédelem</translation>
 <translation id="5043480802608081735">Vágólapra másolt link</translation>
 <translation id="5045550434625856497">Helytelen jelszó</translation>
+<translation id="5048293684454354469">A hirdetéstéma csupán egy azon számos dolog közül, amelyet a webhelyek a hirdetések személyre szabásához használhatnak. A webhelyek a hirdetéstémák nélkül is megjeleníthetnek Önnek hirdetéseket, de előfordulhat, hogy ezek a hirdetések kevésbé lesznek személyre szabottak. További információ a <ph name="BEGIN_LINK" />hirdetésekhez kapcsolódó adatvédelem kezeléséről<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Aktív témák</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlt, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}other{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlokat, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}}</translation>
 <translation id="505757197798929356">Adja meg a megnyitás okát (kötelező)</translation>
@@ -2322,6 +2326,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     <ph name="LINE_BREAK" />
     Javasoljuk, hogy forduljon a rendszergazdához.</translation>
 <translation id="549333378215107354">Méret: 3</translation>
+<translation id="5496804587179176046">Biztonsági kódok mentése. Jelenleg nincsenek mentve biztonsági kódok.</translation>
 <translation id="550365051221576010">Minden kitöltése</translation>
 <translation id="5508443345185481044">Fényképezőgépek és kamerák</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2345,6 +2350,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="553377674408670169">Oktatási állások</translation>
 <translation id="5536214594743852365">A(z) „<ph name="SECTION" />” szakasz megjelenítése</translation>
 <translation id="553782666181800029">Chou 2 boríték</translation>
+<translation id="5538270463355278784">automatikus teljes képernyő</translation>
 <translation id="5539243836947087108">Tutaj</translation>
 <translation id="5540224163453853">A kért cikk nem található.</translation>
 <translation id="5540969246441091044">Lovaglás</translation>
@@ -2709,6 +2715,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Chrome-ban letöltött fájlok kezeléséhez.</translation>
 <translation id="6254436959401408446">Nincs elég memória az oldal megnyitásához</translation>
 <translation id="625463612687472648">Engedélyezés leállítása</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Amikor a Chrome-ban vásárol, megjelenik lehetőségként a(z) <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Amikor a Chrome-ban vásárol, megjelennek lehetőségként a következők: <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Átrendezés újra</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> könyvjelzők</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
@@ -2939,6 +2946,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a Készülékkereső megnyitásához a Google-fiókban.</translation>
 <translation id="6695428916538794739">Akció- és kalandfilmek</translation>
 <translation id="6696424331653607346">Útikönyvek és utazási katalógusok</translation>
+<translation id="6698097747703777657">Nem kapta meg a kódot? <ph name="BEGIN_LINK" />Igényeljen újat<ph name="END_LINK" />.</translation>
 <translation id="6698381487523150993">Létrehozva:</translation>
 <translation id="67007264085648978">Idővezérlő csúszka</translation>
 <translation id="6702851555558236418">Zene- és audioszoftverek</translation>
@@ -3339,7 +3347,6 @@ További részletek:
 <translation id="7442725080345379071">Világos narancssárga</translation>
 <translation id="7444046173054089907">Ez a webhely le van tiltva</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{A cookie-k ma ismét le lesznek tiltva}=1{A cookie-k holnap ismét le lesznek tiltva}other{# nap múlva a cookie-k ismét le lesznek tiltva}}</translation>
-<translation id="7445762425076701745">Nem sikerült teljesen ellenőrizni a szerver azonosságát, amelyhez kapcsolódik. Egy olyan névvel kapcsolódik a szerverhez, amelynek tulajdonjogát egy külső tanúsítványkibocsátó nem ellenőrizheti. Mivel egyes tanúsítványkibocsátók figyelmen kívül hagyják ezeket a neveket, így semmi nem biztosítja, hogy a kívánt webhelyhez kapcsolódik, és nem egy támadó webhelyhez.</translation>
 <translation id="7447234474237738389">Ruházattal kapcsolatos szolgáltatások</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Szinkronizálás kezelése gomb. A gombot megnyomva a Chrome-beállítások között kezelheti, hogy milyen adatokat szinkronizáljon.</translation>
@@ -3844,6 +3851,7 @@ További részletek:
 <translation id="8378714024927312812">Az Ön szervezete kezeli</translation>
 <translation id="8380941800586852976">Veszélyes</translation>
 <translation id="8381674639488873545">Egyszeri és ismétlődő díjakról is szó lehet, amelyek nem feltétlenül nyilvánvalóak. <ph name="BEGIN_LINK" />Megjelenítés mégis<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automatikus teljes képernyő</translation>
 <translation id="838307841291975086">Kombik</translation>
 <translation id="8389532092404711541">Szokásos ár: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Egyedi és nagy teljesítményű járművek</translation>

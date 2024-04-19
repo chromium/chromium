@@ -150,6 +150,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3702352323269013324">Další informace o personalizaci reklam v prohlížeči Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali}=1{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="3713809861844741608">Otevřít odkaz na nové kar&amp;tě prohlížeče Chromium</translation>
+<translation id="3728124580182886854">Propojte Chromium a další služby Google pro personalizaci a další účely</translation>
 <translation id="3788675262216168505">Spravovat profily Chromium</translation>
 <translation id="378917192836375108">Chromium umožňuje kliknout na telefonní číslo na webu a volat na něj prostřednictvím aplikace Skype.</translation>
 <translation id="3790262771324122253">Přečtěte si, proč Chromium blokuje některá stahování</translation>
@@ -231,6 +232,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5352361688875342522">Ostatní profily Chromium</translation>
 <translation id="5358375970380395591">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem prohlížeče Chromium. Vaše údaje prohlížeče Chromium, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Extra kód: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5377622451696208284">Pokud chcete získat personalizaci, zahrňte Chromium do Aktivity na webu a v aplikacích</translation>
 <translation id="5383439451358640070">Přečtěte si, proč Chromium některé soubory blokuje</translation>
 <translation id="5386450000063123300">Aktualizace prohlížeče Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Povolit přihlášení do prohlížeče Chromium</translation>
@@ -274,6 +276,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="608006075545470555">Přidat do tohoto prohlížeče pracovní profil</translation>
 <translation id="6096348254544841612">Přizpůsobte si prohlížeč Chromium a ovládejte jej. Je k dispozici aktualizace.</translation>
 <translation id="6102072151902574948">Když je tato funkce zapnutá, Chromium šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí.</translation>
+<translation id="6107893135096467929">Zapnuto • Chromium nedokáže ověřit, odkud toto rozšíření pochází</translation>
 <translation id="6119438414301547735">Povolit rozšíření zobrazovat na liště prohlížeče Chromium žádosti o přístup</translation>
 <translation id="6120345080069858279">Chromium vám toto heslo uloží do účtu Google. Nebudete si ho muset pamatovat.</translation>
 <translation id="6129621093834146363">Soubor <ph name="FILE_NAME" /> je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
@@ -308,6 +311,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6403826409255603130">Chromium je webový prohlížeč, který spouští webové stránky a aplikace rychlostí blesku. Je rychlý a snadno se používá. Prohlížejte web bezpečněji díky ochraně proti malwaru a phishingu integrované v prohlížeči Chromium.</translation>
 <translation id="6442900851116057561">Restartujte ChromiumOS</translation>
 <translation id="6443470774889161065">Chromium předběžně načítá ještě více stránek, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji</translation>
+<translation id="645458117210240797">Vypnuto • Chromium nedokáže ověřit, odkud toto rozšíření pochází</translation>
 <translation id="6455857529632101747">Vítejte v profilech Chromium</translation>
 <translation id="6475912303565314141">Také řídí, která stránka se zobrazí při spuštění prohlížeče Chromium.</translation>
 <translation id="648319183876919572">Vylepšené Bezpečné prohlížení vás chrání před nebezpečnými weby a soubory ke stažení</translation>
@@ -330,6 +334,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6717134281241384636">Nelze použít váš profil, protože byl vytvořen v novější verzi prohlížeče Chromium.
 
 Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu, nebo používejte novější verzi prohlížeče Chromium.</translation>
+<translation id="6729124504294600478">Pokud chcete získat personalizaci a další funkce, zahrňte Chromium do Aktivity na webu a v aplikacích a do propojených služeb Google</translation>
 <translation id="6734291798041940871">Prohlížeč Chromium je na tomto počítači již nainstalován pro všechny uživatele.</translation>
 <translation id="673636774878526923">Chcete-li mít ve všech zařízeních přístup k údajům z prohlížeče Chromium, přihlaste se a zapněte synchronizaci.</translation>
 <translation id="67706546131546258">Chromium doporučuje zkontrolovat tento soubor, protože může být nebezpečný.</translation>
@@ -358,9 +363,11 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="718435575166326686">Chromium pro tento web potřebuje přístup k fotoaparátu</translation>
 <translation id="7196312274710523067">Chromium nelze spustit. Zkuste to znovu.</translation>
 <translation id="7197677400338048821">Chromium nemůže zkontrolovat hesla. Zkuste to znovu za 24 hodin.</translation>
+<translation id="7198365860059291213">K zahájení imerzivní relace potřebuje Chromium oprávnění k pochopení scény a sledování rukou</translation>
 <translation id="7213407614656404070">Použít Chromium pokaždé, když kliknete na odkazy ve zprávách, dokumentech a dalších aplikacích</translation>
 <translation id="7223968959479464213">Správce úloh – Chromium</translation>
 <translation id="7246575524853130370">Vaše zájmy podle odhadu Chromium</translation>
+<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium vám doporučuje odstranit ho}few{Chromium vám doporučuje odstranit je}many{Chromium vám doporučuje odstranit je}other{Chromium vám doporučuje odstranit je}}</translation>
 <translation id="7309928523159922338">Měření reklam umožňuje navštíveným webům žádat Chromium o informace, na základě kterých mohou měřit výkonnost svých reklam. Měření reklam zabraňuje sledování mezi weby, protože se při něm mezi weby přenáší co možná nejméně informací.</translation>
 <translation id="731795002583552498">Aktualizace prohlížeče Chromium</translation>
 <translation id="7318036098707714271">Soubor nastavení je poškozený nebo neplatný.

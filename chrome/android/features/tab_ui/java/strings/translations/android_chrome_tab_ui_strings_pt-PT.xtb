@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
-<translation id="2613747923081026172">Criar grupo</translation>
 <translation id="2662028055331606429">Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar site</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Criado há <ph name="NUM_HOURS_ONE" /> hora}other{Criado há <ph name="NUM_HOURS_MANY" /> horas}}</translation>

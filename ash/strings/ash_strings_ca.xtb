@@ -68,6 +68,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicació de Play Store</translation>
 <translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Deixa de seleccionar</translation>
+<translation id="1230853660706736937">Cerca text en imatges i consulta previsualitzacions d'imatges</translation>
 <translation id="1235458158152011030">Xarxes conegudes</translation>
 <translation id="1239161794459865856">La funció <ph name="FEATURE_NAME" /> està connectada.</translation>
 <translation id="1240638468526743569">Una aplicació</translation>
@@ -128,6 +129,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1420408895951708260">Activa o desactiva la funció Llum nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1435537621343861112">No es pot iniciar el dictat. El micròfon està desactivat.</translation>
+<translation id="1448963928642384376">Punts d'accés Wi‐Fi del teu dispositiu</translation>
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
 <translation id="14648076227129703">Permet l'accés a la càmera a <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
@@ -160,6 +162,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1569384531973824928">Permet l'accés a tots els llocs web i totes les aplicacions amb permisos per accedir a la càmera i al micròfon. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
 <translation id="1571697193564730395">Commuta el mode No molestis. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Redueix quan la lupa estigui activada</translation>
+<translation id="1582946770779745370">La funció Tauler de joc està disponible. Prem <ph name="LAUNCHER_KEY_NAME" />+Maj+Esc i, després, <ph name="LAUNCHER_KEY_NAME" />+G en qualsevol moment per obrir-la.</translation>
 <translation id="1586324912145647027">Ves a l'escriptori de l'1 al 8</translation>
 <translation id="158838227375272121">Lloc web de Google Classroom</translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
@@ -715,11 +718,13 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3824784079442479685">Permet l'accés a la càmera a <ph name="APP_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
 <translation id="3826099427150913765">Canvia a contrasenya</translation>
 <translation id="383058930331066723">El mode d'estalvi de bateria està activat</translation>
+<translation id="3831226344927851293">Surt de la visualització del tutorial</translation>
 <translation id="383629559565718788">Mostra la configuració del teclat</translation>
 <translation id="384082539148746321">Vols suprimir la plantilla?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> i després <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">No hi ha informació de xarxa disponible</translation>
+<translation id="3848526302597027234">Accedeix als permisos següents:</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="385300504083504382">Principi</translation>
 <translation id="3859364108019690">No es poden reproduir aplicacions en continu</translation>

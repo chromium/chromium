@@ -195,6 +195,7 @@
 <translation id="4053720452172726777">Google Chromen muokkaaminen ja hallinta</translation>
 <translation id="4106587138345390261">Chrome kokeilee uusia ominaisuuksia, joiden avulla sivustot voivat tarjota saman selauskokemuksen vähemmillä tiedoilla.</translation>
 <translation id="4110895483821904099">Luo uusi Chrome-profiili</translation>
+<translation id="4111566860456076004">Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin, ja se saattaa olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi (mukaan lukien henkilökohtaisia tietoja) avatuilla sivustoilla.</translation>
 <translation id="4128488089242627000">Chrome toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti (suositus)</translation>
 <translation id="4147555960264124640">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Google Chrome -profiiliasi. Chrome-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Asennetaan...</translation>
@@ -245,6 +246,7 @@
 <translation id="4793679854893018356">Katso, miten Chrome pitää sinut turvassa</translation>
 <translation id="4828579605166583682">Google Chrome yrittää korvata nykyiset salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="4842397268809523050">ChromeOS Flex ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
+<translation id="4862446263930606916">Organisaatiosi voi nähdä ja hallinnoida työprofiilisi selausdataa, esimerkiksi kirjanmerkkejä, historiaa ja salasanoja. Se ei näe henkilökohtaisten Chrome-profiilien selausdataa.</translation>
 <translation id="4873692836499071887">Sinulla on oltava macOS 11 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 10.15.</translation>
 <translation id="4873783916118289636">Tarkista Chromen tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
 <translation id="4891791193823137474">Jätä Google Chrome käyntiin taustalle</translation>
@@ -489,6 +491,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8999117580775242387">Kun HTTPS ei ole käytettävissä, Chrome käyttää suojaamatonta yhteyttä ilman erillistä varoitusta</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-päivitys on saatavilla}=1{Chrome-päivitys on saatavilla}other{Chrome-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
+<translation id="9024318700713112071">Valitse Chrome oletusselaimeksi</translation>
 <translation id="9053892488859122171">ChromeOS Flexin järjestelmä</translation>
 <translation id="9090566250983691233">Lue lisää siitä, miksi Chrome estää joitakin tiedostoja</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>

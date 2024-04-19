@@ -904,7 +904,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="5752232708629533680">Shiriki GIF pekee</translation>
 <translation id="5754350196967618083">Imeshindwa kuonyesha upya kipengele cha Dokezo</translation>
 <translation id="5755162682436943950">Umeondoka kwenye akaunti. Hufungua kidirisha ili kuingia katika akaunti na kuwasha usawazishaji.</translation>
-<translation id="5759897675466110265">Je, tovuti haifanyi kazi? Jaribu kuruhusu vidakuzi vya washirika wengine kwa muda</translation>
 <translation id="5763382633136178763">Vichupo fiche</translation>
 <translation id="5763514718066511291">Gusa ili unakili URL ya programu hii</translation>
 <translation id="5765517223145864268">Tupe maoni yako. Unaweza pia <ph name="BEGIN_LINK" />kubadilisha mipangilio yako<ph name="END_LINK" />.</translation>
@@ -1052,6 +1051,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6477928892249167417">Tovuti hizi zinaonekana kuwa muhimu kwako:</translation>
 <translation id="6481963882741794338">Unganisha Chrome na huduma nyingine za Google ili upate mapendeleo na madhumuni mengine</translation>
 <translation id="6482749332252372425">Kipakuliwa cha <ph name="FILE_NAME" /> hakijafaulu kwa sababu hakuna nafasi ya hifadhi ya kutosha.</translation>
+<translation id="6495590690749880440">Ungependa Kufungua Kikundi cha Vichupo?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Imepakuliwa faili}other{Imemaliza kupakua faili #}}</translation>
 <translation id="6508722015517270189">Zima na uwashe Chrome</translation>
 <translation id="6518133107902771759">Thibitisha</translation>

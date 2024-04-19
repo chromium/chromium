@@ -301,7 +301,6 @@
 <translation id="2604176749896001318">તમારું બ્રાઉઝર અપડેટ કરો</translation>
 <translation id="2609008503159898744">શું બધી ટૅબ બંધ કરીએ?</translation>
 <translation id="261305050785128654">તમે જે ભાષાઓ બોલો છો તે વેબસાઇટને જણાવો. જ્યારે શક્ય હશે ત્યારે તેઓ તે ભાષાઓમાં કન્ટેન્ટ બતાવશે.</translation>
-<translation id="2613747923081026172">ગ્રૂપ બનાવો</translation>
 <translation id="2617210333344098964">સરનામું એકાઉન્ટમાં ખસેડો</translation>
 <translation id="261739049332372104">તમારા માટે મહત્વપૂર્ણ હોય તે કન્ટેન્ટ વિશે અપડેટ મેળવવા માટે, તમારા iOS સેટિંગમાં નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="2625189173221582860">પાસવર્ડ કૉપિ કર્યો</translation>
@@ -843,6 +842,7 @@
 <translation id="5407969256130905701">ફેરફારો કાઢી નાખો</translation>
 <translation id="5414763847370083940">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમે કોઈ અલર્ટ મેળવશો.</translation>
 <translation id="5416022985862681400">છેલ્લા 7 દિવસ</translation>
+<translation id="5416455648658732408">ટૅબના ગ્રૂપમાં ખસેડો</translation>
 <translation id="5423269318075950257">કિંમત ટ્રૅક કરો</translation>
 <translation id="543338862236136125">પાસવર્ડમાં ફેરફાર કરો</translation>
 <translation id="5433691172869980887">વપરાશકર્તાનામ કૉપિ કર્યું</translation>
@@ -1038,6 +1038,7 @@
 <translation id="6363526231572697780">કોઈ વપરાશકર્તાનું નામ નથી</translation>
 <translation id="6366190659675876144">માનક સંરક્ષણ</translation>
 <translation id="6366663624406569102">સાઇન આઉટ કરીને સિંક કરવું બંધ કરો</translation>
+<translation id="6368038301482806847">સૂચિમાંથી શોધ એન્જિન પસંદ કરો.</translation>
 <translation id="6374469231428023295">ફરી પ્રયાસ કરો</translation>
 <translation id="6377118281273296434">સાઇટની સુરક્ષા</translation>
 <translation id="6383719166112032471">લોકેશન ખોલો…</translation>
@@ -1106,6 +1107,7 @@
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6656103420185847513">ફોલ્ડરમાં ફેરફાર કરો</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
+<translation id="6659660757330712663">એક ટૅબ પરથી બીજા પર સ્વિચ કરવા માટે, તમે ટૂલબાર સ્વાઇપ કરી શકો છો.</translation>
 <translation id="6668619169535738264">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="6672241253012342409">સાઇટ તમને વધુ સારો બ્રાઉઝિંગ અનુભવ આપવા, ઉદાહરણ તરીકે, તમને સાઇન ઇન કરીને રાખવા અથવા તમારા શૉપિંગ કાર્ટની આઇટમ યાદ રાખવા માટે, કુકીનો ઉપયોગ કરી શકે છે.
 
@@ -1196,6 +1198,7 @@
 <translation id="7161230316646448869">બધા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે છૂપી ટૅબ અનલૉક કરો</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>
+<translation id="7186568385131859684">Googleની તમામ સેવાઓમાં તમારા અન્ય ડેટા સાથે બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કેવી રીતે થાય તે નિયંત્રિત કરો</translation>
 <translation id="7189598951263744875">શેર કરો...</translation>
 <translation id="719133302483559673">તમારી રુચિઓ અમે પસંદગીઓ મેનેજ કરો.</translation>
 <translation id="7192050974311852563">લૉગિંગ શરૂ કરો</translation>
@@ -1239,6 +1242,7 @@
 <translation id="7438481509621345350">જ્યારે તમે કોઈ નવી ટૅબ ખોલશો, ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી હવે સ્ટોરી દેખાશે.</translation>
 <translation id="7451023311965289370">{count,plural, =1{બુકમાર્ક "{title}" પર સાચવ્યું}one{બુકમાર્ક "{title}" પર સાચવ્યું}other{બુકમાર્ક "{title}" પર સાચવ્યા}}</translation>
 <translation id="7454057999980797137">રાજ્ય / કાઉન્ટી</translation>
+<translation id="7458706065921255639">મનગમતું બનાવવું અને લિંક કરવું</translation>
 <translation id="745899714366929493">આખો દિવસ</translation>
 <translation id="7459628154744868585">વધારેલું સંરક્ષણ ચાલુ છે</translation>
 <translation id="7465351360025415755">તમારા માટે મહત્ત્વપૂર્ણ હોય તે કન્ટેન્ટ મેળવો</translation>
@@ -1324,6 +1328,7 @@
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7856733331829174190">ડાઉનલોડ ન કરી શક્યાં</translation>
 <translation id="7859704718976024901">બ્રાઉઝિંગ ઇતિહાસ</translation>
+<translation id="7860900259978879139">ગ્રૂપમાંથી કાઢી નાખો</translation>
 <translation id="7866501058614003444">આ પૅકેજને ટ્રૅક કરવાનું સફળતાપૂર્વક બંધ કરવામાં આવ્યું.</translation>
 <translation id="7866872729285243843">તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ મેળવવા માટે, સેટિંગમાં "વાંચન સૂચિ" ચાલુ કરો.</translation>
 <translation id="7866993391592926595">આ કાર્ડ છુપાવવાથી પૅકેજ ટ્રૅકિંગની સુવિધા બંધ થઈ જશે અને તમારો બધો ડેટા કાઢી નાખવામાં આવશે</translation>
@@ -1411,9 +1416,11 @@
 <translation id="8273982424131314219">તમે <ph name="URL" /> માં માહિતી ભરશો</translation>
 <translation id="8281781826761538115">ડિફૉલ્ટ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">છોડો</translation>
+<translation id="8282657446819506217">ટૅબના ગ્રૂપમાં ખોલો</translation>
 <translation id="828291969289324795">{count,plural, =1{નવા ગ્રૂપમાં ટૅબ ઉમેરો}one{નવા ગ્રૂપમાં ટૅબ ઉમેરો}other{નવા ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="8283172974887967105">સેટ કરો…</translation>
 <translation id="8286036467436129157">સાઇન ઇન કરો</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> નોટિફિકેશન બંધ કર્યા</translation>
 <translation id="8292843446079898078">તમે ટ્રૅક કરો છો તે પ્રોડક્ટની કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવો.</translation>
 <translation id="8299417921174340354">પાસવર્ડનો ઉપયોગ કરવા માટે, તમારે પહેલા તમારા ડિવાઇસ પર પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="8299613349954694191">ખાનગી રૂપે વેબ બ્રાઉઝ કરવા છૂપી ટૅબ ખોલો.</translation>
@@ -1421,6 +1428,7 @@
 <translation id="8313645224014086262">ફાઇલ સાચવો</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" /> માટે નોટિફિકેશન બંધ કરો</translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="834783239627985533">સૌથી વધુ મુલાકાત લીધેલી સાઇટ</translation>
 <translation id="8358401059263985056">નોટિફિકેશન ચાલુ કરો</translation>

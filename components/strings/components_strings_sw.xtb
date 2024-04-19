@@ -1987,6 +1987,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4809079943450490359">Maagizo kutoka kwa msimamizi wa kifaa chako:</translation>
 <translation id="4811450222531576619">Fahamu kuhusu mada na chanzo chake</translation>
 <translation id="4813512666221746211">Hitilafu ya mtandao</translation>
+<translation id="4814114628197290459">Futa IBAN</translation>
 <translation id="4816492930507672669">Sawazisha kwenye ukurasa</translation>
 <translation id="4819347708020428563">Ungependa kubadilisha vidokezo katika mwonekano chaguomsingi?</translation>
 <translation id="4822493756793346865">Bei za kawaida hutokana na bei katika maduka yaliyo kwenye wavuti katika kipindi cha siku 90 zilizopita.</translation>
@@ -2108,6 +2109,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5040262127954254034">Faragha</translation>
 <translation id="5043480802608081735">Kiungo Ulichonakili</translation>
 <translation id="5045550434625856497">Nenosiri lisilo sahihi</translation>
+<translation id="5048293684454354469">Mada za matangazo ni mojawapo tu ya vitu vingi ambavyo tovuti inaweza kutumia ili kuwekea mapendeleo matangazo. Hata bila mada za matangazo, tovuti bado zinaweza kukuonyesha matangazo lakini huenda yasikufae zaidi. Pata maelezo zaidi kuhusu <ph name="BEGIN_LINK" />kudhibiti faragha yako ya matangazo<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Mada zinazotumika</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ili utume faili hii kwa kutumia kipengele cha Uhamishaji wa Karibu, futa baadhi ya faili kwenye kifaa chako ili upate nafasi (<ph name="DISK_SPACE_SIZE" />)}other{Ili utume faili hizi kwa kutumia kipengele cha Uhamishaji wa Karibu, futa baadhi ya faili kwenye kifaa chako ili upate nafasi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">Toa sababu ya kufungua (ni lazima)</translation>
@@ -2326,6 +2328,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
     <ph name="LINE_BREAK" />
     Jaribu kuwasiliana na msimamizi wa mfumo wako.</translation>
 <translation id="549333378215107354">Ukubwa wa 3</translation>
+<translation id="5496804587179176046">Hifadhi misimbo ya usalama, hakuna misimbo ya usalama iliyohifadhiwa kwa sasa</translation>
 <translation id="550365051221576010">Jaza kila kitu</translation>
 <translation id="5508443345185481044">Kamera na Kamkoda</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3343,7 +3346,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7442725080345379071">Chungwa Isiyokolea</translation>
 <translation id="7444046173054089907">Tovuti hii imezuiwa</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Vidakuzi vitazuiwa tena leo}=1{Vidakuzi vitazuiwa tena kesho}other{Zimesalia siku # kabla vidakuzi vizuiwe tena}}</translation>
-<translation id="7445762425076701745">Utambulisho wa seva ambayo umejiunga kwayo hauwezi kuhalalishwa kikamilifu. Umeunganishwa kwenye seva kwa kutumia jina ambalo ni halali tu katika mtandao wako, ambalo mamlaka ya cheti cha nje hayana njia ya kuhalalisha umiliki wake. Kama baadhi ya mamlaka ya cheti yatatoa vyeti vya majina haya bila kujali, hakuna njia ya kuhakikisha umeunganishwa kwenye tovuti inayohitajika na sio mshambulizi.</translation>
 <translation id="7447234474237738389">Huduma za Mavazi</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (milimita <ph name="WIDTH" /> x <ph name="HEIGHT" />)</translation>
 <translation id="7450577240311017924">Kitufe cha 'Dhibiti usawazishaji', washa ili udhibiti maelezo unayosawazisha katika mipangilio ya Chrome</translation>

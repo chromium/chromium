@@ -247,6 +247,7 @@
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1178601482396475810">مدیریت همگام‌سازی دستگاه</translation>
 <translation id="117916940443676133">کلید امنیتی‌تان پین ندارد و محافظت‌شده نیست. برای مدیریت داده‌های ورود به سیستم، ابتدا پین ایجاد کنید.</translation>
+<translation id="1179902906564467236">دستورالعمل‌های روی تلفنتان را دنبال کنید یا از برنامه دوربین استفاده کنید</translation>
 <translation id="118057123461613219">صرفه‌جویی‌های بسیار زیاد</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1181366777303791449">در <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -660,6 +661,7 @@
 <translation id="1500801317528437432">‏درباره «برنامه‌های Chrome» پشتیبانی‌نشده بیشتر بدانید</translation>
 <translation id="1501480321619201731">حذف گروه</translation>
 <translation id="1503392482221435031">‏به‌طور خودکار آمار کاربرد را به Google ارسال می‌کند. می‌توانید گزارش‌های خرابی را در تنظیمات دستگاه روشن یا خاموش کنید.</translation>
+<translation id="1503556098270577657">‏بااستفاده از تلفن Android خود به سیستم <ph name="USER_EMAIL" /> وارد شده‌اید</translation>
 <translation id="150411034776756821">حذف <ph name="SITE" /></translation>
 <translation id="1504551620756424144">‏پوشه‌های هم‌رسانی‌شده در Windows در <ph name="BASE_DIR" /> دردسترس هستند.</translation>
 <translation id="1505494256539862015">صادر کردن گذرواژه‌ها</translation>
@@ -1247,6 +1249,7 @@
 <translation id="1915734383465415025">شماره فروشگاه</translation>
 <translation id="1916260783734263714">برگه کنونی</translation>
 <translation id="1916502483199172559">چهرک پیش‌فرض قرمز</translation>
+<translation id="1916770123977586577">برای اعمال کردن تنظیمات به‌روزرسانی‌شده خود در این سایت، این صفحه را بار کردن مجدد کنید</translation>
 <translation id="1918127774159128277">‏بازآوری قابلیت‌های WiFi Direct</translation>
 <translation id="1918141783557917887">&amp;کوچک تر</translation>
 <translation id="1919872106782726755">برای راه‌اندازی اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در بالا گوشه راست صفحه‌کلید، کنار دکمه روشن/خاموش لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
@@ -2564,7 +2567,6 @@
 <translation id="2877467134191447552">می‌توانید حساب‌های اضافی‌تان را برای دسترسی به وب‌سایت‌ها و برنامه‌ها اضافه کنید.</translation>
 <translation id="2878782256107578644">اسکن کردن درحال انجام است، اکنون باز شود؟</translation>
 <translation id="2878889940310164513">افزودن شبکه تلفن همراه…</translation>
-<translation id="2879594947768634665">برگه‌های جدید</translation>
 <translation id="288042212351694283">‏دسترسی به دستگاه‌های Universal 2nd Factor شما</translation>
 <translation id="2881076733170862447">وقتی روی افزونه کلیک می‌کنید</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> راه‌اندازی مجدد و به صورت لحظه‌ای بازنشانی می‌شود</translation>
@@ -5586,6 +5588,10 @@
 <translation id="5235050375939235066">برنامه حذف نصب شود؟</translation>
 <translation id="523505283826916779">تنظیمات دسترس‌پذیری</translation>
 <translation id="5235750401727657667">جایگزین کردن صفحه‌ای که هنگام باز کردن برگه جدید می‌بینید</translation>
+<translation id="5237124927415201087">‏به‌راحتی <ph name="DEVICE_TYPE" /> را با تلفنتان راه‌اندازی کنید. می‌توانید Wi-Fi و «حساب Google» را بدون وارد کردن دستی گذرواژه‌ها اضافه کنید.
+    <ph name="BR" />
+    <ph name="BR" />
+    نمایان با نام <ph name="DEVICE_TYPE" />…</translation>
 <translation id="523862956770478816">اجازه‌های سایت</translation>
 <translation id="5240931875940563122">‏ورود به سیستم با تلفن Android</translation>
 <translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» فعال شود؟</translation>
@@ -7428,7 +7434,6 @@
 <translation id="6673898378497337661">افزایش روشنایی صفحه‌کلید</translation>
 <translation id="6674571176963658787">برای شروع همگام‌سازی، گذرعبارت را وارد کنید</translation>
 <translation id="6675665718701918026">دستگاه نشانگر متصل شد</translation>
-<translation id="6675985668044425385">اگر سایتی عملکرد موردنظر را ندارد، می‌توانید ازطریق گزینه «محافظت دربرابر ردیابی» در نوار نشانی، کوکی‌های شخص ثالث را فعال کنید.</translation>
 <translation id="6676212663108450937">لطفاً درحین آموزش صدایتان، از هدفون استفاده کنید</translation>
 <translation id="667752334740867460">‏درحال دریافت اطلاعات Wi-Fi…</translation>
 <translation id="6678717876183468697">نشانی وب عبارت</translation>
@@ -7512,7 +7517,7 @@
 <translation id="6743841972744298686">تنظیمات همگام‌سازی</translation>
 <translation id="6745592621698551453">اکنون به‌روز شود</translation>
 <translation id="6746124502594467657">انتقال به پایین</translation>
-<translation id="674632704103926902">فعال کردن کشیدن برگه</translation>
+<translation id="674632704103926902">فعال کردن کشیدن با ضربه</translation>
 <translation id="67465227497040338">نشان دادن گذرواژه <ph name="DOMAIN" /></translation>
 <translation id="6748465660675848252">می‌توانید ادامه دهید، اما تنها تنظیمات و داده‌های همگام‌سازی شده شما بازیابی می‌شوند. همه داده‌های محلی از دست می‌روند.</translation>
 <translation id="6748980958975836188">‏<ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Chrome و ChromeOS<ph name="END_LINK2" /> را خوانده‌ام و با آن‌ها موافقت می‌کنم.</translation>
@@ -8898,6 +8903,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">به سایت‌ها اجازه داده نشود صفحه‌کلید را قفل کنند</translation>
 <translation id="7789963078219276159">پس‌زمینه صفحه شروع به <ph name="CATEGORY" /> تغییر کرد.</translation>
+<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">روش ورودی</translation>
 <translation id="7791429245559955092">‏این برنامه در نمایه Chrome که اکنون استفاده می‌کنید نصب خواهد شد</translation>
 <translation id="7791436592012979144">پیمایش معکوس فعال است</translation>
@@ -8971,7 +8977,6 @@
 <translation id="7848892492535275379"><ph name="CREDENTIAL_TYPE" /> برای <ph name="USER_EMAIL" /></translation>
 <translation id="7849264908733290972">باز کردن &amp;تصویر در برگهٔ جدید</translation>
 <translation id="784934925303690534">محدوده زمانی</translation>
-<translation id="7849656116606005620">یادآوری: «محافظت دربرابر ردیابی» روشن است</translation>
 <translation id="7850320739366109486">مزاحم نشوید</translation>
 <translation id="7850717413915978159">‏<ph name="BEGIN_PARAGRAPH1" />اگر به دستگاه‌های ChromeOS اجازه دهید گزارش‌های خودکار ارسال کند، به ما کمک می‌کنید آنچه را باید در ChromeOS درست کنیم و بهبود ببخشیم اولویت‌بندی کنیم. این گزارش‌ها می‌تواند شامل مواردی ازاین‌قبیل باشد: چه زمانی ChromeOS خراب می‌شود، از کدام ویژگی‌ها استفاده می‌کنید، معمولاً از چه مقدار حافظه استفاده می‌کنید، و داده‌های استفاده و عیب‌یابی برنامه Android. برخی‌از داده‌های انبوهشی به برنامه‌ها و شرکای Google، مثل توسعه‌دهندگان Android، هم کمک می‌کند.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />هرزمان خواستید می‌توانید مجاز بودن این گزارش‌ها را در تنظیمات دستگاه ChromeOS شروع یا متوقف کنید. اگر سرپرست دامنه هستید، می‌توانید این تنظیم را در «کنسول سرپرست» تغییر دهید.<ph name="END_PARAGRAPH2" />
@@ -9844,7 +9849,6 @@
 <translation id="8497219075884839166">‏امکانات WIndows</translation>
 <translation id="8498214519255567734">نگاه کردن به صفحه یا خواندن در نور کم را آسان‌تر می‌کند</translation>
 <translation id="8499083585497694743">باصدا کردن میکروفون</translation>
-<translation id="8499951261760185742">اگر سایتی که بازدید می‌کنید طبق انتظار کار نمی‌کند، کوکی‌های شخص ثالث را موقتاً برای آن سایت مجاز کنید. این کار به‌معنی محافظت کمتر است اما ویژگی‌های سایت به احتمال زیاد عملکرد موردنظر را خواهند داشت.</translation>
 <translation id="8500044868721690197">‏دسترسی این سایت برای کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI مسدود شده است</translation>
 <translation id="8502536196501630039">‏برای استفاده از برنامه‌های Google Play، ابتدا باید برنامه‌هایتان را بازیابی کنید. ممکن است برخی از داده‌ها از دست رفته باشد.</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
@@ -10831,6 +10835,10 @@
 <translation id="940212040923880623">جستجو و ویرایش</translation>
 <translation id="942296794412775122">روشن/ خاموش کردن میکروفون</translation>
 <translation id="942532530371314860">‏<ph name="APP_NAME" /> در حال اشتراک‌گذاری یک برگه Chrome و صوت است.</translation>
+<translation id="943673863723789781">‏به‌راحتی <ph name="DEVICE_TYPE" /> را با تلفنتان راه‌اندازی کنید. می‌توانید «حساب Google» خود را بدون وارد کردن دستی گذرواژه اضافه کنید.
+    <ph name="BR" />
+    <ph name="BR" />
+    نمایان با نام <ph name="DEVICE_TYPE" />…</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="947156494302904893">سایت‌هایی که بازدید می‌کنید می‌توانند تأیید کنند که شما شخص واقعی هستید و روبات نیستید</translation>
 <translation id="947329552760389097">&amp;بازرسی عناصر</translation>

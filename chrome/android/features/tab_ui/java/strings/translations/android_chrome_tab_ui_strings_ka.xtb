@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ ჩაკეცვა.}other{<ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ ჩაკეცვა.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის ჩაკეცვა.}other{ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის ჩაკეცვა.}}</translation>
 <translation id="2569352796411618312">შემოთავაზება: თქვენი <ph name="NUMBER_OF_TABS" /> ჩანართი ბოლო დროს არ გამოგიყენებიათ. გსურთ მათი დახურვა?</translation>
-<translation id="2613747923081026172">ჯგუფის შექმნა</translation>
 <translation id="2662028055331606429">შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">საიტზე გადასვლა</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{შეიქმნა <ph name="NUM_HOURS_ONE" /> საათის წინ}other{შეიქმნა <ph name="NUM_HOURS_MANY" /> საათის წინ}}</translation>

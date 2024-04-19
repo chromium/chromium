@@ -904,7 +904,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="5752232708629533680">Kopīgot tikai GIF failu</translation>
 <translation id="5754350196967618083">Nevar atsvaidzināt Discover</translation>
 <translation id="5755162682436943950">Jūs esat izrakstījies. Tiek atvērts dialoglodziņš, lai pierakstītos un ieslēgtu sinhronizāciju.</translation>
-<translation id="5759897675466110265">Vai vietne nedarbojas? Varat mēģināt īslaicīgi atļaut trešo pušu sīkfailus.</translation>
 <translation id="5763382633136178763">Inkognito režīma cilnes</translation>
 <translation id="5763514718066511291">Pieskarieties, lai kopētu šīs lietotnes URL.</translation>
 <translation id="5765517223145864268">Pastāstiet mums par savu pieredzi. Vai <ph name="BEGIN_LINK" />mainiet iestatījumus<ph name="END_LINK" />.</translation>
@@ -1052,6 +1051,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6477928892249167417">Šķiet, ka šīs vietnes jums ir svarīgas:</translation>
 <translation id="6481963882741794338">Saistiet pārlūku Chrome un citus Google pakalpojumus personalizēšanai un citiem mērķiem</translation>
 <translation id="6482749332252372425">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo krātuvē nav pietiekami daudz vietas.</translation>
+<translation id="6495590690749880440">Vai atvērt ciļņu grupu?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Fails ir lejupielādēts.}zero{# lejupielādes ir pabeigtas.}one{# lejupielāde ir pabeigta.}other{# lejupielādes ir pabeigtas.}}</translation>
 <translation id="6508722015517270189">Restartējiet pārlūku Chrome</translation>
 <translation id="6518133107902771759">Verificēt</translation>

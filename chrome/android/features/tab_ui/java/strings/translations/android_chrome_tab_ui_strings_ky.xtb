@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жыйыштыруу.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жыйыштыруу.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк жыйыштырылсын.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобу жыйыштырылсын.}}</translation>
 <translation id="2569352796411618312">Сунуш: Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
-<translation id="2613747923081026172">Топ түзүү</translation>
 <translation id="2662028055331606429">Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Сайтка баш багуу</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> саат мурун түзүлдү}other{<ph name="NUM_HOURS_MANY" /> саат мурун түзүлдү}}</translation>

@@ -195,6 +195,7 @@
 <translation id="4053720452172726777">自訂及管理 Google Chrome</translation>
 <translation id="4106587138345390261">Chrome 團隊正在研究新功能，設法讓網站減少存取個人資訊的情況，同時讓使用者享有相同的瀏覽體驗。</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
+<translation id="4111566860456076004">Chrome 無法驗證擴充功能的來源，因此可能不安全。請從 Chrome 中移除這項擴充功能，使其無法再查看及變更你瀏覽網站時留下的資料，包括個人資訊。</translation>
 <translation id="4128488089242627000">提高 Chrome 執行速度，讓使用 JavaScript 的功能正常運作 (建議採用)</translation>
 <translation id="4147555960264124640">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chrome 設定檔。你的 Chrome 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">安裝中...</translation>
@@ -213,9 +214,11 @@
 <translation id="4293420128516039005">登入即可進行同步處理，讓你在所有裝置上享有個人化的 Chrome 體驗</translation>
 <translation id="430327780270213103">允許擴充功能在 Chrome 工具列中顯示存取要求</translation>
 <translation id="4328355335528187361">Google Chrome 開發人員版 (mDNS-In)</translation>
+<translation id="4329315893554541805">如要享有個人化服務和其他功能，請在「網路和應用程式活動」與「已連結的 Google 服務」中納入 Chrome</translation>
 <translation id="4334294535648607276">下載完成。</translation>
 <translation id="4335235004908507846">Chrome 可確保安全性，例如防範資料侵害事件或封鎖含有惡意軟體的擴充功能等等</translation>
 <translation id="4343195214584226067">已將「<ph name="EXTENSION_NAME" />」加到 Chrome</translation>
+<translation id="4348548358339558429">如要享有個人化服務，請在「網路和應用程式活動」中納入 Chrome</translation>
 <translation id="436060642166082913">這個檔案可能會危害個人和社群網路帳戶，因此 Chrome 已禁止下載</translation>
 <translation id="4384570495110188418">你尚未登入帳戶，因此 Chrome 無法檢查你的密碼</translation>
 <translation id="4389991535395284064">以無痕模式瀏覽網頁時，Chrome 會在使用不安全的連線載入網站前發出警告</translation>
@@ -331,7 +334,9 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6412673304250309937">可使用儲存在 Chrome 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{根據貴機構規定，Chrome 閒置 1 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}other{根據貴機構規定，Chrome 閒置 # 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}}</translation>
 <translation id="6418662306461808273">要切換至現有的 Chrome 設定檔嗎？</translation>
+<translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化等用途</translation>
 <translation id="648319183876919572">安全瀏覽強化防護功能可進一步協助你防範危險的網站和下載內容</translation>
+<translation id="6489302989675808168">已開啟 • Chrome 無法驗證這個擴充功能的來源</translation>
 <translation id="6493527311031785448">Google Chrome 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome 已自動關閉</translation>
 <translation id="6506909944137591434">Chrome 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
@@ -356,6 +361,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6933858244219479645">ChromeOS 系統</translation>
 <translation id="6938166777909186039">如要取得日後的 Google Chrome 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 8.1。</translation>
 <translation id="6943584222992551122">這位使用者的瀏覽資料將從這個裝置上刪除。如要還原資料，請使用 <ph name="USER_EMAIL" /> 登入 Chrome。</translation>
+<translation id="6944202724043006419">Chrome 需要場景理解和手部追蹤權限，才能啟動混合實境工作階段</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome Beta 版輸入規則。</translation>
 <translation id="6989339256997917931">Google Chrome 已更新，但你至少已有 30 天未使用該瀏覽器。</translation>
 <translation id="7011190694940573312">安裝失敗，因為應用程式不支援這個版本的作業系統。</translation>
@@ -390,6 +396,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7477130805345743099">在使用不安全的連線載入任何網站前，Chrome 會發出警告</translation>
 <translation id="7481213027396403996">獲得 Chrome 最強大的安全防護</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
+<translation id="7572537927358445944">已關閉 • Chrome 無法驗證這個擴充功能的來源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
@@ -478,6 +485,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8823341990149967727">Chrome 版本過舊</translation>
 <translation id="8825634023950448068">為保護個人隱私，我們會自動刪除 4 週以上的興趣喜好。視瀏覽內容而定，某個主題可能會再次顯示在你的興趣喜好清單中。如果你認為 Chrome 判斷錯誤或不想看到特定廣告，可以移除感興趣的主題。</translation>
 <translation id="8834965163890861871">Google Chrome 正在嘗試編輯密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome 建議你將其移除}other{Chrome 建議你將其移除}}</translation>
 <translation id="8862326446509486874">你沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝檔。</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送到 Android 手機，請在這兩部裝置上登入 Chrome。</translation>

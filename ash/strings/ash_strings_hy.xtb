@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Խանութի հավելված</translation>
 <translation id="1225748608451425081">Ձեր Chromebook-ը կողպվել է խնդրի պատճառով։ Դուք կկարողանաք մուտք գործել <ph name="TIME_LEFT" />ից։</translation>
 <translation id="1229194443904279055">Դադարեցնել տեքստի ընտրությունը</translation>
+<translation id="1230853660706736937">Տեքստի որոնում պատկերներում և պատկերների նախադիտում</translation>
 <translation id="1235458158152011030">Պահված ցանցեր</translation>
 <translation id="1239161794459865856">«<ph name="FEATURE_NAME" />» գործառույթը միացված է։</translation>
 <translation id="1240638468526743569">Հավելված</translation>
@@ -160,6 +161,7 @@
 <translation id="1569384531973824928">Սա օգտագործման թույլտվություն է տրամադրում բոլոր հավելվածներին ու կայքերին, որոնք ունեն խոսափողի և տեսախցիկի օգտագործման թույլտվություն։ Հնարավոր է՝ անհրաժեշտ լինի թարմացնել վեբ էջը կամ վերագործարկել հավելվածը։</translation>
 <translation id="1571697193564730395">Միացնել/անջատել «Չանհանգստացնել» ռեժիմը։ <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Փոքրացնել, երբ խոշորացույցը միացված է</translation>
+<translation id="1582946770779745370">Խաղային վահանակը հասանելի է։ Բացելու համար ցանկացած պահի սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, հետո՝ <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1586324912145647027">Անցնել 1–8 աշխատասեղաններին</translation>
 <translation id="158838227375272121">Google Classroom-ի կայք</translation>
 <translation id="1589090746204042747">Դիտեք այս աշխատաշրջանում ձեր գործողությունների վիճակագրությունը</translation>
@@ -715,11 +717,13 @@
 <translation id="3824784079442479685">Սա հասանելի է դարձնում տեսախցիկը <ph name="APP_NAME" /> հավելվածին, ինչպես նաև բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն։ Հնարավոր է՝ անհրաժեշտ լինի թարմացնել վեբ էջը կամ վերագործարկել հավելվածը։</translation>
 <translation id="3826099427150913765">Անցնել գաղտնաբառով նույնականացմանը</translation>
 <translation id="383058930331066723">Մարտկոցի տնտեսման ռեժիմը միացված է</translation>
+<translation id="3831226344927851293">Դուրս գալ ուղեցույցի ռեժիմից</translation>
 <translation id="383629559565718788">Ցուցադրել ստեղնաշարի կարգավորումները</translation>
 <translation id="384082539148746321">Ջնջե՞լ ձևանմուշը</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, ապա՝ <ph name="KEY_ONE" /> կամ <ph name="KEY_TWO" />, կամ <ph name="KEY_THREE" />, կամ <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Ցանցի մասին տեղեկություններ չկան</translation>
+<translation id="3848526302597027234">Ստանալ հետևյալ թույլտվությունները՝</translation>
 <translation id="385051799172605136">Հետ</translation>
 <translation id="385300504083504382">Սկիզբ</translation>
 <translation id="3859364108019690">Չհաջողվեց հեռարձակել հավելվածները</translation>

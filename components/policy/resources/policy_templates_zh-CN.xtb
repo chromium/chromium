@@ -1662,7 +1662,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       用户无法更改或覆盖此设置。
 
       请注意：此政策会致使系统将 X-GoogApps-Allowed-Domains 标头附加到向所有 google.com 网域发送的所有 HTTP 和 HTTPS 请求中，如 https://support.google.com/a/answer/1668854 中所述。</translation>
-<translation id="2282174652047982960">一律使用内置 DNS 客户端（若有）</translation>
 <translation id="2288506601233091655">不允许删除打印任务记录</translation>
 <translation id="2289688405312849186">用户的主账号“user@realm”。占位符 <ph name="LOGIN_ID_PLACEHOLDER" /> 会被用户名“user”取代。占位符 <ph name="LOGIN_EMAIL_PLACEHOLDER" /> 会被完整主账号“user@realm”取代。</translation>
 <translation id="2290270645214705008">如果此政策已停用，系统将无法启动远程访问主机服务，也无法将该服务配置为接受传入连接。此政策不影响远程支持场景。
@@ -2068,6 +2067,10 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://chromeenterprise.google/intl/zh_cn/policies/url-patterns/。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
+<translation id="2585535930727399201">企业扩展程序可以通过 chrome.systemLog API 将日志添加到系统日志文件。
+
+如果已启用此政策，便会允许日志在系统日志文件中保留一段有限的时间。
+如果已停用或未设置此政策，将不允许将日志添加到系统日志文件中，这意味着日志无法在会话间持久保留。</translation>
 <translation id="2586117300379904732">允许使用唤醒锁定以便进行电源管理</translation>
 <translation id="2586231026319371211">以当地 24 小时制显示时间。</translation>
 <translation id="2587719089023392205">将 <ph name="PRODUCT_NAME" /> 设为默认浏览器</translation>
@@ -3603,13 +3606,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策设为 2，系统会阻止含侵扰性广告的网站展示广告。</translation>
 <translation id="3876564097829884243">启用 EphemeralNetworkPolicies 功能。</translation>
 <translation id="3877517141460819966">集成的双重身份验证模式</translation>
-<translation id="3877908683993837673">此政策用于控制使用哪个软件堆栈与 DNS 服务器通信：操作系统 DNS 客户端或 <ph name="PRODUCT_NAME" /> 的内置 DNS 客户端。此政策不会影响使用哪些 DNS 服务器：例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。此政策也不会控制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 将始终使用内置的解析器发送 DNS-over-HTTPS 请求。如需了解如何控制 DNS-over-HTTPS，请参阅 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
-
-      如果此政策已启用，系统将会使用内置 DNS 客户端（如果可用）。
-
-      如果此政策已停用，只有当 DNS-over-HTTPS 正在使用中时，系统才会使用内置 DNS 客户端。
-
-      如果此政策未设置，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="ANDROID_NAME" />（当专用 DNS 和 VPN 均未启用时）和 <ph name="PRODUCT_OS_NAME" /> 中，内置 DNS 客户端将会默认处于启用状态。</translation>
 <translation id="3879208481373875102">配置强制安装的 Web 应用的列表</translation>
 <translation id="3879700444818346084">禁止在首次运行时导入已保存的密码</translation>
 <translation id="388237772682176890">我们在 M53 中弃用了此政策，并在 M54 中移除了此政策（因为 SPDY/3.1 已不再受支持）。
@@ -6148,6 +6144,11 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果此政策设为 False 或未设置，网站只能将 WebAssembly 模块发送到同源的窗口和工作器。</translation>
 <translation id="6008497706608447728">流动单点登录服务屏蔽的网域列表</translation>
+<translation id="6009419785187615211">此政策用于控制对浏览器中安全 (HTTPS) 网站内嵌的不安全表单（通过 HTTP 提交的表单）的处理方式。
+       如果已启用或未设置此政策，当用户提交不安全表单时，系统将会显示整页警告。另外，当用户点击此类表单的字段时，系统会在相应字段旁边显示一个警告气泡，并会在表单中停用自动填充功能。
+       如果已停用此政策，系统将不会针对不安全表单显示警告，自动填充功能也可正常使用。
+
+       我们计划从 Chrome 130 中移除此政策。</translation>
 <translation id="6011193465932186973">指纹</translation>
 <translation id="6011969832398368671">允许网站请求用户授予对文件和目录的写入权限</translation>
 <translation id="601234435141599215">允许端口转发到 Linux 虚拟机</translation>
@@ -6906,7 +6907,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6558013557780651644">运行闲置操作前的延迟时间</translation>
 <translation id="6558812160831988140">应用使用情况报告</translation>
 <translation id="6559057113164934677">不允许任何网站使用摄像头和麦克风</translation>
-<translation id="65591220958874949">在 Windows、macOS、Android 和 ChromeOS 中使用内置 DNS 客户端</translation>
 <translation id="6559221564468029245">如果此政策已启用或未设置，播放音频时设备不会被视为闲置。这样就不会导致闲置超时，系统也不会执行闲置操作。不过，在达到配置的超时值后，尽管存在音频活动，屏幕仍会变暗、关闭和锁定。
 
           如果此政策已停用，则即使存在音频活动，系统仍会将设备视为闲置。</translation>

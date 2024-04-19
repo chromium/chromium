@@ -701,7 +701,9 @@
 <translation id="4732120983431207637">स्ट्याक Unwinder</translation>
 <translation id="4736934858538408121">भर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
+<translation id="4738065825338914557">अनसब्सक्राइब गरिँदै छ…</translation>
 <translation id="4738836084190194332">अन्तिम पटक सिंक गरिएको: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">एपअनुसार फिल्टर गर्नुहोस्</translation>
 <translation id="4741753828624614066">तपाईं एड्रेस बारमा अझ राम्रा सुझावहरू प्राप्त गर्नु हुने छ</translation>
 <translation id="4742970037960872810">हाइलाइट हटाउनुहोस्</translation>
 <translation id="4749960740855309258">एउटा नयाँ ट्याब खोल्नुहोस्</translation>
@@ -785,6 +787,7 @@
 <translation id="5099845111805573968">तपाईंले एक पटक डेस्कटप साइट चयन गरिसकेपछि तपाईंले उक्त साइट खोल्दा हरेक पटक यो सेटिङ लागू गरिने छ</translation>
 <translation id="5102401324271069229">कुनै साइटले तपाईंको पासवर्ड चोरी गर्न खोज्दा वा तपाईंले कुनै हानिकारक फाइल डाउनलोड गर्दा Chrome ले पेजमा भएका केही सामग्रीसहित उक्त साइटका URL हरू Safe Browsing मा पठाउन सक्छ</translation>
 <translation id="510275257476243843">१ घन्टा बाँकी छ</translation>
+<translation id="5114895953710637392">एप फिल्टर सिट बन्द छ।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> मा</translation>
 <translation id="5118713593561876160">रूचिहरू</translation>
 <translation id="5122378528687922675">मद्दत चाहिएका खण्डमा आफ्ना अभिभावक (<ph name="PARENT_NAME_1" /> वा <ph name="PARENT_NAME_2" />) लाई अनुरोध गर्नुहोस्</translation>
@@ -903,7 +906,6 @@
 <translation id="5752232708629533680">GIF मात्र सेयर गर्नुहोस्</translation>
 <translation id="5754350196967618083">Discover पुनः ताजा गर्न सकिएन</translation>
 <translation id="5755162682436943950">साइन आउट गरिएको छ। साइन इन गर्न र सिंक गर्ने सुविधा अन गर्न डायलग खोल्छ।</translation>
-<translation id="5759897675466110265">साइटले काम गरिरहेको छैन? केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिई हेर्नुहोस्</translation>
 <translation id="5763382633136178763">इनकग्निटो ट्याबहरू</translation>
 <translation id="5763514718066511291">यस एपको URL कपी गर्न ट्याप गर्नुहोस्</translation>
 <translation id="5765517223145864268">हामीलाई तपाईंको अनुभव सुनाउनुहोस्। वा <ph name="BEGIN_LINK" />आफूले तोकेका सेटिङ परिवर्तन गर्नुहोस्<ph name="END_LINK" />।</translation>
@@ -1138,6 +1140,7 @@
 <translation id="685850645784703949">Google को Discover - अफ छ</translation>
 <translation id="686366188661646310">पासवर्ड मेट्ने हो?</translation>
 <translation id="6864459304226931083">छवि डाउनलोड गर्नुहोस्</translation>
+<translation id="686490460830618322">एप फिल्टर सिट</translation>
 <translation id="6865313869410766144">स्वत: भर्ने फारम लगत</translation>
 <translation id="6867400383614725881">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="6869056123412990582">कम्प्युटर</translation>
@@ -1205,6 +1208,7 @@
 <translation id="7177466738963138057">तपाईं सेटिङहरूमा पछि यो परिवर्तन गर्न सक्नुहुन्छ</translation>
 <translation id="7177873915659574692">QR कोड सिर्जना गर्न सकिएन। URL मा <ph name="CHARACTER_LIMIT" /> भन्दा बढी वर्ण प्रयोग गरिएको छ।</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
+<translation id="7183517696921903380">एप फिल्टर सिट खुला छ।</translation>
 <translation id="7183693674623539380">ट्याब समूह - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Google का विभिन्न सेवाहरूमा रहेका तपाईंका अरू डेटासँग ब्राउजिङ हिस्ट्री प्रयोग गर्ने तरिका नियन्त्रण गर्छ</translation>
 <translation id="7187993566681480880">यस सुविधाले तपाईं Chrome मा साइन इन भएका बेला तपाईंको जानकारी सुरक्षित राख्छ। Google का अन्य एपहरूको सुरक्षा स्तर सुधार गर्न पनि यसको प्रयोग गरिन सक्छ।</translation>
@@ -1331,6 +1335,7 @@
 <translation id="7780645209293383778">यो सुविधाले तपाईंको Google खाता Google का विभिन्न एपहरूमा सुरक्षित राख्ने प्रयोजनका लागि तपाईं साइन इन भएका बेला यो डेटा केही समयका लागि उक्त खातासँग लिंक गर्छ</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> वटा ट्याब रिस्टोर गरिए</translation>
+<translation id="780287761701992588">आफूले प्रयोग गर्ने सबै डिभाइसमा आफ्ना बुकमार्क, पासवर्डलगायतका थप कुरा प्राप्त गर्नुहोस्</translation>
 <translation id="780301667611848630">पर्दैन, धन्यवाद</translation>
 <translation id="7808889146555843082">तपाईंले यो पासवर्ड मेटाउनुभयो भने <ph name="SITE" /> मा रहेको तपाईंको खाता मेटिने छैन। <ph name="SITE" /> मा रहेको तपाईंको खाता अन्य मान्छेहरूबाट सुरक्षित राख्न आफ्नो पासवर्ड परिवर्तन गर्नुहोस् वा उक्त खाता मेटाउनुहोस्।</translation>
 <translation id="7810647596859435254">निम्नमार्फत खोल्नुहोस्…</translation>

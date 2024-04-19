@@ -68,6 +68,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacioni "Dyqani i Play"</translation>
 <translation id="1225748608451425081">Pajisja jote Chromebook është kyçur për shkak të një problemi të njohur. Ti do të mund të identifikohesh pas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ndalo zgjedhjen</translation>
+<translation id="1230853660706736937">Kërko për tekste brenda imazheve dhe shiko pamjet paraprake të imazheve</translation>
 <translation id="1235458158152011030">Rrjetet e njohura</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> është lidhur.</translation>
 <translation id="1240638468526743569">Një aplikacion</translation>
@@ -160,6 +161,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1569384531973824928">Kjo lejon qasjen për të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="1571697193564730395">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zvogëlo kur zmadhuesi është aktiv</translation>
+<translation id="1582946770779745370">"Paneli i lojës" është i disponueshëm. Shtyp "<ph name="LAUNCHER_KEY_NAME" />" + Shift + Escape dhe më pas "<ph name="LAUNCHER_KEY_NAME" />" + g në çdo kohë për ta hapur</translation>
 <translation id="1586324912145647027">Shko te tavolina e punës nga 1 deri në 8</translation>
 <translation id="158838227375272121">Uebsajti i "Klasës së Google"</translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
@@ -715,11 +717,13 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3824784079442479685">Kjo lejon qasjen te kamera për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet me lejen e kamerës. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="3826099427150913765">Kalo te fjalëkalimi</translation>
 <translation id="383058930331066723">Modaliteti i kursimit të baterisë është aktiv</translation>
+<translation id="3831226344927851293">Dil nga pamja e udhëzuesit</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
 <translation id="384082539148746321">Të fshihet shablloni?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> më pas <ph name="KEY_ONE" /> ose <ph name="KEY_TWO" /> ose <ph name="KEY_THREE" /> ose <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Nuk mundësohen informacione mbi rrjetin</translation>
+<translation id="3848526302597027234">Të qaset në lejet e mëposhtme:</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="385300504083504382">Fillimi</translation>
 <translation id="3859364108019690">Aplikacionet nuk mund të transmetohen</translation>

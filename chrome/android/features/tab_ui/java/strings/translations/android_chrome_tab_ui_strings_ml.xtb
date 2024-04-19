@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ് ഉള്ള <ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉള്ള <ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ് ചുരുക്കുക.}other{<ph name="TABS_COUNT_MANY" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.}}</translation>
 <translation id="2569352796411618312">നിർദ്ദേശം: നിങ്ങളുടെ ടാബുകളിൽ <ph name="NUMBER_OF_TABS" /> എണ്ണം അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ല. അവ അടയ്‌ക്കണോ?</translation>
-<translation id="2613747923081026172">ഗ്രൂപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്</translation>
 <translation id="266935134738038806">സൈറ്റ് സന്ദർശിക്കുക</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> മണിക്കൂർ മുമ്പ് സൃഷ്‌ടിച്ചത്}other{<ph name="NUM_HOURS_MANY" /> മണിക്കൂർ മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>

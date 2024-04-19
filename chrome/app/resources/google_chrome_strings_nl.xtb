@@ -198,6 +198,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4053720452172726777">Google Chrome aanpassen en beheren</translation>
 <translation id="4106587138345390261">Chrome bevat nieuwe experimentele functies waarmee sites dezelfde browsefunctionaliteit kunnen leveren terwijl er minder van je gegevens worden gebruikt</translation>
 <translation id="4110895483821904099">Je nieuwe Chrome-profiel instellen</translation>
+<translation id="4111566860456076004">Chrome kan niet verifiëren waar deze extensie vandaan komt en de extensie is misschien onveilig. Verwijder de extensie uit Chrome zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="4128488089242627000">Chrome werkt sneller en functies die JavaScript gebruiken, zouden naar behoren moeten werken (aanbevolen)</translation>
 <translation id="4147555960264124640">Je logt in op een beheerd account en geeft de beheerderscontrole over aan je Google Chrome-profiel. Je Chrome-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installeren...</translation>
@@ -248,6 +249,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4793679854893018356">Meer informatie over hoe Chrome je beschermt</translation>
 <translation id="4828579605166583682">Google Chrome probeert bestaande wachtwoorden te vervangen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
 <translation id="4842397268809523050">Chrome OS Flex kan je gegevens niet synchroniseren omdat synchronisatie niet beschikbaar is voor je domein.</translation>
+<translation id="4862446263930606916">Je organisatie kan browsegegevens in je werkprofiel bekijken en beheren, zoals je bookmarks, geschiedenis en wachtwoorden. De app kan geen browsegegevens bekijken in persoonlijke Chrome-profielen.</translation>
 <translation id="4873692836499071887">Als je toekomstige Google Chrome-updates wilt krijgen, heb je macOS 11 of hoger nodig. Deze computer gebruikt macOS 10.15.</translation>
 <translation id="4873783916118289636">Neem belangrijke privacy- en beveiligingsopties in Chrome door</translation>
 <translation id="4891791193823137474">Google Chrome op de achtergrond laten uitvoeren</translation>
@@ -494,6 +496,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8989968390305463310">Je browsegeschiedenis heeft invloed op de advertenties die je ziet en je interesses. Hieronder staat een schatting. Ter bescherming van je privacy verwijdert Chrome je interesses automatisch elke maand op voortschrijdende basis. Interesses kunnen worden vernieuwd, tenzij je ze verwijdert.</translation>
 <translation id="8999117580775242387">Als HTTPS niet beschikbaar is, gebruikt Chrome een niet-beveiligde verbinding zonder je te waarschuwen</translation>
 <translation id="8999208279178790196">{0,plural, =0{Er is een Chrome-update beschikbaar}=1{Er is een Chrome-update beschikbaar}other{Er is al # dagen een Chrome-update beschikbaar}}</translation>
+<translation id="9024318700713112071">Chrome instellen als je standaardbrowser</translation>
 <translation id="9053892488859122171">Chrome OS Flex-systeem</translation>
 <translation id="9090566250983691233">Meer informatie over waarom Chrome bepaalde bestanden blokkeert</translation>
 <translation id="911206726377975832">Ook browsegegevens wissen?</translation>

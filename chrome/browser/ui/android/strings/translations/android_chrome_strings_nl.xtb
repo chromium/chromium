@@ -702,7 +702,9 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuele kaart</translation>
 <translation id="473775607612524610">Updaten</translation>
+<translation id="4738065825338914557">Afmelden…</translation>
 <translation id="4738836084190194332">Laatst gesynchroniseerd: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Filteren op app</translation>
 <translation id="4741753828624614066">Je krijgt verbeterde suggesties in de adresbalk</translation>
 <translation id="4742970037960872810">Markering verwijderen</translation>
 <translation id="4749960740855309258">Een nieuw tabblad openen</translation>
@@ -786,6 +788,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5099845111805573968">Als je één keer Desktopsite selecteert, wordt de instelling elke keer toegepast als je deze site bezoekt</translation>
 <translation id="5102401324271069229">Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen</translation>
 <translation id="510275257476243843">1 uur resterend</translation>
+<translation id="5114895953710637392">Blad voor app-filter is gesloten.</translation>
 <translation id="5115811374190515607">naar <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interesses</translation>
 <translation id="5122378528687922675">Vraag zo nodig je ouder (<ph name="PARENT_NAME_1" /> of <ph name="PARENT_NAME_2" />) om hulp</translation>
@@ -904,7 +907,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="5752232708629533680">Alleen gif delen</translation>
 <translation id="5754350196967618083">Kan Discover niet vernieuwen</translation>
 <translation id="5755162682436943950">Uitgelogd. Er wordt een dialoogvenster geopend om in te loggen en synchronisatie aan te zetten.</translation>
-<translation id="5759897675466110265">Werkt de site niet? Sta cookies van derden tijdelijk toe</translation>
 <translation id="5763382633136178763">Incognitotabbladen</translation>
 <translation id="5763514718066511291">Tik om de URL voor deze app te kopiëren</translation>
 <translation id="5765517223145864268">Vertel ons wat je ervan vindt. Of <ph name="BEGIN_LINK" />wijzig je instellingen<ph name="END_LINK" />.</translation>
@@ -1052,6 +1054,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6477928892249167417">Zo te zien zijn deze sites belangrijk voor jou:</translation>
 <translation id="6481963882741794338">Koppel Chrome en andere Google-services voor personalisatie en andere doeleinden</translation>
 <translation id="6482749332252372425">Downloaden van <ph name="FILE_NAME" /> is mislukt door te weinig opslagruimte.</translation>
+<translation id="6495590690749880440">Tabbladgroep openen?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Bestand gedownload}other{# downloads voltooid}}</translation>
 <translation id="6508722015517270189">Chrome opnieuw starten</translation>
 <translation id="6518133107902771759">Controleren</translation>
@@ -1138,6 +1141,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="685850645784703949">Discover van Google - uit</translation>
 <translation id="686366188661646310">Wachtwoord verwijderen?</translation>
 <translation id="6864459304226931083">Afbeelding downloaden</translation>
+<translation id="686490460830618322">Blad voor app-filter</translation>
 <translation id="6865313869410766144">Formuliergegevens voor 'Automatisch invullen'</translation>
 <translation id="6867400383614725881">Nieuw incognitotabblad</translation>
 <translation id="6869056123412990582">computer</translation>
@@ -1205,6 +1209,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7177466738963138057">Je kunt dit later wijzigen in Instellingen</translation>
 <translation id="7177873915659574692">Kan geen QR-code maken. De URL is langer dan <ph name="CHARACTER_LIMIT" /> tekens.</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
+<translation id="7183517696921903380">Blad voor app-filter is geopend.</translation>
 <translation id="7183693674623539380">Tabbladgroep: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Bepaal hoe de browsegeschiedenis wordt gebruikt met je andere gegevens in Google-services</translation>
 <translation id="7187993566681480880">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
@@ -1331,6 +1336,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7780645209293383778">Koppelt deze gegevens tijdelijk aan je Google-account als je bent ingelogd om je te beschermen binnen de Google-apps</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> tabbladen hersteld</translation>
+<translation id="780287761701992588">Gebruik je bookmarks, wachtwoorden en meer op al je apparaten</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7808889146555843082">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd. Wijzig je wachtwoord of verwijder je account in <ph name="SITE" /> om het te beschermen.</translation>
 <translation id="7810647596859435254">Openen met…</translation>

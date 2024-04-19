@@ -301,7 +301,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2604176749896001318">Uppfærðu vafrann þinn</translation>
 <translation id="2609008503159898744">Loka öllum flipum?</translation>
 <translation id="261305050785128654">Láttu vefsvæði vita hvaða tungumál þú talar. Þau munu þá birta þér efni á þeim tungumálum þegar það er í boði.</translation>
-<translation id="2613747923081026172">Búa til hóp</translation>
 <translation id="2617210333344098964">Færa heimilisfang á reikning</translation>
 <translation id="261739049332372104">Kveiktu á tilkynningum í iOS-stillingunum þínum til að fá uppfærslur um efni sem skiptir þig máli.</translation>
 <translation id="2625189173221582860">Aðgangsorð afritað</translation>
@@ -843,6 +842,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5407969256130905701">Fleygja breytingum</translation>
 <translation id="5414763847370083940">Þú færð tilkynningu ef verð lækkar á einhverju vefsvæði.</translation>
 <translation id="5416022985862681400">Undanfarnir 7 dagar</translation>
+<translation id="5416455648658732408">Flyta yfir í flipahóp</translation>
 <translation id="5423269318075950257">Vakta verð</translation>
 <translation id="543338862236136125">Breyta aðgangsorði</translation>
 <translation id="5433691172869980887">Notandanafn afritað</translation>
@@ -1038,6 +1038,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6363526231572697780">Ekkert notandanafn</translation>
 <translation id="6366190659675876144">Hefðbundin vörn</translation>
 <translation id="6366663624406569102">Skrá út og slökkva á samstillingu</translation>
+<translation id="6368038301482806847">Veldu leitarvél af listanum.</translation>
 <translation id="6374469231428023295">Reyna aftur</translation>
 <translation id="6377118281273296434">Öryggi vefsvæðis</translation>
 <translation id="6383719166112032471">Opna staðsetningu…</translation>
@@ -1196,6 +1197,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7161230316646448869">Samstilltu bókamerkin þín, ferilinn og fleira í öllum tækjum</translation>
 <translation id="7162168282402939716">Taka huliðsflipa úr lás með <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Opna stillingar</translation>
+<translation id="7186568385131859684">Stjórnaðu því hvernig vafraferillinn er notaður með öðrum gögnum úr Google-þjónustum</translation>
 <translation id="7189598951263744875">Deila...</translation>
 <translation id="719133302483559673">Stjórnaðu áhugasviðum þínum og kjörstillingum.</translation>
 <translation id="7192050974311852563">Hefja skráningu</translation>
@@ -1239,6 +1241,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7438481509621345350">Núna sérðu sögur frá <ph name="CHANNEL_NAME" /> þegar þú opnar nýjan flipa.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bókamerki vistað í „{title}“}one{Bókamerki vistuð í „{title}“}other{Bókamerki vistuð í „{title}“}}</translation>
 <translation id="7454057999980797137">Ríki/sýsla</translation>
+<translation id="7458706065921255639">Sérsnið og tenging</translation>
 <translation id="745899714366929493">Allan daginn</translation>
 <translation id="7459628154744868585">Kveikt er á aukinni vörn</translation>
 <translation id="7465351360025415755">Sjáðu efni sem skiptir þig máli</translation>
@@ -1324,6 +1327,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7853202427316060426">Virkni</translation>
 <translation id="7856733331829174190">Tókst ekki að sækja</translation>
 <translation id="7859704718976024901">Vafraferill</translation>
+<translation id="7860900259978879139">Fjarlægja úr hópi</translation>
 <translation id="7866501058614003444">Hætt var að rekja þennan pakka.</translation>
 <translation id="7866872729285243843">Kveiktu á „Leslisti“ í stillingunum til að fá aðgang að leslistanum þínum í öllum tækjum.</translation>
 <translation id="7866993391592926595">Að fela þetta spjald slekkur á rakningu fyrir pakka og fjarlægir öll gögnin þín</translation>
@@ -1411,9 +1415,11 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8273982424131314219">Þú fyllir upplýsingarnar þínar út á <ph name="URL" /></translation>
 <translation id="8281781826761538115">Sjálfgefið – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Sleppa</translation>
+<translation id="8282657446819506217">Opna í flipahóp</translation>
 <translation id="828291969289324795">{count,plural, =1{Bæta flipa við nýjan hóp}one{Bæta flipum við nýjan hóp}other{Bæta flipum við nýjan hóp}}</translation>
 <translation id="8283172974887967105">Stilla…</translation>
 <translation id="8286036467436129157">Skrá inn</translation>
+<translation id="8289930144142009940">Slökkt er á tilkynningum um <ph name="FEATURE_NAME" /></translation>
 <translation id="8292843446079898078">Fá tilkynningar um lækkað verð á vörum sem þú fylgist með.</translation>
 <translation id="8299417921174340354">Til að nota aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
 <translation id="8299613349954694191">Opnaðu huliðsflipa til að vafra í leyni.</translation>
@@ -1421,6 +1427,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8313645224014086262">Vista skrá</translation>
 <translation id="8319076807703933069">Ný leit</translation>
 <translation id="8328777765163860529">Loka öllu</translation>
+<translation id="8343286328361420468">Slökkva á tilkynningum um <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er.</translation>
 <translation id="834783239627985533">Mest heimsóttu vefsvæðin</translation>
 <translation id="8358401059263985056">Kveikja á tilkynningum</translation>

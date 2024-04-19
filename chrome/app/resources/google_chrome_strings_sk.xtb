@@ -197,6 +197,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4053720452172726777">Prispôsobiť a ovládať Google Chrome</translation>
 <translation id="4106587138345390261">Chrome skúma nové funkcie, ktoré umožňujú webom zobraziť rovnaké prostredie prehliadania s využitím menšieho množstva vašich údajov</translation>
 <translation id="4110895483821904099">Nastavte si nový profil Chromu</translation>
+<translation id="4111566860456076004">Chrome nedokáže overiť, odkiaľ toto rozšírenie pochádza, takže môže byť nebezpečné Odstráňte ho z Chromu, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
 <translation id="4128488089242627000">Chrome je rýchlejší a funkcie používajúce JavaScript by mali fungovať podľa očakávaní (odporúčané)</translation>
 <translation id="4147555960264124640">Prihlasujete sa pomocou spravovaného účtu a jeho správcovi dávate kontrolu nad vaším profilom prehliadača Chrome. Vaše údaje prehliadača Chrome, ako sú aplikácie, záložky, história, heslá a iné nastavenia, sa natrvalo priradia k účtu <ph name="USER_NAME" />. Tieto údaje budete môcť odstrániť len pomocou panela Dashboard v Účtoch Google, ale nebudete ich môcť priradiť k inému účtu. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Inštaluje sa...</translation>
@@ -247,6 +248,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4793679854893018356">Ako vás Chrome chráni</translation>
 <translation id="4828579605166583682">Google Chrome sa pokúša nahradiť existujúce heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="4842397268809523050">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
+<translation id="4862446263930606916">Vaša organizácia si môže zobraziť a spravovať dáta prehliadania vo vašom pracovnom profile, napríklad záložky, históriu a heslá. Nemôže si zobrazovať dáta prehliadania v osobných profiloch Chromu.</translation>
 <translation id="4873692836499071887">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 11 alebo novší. V tomto počítači používate macOS 10.15.</translation>
 <translation id="4873783916118289636">Pozrite si hlavné ovládacie prvky ochrany súkromia a zabezpečenia v Chrome</translation>
 <translation id="4891791193823137474">Povoliť prehliadaču Google Chrome spustenie na pozadí</translation>
@@ -495,6 +497,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8989968390305463310">Vaša história prehliadania ovplyvňuje zobrazované reklamy a záujmy, ktoré sú odhadnuté nižšie. Chrome priebežne automaticky odstraňuje vaše záujmy každý mesiac, aby tak chránil vaše súkromie. Záujmy sa môžu obnoviť, pokiaľ ich neodstránite.</translation>
 <translation id="8999117580775242387">Keď HTTPS nie je k dispozícii, Chrome bude bez upozornenia používať nezabezpečené pripojenie</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozícii aktualizácia Chromu}=1{Je k dispozícii aktualizácia Chromu}few{Aktualizácia Chromu je k dispozícii už # dni}many{Aktualizácia Chromu je k dispozícii už # dňa}other{Aktualizácia Chromu je k dispozícii už # dní}}</translation>
+<translation id="9024318700713112071">Nastavte Chrome ako predvolený prehliadač</translation>
 <translation id="9053892488859122171">Systém Chrome OS Flex</translation>
 <translation id="9090566250983691233">Prečo Chrome blokuje niektoré súbory</translation>
 <translation id="911206726377975832">Chcete tiež odstrániť svoje údaje prehliadania?</translation>

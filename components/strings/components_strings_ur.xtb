@@ -137,6 +137,7 @@
 <translation id="1243027604378859286">مصنف:</translation>
 <translation id="1247030632403369975">ایلومینیم</translation>
 <translation id="1252209483516427155">بیرونی جامہ</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> کے ساتھ ادائیگی کریں</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (مطابقت پذیر کردہ)</translation>
 <translation id="1255086252236620440">فوڈ مکسرز</translation>
 <translation id="1256368399071562588">‏&lt;p&gt;اگر آپ کوئی ویب سائٹ ملاحظہ کرنے کی کوشش کرتے ہیں اور وہ نہیں کھلتی ہے، تو پہلے ٹربل شوٹنگ کے ان مراحل کی مدد سے خرابی کو ٹھیک کرنے کی کوشش کریں:&lt;/p&gt;
@@ -1512,6 +1513,7 @@
 <translation id="385489333361351399">کیمرا اور تصویر کا ساز و سامان</translation>
 <translation id="3858027520442213535">تاریخ اور وقت اپ ڈیٹ کریں</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> کے لیے یہاں شرائط دیکھیں</translation>
 <translation id="3872834068356954457">سائنس</translation>
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
 <translation id="3880456882942693779">آرٹس اور تفریح</translation>
@@ -1987,6 +1989,7 @@
 <translation id="4809079943450490359">آپ کے آلہ کے منتظم کی طرف سے ہدایات:</translation>
 <translation id="4811450222531576619">اس کے ماخذ اور موضوع کے بارے میں جانیں</translation>
 <translation id="4813512666221746211">نیٹ ورک کی خرابی</translation>
+<translation id="4814114628197290459">‏IBAN کو حذف کریں</translation>
 <translation id="4816492930507672669">صفحہ میں فٹ کریں</translation>
 <translation id="4819347708020428563">ڈیفالٹ منظر میں تشریحات میں ترمیم کریں؟</translation>
 <translation id="4822493756793346865">عام قیمتیں پچھلے 90 دن میں ویب پر موجود اسٹورز پر مبنی ہیں۔</translation>
@@ -2351,6 +2354,7 @@
 <translation id="553377674408670169">تعلیمی نوکریاں</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" سیکشن دکھائیں</translation>
 <translation id="553782666181800029">‏Chou 2 لفافہ</translation>
+<translation id="5538270463355278784">خودکار مکمل اسکرین</translation>
 <translation id="5539243836947087108">رافٹ</translation>
 <translation id="5540224163453853">درخواست کردہ مضمون کو تلاش نہیں کیا جا سکا۔</translation>
 <translation id="5540969246441091044">گھڑ سواری سے متعلق</translation>
@@ -2716,6 +2720,7 @@
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="6254436959401408446">اس صفحہ کو کھولنے کیلئے کافی میموری نہیں ہے</translation>
 <translation id="625463612687472648">اجازت دینا بند کریں</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{‏جب آپ Chrome پر خریداری کرتے ہیں، تو <ph name="FINANCIAL_ACCOUNT_TYPES" /> کو اختیار کے طور پر دیکھیں}other{‏جب آپ Chrome پر خريداري کرتے ہيں تو <ph name="FINANCIAL_ACCOUNT_TYPES" /> کو اختيار کے طور پر ديکھيں}}</translation>
 <translation id="6259156558325130047">دوبارہ ترتیب کو &amp;واپس لائیں</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> بُک مارکس</translation>
 <translation id="6264376385120300461">بہر حال ڈاؤن لوڈ کریں</translation>
@@ -2946,6 +2951,7 @@
 <translation id="6694681292321232194">‏<ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google اکاؤنٹ میں اپنے آلہ کو تلاش کرنے کیلئے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="6695428916538794739">ایکشن اور ایڈوینچر موویز</translation>
 <translation id="6696424331653607346">ٹریول گائیڈز اور سفرنامے</translation>
+<translation id="6698097747703777657">آپ کا کوڈ موصول نہیں ہوا؟ <ph name="BEGIN_LINK" />نیا کوڈ حاصل کریں<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">بنا دی گئی:</translation>
 <translation id="67007264085648978">ٹائم اسکربر</translation>
 <translation id="6702851555558236418">آڈیو اور موسیقی سافٹ ویئر</translation>
@@ -3346,7 +3352,6 @@
 <translation id="7442725080345379071">ہلکا نارنجی</translation>
 <translation id="7444046173054089907">یہ سائٹ مسدود ہے</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{کوکیز کو آج دوبارہ بلاک کر دیا جائے گا}=1{کوکیز کو کل دوبارہ بلاک کر دیا جائے گا}other{# دنوں میں کوکیز کو دوبارہ مسدود کر دیا جائے گا}}</translation>
-<translation id="7445762425076701745">آپ جس سرور سے منسلک ہیں اس کی شناخت کی پوری طرح سے توثیق نہیں کی جا سکتی ہے۔ آپ صرف اپنے نیٹ ورک میں درست نام کا استعمال کر کے سرور سے منسلک ہیں، جس کی ملکیت کی توثیق کرنے کیلئے خارجی سرٹیفکیٹ اتھارٹی کے پاس کوئی طریقہ نہیں ہے۔ چونکہ کچھ سرٹیفکیٹ اتھارٹیز ان ناموں سے قطع نظر سرٹیفکیٹس جاری کریں گی لہذا یہ یقینی بنانے کا کوئی طریقہ نہیں ہے کہ آپ کسی حملہ آور سے نہیں بلکہ ارادی ویب سائٹ سے منسلک ہیں۔</translation>
 <translation id="7447234474237738389">پوشاک سے متعلق سروسز</translation>
 <translation id="7447625772313191651">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ملی میٹر)</translation>
 <translation id="7450577240311017924">‏مطابقت پذیری کا نظم کریں بٹن، آپ Chrome ترتیبات میں کن معلومات کو مطابقت پذیر بناتے ہیں ان کا نظم کرنے کے لئے فعال کریں</translation>
@@ -3850,6 +3855,7 @@
 <translation id="8378714024927312812">آپ کی تنظیم کے زیر نظم</translation>
 <translation id="8380941800586852976">خطرناک</translation>
 <translation id="8381674639488873545">یہ چارجز ایک بار یا بار بار عائد ہو سکتے ہیں اور ہو سکتا ہے کہ واضح نہ ہوں۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">خودکار مکمل اسکرین</translation>
 <translation id="838307841291975086">اسٹیشن ویگنز</translation>
 <translation id="8389532092404711541">عام طور پر <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">حسب ضرورت اور کارکردگی والی گاڑیاں</translation>

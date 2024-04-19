@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Minnka flipahópinn „<ph name="TITLE_OF_GROUP" />“ sem inniheldur <ph name="TABS_COUNT_ONE" /> flipa.}one{Minnka flipahópinn „<ph name="TITLE_OF_GROUP" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}other{Minnka flipahópinn „<ph name="TITLE_OF_GROUP" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Draga saman <ph name="TABS_COUNT_ONE" /> flipa.}one{Draga saman flipahóp með <ph name="TABS_COUNT_MANY" /> flipa.}other{Draga saman flipahóp með <ph name="TABS_COUNT_MANY" /> flipum.}}</translation>
 <translation id="2569352796411618312">Tillaga: <ph name="NUMBER_OF_TABS" /> af flipunum þínum hafa ekki verið notaðir nýlega. Viltu loka þeim?</translation>
-<translation id="2613747923081026172">Búa til hóp</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunn</translation>
 <translation id="266935134738038806">Fara á vefsvæði</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Búinn til fyrir <ph name="NUM_HOURS_ONE" /> klukkustund}one{Búinn til fyrir <ph name="NUM_HOURS_MANY" /> klukkustund}other{Búinn til fyrir <ph name="NUM_HOURS_MANY" /> klukkustundum}}</translation>

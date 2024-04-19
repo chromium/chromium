@@ -129,6 +129,7 @@
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1435537621343861112">音声入力を開始できません。マイクがオフになっています。</translation>
+<translation id="1448963928642384376">デバイスのアクセス ポイント</translation>
 <translation id="1455242230282523554">言語設定を表示</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
 <translation id="14648076227129703">カメラへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>

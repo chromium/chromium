@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">المؤلف:</translation>
 <translation id="1247030632403369975">ألومنيوم</translation>
 <translation id="1252209483516427155">ملابس خروج</translation>
+<translation id="1253096324252841344">الدفع باستخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (تمت المزامنة)</translation>
 <translation id="1255086252236620440">خلاطات طعام</translation>
 <translation id="1256368399071562588">‏&lt;p&gt;إذا تعذّر فتح أحد المواقع الإلكترونية التي تحاول زيارتها، يمكنك تحرّي الخطأ وإصلاحه باتّباع الخطوات التالية:&lt;/p&gt;
@@ -1506,6 +1507,7 @@
 <translation id="385489333361351399">كاميرات ومعدّات تصوير</translation>
 <translation id="3858027520442213535">تحديث التاريخ والوقت</translation>
 <translation id="3858860766373142691">الاسم</translation>
+<translation id="3865339060090354361">الاطّلاع على الأحكام الخاصة ببطاقة <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">علوم</translation>
 <translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
 <translation id="3880456882942693779">فنون وترفيه</translation>
@@ -1982,6 +1984,7 @@
 <translation id="4809079943450490359">تعليمات من مشرف الجهاز:</translation>
 <translation id="4811450222531576619">الاطّلاع على مصدر الصفحة وموضوعها</translation>
 <translation id="4813512666221746211">حدث خطأ في الشبكة</translation>
+<translation id="4814114628197290459">‏حذف رقم الحساب بصيغة IBAN</translation>
 <translation id="4816492930507672669">احتواء ضمن الصفحة</translation>
 <translation id="4819347708020428563">هل تريد تعديل التعليقات التوضيحية في العرض التلقائي؟</translation>
 <translation id="4822493756793346865">تستند الأسعار العادية إلى معلومات المتاجر المتاحة على الويب خلال آخر 90 يومًا.</translation>
@@ -2346,6 +2349,7 @@
 <translation id="553377674408670169">وظائف تعليمية</translation>
 <translation id="5536214594743852365">عرض القسم "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">‏ظرف Chou 2</translation>
+<translation id="5538270463355278784">وضع ملء الشاشة تلقائيًا</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">تعذر العثور على المقالة المطلوبة</translation>
 <translation id="5540969246441091044">فروسية</translation>
@@ -2710,6 +2714,7 @@
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة الملفات التي تم تنزيلها في Chrome.</translation>
 <translation id="6254436959401408446">لا تتوفر ذاكرة كافية لفتح هذه الصفحة</translation>
 <translation id="625463612687472648">إيقاف السماح بالأذونات</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيار للدفع}zero{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارات للدفع}two{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارَين للدفع}few{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارات للدفع}many{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارات للدفع}other{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارات للدفع}}</translation>
 <translation id="6259156558325130047">إعادة إ&amp;جراء الترتيب</translation>
 <translation id="6263376278284652872">إشعارات <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
@@ -2940,6 +2945,7 @@
 <translation id="6694681292321232194">‏<ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter للانتقال إلى ميزة "العثور على جهازي" المتوفّرة في حسابك على Google.</translation>
 <translation id="6695428916538794739">أفلام حركة ومغامرة</translation>
 <translation id="6696424331653607346">أدلّة سفر وقصص رحلات</translation>
+<translation id="6698097747703777657">إذا لم يصلك الرمز، يمكنك <ph name="BEGIN_LINK" />الحصول على رمز جديد<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">تاريخ الإنشاء:</translation>
 <translation id="67007264085648978">نقطة تقديم الوقت أو ترجيعه</translation>
 <translation id="6702851555558236418">برامج للصوت والموسيقى</translation>
@@ -3340,7 +3346,6 @@
 <translation id="7442725080345379071">برتقالي فاتح</translation>
 <translation id="7444046173054089907">تم حظر هذا الموقع</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{سيتم حظر ملفات تعريف الارتباط مرة أخرى اليوم.}=1{سيتم حظر ملفات تعريف الارتباط مرة أخرى غدًا.}two{يتبقى يومان حتى يتم حظر ملفات تعريف الارتباط مرة أخرى.}few{يتبقى # أيام حتى يتم حظر ملفات تعريف الارتباط مرة أخرى.}many{يتبقى # يومًا حتى يتم حظر ملفات تعريف الارتباط مرة أخرى.}other{يتبقى # يوم حتى يتم حظر ملفات تعريف الارتباط مرة أخرى.}}</translation>
-<translation id="7445762425076701745">لا يمكن التحقق بصورة كاملة من صحة هوية الخادم الذي تتصل به. فأنت متصل بخادم باستخدام اسم صالح فقط ضمن شبكتك، والذي لن يتمكن المرجع المصدق الخارجي من التحقق من ملكيته. وحيث إن بعض المراجع المصدقة تُصدر الشهادات لهذه الأسماء على أي حال، فليست هناك طريقة للتأكد من أنك متصل بموقع الويب المقصود وليس بأحد المهاجمين.</translation>
 <translation id="7447234474237738389">خدمات ملابس</translation>
 <translation id="7447625772313191651">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ملم)</translation>
 <translation id="7450577240311017924">‏زر إدارة المزامنة: انقر على هذا الزر لإدارة المعلومات التي تتم مزامنتها في إعدادات Chrome.</translation>
@@ -3845,6 +3850,7 @@
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>
 <translation id="8380941800586852976">ضارة</translation>
 <translation id="8381674639488873545">قد يتم تحصيل هذه الرسوم لمرة واحدة أو بشكل متكرِّر، وقد تكون غير واضحة. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">وضع ملء الشاشة تلقائيًا</translation>
 <translation id="838307841291975086">سيارات ستيشن واغن</translation>
 <translation id="8389532092404711541">السعر العادي هو ‫<ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">مركبات مخصّصة ومركبات عالية الأداء</translation>

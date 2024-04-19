@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{A következő, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó lapcsoport összecsukása: <ph name="TITLE_OF_GROUP" />.}other{A következő, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása: <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap összecsukása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása.}}</translation>
 <translation id="2569352796411618312">Javaslat: <ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
-<translation id="2613747923081026172">Csoport létrehozása</translation>
 <translation id="2662028055331606429">Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="266935134738038806">Webhely felkeresése</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> órája létrehozva}other{<ph name="NUM_HOURS_MANY" /> órája létrehozva}}</translation>

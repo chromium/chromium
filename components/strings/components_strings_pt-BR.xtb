@@ -1987,6 +1987,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4811450222531576619">Saiba mais sobre a fonte e o tema</translation>
 <translation id="4813512666221746211">Erro na rede</translation>
+<translation id="4814114628197290459">Excluir IBAN</translation>
 <translation id="4816492930507672669">Ajustar à página</translation>
 <translation id="4819347708020428563">Editar anotações na visualização padrão?</translation>
 <translation id="4822493756793346865">Os preços normais são baseados em lojas na Web nos últimos 90 dias.</translation>
@@ -3346,7 +3347,6 @@ Mais detalhes:
 <translation id="7442725080345379071">Laranja-claro</translation>
 <translation id="7444046173054089907">Este site está bloqueado</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Os cookies serão bloqueados de novo hoje}=1{Os cookies serão bloqueados de novo amanhã}one{# dia até que os cookies sejam bloqueados de novo}other{# dias até que os cookies sejam bloqueados de novo}}</translation>
-<translation id="7445762425076701745">A identidade do servidor ao qual você está conectado não pode ser validada completamente. Você está conectado ao servidor com um nome válido somente na sua rede e que, portanto, uma autoridade de certificação externa não consegue validar a propriedade. Como algumas autoridades de certificação emitem certificados para esses nomes mesmo assim, não é possível garantir que você esteja conectado ao site que gostaria e não a um invasor.</translation>
 <translation id="7447234474237738389">Serviços de vestuário</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Botão "Gerenciar sincronização". Ative para gerenciar quais informações são sincronizadas nas configurações do Chrome</translation>

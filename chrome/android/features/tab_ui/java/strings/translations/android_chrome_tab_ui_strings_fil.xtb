@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="2569352796411618312">Suhestyon: <ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
-<translation id="2613747923081026172">Gumawa ng pangkat</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Bisitahin ang site</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Ginawa <ph name="NUM_HOURS_ONE" /> oras ang nakalipas}one{Ginawa <ph name="NUM_HOURS_MANY" /> oras ang nakalipas}other{Ginawa <ph name="NUM_HOURS_MANY" /> na oras ang nakalipas}}</translation>
@@ -89,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome. Hindi magiging available ang iyong tab na Incognito.}one{Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome. Hindi magiging available ang iyong # tab na Incognito.}other{Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome. Hindi magiging available ang iyong # na tab na Incognito.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="6549021453810473782">Tingnan ang impormasyon ng store</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Ilipat ang tab sa kaliwa</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
 <translation id="661742612106409204">Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome.</translation>

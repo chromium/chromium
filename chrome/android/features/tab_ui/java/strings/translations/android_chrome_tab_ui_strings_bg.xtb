@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="2569352796411618312">Предложение: <ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
-<translation id="2613747923081026172">Създаване на група</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Към сайта</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Създадено преди <ph name="NUM_HOURS_ONE" /> час}other{Създадено преди <ph name="NUM_HOURS_MANY" /> часа}}</translation>

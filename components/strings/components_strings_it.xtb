@@ -1984,6 +1984,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4809079943450490359">Istruzioni dell'amministratore del tuo dispositivo:</translation>
 <translation id="4811450222531576619">Scopri la fonte e l'argomento</translation>
 <translation id="4813512666221746211">Errore di rete</translation>
+<translation id="4814114628197290459">Elimina IBAN</translation>
 <translation id="4816492930507672669">Adatta alla pagina</translation>
 <translation id="4819347708020428563">Vuoi modificare le annotazioni nella visualizzazione predefinita?</translation>
 <translation id="4822493756793346865">I prezzi tipici si basano sui negozi disponibili sul web negli ultimi 90 giorni.</translation>
@@ -2105,6 +2106,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5043480802608081735">Link copiato</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
+<translation id="5048293684454354469">Gli argomenti degli annunci sono solo uno dei tanti elementi che un sito può utilizzare per personalizzare gli annunci. Anche senza gli argomenti degli annunci, i siti possono continuare a mostrarti annunci, che però potrebbero essere meno personalizzati. Scopri di più sulla <ph name="BEGIN_LINK" />gestione della privacy per gli annunci<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Argomenti attivi</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Per inviare questo file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}other{Per inviare questi file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}}</translation>
 <translation id="505757197798929356">Specifica il motivo dell'apertura (obbligatorio)</translation>
@@ -2323,6 +2325,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     <ph name="LINE_BREAK" />
     Prova a contattare l'amministratore di sistema.</translation>
 <translation id="549333378215107354">Dimensione 3</translation>
+<translation id="5496804587179176046">Salva i codici di sicurezza, nessun codice di sicurezza attualmente salvato</translation>
 <translation id="550365051221576010">Compila tutti i campi</translation>
 <translation id="5508443345185481044">Macchine fotografiche e videocamere</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2941,6 +2944,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per trovare il tuo dispositivo nell'Account Google.</translation>
 <translation id="6695428916538794739">Film d'azione e d'avventura</translation>
 <translation id="6696424331653607346">Guide turistiche e diari di viaggio</translation>
+<translation id="6698097747703777657">Non hai ricevuto il codice? <ph name="BEGIN_LINK" />Ricevi nuovo codice<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Data creazione:</translation>
 <translation id="67007264085648978">Dispositivo di scorrimento temporale</translation>
 <translation id="6702851555558236418">Software audio e musicali</translation>
@@ -3341,7 +3345,6 @@ Ulteriori dettagli:
 <translation id="7442725080345379071">Arancione chiaro</translation>
 <translation id="7444046173054089907">Questo sito è bloccato</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{I cookie verranno nuovamente bloccati oggi}=1{I cookie verranno nuovamente bloccati domani}other{# giorni al nuovo blocco dei cookie}}</translation>
-<translation id="7445762425076701745">Impossibile convalidare completamente l'identità del server a cui sei collegato. Sei collegato a un server con un nome valido soltanto nella tua rete, di cui un'autorità di certificazione esterna non può convalidare in alcun modo la proprietà. Poiché alcune autorità di certificazione emettono comunque certificati per questi nomi, non è in alcun modo possibile garantire che tu sia collegato al sito web desiderato anziché a un sito dannoso.</translation>
 <translation id="7447234474237738389">Servizi di sartoria</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Pulsante Gestisci sincronizzazione, attiva per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>

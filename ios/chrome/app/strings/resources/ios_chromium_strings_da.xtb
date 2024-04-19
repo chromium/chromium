@@ -28,6 +28,7 @@
 <translation id="1707458603865303524">Brug Chromium, hver gang du trykker på links i meddelelser eller andre apps.</translation>
 <translation id="1722370509450468186">Din adgangskode gemmes på din konto (<ph name="EMAIL" />).</translation>
 <translation id="1791845338122684020">Åbner siden med din Chromium-historik.</translation>
+<translation id="1811860791247653035">For at få personlig tilpasning og andre funktioner skal du medtage Chromium i <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium har verificeret, at <ph name="ISSUER" /> har udstedt certifikatet for dette website.</translation>
 <translation id="1843424232666537147">Chromium har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -89,6 +90,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 <translation id="3639997914391704523">Chromium kan tjekke dine adgangskoder, når du er logget ind med din Google-konto</translation>
 <translation id="3688710892786762883">Chromium registrerer pakkesporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Dine data deles med Google med henblik på at levere denne funktion og forbedre Shopping for alle.</translation>
 <translation id="372658070733623520">Verificer din identitet for at bruge og gemme Chromium-data på din Google-konto.</translation>
+<translation id="3728124580182886854">Tilknyt Chromium og andre Google-tjenester med henblik på personlig tilpasning og andre formål</translation>
 <translation id="3780779443901618967">Advarer dig om skadelige websites – også websites, som Google ikke tidligere har kendt til – ved at analysere flere data fra websites end Standardbeskyttelse. Du kan vælge at springe Chromium-advarsler over.</translation>
 <translation id="3784369638459513223">Åbner en ny inkognitofane i Chromium.</translation>
 <translation id="3805899903892079518">Chromium har ikke adgang til dine billeder eller videoer. Gå til iOS Indstillinger &gt; Privatliv &gt; Billeder for at få adgang.</translation>

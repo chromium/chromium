@@ -381,6 +381,7 @@
 <translation id="3170673040743561620">Coloque o documento no scanner</translation>
 <translation id="3174321110679064523">Imagem de fundo Do amanhecer ao anoitecer</translation>
 <translation id="3178532070248519384">avant-garde</translation>
+<translation id="3182676044300231689">Introduza um comando como "tornar mais confiante"</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="319101249942218879">Imagem do avatar alterada</translation>
 <translation id="3192947282887913208">Ficheiros de áudio</translation>
@@ -586,6 +587,7 @@
 <translation id="4394049700291259645">Desactivar</translation>
 <translation id="439429847087949098">A reiniciar o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">personalização do teclado</translation>
+<translation id="439946595190720558">Este fundo foi criado com IA através do seguinte texto: "<ph name="PROMPT" />".</translation>
 <translation id="4415951057168511744">Avatar atual</translation>
 <translation id="4417830657741848074">O seu administrador configurou algumas apps para serem iniciadas automaticamente. Algumas destas apps não podem ser fechadas.</translation>
 <translation id="4422041425070339732">seta para baixo</translation>
@@ -1034,6 +1036,7 @@
 <translation id="6905724422583748843">Voltar à página <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A tampa do scanner está aberta. Feche a tampa e tente novamente.</translation>
 <translation id="6911383237894364323">Não é possível estabelecer ligação aos servidores multimédia.</translation>
+<translation id="6930597342185648547">Acerca do fundo</translation>
 <translation id="6939766318048400022">Café</translation>
 <translation id="6943893908656559156">Identidade remota (opcional)</translation>
 <translation id="6953137545147683679">dourada</translation>

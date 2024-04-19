@@ -27,7 +27,6 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Kuncupkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab.}other{Kuncupkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Runtuhkan <ph name="TABS_COUNT_ONE" /> tab.}other{Runtuhkan kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2569352796411618312">Cadangan: <ph name="NUMBER_OF_TABS" /> daripada tab anda sudah lama tidak digunakan. Tutup tab?</translation>
-<translation id="2613747923081026172">Buat kumpulan</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Lawati laman</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Dibuat <ph name="NUM_HOURS_ONE" /> jam yang lalu}other{Dibuat <ph name="NUM_HOURS_MANY" /> jam yang lalu}}</translation>

@@ -1668,7 +1668,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Gebruikers kunnen deze instelling niet wijzigen of overschrijven.
 
       Opmerking: Door dit beleid wordt de kop 'X-GoogApps-Allowed-Domains' toegevoegd aan alle HTTP- en HTTPS-verzoeken voor alle google.com-domeinen, zoals beschreven in https://support.google.com/a/answer/1668854.</translation>
-<translation id="2282174652047982960">De ingebouwde DNS-client altijd gebruiken, indien beschikbaar</translation>
 <translation id="2288506601233091655">Niet toestaan dat de afdrukgeschiedenis wordt verwijderd</translation>
 <translation id="2289688405312849186">Hoofdaccount van gebruiker: 'user@realm'. De tijdelijke aanduiding <ph name="LOGIN_ID_PLACEHOLDER" /> wordt vervangen door de gebruikersnaam 'user'. De tijdelijke aanduiding <ph name="LOGIN_EMAIL_PLACEHOLDER" /> wordt vervangen door het volledige hoofdaccount 'user@realm'.</translation>
 <translation id="2290270645214705008">Als dit beleid niet is toegepast, kan de hostservice voor externe toegang niet worden gestart of ingesteld om inkomende verbindingen te accepteren.  Dit beleid heeft geen effect op scenario's voor support op afstand.
@@ -2073,6 +2072,10 @@ OPMERKING: Dit beleid had de onjuist gedocumenteerde standaardwaarde 'waar' in M
       Als je het beleid niet instelt, is <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
+<translation id="2585535930727399201">Zakelijke extensies kunnen logboeken aan een systeemlogboek toevoegen via de chrome.systemLog API.
+
+Als je het beleid toepast, kunnen de logboeken beperkte tijd worden bewaard in het systeemlogboek.
+Als je het beleid niet toepast of niet instelt, kunnen de logboeken niet worden toegevoegd aan het systeemlogboek. Dit betekent dat logboeken niet worden bewaard tussen sessies.</translation>
 <translation id="2586117300379904732">Wake locks voor stroombeheer toestaan</translation>
 <translation id="2586231026319371211">Tijd geïnterpreteerd als lokale tijd in 24-uursnotatie op wandklok.</translation>
 <translation id="2587719089023392205"><ph name="PRODUCT_NAME" /> instellen als standaardbrowser</translation>
@@ -3610,13 +3613,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Als je het beleid instelt op 2, worden advertenties geblokkeerd op alle sites met opdringerige advertenties.</translation>
 <translation id="3876564097829884243">De functie EphemeralNetworkPolicies aanzetten.</translation>
 <translation id="3877517141460819966">Geïntegreerde modus voor authenticatie met twee factoren</translation>
-<translation id="3877908683993837673">Dit beleid beheert welke softwarestack wordt gebruikt voor communicatie met de DNS-server: de DNS-client van het besturingssysteem of de ingebouwde DNS-client van <ph name="PRODUCT_NAME" />. Dit beleid heeft geen invloed op welke DNS-servers worden gebruikt: als het besturingssysteem bijvoorbeeld is ingesteld voor gebruik van een zakelijke DNS-server, wordt diezelfde server gebruikt door de ingebouwde DNS-client. Ook wordt met dit beleid niet beheerd of DNS-over-HTTPS wordt gebruikt: <ph name="PRODUCT_NAME" /> gebruikt altijd de ingebouwde resolver voor DNS-over-HTTPS-verzoeken. Zie het <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />-beleid voor informatie over het beheer van DNS-over-HTTPS.
-
-      Als je dit beleid toepast, wordt de ingebouwde DNS-client gebruikt (indien beschikbaar).
-
-      Als je dit beleid niet toepast, wordt de ingebouwde DNS-client alleen gebruikt als DNS-over-HTTPS wordt gebruikt.
-
-      Als je dit beleid niet instelt, wordt de ingebouwde DNS-client standaard aangezet op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (als Privé-DNS en VPN niet aanstaan) en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Lijst met afgedwongen geïnstalleerde web-apps instellen</translation>
 <translation id="3879700444818346084">Import van opgeslagen wachtwoorden bij eerste uitvoering uitzetten</translation>
 <translation id="388237772682176890">Dit beleid is beëindigd in M53 en is verwijderd in M54, omdat de ondersteuning voor SPDY/3.1 is verwijderd.
@@ -6158,6 +6154,11 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
 
       Als je dit beleid instelt op False of niet instelt, kunnen sites alleen WebAssembly-modules naar vensters en werkrollen in dezelfde oorsprong sturen.</translation>
 <translation id="6008497706608447728">Lijst met geblokkeerde domeinen voor zwevende SSO-service</translation>
+<translation id="6009419785187615211">Dit beleid bepaalt hoe er wordt omgegaan met onveilige formulieren (formulieren die gegevens sturen via HTTP) die zijn ingesloten in beveiligde sites (HTTPS) in de browser.
+       Als je het beleid toepast of niet instelt, wordt er een waarschuwingsbericht op de volledige pagina weergegeven als er een onveilig formulier wordt gestuurd. Daarnaast wordt er een waarschuwingsballon naast de formuliervelden weergegeven als de focus erop wordt geplaatst en wordt automatisch aanvullen uitgezet voor deze formulieren.
+       Als je het beleid niet toepast, worden er geen waarschuwingen weergegeven voor onveilige formulieren en werkt automatisch aanvullen normaal.
+
+       Dit beleid wordt verwijderd in Chrome 130.</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
 <translation id="6011969832398368671">Sites toestaan om gebruikers schrijftoegang te vragen tot bestanden en directory's</translation>
 <translation id="601234435141599215">Poortdoorschakeling naar virtuele Linux-machines toestaan</translation>
@@ -6915,7 +6916,6 @@ Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepa
 <translation id="6558013557780651644">Vertraging voordat acties bij inactiviteit worden uitgevoerd</translation>
 <translation id="6558812160831988140">Rapportage over app-gebruik</translation>
 <translation id="6559057113164934677">Niet toestaan dat sites toegang krijgen tot de camera en microfoon</translation>
-<translation id="65591220958874949">De ingebouwde DNS-client gebruiken in Windows, macOS, Android en ChromeOS</translation>
 <translation id="6559221564468029245">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er audio wordt afgespeeld. Hierdoor wordt voorkomen dat de time-out voor inactiviteit wordt bereikt en dat de actie bij inactiviteit wordt ondernomen. Het dimmen, uitzetten of vergrendelen van het scherm wordt nog wel uitgevoerd na de ingestelde periode, ongeacht of er audio wordt afgespeeld.
 
       Als je het beleid niet toepast, worden gebruikers wel als inactief gezien, ook als er audio wordt afgespeeld.</translation>

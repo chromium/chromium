@@ -1986,6 +1986,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4809079943450490359">Ierīces administratora norādījumi</translation>
 <translation id="4811450222531576619">Uzziniet par tās avotu un tēmu.</translation>
 <translation id="4813512666221746211">Tīkla kļūda</translation>
+<translation id="4814114628197290459">IBAN dzēšana</translation>
 <translation id="4816492930507672669">Ietilpināt lapā</translation>
 <translation id="4819347708020428563">Vai vēlaties rediģēt piezīmes noklusējuma skatā?</translation>
 <translation id="4822493756793346865">Parasto cenu pamatā ir informācija par pēdējām 90 dienām no veikaliem tīmeklī.</translation>
@@ -2107,6 +2108,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5040262127954254034">Konfidencialitāte</translation>
 <translation id="5043480802608081735">Jūsu kopētā saite</translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
+<translation id="5048293684454354469">Reklāmu tēmas ir tikai viena no daudzām funkcijām, ko vietnē var izmantot reklāmu personalizēšanai. Pat bez reklāmu tēmām vietnēs joprojām var tikt rādītas reklāmas, taču tās var būt mazāk personalizētas. Uzziniet vairāk par <ph name="BEGIN_LINK" />reklāmu konfidencialitātes pārvaldību<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Aktīvās tēmas</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Lai nosūtītu šo failu, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}zero{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}one{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}other{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">Norādiet atvēršanas iemeslu (obligāti)</translation>
@@ -2325,6 +2327,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
     <ph name="LINE_BREAK" />
     Sazinieties ar sistēmas administratoru.</translation>
 <translation id="549333378215107354">3. izmērs</translation>
+<translation id="5496804587179176046">Saglabāt drošības kodus; pašlaik nav saglabāts neviens drošības kods</translation>
 <translation id="550365051221576010">Aizpildīt visu</translation>
 <translation id="5508443345185481044">Kameras un videoierakstītāji</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3344,7 +3347,6 @@ Papildu informācija:
 <translation id="7442725080345379071">Gaiši oranža</translation>
 <translation id="7444046173054089907">Šī vietne ir bloķēta</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Šodien atkal tiks bloķēti sīkfaili}=1{Rīt atkal tiks bloķēti sīkfaili}zero{Pēc # dienām atkal tiks bloķēti sīkfaili}one{Pēc # dienas atkal tiks bloķēti sīkfaili}other{Pēc # dienām atkal tiks bloķēti sīkfaili}}</translation>
-<translation id="7445762425076701745">Nevar pilnībā apstiprināt servera identifikācijas datus, ar kuru esat savienots. Jums ir izveidots savienojums ar serveri, izmantojot nosaukumu, kas ir derīgs tikai jūsu tīklā, kam ārējā sertifikāta izdevējiestāde nekādā veidā nevar apstiprināt īpašumtiesības. Tā kā dažas sertifikāta izdevējiestādes tāpat izsniegs sertifikātus šādiem nosaukumiem, nav iespējams garantēt, ka jūs esat savienots ar vajadzīgo vietni, nevis uzbrucēju.</translation>
 <translation id="7447234474237738389">Ar apģērbu saistīti pakalpojumi</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Poga “Sinhronizācijas pārvaldība”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu, kāda informācija tiek sinhronizēta.</translation>

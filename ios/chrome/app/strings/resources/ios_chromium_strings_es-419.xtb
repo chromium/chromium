@@ -28,6 +28,7 @@
 <translation id="1707458603865303524">Usa Chromium cada vez que presiones vínculos en mensajes o demás apps.</translation>
 <translation id="1722370509450468186">La contraseña se guardará en tu Cuenta de Google (<ph name="EMAIL" />).</translation>
 <translation id="1791845338122684020">Abre la página del historial de Chromium.</translation>
+<translation id="1811860791247653035">Para obtener la personalización y otras funciones, incluye Chromium en <ph name="FEATURE_NAME_1" /> y <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="1843424232666537147">Ciertas funciones de Chromium te ayudan a administrar los datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -89,6 +90,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="3639997914391704523">Chromium puede revisar las contraseñas cuando accedes con tu Cuenta de Google.</translation>
 <translation id="3688710892786762883">Chrome detectará los números de seguimiento del paquete en los sitios que visites y te mostrará actualizaciones de tus paquetes en la página Nueva pestaña. Tus datos se compartirán con Google para proporcionar esta función y mejorar Shopping para todos los usuarios.</translation>
 <translation id="372658070733623520">Para usar y guardar datos de Chromium en tu Cuenta de Google, verifica tu identidad.</translation>
+<translation id="3728124580182886854">Vincula Chromium y otros servicios de Google para la personalización y otros fines</translation>
 <translation id="3780779443901618967">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chromium.</translation>
 <translation id="3784369638459513223">Abre una nueva pestaña de incógnito en Chromium.</translation>
 <translation id="3805899903892079518">Chromium no tiene acceso a tus fotos o videos. Habilita el acceso en Configuración de iOS &gt; Privacidad &gt; Fotos.</translation>
