@@ -1593,8 +1593,8 @@
   },
   {
     "name": "cros-components",
-    "owners": [ "cros-jellybean-team@google.com"],
-    "expiry_milestone": 125
+    "owners": [ "wenbojie@chromium.com"],
+    "expiry_milestone": 137
   },
   {
     "name": "cros-focus-mode",
