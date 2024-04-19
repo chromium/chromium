@@ -42,6 +42,7 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/base/page_transition_types.h"
+#include "url/url_features.h"
 
 using base::ASCIIToUTF16;
 using base::Time;
@@ -1137,7 +1138,30 @@ TEST_F(HistoryURLProviderTest, CullSearchResults) {
           std::size(expected_when_searching_site));
 }
 
-TEST_F(HistoryURLProviderTest, SuggestExactInput) {
+// Non-special URLs behavior is affected by the
+// StandardCompliantNonSpecialSchemeURLParsing feature.
+// See https://crbug.com/40063064 for details.
+class HistoryURLProviderParamTest : public HistoryURLProviderTest,
+                                    public ::testing::WithParamInterface<bool> {
+ public:
+  HistoryURLProviderParamTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    if (use_standard_compliant_non_special_scheme_url_parsing_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          url::kStandardCompliantNonSpecialSchemeURLParsing);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          url::kStandardCompliantNonSpecialSchemeURLParsing);
+    }
+  }
+
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(HistoryURLProviderParamTest, SuggestExactInput) {
   const size_t npos = std::string::npos;
   struct TestCase {
     // Inputs:
@@ -1150,8 +1174,12 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
     // The index of the ACMatchClassification that should have the MATCH bit
     // set, npos if no ACMatchClassification should have the MATCH bit set.
     size_t match_classification_index;
+    // Expected outputs when StandardCompliantNonSpecialSchemeURLParsing feature
+    // is enabled. This field can be omitted if the expected output remains
+    // the same regardless of the feature being enabled.
+    const char* contents_when_non_special_url_feature_is_enabled;
   } test_cases[] = {
-    // clang-format off
+      // clang-format off
     { "http://www.somesite.com", false,
       "http://www.somesite.com", {0, npos, npos}, 0 },
     { "http://www.somesite.com/", false,
@@ -1182,10 +1210,12 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
       "http://www.w.com", {0, npos, npos}, 0 },
     { "http://a///www.w.com", false,
       "http://a///www.w.com", {0, npos, npos}, 0 },
+    { "http://a@b.com", false, "http://b.com", {0, npos, npos}, 0 },
+    { "a@b.com", true, "b.com", {0, npos, npos} },
     { "mailto://a@b.com", true,
-      "mailto://a@b.com", {0, npos, npos}, 0 },
+      "mailto://a@b.com", {0, npos, npos}, 0, "mailto://b.com" },
     { "mailto://a@b.com", false,
-      "mailto://a@b.com", {0, npos, npos}, 0 },
+      "mailto://a@b.com", {0, npos, npos}, 0, "mailto://b.com" },
     { "http://a%20b/x%20y", false,
       "http://a%20b/x y", {0, npos, npos}, 0 },
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -1200,7 +1230,7 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
      "view-source:x%20y/a b", {0, npos, npos}, 0 },
     { "view-source:http://x%20y/a%20b", false,
       "view-source:http://x%20y/a b", {0, npos, npos}, 0 },
-    // clang-format on
+      // clang-format on
   };
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Index " << i << " input: "
@@ -1214,7 +1244,15 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
     AutocompleteMatch match(VerbatimMatchForInput(
         provider_.get(), client_.get(), input, input.canonicalized_url(),
         test_cases[i].trim_http));
-    EXPECT_EQ(ASCIIToUTF16(test_cases[i].contents), match.contents);
+    if (use_standard_compliant_non_special_scheme_url_parsing_ &&
+        test_cases[i].contents_when_non_special_url_feature_is_enabled) {
+      EXPECT_EQ(
+          ASCIIToUTF16(
+              test_cases[i].contents_when_non_special_url_feature_is_enabled),
+          match.contents);
+    } else {
+      EXPECT_EQ(ASCIIToUTF16(test_cases[i].contents), match.contents);
+    }
     for (size_t match_index = 0; match_index < match.contents_class.size();
          ++match_index) {
       EXPECT_EQ(test_cases[i].offsets[match_index],
@@ -1227,6 +1265,8 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
     EXPECT_EQ(npos, test_cases[i].offsets[match.contents_class.size()]);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, HistoryURLProviderParamTest, ::testing::Bool());
 
 TEST_F(HistoryURLProviderTest, HUPScoringExperiment) {
   HUPScoringParams max_2000_no_time_decay;
