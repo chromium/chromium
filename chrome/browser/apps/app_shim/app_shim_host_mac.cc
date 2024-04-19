@@ -123,15 +123,6 @@ void AppShimHost::OnShimProcessLaunched(
   // If the shim process was created, then await either an AppShimHostBootstrap
   // connecting or the process exiting.
   if (shim_process.IsValid()) {
-    auto* provider = metrics::SubprocessMetricsProvider::GetInstance();
-    if (!provider) {
-      CHECK_IS_TEST();
-    } else if (histogram_allocator_) {
-      provider->RegisterSubprocessAllocator(
-          child_process_host_id_,
-          std::make_unique<base::PersistentHistogramAllocator>(
-              std::move(histogram_allocator_)));
-    }
     return;
   }
 
@@ -206,6 +197,16 @@ void AppShimHost::OnBootstrapConnected(
   host_receiver_.Bind(bootstrap_->GetAppShimHostReceiver());
   host_receiver_.set_disconnect_with_reason_handler(
       base::BindOnce(&AppShimHost::ChannelError, base::Unretained(this)));
+
+  auto* provider = metrics::SubprocessMetricsProvider::GetInstance();
+  if (!provider) {
+    CHECK_IS_TEST();
+  } else if (histogram_allocator_) {
+    provider->RegisterSubprocessAllocator(
+        child_process_host_id_,
+        std::make_unique<base::PersistentHistogramAllocator>(
+            std::move(histogram_allocator_)));
+  }
 
   if (on_shim_connected_for_testing_)
     std::move(on_shim_connected_for_testing_).Run();
