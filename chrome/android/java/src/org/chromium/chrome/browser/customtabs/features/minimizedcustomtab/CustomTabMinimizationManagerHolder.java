@@ -27,13 +27,14 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 
 /** Class that holds the {@link CustomTabMinimizationManager}. */
 @ActivityScope
 public class CustomTabMinimizationManagerHolder implements DestroyObserver {
 
     private final AppCompatActivity mActivity;
-    private final CustomTabActivityNavigationController mNavigationController;
+    private final Provider<CustomTabActivityNavigationController> mNavigationController;
     private final ActivityTabProvider mActivityTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -46,7 +47,7 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     @Inject
     public CustomTabMinimizationManagerHolder(
             AppCompatActivity activity,
-            CustomTabActivityNavigationController navigationController,
+            Provider<CustomTabActivityNavigationController> navigationController,
             ActivityTabProvider activityTabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -80,7 +81,7 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
                                     profileSupplier,
                                     new Handler(Looper.getMainLooper())),
                             profileSupplier);
-            Runnable closeTabRunnable = mNavigationController::navigateOnClose;
+            Runnable closeTabRunnable = mNavigationController.get()::navigateOnClose;
             mMinimizationManager =
                     new CustomTabMinimizationManager(
                             mActivity,

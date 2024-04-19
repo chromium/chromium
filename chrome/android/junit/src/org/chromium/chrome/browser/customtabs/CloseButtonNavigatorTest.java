@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.NavigationController;
@@ -68,6 +69,7 @@ public class CloseButtonNavigatorTest {
     @Mock public CustomTabActivityTabProvider mTabProvider;
     @Mock public WebappExtras mWebappExtras;
     @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
 
     private final Stack<Tab> mTabs = new Stack<>();
     private CloseButtonNavigator mCloseButtonNavigator;
@@ -91,7 +93,11 @@ public class CloseButtonNavigatorTest {
                     mTabController.closeTab();
                 };
         mCloseButtonNavigator =
-                new CloseButtonNavigator(mTabController, mTabProvider, mIntentDataProvider);
+                new CloseButtonNavigator(
+                        mTabController,
+                        mTabProvider,
+                        mIntentDataProvider,
+                        mMinimizationManagerHolder);
 
         // Set up our mTabs to act as the mock tab model:
         // - mTabController.closeTab removes the top tab.
