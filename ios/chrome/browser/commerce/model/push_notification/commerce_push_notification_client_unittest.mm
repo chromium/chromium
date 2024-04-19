@@ -11,9 +11,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/bookmarks/test/test_bookmark_client.h"
+#import "components/browser_sync/browser_sync_switches.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
@@ -150,7 +152,13 @@ class MockDelegate
 
 class CommercePushNotificationClientTest : public PlatformTest {
  public:
-  CommercePushNotificationClientTest() {}
+  CommercePushNotificationClientTest() {
+    // TODO(crbug.com/326185948): These tests rely on Sync-the-feature and thus
+    // break with kMigrateSyncingUserToSignedIn enabled. Once
+    // kEnableBookmarkFoldersForAccountStorage gets enabled, that should resolve
+    // this.
+    features_.InitAndDisableFeature(switches::kMigrateSyncingUserToSignedIn);
+  }
   ~CommercePushNotificationClientTest() override = default;
 
   void SetUp() override {
@@ -256,6 +264,8 @@ class CommercePushNotificationClientTest : public PlatformTest {
   }
 
  protected:
+  base::test::ScopedFeatureList features_;
+
   web::WebTaskEnvironment task_environment_;
   CommercePushNotificationClient commerce_push_notification_client_;
   std::unique_ptr<Browser> browser_;

@@ -40,6 +40,7 @@ source_set("unit_tests") {
     ":push_notification",
     "//base",
     "//base/test:test_support",
+    "//components/browser_sync:switches",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
