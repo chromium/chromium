@@ -23,6 +23,9 @@ extern const char kCrashUploaderDaemon[];
 // Disable Crash Reporting
 extern const char kDisableCrashReporter[];
 
+// Disable Crashpad forwarding
+extern const char kDisableCrashpadForwarding[];
+
 // Path to dumpstate binary to be used for crash reporting.
 // This gives Chromium's crash reporter the flexibility to switch
 // between multiple implementations of dumpstate tool.

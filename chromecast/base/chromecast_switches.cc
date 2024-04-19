@@ -27,6 +27,9 @@ const char kCrashUploaderDaemon[] = "daemon";
 // Switch to disable Crash reporting
 const char kDisableCrashReporter[] = "disable-crash-reporter";
 
+// Switch to disable Crashpad forwarding
+const char kDisableCrashpadForwarding[] = "disable-crashpad-forwarding";
+
 // Switch to dumpstate binary path.
 const char kDumpstateBinPath[] = "dumpstate-path";
 
