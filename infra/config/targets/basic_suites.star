@@ -3796,6 +3796,12 @@ targets.legacy_basic_suite(
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.compositor_unittests.filter",
             ],
         ),
+        "content_browsertests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter",
+            ],
+        ),
         "content_unittests": targets.legacy_test_config(
             args = [
                 "--test-launcher-bot-mode",

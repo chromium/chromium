@@ -4140,6 +4140,12 @@
           '--test-launcher-filter-file=testing/buildbot/filters/ios.compositor_unittests.filter',
         ],
       },
+      'content_browsertests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter',
+        ],
+      },
       'content_unittests': {
         'args': [
           '--test-launcher-bot-mode',
