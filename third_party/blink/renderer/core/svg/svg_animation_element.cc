@@ -563,40 +563,29 @@ bool SVGAnimationElement::CheckAnimationParameters() const {
   DCHECK_NE(animation_mode_, kNoAnimation);
 
   // These validations are appropriate for all animation modes.
-  if (FastHasAttribute(svg_names::kKeyPointsAttr)) {
+  const bool has_key_points = FastHasAttribute(svg_names::kKeyPointsAttr);
+  const bool has_key_times = FastHasAttribute(svg_names::kKeyTimesAttr);
+  if (has_key_points) {
+    // Each value in 'keyPoints' should correspond to a value in 'keyTimes'.
+    if (!has_key_times) {
+      return false;
+    }
     // If 'keyPoints' is specified it should have the same amount of points as
     // 'keyTimes'.
     if (KeyTimes().size() != key_points_.size()) {
       return false;
     }
-    if (animation_mode_ == kFromToAnimation ||
-        animation_mode_ == kFromByAnimation ||
-        animation_mode_ == kToAnimation ||
-        animation_mode_ == kByAnimation) {
-      if (FastHasAttribute(svg_names::kKeyTimesAttr)) {
-        // ...and at least two points.
-        if (KeyTimes().size() < 2) {
-          return false;
-        }
-      }
-    } else if (animation_mode_ == kValuesAnimation ||
-               animation_mode_ == kPathAnimation) {
-      // ...and at least two points.
-      if (KeyTimes().size() < 2) {
-        return false;
-      }
+    // ...and at least two points.
+    if (KeyTimes().size() < 2) {
+      return false;
     }
   }
   if (GetCalcMode() == kCalcModeSpline) {
     // If 'calcMode' is 'spline', there should be one less spline than there
-    // are 'keyTimes' or 'keyPoints' - or 'values' if it is used.
+    // are 'keyTimes' or 'keyPoints'.
     if (key_splines_.empty() ||
-        (FastHasAttribute(svg_names::kKeyPointsAttr) &&
-         key_splines_.size() != key_points_.size() - 1) ||
-        (animation_mode_ == kValuesAnimation &&
-         key_splines_.size() != values_.size() - 1) ||
-        (FastHasAttribute(svg_names::kKeyTimesAttr) &&
-         key_splines_.size() != KeyTimes().size() - 1))
+        (has_key_points && key_splines_.size() != key_points_.size() - 1) ||
+        (has_key_times && key_splines_.size() != KeyTimes().size() - 1))
       return false;
   }
   if (animation_mode_ == kValuesAnimation) {
@@ -606,9 +595,7 @@ bool SVGAnimationElement::CheckAnimationParameters() const {
     const CalcMode calc_mode = GetCalcMode();
     // For 'values' animations, there should be exactly as many 'keyTimes' as
     // 'values'.
-    if (calc_mode != kCalcModePaced &&
-        !FastHasAttribute(svg_names::kKeyPointsAttr) &&
-        FastHasAttribute(svg_names::kKeyTimesAttr) &&
+    if (calc_mode != kCalcModePaced && !has_key_points && has_key_times &&
         values_.size() != KeyTimes().size()) {
       return false;
     }
@@ -618,13 +605,11 @@ bool SVGAnimationElement::CheckAnimationParameters() const {
         KeyTimes().back() != 1) {
       return false;
     }
-    // If 'calcMode' is 'spline', there should be one less spline than there are
-    // 'keyPoints' or 'values'.
-    if (calc_mode == kCalcModeSpline) {
-      if ((key_splines_.empty() || key_splines_.size() != values_.size() - 1) &&
-          key_splines_.size() != key_points_.size() - 1) {
-        return false;
-      }
+    // If 'calcMode' is 'spline', there should be one less spline than there
+    // are 'values'.
+    if (calc_mode == kCalcModeSpline &&
+        key_splines_.size() != values_.size() - 1) {
+      return false;
     }
   }
   return true;
