@@ -3788,6 +3788,10 @@ class DevToolsProcessPerSiteTest : public DevToolsTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kProcessPerSite);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kDevToolsSharedProcessInfobar};
 };
 
 // TODO(https://crbug.com/328693031): Flaky on Linux dbg.
