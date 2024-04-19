@@ -10291,6 +10291,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"drive-fs-show-cse-files", flag_descriptions::kDriveFsShowCSEFilesName,
      flag_descriptions::kDriveFsShowCSEFilesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDriveFsShowCSEFiles)},
+    {"drive-fs-mirroring", flag_descriptions::kDriveFsMirroringName,
+     flag_descriptions::kDriveFsShowCSEFilesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kDriveFsMirroring)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

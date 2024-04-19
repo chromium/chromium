@@ -20759,6 +20759,7 @@ from previous Chrome versions.
   <int value="-180481252" label="CompositorThreadedScrollbarScrolling:enabled"/>
   <int value="-180056644" label="HomeButtonWithText:disabled"/>
   <int value="-179580377" label="CrossOriginOpenerPolicy:enabled"/>
+  <int value="-178744239" label="DriveFsMirroring:enabled"/>
   <int value="-178364053" label="TerminalSystemAppLegacySettings:enabled"/>
   <int value="-178359490" label="DrawImmediatelyWhenInteractive:enabled"/>
   <int value="-177974995" label="CrostiniShowMicSetting:disabled"/>
@@ -25270,6 +25271,7 @@ from previous Chrome versions.
   <int value="1823337908" label="SmartDim20190221:enabled"/>
   <int value="1823457914"
       label="UsernameFirstFlowWithIntermediateValues:disabled"/>
+  <int value="1823816639" label="DriveFsMirroring:disabled"/>
   <int value="1824332134" label="EnableDnsProxy:disabled"/>
   <int value="1824931483"
       label="EnableHistoryFaviconsGoogleServerQuery:disabled"/>

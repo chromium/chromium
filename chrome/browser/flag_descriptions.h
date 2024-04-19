@@ -3547,6 +3547,9 @@ extern const char kDoubleTapToZoomInTabletModeDescription[];
 extern const char kQuickSettingsPWANotificationsName[];
 extern const char kQuickSettingsPWANotificationsDescription[];
 
+extern const char kDriveFsMirroringName[];
+extern const char kDriveFsMirroringDescription[];
+
 extern const char kDriveFsShowCSEFilesName[];
 extern const char kDriveFsShowCSEFilesDescription[];
 

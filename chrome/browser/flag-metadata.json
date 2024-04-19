@@ -2112,6 +2112,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "drive-fs-mirroring",
+    "owners": [ "wenbojie@chromium.org", "fdegros@chromium.org", "simmonsjosh@google.com"],
+    "expiry_milestone": 133
+  },
+  {
     "name": "drive-fs-show-cse-files",
     "owners": [ "cros-dlp-extended@google.com" ],
     "expiry_milestone": 135

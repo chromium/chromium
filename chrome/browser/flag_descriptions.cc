@@ -6126,6 +6126,10 @@ const char kQuickSettingsPWANotificationsDescription[] =
     "permissions in the quick settings menu. Website notification permissions "
     "settings will be migrated to the lacros - chrome browser.";
 
+const char kDriveFsMirroringName[] = "Enable local to Drive mirror sync";
+const char kDriveFsMirroringDescription[] =
+    "Enable mirror sync between local files and Google Drive";
+
 const char kDriveFsShowCSEFilesName[] = "Enable listing of CSE files";
 const char kDriveFsShowCSEFilesDescription[] =
     "Enable listing of CSE files in DriveFS, which will result in these files "
