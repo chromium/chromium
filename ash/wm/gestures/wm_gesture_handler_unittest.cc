@@ -28,8 +28,12 @@
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_util.h"
 #include "base/files/file_path.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/client/window_types.h"
+#include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/events/devices/device_hotplug_event_observer.h"
 #include "ui/events/devices/input_device.h"
@@ -37,6 +41,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/capture_controller.h"
 
 namespace ash {
 
@@ -261,6 +266,79 @@ TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
                               GetOffsetY(-10), num_fingers);
   GetEventGenerator()->Dispatch(&fling_start);
   EXPECT_TRUE(InOverviewSession());
+}
+
+TEST_F(WmGestureHandlerTest, EnterOverviewWithNormalCaptureWindow) {
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  constexpr int num_fingers = 3;
+  constexpr base::TimeDelta step_delay(base::Milliseconds(5));
+
+  // If 3 finger scroll event while there is a capture window is set to the
+  // normal type window, we should not handle the event as entering overview
+  // mode.
+  std::unique_ptr<aura::Window> normal_window =
+      CreateTestWindow(gfx::Rect(100, 100));
+  normal_window->SetCapture();
+
+  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+                               timestamp, 0, 0, 0, 0, 0, num_fingers);
+  GetEventGenerator()->Dispatch(&fling_cancel);
+
+  // Send ET_SCROLL events to initializae ScrollData.
+  for (int i = 0; i < 100; ++i) {
+    timestamp += step_delay;
+    ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, 0,
+                         GetOffsetY(10), 0, GetOffsetY(10), num_fingers);
+    GetEventGenerator()->Dispatch(&move);
+  }
+
+  timestamp += step_delay;
+
+  ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+                              timestamp, 0, 0, GetOffsetY(-10), 0,
+                              GetOffsetY(-10), num_fingers);
+  GetEventGenerator()->Dispatch(&fling_start);
+  EXPECT_FALSE(InOverviewSession());
+  normal_window->ReleaseCapture();
+}
+
+TEST_F(WmGestureHandlerTest, EnterOverviewWithPopupCaptureWindow) {
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  constexpr int num_fingers = 3;
+  constexpr base::TimeDelta step_delay(base::Milliseconds(5));
+
+  // If 3 finger scroll event while there is a capture window is set to the
+  // window by not normal, we should ignore the capture state and handle the
+  // event as entering overview mode.
+  std::unique_ptr<aura::Window> normal_window =
+      CreateTestWindow(gfx::Rect(100, 100));
+  std::unique_ptr<aura::Window> popup_window =
+      base::WrapUnique(aura::test::CreateTestWindowWithDelegateAndType(
+          aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+          aura::client::WINDOW_TYPE_POPUP, /*id=*/1, gfx::Rect(100, 100),
+          normal_window.get(), /*show_on_creation=*/true));
+  popup_window->SetCapture();
+
+  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+                               timestamp, 0, 0, 0, 0, 0, num_fingers);
+  GetEventGenerator()->Dispatch(&fling_cancel);
+
+  // Send ET_SCROLL events to initializae ScrollData.
+  for (int i = 0; i < 100; ++i) {
+    timestamp += step_delay;
+    ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, 0,
+                         GetOffsetY(10), 0, GetOffsetY(10), num_fingers);
+    GetEventGenerator()->Dispatch(&move);
+  }
+
+  timestamp += step_delay;
+
+  ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+                              timestamp, 0, 0, GetOffsetY(-10), 0,
+                              GetOffsetY(-10), num_fingers);
+  GetEventGenerator()->Dispatch(&fling_start);
+  EXPECT_TRUE(InOverviewSession());
+  popup_window->ReleaseCapture();
 }
 
 // Test switch desk is disabled when screen is pinned.
