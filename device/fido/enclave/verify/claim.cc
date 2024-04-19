@@ -18,4 +18,32 @@ ClaimEvidence::ClaimEvidence(std::optional<std::string> role,
     : role(std::move(role)), uri(std::move(uri)), digest(std::move(digest)) {}
 ClaimEvidence::~ClaimEvidence() = default;
 
+template <typename T>
+bool ValidateClaim(const Statement<ClaimPredicate<T>>& claim) {
+  if (claim.type != kStatementV1) {
+    return false;
+  }
+  if (claim.predicate_type != kPredicateV1 &&
+      claim.predicate_type != kPredicateV2) {
+    return false;
+  }
+  if (claim.predicate.validity.has_value()) {
+    if (claim.predicate.validity->not_before < claim.predicate.issued_on) {
+      return false;
+    }
+    if (claim.predicate.validity->not_before >
+        claim.predicate.validity->not_after) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ValidateEndorsement(const EndorsementStatement& claim) {
+  if (!ValidateClaim(claim) || claim.predicate.claim_type != kEndorsementV2) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace device::enclave

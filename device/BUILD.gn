@@ -177,6 +177,7 @@ test("device_unittests") {
       "fido/ctap_request_unittest.cc",
       "fido/ctap_response_unittest.cc",
       "fido/enclave/enclave_protocol_utils_unittest.cc",
+      "fido/enclave/verify/claim_unittest.cc",
       "fido/enclave/verify/utils_unittest.cc",
       "fido/fake_fido_discovery_unittest.cc",
       "fido/fido_device_authenticator_unittest.cc",
