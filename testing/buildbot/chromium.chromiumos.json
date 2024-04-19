@@ -3432,8 +3432,8 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter",
-          "--lacros-chrome-path=lacros_clang_x64/test_lacros_chrome"
+          "--lacros-chrome-path=lacros_clang_x64/test_lacros_chrome",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter"
         ],
         "isolate_profile_data": true,
         "merge": {

@@ -1219,9 +1219,17 @@
   },
   'browser_tests_require_lacros': {
     'modifications': {
+      'linux-chromeos-chrome-with-lacros': {
+        'args': [
+            '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.branded.browser_tests.require_lacros.filter'
+        ]
+      },
       'linux-chromeos-rel': {
+        'args': [
+            '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter'
+        ],
         'retry_only_failed_tests': True
-      }
+      },
     }
   },
   'capture_unittests': {

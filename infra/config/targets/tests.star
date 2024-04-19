@@ -342,7 +342,6 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "browser_tests_require_lacros",
     args = [
-        "--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter",
         "--lacros-chrome-path=lacros_clang_x64/test_lacros_chrome",
     ],
     binary = "browser_tests",
