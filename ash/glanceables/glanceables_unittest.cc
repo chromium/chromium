@@ -20,22 +20,30 @@
 namespace ash {
 
 class GlanceablesTest : public AshTestBase {
+ public:
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    const auto account_id =
+        AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
+    SimulateUserLogin(account_id);
+
+    tasks_client_ = glanceables_tasks_test_util::InitializeFakeTasksClient(
+        base::Time::Now());
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id, GlanceablesController::ClientsRegistration{
+                        .tasks_client = tasks_client_.get()});
+  }
+
+  api::FakeTasksClient* tasks_client() const { return tasks_client_.get(); }
+
  private:
   base::test::ScopedFeatureList features{
       features::kGlanceablesTimeManagementTasksView};
+  std::unique_ptr<api::FakeTasksClient> tasks_client_;
 };
 
-TEST_F(GlanceablesTest, DISABLED_DoesNotAddTasksViewWhenDisabledByAdmin) {
-  const auto account_id =
-      AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
-  SimulateUserLogin(account_id);
-
-  const auto client =
-      glanceables_tasks_test_util::InitializeFakeTasksClient(base::Time::Now());
-  Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
-      account_id,
-      GlanceablesController::ClientsRegistration{.tasks_client = client.get()});
-
+TEST_F(GlanceablesTest, DoesNotAddTasksViewWhenDisabledByAdmin) {
   auto* const date_tray =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();
 
@@ -52,7 +60,7 @@ TEST_F(GlanceablesTest, DISABLED_DoesNotAddTasksViewWhenDisabledByAdmin) {
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
 
   // Simulate that admin disables the integration.
-  client->set_is_disabled_by_admin(true);
+  tasks_client()->set_is_disabled_by_admin(true);
 
   // Open Glanceables via Search + C again, make sure the bubble no longer
   // contains the Tasks view.
@@ -64,11 +72,6 @@ TEST_F(GlanceablesTest, DISABLED_DoesNotAddTasksViewWhenDisabledByAdmin) {
   // Close Glanceables.
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
-
-  // Unregister `client` to prevent crash during `AshTestBase::TearDown`.
-  Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
-      account_id,
-      GlanceablesController::ClientsRegistration{.tasks_client = nullptr});
 }
 
 }  // namespace ash
