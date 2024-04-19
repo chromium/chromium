@@ -25,6 +25,8 @@ class WebContents;
 
 namespace autofill {
 
+class AutofillKeyboardAccessoryView;
+
 // This adapter allows the AutofillSuggestionController to treat the keyboard
 // accessory like any other implementation of AutofillPopupView.
 // From the controller's perspective, this behaves like a real AutofillPopupView
@@ -42,34 +44,7 @@ class AutofillKeyboardAccessoryAdapter
 
   ~AutofillKeyboardAccessoryAdapter() override;
 
-  // Interface describing the minimal capabilities for the native view.
-  class AccessoryView {
-   public:
-    virtual ~AccessoryView() = default;
-
-    // Initializes the Java-side of this bridge. Returns true after a successful
-    // creation and false otherwise.
-    virtual bool Initialize() = 0;
-
-    // Requests to dismiss this view.
-    virtual void Hide() = 0;
-
-    // Requests to show this view with the data provided by the controller.
-    virtual void Show() = 0;
-
-    // Makes announcement for acessibility.
-    virtual void AxAnnounce(const std::u16string& text);
-
-    // Ask to confirm a deletion. Triggers the callback upon the user confirming
-    // or declining the deletion. The detection callback parameter specifies
-    // whether the deletion was confirmed or declined.
-    virtual void ConfirmDeletion(
-        const std::u16string& confirmation_title,
-        const std::u16string& confirmation_body,
-        base::OnceCallback<void(bool)> deletion_callback) = 0;
-  };
-
-  void SetAccessoryView(std::unique_ptr<AccessoryView> view) {
+  void SetAccessoryView(std::unique_ptr<AutofillKeyboardAccessoryView> view) {
     view_ = std::move(view);
   }
 
@@ -139,7 +114,7 @@ class AutofillKeyboardAccessoryAdapter
   int OffsetIndexFor(int element_index) const;
 
   base::WeakPtr<AutofillKeyboardAccessoryController> controller_;
-  std::unique_ptr<AutofillKeyboardAccessoryAdapter::AccessoryView> view_;
+  std::unique_ptr<AutofillKeyboardAccessoryView> view_;
 
   // The labels to be used for the input chips.
   std::vector<std::u16string> labels_;

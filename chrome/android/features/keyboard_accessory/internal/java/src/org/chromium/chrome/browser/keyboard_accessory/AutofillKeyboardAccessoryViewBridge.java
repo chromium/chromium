@@ -214,21 +214,21 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     @NativeMethods
     interface Natives {
         void viewDismissed(
-                long nativeAutofillKeyboardAccessoryView,
+                long nativeAutofillKeyboardAccessoryViewImpl,
                 AutofillKeyboardAccessoryViewBridge caller);
 
         void suggestionSelected(
-                long nativeAutofillKeyboardAccessoryView,
+                long nativeAutofillKeyboardAccessoryViewImpl,
                 AutofillKeyboardAccessoryViewBridge caller,
                 int listIndex);
 
         void deletionRequested(
-                long nativeAutofillKeyboardAccessoryView,
+                long nativeAutofillKeyboardAccessoryViewImpl,
                 AutofillKeyboardAccessoryViewBridge caller,
                 int listIndex);
 
         void onDeletionDialogClosed(
-                long nativeAutofillKeyboardAccessoryView,
+                long nativeAutofillKeyboardAccessoryViewImpl,
                 AutofillKeyboardAccessoryViewBridge caller,
                 boolean confirmed);
     }

@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"

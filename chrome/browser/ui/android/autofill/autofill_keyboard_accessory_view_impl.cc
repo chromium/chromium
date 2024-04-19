@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_view.h"
+#include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_view_impl.h"
 
 #include <string>
 #include <utility>
@@ -37,7 +37,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
 
-AutofillKeyboardAccessoryView::AutofillKeyboardAccessoryView(
+AutofillKeyboardAccessoryViewImpl::AutofillKeyboardAccessoryViewImpl(
     base::WeakPtr<AutofillKeyboardAccessoryController> adapter,
     base::WeakPtr<AutofillKeyboardAccessoryController> controller)
     : adapter_(adapter), controller_(controller) {
@@ -45,12 +45,12 @@ AutofillKeyboardAccessoryView::AutofillKeyboardAccessoryView(
       base::android::AttachCurrentThread()));
 }
 
-AutofillKeyboardAccessoryView::~AutofillKeyboardAccessoryView() {
+AutofillKeyboardAccessoryViewImpl::~AutofillKeyboardAccessoryViewImpl() {
   Java_AutofillKeyboardAccessoryViewBridge_resetNativeViewPointer(
       base::android::AttachCurrentThread(), java_object_);
 }
 
-bool AutofillKeyboardAccessoryView::Initialize() {
+bool AutofillKeyboardAccessoryViewImpl::Initialize() {
   if (!controller_) {
     return false;
   }
@@ -66,13 +66,13 @@ bool AutofillKeyboardAccessoryView::Initialize() {
   return true;
 }
 
-void AutofillKeyboardAccessoryView::Hide() {
+void AutofillKeyboardAccessoryViewImpl::Hide() {
   TRACE_EVENT0("passwords", "AutofillKeyboardAccessoryView::Hide");
   Java_AutofillKeyboardAccessoryViewBridge_dismiss(
       base::android::AttachCurrentThread(), java_object_);
 }
 
-void AutofillKeyboardAccessoryView::Show() {
+void AutofillKeyboardAccessoryViewImpl::Show() {
   TRACE_EVENT0("passwords", "AutofillKeyboardAccessoryView::Show");
   if (!controller_) {
     return;
@@ -122,11 +122,11 @@ void AutofillKeyboardAccessoryView::Show() {
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array);
 }
 
-void AutofillKeyboardAccessoryView::AxAnnounce(const std::u16string& text) {
+void AutofillKeyboardAccessoryViewImpl::AxAnnounce(const std::u16string& text) {
   AnnounceTextForA11y(text);
 }
 
-void AutofillKeyboardAccessoryView::ConfirmDeletion(
+void AutofillKeyboardAccessoryViewImpl::ConfirmDeletion(
     const std::u16string& confirmation_title,
     const std::u16string& confirmation_body,
     base::OnceCallback<void(bool)> deletion_callback) {
@@ -136,14 +136,14 @@ void AutofillKeyboardAccessoryView::ConfirmDeletion(
       env, java_object_, confirmation_title, confirmation_body);
 }
 
-void AutofillKeyboardAccessoryView::SuggestionSelected(
+void AutofillKeyboardAccessoryViewImpl::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
   adapter_->AcceptSuggestion(list_index);
 }
 
-void AutofillKeyboardAccessoryView::DeletionRequested(
+void AutofillKeyboardAccessoryViewImpl::DeletionRequested(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
@@ -152,7 +152,7 @@ void AutofillKeyboardAccessoryView::DeletionRequested(
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 }
 
-void AutofillKeyboardAccessoryView::OnDeletionDialogClosed(
+void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jboolean confirmed) {
@@ -163,7 +163,7 @@ void AutofillKeyboardAccessoryView::OnDeletionDialogClosed(
   std::move(deletion_callback_).Run(confirmed);
 }
 
-void AutofillKeyboardAccessoryView::ViewDismissed(
+void AutofillKeyboardAccessoryViewImpl::ViewDismissed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   adapter_->ViewDestroyed();
@@ -181,7 +181,7 @@ base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
           .GetWeakPtrToController();
   auto adapter =
       std::make_unique<AutofillKeyboardAccessoryAdapter>(controller_weak);
-  auto accessory_view = std::make_unique<AutofillKeyboardAccessoryView>(
+  auto accessory_view = std::make_unique<AutofillKeyboardAccessoryViewImpl>(
       adapter->GetWeakPtrToAdapter(), controller_weak);
   if (!accessory_view->Initialize()) {
     return nullptr;  // Don't create an adapter without initialized view.

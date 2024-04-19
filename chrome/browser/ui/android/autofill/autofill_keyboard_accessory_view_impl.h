@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_VIEW_H_
-#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_VIEW_H_
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_VIEW_IMPL_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_VIEW_IMPL_H_
 
 #include <jni.h>
 #include <stddef.h>
+
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -14,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_adapter.h"
-#include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 
 namespace autofill {
 
@@ -23,20 +24,20 @@ class AutofillKeyboardAccessoryController;
 // A suggestion view that acts as an alternative to the field-attached popup
 // window. This view appears above the keyboard and spans the width of the
 // screen, condensing rather than overlaying the content area.
-class AutofillKeyboardAccessoryView
-    : public AutofillKeyboardAccessoryAdapter::AccessoryView {
+class AutofillKeyboardAccessoryViewImpl
+    : public AutofillKeyboardAccessoryView {
  public:
-  AutofillKeyboardAccessoryView(
+  AutofillKeyboardAccessoryViewImpl(
       base::WeakPtr<AutofillKeyboardAccessoryController> adapter,
       base::WeakPtr<AutofillKeyboardAccessoryController> controller);
 
-  AutofillKeyboardAccessoryView(const AutofillKeyboardAccessoryView&) = delete;
-  AutofillKeyboardAccessoryView& operator=(
-      const AutofillKeyboardAccessoryView&) = delete;
+  AutofillKeyboardAccessoryViewImpl(const AutofillKeyboardAccessoryViewImpl&) = delete;
+  AutofillKeyboardAccessoryViewImpl& operator=(
+      const AutofillKeyboardAccessoryViewImpl&) = delete;
 
-  ~AutofillKeyboardAccessoryView() override;
+  ~AutofillKeyboardAccessoryViewImpl() override;
 
-  // Implementation of AutofillKeyboardAccessoryAdapter::AccessoryView.
+  // AutofillKeyboardAccessoryView:
   bool Initialize() override;
   void Hide() override;
   void Show() override;
@@ -87,4 +88,4 @@ class AutofillKeyboardAccessoryView
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_VIEW_H_
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_VIEW_IMPL_H_

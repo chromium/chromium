@@ -19,6 +19,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -148,8 +149,7 @@ class MockAutofillKeyboardAccessoryController
       weak_ptr_factory_{this};
 };
 
-class MockAccessoryView
-    : public AutofillKeyboardAccessoryAdapter::AccessoryView {
+class MockAccessoryView : public AutofillKeyboardAccessoryView {
  public:
   MockAccessoryView() {}
 
@@ -280,7 +280,7 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
   MockAccessoryView* view() { return accessory_view_; }
 
  private:
-  raw_ptr<StrictMock<MockAccessoryView>> accessory_view_;
+  raw_ptr<MockAccessoryView> accessory_view_ = nullptr;
   std::unique_ptr<MockAutofillKeyboardAccessoryController> popup_controller_;
   std::unique_ptr<AutofillKeyboardAccessoryAdapter> autofill_accessory_adapter_;
 };
