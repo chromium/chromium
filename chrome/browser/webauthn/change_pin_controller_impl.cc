@@ -101,6 +101,13 @@ void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ChangePinControllerImpl::OnGPMPinOptionChanged(bool is_arbitrary) {
+  CHECK(model_->step() == Step::kGPMCreatePin ||
+        model_->step() == Step::kGPMCreateArbitraryPin);
+  model_->SetStep(is_arbitrary ? Step::kGPMCreateArbitraryPin
+                               : Step::kGPMCreatePin);
+}
+
 void ChangePinControllerImpl::Reset() {
   model_observation_.Reset();
   model_->SetStep(Step::kNotStarted);

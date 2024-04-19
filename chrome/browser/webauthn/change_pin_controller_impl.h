@@ -41,7 +41,7 @@ class EnclaveManager;
 // │ OnReauthComplete ───────────────┼─────────────┼───────────┐           │
 // │                                 │             │           │           │
 // │                                 │ Cancelled   │           ▼           │
-// │ CancelAuthenticatorRequest ◄────┼─────────────┼── kGPMCreatePin       │
+// │ CancelAuthenticatorRequest ◄────┼─────────────┼── kGPMCreatePin*      │
 // │                                 │             │           │           │
 // │                                 │ PIN entered │           │           │
 // │        ┌────────────────────────┼─────────────┼───────────┘           │
@@ -59,6 +59,9 @@ class EnclaveManager;
 // │ OnGpmPinChanged                 │             │                │
 // │                                 │             │                │
 // └─────────────────────────────────┘             └────────────────┘
+//
+// *: this can also be kGPMCreateArbitraryPin when the user switches the step in
+// the view.
 class ChangePinControllerImpl
     : public ChangePinController,
       public base::SupportsUserData::Data,
@@ -85,6 +88,7 @@ class ChangePinControllerImpl
   void OnReauthComplete(std::string rapt) override;
   void OnRecoverSecurityDomainClosed() override;
   void OnGPMPinEntered(const std::u16string& pin) override;
+  void OnGPMPinOptionChanged(bool is_arbitrary) override;
 
  private:
   void OnGpmPinChanged(bool success);
