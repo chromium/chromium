@@ -84,6 +84,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "extensions/browser/extension_registry.h"
@@ -762,8 +763,43 @@ void BookmarkBarView::Layout(PassKey) {
   int saved_tab_group_bar_width = 0;
   if (saved_tab_group_bar_ && saved_tab_group_bar_->GetVisible()) {
     // Calculate the maximum size needed for the tab group buttons.
+    // In v2 UI we need to allocate space for both saved tab group and
+    // bookmarks to prevent one overwhelming the other.
+    int saved_tab_groups_bar_available_width;
+    if (tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
+      // Calculate the save tab group width without any restriction.
+      int saved_tab_group_max_width =
+          saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(INT_MAX);
+      // Estimate the bookmark buttons width with existing buttons because not
+      // all the bookmarks have button created.
+      int estimate_bookmark_buttons_width = 0;
+      for (views::LabelButton* button : bookmark_buttons_) {
+        estimate_bookmark_buttons_width += button->GetPreferredSize().width();
+      }
+      int bookmark_count =
+          bookmark_model_->loaded()
+              ? bookmark_model_->bookmark_bar_node()->children().size()
+              : 0;
+      int button_count = bookmark_buttons_.size();
+      if (button_count > 0) {
+        estimate_bookmark_buttons_width *=
+            (1.0 * bookmark_count / button_count);
+      }
+      estimate_bookmark_buttons_width +=
+          (bookmark_count - 1) * bookmark_bar_button_padding;
+
+      saved_tab_groups_bar_available_width =
+          GetAvailableWidthForSavedTabGroupsBar(
+              saved_tab_group_max_width, estimate_bookmark_buttons_width,
+              max_x - x -
+                  saved_tab_groups_separator_view_->GetPreferredSize().width());
+    } else {
+      saved_tab_groups_bar_available_width = max_x - x;
+    }
+
     saved_tab_group_bar_width =
-        saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(max_x - x);
+        saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(
+            saved_tab_groups_bar_available_width);
     saved_tab_group_bar_->SetBounds(x, y, saved_tab_group_bar_width,
                                     button_height);
 
@@ -1380,6 +1416,36 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
       GetWidget(), browser_, browser_->profile(),
       BookmarkLaunchLocation::kAttachedBar, parent, nodes, close_on_remove);
   context_menu_->RunMenuAt(point, source_type);
+}
+
+// Calculate the available width for the saved tab group bar.
+// The following rules are applied to prevent one allocate too much space over
+// another.
+//
+// 1. If saved tab group bar and bookmark buttons can both fit into the space,
+// allocate as much as they need to both of them.
+//
+// 2. When saved tab group bar and bookmark buttons can't both fit into the
+// space, if one of them is smaller than half of the available width and the
+// other is bigger than it, then allocate enough space to fit the smaller one
+// and the rest for the bigger one.
+//
+// 3. When saved tab group bar and bookmark buttons can't both fit into the
+// space, if both of them are bigger than half of the available width, then
+// allocate half of the available to each of them.
+int BookmarkBarView::GetAvailableWidthForSavedTabGroupsBar(
+    int saved_tab_group_bar_width,
+    int bookmark_buttons_width,
+    int available_width) {
+  if (saved_tab_group_bar_width + bookmark_buttons_width <= available_width) {
+    return available_width;
+  } else if (saved_tab_group_bar_width <= available_width / 2) {
+    return available_width;
+  } else if (bookmark_buttons_width <= available_width / 2) {
+    return available_width - bookmark_buttons_width;
+  } else {
+    return available_width / 2;
+  }
 }
 
 void BookmarkBarView::Init() {

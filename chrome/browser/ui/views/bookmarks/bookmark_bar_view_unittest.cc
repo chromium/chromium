@@ -601,6 +601,27 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
   EXPECT_EQ(bounds_in_screen, button_3->GetBoundsInScreen());
 }
 
+TEST_F(BookmarkBarViewTest, GetAvailableWidthForSavedTabGroupsBar) {
+  // Saved tab group bar and bookmark buttons can both fit.
+  ASSERT_EQ(
+      100, BookmarkBarView::GetAvailableWidthForSavedTabGroupsBar(60, 30, 100));
+
+  // Cases of saved tab group bar and bookmark buttons cannot both fit below.
+  // Prioritize fitting saved tab group since it's smaller than half of the
+  // available width.
+  ASSERT_EQ(
+      100, BookmarkBarView::GetAvailableWidthForSavedTabGroupsBar(30, 80, 100));
+
+  // Prioritize fitting bookmark buttons since it's smaller than half of the
+  // available width.
+  ASSERT_EQ(
+      70, BookmarkBarView::GetAvailableWidthForSavedTabGroupsBar(80, 30, 100));
+
+  // Split the space evenly since neither can fit half of the availablel width.
+  ASSERT_EQ(
+      50, BookmarkBarView::GetAvailableWidthForSavedTabGroupsBar(80, 60, 100));
+}
+
 TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   widget()->Show();
 

@@ -230,6 +230,14 @@ class BookmarkBarView : public views::AccessiblePaneView,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
 
+  // Calculate the available width for the saved tab group bar.
+  // This is used in Tab Group v2 UI to allocate space for both saved tab groups
+  // and bookmark buttons.
+  static int GetAvailableWidthForSavedTabGroupsBar(
+      int saved_tab_group_bar_width,
+      int bookmark_buttons_width,
+      int available_width);
+
  private:
   struct DropInfo;
   struct DropLocation;
