@@ -102,6 +102,10 @@ class AutofillKeyboardAccessoryControllerImpl
   // Returns true if the popup has entries that are not "Manage ...".
   bool HasSuggestions() const;
 
+  // Moves "clear form" suggestions to the front and creates labels for elements
+  // of `suggestions_`.
+  void OrderSuggestionsAndCreateLabels();
+
   // Hides the view and asynchronously deletes itself.
   void HideViewAndDie();
 
@@ -113,8 +117,14 @@ class AutofillKeyboardAccessoryControllerImpl
   // A helper that detects events that should hide the popup.
   std::optional<AutofillPopupHideHelper> popup_hide_helper_;
 
-  // The suggestions to be shown in the Keyboard Accessory.
+  // The suggestions to be shown in the Keyboard Accessory. Note that they do
+  // not necessarily have the same order as the `suggestions` parameter passed
+  // to `Show`: The keyboard accessory moves a "Clear form" entry to the front,
+  // if it exists.
   std::vector<Suggestion> suggestions_;
+
+  // The labels to be used for the Keyboard Accessory chips.
+  std::vector<Suggestion::Text> labels_;
 
   // The trigger source of the `suggestions_`.
   AutofillSuggestionTriggerSource trigger_source_ =

@@ -121,18 +121,6 @@ class MockAutofillKeyboardAccessoryController
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void set_suggestions(const std::vector<PopupItemId>& ids) {
-    suggestions_.clear();
-
-    for (const auto& id : ids) {
-      // Accessibility requires all focusable AutofillPopupItemView to have
-      // ui::AXNodeData with non-empty names. We specify dummy values and labels
-      // to satisfy this.
-      suggestions_.emplace_back("dummy_value", "dummy_label",
-                                Suggestion::Icon::kNoIcon, id);
-    }
-  }
-
   void set_suggestions(std::vector<Suggestion> suggestions) {
     suggestions_ = std::move(suggestions);
   }
@@ -183,57 +171,6 @@ std::vector<Suggestion> createSuggestions() {
       createPasswordEntry("****************", "Berta", "psl.origin.eg"),
       createPasswordEntry("***", "Carl", "")};
   return suggestions;
-}
-
-std::vector<Suggestion> createSuggestions(int clearItemOffset) {
-  std::vector<Suggestion> suggestions = createSuggestions();
-  suggestions.emplace(suggestions.begin() + clearItemOffset, "Clear", "",
-                      Suggestion::Icon::kNoIcon, PopupItemId::kClearForm);
-  return suggestions;
-}
-
-// Convert the Suggestion::labels into one string of format "[[a, b],[c]]".
-std::string SuggestionLabelsToString(
-    const std::vector<std::vector<Suggestion::Text>>& labels) {
-  std::string result;
-  for (const std::vector<Suggestion::Text>& texts : labels) {
-    if (!result.empty())
-      result.append(",");
-
-    std::string row;
-    for (const Suggestion::Text& text : texts) {
-      if (!row.empty())
-        row.append(",");
-      row.append(base::UTF16ToUTF8(text.value));
-    }
-    result.append("[" + row + "]");
-  }
-  return "[" + result + "]";
-}
-
-// Matcher returning true if suggestions have equal members.
-MATCHER_P(equalsSuggestion, other, "") {
-  if (arg.popup_item_id != other.popup_item_id) {
-    *result_listener << "has a different popup_item_id:\n"
-                     << ::testing::PrintToString(arg) << "\n";
-    return false;
-  }
-  if (arg.main_text != other.main_text) {
-    *result_listener << "has a different main_text:\n"
-                     << ::testing::PrintToString(arg) << "\n";
-    return false;
-  }
-  if (arg.labels != other.labels) {
-    *result_listener << "has different labels:\n"
-                     << SuggestionLabelsToString(arg.labels) << "\n";
-    return false;
-  }
-  if (arg.icon != other.icon) {
-    *result_listener << "has a different icon:\n"
-                     << ::testing::PrintToString(arg) << "\n";
-    return false;
-  }
-  return true;
 }
 
 }  // namespace
@@ -293,63 +230,6 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, ShowingInitializesAndUpdatesView) {
 TEST_F(AutofillKeyboardAccessoryAdapterTest, HidingAdapterHidesView) {
   EXPECT_CALL(*view(), Hide());
   adapter_as_view()->Hide();
-}
-
-TEST_F(AutofillKeyboardAccessoryAdapterTest, ReorderUpdatedSuggestions) {
-  controller()->set_suggestions(createSuggestions(/*clearItemOffset=*/2));
-  EXPECT_CALL(*view(), Show());
-
-  adapter_as_view()->OnSuggestionsChanged();
-
-  EXPECT_THAT(adapter_as_controller()->GetSuggestionAt(0),
-              equalsSuggestion(suggestion(2)));
-  EXPECT_THAT(adapter_as_controller()->GetSuggestionAt(1),
-              equalsSuggestion(suggestion(0)));
-  EXPECT_THAT(adapter_as_controller()->GetSuggestionAt(2),
-              equalsSuggestion(suggestion(1)));
-  EXPECT_THAT(adapter_as_controller()->GetSuggestionAt(3),
-              equalsSuggestion(suggestion(3)));
-}
-
-TEST_F(AutofillKeyboardAccessoryAdapterTest, UseAdditionalLabelForElidedLabel) {
-  controller()->set_suggestions(createSuggestions(/*clearItemOffset=*/1));
-  NotifyAboutSuggestions();
-
-  // The 1st item is usually not visible (something like clear form) and has an
-  // empty label. But it needs to be handled since UI might ask for it anyway.
-  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(0).size(), 1U);
-  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(0)[0].size(), 1U);
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(0)[0][0].value,
-            std::u16string());
-
-  // If there is a label, use it but cap at 8 bullets.
-  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(1).size(), 1U);
-  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(1)[0].size(), 1U);
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(1)[0][0].value,
-            u"********");
-
-  // If the label is empty, use the additional label:
-  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(2).size(), 1U);
-  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(2)[0].size(), 1U);
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(2)[0][0].value,
-            u"psl.origin.eg ********");
-
-  // If the password has less than 8 bullets, show the exact amount.
-  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(3).size(), 1U);
-  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(3)[0].size(), 1U);
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(3)[0][0].value,
-            u"***");
-}
-
-TEST_F(AutofillKeyboardAccessoryAdapterTest, ProvideReorderedSuggestions) {
-  controller()->set_suggestions(createSuggestions(/*clearItemOffset=*/2));
-  NotifyAboutSuggestions();
-
-  EXPECT_THAT(adapter_as_controller()->GetSuggestions(),
-              testing::ElementsAre(equalsSuggestion(suggestion(2)),
-                                   equalsSuggestion(suggestion(0)),
-                                   equalsSuggestion(suggestion(1)),
-                                   equalsSuggestion(suggestion(3))));
 }
 
 TEST_F(AutofillKeyboardAccessoryAdapterTest, RemoveAfterConfirmation) {

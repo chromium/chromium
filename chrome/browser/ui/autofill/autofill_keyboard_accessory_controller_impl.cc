@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl.h"
 
+#include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -12,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
@@ -22,6 +25,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -32,7 +36,32 @@
 
 namespace autofill {
 
+namespace {
+
 using FillingSource = ManualFillingController::FillingSource;
+
+constexpr std::u16string_view kLabelSeparator = u" ";
+constexpr size_t kMaxBulletCount = 8;
+
+Suggestion::Text CreateLabel(const Suggestion& suggestion) {
+  std::u16string password =
+      suggestion.additional_label.substr(0, kMaxBulletCount);
+  // The label contains the signon_realm or is empty. The additional_label can
+  // never be empty since it must contain a password.
+  if (suggestion.labels.empty() || suggestion.labels[0][0].value.empty()) {
+    return Suggestion::Text(password);
+  }
+
+  // TODO(crbug.com/40221039): Re-consider whether using CHECK is an appropriate
+  // way to explicitly regulate what information should be populated for the
+  // interface.
+  CHECK_EQ(suggestion.labels.size(), 1U);
+  CHECK_EQ(suggestion.labels[0].size(), 1U);
+  return Suggestion::Text(
+      base::StrCat({suggestion.labels[0][0].value, kLabelSeparator, password}));
+}
+
+}  // namespace
 
 // static
 base::WeakPtr<AutofillSuggestionController>
@@ -188,8 +217,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnSuggestionsChanged() {
 }
 
 void AutofillKeyboardAccessoryControllerImpl::SelectSuggestion(int index) {
-  CHECK_GE(index, 0);
-  CHECK_LT(index, static_cast<int>(suggestions_.size()));
+  CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
 
   if (!IsAcceptablePopupItemId(GetSuggestionAt(index).popup_item_id)) {
     UnselectSuggestion();
@@ -233,7 +261,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
     return;
   }
 
-  if (static_cast<size_t>(index) >= suggestions_.size()) {
+  if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
     return;
   }
 
@@ -284,10 +312,11 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
 
   // This function might be called in a callback, so ensure the list index is
   // still in bounds. If not, terminate the removing and consider it failed.
-  // TODO(crbug.com/40766704): Replace these checks with a stronger identifier.
-  if (index < 0 || static_cast<size_t>(index) >= suggestions_.size()) {
+  // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
+  if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
     return false;
   }
+  CHECK_EQ(suggestions_.size(), labels_.size());
 
   if (!delegate_->RemoveSuggestion(suggestions_[index])) {
     return false;
@@ -319,6 +348,7 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
 
   // Remove the deleted element.
   suggestions_.erase(suggestions_.begin() + index);
+  labels_.erase(labels_.begin() + index);
 
   if (HasSuggestions()) {
     delegate_->ClearPreviewedForm();
@@ -403,6 +433,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
       std::move(hiding_callback), std::move(pip_detection_callback));
 
   suggestions_ = std::move(suggestions);
+  OrderSuggestionsAndCreateLabels();
   trigger_source_ = trigger_source;
 
   if (view_) {
@@ -449,7 +480,9 @@ void AutofillKeyboardAccessoryControllerImpl::SetViewForTesting(
 
 void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
     base::span<const SelectOption> options) {
-  UpdateSuggestionsFromDataList(options, suggestions_);
+  suggestions_ =
+      UpdateSuggestionsFromDataList(options, std::move(suggestions_));
+  OrderSuggestionsAndCreateLabels();
   if (HasSuggestions()) {
     OnSuggestionsChanged();
   } else {
@@ -474,13 +507,15 @@ bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
 
 std::vector<std::vector<Suggestion::Text>>
 AutofillKeyboardAccessoryControllerImpl::GetSuggestionLabelsAt(int row) const {
-  return suggestions_[row].labels;
+  CHECK_LT(base::checked_cast<size_t>(row), labels_.size());
+  return {{labels_[row]}};
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
     int index,
     std::u16string* title,
     std::u16string* body) {
+  CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
   const std::u16string& value = suggestions_[index].main_text.value;
   const PopupItemId popup_item_id = suggestions_[index].popup_item_id;
   const Suggestion::BackendId backend_id =
@@ -543,6 +578,29 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
 base::WeakPtr<AutofillKeyboardAccessoryController>
 AutofillKeyboardAccessoryControllerImpl::GetWeakPtrToController() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void AutofillKeyboardAccessoryControllerImpl::
+    OrderSuggestionsAndCreateLabels() {
+  // If there is a "clear form" entry, move it to the front.
+  if (auto it = base::ranges::find(suggestions_, PopupItemId::kClearForm,
+                                   &Suggestion::popup_item_id);
+      it != suggestions_.end()) {
+    std::rotate(suggestions_.begin(), it, it + 1);
+  }
+
+  labels_.clear();
+  labels_.reserve(suggestions_.size());
+  for (const Suggestion& suggestion : suggestions_) {
+    if (suggestion.popup_item_id != PopupItemId::kClearForm) {
+      labels_.push_back(CreateLabel(suggestion));
+    } else if (suggestion.labels.empty()) {
+      labels_.emplace_back();
+    } else {
+      CHECK(!suggestion.labels[0].empty());
+      labels_.push_back(suggestion.labels[0][0]);
+    }
+  }
 }
 
 }  // namespace autofill

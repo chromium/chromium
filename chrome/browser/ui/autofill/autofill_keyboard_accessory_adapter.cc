@@ -25,28 +25,6 @@
 
 namespace autofill {
 
-constexpr char16_t kLabelSeparator = ' ';
-constexpr size_t kMaxBulletCount = 8;
-
-namespace {
-std::u16string CreateLabel(const Suggestion& suggestion) {
-  std::u16string password =
-      suggestion.additional_label.substr(0, kMaxBulletCount);
-  // The label contains the signon_realm or is empty. The additional_label can
-  // never be empty since it must contain a password.
-  if (suggestion.labels.empty() || suggestion.labels[0][0].value.empty())
-    return password;
-
-  // TODO(crbug.com/40221039): Re-consider whether using CHECK is an appropriate
-  // way to explicitly regulate what information should be populated for the
-  // interface.
-  CHECK_EQ(suggestion.labels.size(), 1U);
-  CHECK_EQ(suggestion.labels[0].size(), 1U);
-  return suggestion.labels[0][0].value + kLabelSeparator + password;
-}
-
-}  // namespace
-
 AutofillKeyboardAccessoryAdapter::AutofillKeyboardAccessoryAdapter(
     base::WeakPtr<AutofillKeyboardAccessoryController> controller)
     : controller_(controller) {}
@@ -58,7 +36,7 @@ AutofillKeyboardAccessoryAdapter::~AutofillKeyboardAccessoryAdapter() = default;
 bool AutofillKeyboardAccessoryAdapter::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   CHECK(view_) << "Show called before a View was set!";
-  OnSuggestionsChanged();
+  view_->Show();
   return true;
 }
 
@@ -76,35 +54,10 @@ bool AutofillKeyboardAccessoryAdapter::OverlapsWithPictureInPictureWindow()
 
 bool AutofillKeyboardAccessoryAdapter::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
-  TRACE_EVENT0("passwords",
-               "AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged");
-  CHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
-  CHECK(view_) << "OnSuggestionsChanged called before a View was set!";
-
-  labels_.clear();
-  front_element_ = std::nullopt;
-  for (int i = 0; i < GetLineCount(); ++i) {
-    const Suggestion& suggestion = controller_->GetSuggestionAt(i);
-    if (suggestion.popup_item_id != PopupItemId::kClearForm) {
-      labels_.push_back(CreateLabel(suggestion));
-      continue;
-    }
-    CHECK(!front_element_.has_value()) << "Additional front item at: " << i;
-    front_element_ = std::optional<int>(i);
-    // If there is a special popup item, just reuse the previously used label.
-    std::vector<std::vector<Suggestion::Text>> suggestion_labels =
-        controller_->GetSuggestionLabelsAt(i);
-    if (suggestion_labels.empty()) {
-      labels_.emplace_back();
-    } else {
-      labels_.emplace_back(std::move(suggestion_labels[0][0].value));
-    }
-  }
-
   view_->Show();
 }
 
@@ -114,8 +67,7 @@ void AutofillKeyboardAccessoryAdapter::AxAnnounce(const std::u16string& text) {
 }
 
 std::optional<int32_t> AutofillKeyboardAccessoryAdapter::GetAxUniqueId() {
-  NOTIMPLEMENTED() << "See https://crbug.com/985927";
-  return std::nullopt;
+  NOTREACHED_NORETURN();
 }
 
 base::WeakPtr<AutofillPopupView>
@@ -126,46 +78,39 @@ AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
 base::WeakPtr<AutofillPopupView>
 AutofillKeyboardAccessoryAdapter::CreateSubPopupView(
     base::WeakPtr<AutofillSuggestionController> controller) {
-  NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 // AutofillSuggestionController implementation.
 
 void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
-  if (controller_) {
-    controller_->AcceptSuggestion(OffsetIndexFor(index));
-  }
+  NOTREACHED_NORETURN();
 }
 
 int AutofillKeyboardAccessoryAdapter::GetLineCount() const {
-  return controller_ ? controller_->GetLineCount() : 0;
+  NOTREACHED_NORETURN();
 }
 
 const autofill::Suggestion& AutofillKeyboardAccessoryAdapter::GetSuggestionAt(
     int row) const {
-  CHECK(controller_) << "Call GetSuggestionAt only from its owner!";
-  return controller_->GetSuggestionAt(OffsetIndexFor(row));
+  NOTREACHED_NORETURN();
 }
 
 std::vector<std::vector<Suggestion::Text>>
 AutofillKeyboardAccessoryAdapter::GetSuggestionLabelsAt(int row) const {
-  CHECK(controller_) << "Call GetSuggestionLabelsAt only from its owner!";
-  CHECK(static_cast<size_t>(row) < labels_.size());
-  return {{Suggestion::Text(labels_[OffsetIndexFor(row)])}};
+  NOTREACHED_NORETURN();
 }
 
 FillingProduct AutofillKeyboardAccessoryAdapter::GetMainFillingProduct() const {
-  CHECK(controller_) << "Call GetPopupType only from its owner!";
-  return controller_->GetMainFillingProduct();
+  NOTREACHED_NORETURN();
 }
 
 bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(
     int index,
     std::u16string* title,
     std::u16string* body) {
-  return controller_ && controller_->GetRemovalConfirmationText(
-                            OffsetIndexFor(index), title, body);
+  return controller_ &&
+         controller_->GetRemovalConfirmationText(index, title, body);
 }
 
 bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(
@@ -174,9 +119,12 @@ bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(
   CHECK_EQ(removal_method,
            AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
   CHECK(view_) << "RemoveSuggestion called before a View was set!";
-  std::u16string title, body;
-  if (!GetRemovalConfirmationText(index, &title, &body))
+  std::u16string title;
+  std::u16string body;
+  if (!controller_ ||
+      !controller_->GetRemovalConfirmationText(index, &title, &body)) {
     return false;
+  }
 
   view_->ConfirmDeletion(
       title, body,
@@ -186,53 +134,47 @@ bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(
 }
 
 void AutofillKeyboardAccessoryAdapter::SelectSuggestion(int index) {
-  if (!controller_)
-    return;
-  controller_->SelectSuggestion(OffsetIndexFor(index));
+  NOTREACHED_NORETURN();
 }
 
 void AutofillKeyboardAccessoryAdapter::UnselectSuggestion() {
-  if (!controller_) {
-    return;
-  }
-  controller_->UnselectSuggestion();
+  NOTREACHED_NORETURN();
 }
 
 void AutofillKeyboardAccessoryAdapter::Show(
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void AutofillKeyboardAccessoryAdapter::DisableThresholdForTesting(
     bool disable_threshold) {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void AutofillKeyboardAccessoryAdapter::KeepPopupOpenForTesting() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void AutofillKeyboardAccessoryAdapter::SetViewForTesting(
     base::WeakPtr<AutofillPopupView> view) {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void AutofillKeyboardAccessoryAdapter::UpdateDataListValues(
     base::span<const SelectOption> options) {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void AutofillKeyboardAccessoryAdapter::PinView() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 // AutofillPopupViewDelegate implementation
 
 void AutofillKeyboardAccessoryAdapter::Hide(PopupHidingReason reason) {
-  if (controller_)
-    controller_->Hide(reason);
+  NOTREACHED_NORETURN();
 }
 
 void AutofillKeyboardAccessoryAdapter::ViewDestroyed() {
@@ -267,21 +209,12 @@ AutofillKeyboardAccessoryAdapter::GetElementTextDirection() const {
 
 std::vector<Suggestion> AutofillKeyboardAccessoryAdapter::GetSuggestions()
     const {
-  if (!controller_)
-    return std::vector<Suggestion>();
-  std::vector<Suggestion> suggestions = controller_->GetSuggestions();
-  if (front_element_.has_value()) {
-    std::rotate(suggestions.begin(),
-                suggestions.begin() + front_element_.value(),
-                suggestions.begin() + front_element_.value() + 1);
-  }
-  return suggestions;
+  NOTREACHED_NORETURN();
 }
 
 std::optional<AutofillClient::PopupScreenLocation>
 AutofillKeyboardAccessoryAdapter::GetPopupScreenLocation() const {
-  NOTIMPLEMENTED() << "No popup screen location for keyboard accessories.";
-  return std::nullopt;
+  NOTREACHED_NORETURN();
 }
 
 base::WeakPtr<AutofillKeyboardAccessoryController>
@@ -294,24 +227,16 @@ void AutofillKeyboardAccessoryAdapter::OnDeletionDialogClosed(int index,
   if (confirmed) {
     if (controller_) {
       controller_->RemoveSuggestion(
-          OffsetIndexFor(index),
-          AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+          index, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
     }
     return;
   }
-  if (GetFillingProductFromPopupItemId(GetSuggestionAt(index).popup_item_id) ==
-      FillingProduct::kAddress) {
+  if (controller_ && GetFillingProductFromPopupItemId(
+                         controller_->GetSuggestionAt(index).popup_item_id) ==
+                         FillingProduct::kAddress) {
     autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
         /*user_accepted_delete=*/false);
   }
-}
-
-int AutofillKeyboardAccessoryAdapter::OffsetIndexFor(int element_index) const {
-  if (!front_element_.has_value())
-    return element_index;
-  if (0 == element_index)
-    return front_element_.value();
-  return element_index - (element_index <= front_element_.value() ? 1 : 0);
 }
 
 }  // namespace autofill

@@ -82,8 +82,9 @@ void NotifyIphAboutAcceptedSuggestion(content::BrowserContext* browser_context,
   }
 }
 
-void UpdateSuggestionsFromDataList(base::span<const SelectOption> options,
-                                   std::vector<Suggestion>& suggestions) {
+std::vector<Suggestion> UpdateSuggestionsFromDataList(
+    base::span<const SelectOption> options,
+    std::vector<Suggestion> suggestions) {
   // Remove all the old data list values, which should always be at the top of
   // the list if they are present.
   std::erase_if(suggestions, [](const Suggestion& suggestion) {
@@ -97,8 +98,7 @@ void UpdateSuggestionsFromDataList(base::span<const SelectOption> options,
         suggestions[0].popup_item_id == PopupItemId::kSeparator) {
       suggestions.erase(suggestions.begin());
     }
-
-    return;
+    return suggestions;
   }
 
   // Add a separator if there are any other values.
@@ -116,6 +116,7 @@ void UpdateSuggestionsFromDataList(base::span<const SelectOption> options,
     suggestions[i].labels = {{Suggestion::Text(options[i].content)}};
     suggestions[i].popup_item_id = PopupItemId::kDatalistEntry;
   }
+  return suggestions;
 }
 
 }  // namespace autofill

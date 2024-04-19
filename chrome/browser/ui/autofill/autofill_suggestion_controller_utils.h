@@ -41,8 +41,9 @@ bool IsPointerLocked(content::WebContents* web_contents);
 void NotifyIphAboutAcceptedSuggestion(content::BrowserContext* browser_context,
                                       const Suggestion& suggestion);
 
-void UpdateSuggestionsFromDataList(base::span<const SelectOption> options,
-                                   std::vector<Suggestion>& suggestions);
+std::vector<Suggestion> UpdateSuggestionsFromDataList(
+    base::span<const SelectOption> options,
+    std::vector<Suggestion> suggestions);
 
 }  // namespace autofill
 

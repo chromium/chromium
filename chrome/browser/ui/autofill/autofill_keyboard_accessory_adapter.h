@@ -108,20 +108,8 @@ class AutofillKeyboardAccessoryAdapter
 
   void OnDeletionDialogClosed(int index, bool confirmed);
 
-  // Indices might be offset because a special item is moved to the front. This
-  // method returns the index used by the keyboard accessory (may be offset).
-  // `element_index` is the position of an element as returned by `controller_`.
-  int OffsetIndexFor(int element_index) const;
-
   base::WeakPtr<AutofillKeyboardAccessoryController> controller_;
   std::unique_ptr<AutofillKeyboardAccessoryView> view_;
-
-  // The labels to be used for the input chips.
-  std::vector<std::u16string> labels_;
-
-  // Position that the front element has in the suggestion list returned by
-  // controller_. It is used to determine the offset suggestions.
-  std::optional<int> front_element_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryAdapter> weak_ptr_factory_{
       this};

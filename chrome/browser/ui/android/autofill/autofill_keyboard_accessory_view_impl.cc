@@ -83,9 +83,8 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
       Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestionArray(
           env, line_count);
 
-  size_t position = 0;
   for (int i = 0; i < line_count; ++i) {
-    const Suggestion& suggestion = adapter_->GetSuggestionAt(i);
+    const Suggestion& suggestion = controller_->GetSuggestionAt(i);
     int android_icon_id = 0;
     if (suggestion.icon != Suggestion::Icon::kNoIcon) {
       android_icon_id = ResourceMapper::MapToJavaDrawableId(
@@ -95,7 +94,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
     std::u16string label = suggestion.main_text.value;
     std::u16string sublabel = suggestion.minor_text.value;
     if (std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
-            adapter_->GetSuggestionLabelsAt(i);
+            controller_->GetSuggestionLabelsAt(i);
         !suggestion_labels.empty()) {
       // Verify that there is a single line of label, and it contains a single
       // item.
@@ -113,9 +112,9 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
     }
 
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
-        env, data_array, position++, label, sublabel, android_icon_id,
+        env, data_array, i, label, sublabel, android_icon_id,
         base::to_underlying(suggestion.popup_item_id),
-        adapter_->GetRemovalConfirmationText(i, nullptr, nullptr),
+        controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
         suggestion.feature_for_iph ? suggestion.feature_for_iph->name : "",
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
@@ -140,7 +139,9 @@ void AutofillKeyboardAccessoryViewImpl::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  adapter_->AcceptSuggestion(list_index);
+  if (controller_) {
+    controller_->AcceptSuggestion(list_index);
+  }
 }
 
 void AutofillKeyboardAccessoryViewImpl::DeletionRequested(

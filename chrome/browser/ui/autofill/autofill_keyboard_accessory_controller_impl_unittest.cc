@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -16,10 +17,34 @@
 
 namespace autofill {
 
+namespace {
+
 using ::testing::_;
+using ::testing::ElementsAre;
 
 using AutofillKeyboardAccessoryControllerImplTest =
     AutofillSuggestionControllerTestBase<>;
+
+std::vector<Suggestion> CreateSuggestionsWithClearFormEntry(
+    size_t clear_form_offset) {
+  auto create_pw_suggestion = [](std::string_view password,
+                                 std::string_view username,
+                                 std::string_view origin) {
+    Suggestion s(/*main_text=*/username, /*label=*/origin,
+                 Suggestion::Icon::kNoIcon, PopupItemId::kPasswordEntry);
+    s.additional_label = base::UTF8ToUTF16(password);
+    return s;
+  };
+  std::vector<Suggestion> suggestions = {
+      create_pw_suggestion("****************", "Alf", ""),
+      create_pw_suggestion("****************", "Berta", "psl.origin.eg"),
+      create_pw_suggestion("***", "Carl", "")};
+  suggestions.emplace(suggestions.begin() + clear_form_offset, "Clear", "",
+                      Suggestion::Icon::kNoIcon, PopupItemId::kClearForm);
+  return suggestions;
+}
+
+}  // namespace
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_UnrelatedPopupItemId) {
@@ -212,6 +237,46 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
             PopupHidingReason::kAcceptSuggestion);
       });
   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+}
+
+// Tests that the `KeyboardAccessoryController` moves "clear form" suggestions
+// to the front.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest, ReorderUpdatedSuggestions) {
+  const std::vector<Suggestion> suggestions =
+      CreateSuggestionsWithClearFormEntry(/*clear_form_offset=*/2);
+  ShowSuggestions(manager(), suggestions);
+
+  // TODO(crbug.com/333316034): Add expectation for the view.
+  EXPECT_THAT(client().popup_controller(manager()).GetSuggestions(),
+              ElementsAre(suggestions[2], suggestions[0], suggestions[1],
+                          suggestions[3]));
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       UseAdditionalLabelForElidedLabel) {
+  auto label_is = [](std::u16string label) {
+    return ElementsAre(ElementsAre(Suggestion::Text(std::move(label))));
+  };
+
+  ShowSuggestions(manager(),
+                  CreateSuggestionsWithClearFormEntry(/*clear_form_offset=*/1));
+
+  // The 1st item is usually not visible (something like clear form) and has an
+  // empty label. But it needs to be handled since UI might ask for it anyway.
+  EXPECT_THAT(client().popup_controller(manager()).GetSuggestionLabelsAt(0),
+              label_is(std::u16string()));
+
+  // If there is a label, use it but cap at 8 bullets.
+  EXPECT_THAT(client().popup_controller(manager()).GetSuggestionLabelsAt(1),
+              label_is(u"********"));
+
+  // If the label is empty, use the additional label:
+  EXPECT_THAT(client().popup_controller(manager()).GetSuggestionLabelsAt(2),
+              label_is(u"psl.origin.eg ********"));
+
+  // If the password has less than 8 bullets, show the exact amount.
+  EXPECT_THAT(client().popup_controller(manager()).GetSuggestionLabelsAt(3),
+              label_is(u"***"));
 }
 
 }  // namespace autofill

@@ -250,7 +250,8 @@ void AutofillPopupControllerImpl::KeepPopupOpenForTesting() {
 
 void AutofillPopupControllerImpl::UpdateDataListValues(
     base::span<const SelectOption> options) {
-  UpdateSuggestionsFromDataList(options, non_filtered_suggestions_);
+  non_filtered_suggestions_ = UpdateSuggestionsFromDataList(
+      options, std::move(non_filtered_suggestions_));
   UpdateFilteredSuggestions(/*notify_suggestions_changed=*/false);
   if (HasSuggestions()) {
     OnSuggestionsChanged();
