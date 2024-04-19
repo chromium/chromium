@@ -23,6 +23,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -351,23 +352,21 @@ void OnLocalStorageUsageInfo(
                 dom_storage_context, std::move(callback))
           : std::move(callback);
 
-  base::RepeatingClosure barrier =
-      base::BarrierClosure(infos.size(), std::move(done_callback));
+  base::ConcurrentClosures concurrent;
   for (const StorageUsageInfo& info : infos) {
     if (storage_key_matcher &&
         !storage_key_matcher.Run(info.storage_key,
                                  special_storage_policy.get())) {
-      barrier.Run();
       continue;
     }
 
     if (info.last_modified >= delete_begin &&
         info.last_modified <= delete_end) {
-      dom_storage_context->DeleteLocalStorage(info.storage_key, barrier);
-    } else {
-      barrier.Run();
+      dom_storage_context->DeleteLocalStorage(info.storage_key,
+                                              concurrent.CreateClosure());
     }
   }
+  std::move(concurrent).Done(std::move(done_callback));
 }
 
 void OnSessionStorageUsageInfo(
@@ -386,18 +385,16 @@ void OnSessionStorageUsageInfo(
                 dom_storage_context, std::move(callback))
           : std::move(callback);
 
-  base::RepeatingClosure barrier =
-      base::BarrierClosure(infos.size(), std::move(done_callback));
-
+  base::ConcurrentClosures concurrent;
   for (const SessionStorageUsageInfo& info : infos) {
     if (storage_key_matcher &&
         !storage_key_matcher.Run(info.storage_key,
                                  special_storage_policy.get())) {
-      barrier.Run();
       continue;
     }
-    dom_storage_context->DeleteSessionStorage(info, barrier);
+    dom_storage_context->DeleteSessionStorage(info, concurrent.CreateClosure());
   }
+  std::move(concurrent).Done(std::move(done_callback));
 }
 
 void ClearLocalStorageOnUIThread(
