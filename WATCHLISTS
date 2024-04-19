@@ -1387,7 +1387,9 @@
     },
     'ip_protection': {
       'filepath': 'chrome/browser/ip_protection/' \
+                  '|components/privacy_sandbox/masked_domain_list/' \
                   '|services/network/ip_protection/' \
+                  '|services/network/masked_domain_list/' \
                   '|services/network/network_service_proxy_delegate',
     },
     'isolated_web_apps_apis': {
@@ -2986,9 +2988,10 @@
     'ios_transactions': ['tmartino+transactions-watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
-    'ip_protection': ['djmitche@chromium.org',
+    'ip_protection': ['aakallam+watch@chromium.org',
                       'awillia@chromium.org',
-                      'brgoldstein@google.com'],
+                      'brgoldstein@google.com',
+                      'djmitche@chromium.org'],
     'isolated_web_apps_apis': ['greengrape@google.com', 'simonha@google.com'],
     'isolated_web_apps_core': ['greengrape@google.com', 'simonha@google.com'],
     'isolated_web_apps_unmanaged_install': ['greengrape@google.com', 'simonha@google.com'],
