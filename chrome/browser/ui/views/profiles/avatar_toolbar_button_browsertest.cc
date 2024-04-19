@@ -1527,8 +1527,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
 
 #endif  // !BUILDFLAG(IS_WIN)
 
+// TODO(b/335775210): Flaky on win-asan
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#define MAYBE_SigninPaused_ThenSignout DISABLED_SigninPaused_ThenSignout
+#else
+#define MAYBE_SigninPaused_ThenSignout SigninPaused_ThenSignout
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
-                       SigninPaused_ThenSignout) {
+                       MAYBE_SigninPaused_ThenSignout) {
   SigninAndWait(u"test@gmail.com");
 
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
