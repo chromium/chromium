@@ -4,6 +4,7 @@
 
 #include "media/mojo/clients/mojo_video_decoder.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -323,6 +324,10 @@ void MojoVideoDecoder::Reset(base::OnceClosure reset_cb) {
     task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
     return;
   }
+
+  // TODO(crbug.com/335001233): rollback the change or replace it with a CHECK
+  // before closing the bug.
+  DUMP_WILL_BE_CHECK(reset_cb);
 
   reset_cb_ = std::move(reset_cb);
   remote_decoder_->Reset(
