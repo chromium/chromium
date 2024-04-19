@@ -249,6 +249,8 @@ export class FakeReadingMode {
   // by clicking.
   onCollapseSelection() {}
 
+  sendGetVoicePackInfoRequest(_: string) {}
+
   // Set the content. Used by tests only.
   // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:
   //   const axTree = {

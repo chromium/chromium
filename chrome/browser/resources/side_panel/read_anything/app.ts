@@ -20,8 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import type {VoicePackStatus} from './voice_language_util.js';
-import {convertLangOrLocaleForVoicePackManager, mojoVoicePackStatusToVoicePackStatusEnum} from './voice_language_util.js';
+import {convertLangOrLocaleForVoicePackManager, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -273,6 +272,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private localeToDisplayName: {[locale: string]: string};
 
   private voicePackInstallStatus: {[language: string]: VoicePackStatus} = {};
+
+  // Set of languages of the browser and/or of the pages navigated to that we
+  // need to download Natural voices for automatically
+  private languagesForVoiceDownloads: Set<string> = new Set();
 
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
@@ -759,6 +762,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
     const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
+    if (voicePackStatus === VoicePackStatus.NOT_INSTALLED &&
+        this.languagesForVoiceDownloads.has(lang)) {
+      chrome.readingMode.sendInstallVoicePackRequest(lang);
+    }
+
     this.voicePackInstallStatus =
         {...this.voicePackInstallStatus, [lang]: voicePackStatus};
     // TODO (b/335472298) Handle voice menu downloading voice spinners
@@ -1657,6 +1665,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   languageChanged() {
     this.$.toolbar.updateFonts();
     this.selectPreferredVoice_();
+
+    const baseLang = chrome.readingMode.baseLanguageForSpeech;
+    const langCodeForVoicePackManager =
+        convertLangOrLocaleForVoicePackManager(baseLang);
+    if (langCodeForVoicePackManager) {
+      this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
+      // Inquire if the voice pack is downloaded. If not, it'll trigger a
+      // download when we get the response in updateVoicePackStatus()
+      this.sendGetVoicePackInfoRequest(langCodeForVoicePackManager);
+    }
   }
 
   private onKeyDown_(e: KeyboardEvent) {
