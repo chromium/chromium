@@ -7,7 +7,6 @@
 #include "base/containers/span_writer.h"
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 
 namespace blink {
@@ -28,8 +27,7 @@ Vector<uint8_t> TrailerWriter::MakeTrailerData() const {
   // The code below assumes that the size of SerializationTag is one byte.
   static_assert(sizeof(SerializationTag) == 1u);
   if (wtf_size_t num_exposed = requires_exposed_interfaces_.size();
-      num_exposed && base::FeatureList::IsEnabled(
-                         features::kSSVTrailerWriteExposureAssertion)) {
+      num_exposed) {
     wtf_size_t start = trailer.size();
     trailer.Grow(start + 1 + sizeof(uint32_t) + num_exposed);
     auto trailer_span = base::span(trailer);

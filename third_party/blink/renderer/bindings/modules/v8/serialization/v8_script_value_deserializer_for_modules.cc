@@ -685,9 +685,6 @@ bool V8ScriptValueDeserializerForModules::ExecutionContextExposesInterface(
           execution_context, interface_tag)) {
     return true;
   }
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kSSVTrailerEnforceExposureAssertion))
-      << "V8ScriptValueDeserializer should already have handled this";
   switch (interface_tag) {
     case kCryptoKeyTag:
       return V8CryptoKey::IsExposed(execution_context);

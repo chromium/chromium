@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
@@ -930,11 +929,6 @@ V8ScriptValueDeserializer::GetSharedValueConveyor(v8::Isolate* isolate) {
 bool V8ScriptValueDeserializer::ExecutionContextExposesInterface(
     ExecutionContext* execution_context,
     SerializationTag interface_tag) {
-  if (!base::FeatureList::IsEnabled(
-          features::kSSVTrailerEnforceExposureAssertion)) {
-    return true;
-  }
-
   // If you're updating this, consider whether you should also update
   // V8ScriptValueSerializer to call TrailerWriter::RequireExposedInterface
   // (generally via WriteAndRequireInterfaceTag). Any interface which might

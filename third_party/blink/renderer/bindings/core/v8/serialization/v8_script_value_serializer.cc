@@ -7,7 +7,6 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -238,21 +237,15 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
       SerializedScriptValue::kWireFormatVersion < 0x80,
       "the following calculation depends on the encoded length of the version");
   static_assert(SerializedScriptValue::kWireFormatVersion == 21,
-                "The kSSVTrailerWriteNewVersion flag assumes writing version "
-                "20 is otherwise safe.");
+                "Only version 21 is supported.");
   static constexpr size_t kTrailerOffsetPosition =
       1 /* version tag */ + 1 /* version */ + 1 /* trailer offset tag */;
   static constexpr uint8_t kZeroOffset[sizeof(uint64_t) + sizeof(uint32_t)] =
       {};
-  if (base::FeatureList::IsEnabled(features::kSSVTrailerWriteNewVersion)) {
-    WriteTag(kVersionTag);
-    WriteUint32(SerializedScriptValue::kWireFormatVersion);
-    WriteTag(kTrailerOffsetTag);
-    WriteRawBytes(kZeroOffset, sizeof(kZeroOffset));
-  } else {
-    WriteTag(kVersionTag);
-    WriteUint32(20 /* wire format version before trailers */);
-  }
+  WriteTag(kVersionTag);
+  WriteUint32(SerializedScriptValue::kWireFormatVersion);
+  WriteTag(kTrailerOffsetTag);
+  WriteRawBytes(kZeroOffset, sizeof(kZeroOffset));
   serializer_.WriteHeader();
 
   // Serialize the value and handle errors.
@@ -289,10 +282,9 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
 
   // Append the trailer, if applicable.
   Vector<uint8_t> trailer;
-  if (base::FeatureList::IsEnabled(features::kSSVTrailerWriteNewVersion)) {
-    trailer = trailer_writer_.MakeTrailerData();
-    if (!trailer.empty())
-      WriteRawBytes(trailer.data(), trailer.size());
+  trailer = trailer_writer_.MakeTrailerData();
+  if (!trailer.empty()) {
+    WriteRawBytes(trailer.data(), trailer.size());
   }
 
   // Finalize the results.
@@ -306,7 +298,6 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
       UNSAFE_BUFFERS(SerializedScriptValue::DataBufferPtr::FromOwningPointer(
           buffer_ptr, buffer_size));
   if (!trailer.empty()) {
-    CHECK(base::FeatureList::IsEnabled(features::kSSVTrailerWriteNewVersion));
     buffer.as_span()
         .subspan<kTrailerOffsetPosition, sizeof(uint64_t)>()
         .copy_from(
