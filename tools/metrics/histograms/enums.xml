@@ -33325,6 +33325,9 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="CERT_VALIDITY_TOO_LONG"/>
   <int value="15" label="CERTIFICATE_TRANSPARENCY_REQUIRED"/>
   <int value="16" label="CERT_SYMANTEC_LEGACY"/>
+  <int value="17" label="CERT_KNOWN_INTERCEPTION_BLOCKED"/>
+  <int value="18" label="LEGACY_TLS"/>
+  <int value="19" label="CERT_NON_UNIQUE_NAME"/>
 </enum>
 
 <enum name="SSLSignatureAlgorithm">

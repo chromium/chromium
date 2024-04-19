@@ -102,6 +102,13 @@
     The server certificate has a validity period that is too long.
   </message>
 
+  <message name="IDS_CERT_ERROR_NON_UNIQUE_NAME_DETAILS" desc="Details of the error page for a certificate for a non-unique name">
+    You attempted to reach <ph name="DOMAIN">&lt;strong&gt;$1<ex>paypal.com</ex>&lt;/strong&gt;</ph>, but the server presented an invalid certificate issued to that name. The name is a reserved IP address or internal hostname.
+  </message>
+  <message name="IDS_CERT_ERROR_NON_UNIQUE_NAME_DESCRIPTION" desc="Description of the error page for a certificate for a non-unique name">
+    The server certificate is issued to a non-unique name.
+  </message>
+
   <message name="IDS_CERT_ERROR_UNKNOWN_ERROR_DETAILS" desc="Details of the error page for an unknown ssl error">
     An unknown error has occurred.
   </message>

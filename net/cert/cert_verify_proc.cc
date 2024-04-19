@@ -577,22 +577,24 @@ int CertVerifyProc::Verify(X509Certificate* cert,
       rv = MapCertStatusToNetError(verify_result->cert_status);
   }
 
-  // Flag certificates from publicly-trusted CAs that are issued to intranet
-  // hosts. While the CA/Browser Forum Baseline Requirements (v1.1) permit
-  // these to be issued until 1 November 2015, they represent a real risk for
-  // the deployment of gTLDs and are being phased out ahead of the hard
-  // deadline.
-  if (verify_result->is_issued_by_known_root && IsHostnameNonUnique(hostname)) {
-    verify_result->cert_status |= CERT_STATUS_NON_UNIQUE_NAME;
-    // CERT_STATUS_NON_UNIQUE_NAME will eventually become a hard error. For
-    // now treat it as a warning and do not map it to an error return value.
-  }
-
   // Flag certificates using too long validity periods.
   if (verify_result->is_issued_by_known_root && HasTooLongValidity(*cert)) {
     verify_result->cert_status |= CERT_STATUS_VALIDITY_TOO_LONG;
     if (rv == OK)
       rv = MapCertStatusToNetError(verify_result->cert_status);
+  }
+
+  // Flag certificates from publicly-trusted CAs that are issued to intranet
+  // hosts. These are not allowed per the CA/Browser Forum requirements.
+  //
+  // Validity period is checked first just for testing convenience; there's not
+  // a strong security reason to let validity period vs non-unique names take
+  // precedence.
+  if (verify_result->is_issued_by_known_root && IsHostnameNonUnique(hostname)) {
+    verify_result->cert_status |= CERT_STATUS_NON_UNIQUE_NAME;
+    if (rv == OK) {
+      rv = MapCertStatusToNetError(verify_result->cert_status);
+    }
   }
 
   // Record a histogram for per-verification usage of root certs.

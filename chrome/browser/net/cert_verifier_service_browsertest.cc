@@ -20,6 +20,7 @@
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/internal/trust_store_features.h"
 #include "net/cert/x509_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -43,6 +44,8 @@ class CertVerifierServiceChromeRootStoreOptionalTest
     // during this test.
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         false);
+
+    host_resolver()->AddRule("*", "127.0.0.1");
 
     content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
         use_chrome_root_store(), base::DoNothing());
@@ -69,9 +72,10 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreOptionalTest, Test) {
       net::EmbeddedTestServer::TYPE_HTTPS);
   // Use a runtime generated cert, as the pre-generated ok_cert has too long of
   // a validity period to be accepted by a publicly trusted root.
-  https_test_server.SetSSLConfig(
-      net::test_server::EmbeddedTestServer::CERT_AUTO);
   https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  // The test uses a certificate with a publicly resolvable name, since Chrome
+  // rejects certificates for non-unique names from publicly trusted CAs.
+  https_test_server.SetCertHostnames({"example.com"});
   ASSERT_TRUE(https_test_server.Start());
 
   // Clear test roots so that cert validation only happens with
@@ -97,8 +101,9 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreOptionalTest, Test) {
   }
 
   EXPECT_EQ(use_chrome_root_store(),
-            content::NavigateToURL(GetActiveWebContents(),
-                                   https_test_server.GetURL("/simple.html")));
+            content::NavigateToURL(
+                GetActiveWebContents(),
+                https_test_server.GetURL("example.com", "/simple.html")));
 
   // The navigation should show an interstitial if CRS was not in use, since
   // the root was only trusted in the test CRS update and won't be trusted by

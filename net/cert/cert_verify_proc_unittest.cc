@@ -1603,7 +1603,7 @@ TEST(CertVerifyProcTest, IntranetHostsRejected) {
                               /*ocsp_response=*/std::string(),
                               /*sct_list=*/std::string(), 0, &verify_result,
                               NetLogWithSource());
-  EXPECT_THAT(error, IsOk());
+  EXPECT_THAT(error, IsError(ERR_CERT_NON_UNIQUE_NAME));
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_NON_UNIQUE_NAME);
 
   // However, if the CA is not well known, these should not be flagged:

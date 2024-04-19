@@ -995,12 +995,6 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
       identity_status_description_android_ += bullet;
       identity_status_description_android_ += error.short_description();
     }
-
-    if (visible_security_state.cert_status & net::CERT_STATUS_NON_UNIQUE_NAME) {
-      identity_status_description_android_ += u"\n\n";
-      identity_status_description_android_ +=
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_TAB_NON_UNIQUE_NAME);
-    }
 #endif
   }
 
