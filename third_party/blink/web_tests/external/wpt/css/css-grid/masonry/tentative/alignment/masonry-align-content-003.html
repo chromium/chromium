@@ -5,10 +5,14 @@
 -->
 <html><head>
   <meta charset="utf-8">
-  <title>CSS Grid Test: Masonry layout with `justify-content` in masonry axis</title>
+  <title>CSS Grid Test: Masonry layout with `align-content` in grid axis (horizontal writing mode)</title>
+  <meta name="assert"
+        content="Test passes if align-content distributes tracks
+                 in the grid axis of a masonry grid container
+                 and the grid container's baseline is also shifted accordingly.">
   <link rel="author" title="Mats Palmgren" href="mailto:mats@mozilla.com">
-  <link rel="help" href="https://drafts.csswg.org/css-grid-2">
-  <link rel="match" href="masonry-justify-content-003-ref.html">
+  <link rel="help" href="https://drafts.csswg.org/css-grid-3/#alignment">
+  <link rel="match" href="masonry-align-content-003-ref.html">
   <style>
 html,body {
   color:black; background-color:white; font:15px/1 monospace; padding:0; margin:0;
@@ -18,11 +22,14 @@ grid {
   display: inline-grid;
   gap: 1px 2px;
   grid-template-columns: masonry;
-  grid-template-rows: repeat(4,20px);
+  grid-template-rows: repeat(4,auto);
   background: content-box silver;
   border: 1px solid;
-  padding: 2px;
+  padding: 0 3px 2px 0;
   width: 100px;
+  height: 120px;
+  align-content: center;
+  justify-items: start;
 }
 
 item {
@@ -30,12 +37,12 @@ item {
   color: #fff;
 }
 
-.tall { padding-left: 30px; }
+.tall { padding: 3px 11px 1px 13px; }
 </style>
 </head>
 <body>
 
-<grid style="justify-content:start">
+<grid style="align-content:start">
   <item class="tall">1</item>
   <item>2</item>
   <item>3</item>
@@ -44,7 +51,7 @@ item {
   <item>6</item>
 </grid>
 
-<grid style="justify-content:start">
+<grid style="align-content:start">
   <item>1</item>
   <item class="tall">2</item>
   <item>3</item>
@@ -53,7 +60,7 @@ item {
   <item>6</item>
 </grid>
 
-<grid style="justify-content:end">
+<grid style="align-content:end">
   <item class="tall">1</item>
   <item>2</item>
   <item>3</item>
@@ -62,7 +69,7 @@ item {
   <item>6</item>
 </grid>
 
-<grid style="justify-content:end">
+<grid style="align-content:end">
   <item>1</item>
   <item class="tall">2</item>
   <item>3</item>
@@ -71,7 +78,7 @@ item {
   <item>6</item>
 </grid>
 
-<grid style="justify-content:center">
+<grid style="align-content:center">
   <item class="tall">1</item>
   <item>2</item>
   <item>3</item>
@@ -80,7 +87,7 @@ item {
   <item>6</item>
 </grid>
 
-<grid style="justify-content:center">
+<grid style="align-content:center">
   <item>1</item>
   <item class="tall">2</item>
   <item>3</item>
@@ -89,7 +96,7 @@ item {
   <item>6</item>
 </grid>
 
-<grid style="justify-content:stretch">
+<grid style="align-content:stretch">
   <item class="tall">1</item>
   <item>2</item>
   <item>3</item>
@@ -98,7 +105,7 @@ item {
   <item>6</item>
 </grid>
 
-<grid style="justify-content:space-between">
+<grid style="align-content:space-between">
   <item class="tall">1</item>
   <item>2</item>
   <item>3</item>
@@ -107,7 +114,7 @@ item {
   <item>6</item>
 </grid>
 
-<grid style="justify-content:space-around">
+<grid style="align-content:space-around">
   <item class="tall">1</item>
   <item>2</item>
   <item>3</item>
@@ -116,7 +123,7 @@ item {
   <item>6</item>
 </grid>
 
-<grid style="justify-content:space-evenly">
+<grid style="align-content:space-evenly">
   <item class="tall">1</item>
   <item>2</item>
   <item>3</item>

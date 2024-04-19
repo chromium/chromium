@@ -3,15 +3,14 @@
      Any copyright is dedicated to the Public Domain.
      http://creativecommons.org/publicdomain/zero/1.0/
 -->
-<html><head>
+<html>
   <meta charset="utf-8">
   <title>Reference: Masonry layout intrinsic sizing</title>
   <link rel="author" title="Mats Palmgren" href="mailto:mats@mozilla.com">
   <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
   <style>
-html,body {
-  color:black; background-color:white; font:15px/1 Ahem; padding:0; margin:0;
-}
+
+@import "support/masonry-intrinsic-sizing-visual.css";
 
 grid {
   display: inline-grid;
@@ -28,15 +27,11 @@ grid {
 .mixed {
   grid-template-columns: 1fr 2fr min-content max-content;
 }
-
-item {
-  background-color: #444;
-  color: blue;
-}
 </style>
-</head>
+
 <body>
 
+<section>
 <grid>
   <item style="width:2ch">1</item>
   <item>2</item>
@@ -111,9 +106,11 @@ item {
   <item>4</item>
   <item style="width:6ch; grid-column:span 3">5</item>
 </grid>
+</section>
 
 <!-- ditto with 'fr' sizing -->
 
+<section>
 <grid class="fr">
   <item style="width:2ch">1</item>
   <item>2</item>
@@ -188,10 +185,11 @@ item {
   <item>4</item>
   <item style="width:6ch; grid-column:span 3">5</item>
 </grid>
-
+</section>
 
 <!-- ditto with mixed sizing -->
 
+<section>
 <grid class="mixed" style="grid-template-columns: 2ch 4ch 1ch 1ch">
   <item style="width:2ch">1</item>
   <item>2</item>
@@ -266,6 +264,5 @@ item {
   <item>4</item>
   <item style="width:6ch; grid-column:span 3">5</item>
 </grid>
+</section>
 
-</body>
-</html>

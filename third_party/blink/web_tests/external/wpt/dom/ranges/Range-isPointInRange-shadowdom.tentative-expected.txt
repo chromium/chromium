@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] isPointInRange() test for collapsed selection
+  assert_implements: GetComposedRanges is not supported undefined
+[FAIL] isPointInRange() test for non-collapsed selection
+  assert_implements: GetComposedRanges is not supported undefined
+Harness: the test ran to completion.
+
