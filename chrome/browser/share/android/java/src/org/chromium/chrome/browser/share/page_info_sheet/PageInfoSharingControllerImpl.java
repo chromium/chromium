@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.model_execution.ModelExecutionManager;
 import org.chromium.chrome.browser.model_execution.ModelExecutionSession;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.PageInfoContents;
+import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryMetrics.PageSummarySheetEvents;
 import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryMetrics.ShareActionVisibility;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -109,6 +110,7 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
             ChromeOptionShareCallback chromeOptionShareCallback,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Tab tab) {
+        PageSummaryMetrics.recordSummarySheetEvent(PageSummarySheetEvents.OPEN_SUMMARY_SHEET);
         if (!shouldShowInShareSheetInternal(tab, false)) return;
         if (sErrorMessage == null) {
             // TODO(salg): Improve the way this resource is fetched.
@@ -192,6 +194,7 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
 
     @Override
     public void shareWithoutPageInfo(ChromeOptionShareCallback chromeOptionShareCallback, Tab tab) {
+        PageSummaryMetrics.recordSummarySheetEvent(PageSummarySheetEvents.REMOVE_SUMMARY);
         ShareParams shareParams =
                 new ShareParams.Builder(
                                 tab.getWindowAndroid(), tab.getTitle(), tab.getUrl().getSpec())

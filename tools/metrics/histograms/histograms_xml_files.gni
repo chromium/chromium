@@ -216,6 +216,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/session/histograms.xml",
   "//tools/metrics/histograms/metadata/settings/enums.xml",
   "//tools/metrics/histograms/metadata/settings/histograms.xml",
+  "//tools/metrics/histograms/metadata/sharing/enums.xml",
   "//tools/metrics/histograms/metadata/sharing/histograms.xml",
   "//tools/metrics/histograms/metadata/side_search/histograms.xml",
   "//tools/metrics/histograms/metadata/signin/enums.xml",

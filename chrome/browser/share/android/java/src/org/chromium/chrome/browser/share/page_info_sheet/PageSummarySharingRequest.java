@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.Delegate;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.PageInfoContents;
+import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryMetrics.PageSummarySheetEvents;
 import org.chromium.chrome.browser.share.page_info_sheet.feedback.FeedbackSheetCoordinator;
 import org.chromium.chrome.browser.share.page_info_sheet.feedback.FeedbackSheetCoordinator.FeedbackOption;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -96,26 +97,38 @@ class PageSummarySharingRequest {
                         new Delegate() {
                             @Override
                             public void onAccept() {
+                                PageSummaryMetrics.recordSummarySheetEvent(
+                                        PageSummarySheetEvents.ADD_SUMMARY);
                                 attachSummaryToShareSheet();
                             }
 
                             @Override
                             public void onCancel() {
+                                // Calls to PageSummaryMetrics.recordSummarySheetEvent on
+                                // cancellation/dismiss are handled inside
+                                // PageInfoBottomSheetMediator because they record the sheet's
+                                // internal state.
                                 destroy();
                             }
 
                             @Override
                             public void onLearnMore() {
+                                PageSummaryMetrics.recordSummarySheetEvent(
+                                        PageSummarySheetEvents.CLICK_LEARN_MORE);
                                 openLearnMorePage();
                             }
 
                             @Override
                             public void onPositiveFeedback() {
+                                PageSummaryMetrics.recordSummarySheetEvent(
+                                        PageSummarySheetEvents.CLICK_POSITIVE_FEEDBACK);
                                 // TODO(salg): Record a histogram.
                             }
 
                             @Override
                             public void onNegativeFeedback() {
+                                PageSummaryMetrics.recordSummarySheetEvent(
+                                        PageSummarySheetEvents.CLICK_NEGATIVE_FEEDBACK);
                                 openFeedbackSheet();
                             }
 
@@ -142,12 +155,16 @@ class PageSummarySharingRequest {
                         new FeedbackSheetCoordinator.Delegate() {
                             @Override
                             public void onAccepted(String selectedType) {
+                                PageSummaryMetrics.recordSummarySheetEvent(
+                                        PageSummarySheetEvents.NEGATIVE_FEEDBACK_TYPE_SELECTED);
                                 openSystemFeedbackSheet(selectedType);
                                 destroy();
                             }
 
                             @Override
                             public void onCanceled() {
+                                PageSummaryMetrics.recordSummarySheetEvent(
+                                        PageSummarySheetEvents.NEGATIVE_FEEDBACK_SHEET_DISMISSED);
                                 destroyFeedbackSheet();
                                 openPageSummarySheet();
                             }

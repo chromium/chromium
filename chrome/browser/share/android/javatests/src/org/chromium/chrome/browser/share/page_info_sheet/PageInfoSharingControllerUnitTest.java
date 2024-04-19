@@ -68,10 +68,12 @@ import org.chromium.chrome.browser.content_extraction.InnerTextBridgeJni;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.model_execution.ExecutionResult;
+import org.chromium.chrome.browser.model_execution.ExecutionResult.ExecutionError;
 import org.chromium.chrome.browser.model_execution.ModelExecutionSession;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryMetrics.PageSummarySheetEvents;
 import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryMetrics.ShareActionVisibility;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -136,6 +138,18 @@ public class PageInfoSharingControllerUnitTest {
                 .setModelExecutionSessionForTesting(mModelExecutionSession);
     }
 
+    private void setInnerTextExtractionResult(String innerText) {
+        doAnswer(
+                        invocationOnMock -> {
+                            Callback<Optional<String>> innerTextCallback =
+                                    invocationOnMock.getArgument(1);
+                            innerTextCallback.onResult(Optional.of(innerText));
+                            return null;
+                        })
+                .when(mInnerTextJniMock)
+                .getInnerText(any(), any());
+    }
+
     /**
      * Sets up and starts a summarization flow for {@code tab} and invokes the result callbacks that
      * move the UI into the success state, where the result can be shared and feedback can be
@@ -150,15 +164,7 @@ public class PageInfoSharingControllerUnitTest {
         when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
         when(mModelExecutionSession.isAvailable()).thenReturn(true);
-        doAnswer(
-                        invocationOnMock -> {
-                            Callback<Optional<String>> innerTextCallback =
-                                    invocationOnMock.getArgument(1);
-                            innerTextCallback.onResult(Optional.of("Inner text of web page"));
-                            return null;
-                        })
-                .when(mInnerTextJniMock)
-                .getInnerText(any(), any());
+        setInnerTextExtractionResult("Inner text of web page");
 
         PageInfoSharingControllerImpl.getInstance()
                 .sharePageInfo(
@@ -317,6 +323,10 @@ public class PageInfoSharingControllerUnitTest {
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
         when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                        PageSummarySheetEvents.OPEN_SUMMARY_SHEET);
 
         var activityScenario = mActivityScenarioRule.getScenario();
         activityScenario.onActivity(
@@ -329,6 +339,199 @@ public class PageInfoSharingControllerUnitTest {
                                     mMockFeedbackLauncher,
                                     tab);
                     verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+                    histogramWatcher.assertExpected();
+                });
+    }
+
+    @Test
+    public void testDismissDialog_whileInitializing() {
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
+        Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.OPEN_SUMMARY_SHEET)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.CLOSE_SHEET_WHILE_INITIALIZING)
+                        .build();
+
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    ArgumentCaptor<BottomSheetContent> bottomSheetContentCaptor =
+                            ArgumentCaptor.forClass(BottomSheetContent.class);
+
+                    PageInfoSharingControllerImpl.getInstance()
+                            .sharePageInfo(
+                                    activity,
+                                    mBottomSheetController,
+                                    mChromeOptionShareCallback,
+                                    mMockFeedbackLauncher,
+                                    tab);
+
+                    verify(mBottomSheetController)
+                            .requestShowContent(bottomSheetContentCaptor.capture(), anyBoolean());
+                    BottomSheetContent sheetContent = bottomSheetContentCaptor.getValue();
+                    View cancelButton =
+                            sheetContent.getContentView().findViewById(R.id.cancel_button);
+
+                    cancelButton.performClick();
+
+                    verify(mBottomSheetController).hideContent(sheetContent, true);
+                    histogramWatcher.assertExpected();
+                });
+    }
+
+    @Test
+    public void testDismissDialog_whileLoading() {
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
+        Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
+        setInnerTextExtractionResult("Inner text of web page");
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.OPEN_SUMMARY_SHEET)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.CLOSE_SHEET_WHILE_LOADING)
+                        .build();
+
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    ArgumentCaptor<Callback<ExecutionResult>> modelExecutionCallbackCaptor =
+                            ArgumentCaptor.forClass(Callback.class);
+                    ArgumentCaptor<BottomSheetContent> bottomSheetContentCaptor =
+                            ArgumentCaptor.forClass(BottomSheetContent.class);
+
+                    PageInfoSharingControllerImpl.getInstance()
+                            .sharePageInfo(
+                                    activity,
+                                    mBottomSheetController,
+                                    mChromeOptionShareCallback,
+                                    mMockFeedbackLauncher,
+                                    tab);
+
+                    verify(mBottomSheetController)
+                            .requestShowContent(bottomSheetContentCaptor.capture(), anyBoolean());
+                    verify(mModelExecutionSession)
+                            .executeModel(anyString(), modelExecutionCallbackCaptor.capture());
+
+                    Callback<ExecutionResult> executionResultCallback =
+                            modelExecutionCallbackCaptor.getValue();
+
+                    // Call model execution callback with a single partial streaming result.
+                    executionResultCallback.onResult(
+                            new ExecutionResult("Test", /* isCompleteResult= */ false));
+                    ShadowLooper.runUiThreadTasks();
+
+                    BottomSheetContent sheetContent = bottomSheetContentCaptor.getValue();
+                    View cancelButton =
+                            sheetContent.getContentView().findViewById(R.id.cancel_button);
+
+                    cancelButton.performClick();
+
+                    verify(mBottomSheetController).hideContent(sheetContent, true);
+                    histogramWatcher.assertExpected();
+                });
+    }
+
+    @Test
+    public void testDismissDialog_afterError() {
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
+        Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
+        setInnerTextExtractionResult("Inner text of web page");
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.OPEN_SUMMARY_SHEET)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.CLOSE_SHEET_ON_ERROR)
+                        .build();
+
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    ArgumentCaptor<Callback<ExecutionResult>> modelExecutionCallbackCaptor =
+                            ArgumentCaptor.forClass(Callback.class);
+                    ArgumentCaptor<BottomSheetContent> bottomSheetContentCaptor =
+                            ArgumentCaptor.forClass(BottomSheetContent.class);
+
+                    PageInfoSharingControllerImpl.getInstance()
+                            .sharePageInfo(
+                                    activity,
+                                    mBottomSheetController,
+                                    mChromeOptionShareCallback,
+                                    mMockFeedbackLauncher,
+                                    tab);
+
+                    verify(mBottomSheetController)
+                            .requestShowContent(bottomSheetContentCaptor.capture(), anyBoolean());
+                    verify(mModelExecutionSession)
+                            .executeModel(anyString(), modelExecutionCallbackCaptor.capture());
+
+                    Callback<ExecutionResult> executionResultCallback =
+                            modelExecutionCallbackCaptor.getValue();
+
+                    // Call model execution callback with an error.
+                    executionResultCallback.onResult(
+                            new ExecutionResult(ExecutionError.NOT_AVAILABLE));
+                    ShadowLooper.runUiThreadTasks();
+
+                    BottomSheetContent sheetContent = bottomSheetContentCaptor.getValue();
+                    View cancelButton =
+                            sheetContent.getContentView().findViewById(R.id.cancel_button);
+
+                    cancelButton.performClick();
+
+                    verify(mBottomSheetController).hideContent(sheetContent, true);
+                    histogramWatcher.assertExpected();
+                });
+    }
+
+    @Test
+    public void testDismissDialog_afterSuccessfulLoading() {
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
+        Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.OPEN_SUMMARY_SHEET)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.CLOSE_SHEET_AFTER_SUCCESS)
+                        .build();
+
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    ArgumentCaptor<BottomSheetContent> bottomSheetContentCaptor =
+                            ArgumentCaptor.forClass(BottomSheetContent.class);
+                    simulateSuccessfulSummarization(activity, tab, bottomSheetContentCaptor);
+                    ShadowLooper.runUiThreadTasks();
+
+                    BottomSheetContent sheetContent = bottomSheetContentCaptor.getValue();
+                    View cancelButton =
+                            sheetContent.getContentView().findViewById(R.id.cancel_button);
+
+                    cancelButton.performClick();
+
+                    verify(mBottomSheetController).hideContent(sheetContent, true);
+                    histogramWatcher.assertExpected();
                 });
     }
 
@@ -374,17 +577,8 @@ public class PageInfoSharingControllerUnitTest {
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
         when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
-        RenderFrameHost mainFrame = tab.getWebContents().getMainFrame();
 
-        doAnswer(
-                        invocationOnMock -> {
-                            Callback<Optional<String>> innerTextCallback =
-                                    invocationOnMock.getArgument(1);
-                            innerTextCallback.onResult(Optional.of("Inner text of web page"));
-                            return null;
-                        })
-                .when(mInnerTextJniMock)
-                .getInnerText(eq(mainFrame), any());
+        setInnerTextExtractionResult("Inner text of web page");
 
         var activityScenario = mActivityScenarioRule.getScenario();
         activityScenario.onActivity(
@@ -448,17 +642,17 @@ public class PageInfoSharingControllerUnitTest {
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
         when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
-        RenderFrameHost mainFrame = tab.getWebContents().getMainFrame();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.OPEN_SUMMARY_SHEET)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.ADD_SUMMARY)
+                        .build();
 
-        doAnswer(
-                        invocationOnMock -> {
-                            Callback<Optional<String>> innerTextCallback =
-                                    invocationOnMock.getArgument(1);
-                            innerTextCallback.onResult(Optional.of("Inner text of web page"));
-                            return null;
-                        })
-                .when(mInnerTextJniMock)
-                .getInnerText(eq(mainFrame), any());
+        setInnerTextExtractionResult("Inner text of web page");
 
         var activityScenario = mActivityScenarioRule.getScenario();
         activityScenario.onActivity(
@@ -530,6 +724,7 @@ public class PageInfoSharingControllerUnitTest {
                     assertEquals(
                             DetailedContentType.PAGE_INFO,
                             chromeShareExtrasCaptor.getValue().getDetailedContentType());
+                    histogramWatcher.assertExpected();
                 });
     }
 
@@ -539,6 +734,18 @@ public class PageInfoSharingControllerUnitTest {
                 ArgumentCaptor.forClass(BottomSheetContent.class);
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
         String tabUrl = tab.getUrl().getSpec();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.OPEN_SUMMARY_SHEET)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.CLICK_NEGATIVE_FEEDBACK)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.NEGATIVE_FEEDBACK_TYPE_SELECTED)
+                        .build();
 
         var activityScenario = mActivityScenarioRule.getScenario();
         activityScenario.onActivity(
@@ -584,6 +791,7 @@ public class PageInfoSharingControllerUnitTest {
                     // Feedback launcher should have been invoked.
                     verify(mMockFeedbackLauncher)
                             .showFeedback(eq(activity), eq(tabUrl), anyString(), any());
+                    histogramWatcher.assertExpected();
                 });
     }
 
@@ -592,6 +800,18 @@ public class PageInfoSharingControllerUnitTest {
         ArgumentCaptor<BottomSheetContent> sheetContentCaptor =
                 ArgumentCaptor.forClass(BottomSheetContent.class);
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.OPEN_SUMMARY_SHEET)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.CLICK_NEGATIVE_FEEDBACK)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.NEGATIVE_FEEDBACK_SHEET_DISMISSED)
+                        .build();
 
         var activityScenario = mActivityScenarioRule.getScenario();
         activityScenario.onActivity(
@@ -635,6 +855,7 @@ public class PageInfoSharingControllerUnitTest {
 
                     // Feedback launcher shouldn't have been invoked.
                     verifyNoInteractions(mMockFeedbackLauncher);
+                    histogramWatcher.assertExpected();
                 });
     }
 
@@ -653,6 +874,15 @@ public class PageInfoSharingControllerUnitTest {
                 ArgumentCaptor.forClass(BottomSheetContent.class);
 
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.OPEN_SUMMARY_SHEET)
+                        .expectIntRecord(
+                                PageSummaryMetrics.SUMMARY_SHEET_UI_EVENTS,
+                                PageSummarySheetEvents.CLICK_LEARN_MORE)
+                        .build();
 
         var activityScenario = mActivityScenarioRule.getScenario();
         activityScenario.onActivity(
@@ -681,6 +911,7 @@ public class PageInfoSharingControllerUnitTest {
 
                     // Summary sheet should be closed.
                     verify(mBottomSheetController).hideContent(summaryBottomSheetContent, true);
+                    histogramWatcher.assertExpected();
                 });
     }
 }

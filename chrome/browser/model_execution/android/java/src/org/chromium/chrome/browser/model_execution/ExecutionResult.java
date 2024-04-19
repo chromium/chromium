@@ -42,7 +42,7 @@ public class ExecutionResult {
      * @param errorCode A value from {@code ExecutionError}
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    ExecutionResult(@ExecutionError int errorCode) {
+    public ExecutionResult(@ExecutionError int errorCode) {
         mIsCompleteResult = false;
         mErrorCode = Optional.of(errorCode);
         mResponse = null;

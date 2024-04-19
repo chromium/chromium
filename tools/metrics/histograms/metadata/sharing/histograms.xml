@@ -172,6 +172,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.AndroidPageSummary.SheetEvents"
+    enum="PageSummarySheetEvents" expires_after="2024-06-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records ocurrences of various UI events related to the page summary sharing
+    sheet (open sheet, dismiss sheet, send feedback, etc.). Recorded based on
+    user actions (See enum definitions for more details).
+  </summary>
+</histogram>
+
 <histogram name="Sharing.AnyShareStarted" enum="ShareSourceAndroid"
     expires_after="never">
   <owner>dimich@chromium.org</owner>
