@@ -178,6 +178,10 @@ class BluetoothAdvertisementServiceProviderImpl
                scan_response_data_) {
       writer.OpenVariant("o", &variant_writer);
       AppendScanResponseDataVariant(&variant_writer);
+    } else if ((property_name ==
+                bluetooth_advertisement::kSecondaryChannelProperty)) {
+      writer.OpenVariant("s", &variant_writer);
+      variant_writer.AppendString(bluetooth_advertisement::kPhy1M);
     } else {
       std::unique_ptr<dbus::ErrorResponse> error_response =
           dbus::ErrorResponse::FromMethodCall(
@@ -247,6 +251,7 @@ class BluetoothAdvertisementServiceProviderImpl
     writer.OpenArray("{sv}", &array_writer);
 
     AppendType(&array_writer);
+    AppendSecondaryChannel(&array_writer);
     AppendServiceUUIDs(&array_writer);
     AppendManufacturerData(&array_writer);
     AppendSolicitUUIDs(&array_writer);
@@ -292,6 +297,15 @@ class BluetoothAdvertisementServiceProviderImpl
     } else {
       dict_entry_writer.AppendVariantOfString("peripheral");
     }
+    array_writer->CloseContainer(&dict_entry_writer);
+  }
+
+  void AppendSecondaryChannel(dbus::MessageWriter* array_writer) {
+    dbus::MessageWriter dict_entry_writer(NULL);
+    array_writer->OpenDictEntry(&dict_entry_writer);
+    dict_entry_writer.AppendString(
+        bluetooth_advertisement::kSecondaryChannelProperty);
+    dict_entry_writer.AppendVariantOfString(bluetooth_advertisement::kPhy1M);
     array_writer->CloseContainer(&dict_entry_writer);
   }
 
