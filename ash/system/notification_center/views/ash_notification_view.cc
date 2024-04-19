@@ -653,7 +653,12 @@ AshNotificationView::AshNotificationView(
   UpdateWithNotification(notification);
 }
 
-AshNotificationView::~AshNotificationView() = default;
+AshNotificationView::~AshNotificationView() {
+  // b/330585555: We need to abort any in progress animations before we destroy
+  // the views hierarchy to make sure there are no dangling pointers associated
+  // with an animations' OnAborted callback.
+  layer()->GetAnimator()->AbortAllAnimations();
+}
 
 void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
   collapsed_summary_view_->SetVisible(!expanded);
