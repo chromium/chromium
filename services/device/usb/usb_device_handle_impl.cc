@@ -864,12 +864,8 @@ UsbDeviceHandleImpl::~UsbDeviceHandleImpl() {
   // This class is RefCountedThreadSafe and so the destructor may be called on
   // any thread. libusb is not safe to reentrancy so be sure not to try to close
   // the device from inside a transfer completion callback.
-  if (blocking_task_runner_->RunsTasksInCurrentSequence()) {
-    handle_.Reset();
-  } else {
-    blocking_task_runner_->PostTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(handle_)));
-  }
+  blocking_task_runner_->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(handle_)));
 }
 
 void UsbDeviceHandleImpl::SetConfigurationBlocking(int configuration_value,
