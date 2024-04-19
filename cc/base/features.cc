@@ -142,13 +142,12 @@ BASE_FEATURE(kReclaimPrepaintTilesWhenIdle,
 // This saves memory on all platforms, but while on Android savings are
 // significant (~10MiB or more of foreground memory), on desktop they were
 // small, so only enable on Android.
+//
+// Disabled 04/2024 as it regresses checkerboarding metrics. Feature kept around
+// to find a better balance between checkerboarding and memory.
 BASE_FEATURE(kSmallerInterestArea,
              "SmallerInterestArea",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 const base::FeatureParam<int> kInterestAreaSizeInPixels{
