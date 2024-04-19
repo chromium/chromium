@@ -192,15 +192,7 @@ TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemSameBrowser) {
 
 // Test that calling `MoveGroupBeforeTabStripItem` between browsers works as
 // expected.
-// TODO(crbug.com/335581919): Fails on device and ASan.
-#if !TARGET_IPHONE_SIMULATOR || defined(ADDRESS_SANITIZER)
-#define MAYBE_MoveGroupBeforeItemDifferentBrowser \
-  DISABLED_MoveGroupBeforeItemDifferentBrowser
-#else
-#define MAYBE_MoveGroupBeforeItemDifferentBrowser \
-  MoveGroupBeforeItemDifferentBrowser
-#endif
-TEST_F(TabStripMediatorUtilsTest, MAYBE_MoveGroupBeforeItemDifferentBrowser) {
+TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemDifferentBrowser) {
   WebStateListBuilderFromDescription builder(web_state_list_.get());
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "| [ 0 a b* ] c", base::BindRepeating(CreateWebState)));
@@ -208,8 +200,6 @@ TEST_F(TabStripMediatorUtilsTest, MAYBE_MoveGroupBeforeItemDifferentBrowser) {
   web::WebState* webstate_a = builder.GetWebStateForIdentifier('a');
   web::WebState* webstate_b = builder.GetWebStateForIdentifier('b');
   web::WebState* webstate_c = builder.GetWebStateForIdentifier('c');
-  TabStripItemIdentifier* group_0_item_identifier =
-      CreateGroupItemIdentifier(group_0, web_state_list_);
   TabStripItemIdentifier* webstate_c_item_identifier =
       CreateTabItemIdentifier(webstate_c);
 
@@ -271,7 +261,9 @@ TEST_F(TabStripMediatorUtilsTest, MAYBE_MoveGroupBeforeItemDifferentBrowser) {
   EXPECT_EQ("| [ 1 e f ] d", other_builder.GetWebStateListDescription());
 
   // Move `group_1` before `group_0_item_identifier` in `browser_`.
-  MoveGroupBeforeTabStripItem(group_1, group_0_item_identifier, browser_.get());
+  MoveGroupBeforeTabStripItem(
+      group_1, CreateGroupItemIdentifier(group_0, web_state_list_.get()),
+      browser_.get());
   builder.SetWebStateIdentifier(webstate_e, 'e');
   builder.SetWebStateIdentifier(webstate_f, 'f');
   builder.GenerateIdentifiersForWebStateList();

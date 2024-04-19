@@ -13,6 +13,7 @@
 @implementation TabGroupItem {
   WebStateList* _webStateList;
   NSMutableArray<GroupTabInfo*>* _tabGroupInfos;
+  base::WeakPtr<const TabGroup> _tabGroup;
 }
 
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
@@ -22,50 +23,54 @@
   CHECK(webStateList->ContainsGroup(tabGroup));
   self = [super init];
   if (self) {
-    _tabGroup = tabGroup;
+    _tabGroup = tabGroup->GetWeakPtr();
     _webStateList = webStateList;
     _tabGroupInfos = [[NSMutableArray alloc] init];
   }
   return self;
 }
 
+- (const TabGroup*)tabGroup {
+  return _tabGroup.get();
+}
+
 - (NSString*)title {
-  if (!_webStateList->ContainsGroup(_tabGroup)) {
+  if (!_webStateList->ContainsGroup(self.tabGroup)) {
     return nil;
   }
   return _tabGroup->GetTitle();
 }
 
 - (NSString*)rawTitle {
-  if (!_webStateList->ContainsGroup(_tabGroup)) {
+  if (!_webStateList->ContainsGroup(self.tabGroup)) {
     return nil;
   }
   return _tabGroup->GetRawTitle();
 }
 
 - (UIColor*)groupColor {
-  if (!_webStateList->ContainsGroup(_tabGroup)) {
+  if (!_webStateList->ContainsGroup(self.tabGroup)) {
     return nil;
   }
   return _tabGroup->GetColor();
 }
 
 - (NSInteger)numberOfTabsInGroup {
-  if (!_webStateList->ContainsGroup(_tabGroup)) {
+  if (!_webStateList->ContainsGroup(self.tabGroup)) {
     return 0;
   }
   return _tabGroup->range().count();
 }
 
 - (BOOL)collapsed {
-  if (!_webStateList->ContainsGroup(_tabGroup)) {
+  if (!_webStateList->ContainsGroup(self.tabGroup)) {
     return NO;
   }
   return _tabGroup->visual_data().is_collapsed();
 }
 
 - (void)fetchGroupTabInfos:(GroupTabInfosFetchingCompletionBlock)completion {
-  if (!_webStateList->ContainsGroup(_tabGroup)) {
+  if (!_webStateList->ContainsGroup(self.tabGroup)) {
     __weak TabGroupItem* weakSelf = self;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(^{
@@ -110,7 +115,7 @@
 // completion if there is no new snapshot or favicon to save.
 
 - (void)notifyCompletion:(GroupTabInfosFetchingCompletionBlock)completion {
-  if (!_webStateList->ContainsGroup(_tabGroup)) {
+  if (!_webStateList->ContainsGroup(self.tabGroup)) {
     completion(self, @[]);
     return;
   }
