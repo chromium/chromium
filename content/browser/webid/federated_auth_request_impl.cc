@@ -682,8 +682,6 @@ void FederatedAuthRequestImpl::RequestToken(
       (intercept && should_complete_request_immediately) ||
       api_permission_delegate_->ShouldCompleteRequestImmediately();
 
-  MaybeCreateFedCmMetrics();
-  fedcm_metrics_->SetNewSessionID(webid::GetNewSessionID());
   // Expand the providers list with registered providers.
   if (IsFedCmIdPRegistrationEnabled()) {
     for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
@@ -761,6 +759,14 @@ void FederatedAuthRequestImpl::RequestToken(
   had_transient_user_activation_ =
       render_frame_host().HasTransientUserActivation();
 
+  MaybeCreateFedCmMetrics();
+  int old_session_id = fedcm_metrics_->session_id();
+  fedcm_metrics_->SetSessionID(webid::GetNewSessionID());
+  // Store the previous `idp_order_` value from this class. Note that this is {}
+  // unless there is a pending request from the same RFH. In particular, this is
+  // still {} if there is a pending request but from a different RFH.
+  std::vector<GURL> old_idp_order = std::move(idp_order_);
+  idp_order_ = {};
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
       idp_order_.push_back(idp_ptr->config->config_url);
@@ -781,6 +787,7 @@ void FederatedAuthRequestImpl::RequestToken(
         new_request_rp_mode == RpMode::kButton &&
         pending_request_rp_mode != RpMode::kButton;
     if (!can_replace_pending_request) {
+      // Cancel this new request.
       fedcm_metrics_->RecordRequestTokenStatus(
           TokenStatus::kTooManyRequests, requirement, idp_order_,
           /*num_idps_mismatch=*/0,
@@ -798,9 +805,19 @@ void FederatedAuthRequestImpl::RequestToken(
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
                               std::nullopt, "", /*error=*/nullptr,
                               /*is_auto_selected=*/false);
+      // The old request is alive, so set the session ID to the old one.
+      fedcm_metrics_->SetSessionID(old_session_id);
+      idp_order_ = std::move(old_idp_order);
       return;
     }
+
     // Cancel the pending request before starting the new button flow request.
+    // Set the old values before completing in case the pending request
+    // corresponds to one in this object.
+    int new_session_id = fedcm_metrics_->session_id();
+    std::vector<GURL> new_idp_order = std::move(idp_order_);
+    fedcm_metrics_->SetSessionID(old_session_id);
+    idp_order_ = std::move(old_idp_order);
     pending_request->CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorReplacedByButtonMode,
         TokenStatus::kReplacedByButtonMode,
@@ -811,11 +828,8 @@ void FederatedAuthRequestImpl::RequestToken(
     // Some members were reset to false during CleanUp when replacing a widget
     // flow from the same frame so we need to set them again.
     had_transient_user_activation_ = true;
-    for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
-      for (auto& idp_ptr : idp_get_params_ptr->providers) {
-        idp_order_.push_back(idp_ptr->config->config_url);
-      }
-    }
+    fedcm_metrics_->SetSessionID(new_session_id);
+    idp_order_ = std::move(new_idp_order);
   }
 
   should_complete_request_immediately_ = should_complete_request_immediately;

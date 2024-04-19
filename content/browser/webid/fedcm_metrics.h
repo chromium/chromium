@@ -218,7 +218,7 @@ class CONTENT_EXPORT FedCmMetrics {
       std::optional<bool> idp_signin_status,
       IdpNetworkRequestManager::ParseStatus accounts_endpoint_status);
 
-  void SetNewSessionID(int session_id);
+  void SetSessionID(int session_id);
 
   // Records the time from when a call to the API was made to when the accounts
   // dialog is shown. This does not include flows that involve LoginToIdP. e.g.
@@ -383,6 +383,8 @@ class CONTENT_EXPORT FedCmMetrics {
   // page load, to when the first Button Mode API is called afterwards, if any.
   void RecordTimeBetweenUserInfoAndButtonModeAPI(base::TimeDelta duration);
 
+  int session_id() { return session_id_; }
+
  private:
   ukm::SourceId GetOrCreateProviderSourceId(const GURL& provider);
 
@@ -392,9 +394,6 @@ class CONTENT_EXPORT FedCmMetrics {
   // The SourceId to be used to log the UKM event Blink.FedCmIdp. Maps a
   // provider's config URL to its UKM SourceId.
   std::map<GURL, ukm::SourceId> provider_source_ids_;
-
-  // Whether a RequestTokenStatus has been recorded.
-  bool request_token_status_recorded_{false};
 
   // The session ID associated to the FedCM token request for which this object
   // is recording metrics. Each FedCM call gets a random integer session id,
