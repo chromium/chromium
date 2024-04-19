@@ -34,7 +34,6 @@ class HTMLAnchorElement;
 class HTMLElement;
 class KURL;
 class LocalFrame;
-class Resource;
 class ResourceRequest;
 class ResourceResponse;
 class WebString;
@@ -61,12 +60,10 @@ class CORE_EXPORT AttributionSrcLoader
   void Register(const AtomicString& attribution_src, HTMLElement* element);
 
   // Registers an attribution resource client for the given resource if
-  // the request is eligible for attribution registration. Safe to call multiple
-  // times for the same `resource`. Returns whether a registration was
-  // successful.
+  // the request is eligible for attribution registration.
+  // Returns whether a registration was successful.
   bool MaybeRegisterAttributionHeaders(const ResourceRequest& request,
-                                       const ResourceResponse& response,
-                                       const Resource* resource);
+                                       const ResourceResponse& response);
 
   // Splits `attribution_src` on spaces and completes each token as a URL
   // against the frame's document.
@@ -132,7 +129,6 @@ class CORE_EXPORT AttributionSrcLoader
                                bool log_issues = true);
 
   bool CreateAndSendRequests(Vector<KURL>,
-                             HTMLElement*,
                              std::optional<AttributionSrcToken>);
 
   struct AttributionHeaders;

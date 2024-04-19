@@ -415,7 +415,7 @@ class AttributionSrcLoader::ResourceClient
 
   wtf_size_t num_registrations_ = 0;
 
-  network::mojom::AttributionSupport support_;
+  const network::mojom::AttributionSupport support_;
 
   SelfKeepAlive<ResourceClient> keep_alive_{this};
 };
@@ -440,7 +440,7 @@ Vector<KURL> AttributionSrcLoader::ParseAttributionSrc(
 
 void AttributionSrcLoader::Register(const AtomicString& attribution_src,
                                     HTMLElement* element) {
-  CreateAndSendRequests(ParseAttributionSrc(attribution_src, element), element,
+  CreateAndSendRequests(ParseAttributionSrc(attribution_src, element),
                         /*attribution_src_token=*/std::nullopt);
 }
 
@@ -469,7 +469,7 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
       .runtime_features = GetRuntimeFeatures(),
   };
 
-  if (CreateAndSendRequests(std::move(attribution_src_urls), element,
+  if (CreateAndSendRequests(std::move(attribution_src_urls),
                             impression.attribution_src_token)) {
     return impression;
   }
@@ -508,7 +508,6 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
 
 bool AttributionSrcLoader::CreateAndSendRequests(
     Vector<KURL> urls,
-    HTMLElement* element,
     std::optional<AttributionSrcToken> attribution_src_token) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_->IsAttached() || urls.empty()) {
@@ -579,7 +578,7 @@ bool AttributionSrcLoader::DoRegistration(
             : AttributionReportingEligibility::kEventSourceOrTrigger);
     if (attribution_src_token.has_value()) {
       base::UnguessableToken token = attribution_src_token->value();
-      request.SetAttributionReportingSrcToken(std::move(token));
+      request.SetAttributionReportingSrcToken(token);
     }
 
     FetchParameters params(
@@ -719,10 +718,7 @@ AttributionSrcLoader::GetRuntimeFeatures() const {
 
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     const ResourceRequest& request,
-    const ResourceResponse& response,
-    const Resource* resource) {
-  DCHECK(resource);
-
+    const ResourceResponse& response) {
   if (response.IsNull()) {
     return false;
   }
@@ -788,16 +784,16 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
-        &AttributionSrcLoader::RegisterAttributionHeaders,
-        WrapPersistentIfNeeded(this), *registration_eligibility, support,
-        std::move(*reporting_origin), std::move(headers),
-        response.GetTriggerVerifications(), registration_info.value(),
-        response.WasFetchedViaServiceWorker()));
+    document->AddPostPrerenderingActivationStep(
+        WTF::BindOnce(&AttributionSrcLoader::RegisterAttributionHeaders,
+                      WrapPersistentIfNeeded(this), *registration_eligibility,
+                      support, std::move(*reporting_origin), std::move(headers),
+                      response.GetTriggerVerifications(), *registration_info,
+                      response.WasFetchedViaServiceWorker()));
   } else {
     RegisterAttributionHeaders(
         *registration_eligibility, support, std::move(*reporting_origin),
-        headers, response.GetTriggerVerifications(), registration_info.value(),
+        headers, response.GetTriggerVerifications(), *registration_info,
         response.WasFetchedViaServiceWorker());
   }
 
@@ -915,9 +911,9 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     return;
   }
 
-  HandleResponseHeaders(
-      std::move(*reporting_origin), headers, response.GetTriggerVerifications(),
-      registration_info.value(), response.WasFetchedViaServiceWorker());
+  HandleResponseHeaders(std::move(*reporting_origin), headers,
+                        response.GetTriggerVerifications(), *registration_info,
+                        response.WasFetchedViaServiceWorker());
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
@@ -1074,7 +1070,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
 
       data_host_->TriggerDataAvailable(
           std::move(reporting_origin), std::move(*trigger_data),
-          std::move(trigger_verifications), was_fetched_via_service_worker);
+          trigger_verifications, was_fetched_via_service_worker);
       ++num_registrations_;
       break;
     }

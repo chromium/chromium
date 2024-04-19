@@ -154,7 +154,7 @@ void ResourceLoadObserverForFrame::WillSendRequest(
   }
 
   frame->GetAttributionSrcLoader()->MaybeRegisterAttributionHeaders(
-      request, redirect_response, resource);
+      request, redirect_response);
 
   probe::WillSendRequest(
       document_->domWindow(), document_loader_,
@@ -256,8 +256,8 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
         document_loader_->GetContentSecurityNotifier());
   }
 
-  frame->GetAttributionSrcLoader()->MaybeRegisterAttributionHeaders(
-      request, response, resource);
+  frame->GetAttributionSrcLoader()->MaybeRegisterAttributionHeaders(request,
+                                                                    response);
 
   frame->Loader().Progress().IncrementProgress(identifier, response);
   probe::DidReceiveResourceResponse(GetProbe(), identifier, document_loader_,
