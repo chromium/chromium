@@ -221,7 +221,8 @@ void PaintOpReader::Read(SkColor4f* color) {
   // infinite and NaN colors don't make sense and shouldn't be produced by a
   // renderer, so encountering a non-finite color implies the paint op buffer
   // is invalid.
-  if (valid_ && !SkScalarsAreFinite(color->vec(), 4)) {
+  if (valid_ && (!std::isfinite(color->fR) || !std::isfinite(color->fG) ||
+                 !std::isfinite(color->fB) || !std::isfinite(color->fA))) {
     SetInvalid(DeserializationError::kNonFiniteSkColor4f);
   }
 }

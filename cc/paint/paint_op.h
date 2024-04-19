@@ -488,8 +488,8 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlags {
                               SkCanvas* canvas,
                               const PlaybackParams& params);
   bool IsValid() const {
-    return flags.IsValid() && SkScalarIsFinite(scale_adjustment.width()) &&
-           SkScalarIsFinite(scale_adjustment.height());
+    return flags.IsValid() && std::isfinite(scale_adjustment.width()) &&
+           std::isfinite(scale_adjustment.height());
   }
   bool EqualsForTesting(const DrawImageOp& other) const;
   bool HasDiscardableImages() const;
@@ -530,8 +530,8 @@ class CC_PAINT_EXPORT DrawImageRectOp final : public PaintOpWithFlags {
                               const PlaybackParams& params);
   bool IsValid() const {
     return flags.IsValid() && src.isFinite() && dst.isFinite() &&
-           SkScalarIsFinite(scale_adjustment.width()) &&
-           SkScalarIsFinite(scale_adjustment.height());
+           std::isfinite(scale_adjustment.width()) &&
+           std::isfinite(scale_adjustment.height());
   }
   bool EqualsForTesting(const DrawImageRectOp& other) const;
   bool HasDiscardableImages() const;
