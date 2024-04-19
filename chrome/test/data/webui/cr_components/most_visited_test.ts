@@ -1295,7 +1295,7 @@ suite('Prerendering', () => {
     await handler.whenCalled('prerenderMostVisitedTile');
   });
 
-  test('prerender cancelation', async () => {
+  test('prerender cancelation and retrigger', async () => {
     // Arrange.
     await addTiles(1);
 
@@ -1313,6 +1313,16 @@ suite('Prerendering', () => {
 
     const mouseExitEvent = document.createEvent('MouseEvents');
     mouseExitEvent.initEvent('mouseleave', true, true);
+    tileLink.dispatchEvent(mouseExitEvent);
+
+    // Make sure Prerendering has been canceled.
+    await handler.whenCalled('cancelPrerender');
+
+    tileLink.dispatchEvent(mouseEnterEvent);
+
+    // Make sure Prerendering can be re-triggered
+    await handler.whenCalled('prerenderMostVisitedTile');
+
     tileLink.dispatchEvent(mouseExitEvent);
 
     // Make sure Prerendering has been canceled.

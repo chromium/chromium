@@ -785,7 +785,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
-                       PrerenderTriggeredCanceled) {
+                       PrerenderTriggeredCancelAndRetrigger) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
@@ -807,6 +807,25 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_NewTabPage",
       kFinalStatusTriggerDestroyed, 1);
+
+  // Retrigger after cancelation.
+  EXPECT_TRUE(
+      prerender_manager->StartPrerenderNewTabPage(prerender_url, GetParam()));
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url);
+
+  // Activate.
+  content::TestActivationManager activation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  SimulateNewTabNavigation(prerender_url);
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_NewTabPage",
+      kFinalStatusActivated, 1);
+  histogram_tester.ExpectTotalCount(
+      "NewTabPage.PrerenderNavigationToActivation", 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
