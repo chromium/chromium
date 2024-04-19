@@ -253,9 +253,10 @@ class EncodedNextFreelistEntry {
     // Don't allow the freelist to be blindly followed to any location.
     // Checks following constraints:
     // - `here->shadow_` must match an inversion of `here->next_` (if present).
-    // - `next` cannot point inside the metadata area.
-    // - `here` and `next` must belong to the same superpage, unless this is in
-    //   the thread cache (they even always belong to the same slot span).
+    // - `next` mustn't point inside the super page metadata area.
+    // - Unless this is a thread-cache freelist, `here` and `next` must belong
+    //   to the same super page (as a matter of fact, they must belong to the
+    //   same slot span, but that'd be too expensive to check here).
     // - `next` is marked as free in the free slot bitmap (if present).
 
     const uintptr_t here_address = SlotStartPtr2Addr(here);
