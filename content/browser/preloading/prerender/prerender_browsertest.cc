@@ -10363,10 +10363,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ColorSchemeDarkInNonPrimaryPage) {
   prerendered_page_background_waiter.Wait();
 }
 
+// TODO(b/335786567): Flaky on win-asan.
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#define MAYBE_ThemeColorSchemeChangeInNonPrimaryPage \
+  DISABLED_ThemeColorSchemeChangeInNonPrimaryPage
+#else
+#define MAYBE_ThemeColorSchemeChangeInNonPrimaryPage \
+  ThemeColorSchemeChangeInNonPrimaryPage
+#endif
 // Tests that theme color in a prerendered page does not affect
 // the primary page.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       ThemeColorSchemeChangeInNonPrimaryPage) {
+                       MAYBE_ThemeColorSchemeChangeInNonPrimaryPage) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/theme_color.html");
 
