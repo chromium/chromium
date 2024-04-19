@@ -406,6 +406,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Sets the pref for a SetUpList item to indicate it is complete.
 - (void)markSetUpListItemPrefComplete:(SetUpListItemType)type {
+  // Exit early if this is called after `disconnect` which clears _localState.
+  // Item states will be reevaluated the next time this mediator is loaded.
+  if (!_localState) {
+    return;
+  }
   set_up_list_prefs::MarkItemComplete(_localState, type);
 }
 
