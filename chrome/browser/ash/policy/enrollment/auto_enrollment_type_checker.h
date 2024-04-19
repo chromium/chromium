@@ -39,7 +39,7 @@ class AutoEnrollmentTypeChecker {
 
   // Requirement for forced re-enrollment check.
   enum class FRERequirement {
-    // FRE check is disabled via command line.
+    // FRE check is disabled by the OS command line.
     kDisabled = 0,
     // The device was setup (has kActivateDateKey) but doesn't have the
     // kCheckEnrollmentKey entry in VPD.

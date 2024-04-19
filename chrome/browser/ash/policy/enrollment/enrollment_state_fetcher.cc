@@ -992,7 +992,7 @@ class EnrollmentStateFetcherImpl::Sequence {
         ConstructPlainttextId(context_.rlz_brand_code, context_.serial_number);
     // Use WARNING level to preserve PSM ID in the logs.
     LOG(WARNING) << "PSM determination successful. Identifier "
-                 << psm_id.sensitive_id() << " is "
+                 << psm_id.sensitive_id() << " is"
                  << (result.value() ? "" : " not") << " present on the server";
 
     base::UmaHistogramBoolean(kUMAStateDeterminationPsmReportedAvailableState,
@@ -1001,6 +1001,7 @@ class EnrollmentStateFetcherImpl::Sequence {
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
     query_.StoreResponse(local_state_, result.value());
+
     state_keys_.Retrieve(context_.state_key_broker,
                          base::BindOnce(&Sequence::OnStateKeysRetrieved,
                                         weak_factory_.GetWeakPtr()));
@@ -1019,7 +1020,8 @@ class EnrollmentStateFetcherImpl::Sequence {
       switch (state_key.error()) {
         case ServerBackedStateKeysBroker::ErrorType::kMissingIdentifiers:
           // Missing identifiers is typically a permanent error, hence we
-          // proceed to attempt ZTE with just serial number and brand code.
+          // proceed to attempt state retrieval with just serial number
+          // and brand code.
           LOG(WARNING)
               << "Failed to obtain state keys due to missing identifiers";
           context_.state_key.reset();

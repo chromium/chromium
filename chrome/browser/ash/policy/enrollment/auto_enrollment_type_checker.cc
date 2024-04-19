@@ -68,7 +68,7 @@ static std::string FRERequirementToString(
   using FRERequirement = AutoEnrollmentTypeChecker::FRERequirement;
   switch (requirement) {
     case FRERequirement::kDisabled:
-      return "Forced Re-Enrollment disabled via command line.";
+      return "Forced Re-Enrollment disabled by the OS or command line.";
     case FRERequirement::kRequired:
       return "Forced Re-Enrollment required.";
     case FRERequirement::kNotRequired:
