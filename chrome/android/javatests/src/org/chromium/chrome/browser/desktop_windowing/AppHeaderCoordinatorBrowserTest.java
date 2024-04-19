@@ -10,6 +10,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
 import android.widget.FrameLayout.LayoutParams;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -64,7 +66,6 @@ import org.chromium.ui.test.util.UiRestriction;
 public class AppHeaderCoordinatorBrowserTest {
     private static final int APP_HEADER_LEFT_PADDING = 10;
     private static final int APP_HEADER_RIGHT_PADDING = 20;
-    private static final int APP_HEADER_HEIGHT_PX = 100;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -76,6 +77,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
     private Rect mWidestUnoccludedRect = new Rect();
     private Rect mWindowRect = new Rect();
+    private int mTestAppHeaderHeight;
 
     @Before
     public void setup() {
@@ -86,6 +88,14 @@ public class AppHeaderCoordinatorBrowserTest {
         doAnswer(args -> mWindowRect).when(mInsetsRectProvider).getWindowRect();
 
         mActivityTestRule.startMainActivityOnBlankPage();
+
+        // Initialize the strip height for testing. This is due to bots might have different
+        // densities.
+        Resources res = mActivityTestRule.getActivity().getResources();
+        int tabStripHeight = res.getDimensionPixelSize(R.dimen.tab_strip_height);
+        int reservedStripTopPadding =
+                res.getDimensionPixelOffset(R.dimen.tab_strip_reserved_top_padding);
+        mTestAppHeaderHeight = tabStripHeight + reservedStripTopPadding;
     }
 
     @Test
@@ -111,7 +121,7 @@ public class AppHeaderCoordinatorBrowserTest {
                     Criteria.checkThat(
                             "Tab strip height is different",
                             activity.getToolbarManager().getTabStripHeightSupplier().get(),
-                            Matchers.equalTo(APP_HEADER_HEIGHT_PX));
+                            Matchers.equalTo(mTestAppHeaderHeight));
                 });
     }
 
@@ -150,7 +160,7 @@ public class AppHeaderCoordinatorBrowserTest {
                 tabSwitcherContainerView.getY() != 0);
         assertEquals(
                 "Tab switcher container view y-offset should match the app header height.",
-                APP_HEADER_HEIGHT_PX,
+                mTestAppHeaderHeight,
                 tabSwitcherContainerView.getY(),
                 0f);
 
@@ -196,7 +206,7 @@ public class AppHeaderCoordinatorBrowserTest {
                 tabSwitcherContainerView.getY() != 0);
         assertEquals(
                 "Tab switcher container view y-offset should match the app header height.",
-                APP_HEADER_HEIGHT_PX,
+                mTestAppHeaderHeight,
                 tabSwitcherContainerView.getY(),
                 0f);
 
@@ -233,12 +243,12 @@ public class AppHeaderCoordinatorBrowserTest {
                             "Tab switcher container view y-offset should match the app header"
                                     + " height.",
                             (int) hubContainerView.getY(),
-                            Matchers.is(APP_HEADER_HEIGHT_PX));
+                            Matchers.is(mTestAppHeaderHeight));
                     Criteria.checkThat(
                             "Tab switcher container view top margin should match the app header"
                                     + " height.",
                             params.topMargin,
-                            Matchers.is(APP_HEADER_HEIGHT_PX));
+                            Matchers.is(mTestAppHeaderHeight));
                 });
 
         // Exit desktop windowing mode.
@@ -283,12 +293,12 @@ public class AppHeaderCoordinatorBrowserTest {
                             "Tab switcher container view y-offset should match the app header"
                                     + " height.",
                             (int) hubContainerView.getY(),
-                            Matchers.is(APP_HEADER_HEIGHT_PX));
+                            Matchers.is(mTestAppHeaderHeight));
                     Criteria.checkThat(
                             "Tab switcher container view top margin should match the app header"
                                     + " height.",
                             params.topMargin,
-                            Matchers.is(APP_HEADER_HEIGHT_PX));
+                            Matchers.is(mTestAppHeaderHeight));
                 });
 
         // Exit desktop windowing mode.
@@ -376,7 +386,7 @@ public class AppHeaderCoordinatorBrowserTest {
         activity.getWindow().getDecorView().getGlobalVisibleRect(mWindowRect);
         if (isInDesktopWindow) {
             mWidestUnoccludedRect.set(
-                    APP_HEADER_LEFT_PADDING, 0, APP_HEADER_RIGHT_PADDING, APP_HEADER_HEIGHT_PX);
+                    APP_HEADER_LEFT_PADDING, 0, APP_HEADER_RIGHT_PADDING, mTestAppHeaderHeight);
         } else {
             mWidestUnoccludedRect.setEmpty();
         }
