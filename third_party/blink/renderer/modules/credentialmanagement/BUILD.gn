@@ -50,10 +50,6 @@ blink_modules_sources("credentialmanagement") {
     "public_key_credential.h",
     "scoped_promise_resolver.cc",
     "scoped_promise_resolver.h",
-    "web_identity_requester.cc",
-    "web_identity_requester.h",
-    "web_identity_window_onload_event_listener.cc",
-    "web_identity_window_onload_event_listener.h",
   ]
   deps = [ "//services/metrics/public/cpp:ukm_builders" ]
 }

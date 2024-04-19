@@ -1544,17 +1544,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.FedCm.IsAfterWindowOnload" enum="Boolean"
-    expires_after="2024-09-01">
-  <owner>tanzachary@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records whether the FedCM request is made before or after the start of the
-    window onload event. Records once per API call when the
-    FedCmMultipleIdentityProviders flag is disabled.
-  </summary>
-</histogram>
-
 <histogram name="Blink.FedCm.IsSignInUser" enum="Boolean"
     expires_after="2024-09-01">
   <owner>yigu@chromium.org</owner>
@@ -1852,21 +1841,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.FedCm.Timing.PostTaskDelayDuration" units="ms"
-    expires_after="2024-09-01">
-  <owner>tanzachary@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records the duration from when RequestToken is called directly in
-    navigator.credentials.get to when RequestToken would be called if invoked
-    through a posted task. Records once per API call when the
-    FedCmMultipleIdentityProviders flag is disabled and RequestToken is called
-    during or after the window onload event. If RequestToken is called before
-    the window onload event, Blink.FedCm.Timing.WindowOnloadDelayDuration is
-    recorded instead.
-  </summary>
-</histogram>
-
 <histogram name="Blink.FedCm.Timing.ShowAccountsDialog" units="ms"
     expires_after="2024-09-29">
   <owner>yigu@chromium.org</owner>
@@ -1939,21 +1913,6 @@ chromium-metrics-reviews@google.com.
     histogram because many well-known and config file fetches take too much time
     such that the API call would fail without fetching the rest endpoints. i.e.
     the distribution of the two histograms could be statically different.
-  </summary>
-</histogram>
-
-<histogram name="Blink.FedCm.Timing.WindowOnloadDelayDuration" units="ms"
-    expires_after="2024-09-01">
-  <owner>tanzachary@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records the duration from when RequestToken is called directly in
-    navigator.credentials.get to when RequestToken would be called if invoked
-    through a window onload event listener. Records once per API call when the
-    FedCmMultipleIdentityProviders flag is disabled and RequestToken is called
-    prior to the start of the window onload event. If RequestToken is called
-    during or after the window onload event,
-    Blink.FedCm.Timing.PostTaskDelayDuration is recorded instead.
   </summary>
 </histogram>
 

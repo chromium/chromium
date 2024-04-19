@@ -7,8 +7,8 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credentials_container.h"
-#include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -56,8 +56,6 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
 
   class OtpRequestAbortAlgorithm;
   class PublicKeyRequestAbortAlgorithm;
-
-  Member<WebIdentityRequester> web_identity_requester_;
 };
 
 }  // namespace blink

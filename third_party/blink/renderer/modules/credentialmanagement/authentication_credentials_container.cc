@@ -73,7 +73,6 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/password_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/scoped_promise_resolver.h"
-#include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -1905,7 +1904,6 @@ AuthenticationCredentialsContainer::preventSilentAccess(
 }
 
 void AuthenticationCredentialsContainer::Trace(Visitor* visitor) const {
-  visitor->Trace(web_identity_requester_);
   Supplement<Navigator>::Trace(visitor);
   CredentialsContainer::Trace(visitor);
 }
@@ -2058,56 +2056,29 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     mediation_requirement = CredentialMediationRequirement::kOptional;
   }
 
-  if (!web_identity_requester_) {
-    web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
-        context, mediation_requirement);
-  }
-
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (signal) {
     // Checked signal->aborted() at the top of the function.
 
-    auto callback =
-        !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(context)
-            ? WTF::BindOnce(&AbortIdentityCredentialRequest,
-                            WrapPersistent(script_state))
-            : WTF::BindOnce(&WebIdentityRequester::AbortRequest,
-                            WrapPersistent(web_identity_requester_.Get()),
-                            WrapPersistent(script_state));
+    auto callback = WTF::BindOnce(&AbortIdentityCredentialRequest,
+                                  WrapPersistent(script_state));
 
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-  if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(context)) {
-    Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
-    mojom::blink::IdentityProviderGetParametersPtr get_params =
-        mojom::blink::IdentityProviderGetParameters::New(
-            std::move(identity_provider_ptrs), rp_context, rp_mode);
-    idp_get_params.push_back(std::move(get_params));
+  Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
+  mojom::blink::IdentityProviderGetParametersPtr get_params =
+      mojom::blink::IdentityProviderGetParameters::New(
+          std::move(identity_provider_ptrs), rp_context, rp_mode);
+  idp_get_params.push_back(std::move(get_params));
 
-    auto* auth_request =
-        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-    auth_request->RequestToken(
-        std::move(idp_get_params), mediation_requirement,
-        WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
-                      std::move(scoped_abort_state), WrapPersistent(&options)));
-
-    // Start recording the duration from when RequestToken is called directly
-    // to when RequestToken would be called if invoked through
-    // web_identity_requester_.
-    web_identity_requester_->StartDelayTimer(resolver);
-
-    return;
-  }
-
-  if (scoped_abort_state) {
-    web_identity_requester_->InsertScopedAbortState(
-        std::move(scoped_abort_state));
-  }
-
-  web_identity_requester_->AppendGetCall(resolver, identity_options.providers(),
-                                         rp_context, rp_mode);
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->RequestToken(
+      std::move(idp_get_params), mediation_requirement,
+      WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
+                    std::move(scoped_abort_state), WrapPersistent(&options)));
 }
 
 }  // namespace blink
