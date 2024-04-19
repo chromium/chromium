@@ -21,6 +21,9 @@ const char kSwitchValueFalse[] = "false";
 // Default is "https://clients2.google.com/cr/staging_report" for non prod.
 const char kCrashServerUrl[] = "crash-server-url";
 
+// Switch to enable daemon-mode in crash_uploader.
+const char kCrashUploaderDaemon[] = "daemon";
+
 // Switch to disable Crash reporting
 const char kDisableCrashReporter[] = "disable-crash-reporter";
 

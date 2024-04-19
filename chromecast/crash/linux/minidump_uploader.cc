@@ -303,6 +303,29 @@ bool MinidumpUploader::DoWork() {
       }
     }
 
+    // Set CastLite specific crash report data.
+    if (!dump.params().comments.empty()) {
+      g.SetParameter("comments", dump.params().comments);
+    }
+    if (!dump.params().js_engine.empty()) {
+      g.SetParameter("js_engine", dump.params().js_engine);
+    }
+    if (!dump.params().js_build_label.empty()) {
+      g.SetParameter("js_build_label", dump.params().js_build_label);
+    }
+    if (!dump.params().js_exception_category.empty()) {
+      g.SetParameter("js_exception_category",
+                     dump.params().js_exception_category);
+    }
+    if (!dump.params().js_exception_details.empty()) {
+      g.SetParameter("js_exception_details",
+                     dump.params().js_exception_details);
+    }
+    if (!dump.params().js_exception_signature.empty()) {
+      // Upload as "signature" to populate the "Stable Signature" field
+      g.SetParameter("signature", dump.params().js_exception_signature);
+    }
+
     std::string response;
     if (!g.Upload(&response)) {
       // We have failed to upload this file.

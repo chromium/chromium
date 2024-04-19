@@ -115,7 +115,13 @@ TEST(DumpInfoTest, AllOptionalFieldsIsValid) {
                      "\"last_app_name\": \"last_app\","
                      "\"release_version\": \"RELEASE\","
                      "\"build_number\": \"BUILD_NUMBER\","
-                     "\"reason\": \"foo\""
+                     "\"reason\": \"foo\","
+                     "\"comments\": \"comments\","
+                     "\"js_engine\": \"js_engine\","
+                     "\"js_build_label\": \"js_build_label\","
+                     "\"js_exception_category\": \"js_exception_category\","
+                     "\"js_exception_details\": \"js_exception_details\","
+                     "\"js_exception_signature\": \"js_exception_signature\""
                      "}"));
   static constexpr base::Time::Exploded kTime = {.year = 2001,
                                                  .month = 11,
@@ -141,6 +147,13 @@ TEST(DumpInfoTest, AllOptionalFieldsIsValid) {
   ASSERT_EQ("current_app", info->params().current_app_name);
   ASSERT_EQ("last_app", info->params().last_app_name);
   ASSERT_EQ("foo", info->params().reason);
+
+  ASSERT_EQ("comments", info->params().comments);
+  ASSERT_EQ("js_engine", info->params().js_engine);
+  ASSERT_EQ("js_build_label", info->params().js_build_label);
+  ASSERT_EQ("js_exception_category", info->params().js_exception_category);
+  ASSERT_EQ("js_exception_details", info->params().js_exception_details);
+  ASSERT_EQ("js_exception_signature", info->params().js_exception_signature);
 }
 
 TEST(DumpInfoTest, SomeOptionalFieldsIsValid) {
@@ -152,7 +165,10 @@ TEST(DumpInfoTest, SomeOptionalFieldsIsValid) {
                      "\"uptime\": \"123456789\","
                      "\"logfile\": \"logfile.log\","
                      "\"suffix\": \"suffix\","
-                     "\"prev_app_name\": \"previous_app\""
+                     "\"prev_app_name\": \"previous_app\","
+                     "\"comments\": \"comments\","
+                     "\"js_engine\": \"js_engine\","
+                     "\"js_build_label\": \"js_build_label\""
                      "}"));
   static constexpr base::Time::Exploded kTime = {.year = 2001,
                                                  .month = 11,
@@ -171,6 +187,10 @@ TEST(DumpInfoTest, SomeOptionalFieldsIsValid) {
 
   ASSERT_EQ("suffix", info->params().suffix);
   ASSERT_EQ("previous_app", info->params().previous_app_name);
+
+  ASSERT_EQ("comments", info->params().comments);
+  ASSERT_EQ("js_engine", info->params().js_engine);
+  ASSERT_EQ("js_build_label", info->params().js_engine);
 }
 
 TEST(DumpInfoTest, ExtraFieldsIsNotValid) {
@@ -187,6 +207,12 @@ TEST(DumpInfoTest, ExtraFieldsIsNotValid) {
                      "\"last_app_name\": \"last_app\","
                      "\"release_version\": \"RELEASE\","
                      "\"build_number\": \"BUILD_NUMBER\","
+                     "\"comments\": \"comments\","
+                     "\"js_engine\": \"js_engine\","
+                     "\"js_build_label\": \"js_build_label\","
+                     "\"js_exception_category\": \"js_exception_category\","
+                     "\"js_exception_details\": \"js_exception_details\","
+                     "\"js_exception_signature\": \"js_exception_signature\","
                      "\"hello\": \"extra_field\""
                      "}"));
   ASSERT_FALSE(info->valid());

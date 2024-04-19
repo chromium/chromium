@@ -16,8 +16,9 @@ namespace switches {
 extern const char kSwitchValueTrue[];
 extern const char kSwitchValueFalse[];
 
-// Url to upload crash data to.
+// Switches for crash_uploader
 extern const char kCrashServerUrl[];
+extern const char kCrashUploaderDaemon[];
 
 // Disable Crash Reporting
 extern const char kDisableCrashReporter[];
