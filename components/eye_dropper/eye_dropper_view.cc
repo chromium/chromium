@@ -29,7 +29,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/aura/client/screen_position_client.h"
+#include "ui/aura/window_tree_host.h"
 #endif
 
 namespace eye_dropper {
@@ -114,6 +114,8 @@ EyeDropperView::ScreenCapturer::ScreenCapturer(EyeDropperView* owner)
       capturer_->SelectSource(webrtc::kFullDesktopScreenId);
     }
   }
+
+  // On ChromeOS this will capture `Screen::GetDisplayForNewWindows()`.
   CaptureScreen(std::nullopt);
 }
 
@@ -240,15 +242,14 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   ignore_selection_time_ = base::TimeTicks::Now() + base::Milliseconds(500);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  GetWidget()->GetNativeWindow()->AddObserver(this);
+  // Add an observation so the capture can be updated as the eye dropper window
+  // moves between displays.
+  window_observation_.Observe(GetWidget()->GetNativeWindow());
 #endif
 }
 
 EyeDropperView::~EyeDropperView() {
   if (GetWidget()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    GetWidget()->GetNativeWindow()->RemoveObserver(this);
-#endif
     GetWidget()->CloseNow();
   }
 }
@@ -285,37 +286,38 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   // Project pixels.
   const int pixel_count = diameter / kPixelSize;
   const SkBitmap frame = screen_capturer_->GetBitmap();
+  gfx::Point center_position_px;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS only captures a single display at a time, and we need to convert
+  // the cursor position to display (root window) local pixel coordinates.
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  const gfx::Point center_position =
+      window->GetBoundsInRootWindow().CenterPoint();
+  center_position_px =
+      window->GetHost()->GetRootTransform().MapPoint(center_position);
+#else
   // The captured frame is not scaled so we need to use widget's bounds in
   // pixels to have the magnified region match cursor position.
-  gfx::Point center_position =
+  center_position_px =
       display::Screen::GetScreen()
           ->DIPToScreenRectInWindow(GetWidget()->GetNativeWindow(),
                                     GetWidget()->GetWindowBoundsInScreen())
           .CenterPoint();
-  center_position.Offset(-screen_capturer_->original_offset_x(),
-                         -screen_capturer_->original_offset_y());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS only captures a single display at a time, and we need to convert
-  // the cursor position to local values for non primary displays.
-  aura::Window* window = GetWidget()->GetNativeWindow()->GetRootWindow();
-  aura::client::ScreenPositionClient* screen_position_client =
-      aura::client::GetScreenPositionClient(window);
-  if (screen_position_client) {
-    screen_position_client->ConvertPointFromScreen(window, &center_position);
-  }
+  center_position_px.Offset(-screen_capturer_->original_offset_x(),
+                            -screen_capturer_->original_offset_y());
 #endif
 
   view_canvas->DrawImageInt(gfx::ImageSkia::CreateFrom1xBitmap(frame),
-                            center_position.x() - pixel_count / 2,
-                            center_position.y() - pixel_count / 2, pixel_count,
-                            pixel_count, padding.width(), padding.height(),
-                            diameter, diameter, false);
+                            center_position_px.x() - pixel_count / 2,
+                            center_position_px.y() - pixel_count / 2,
+                            pixel_count, pixel_count, padding.width(),
+                            padding.height(), diameter, diameter, false);
 
   // Store the pixel color under the cursor as it is the last color seen
   // by the user before selection.
-  selected_color_ =
-      screen_capturer_->GetColor(center_position.x(), center_position.y());
+  selected_color_ = screen_capturer_->GetColor(center_position_px.x(),
+                                               center_position_px.y());
 
   // Paint grid.
   const auto* color_provider = GetColorProvider();
@@ -382,6 +384,10 @@ void EyeDropperView::OnWindowAddedToRootWindow(aura::Window* window) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
   CaptureScreen(display.id());
+}
+
+void EyeDropperView::OnWindowDestroying(aura::Window* window) {
+  window_observation_.Reset();
 }
 #endif
 
