@@ -973,6 +973,9 @@ public final class ProductionSupportedFlagList {
                 "Enables moves instead of copies of snapshot tree data when merging udpates."),
         Flag.baseFeature(
                 "EnableHangWatcher", "Controls whether hooks for hang detection are active"),
+        Flag.baseFeature(
+                "MojoPredictiveAllocation",
+                "Predictively allocate some serialization buffers for Mojo"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
