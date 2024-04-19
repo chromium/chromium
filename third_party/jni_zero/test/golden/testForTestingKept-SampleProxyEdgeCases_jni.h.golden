@@ -163,9 +163,9 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceM
     JNIEnv* env,
     jobject jcaller,
     jlong nativeInstance) {
-  Instance* _native = reinterpret_cast<Instance*>(nativeInstance);
-  CHECK_NATIVE_PTR(env, jcaller, _native, "InstanceMethod")
-  _native->InstanceMethod(env, jni_zero::JavaParamRef<jobject>(env, jcaller));
+  reinterpret_cast<Instance*>(nativeInstance)->InstanceMethod(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller));
 }
 
 // Forward declaration. To be implemented by the including .cc file.

@@ -43,21 +43,19 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniq
     jclass jcaller,
     jlong nativePtr,
     jstring arg) {
-  FooAndroid::BarDelegate* _native = reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr);
-  CHECK_NATIVE_PTR(env, jcaller, _native, "Foo")
   std::string arg_converted = jni_zero::FromJniType<std::string>(
       env,
       jni_zero::JavaParamRef<jobject>(env, arg));
-  _native->Foo(env, arg_converted);
+  reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr)->Foo(
+      env,
+      arg_converted);
 }
 
 JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeCallWithQualifiedObject(
     JNIEnv* env,
     jobject jcaller,
     jlong nativePtr) {
-  Foo::Bar* _native = reinterpret_cast<Foo::Bar*>(nativePtr);
-  CHECK_NATIVE_PTR(env, jcaller, _native, "CallWithQualifiedObject")
-  _native->CallWithQualifiedObject(
+  reinterpret_cast<Foo::Bar*>(nativePtr)->CallWithQualifiedObject(
       env,
       jni_zero::JavaParamRef<jobject>(env, jcaller));
 }

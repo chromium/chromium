@@ -94,15 +94,6 @@ def _single_method(sb, jni_obj, native):
   proxy_return_type = native.proxy_return_type
   return_type = native.return_type
   with sb.block():
-    if cpp_class:
-      first_param_name = native.params[0].cpp_name()
-      sb(f"""\
-{cpp_class}* _native = reinterpret_cast<{cpp_class}*>({first_param_name});
-CHECK_NATIVE_PTR(env, jcaller, _native, "{native.cpp_name}\"""")
-      if default_value := proxy_return_type.to_cpp_default_value():
-        sb(f', {default_value}')
-      sb(')\n')
-
     param_rvalues = [
         _prep_param(sb, param, proxy_param.java_type)
         for param, proxy_param in zip(params, proxy_params)
@@ -112,7 +103,8 @@ CHECK_NATIVE_PTR(env, jcaller, _native, "{native.cpp_name}\"""")
       if not return_type.is_void():
         sb('auto _ret = ')
       if cpp_class:
-        sb(f'_native->{native.cpp_name}')
+        sb(f'reinterpret_cast<{cpp_class}*>({native.params[0].cpp_name()})'
+           f'->{native.cpp_name}')
       else:
         sb(f'{native.cpp_impl_name}')
       with sb.param_list() as plist:
