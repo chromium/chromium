@@ -897,14 +897,23 @@ std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateChooseAnAccountButton(
     const std::vector<std::u16string> mismatch_idps,
     const std::vector<std::u16string> non_mismatch_idps) {
+  // TODO(crbug.com/325503352): `icon_view` should probably be smaller while
+  // still taking the same amount of space.
+  auto icon_view =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          kPersonFilledPaddedSmallIcon, ui::kColorMenuIcon,
+          kDesiredChooseAnAccountIconSize));
   auto button = std::make_unique<HoverButton>(
       base::BindOnce(&AccountSelectionViewBase::Observer::OnChooseAnAccount,
                      base::Unretained(observer_)),
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kPersonFilledPaddedSmallIcon, ui::kColorMenuIcon,
-          kDesiredChooseAnAccountIconSize)),
+      std::move(icon_view),
+      /*title=*/
       l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON),
-      BuildStringFromIDPs(mismatch_idps, non_mismatch_idps));
+      /*subtitle=*/BuildStringFromIDPs(mismatch_idps, non_mismatch_idps),
+      /*secondary_view=*/
+      std::make_unique<views::ImageView>(
+          ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
+                                         ui::kColorMenuIcon, kArrowIconSize)));
   button->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
                                views::style::STYLE_SECONDARY);
   return button;

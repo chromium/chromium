@@ -373,7 +373,6 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     }
     std::unique_ptr<views::ImageView> arrow_icon_view = nullptr;
     if (is_modal_dialog) {
-      constexpr int kArrowIconSize = 8;
       constexpr int kArrowIconRightPadding = 8;
       arrow_icon_view = std::make_unique<views::ImageView>();
       arrow_icon_view->SetBorder(views::CreateEmptyBorder(

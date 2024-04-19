@@ -45,7 +45,7 @@ inline constexpr int kDesiredIdpIconSize = 20;
 // The desired size of the icon for the "Use another account" button.
 inline constexpr int kDesiredUseOtherAccountIconSize = 20;
 // The desired size of the icon for the "Choose an account" button.
-inline constexpr int kDesiredChooseAnAccountIconSize = 20;
+inline constexpr int kDesiredChooseAnAccountIconSize = 34;
 // The size of the padding used at the top and bottom of the bubble.
 inline constexpr int kTopBottomPadding = 4;
 // The size of the horizontal padding between the bubble content and the edge of
@@ -68,7 +68,9 @@ inline constexpr int kModalAvatarSize = 36;
 // The size of the horizontal padding for most elements in the modal.
 inline constexpr int kModalHorizontalSpacing = 8;
 // Size of the IDP icon offset when badging the IDP icon in the account button.
-inline constexpr int kIdpBadgeOffset = 4;
+inline constexpr int kIdpBadgeOffset = 8;
+// The size of the arrow icon.
+inline constexpr int kArrowIconSize = 8;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
