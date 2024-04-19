@@ -103,3 +103,14 @@ FROM slice s
 WHERE
   category GLOB "*scheduler.long_tasks*"
   AND name = $name;
+
+-- Extracts scroll id for the EventLatency slice at `ts`.
+CREATE PERFETTO FUNCTION get_most_recent_scroll_begin_id(ts INT)
+RETURNS INT AS
+SELECT EXTRACT_ARG(arg_set_id, "event_latency.event_latency_id")
+FROM slice
+WHERE name="EventLatency"
+AND EXTRACT_ARG(arg_set_id, "event_latency.event_type") = "GESTURE_SCROLL_BEGIN"
+AND ts<=$ts
+ORDER BY ts DESC
+LIMIT 1;
