@@ -80,7 +80,24 @@ static bool PrepareForJPEGDecode(const unsigned char* input,
 
   // Reject images that would exceed INT_MAX bytes.
   constexpr int kBytesPerPixel = 4;
-  return size.area() < (INT_MAX / kBytesPerPixel);
+  if (size.area() >= (INT_MAX / kBytesPerPixel)) {
+    return false;
+  }
+
+  // The fuzzer is able to make astronomically large bitmaps (30000x30000) from
+  // very small inputs. Images this large can take several seconds to decode. In
+  // a build instrumented for fuzzing, this time can balloon to over a minute.
+  // To avoid timeouts, we limit the fuzzer to 16 million pixels. We don't
+  // reject very wide or very tall images, as long as the image is reasonably
+  // small on the other axis.
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+  constexpr int kFuzzerPixelLimit = 4000 * 4000;
+  if (size.area() >= kFuzzerPixelLimit) {
+    return false;
+  }
+#endif
+
+  return true;
 }
 
 bool JPEGCodec::Decode(const unsigned char* input,
