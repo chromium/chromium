@@ -5109,8 +5109,9 @@
       # configs. Additionally, shared workers are not supported on Android, so
       # remove tests from there.
       'Dawn Android arm DEPS Release (Pixel 4)',
-      'Dawn Android arm64 DEPS Release (Pixel 6)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
       'Dawn Linux x64 DEPS Release (Intel UHD 630)',
       'Dawn Linux x64 Experimental Release (Intel UHD 630)',
