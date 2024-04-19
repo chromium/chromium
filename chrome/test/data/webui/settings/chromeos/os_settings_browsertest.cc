@@ -138,9 +138,10 @@ class OSSettingsCrostiniTestRevampDisabled
   crostini::FakeCrostiniFeatures fake_crostini_features_;
 };
 
-class OSSettingsMochaTestReducedAnimationsEnabled : public OSSettingsMochaTest {
+class OSSettingsRevampMochaTestReducedAnimationsEnabled
+    : public OSSettingsRevampMochaTest {
  protected:
-  OSSettingsMochaTestReducedAnimationsEnabled() {
+  OSSettingsRevampMochaTestReducedAnimationsEnabled() {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kAccessibilityReducedAnimations);
   }
@@ -148,6 +149,12 @@ class OSSettingsMochaTestReducedAnimationsEnabled : public OSSettingsMochaTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestReducedAnimationsEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestReducedAnimationsEnabled::DescribeParams);
 
 class OSSettingsMochaTestMagnifierFollowsStsEnabled
     : public OSSettingsMochaTest {
@@ -161,9 +168,10 @@ class OSSettingsMochaTestMagnifierFollowsStsEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
+class OSSettingsRevampMochaTestMouseKeysEnabled
+    : public OSSettingsRevampMochaTest {
  protected:
-  OSSettingsMochaTestMouseKeysEnabled() {
+  OSSettingsRevampMochaTestMouseKeysEnabled() {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kAccessibilityMouseKeys);
   }
@@ -172,9 +180,16 @@ class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class OSSettingsMochaTestCaretBlinkSettingEnabled : public OSSettingsMochaTest {
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestMouseKeysEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestMouseKeysEnabled::DescribeParams);
+
+class OSSettingsRevampMochaTestCaretBlinkSettingEnabled
+    : public OSSettingsRevampMochaTest {
  protected:
-  OSSettingsMochaTestCaretBlinkSettingEnabled() {
+  OSSettingsRevampMochaTestCaretBlinkSettingEnabled() {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kAccessibilityCaretBlinkIntervalSetting);
   }
@@ -182,6 +197,12 @@ class OSSettingsMochaTestCaretBlinkSettingEnabled : public OSSettingsMochaTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestCaretBlinkSettingEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestCaretBlinkSettingEnabled::DescribeParams);
 
 class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
  protected:
@@ -467,6 +488,23 @@ INSTANTIATE_TEST_SUITE_P(
     OSSettingsRevampNearbyShareTestSharingEnabled,
     testing::Bool(),
     OSSettingsRevampNearbyShareTestSharingEnabled::DescribeParams);
+
+class OSSettingsRevampOsA11yTestPdfOcrEnabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampOsA11yTestPdfOcrEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kPdfOcr);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampOsA11yTestPdfOcrEnabled,
+    testing::Bool(),
+    OSSettingsRevampOsA11yTestPdfOcrEnabled::DescribeParams);
 
 /* End Test Classes */
 
@@ -1029,53 +1067,45 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OncMojoTest) {
   RunSettingsTest("onc_mojo_test.js");
 }
 
-class OSSettingsOsA11yTestPdfOcrEnabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsOsA11yTestPdfOcrEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(::features::kPdfOcr);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestPdfOcrEnabled, OsA11yPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampOsA11yTestPdfOcrEnabled, OsA11yPage) {
   RunSettingsTest("os_a11y_page/os_a11y_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestPdfOcrEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampOsA11yTestPdfOcrEnabled,
                        OsA11yPageLiveCaptionSection) {
   RunSettingsTest("os_a11y_page/live_caption_section_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageAudioAndCaptionsPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsA11yPageAudioAndCaptionsPage) {
   RunSettingsTest("os_a11y_page/audio_and_captions_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageChromeVoxSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsA11yPageChromeVoxSubpage) {
   RunSettingsTest("os_a11y_page/chromevox_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageCursorAndTouchpadPage) {
-  RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMouseKeysEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageCursorAndTouchpadPage) {
   RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestMouseKeysEnabled,
+                       OsA11yPageCursorAndTouchpadPage) {
+  RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageChangeDictationLocaleDialog) {
   RunSettingsTest("os_a11y_page/change_dictation_locale_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageDisplayAndMagnificationSubpage) {
   RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestReducedAnimationsEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestReducedAnimationsEnabled,
                        OsA11yPageDisplayAndMagnificationSubpage) {
   RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
 }
@@ -1085,89 +1115,79 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMagnifierFollowsStsEnabled,
   RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageKeyboardAndTextInputPage) {
   RunSettingsTest("os_a11y_page/keyboard_and_text_input_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestCaretBlinkSettingEnabled,
-                       OsA11yPageKeyboardAndTextInputPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestCaretBlinkSettingEnabled,
+                       OsA11yPageKeyboardAndTextInputPageCaret) {
   RunSettingsTest("os_a11y_page/keyboard_and_text_input_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageKioskMode) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsA11yPageKioskMode) {
   RunSettingsTest("os_a11y_page/os_a11y_page_kiosk_mode_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageSelectToSpeakSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsA11yPageSelectToSpeakSubpage) {
   RunSettingsTest("os_a11y_page/select_to_speak_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageSwitchAccessActionAssignmentDialog) {
   RunSettingsTest(
       "os_a11y_page/switch_access_action_assignment_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageSwitchAccessSetupGuideDialog) {
   RunSettingsTest("os_a11y_page/switch_access_setup_guide_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageSwitchAccessSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsA11yPageSwitchAccessSubpage) {
   RunSettingsTest("os_a11y_page/switch_access_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestPdfOcrEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampOsA11yTestPdfOcrEnabled,
                        OsA11yPageTextToSpeechSubpage) {
   RunSettingsTest("os_a11y_page/text_to_speech_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageTtsVoiceSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsA11yPageTtsVoiceSubpage) {
   RunSettingsTest("os_a11y_page/tts_voice_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
-                       OsAboutPage_AllBuilds) {
-  RunSettingsTest("os_about_page/os_about_page_test.js",
-                  "runMochaSuite('<os-about-page> AllBuilds')");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
-                       OsAboutPage_AllBuilds) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsAboutPage_AllBuilds) {
   RunSettingsTest("os_about_page/os_about_page_test.js",
                   "runMochaSuite('<os-about-page> AllBuilds')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
-                       OsAboutPage_OfficialBuild) {
-  RunSettingsTest("os_about_page/os_about_page_test.js",
-                  "runMochaSuite('<os-about-page> OfficialBuild')");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
-                       OsAboutPage_OfficialBuild) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsAboutPage_OfficialBuild) {
   RunSettingsTest("os_about_page/os_about_page_test.js",
                   "runMochaSuite('<os-about-page> OfficialBuild')");
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsAboutPageChannelSwitcherDialog) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsAboutPageChannelSwitcherDialog) {
   RunSettingsTest("os_about_page/channel_switcher_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAboutPageConsumerAutoUpdateToggleDialog) {
   RunSettingsTest("os_about_page/consumer_auto_update_toggle_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsAboutPageDetailedBuildInfoSubpage) {
   RunSettingsTest("os_about_page/detailed_build_info_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsAboutPageEditHostnameDialog) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsAboutPageEditHostnameDialog) {
   RunSettingsTest("os_about_page/edit_hostname_dialog_test.js");
 }
 
