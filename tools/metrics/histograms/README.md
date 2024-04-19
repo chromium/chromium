@@ -161,6 +161,8 @@ buckets are added later.
 ```c++
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(NewTabPageAction)
 enum class NewTabPageAction {
   kUseOmnibox = 0,
   kClickTitle = 1,
@@ -168,7 +170,13 @@ enum class NewTabPageAction {
   kOpenBookmark = 3,
   kMaxValue = kOpenBookmark,
 };
+// LINT.ThenChange(//path/to/enums.xml:NewTabPageActionEnum)
 ```
+
+The `LINT.IfChange / LINT.ThenChange` comments point between the code and XML
+definitions of the enum, to encourage them to be kept in sync. See
+[guide](https://www.chromium.org/chromium-os/developer-library/guides/development/keep-files-in-sync/)
+and [more details](http://go/gerrit-ifthisthenthat).
 
 `kMaxValue` is a special enumerator that must share the highest enumerator
 value, typically done by aliasing it with the enumerator with the highest
@@ -213,7 +221,16 @@ private static void logNewTabPageAction(@NewTabPageAction int action) {
 ```
 
 Finally, regardless of the programming language you are using, add the
-definition of the enumerator to [enums.xml](./enums.xml).
+definition of the enumerator to [enums.xml](./enums.xml), and add linter checks
+to keep the C++/Java and XML values in sync:
+
+```xml
+<!-- LINT.IfChange(NewTabPageActionEnum) -->
+<enum name="NewTabPageActionEnum">
+  ...
+</enum>
+<!-- LINT.ThenChange(//path/to/cpp_definition.h:NewTabPageAction) -->
+```
 
 #### Legacy Enums
 
@@ -825,9 +842,9 @@ This example defines metadata for 12 (= 3 x 4) concrete histograms, such as
 </histogram>
 ```
 
-Each token `<variant>` defines what text should be substituted for it, 
-both in the histogram name and in the summary text. The name part gets 
-substituted into the histogram name; the summary part gets substituted in 
+Each token `<variant>` defines what text should be substituted for it,
+both in the histogram name and in the summary text. The name part gets
+substituted into the histogram name; the summary part gets substituted in
 the summary field (the histogram description). As shorthand, a
 `<variant>` that omits the `summary` attribute substitutes the value of
 the `name` attribute in the histogram's `<summary>` text as well.
