@@ -270,7 +270,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     }
 
     private View.OnClickListener getColorIconClickListener() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             return (view) -> {
                 showColorPickerPopup(view);
                 TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(

@@ -670,7 +670,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     .addTouchEventObserver(mDragDropTouchObserver);
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             Runnable onDialogAcceptedRunnable =
                     () -> {
                         if (!mTabModelSelectorSupplier.get().isIncognitoSelected()) {
