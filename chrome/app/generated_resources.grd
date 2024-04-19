@@ -9093,61 +9093,61 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READ_ANYTHING_LOADING" desc="Message to show while Read Anything is figuring out what text to display.">
         Getting ready
       </message>
-      <message name="IDS_READING_MODE_FONT_RESET" desc="Label for button that resets the font size of the reading mode feature back to the default font setting." translateable="false">
+      <message name="IDS_READING_MODE_FONT_RESET" desc="Label for button that resets the font size of the reading mode feature back to the default font setting.">
         Reset
       </message>
-      <message name="IDS_READING_MODE_TURN_HIGHLIGHT_OFF" desc="Tooltip label for button that turns off highlighting in Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_TURN_HIGHLIGHT_OFF" desc="Tooltip label for button that turns off highlighting in Read Aloud.">
         Turn off highlight
       </message>
-      <message name="IDS_READING_MODE_TURN_HIGHLIGHT_ON" desc="Tooltip label for button that turns on highlighting in Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_TURN_HIGHLIGHT_ON" desc="Tooltip label for button that turns on highlighting in Read Aloud.">
         Turn on highlight
       </message>
-      <message name="IDS_READING_MODE_PLAY_DESCRIPTION" desc="Accessibility description for button that plays speech in Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_PLAY_DESCRIPTION" desc="Accessibility description for button that plays speech in Read Aloud.">
         Listen to the text with natural voice
       </message>
-      <message name="IDS_READING_MODE_PLAY_SPEECH" desc="Accessible name for button that plays speech in Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_PLAY_SPEECH" desc="Accessible name for button that plays speech in Read Aloud.">
         Play keyboard shortcut k
       </message>
-      <message name="IDS_READING_MODE_PAUSE_SPEECH" desc="Accessibile name for button that pauses speech in Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_PAUSE_SPEECH" desc="Accessibile name for button that pauses speech in Read Aloud.">
         Pause keyboard shortcut k
       </message>
-      <message name="IDS_READING_MODE_PLAY_TOOLTIP" desc="Tooltip label for button that plays speech in Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_PLAY_TOOLTIP" desc="Tooltip label for button that plays speech in Read Aloud.">
         Play (k)
       </message>
-      <message name="IDS_READING_MODE_PAUSE_TOOLTIP" desc="Tooltip label for button that pauses speech in Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_PAUSE_TOOLTIP" desc="Tooltip label for button that pauses speech in Read Aloud.">
         Pause (k)
       </message>
-      <message name="IDS_READING_MODE_STOP_SPEECH" desc="Accessibility label for button that stops speech in Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_STOP_SPEECH" desc="Accessibility label for button that stops speech in Read Aloud.">
         Stop
       </message>
-      <message name="IDS_READING_MODE_NAVIGATE_PREVIOUS_SENTENCE" desc="Accessibility label for button that moves speech in Read Aloud to the previous sentence." translateable="false">
+      <message name="IDS_READING_MODE_NAVIGATE_PREVIOUS_SENTENCE" desc="Accessibility label for button that moves speech in Read Aloud to the previous sentence.">
         Previous sentence
       </message>
-      <message name="IDS_READING_MODE_NAVIGATE_NEXT_SENTENCE" desc="Accessibility label for button that moves speech in Read Aloud to the next sentence." translateable="false">
+      <message name="IDS_READING_MODE_NAVIGATE_NEXT_SENTENCE" desc="Accessibility label for button that moves speech in Read Aloud to the next sentence.">
         Next sentence
       </message>
-      <message name="IDS_READING_MODE_MORE_OPTIONS" desc="Accessibility label for button that contains more text style options for the reading mode feature." translateable="false">
+      <message name="IDS_READING_MODE_MORE_OPTIONS" desc="Accessibility label for button that contains more text style options for the reading mode feature.">
         More options
       </message>
-      <message name="IDS_READING_MODE_VOICE_SPEED" desc="Accessibility label for button that opens a dropdown with options for changing the speed of the voice for Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_VOICE_SPEED" desc="Accessibility label for button that opens a dropdown with options for changing the speed of the voice for Read Aloud.">
         Voice speed
       </message>
-      <message name="IDS_READING_MODE_VOICE_SELECTION" desc="Accessibility label for button that opens a dropdown with options for changing the voice used for Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_VOICE_SELECTION" desc="Accessibility label for button that opens a dropdown with options for changing the voice used for Read Aloud.">
         Voice selection
       </message>
-      <message name="IDS_READING_MODE_LANGUAGE_MENU" desc="Label for a button that opens a dialog with options for managing language preferences for Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_LANGUAGE_MENU" desc="Label for a button that opens a dialog with options for managing language preferences for Read Aloud.">
         Languages...
       </message>
-      <message name="IDS_READING_MODE_LANGUAGE_MENU_TITLE" desc="Dialog title label for a dialog with options for managing language preferences for Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_TITLE" desc="Dialog title label for a dialog with options for managing language preferences for Read Aloud.">
         Languages
       </message>
-      <message name="IDS_READING_MODE_LANGUAGE_MENU_CLOSE" desc="Label for a button to close a dialog with options for managing language preferences for Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_CLOSE" desc="Label for a button to close a dialog with options for managing language preferences for Read Aloud.">
         Close
       </message>
-      <message name="IDS_READING_MODE_LANGUAGE_MENU_SEARCH_LABEL" desc="Label for a search field that searches for language preference to be managed for Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_SEARCH_LABEL" desc="Label for a search field that searches for language preference to be managed for Read Aloud.">
         Search
       </message>
-      <message name="IDS_READING_MODE_LANGUAGE_MENU_SEARCH_CLEAR" desc="Accessibility label for a button to clear search field that searches for language preference to be managed for Read Aloud." translateable="false">
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_SEARCH_CLEAR" desc="Accessibility label for a button to clear search field that searches for language preference to be managed for Read Aloud.">
         Clear search
       </message>
       <message name="IDS_READING_MODE_SIDE_PANEL_PROMO"
@@ -9158,10 +9158,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
                desc="Text for the in-product-help bubble shown for the reading mode bubble when Side Panel Pinning is enabled.">
         To see a simplified view of this page, go to More Tools > Reading Mode
       </message>
-     <message name="IDS_READING_MODE_VOICE_PREVIEW_STRING" desc="Message to be played when a user previews a voice for Read Aloud." translateable="false">
+     <message name="IDS_READING_MODE_VOICE_PREVIEW_STRING" desc="Message to be played when a user previews a voice for Read Aloud.">
         Hi. This is a preview
       </message>
-     <message name="IDS_READING_MODE_FONT_LOADING_STRING" desc="Text added to a font name in the Reading Mode font dropdown when the font style hasn't loaded yet." translateable="false">
+     <message name="IDS_READING_MODE_FONT_LOADING_STRING" desc="Text added to a font name in the Reading Mode font dropdown when the font style hasn't loaded yet.">
          (loading)
       </message>
 
