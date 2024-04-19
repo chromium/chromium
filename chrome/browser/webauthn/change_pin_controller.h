@@ -25,10 +25,10 @@ class ChangePinController {
 
   // Checks whether changing PIN flow is available. Changing the PIN is only
   // possible when the `EnclaveManager` is ready and has a wrapped PIN.
-  virtual bool IsChangePinFlowAvailable();
+  virtual bool IsChangePinFlowAvailable() = 0;
 
   // Starts the change PIN flow. The callback is run once the flow is completed.
-  virtual void StartChangePin(SuccessCallback callback);
+  virtual void StartChangePin(SuccessCallback callback) = 0;
 
   static void set_instance_for_testing(ChangePinController* controller) {
     instance_for_testing_ = controller;

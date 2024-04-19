@@ -24,12 +24,6 @@ ChangePinController* ChangePinController::instance_for_testing_ = nullptr;
 
 ChangePinController::~ChangePinController() = default;
 
-bool ChangePinController::IsChangePinFlowAvailable() {
-  return false;
-}
-
-void ChangePinController::StartChangePin(SuccessCallback callback) {}
-
 // static
 ChangePinController* ChangePinController::ForWebContents(
     content::WebContents* web_contents) {
