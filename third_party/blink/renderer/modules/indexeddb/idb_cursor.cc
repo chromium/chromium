@@ -61,7 +61,7 @@ namespace {
 
 using CursorSet = HeapHashSet<WeakMember<IDBCursor>>;
 
-CursorSet& GetInstanceForCurrentThread() {
+CursorSet& GetGlobalCursorSet() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CursorSet>>,
                                   thread_specific_instance, ());
   if (!*thread_specific_instance) {
@@ -71,7 +71,7 @@ CursorSet& GetInstanceForCurrentThread() {
 }
 
 void RegisterCursor(IDBCursor* cursor) {
-  CursorSet& cursor_set = GetInstanceForCurrentThread();
+  CursorSet& cursor_set = GetGlobalCursorSet();
   CHECK(!cursor_set.Contains(cursor));
   cursor_set.insert(cursor);
 }
@@ -340,6 +340,7 @@ void IDBCursor::Close() {
   request_.Clear();
   remote_.reset();
   ResetPrefetchCache();
+  GetGlobalCursorSet().erase(this);
 }
 
 ScriptValue IDBCursor::key(ScriptState* script_state) {
@@ -479,7 +480,7 @@ mojom::IDBCursorDirection IDBCursor::StringToDirection(
 // static
 void IDBCursor::ResetCursorPrefetchCaches(int64_t transaction_id,
                                           IDBCursor* except_cursor) {
-  CursorSet& cursor_set = GetInstanceForCurrentThread();
+  CursorSet& cursor_set = GetGlobalCursorSet();
 
   for (IDBCursor* cursor : cursor_set) {
     if (cursor != except_cursor &&
