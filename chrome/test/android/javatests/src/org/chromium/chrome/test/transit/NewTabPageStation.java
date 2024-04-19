@@ -4,16 +4,25 @@
 
 package org.chromium.chrome.test.transit;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.R;
 
 /**
  * The New Tab Page screen, with an omnibox, most visited tiles, and the Feed instead of the
  * WebContents.
  */
 public class NewTabPageStation extends PageStation {
-    /** Use {@link #newPageStationBuilder()} or the PageStation's subclass |newBuilder()|. */
+    public ViewElement SEARCH_LOGO = sharedViewElement(withId(R.id.search_provider_logo));
+    public ViewElement SEARCH_BOX = sharedViewElement(withId(R.id.search_box));
+    public ViewElement MOST_VISITED_TILES = sharedViewElement(withId(R.id.mv_tiles_container));
+
     protected NewTabPageStation(Builder<NewTabPageStation> builder) {
-        super(builder);
+        super(builder.withIncognito(false));
     }
 
     public static Builder<NewTabPageStation> newBuilder() {
@@ -23,6 +32,17 @@ public class NewTabPageStation extends PageStation {
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
+
+        boolean isTablet = mChromeTabbedActivityTestRule.getActivity().isTablet();
+
+        // TODO(crbug.com/40267786): On generic_android32_foldable these elements do not appear or
+        // appear unreliably when a keyboard is attached, which is the case for local development
+        // and in bots.
+        if (!isTablet) {
+            elements.declareView(SEARCH_LOGO);
+            elements.declareView(SEARCH_BOX);
+            elements.declareView(MOST_VISITED_TILES);
+        }
 
         elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedEnterCondition));
     }

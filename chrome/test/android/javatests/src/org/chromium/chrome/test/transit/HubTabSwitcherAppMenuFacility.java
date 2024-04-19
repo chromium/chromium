@@ -61,13 +61,12 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
     }
 
     /** Selects "New Incognito tab" from the app menu. */
-    public NewTabPageStation openNewIncognitoTab() {
+    public IncognitoNewTabPageStation openNewIncognitoTab() {
         recheckActiveConditions();
 
-        NewTabPageStation destination =
-                NewTabPageStation.newBuilder()
+        IncognitoNewTabPageStation destination =
+                IncognitoNewTabPageStation.newBuilder()
                         .withActivityTestRule(mChromeTabbedActivityTestRule)
-                        .withIncognito(true)
                         .withIsOpeningTab(true)
                         .withIsSelectingTab(true)
                         .build();
