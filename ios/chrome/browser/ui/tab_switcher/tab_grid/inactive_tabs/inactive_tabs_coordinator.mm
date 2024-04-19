@@ -346,9 +346,14 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   // No op.
 }
 
-- (void)gridViewControllerDragSessionWillBegin:
+- (void)gridViewControllerDragSessionWillBeginForTab:
     (BaseGridViewController*)gridViewController {
   // No op.
+}
+
+- (void)gridViewControllerDragSessionWillBeginForTabGroup:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
 }
 
 - (void)gridViewControllerDragSessionDidEnd:

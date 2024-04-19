@@ -57,7 +57,12 @@
   // No-op for unittests. This is only called when an item has been removed.
 }
 
-- (void)gridViewControllerDragSessionWillBegin:
+- (void)gridViewControllerDragSessionWillBeginForTab:
+    (BaseGridViewController*)gridViewController {
+  // No-op for unittests.
+}
+
+- (void)gridViewControllerDragSessionWillBeginForTabGroup:
     (BaseGridViewController*)gridViewController {
   // No-op for unittests.
 }

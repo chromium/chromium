@@ -160,7 +160,12 @@
   // No-op.
 }
 
-- (void)gridViewControllerDragSessionWillBegin:
+- (void)gridViewControllerDragSessionWillBeginForTab:
+    (BaseGridViewController*)gridViewController {
+  // No-op.
+}
+
+- (void)gridViewControllerDragSessionWillBeginForTabGroup:
     (BaseGridViewController*)gridViewController {
   // No-op.
 }

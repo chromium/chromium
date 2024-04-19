@@ -815,26 +815,29 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
+  self.dragEndAtNewIndex = NO;
+  self.localDragActionInProgress = YES;
+
   switch (_draggedItemIdentifier.type) {
-    case GridItemType::Tab:
+    case GridItemType::Tab: {
       [self.dragDropHandler
           dragWillBeginForTabSwitcherItem:_draggedItemIdentifier
                                               .tabSwitcherItem];
       base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent,
                                     DragDropItem::kDragBegin);
+      [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
       break;
-    case GridItemType::Group:
+    }
+    case GridItemType::Group: {
       base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent,
                                     DragDropItem::kDragBegin);
+      [self.delegate gridViewControllerDragSessionWillBeginForTabGroup:self];
       break;
+    }
     case GridItemType::SuggestedActions:
       NOTREACHED();
       break;
   }
-  self.dragEndAtNewIndex = NO;
-  self.localDragActionInProgress = YES;
-
-  [self.delegate gridViewControllerDragSessionWillBegin:self];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -1041,8 +1044,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidEnter:(id<UIDropSession>)session {
   if (IsPinnedTabsEnabled()) {
+    if (_draggedItemIdentifier &&
+        _draggedItemIdentifier.type == GridItemType::Group) {
+      // Don't notify the delegate if the dragged item is a local tab group.
+      return;
+    }
     // Notify the delegate that a drag cames from another app.
-    [self.delegate gridViewControllerDragSessionWillBegin:self];
+    [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
   }
 }
 

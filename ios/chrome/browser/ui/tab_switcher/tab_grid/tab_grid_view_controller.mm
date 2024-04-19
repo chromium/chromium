@@ -1559,6 +1559,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.swipeToIncognitoIPH startAnimation];
 }
 
+// Called when a drag will begin.
+- (void)dragSessionWillBegin {
+  self.dragSessionInProgress = YES;
+  [self.mutator dragAndDropSessionStarted];
+
+  // Actions on both bars should be disabled during dragging.
+  self.topToolbar.pageControl.userInteractionEnabled = NO;
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
@@ -1918,16 +1927,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setCurrentIdlePageStatus:NO];
 }
 
-- (void)gridViewControllerDragSessionWillBegin:
+- (void)gridViewControllerDragSessionWillBeginForTab:
     (BaseGridViewController*)gridViewController {
-  self.dragSessionInProgress = YES;
-  [self.mutator dragAndDropSessionStarted];
-
-  // Actions on both bars should be disabled during dragging.
-  self.topToolbar.pageControl.userInteractionEnabled = NO;
+  [self dragSessionWillBegin];
   if (IsPinnedTabsEnabled()) {
     [self.pinnedTabsViewController dragSessionEnabled:YES];
   }
+}
+
+- (void)gridViewControllerDragSessionWillBeginForTabGroup:
+    (BaseGridViewController*)gridViewController {
+  [self dragSessionWillBegin];
 }
 
 - (void)gridViewControllerDragSessionDidEnd:
