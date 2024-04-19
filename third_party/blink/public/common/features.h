@@ -31,12 +31,6 @@ namespace features {
 // `RuntimeEnabledFeatures)`, they should still be ordered in this section based
 // on the identifier name of the generated feature.
 
-// Enables passing of mailbox backed Accelerated bitmap images to be passed
-// cross-process as mailbox references instead of serialized bitmaps in
-// shared memory.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAcceleratedStaticBitmapImageSerialization);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionReportingWithMacroApi);
 
 // Controls the capturing of the Ad-Auction-Signals header, and the maximum

@@ -31,10 +31,6 @@ namespace features {
 // `RuntimeEnabledFeatures)`, they should still be ordered in this section based
 // on the identifier name of the generated feature.
 
-BASE_FEATURE(kAcceleratedStaticBitmapImageSerialization,
-             "AcceleratedStaticBitmapImageSerialization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable the Protected Audience's reporting with ad macro API.
 BASE_FEATURE(kAdAuctionReportingWithMacroApi,
              "AdAuctionReportingWithMacroApi",
