@@ -335,11 +335,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, MAYBE_PointerLockEventRouting) {
   EXPECT_EQ(true, EvalJs(root,
                          "(async ()=> {return await "
                          "mouseMoveExecuted.then(()=>true);})();"));
-  if (base::FeatureList::IsEnabled(features::kConsolidatedMovementXY))
-    EXPECT_EQ("[6,7,0,0]", EvalJs(root, "JSON.stringify([x,y,mX,mY])"));
-  else
-    EXPECT_EQ("[6,7,8,9]", EvalJs(root, "JSON.stringify([x,y,mX,mY])"));
-
+  EXPECT_EQ("[6,7,0,0]", EvalJs(root, "JSON.stringify([x,y,mX,mY])"));
   EXPECT_EQ(true, PointerLockHelper::RequestPointerLockOnBody(root));
   // Root frame should have been granted pointer lock.
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(root));
@@ -355,10 +351,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, MAYBE_PointerLockEventRouting) {
                          "(async ()=> {return await "
                          "mouseMoveExecuted.then(()=>true);})();"));
   // Locked event has same coordinates as before locked.
-  if (base::FeatureList::IsEnabled(features::kConsolidatedMovementXY))
-    EXPECT_EQ("[6,7,4,5]", EvalJs(root, "JSON.stringify([x,y,mX,mY])"));
-  else
-    EXPECT_EQ("[6,7,12,13]", EvalJs(root, "JSON.stringify([x,y,mX,mY])"));
+  EXPECT_EQ("[6,7,4,5]", EvalJs(root, "JSON.stringify([x,y,mX,mY])"));
 
   EXPECT_EQ(true, PointerLockHelper::ExitPointerLock(root));
 
@@ -389,10 +382,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, MAYBE_PointerLockEventRouting) {
                          "(async ()=> {return await "
                          "mouseMoveExecuted.then(()=>true);})()"));
   // This is the first event to child render, so the coordinates is (0, 0)
-  if (base::FeatureList::IsEnabled(features::kConsolidatedMovementXY))
-    EXPECT_EQ("[0,0,0,0]", EvalJs(child, "JSON.stringify([x,y,mX,mY])"));
-  else
-    EXPECT_EQ("[0,0,16,17]", EvalJs(child, "JSON.stringify([x,y,mX,mY])"));
+  EXPECT_EQ("[0,0,0,0]", EvalJs(child, "JSON.stringify([x,y,mX,mY])"));
 }
 
 // Tests that the browser will not unlock the pointer if a RenderWidgetHostView
@@ -573,10 +563,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
   MainThreadFrameObserver root_observer(root_view->GetRenderWidgetHost());
   root_observer.Wait();
 
-  if (base::FeatureList::IsEnabled(features::kConsolidatedMovementXY))
-    EXPECT_EQ("[6,7,0,0]", EvalJs(root, "JSON.stringify([x,y,mX,mY])"));
-  else
-    EXPECT_EQ("[6,7,8,9]", EvalJs(root, "JSON.stringify([x,y,mX,mY])"));
+  EXPECT_EQ("[6,7,0,0]", EvalJs(root, "JSON.stringify([x,y,mX,mY])"));
 
   EXPECT_EQ(true, PointerLockHelper::RequestPointerLockOnBody(root));
 

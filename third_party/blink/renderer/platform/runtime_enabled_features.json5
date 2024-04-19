@@ -680,11 +680,6 @@
       status: "stable",
     },
     {
-      name: "ConsolidatedMovementXY",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "ContactsManager",
       status:  {"Android": "stable", "default": "test"},
     },

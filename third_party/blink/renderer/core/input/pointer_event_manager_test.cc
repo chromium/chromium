@@ -338,8 +338,8 @@ TEST_F(PointerEventManagerTest, PointerEventCoordinates) {
   ASSERT_EQ(callback->last_screen_y_, 50);
   ASSERT_EQ(callback->last_width_, 8);
   ASSERT_EQ(callback->last_height_, 12);
-  ASSERT_EQ(callback->last_movement_x_, 10);
-  ASSERT_EQ(callback->last_movement_y_, 10);
+  ASSERT_EQ(callback->last_movement_x_, 0);
+  ASSERT_EQ(callback->last_movement_y_, 0);
 }
 
 TEST_F(PointerEventManagerTest, PointerEventMovements) {
@@ -355,9 +355,6 @@ TEST_F(PointerEventManagerTest, PointerEventMovements) {
                                          callback);
 
   {
-    // Turn on the flag for test.
-    ScopedConsolidatedMovementXYForTest scoped_feature(true);
-
     WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
         CreateTestPointerEvent(WebInputEvent::Type::kPointerMove,
                                WebPointerProperties::PointerType::kMouse,
@@ -395,22 +392,6 @@ TEST_F(PointerEventManagerTest, PointerEventMovements) {
     ASSERT_FLOAT_EQ(callback->last_movement_x_, -19);
     ASSERT_FLOAT_EQ(callback->last_movement_y_, 3);
   }
-
-  {
-    // When flag is off, movementX/Y follows the value in WebPointerProperties.
-    ScopedConsolidatedMovementXYForTest scoped_feature(false);
-
-    WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
-        CreateTestPointerEvent(WebInputEvent::Type::kPointerMove,
-                               WebPointerProperties::PointerType::kMouse,
-                               gfx::PointF(150, 210), gfx::PointF(100, 16.25),
-                               1024, -8765),
-        {}, {}, ui::LatencyInfo()));
-    ASSERT_EQ(callback->last_screen_x_, 100);
-    ASSERT_EQ(callback->last_screen_y_, 16.25);
-    ASSERT_EQ(callback->last_movement_x_, 1024);
-    ASSERT_EQ(callback->last_movement_y_, -8765);
-  }
 }
 
 // Test that we are not losing fractions when truncating movements.
@@ -425,9 +406,6 @@ TEST_F(PointerEventManagerTest, PointerEventSmallFractionMovements) {
       PointerEventCoordinateListenerCallback::Create();
   GetDocument().body()->addEventListener(event_type_names::kPointermove,
                                          callback);
-
-  // Turn on the flag for test.
-  ScopedConsolidatedMovementXYForTest scoped_feature(true);
 
   std::unique_ptr<WebPointerEvent> pointer_event = CreateTestPointerEvent(
       WebInputEvent::Type::kPointerMove,
@@ -471,9 +449,6 @@ TEST_F(PointerEventManagerTest, PointerRawUpdateMovements) {
                                          callback);
   GetDocument().body()->addEventListener(event_type_names::kPointerrawupdate,
                                          callback);
-
-  // Turn on the flag for test.
-  ScopedConsolidatedMovementXYForTest scoped_feature(true);
 
   WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
       CreateTestPointerEvent(WebInputEvent::Type::kPointerRawUpdate,
@@ -525,8 +500,6 @@ TEST_F(PointerEventManagerTest, PointerRawUpdateMovements) {
 }
 
 TEST_F(PointerEventManagerTest, PointerRawUpdateWithRelativeMotionEvent) {
-  ScopedConsolidatedMovementXYForTest scoped_feature(true);
-
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

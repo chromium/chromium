@@ -87,8 +87,7 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
 
   MouseEvent::SetCoordinatesFromWebPointerProperties(
       web_pointer_event_in_root_frame, dom_window, pointer_event_init);
-  if (RuntimeEnabledFeatures::ConsolidatedMovementXYEnabled() &&
-      !web_pointer_event.is_raw_movement_event &&
+  if (!web_pointer_event.is_raw_movement_event &&
       (web_pointer_event.GetType() == WebInputEvent::Type::kPointerMove ||
        web_pointer_event.GetType() == WebInputEvent::Type::kPointerRawUpdate)) {
     float device_scale_factor = 1;

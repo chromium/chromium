@@ -951,8 +951,7 @@ void ExtractUnderlines(NSAttributedString* string,
   WebMouseEvent event = WebMouseEventBuilder::Build(
       theEvent, self, _pointerType, unacceleratedMovement);
 
-  if (_mouseLocked &&
-      base::FeatureList::IsEnabled(features::kConsolidatedMovementXY)) {
+  if (_mouseLocked) {
     // When mouse is locked, we keep increasing |_lastMouseScreenPosition|
     // by movement_x/y so that we can still use PositionInScreen to calculate
     // movements in blink. We need to keep |_lastMouseScreenPosition| from

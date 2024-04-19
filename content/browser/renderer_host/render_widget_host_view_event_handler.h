@@ -302,8 +302,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   // events vs. normal mouse move events.
   std::optional<gfx::Point> synthetic_move_position_;
 
-  bool enable_consolidated_movement_;
-
   // Whether a swipe-to-move-cursor gesture is activated.
   bool swipe_to_move_cursor_activated_ = false;
 

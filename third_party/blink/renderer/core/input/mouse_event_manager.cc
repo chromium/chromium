@@ -55,8 +55,7 @@ void UpdateMouseMovementXY(const WebMouseEvent& mouse_event,
                            const gfx::PointF* last_position,
                            LocalDOMWindow* dom_window,
                            MouseEventInit* initializer) {
-  if (RuntimeEnabledFeatures::ConsolidatedMovementXYEnabled() &&
-      !mouse_event.is_raw_movement_event &&
+  if (!mouse_event.is_raw_movement_event &&
       mouse_event.GetType() == WebInputEvent::Type::kMouseMove &&
       last_position) {
     // movementX/Y is type int for now, so we need to truncated the coordinates

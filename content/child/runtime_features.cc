@@ -205,8 +205,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kBrowserVerifiedUserActivationMouse)},
           {wf::EnableCompositeBGColorAnimation,
            raw_ref(features::kCompositeBGColorAnimation)},
-          {wf::EnableConsolidatedMovementXY,
-           raw_ref(features::kConsolidatedMovementXY)},
           {wf::EnableCooperativeScheduling,
            raw_ref(features::kCooperativeScheduling)},
           {wf::EnableDigitalGoods, raw_ref(features::kDigitalGoodsApi),

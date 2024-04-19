@@ -93,11 +93,6 @@ BASE_FEATURE(kCodeCacheDeletionWithoutFilter,
              "CodeCacheDeletionWithoutFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, event.movement is calculated in blink instead of in browser.
-BASE_FEATURE(kConsolidatedMovementXY,
-             "ConsolidatedMovementXY",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables support for the `Critical-CH` response header.
 // https://github.com/WICG/client-hints-infrastructure/blob/master/reliability.md#critical-ch
 BASE_FEATURE(kCriticalClientHint,

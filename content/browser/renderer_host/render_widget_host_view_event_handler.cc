@@ -115,8 +115,6 @@ RenderWidgetHostViewEventHandler::RenderWidgetHostViewEventHandler(
     RenderWidgetHostViewBase* host_view,
     Delegate* delegate)
     : pinch_zoom_enabled_(content::IsPinchToZoomEnabled()),
-      enable_consolidated_movement_(
-          base::FeatureList::IsEnabled(features::kConsolidatedMovementXY)),
       host_(host),
       host_view_(host_view),
       delegate_(delegate),
@@ -208,7 +206,6 @@ void RenderWidgetHostViewEventHandler::UnlockPointer() {
   // after the cursor is moved ends up getting a large movement delta which is
   // not what sites expect. The delta is computed in the
   // ModifyEventMovementAndCoords function.
-  global_mouse_position_ = unlocked_global_mouse_position_;
   window_->MoveCursorTo(gfx::ToFlooredPoint(unlocked_mouse_position_));
   synthetic_move_position_ =
       gfx::ToFlooredPoint(unlocked_global_mouse_position_);
@@ -747,37 +744,28 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
 
     blink::WebMouseEvent mouse_event = ui::MakeWebMouseEvent(*event);
 
-    bool should_not_forward = MatchesSynthesizedMovePosition(mouse_event);
-
     ModifyEventMovementAndCoords(*event, &mouse_event);
 
-    if (!enable_consolidated_movement_ && should_not_forward) {
-      synthetic_move_position_.reset();
-    } else {
-      bool is_selection_popup = NeedsInputGrab(popup_child_host_view_);
-      // Forward event to renderer.
-      if (CanRendererHandleEvent(event, mouse_locked_, is_selection_popup) &&
-          !(event->flags() & ui::EF_FROM_TOUCH)) {
-        if (ShouldRouteEvents()) {
-          host_->delegate()->GetInputEventRouter()->RouteMouseEvent(
-              host_view_, &mouse_event, *event->latency());
-        } else {
-          ProcessMouseEvent(mouse_event, *event->latency());
-        }
-        // Ensure that we get keyboard focus on mouse down as a plugin window
-        // may have grabbed keyboard focus.
-        if (event->type() == ui::ET_MOUSE_PRESSED)
-          SetKeyboardFocus();
+    bool is_selection_popup = NeedsInputGrab(popup_child_host_view_);
+    // Forward event to renderer.
+    if (CanRendererHandleEvent(event, mouse_locked_, is_selection_popup) &&
+        !(event->flags() & ui::EF_FROM_TOUCH)) {
+      if (ShouldRouteEvents()) {
+        host_->delegate()->GetInputEventRouter()->RouteMouseEvent(
+            host_view_, &mouse_event, *event->latency());
+      } else {
+        ProcessMouseEvent(mouse_event, *event->latency());
       }
+      // Ensure that we get keyboard focus on mouse down as a plugin window
+      // may have grabbed keyboard focus.
+      if (event->type() == ui::ET_MOUSE_PRESSED) {
+        SetKeyboardFocus();
+      }
+    }
 
-      // Check if the mouse has reached the border and needs to be centered.
-      // Use event position if consolidated_movement_ is enabled, otherwise use
-      // stored global_mouse_position_.
-      if (ShouldMoveToCenter(enable_consolidated_movement_
-                                 ? gfx::PointF(mouse_event.PositionInScreen())
-                                 : global_mouse_position_)) {
-        MoveCursorToCenter(event);
-      }
+    // Check if the mouse has reached the border and needs to be centered.
+    if (ShouldMoveToCenter(gfx::PointF(mouse_event.PositionInScreen()))) {
+      MoveCursorToCenter(event);
     }
   }
   if (!ShouldGenerateAppCommand(event))
@@ -787,40 +775,11 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
 void RenderWidgetHostViewEventHandler::ModifyEventMovementAndCoords(
     const ui::MouseEvent& ui_mouse_event,
     blink::WebMouseEvent* event) {
-  if (!enable_consolidated_movement_) {
-    // If the mouse has just entered, we must report zero movementX/Y. Hence we
-    // reset any global_mouse_position set previously.
-    if (ui_mouse_event.type() == ui::ET_MOUSE_ENTERED ||
-        ui_mouse_event.type() == ui::ET_MOUSE_EXITED) {
-      global_mouse_position_ = event->PositionInScreen();
-    }
-
-    // Movement is computed by taking the difference of the new cursor position
-    // and the previous. Under mouse lock the cursor will be warped back to the
-    // center so that we are not limited by clipping boundaries.
-    // We do not measure movement as the delta from cursor to center because
-    // we may receive more mouse movement events before our warp has taken
-    // effect.
-    // TODO(crbug.com/802067): We store event coordinates as pointF but
-    // movement_x/y are integer. In order not to lose fractional part, we need
-    // to keep the movement calculation as "floor(cur_pos) - floor(last_pos)".
-    // Remove the floor here when movement_x/y is changed to double.
-    if (!(ui_mouse_event.flags() & ui::EF_UNADJUSTED_MOUSE)) {
-      event->movement_x = base::ClampFloor(event->PositionInScreen().x()) -
-                          base::ClampFloor(global_mouse_position_.x());
-      event->movement_y = base::ClampFloor(event->PositionInScreen().y()) -
-                          base::ClampFloor(global_mouse_position_.y());
-    }
-
-    global_mouse_position_ = event->PositionInScreen();
-  }
-
   // This logic is similar to |is_move_to_center_event| check when
   // consolidated_movement disabled. We can not guarantee that |MoveCursorTo|
   // is taking effect immediately, so wait for the event that has matching
-  // coordiantes to marked as synthesized event.
-  if (enable_consolidated_movement_ && mouse_locked_ &&
-      MatchesSynthesizedMovePosition(*event)) {
+  // coordinates to marked as synthesized event.
+  if (mouse_locked_ && MatchesSynthesizedMovePosition(*event)) {
     event->SetModifiers(event->GetModifiers() |
                         blink::WebInputEvent::Modifiers::kRelativeMotionEvent);
     synthetic_move_position_.reset();
@@ -829,14 +788,7 @@ void RenderWidgetHostViewEventHandler::ModifyEventMovementAndCoords(
 
   // Under mouse lock, coordinates of mouse are locked to what they were when
   // mouse lock was entered.
-  if (mouse_locked_) {
-    if (!enable_consolidated_movement_) {
-      event->SetPositionInWidget(unlocked_mouse_position_.x(),
-                                 unlocked_mouse_position_.y());
-      event->SetPositionInScreen(unlocked_global_mouse_position_.x(),
-                                 unlocked_global_mouse_position_.y());
-    }
-  } else {
+  if (!mouse_locked_) {
     unlocked_mouse_position_ = event->PositionInWidget();
     unlocked_global_mouse_position_ = event->PositionInScreen();
   }
@@ -850,12 +802,11 @@ void RenderWidgetHostViewEventHandler::MoveCursorToCenter(
   gfx::Point center_in_screen(window_->GetBoundsInScreen().CenterPoint());
   window_->MoveCursorTo(center);
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/781182): Set the global position when move cursor to center.
-  // This is a workaround for a bug from Windows update 16299, and should be
-  // remove once the bug is fixed in OS. When consolidate_movement_ flag is
-  // enabled, send a synthesized event to update the blink side states.
+  // TODO(crbug.com/781182): This is a workaround for a bug from Windows
+  // update 16299, and should be remove once the bug is fixed in OS. Send a
+  // synthesized event to update the blink side states.
   global_mouse_position_ = gfx::PointF(center_in_screen);
-  if (enable_consolidated_movement_ && event) {
+  if (event) {
     blink::WebMouseEvent mouse_event = ui::MakeWebMouseEvent(*event);
     mouse_event.SetType(blink::WebMouseEvent::Type::kMouseMove);
     mouse_event.SetModifiers(
