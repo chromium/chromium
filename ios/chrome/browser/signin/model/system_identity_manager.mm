@@ -84,20 +84,3 @@ void SystemIdentityManager::FireIdentityAccessTokenRefreshFailed(
     observer.OnIdentityAccessTokenRefreshFailed(identity, error);
   }
 }
-
-// Temporary implementation so that we can modify ios_internal. It will be
-// deleted in the next CL.
-bool SystemIdentityManager::HandleMDMNotification(
-    id<SystemIdentity> identity,
-    id<RefreshAccessTokenError> error,
-    HandleMDMCallback callback) {
-  return HandleMDMNotification(identity, error, true, std::move(callback));
-}
-
-bool SystemIdentityManager::HandleMDMNotification(
-    id<SystemIdentity> identity,
-    id<RefreshAccessTokenError> error,
-    bool display,
-    HandleMDMCallback callback) {
-  return HandleMDMNotification(identity, error, std::move(callback));
-}
