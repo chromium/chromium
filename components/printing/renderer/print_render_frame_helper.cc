@@ -572,6 +572,7 @@ mojom::PrintScalingOption GetPrintScalingOption(
     }
     if (scaling_type == FIT_TO_PAPER)
       return mojom::PrintScalingOption::kFitToPaper;
+    return mojom::PrintScalingOption::kFitToPrintableArea;
   }
   return mojom::PrintScalingOption::kCenterShrinkToFitPaper;
 }
