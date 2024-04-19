@@ -1247,7 +1247,9 @@ Element* Element::anchorElement() const {
 void Element::setAnchorElement(Element* new_element) {
   CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
   SetElementAttribute(html_names::kAnchorAttr, new_element);
-  EnsureAnchorElementObserver().Notify();
+  if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
+    EnsureAnchorElementObserver().Notify();
+  }
 }
 
 inline void Element::SynchronizeAttribute(const QualifiedName& name) const {
@@ -9964,6 +9966,7 @@ Element* Element::ImplicitAnchorElement() const {
   }
   if (const HTMLElement* html_element = DynamicTo<HTMLElement>(this)) {
     if (Element* anchor = html_element->anchorElement()) {
+      DCHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
       return anchor;
     }
     if (Element* select_list = html_element->popoverOwnerSelectListElement()) {
