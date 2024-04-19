@@ -81,18 +81,9 @@ void PerformTouchpadPinch(WebContents* web_contents,
 
 }  // namespace
 
-class TouchpadPinchBrowserTest : public ContentBrowserTest,
-                                 public testing::WithParamInterface<bool> {
+class TouchpadPinchBrowserTest : public ContentBrowserTest {
  public:
-  TouchpadPinchBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kTouchpadAsyncPinchEvents);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kTouchpadAsyncPinchEvents);
-    }
-  }
+  TouchpadPinchBrowserTest() = default;
 
   TouchpadPinchBrowserTest(const TouchpadPinchBrowserTest&) = delete;
   TouchpadPinchBrowserTest& operator=(const TouchpadPinchBrowserTest&) = delete;
@@ -129,10 +120,8 @@ class TouchpadPinchBrowserTest : public ContentBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, TouchpadPinchBrowserTest, testing::Bool());
-
 // Performing a touchpad pinch gesture should change the page scale.
-IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest,
+IN_PROC_BROWSER_TEST_F(TouchpadPinchBrowserTest,
                        TouchpadPinchChangesPageScale) {
   LoadURL();
 
@@ -148,7 +137,7 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest,
 
 // We should offer synthetic wheel events to the page when a touchpad pinch
 // is performed.
-IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest, WheelListenerAllowingPinch) {
+IN_PROC_BROWSER_TEST_F(TouchpadPinchBrowserTest, WheelListenerAllowingPinch) {
   LoadURL();
   ASSERT_TRUE(ExecJs(shell()->web_contents(), "setListener(false);"));
   SynchronizeCompositorAndMainThreads();
@@ -204,7 +193,7 @@ void TouchpadPinchBrowserTest::EnsureNoScaleChangeWhenCanceled(
 
 // If the synthetic wheel event for a touchpad pinch is canceled, we should not
 // change the page scale.
-IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest, WheelListenerPreventingPinch) {
+IN_PROC_BROWSER_TEST_F(TouchpadPinchBrowserTest, WheelListenerPreventingPinch) {
   LoadURL();
 
   EnsureNoScaleChangeWhenCanceled(
@@ -215,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest, WheelListenerPreventingPinch) {
 
 // If the synthetic wheel event for a touchpad double tap is canceled, we
 // should not change the page scale.
-IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest,
+IN_PROC_BROWSER_TEST_F(TouchpadPinchBrowserTest,
                        WheelListenerPreventingDoubleTap) {
   LoadURL();
 

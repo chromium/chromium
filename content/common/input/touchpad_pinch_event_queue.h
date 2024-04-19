@@ -70,7 +70,6 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
 
   void TryForwardNextEventToRenderer();
 
-  const bool touchpad_async_pinch_events_;
   raw_ptr<TouchpadPinchEventQueueClient> client_;
 
   base::circular_deque<std::unique_ptr<QueuedTouchpadPinchEvent>> pinch_queue_;

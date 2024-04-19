@@ -503,14 +503,6 @@ const base::FeatureParam<base::TimeDelta> kTextInputClientIPCTimeout{
     &kTextInputClient, "ipc_timeout", base::Milliseconds(1500)};
 #endif
 
-// Enables async touchpad pinch zoom events. We check the ACK of the first
-// synthetic wheel event in a pinch sequence, then send the rest of the
-// synthetic wheel events of the pinch sequence as non-blocking if the first
-// event’s ACK is not canceled.
-BASE_FEATURE(kTouchpadAsyncPinchEvents,
-             "TouchpadAsyncPinchEvents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows swipe left/right from touchpad change browser navigation. Currently
 // only enabled by default on CrOS, LaCrOS and Windows.
 BASE_FEATURE(kTouchpadOverscrollHistoryNavigation,

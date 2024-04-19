@@ -18,7 +18,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/input/touch_action.h"
@@ -28,7 +27,6 @@
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/browser/site_instance_group.h"
 #include "content/common/content_constants_internal.h"
-#include "content/common/features.h"
 #include "content/common/input/gesture_event_queue.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1910,39 +1908,8 @@ TEST_F(InputRouterImplTest, DoubleTapGestureDependsOnFirstTap) {
   EXPECT_EQ(0, client_->in_flight_event_count());
 }
 
-class TouchpadPinchInputRouterImplTest
-    : public InputRouterImplTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  TouchpadPinchInputRouterImplTest() : async_events_enabled_(GetParam()) {
-    if (async_events_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kTouchpadAsyncPinchEvents);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kTouchpadAsyncPinchEvents);
-    }
-  }
-
-  TouchpadPinchInputRouterImplTest(const TouchpadPinchInputRouterImplTest&) =
-      delete;
-  TouchpadPinchInputRouterImplTest& operator=(
-      const TouchpadPinchInputRouterImplTest&) = delete;
-
-  ~TouchpadPinchInputRouterImplTest() = default;
-
-  const bool async_events_enabled_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TouchpadPinchInputRouterImplTest,
-                         ::testing::Bool());
-
 // Test that GesturePinchUpdate is handled specially for trackpad
-TEST_P(TouchpadPinchInputRouterImplTest, TouchpadPinchUpdate) {
+TEST_F(InputRouterImplTest, TouchpadPinchUpdate) {
   // GesturePinchUpdate for trackpad sends synthetic wheel events.
   // Note that the Touchscreen case is verified as NOT doing this as
   // part of the ShowPressIsInOrder test.
@@ -1999,33 +1966,17 @@ TEST_P(TouchpadPinchInputRouterImplTest, TouchpadPinchUpdate) {
   ASSERT_EQ(WebInputEvent::Type::kMouseWheel, input_event->GetType());
   synthetic_wheel = static_cast<const WebMouseWheelEvent*>(input_event);
   EXPECT_EQ(blink::WebMouseWheelEvent::kPhaseChanged, synthetic_wheel->phase);
-  if (async_events_enabled_) {
-    EXPECT_EQ(blink::WebInputEvent::DispatchType::kEventNonBlocking,
-              synthetic_wheel->dispatch_type);
-  } else {
-    EXPECT_EQ(blink::WebInputEvent::DispatchType::kBlocking,
-              synthetic_wheel->dispatch_type);
-  }
-
-  if (async_events_enabled_) {
-    dispatched_messages[0]->ToEvent()->CallCallback(
-        blink::mojom::InputEventResultState::kIgnored);
-  } else {
-    dispatched_messages[0]->ToEvent()->CallCallback(
-        blink::mojom::InputEventResultState::kNotConsumed);
-  }
+  EXPECT_EQ(blink::WebInputEvent::DispatchType::kEventNonBlocking,
+            synthetic_wheel->dispatch_type);
+  dispatched_messages[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kIgnored);
 
   // Check that the correct HANDLED pinch event was received.
   EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
   EXPECT_EQ(WebInputEvent::Type::kGesturePinchUpdate,
             disposition_handler_->ack_event_type());
-  if (async_events_enabled_) {
-    EXPECT_EQ(blink::mojom::InputEventResultState::kIgnored,
-              disposition_handler_->ack_state());
-  } else {
-    EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
-              disposition_handler_->ack_state());
-  }
+  EXPECT_EQ(blink::mojom::InputEventResultState::kIgnored,
+            disposition_handler_->ack_state());
   EXPECT_FLOAT_EQ(
       0.3f,
       disposition_handler_->acked_gesture_event().data.pinch_update.scale);

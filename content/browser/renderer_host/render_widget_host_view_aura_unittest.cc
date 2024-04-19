@@ -5479,29 +5479,9 @@ TEST_F(RenderWidgetHostViewAuraTest, LegacyRenderWidgetHostHWNDAuraLookup) {
 }
 #endif
 
-class TouchpadRenderWidgetHostViewAuraTest
-    : public base::test::WithFeatureOverride,
-      public RenderWidgetHostViewAuraTest {
- public:
-  TouchpadRenderWidgetHostViewAuraTest()
-      : WithFeatureOverride(features::kTouchpadAsyncPinchEvents) {}
-
-  TouchpadRenderWidgetHostViewAuraTest(
-      const TouchpadRenderWidgetHostViewAuraTest&) = delete;
-  TouchpadRenderWidgetHostViewAuraTest& operator=(
-      const TouchpadRenderWidgetHostViewAuraTest&) = delete;
-
-  ~TouchpadRenderWidgetHostViewAuraTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(TouchpadRenderWidgetHostViewAuraTest);
-
 // Test that we elide touchpad pinch gesture steams consisting of only begin
 // and end events.
-TEST_P(TouchpadRenderWidgetHostViewAuraTest, ElideEmptyTouchpadPinchSequence) {
+TEST_F(RenderWidgetHostViewAuraTest, ElideEmptyTouchpadPinchSequence) {
   ui::GestureEventDetails begin_details(ui::ET_GESTURE_PINCH_BEGIN);
   begin_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
   ui::GestureEvent begin_event(0, 0, 0, ui::EventTimeForNow(), begin_details);

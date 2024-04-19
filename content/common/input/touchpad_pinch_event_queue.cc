@@ -94,9 +94,7 @@ class QueuedTouchpadPinchEvent : public GestureEventWithLatencyInfo {
 
 TouchpadPinchEventQueue::TouchpadPinchEventQueue(
     TouchpadPinchEventQueueClient* client)
-    : touchpad_async_pinch_events_(
-          base::FeatureList::IsEnabled(features::kTouchpadAsyncPinchEvents)),
-      client_(client) {
+    : client_(client) {
   DCHECK(client_);
 }
 
@@ -193,8 +191,7 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
       cancelable = true;
     } else {
       phase = blink::WebMouseWheelEvent::kPhaseChanged;
-      cancelable =
-          !touchpad_async_pinch_events_ || first_event_prevented_.value();
+      cancelable = first_event_prevented_.value();
     }
   }
 

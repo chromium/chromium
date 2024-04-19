@@ -116,7 +116,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kTextInputClient);
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kTextInputClientIPCTimeout;
 #endif
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadAsyncPinchEvents);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadOverscrollHistoryNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTrustedTypesFromLiteral);
 #if BUILDFLAG(IS_ANDROID)
