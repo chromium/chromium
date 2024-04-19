@@ -4309,27 +4309,27 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SurfaceDamageSameFrameSinkId) {
   auto aggregated_frame = AggregateFrame(root_surface_id_);
 
   // |id1| is before the fallback id so it shouldn't damage the display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id1)));
 
   // |id2| is the fallback id so it should damage the display.
-  EXPECT_TRUE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_TRUE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id2)));
 
   // |id3| is between fallback and primary so it should damage the display.
-  EXPECT_TRUE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_TRUE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id3)));
 
   // |id4| is the primary id so it should damage the display.
-  EXPECT_TRUE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_TRUE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id4)));
 
   // |id5| is newer than the primary surface so it shouldn't damage display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id5)));
 
   // This FrameSinkId is not embedded at all so it shouldn't damage the display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId3, id3)));
 }
 
@@ -4380,24 +4380,24 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SurfaceDamageDifferentFrameSinkId) {
   auto aggregated_frame = AggregateFrame(root_surface_id_);
 
   // |id1| is before the fallback id so it shouldn't damage the display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id1)));
 
   // |id2| is the fallback id so it should damage the display.
-  EXPECT_TRUE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_TRUE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id2)));
 
   // |id3| is before the primary and fallback has a different FrameSinkId so it
   // should damage the display.
-  EXPECT_TRUE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_TRUE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId2, id3)));
 
   // |id4| is the primary id so it should damage the display.
-  EXPECT_TRUE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_TRUE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId2, id4)));
 
   // This FrameSinkId is not embedded at all so it shouldn't damage the display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId3, id4)));
 }
 
@@ -4430,19 +4430,19 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SurfaceDamagePrimarySurfaceOnly) {
   auto aggregated_frame = AggregateFrame(root_surface_id_);
 
   // |id1| is inside the range so it should damage the display.
-  EXPECT_TRUE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_TRUE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id1)));
 
   // |id2| is the primary id so it should damage the display.
-  EXPECT_TRUE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_TRUE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id2)));
 
   // |id3| is after the primary id so it shouldn't damage the display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id3)));
 
   // This FrameSinkId is not embedded at all so it shouldn't damage the display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId3, id4)));
 }
 
@@ -4490,19 +4490,19 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   auto aggregated_frame = AggregateFrame(root_surface_id_);
 
   // |id1| is before the fallback id so it shouldn't damage the display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id1)));
 
   // |id2| is the embedded id so it should damage the display.
-  EXPECT_TRUE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_TRUE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id2)));
 
   // |id3| is newer than primary id so it shouldn't damage the display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId1, id3)));
 
   // This FrameSinkId is not embedded at all so it shouldn't damage the display.
-  EXPECT_FALSE(aggregator_.NotifySurfaceDamageAndCheckForDisplayDamage(
+  EXPECT_FALSE(aggregator_.CheckForDisplayDamage(
       SurfaceId(kArbitraryFrameSinkId3, id4)));
 }
 

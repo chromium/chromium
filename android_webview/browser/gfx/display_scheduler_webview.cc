@@ -109,9 +109,13 @@ void DisplaySchedulerWebView::OnSurfaceHasNewUncommittedFrame(
   // We don't need to track damage of root frame sink as we submit frame to it
   // at DrawAndSwap and Root Renderer sink because Android View.Invalidation is
   // handled by SynchronousCompositorHost.
-  if (surface_id.frame_sink_id() != root_frame_sink_->root_frame_sink_id() &&
-      !root_frame_sink_->IsChildSurface(surface_id.frame_sink_id()) &&
-      !IsFrameSinkOverlayed(surface_id.frame_sink_id())) {
+  const bool is_root =
+      surface_id.frame_sink_id() == root_frame_sink_->root_frame_sink_id();
+  const bool is_root_renderer =
+      root_frame_sink_->IsChildSurface(surface_id.frame_sink_id());
+
+  if (!is_root && !is_root_renderer &&
+      damage_tracker_->CheckForDisplayDamage(surface_id)) {
     root_frame_sink_->OnNewUncommittedFrame(surface_id);
   }
 }

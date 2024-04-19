@@ -113,7 +113,16 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   void SetMaxRenderTargetSize(int max_size);
 
-  bool NotifySurfaceDamageAndCheckForDisplayDamage(const SurfaceId& surface_id);
+  // Checks if damage to `surface_id` potentially contributes to the display
+  // damage.
+  bool CheckForDisplayDamage(const SurfaceId& surface_id);
+
+  // When a client submits a CompositorFrame without resources it's typically
+  // done to force return of existing resources to the client. This function
+  // forces the release in this cases. Returns true if some resources were
+  // released and draw needs to happen for DisplayResourceProvider to unlock
+  // them.
+  bool ForceReleaseResourcesIfNeeded(const SurfaceId& surface_id);
 
   bool HasFrameAnnotator() const;
   void SetFrameAnnotator(std::unique_ptr<FrameAnnotator> frame_annotator);

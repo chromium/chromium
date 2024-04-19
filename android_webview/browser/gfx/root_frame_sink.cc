@@ -365,10 +365,9 @@ void RootFrameSink::OnNewUncommittedFrame(const viz::SurfaceId& surface_id) {
   if (!use_new_invalidate_heuristic_)
     return;
 
-  // If there is new uncommitted frame in visible surface, make sure we request
-  // a begin frame to check if we need to invalidate next frame.
-  if (contained_surfaces_.contains(surface_id))
-    UpdateNeedsBeginFrames(true);
+  // If there is new uncommitted frame in the surface that affects display, make
+  // sure we request a begin frame to check if we need to invalidate next frame.
+  UpdateNeedsBeginFrames(true);
 }
 
 bool RootFrameSink::IsChildSurface(const viz::FrameSinkId& frame_sink_id) {
@@ -422,6 +421,15 @@ void RootFrameSink::SubmitChildCompositorFrame(ChildFrame* child_frame) {
     child_sink_support_->support()->SetThreadIds(
         /*from_untrusted_client=*/true, child_frame->renderer_thread_ids);
   }
+
+  // Root renderer frame MUST be presented synchronously with UI, so we can't
+  // delay activation. Note, it's not part of invalidation heuristic, but for
+  // safety we update deadline only on the new path, on the old path there are
+  // almost no embedded surfaces anyway.
+  if (use_new_invalidate_heuristic_) {
+    child_frame->frame->metadata.deadline = viz::FrameDeadline::MakeZero();
+  }
+
   child_sink_support_->SubmitCompositorFrame(
       child_frame->local_surface_id, std::move(*child_frame->frame),
       std::move(child_frame->hit_test_region_list));

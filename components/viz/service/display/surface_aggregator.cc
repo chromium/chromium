@@ -2510,7 +2510,22 @@ void SurfaceAggregator::SetMaxRenderTargetSize(int max_size) {
   max_render_target_size_ = max_size;
 }
 
-bool SurfaceAggregator::NotifySurfaceDamageAndCheckForDisplayDamage(
+bool SurfaceAggregator::CheckForDisplayDamage(const SurfaceId& surface_id) {
+  auto it = damage_ranges_.find(surface_id.frame_sink_id());
+  if (it == damage_ranges_.end()) {
+    return false;
+  }
+
+  for (const SurfaceRange& surface_range : it->second) {
+    if (surface_range.IsInRangeInclusive(surface_id)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool SurfaceAggregator::ForceReleaseResourcesIfNeeded(
     const SurfaceId& surface_id) {
   auto iter = resolved_frames_.find(surface_id);
   if (iter != resolved_frames_.end()) {
@@ -2522,15 +2537,6 @@ bool SurfaceAggregator::NotifySurfaceDamageAndCheckForDisplayDamage(
       resolved_frame.ForceReleaseResource();
     }
     return true;
-  }
-
-  auto it = damage_ranges_.find(surface_id.frame_sink_id());
-  if (it == damage_ranges_.end())
-    return false;
-
-  for (const SurfaceRange& surface_range : it->second) {
-    if (surface_range.IsInRangeInclusive(surface_id))
-      return true;
   }
 
   return false;
