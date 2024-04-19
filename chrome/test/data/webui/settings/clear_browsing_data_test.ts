@@ -11,7 +11,7 @@ import {ClearBrowsingDataBrowserProxyImpl, TimePeriodExperiment, TimePeriod} fro
 import type {CrButtonElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {loadTimeData, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
@@ -112,6 +112,46 @@ function getClearBrowsingDataPrefs() {
   };
 }
 
+// TODO(crbug.com/1487530): Used by the CbdExperiment test suites below. Remove
+// once crbug.com/1487530 completed.
+async function testCbdExperimentDualWritesPref(
+    element: SettingsClearBrowsingDataDialogElement, tabIndex: number,
+    userSelectedTimeFrame: number, prefName: string, inialPrefValue: number,
+    expectedDualWrittenPrefValue: number) {
+  // Ensure the test starts with a known pref state.
+  element.setPrefValue(prefName, inialPrefValue);
+
+  // The user selects the tab of interest.
+  element.$.tabs.selected = tabIndex;
+  await element.$.tabs.updateComplete;
+
+  // Select a datatype for deletion to enable the clear button.
+  const page = element.$.pages.selectedItem as HTMLElement;
+  const cookiesCheckbox =
+      page.querySelector<SettingsCheckboxElement>('.cookies-checkbox');
+  assertTrue(!!cookiesCheckbox);
+  cookiesCheckbox.$.checkbox.click();
+  await cookiesCheckbox.$.checkbox.updateComplete;
+  const actionButton =
+      element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+  assertTrue(!!actionButton);
+  assertFalse(actionButton!.disabled);
+
+  // The user selects a time range value.
+  const dropdownMenu =
+      page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
+  assertTrue(!!dropdownMenu);
+  const selectElement = dropdownMenu.shadowRoot!.querySelector('select');
+  assertTrue(!!selectElement);
+  selectElement.value = userSelectedTimeFrame.toString();
+  selectElement.dispatchEvent(new CustomEvent('change'));
+  await waitAfterNextRender(dropdownMenu);
+
+  // The correct time range value is dual written to the other pref.
+  actionButton.click();
+  assertEquals(expectedDualWrittenPrefValue, element.getPref(prefName).value);
+}
+
 suite('ClearBrowsingDataDesktop', function() {
   let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let testSyncBrowserProxy: TestSyncBrowserProxy;
@@ -124,8 +164,10 @@ suite('ClearBrowsingDataDesktop', function() {
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // TODO(b/314968275): Add tests for when UNO Desktop is enabled.
-    loadTimeData.overrideValues(
-        {enableCbdTimeframeRequired: false, unoDesktopEnabled: false});
+    loadTimeData.overrideValues({
+      enableCbdTimeframeRequired: false,
+      unoDesktopEnabled: false,
+    });
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
@@ -322,21 +364,56 @@ suite('ClearBrowsingDataDesktop', function() {
             option.name === loadTimeData.getString('clearPeriod15Minutes')));
   });
 
-  async function testCbdExperimentDropdown(
-      testBrowserProxy: TestClearBrowsingDataBrowserProxy, tabIndex: number) {
-    // This test requires recreation of the page (ClearBrowsingDataDialog) after
-    // defining loadTimeData to apply experiment changes after enabling the
-    // feature/flag.
-    testBrowserProxy.reset();
+  async function testUnsupportedTimePeriod(tabIndex: number, prefName: string) {
+    // The user selects the tab of interest.
+    element.$.tabs.selected = tabIndex;
+    await element.$.tabs.updateComplete;
+
+    const page = element.$.pages.selectedItem as HTMLElement;
+    const dropdownMenu =
+        page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
+    assertTrue(!!dropdownMenu);
+    const selectElement = dropdownMenu.shadowRoot!.querySelector('select');
+    assertTrue(!!selectElement);
+
+    const unsupported_pref_value = 100;
+
+    element.setPrefValue(prefName, unsupported_pref_value);
+
+    await waitAfterNextRender(dropdownMenu);
+
+    // The unsupported value is replaced by the Default value.
+    assertEquals(TimePeriod.LAST_HOUR, element.getPref(prefName).value);
+    assertEquals(TimePeriod.LAST_HOUR.toString(), selectElement.value);
+  }
+
+  test('ClearBrowsingData_UnsupportedTimePeriod_Basic', function() {
+    return testUnsupportedTimePeriod(0, 'browser.clear_data.time_period_basic');
+  });
+
+  test('ClearBrowsingData_UnsupportedTimePeriod_Advanced', function() {
+    return testUnsupportedTimePeriod(1, 'browser.clear_data.time_period');
+  });
+});
+
+// TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
+suite('CbdTimeRangeExperiment_ExperimentOn', function() {
+  let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
+  let element: SettingsClearBrowsingDataDialogElement;
+
+  setup(async function() {
+    testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
+    ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({enableCbdTimeframeRequired: true});
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
     await testBrowserProxy.whenCalled('initialize');
-    assertEquals(1, testBrowserProxy.getCallCount('initialize'));
-    await flushTasks();
+    assertTrue(element.$.clearBrowsingDataDialog.open);
+  });
 
+  async function testTimeRangeDropdownRequiresSelection(tabIndex: number) {
     // The user selects the tab of interest.
     element.$.tabs.selected = tabIndex;
     await element.$.tabs.updateComplete;
@@ -393,45 +470,110 @@ suite('ClearBrowsingDataDesktop', function() {
     assertFalse(dropdownMenu.classList.contains('dropdown-error'));
   }
 
-  // TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
   test('ClearBrowsingData_CbdTimeframeRequired_Basic', function() {
-    return testCbdExperimentDropdown(testBrowserProxy, /*tabIndex*/ 0);
+    return testTimeRangeDropdownRequiresSelection(/*tabIndex*/ 0);
   });
 
-  // TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
   test('ClearBrowsingData_CbdTimeframeRequired_Advanced', function() {
-    return testCbdExperimentDropdown(testBrowserProxy, /*tabIndex*/ 1);
+    return testTimeRangeDropdownRequiresSelection(/*tabIndex*/ 1);
   });
 
-  async function testUnsupportedTimePeriod(tabIndex: number, prefName: string) {
-    // The user selects the tab of interest.
-    element.$.tabs.selected = tabIndex;
-    await element.$.tabs.updateComplete;
-
-    const page = element.$.pages.selectedItem as HTMLElement;
-    const dropdownMenu =
-        page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
-    assertTrue(!!dropdownMenu);
-
-    const unsupported_pref_value = 100;
-
-    element.setPrefValue(prefName, unsupported_pref_value);
-
-    await waitAfterNextRender(dropdownMenu);
-
-    // Assert unsupported value in Advanced tab is replaced by the Default value
-    // (Last hour).
-    assertEquals(TimePeriod.LAST_HOUR, element.getPref(prefName).value);
-    assertEquals(
-        TimePeriod.LAST_HOUR.toString(), dropdownMenu.getSelectedValue());
-  }
-
-  test('ClearBrowsingData_UnsupportedTimePeriod_Basic', function() {
-    return testUnsupportedTimePeriod(0, 'browser.clear_data.time_period_basic');
+  test('DualWritePrefs_BasicDualWriteSelection', function() {
+    return testCbdExperimentDualWritesPref(
+        /*element*/ element,
+        /*tabIndex*/ 0,
+        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_DAY,
+        /*prefName*/ 'browser.clear_data.time_period_basic',
+        /*inialPrefValue*/ TimePeriod.LAST_WEEK,
+        /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_DAY);
   });
 
-  test('ClearBrowsingData_UnsupportedTimePeriod_Advanced', function() {
-    return testUnsupportedTimePeriod(1, 'browser.clear_data.time_period');
+  test('DualWritePrefs_BasicDualWrite1h', function() {
+    return testCbdExperimentDualWritesPref(
+        /*element*/ element,
+        /*tabIndex*/ 0,
+        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_15_MINUTES,
+        /*prefName*/ 'browser.clear_data.time_period_basic',
+        /*inialPrefValue*/ TimePeriod.LAST_WEEK,
+        /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_HOUR);
+  });
+
+  test('DualWritePrefs_AdvancedDualWriteSelection', function() {
+    return testCbdExperimentDualWritesPref(
+        /*element*/ element,
+        /*tabIndex*/ 1,
+        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_DAY,
+        /*prefName*/ 'browser.clear_data.time_period',
+        /*inialPrefValue*/ TimePeriod.LAST_WEEK,
+        /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_DAY);
+  });
+
+  test('DualWritePrefs_AdvancedDualWrite1h', function() {
+    return testCbdExperimentDualWritesPref(
+        /*element*/ element,
+        /*tabIndex*/ 1,
+        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_15_MINUTES,
+        /*prefName*/ 'browser.clear_data.time_period',
+        /*inialPrefValue*/ TimePeriod.LAST_WEEK,
+        /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_HOUR);
+  });
+});
+
+// TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
+suite('CbdTimeRangeExperiment_ExperimentOff', function() {
+  let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
+  let element: SettingsClearBrowsingDataDialogElement;
+
+  setup(async function() {
+    testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
+    ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({enableCbdTimeframeRequired: false});
+    element = document.createElement('settings-clear-browsing-data-dialog');
+    element.set('prefs', getClearBrowsingDataPrefs());
+    document.body.appendChild(element);
+    await testBrowserProxy.whenCalled('initialize');
+    assertTrue(element.$.clearBrowsingDataDialog.open);
+  });
+
+  test('DualWritePrefs_BasicDualWrite', function() {
+    return testCbdExperimentDualWritesPref(
+        /*element*/ element,
+        /*tabIndex*/ 0,
+        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
+        /*prefName*/ 'browser.clear_data.time_period_v2_basic',
+        /*inialPrefValue*/ TimePeriodExperiment.LAST_WEEK,
+        /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_DAY);
+  });
+
+  test('DualWritePrefs_BasicDontDualWrite', function() {
+    return testCbdExperimentDualWritesPref(
+        /*element*/ element,
+        /*tabIndex*/ 0,
+        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
+        /*prefName*/ 'browser.clear_data.time_period_v2_basic',
+        /*inialPrefValue*/ TimePeriodExperiment.NOT_SELECTED,
+        /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.NOT_SELECTED);
+  });
+
+  test('DualWritePrefs_AdvancedDualWrite', function() {
+    return testCbdExperimentDualWritesPref(
+        /*element*/ element,
+        /*tabIndex*/ 1,
+        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
+        /*prefName*/ 'browser.clear_data.time_period_v2',
+        /*inialPrefValue*/ TimePeriodExperiment.LAST_WEEK,
+        /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_DAY);
+  });
+
+  test('DualWritePrefs_AdvancedDontDualWrite', function() {
+    return testCbdExperimentDualWritesPref(
+        /*element*/ element,
+        /*tabIndex*/ 1,
+        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
+        /*prefName*/ 'browser.clear_data.time_period_v2',
+        /*inialPrefValue*/ TimePeriodExperiment.NOT_SELECTED,
+        /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.NOT_SELECTED);
   });
 });
 

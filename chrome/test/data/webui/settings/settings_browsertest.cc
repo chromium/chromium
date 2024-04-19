@@ -566,6 +566,18 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
 #endif
 
 IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
+                       CbdTimeRangeExperiment_ExperimentOn) {
+  RunTest("settings/clear_browsing_data_test.js",
+          "runMochaSuite('CbdTimeRangeExperiment_ExperimentOn')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
+                       CbdTimeRangeExperiment_ExperimentOff) {
+  RunTest("settings/clear_browsing_data_test.js",
+          "runMochaSuite('CbdTimeRangeExperiment_ExperimentOff')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
                        ClearBrowsingDataForSupervisedUsers) {
   RunTest("settings/clear_browsing_data_test.js",
           "runMochaSuite('ClearBrowsingDataForSupervisedUsers')");

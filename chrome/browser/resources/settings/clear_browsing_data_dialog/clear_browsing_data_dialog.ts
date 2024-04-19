@@ -572,6 +572,49 @@ export class SettingsClearBrowsingDataDialogElement extends
     return false;
   }
 
+  // TODO(crbug.com/1487530): Remove once crbug.com/1487530 completed.
+  private cbdExperimentDualWritePrefs_() {
+    // To avoid in- and out-of-experiment prefs of the CBD time range experiment
+    // (crbug.com/1487530) from diverging, the in-experiment prefs should also
+    // be written to the out-of-experiment prefs. A 15min in-experiment
+    // selection should be a 1h out-of-experiment selection. Out-of-experiment
+    // prefs should also be written to the in-experiment prefs iff the in-
+    // experiment prefs value is not TimePeriodExperiment.NOT_SELECTED.
+    const dropdownMenuBasic =
+        this.shadowRoot!.querySelector<SettingsCheckboxElement>(
+            '#clearFromBasic');
+    assert(dropdownMenuBasic);
+    const timeRangeBasic =
+        dropdownMenuBasic.pref!.value === TimePeriodExperiment.LAST_15_MINUTES ?
+        TimePeriod.LAST_HOUR :
+        dropdownMenuBasic.pref!.value;
+
+    const dropdownMenuAdvanced =
+        this.shadowRoot!.querySelector<SettingsCheckboxElement>('#clearFrom');
+    assert(dropdownMenuAdvanced);
+    const timeRangeAdvanced = dropdownMenuAdvanced.pref!.value ===
+            TimePeriodExperiment.LAST_15_MINUTES ?
+        TimePeriod.LAST_HOUR :
+        dropdownMenuAdvanced.pref!.value;
+
+    if (this.enableCbdTimeframeRequired_) {
+      this.setPrefValue('browser.clear_data.time_period_basic', timeRangeBasic);
+      this.setPrefValue('browser.clear_data.time_period', timeRangeAdvanced);
+    } else {
+      // Out-of-experiment.
+      if (this.getPref('browser.clear_data.time_period_v2_basic').value !==
+          TimePeriodExperiment.NOT_SELECTED) {
+        this.setPrefValue(
+            'browser.clear_data.time_period_v2_basic', timeRangeBasic);
+      }
+      if (this.getPref('browser.clear_data.time_period_v2').value !==
+          TimePeriodExperiment.NOT_SELECTED) {
+        this.setPrefValue(
+            'browser.clear_data.time_period_v2', timeRangeAdvanced);
+      }
+    }
+  }
+
   /** Clears browsing data and maybe shows a history notice. */
   private async clearBrowsingData_() {
     if (!this.validateSelectedTimeRange_()) {
@@ -593,6 +636,9 @@ export class SettingsClearBrowsingDataDialogElement extends
         .querySelectorAll<SettingsDropdownMenuElement>(
             'settings-dropdown-menu[no-set-pref]')
         .forEach(dropdown => dropdown.sendPrefChange());
+
+    // Dual write prefs only after the regular prefs have been written above.
+    this.cbdExperimentDualWritePrefs_();
 
     const page = this.$.pages.selectedItem as HTMLElement;
     const dataTypes = this.getSelectedDataTypes_(page);
