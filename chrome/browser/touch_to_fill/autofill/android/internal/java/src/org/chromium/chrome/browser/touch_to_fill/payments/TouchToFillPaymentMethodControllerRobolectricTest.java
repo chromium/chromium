@@ -25,11 +25,11 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ON_CREDIT_CARD_CLICK_ACTION;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
@@ -293,12 +293,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mClock.advanceCurrentTimeMillis(
                 InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD - 100);
         cardModel.get().get(ON_CREDIT_CARD_CLICK_ACTION).run();
-        verify(mDelegateMock, times(0)).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
+        verify(mDelegateMock, times(0))
+                .creditCardSuggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
 
         // Clicking after the threshold should work.
         mClock.advanceCurrentTimeMillis(100);
         cardModel.get().get(ON_CREDIT_CARD_CLICK_ACTION).run();
-        verify(mDelegateMock, times(1)).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
+        verify(mDelegateMock, times(1))
+                .creditCardSuggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
     }
 
     @Test
@@ -311,7 +313,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertNotNull(cardModel.get().get(ON_CREDIT_CARD_CLICK_ACTION));
 
         advanceClockAndClick(cardModel.get());
-        verify(mDelegateMock).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
+        verify(mDelegateMock).creditCardSuggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -333,7 +335,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         advanceClockAndClick(cardModel.get());
         verify(mDelegateMock)
-                .suggestionSelected(VIRTUAL_CARD.getGUID(), VIRTUAL_CARD.getIsVirtual());
+                .creditCardSuggestionSelected(VIRTUAL_CARD.getGUID(), VIRTUAL_CARD.getIsVirtual());
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -406,7 +408,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showSheet(new CreditCard[] {VISA}, false);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         advanceClockAndClick(getModelsOfType(itemList, FILL_BUTTON).get(0));
-        verify(mDelegateMock).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
+        verify(mDelegateMock).creditCardSuggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
     }
 
     @Test

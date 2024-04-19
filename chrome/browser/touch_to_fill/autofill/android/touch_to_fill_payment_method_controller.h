@@ -63,9 +63,10 @@ class TouchToFillPaymentMethodController
   void OnDismissed(JNIEnv* env, bool dismissed_by_user) override;
   void ScanCreditCard(JNIEnv* env) override;
   void ShowPaymentMethodSettings(JNIEnv* env) override;
-  void SuggestionSelected(JNIEnv* env,
-                          base::android::JavaParamRef<jstring> unique_id,
-                          bool is_virtual) override;
+  void CreditCardSuggestionSelected(
+      JNIEnv* env,
+      base::android::JavaParamRef<jstring> unique_id,
+      bool is_virtual) override;
 
   TouchToFillKeyboardSuppressor& keyboard_suppressor_for_test() {
     return keyboard_suppressor_;

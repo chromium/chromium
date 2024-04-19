@@ -763,7 +763,8 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard).Times(1);
-  touch_to_fill_delegate_->SuggestionSelected(credit_card.guid(), false);
+  touch_to_fill_delegate_->CreditCardSuggestionSelected(credit_card.guid(),
+                                                        false);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
@@ -777,7 +778,8 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(*browser_autofill_manager_, AuthenticateThenFillCreditCardForm);
-  touch_to_fill_delegate_->SuggestionSelected(credit_card.guid(), false);
+  touch_to_fill_delegate_->CreditCardSuggestionSelected(credit_card.guid(),
+                                                        false);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
@@ -792,7 +794,8 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(*browser_autofill_manager_, AuthenticateThenFillCreditCardForm);
-  touch_to_fill_delegate_->SuggestionSelected(credit_card.guid(), true);
+  touch_to_fill_delegate_->CreditCardSuggestionSelected(credit_card.guid(),
+                                                        true);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,

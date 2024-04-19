@@ -59,10 +59,10 @@ class TouchToFillPaymentMethodControllerBridge
     }
 
     @Override
-    public void suggestionSelected(String uniqueId, boolean isVirtual) {
+    public void creditCardSuggestionSelected(String uniqueId, boolean isVirtual) {
         if (mNativeTouchToFillPaymentMethodViewController != 0) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
-                    .suggestionSelected(
+                    .creditCardSuggestionSelected(
                             mNativeTouchToFillPaymentMethodViewController, uniqueId, isVirtual);
         }
     }
@@ -76,7 +76,7 @@ class TouchToFillPaymentMethodControllerBridge
 
         void showPaymentMethodSettings(long nativeTouchToFillPaymentMethodViewController);
 
-        void suggestionSelected(
+        void creditCardSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController,
                 String uniqueId,
                 boolean isVirtual);

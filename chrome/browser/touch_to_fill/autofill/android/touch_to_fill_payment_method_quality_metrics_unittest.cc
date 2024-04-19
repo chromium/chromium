@@ -126,8 +126,9 @@ TEST_P(TouchToFillForPaymentMethodsTest,
 
   base::HistogramTester histogram_tester;
   // Simulate user selection in the payments bottom sheet.
-  touch_to_fill_delegate().SuggestionSelected(/*unique_id=*/kTestLocalCardId,
-                                              /*is_virtual=*/false);
+  touch_to_fill_delegate().CreditCardSuggestionSelected(
+      /*unique_id=*/kTestLocalCardId,
+      /*is_virtual=*/false);
   touch_to_fill_delegate().OnDismissed(/*dismissed_by_user=*/false);
   // Simulate that fields were autofilled.
   SetFieldsAutofilledValues(form, test_case.fields_have_autofilled_values,

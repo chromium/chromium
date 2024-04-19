@@ -209,7 +209,7 @@ class TouchToFillPaymentMethodMediator {
 
     public void onSelectedCreditCard(CreditCard card) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
-        mDelegate.suggestionSelected(card.getGUID(), card.getIsVirtual());
+        mDelegate.creditCardSuggestionSelected(card.getGUID(), card.getIsVirtual());
         recordTouchToFillOutcomeHistogram(
                 card.getIsVirtual()
                         ? TouchToFillCreditCardOutcome.VIRTUAL_CARD

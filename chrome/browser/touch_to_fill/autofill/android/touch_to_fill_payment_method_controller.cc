@@ -137,12 +137,12 @@ void TouchToFillPaymentMethodController::ShowPaymentMethodSettings(JNIEnv* env) 
   }
 }
 
-void TouchToFillPaymentMethodController::SuggestionSelected(
+void TouchToFillPaymentMethodController::CreditCardSuggestionSelected(
     JNIEnv* env,
     base::android::JavaParamRef<jstring> unique_id,
     bool is_virtual) {
   if (delegate_) {
-    delegate_->SuggestionSelected(
+    delegate_->CreditCardSuggestionSelected(
         base::android::ConvertJavaStringToUTF8(env, unique_id), is_virtual);
   }
 }

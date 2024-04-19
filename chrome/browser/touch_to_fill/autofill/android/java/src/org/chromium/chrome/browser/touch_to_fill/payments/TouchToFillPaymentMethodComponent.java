@@ -32,7 +32,7 @@ interface TouchToFillPaymentMethodComponent {
          * @param uniqueId A backend id of the card.
          * @param isVirtual A boolean to identify if the card is a virtual card.
          */
-        void suggestionSelected(String uniqueId, boolean isVirtual);
+        void creditCardSuggestionSelected(String uniqueId, boolean isVirtual);
     }
 
     /**

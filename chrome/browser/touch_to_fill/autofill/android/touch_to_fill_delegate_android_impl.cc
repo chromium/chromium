@@ -269,8 +269,9 @@ void TouchToFillDelegateAndroidImpl::ShowPaymentMethodSettings() {
   manager_->client().ShowAutofillSettings(FillingProduct::kCreditCard);
 }
 
-void TouchToFillDelegateAndroidImpl::SuggestionSelected(std::string unique_id,
-                                                        bool is_virtual) {
+void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
+    std::string unique_id,
+    bool is_virtual) {
   HideTouchToFill();
 
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();

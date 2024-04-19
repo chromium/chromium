@@ -23,7 +23,7 @@ class TouchToFillPaymentMethodViewController {
   virtual void ScanCreditCard(JNIEnv* env) = 0;
   // Causes the payment methods settings page to be shown
   virtual void ShowPaymentMethodSettings(JNIEnv* env) = 0;
-  virtual void SuggestionSelected(
+  virtual void CreditCardSuggestionSelected(
       JNIEnv* env,
       base::android::JavaParamRef<jstring> unique_id,
       bool is_virtual) = 0;

@@ -69,7 +69,7 @@ class MockTouchToFillDelegateAndroidImpl
   MOCK_METHOD(void, OnCreditCardScanned, (const CreditCard& card), (override));
   MOCK_METHOD(void, ShowPaymentMethodSettings, (), (override));
   MOCK_METHOD(void,
-              SuggestionSelected,
+              CreditCardSuggestionSelected,
               (std::string unique_id, bool is_virtual),
               (override));
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
