@@ -2031,30 +2031,32 @@ action("gn2bp_check") {
   ]
 }
 
-action("dependencies_checks") {
-  script = "//components/cronet/tools/check_cronet_dependencies.py"
-  inputs = [ "//components/cronet/android/dependencies.txt" ]
-  sources = [ "$_gn_path" ]
-  outputs = [ "$target_gen_dir/$target_name.stamp" ]
-  deps = [
-    ":cronet",
-    ":cronet_api_helpers_java",
-    ":cronet_api_java",
-    ":cronet_impl_native_java",
-  ]
-  abs_deps = []
-  foreach(dep, deps) {
-    abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
-  }
-  args = [
-    "--old-dependencies",
-    rebase_path(inputs[0], root_build_dir),
-    "--stamp",
-    rebase_path(outputs[0], root_build_dir),
-    "--root-deps",
-  ]
-  foreach(abs_dep, abs_deps) {
-    args += [ abs_dep ]
+if (!using_sanitizer) {
+  action("dependencies_checks") {
+    script = "//components/cronet/tools/check_cronet_dependencies.py"
+    inputs = [ "//components/cronet/android/dependencies.txt" ]
+    sources = [ "$_gn_path" ]
+    outputs = [ "$target_gen_dir/$target_name.stamp" ]
+    deps = [
+      ":cronet",
+      ":cronet_api_helpers_java",
+      ":cronet_api_java",
+      ":cronet_impl_native_java",
+    ]
+    abs_deps = []
+    foreach(dep, deps) {
+      abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
+    }
+    args = [
+      "--old-dependencies",
+      rebase_path(inputs[0], root_build_dir),
+      "--stamp",
+      rebase_path(outputs[0], root_build_dir),
+      "--root-deps",
+    ]
+    foreach(abs_dep, abs_deps) {
+      args += [ abs_dep ]
+    }
   }
 }
 
@@ -2121,10 +2123,12 @@ group("cronet_package_android") {
     ":cronet_combined_proguard_flags_golden_test",
     ":cronet_non_test_package",
     ":cronet_test_package",
-    ":dependencies_checks",
     ":generate_javadoc",
     ":generate_licenses",
   ]
+  if (!using_sanitizer) {
+    deps += [ ":dependencies_checks" ]
+  }
 }
 
 # Everything added here will be executed in the CI.
