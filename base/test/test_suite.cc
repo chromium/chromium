@@ -690,12 +690,11 @@ void TestSuite::PreInitialize() {
   // fork() but before exec() is unsafe. Using the threadsafe style by default
   // alleviates these concerns.
   //
-  // However, the threasafe style does not work reliably on Android, so that
-  // will keep the default of "fast". See https://crbug.com/815537,
-  // https://github.com/google/googletest/issues/1496, and
-  // https://github.com/google/googletest/issues/2093.
-  // TODO(danakj): Determine if all death tests should be skipped on Android
-  // (many already are, such as for DCHECK-death tests).
+  // However, the threadsafe style does not work reliably on Android, so for
+  // that we will keep the default of "fast". For more information, see:
+  // https://crbug.com/41372437#comment12.
+  // TODO(https://crbug.com/41372437): Use "threadsafe" on Android once it is
+  // supported.
 #if !BUILDFLAG(IS_ANDROID)
   GTEST_FLAG_SET(death_test_style, "threadsafe");
 #endif
