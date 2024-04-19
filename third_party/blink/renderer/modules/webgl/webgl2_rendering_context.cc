@@ -176,7 +176,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
       TimerQueryExtensionsEnabled() ? kApprovedExtension : kDeveloperExtension);
   RegisterExtension(ext_float_blend_);
   RegisterExtension(ext_polygon_offset_clamp_);
-  RegisterExtension(ext_render_snorm_, kDraftExtension);
+  RegisterExtension(ext_render_snorm_);
   RegisterExtension(ext_texture_compression_bptc_);
   RegisterExtension(ext_texture_compression_rgtc_);
   RegisterExtension(ext_texture_filter_anisotropic_);
@@ -185,8 +185,8 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(khr_parallel_shader_compile_);
   RegisterExtension(nv_shader_noperspective_interpolation_);
   RegisterExtension(oes_draw_buffers_indexed_);
-  RegisterExtension(oes_sample_variables_, kDraftExtension);
-  RegisterExtension(oes_shader_multisample_interpolation_, kDraftExtension);
+  RegisterExtension(oes_sample_variables_);
+  RegisterExtension(oes_shader_multisample_interpolation_);
   RegisterExtension(oes_texture_float_linear_);
   RegisterExtension(ovr_multiview2_);
   RegisterExtension(webgl_blend_func_extended_);
