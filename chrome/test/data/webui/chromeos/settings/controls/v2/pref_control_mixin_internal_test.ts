@@ -4,8 +4,9 @@
 
 import {CrSettingsPrefs, PrefControlMixinInternal} from 'chrome://os-settings/os_settings.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotReached, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../../utils.js';
 
@@ -17,7 +18,7 @@ suite('PrefControlMixinInternal', () => {
   let testElement: TestElement;
 
   const fakePrefObject = {
-    key: 'testPref',
+    key: 'foo.bar.baz',
     type: chrome.settingsPrivate.PrefType.BOOLEAN,
     value: false,
   };
@@ -146,6 +147,40 @@ suite('PrefControlMixinInternal', () => {
       CrSettingsPrefs.setInitialized();
       await flushTasks();
       assertTrue(validatePrefCalled);
+    });
+  });
+
+  suite('dispatchPrefChange()', () => {
+    test('No event is dispatched if pref does not exist', async () => {
+      const eventPromise =
+          eventToPromise('user-action-setting-pref-change', window).then(() => {
+            assertNotReached();
+          });
+
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => resolve('success'), 1000);
+      });
+
+      testElement.dispatchPrefChange('newValue9001');
+
+      // eventPromise should never resolve. If eventPromise resolves, then
+      // assertNotReached() will throw an error and this test will fail.
+      // Assert that timeoutPromise wins.
+      const value = await Promise.race([eventPromise, timeoutPromise]);
+      assertEquals('success', value);
+    });
+
+    test('Event includes the provided value', async () => {
+      const eventPromise =
+          eventToPromise('user-action-setting-pref-change', window);
+
+      const expectedValue = 'newValue9001';
+      testElement.pref = {...fakePrefObject};
+      testElement.dispatchPrefChange(expectedValue);
+
+      const event = await eventPromise;
+      assertEquals(fakePrefObject.key, event.detail.prefKey);
+      assertEquals(expectedValue, event.detail.value);
     });
   });
 });

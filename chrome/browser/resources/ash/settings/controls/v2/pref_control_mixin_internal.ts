@@ -17,7 +17,7 @@ import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {dedupingMixin, type PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {Constructor} from '../../common/types.js';
+import type {Constructor, UserActionSettingPrefChangeEvent} from '../../common/types.js';
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
@@ -26,6 +26,7 @@ export interface PrefControlMixinInternalInterface {
   isPrefEnforced: boolean;
   pref?: PrefObject;
   validPrefTypes: chrome.settingsPrivate.PrefType[];
+  dispatchPrefChange(value: any): void;
   validatePref(): void;
 }
 
@@ -118,6 +119,26 @@ export const PrefControlMixinInternal = dedupingMixin(
         }
 
         /**
+         * Dispatches a `user-action-setting-pref-change` event to notify the
+         * any subscribing elements (i.e. os-settings-ui) about a pending pref
+         * change.
+         * @param value the new value of the pref.
+         */
+        dispatchPrefChange(value: any): void {
+          if (!this.pref) {
+            return;
+          }
+
+          const event: UserActionSettingPrefChangeEvent =
+              new CustomEvent('user-action-setting-pref-change', {
+                bubbles: true,
+                composed: true,
+                detail: {prefKey: this.pref.key, value},
+              });
+          this.dispatchEvent(event);
+        }
+
+        /**
          * PrefObjects are marked as enforced per `PrefsUtil::GetPref()` in
          * `chrome/browser/extensions/api/settings_private/prefs_util.cc`.
          * @returns true if `pref` exists and is enforced. Else returns false.
@@ -147,8 +168,6 @@ export const PrefControlMixinInternal = dedupingMixin(
           error += ` error: ${message}`;
           return error;
         }
-
-        // TODO(b/333453826) Add dispatch pref change event for one-way binding.
       }
 
       return PrefControlMixinInternalImpl;
