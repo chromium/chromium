@@ -55,6 +55,7 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
   void AccessibilityEventReceived(
       const ui::AXUpdatesAndEvents& details) override;
   void PrimaryPageChanged(content::Page& page) override;
+  void WebContentsDestroyed() override;
 
   // base::SafeRef used since the lifetime of ReadAnythingWebContentsObserver is
   // completely contained by page_handler_. See
@@ -97,6 +98,7 @@ class ReadAnythingUntrustedPageHandler
 
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
   void PrimaryPageChanged();
+  void WebContentsDestroyed();
 
  private:
   // TranslateDriver::LanguageDetectionObserver:

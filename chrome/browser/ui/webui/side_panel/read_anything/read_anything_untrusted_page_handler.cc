@@ -223,6 +223,10 @@ void ReadAnythingWebContentsObserver::PrimaryPageChanged(content::Page& page) {
   page_handler_->PrimaryPageChanged();
 }
 
+void ReadAnythingWebContentsObserver::WebContentsDestroyed() {
+  page_handler_->WebContentsDestroyed();
+}
+
 ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     mojo::PendingRemote<UntrustedPage> page,
     mojo::PendingReceiver<UntrustedPageHandler> receiver,
@@ -319,6 +323,10 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
 void ReadAnythingUntrustedPageHandler::PrimaryPageChanged() {
   SetUpPdfObserver();
   OnActiveAXTreeIDChanged();
+}
+
+void ReadAnythingUntrustedPageHandler::WebContentsDestroyed() {
+  translate_observation_.Reset();
 }
 
 void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
@@ -704,15 +712,20 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   if (ChromeTranslateClient* translate_client =
           ChromeTranslateClient::FromWebContents(contents)) {
     translate::TranslateDriver* driver = translate_client->GetTranslateDriver();
-    // If the page was already open when Reading Mode opened, then we're already
-    // observing the page, so just set the language.
-    if (translate_observation_.IsObservingSource(driver)) {
-      const std::string& source_language =
-          translate_client->GetLanguageState().source_language();
-      SetLanguageCode(source_language);
+    const std::string& source_language =
+        translate_client->GetLanguageState().source_language();
+    // If the language is empty and we're not already observing these web
+    // contents, then observe them so we can get a callback when the language is
+    // determined. If we are already observing them, then the language couldn't
+    // be determined, so pass the empty code to SetLanguageCode. If the language
+    // is not empty then the language was already determined so we pass that to
+    // SetLanguageCode.
+    if (source_language.empty() &&
+        !translate_observation_.IsObservingSource(driver)) {
       translate_observation_.Reset();
-    } else {
       translate_observation_.Observe(driver);
+    } else {
+      SetLanguageCode(source_language);
     }
   }
 
@@ -756,7 +769,6 @@ void ReadAnythingUntrustedPageHandler::SetLanguageCode(
 void ReadAnythingUntrustedPageHandler::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   SetLanguageCode(details.adopted_language);
-  translate_observation_.Reset();
 }
 
 void ReadAnythingUntrustedPageHandler::OnTranslateDriverDestroyed(
