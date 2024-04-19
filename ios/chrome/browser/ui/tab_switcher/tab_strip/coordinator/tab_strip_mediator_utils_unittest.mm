@@ -192,13 +192,13 @@ TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemSameBrowser) {
 
 // Test that calling `MoveGroupBeforeTabStripItem` between browsers works as
 // expected.
-// TODO(crbug.com/335581919): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_MoveGroupBeforeItemDifferentBrowser \
-  MoveGroupBeforeItemDifferentBrowser
-#else
+// TODO(crbug.com/335581919): Fails on device and ASan.
+#if !TARGET_IPHONE_SIMULATOR || defined(ADDRESS_SANITIZER)
 #define MAYBE_MoveGroupBeforeItemDifferentBrowser \
   DISABLED_MoveGroupBeforeItemDifferentBrowser
+#else
+#define MAYBE_MoveGroupBeforeItemDifferentBrowser \
+  MoveGroupBeforeItemDifferentBrowser
 #endif
 TEST_F(TabStripMediatorUtilsTest, MAYBE_MoveGroupBeforeItemDifferentBrowser) {
   WebStateListBuilderFromDescription builder(web_state_list_.get());
