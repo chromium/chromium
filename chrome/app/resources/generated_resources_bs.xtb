@@ -906,7 +906,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="16620462294541761">Nažalost, vaša lozinka nije potvrđena. Pokušajte ponovo.</translation>
 <translation id="166278006618318542">Algoritam javnog ključa subjekta</translation>
 <translation id="1662801900924515589">Aplikacija <ph name="APP" /> je instalirana</translation>
-<translation id="1663698992894057019">Nadogradite na novi Chromebook za najnovije sigurnosne i softverske funkcije</translation>
+<translation id="1663698992894057019">Pređite na novi Chromebook za najnovije sigurnosne i softverske funkcije</translation>
 <translation id="1665328953287874063">Koristite lozinku ili PIN da otključate svoj uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Onemogućite zaštitu pristupa podacima za periferne uređaje</translation>
 <translation id="1667842670298352129">Slušajte određeni tekst koji se čita naglas. Najprije odaberite ikonu Odaberite za govor na dnu ekrana, a zatim istaknite tekst. Možete koristiti i prečicu na tastaturi: Istaknite tekst, a zatim pritisnite tipku za pretraživanje + S.</translation>
@@ -2647,7 +2647,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="2949289451367477459">Koristite lokaciju. Dozvolite aplikacijama i uslugama s odobrenjem za lokaciju da koriste lokacije ovog uređaja. Google s vremena na vrijeme može prikupljati podatke o lokaciji i anonimno koristiti te podatke s ciljem poboljšavanja preciznosti lokacije i usluga koje se zasnivaju na lokaciji. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">Registriraj me</translation>
 <translation id="2953019166882260872">Povežite telefon kablom</translation>
-<translation id="2953210795988451570">Sigurnosna ažuriranja su se završila. Nadogradite na novi Chromebook.</translation>
+<translation id="2953210795988451570">Sigurnosna ažuriranja su se završila. Pređite na novi Chromebook.</translation>
 <translation id="2953218713108551165">Obavještenja nisu dozvoljena za <ph name="SITE" />. Pitat ćemo vas ponovo prilikom sljedeće posjete.</translation>
 <translation id="2956070239128776395">Odjeljak je ugniježđen u grupi: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Upozorenje na ekstenziju paketa</translation>
@@ -5117,7 +5117,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4878653975845355462">Vaš administrator je isključio prilagođene pozadine</translation>
 <translation id="4878718769565915065">Dodavanje otiska prsta ovom sigurnosnom ključu nije uspjelo</translation>
 <translation id="4879491255372875719">Automatski (zadano)</translation>
-<translation id="4880315242806573837">Sigurnosna ažuriranja se završavaju uskoro. Nadogradite na novi Chromebook.</translation>
+<translation id="4880315242806573837">Sigurnosna ažuriranja uskoro završavaju. Pređite na novi Chromebook.</translation>
 <translation id="4880827082731008257">Historija pretraživanja</translation>
 <translation id="4881685975363383806">Ne podsjećaj me sljedeći put</translation>
 <translation id="4881695831933465202">Otvori</translation>
