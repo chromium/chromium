@@ -353,7 +353,7 @@ std::optional<gfx::Vector2dF> ToVector(const std::string& direction,
   return std::nullopt;
 }
 
-int ToKeyModifiers(const std::string_view& key) {
+int ToKeyModifiers(std::string_view key) {
   if (key == "Alt")
     return blink::WebInputEvent::kAltKey;
   if (key == "Control")
@@ -372,7 +372,7 @@ int ToKeyModifiers(const std::string_view& key) {
   return 0;
 }
 
-int ToButtonModifiers(const std::string_view& button) {
+int ToButtonModifiers(std::string_view button) {
   if (button == "Left")
     return blink::WebMouseEvent::kLeftButtonDown;
   if (button == "Middle")
@@ -854,7 +854,7 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   int modifiers = 0;
   std::vector<std::string_view> key_list = base::SplitStringPiece(
       keys_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const std::string_view& key : key_list) {
+  for (std::string_view key : key_list) {
     int key_modifier = ToKeyModifiers(key);
     if (key_modifier == 0) {
       return false;
@@ -942,7 +942,7 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   int modifiers = 0;
   std::vector<std::string_view> key_list = base::SplitStringPiece(
       keys_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const std::string_view& key : key_list) {
+  for (std::string_view key : key_list) {
     int key_modifier = ToKeyModifiers(key);
     if (key_modifier == 0) {
       return false;
@@ -952,7 +952,7 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
 
   std::vector<std::string_view> button_list = base::SplitStringPiece(
       buttons_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const std::string_view& button : button_list) {
+  for (std::string_view button : button_list) {
     int button_modifier = ToButtonModifiers(button);
     if (button_modifier == 0) {
       return false;

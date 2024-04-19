@@ -31,7 +31,7 @@ namespace {
 // static variable.
 static void CheckPreloadingPredictorValidity(PreloadingPredictor predictor) {
 #if DCHECK_IS_ON()
-  // Use `std::string` because we can't guarantee base::StringPiece has a static
+  // Use `std::string` because we can't guarantee std::string_view has a static
   // lifetime.
   static base::NoDestructor<std::vector<std::pair<int64_t, std::string>>>
       seen_predictors;

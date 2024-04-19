@@ -545,7 +545,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     // TODO(johannes): For now, We need to copy here because
     // ReceivedMessageFromTarget is generated code and we're using const
     // std::string& for such parameters. Perhaps we should switch this to
-    // base::StringPiece?
+    // std::string_view?
     std::string message_copy(message.begin(), message.end());
     handler_->frontend_->ReceivedMessageFromTarget(id_, message_copy,
                                                    agent_host_->GetId());

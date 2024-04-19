@@ -2786,7 +2786,7 @@ printing::PageRanges TestRunner::GetPrintingPageRanges(
                              base::SPLIT_WANT_NONEMPTY);
   printing::PageRanges result;
 
-  for (const std::string_view& range_string : range_strings) {
+  for (std::string_view range_string : range_strings) {
     // The format for each range is "<int> | <int>? - <int>?" where the page
     // numbers are 1-indexed.
     const std::vector<std::string_view> page_strings = base::SplitStringPiece(

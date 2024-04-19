@@ -186,7 +186,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
     return net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
   }
 
-  static std::string CreateCertMessage(const std::string_view& cert_data) {
+  static std::string CreateCertMessage(std::string_view cert_data) {
     cbor::Value::MapValue cbor_map;
     cbor_map[cbor::Value("sct")] =
         cbor::Value("SCT", cbor::Value::Type::BYTE_STRING);

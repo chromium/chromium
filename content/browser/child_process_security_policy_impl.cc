@@ -2931,7 +2931,7 @@ ChildProcessSecurityPolicyImpl::ParseIsolatedOrigins(
   std::vector<IsolatedOriginPattern> patterns;
   patterns.reserve(origin_strings.size());
 
-  for (const std::string_view& origin_string : origin_strings) {
+  for (std::string_view origin_string : origin_strings) {
     patterns.emplace_back(origin_string);
   }
 

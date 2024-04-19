@@ -243,7 +243,7 @@ base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
       cmdline_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   base::flat_set<url::Origin> origin_set;
-  for (const std::string_view& origin_string : origin_strings) {
+  for (std::string_view origin_string : origin_strings) {
     url::Origin allowed_origin = url::Origin::Create(GURL(origin_string));
     if (!allowed_origin.opaque()) {
       origin_set.insert(allowed_origin);

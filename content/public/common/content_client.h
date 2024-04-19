@@ -166,7 +166,8 @@ class CONTENT_EXPORT ContentClient {
   virtual std::u16string GetLocalizedString(int message_id,
                                             const std::u16string& replacement);
 
-  // Return the contents of a resource in a StringPiece given the resource id.
+  // Return the contents of a resource in a std::string_view given the resource
+  // id.
   virtual std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor);

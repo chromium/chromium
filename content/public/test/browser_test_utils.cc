@@ -1549,7 +1549,7 @@ std::string AnnotateAndAdjustJsStackTraces(std::string_view js_error,
   // Loop over each line of |js_error|, and append each to |annotated_error| --
   // possibly rewriting to include extra context.
   std::ostringstream annotated_error;
-  for (const std::string_view& error_line : base::SplitStringPiece(
+  for (std::string_view error_line : base::SplitStringPiece(
            js_error, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL)) {
     // Does this look like a stack frame whose URL source matches |source_name|?
     if (base::MatchPattern(error_line, source_frame_pattern)) {

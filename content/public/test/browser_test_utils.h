@@ -630,8 +630,8 @@ void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
                                           std::string_view script);
 
 // JsLiteralHelper is a helper class that determines what types are legal to
-// pass to StringifyJsLiteral. Legal types include int, string, StringPiece,
-// char*, bool, double, GURL, url::Origin, and base::Value&&.
+// pass to StringifyJsLiteral. Legal types include int, string,
+// std::string_view, char*, bool, double, GURL, url::Origin, and base::Value&&.
 template <typename T>
 struct JsLiteralHelper {
   // This generic version enables passing any type from which base::Value can be
@@ -663,7 +663,7 @@ struct JsLiteralHelper<url::Origin> {
 // Construct a list-type base::Value from a mix of arguments.
 //
 // Each |arg| can be any type explicitly convertible to base::Value
-// (including int/string/StringPiece/char*/double/bool), or any type that
+// (including int/string/std::string_view/char*/double/bool), or any type that
 // JsLiteralHelper is specialized for -- like URL and url::Origin, which emit
 // string literals. |args| can be a mix of different types.
 template <typename... Args>
@@ -683,7 +683,7 @@ base::Value ListValueOf(Args&&... args) {
 // escape string content, even if it contains slashes or quotation marks.
 //
 // Each |arg| can be any type explicitly convertible to base::Value
-// (including int/string/StringPiece/char*/double/bool), or any type that
+// (including int/string/std::string_view/char*/double/bool), or any type that
 // JsLiteralHelper is specialized for -- like URL and url::Origin, which emit
 // string literals. |args| can be a mix of different types.
 //

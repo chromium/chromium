@@ -10285,7 +10285,7 @@ WebContentsImpl::ParseDownloadHeaders(const std::string& headers) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ParseDownloadHeaders",
                         "headers", headers);
   download::DownloadUrlParameters::RequestHeadersType request_headers;
-  for (const std::string_view& key_value : base::SplitStringPiece(
+  for (std::string_view key_value : base::SplitStringPiece(
            headers, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     std::vector<std::string> pair = base::SplitString(
         key_value, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);

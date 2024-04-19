@@ -503,10 +503,10 @@ AXImageStopwords& AXImageStopwords::GetInstance() {
 
 AXImageStopwords::AXImageStopwords() {
   // Parse the newline-delimited stopwords from kImageStopwordsUtf8 and store
-  // them as a flat_set of type StringPiece. This is very memory-efficient
-  // because it avoids ever needing to copy any of the strings; each StringPiece
-  // is just a pointer into kImageStopwordsUtf8 and flat_set acts like a set but
-  // basically just does a binary search.
+  // them as a flat_set of type string_view. This is very memory-efficient
+  // because it avoids ever needing to copy any of the strings; each
+  // string_view is just a pointer into kImageStopwordsUtf8 and flat_set
+  // acts like a set but basically just does a binary search.
   std::vector<std::string_view> stopwords =
       base::SplitStringPiece(kImageStopwordsUtf8, "\n", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);

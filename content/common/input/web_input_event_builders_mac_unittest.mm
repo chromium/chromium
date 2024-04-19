@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 #include "content/common/input/web_input_event_builders_mac.h"
-#include "base/check.h"
 
 #include <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
+#import <string_view>
+
 #include "base/apple/owned_objc.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/check.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -55,7 +57,7 @@ const ModifierKey kModifierKeys[] = {
 };
 
 NSEvent* BuildFakeKeyEvent(NSUInteger key_code,
-                           base::StringPiece16 character,
+                           std::u16string_view character,
                            NSUInteger modifier_flags,
                            NSEventType event_type) {
   NSString* string = base::SysUTF16ToNSString(character);
@@ -75,7 +77,7 @@ NSEvent* BuildFakeKeyEvent(NSUInteger key_code,
                            char16_t code_point,
                            NSUInteger modifier_flags,
                            NSEventType event_type) {
-  return BuildFakeKeyEvent(key_code, base::StringPiece16(&code_point, 1),
+  return BuildFakeKeyEvent(key_code, std::u16string_view(&code_point, 1),
                            modifier_flags, event_type);
 }
 
