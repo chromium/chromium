@@ -10,10 +10,7 @@ declare_args() {
   # default for all prestable builds. The icon for Monochrome is shown
   # dynamically at runtime if Monochrome is the current selected system WebView
   # implementation or hidden otherwise.
-  # Temporarily enabling the launcher icon for the stable channel to have a
-  # signed APK with the icon enabled. We need this APK for testing purposes
-  # only. We will revert this change after the APK is generated.
-  webview_devui_show_icon = true
+  webview_devui_show_icon = android_channel != "stable"
 }
 
 upstream_only_webview_deps = [
