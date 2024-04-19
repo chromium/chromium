@@ -84,19 +84,6 @@ const char kDesktop[] =
     "Safari/537.36";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-std::string GetMachine() {
-  struct utsname unixinfo;
-  uname(&unixinfo);
-  std::string machine = unixinfo.machine;
-  if (strcmp(unixinfo.machine, "x86_64") == 0 &&
-      sizeof(void*) == sizeof(int32_t)) {
-    machine = "i686 (x86_64)";
-  }
-  return machine;
-}
-#endif
-
 void CheckUserAgentStringOrdering(bool mobile_device) {
   std::vector<std::string> pieces;
 
@@ -133,15 +120,10 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   pieces = base::SplitStringUsingSubstr(os_str, "; ", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
 #if BUILDFLAG(IS_WIN)
+  // Post-UA Reduction there is a single <unifiedPlatform> value for Windows:
   // Windows NT 10.0; Win64; x64
-  // Windows NT 10.0; WOW64
-  // Windows NT 10.0
-  std::string os_and_version = pieces[0];
-  for (unsigned int i = 1; i < pieces.size(); ++i) {
-    bool equals = ((pieces[i] == "WOW64") || (pieces[i] == "Win64") ||
-                   pieces[i] == "x64");
-    ASSERT_TRUE(equals);
-  }
+  ASSERT_TRUE(pieces[1] == "Win64");
+  ASSERT_TRUE(pieces[2] == "x64");
   pieces = base::SplitStringUsingSubstr(pieces[0], " ", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
   ASSERT_EQ(3u, pieces.size());
@@ -152,7 +134,8 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_LE(4.0, version);
   ASSERT_GT(11.0, version);
 #elif BUILDFLAG(IS_MAC)
-  // Macintosh; Intel Mac OS X 10_15_4
+  // Post-UA Reduction there is a single <unifiedPlatform> value for macOS:
+  // Macintosh; Intel Mac OS X 10_15_7
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("Macintosh", pieces[0]);
   pieces = base::SplitStringUsingSubstr(pieces[1], " ", base::KEEP_WHITESPACE,
@@ -170,7 +153,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
     // crbug.com/1175225
     if (major > 10)
       major = 10;
-    ASSERT_EQ(base::StringPrintf("%d", major), pieces[0]);
+    ASSERT_EQ(10, major);
   }
   int value;
   ASSERT_TRUE(base::StringToInt(pieces[1], &value));
@@ -178,32 +161,29 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_TRUE(base::StringToInt(pieces[2], &value));
   ASSERT_LE(0, value);
 #elif BUILDFLAG(IS_CHROMEOS)
-  // X11; CrOS armv7l 4537.56.0
+  // Post-UA Reduction there is a single <unifiedPlatform> value for ChromeOS:
+  // X11; CrOS x86_64 14541.0.0
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("X11", pieces[0]);
   pieces = base::SplitStringUsingSubstr(pieces[1], " ", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
   ASSERT_EQ(3u, pieces.size());
   ASSERT_EQ("CrOS", pieces[0]);
-  ASSERT_EQ(GetMachine(), pieces[1]);
-  pieces = base::SplitStringUsingSubstr(pieces[2], ".", base::KEEP_WHITESPACE,
-                                        base::SPLIT_WANT_ALL);
-  for (unsigned int i = 1; i < pieces.size(); ++i) {
-    int value;
-    ASSERT_TRUE(base::StringToInt(pieces[i], &value));
-  }
+  ASSERT_EQ("x86_64", pieces[1]);
+  ASSERT_EQ("14541.0.0", pieces[2]);
 #elif BUILDFLAG(IS_LINUX)
+  // Post-UA Reduction there is a single <unifiedPlatform> value for Linux:
   // X11; Linux x86_64
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("X11", pieces[0]);
   pieces = base::SplitStringUsingSubstr(pieces[1], " ", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
   ASSERT_EQ(2u, pieces.size());
-  // This may not be Linux in all cases in the wild, but it is on the bots.
   ASSERT_EQ("Linux", pieces[0]);
-  ASSERT_EQ(GetMachine(), pieces[1]);
+  ASSERT_EQ("x86_64", pieces[1]);
 #elif BUILDFLAG(IS_ANDROID)
-  // Linux; Android 7.1.1; Pixel 2
+  // Post-UA Reduction there is a single <unifiedPlatform> value for Android:
+  // Linux; Android 10; K
   ASSERT_GE(3u, pieces.size());
   ASSERT_EQ("Linux", pieces[0]);
   std::string model;
@@ -214,6 +194,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
                                         base::SPLIT_WANT_ALL);
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("Android", pieces[0]);
+  ASSERT_EQ("10", pieces[1]);
   pieces = base::SplitStringUsingSubstr(pieces[1], ".", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
   for (unsigned int i = 1; i < pieces.size(); ++i) {
@@ -223,18 +204,14 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
 
   if (!model.empty()) {
     if (base::SysInfo::GetAndroidBuildCodename() == "REL") {
-      // In UA reduction Phase 6, we change the deviceModel token to "K".
-      ASSERT_EQ(base::FeatureList::IsEnabled(
-                    blink::features::kReduceUserAgentAndroidVersionDeviceModel)
-                    ? "K"
-                    : base::SysInfo::HardwareModelName(),
-                model);
+      ASSERT_EQ("K", model);
     } else {
       ASSERT_EQ("", model);
     }
   }
 #elif BUILDFLAG(IS_FUCHSIA)
-  // X11; Fuchsia
+  // Post-UA Reduction there is a single <unifiedPlatform> value for Fuchsia:
+  // Fuchsia
   ASSERT_EQ(1u, pieces.size());
   ASSERT_EQ("Fuchsia", pieces[0]);
 #else
