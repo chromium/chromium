@@ -47,9 +47,8 @@ ChromePingManagerFactory::ChromePingManagerFactory()
           "ChromeSafeBrowsingPingManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              // Telemetry report should not be sent in guest mode.
+              .WithGuest(ProfileSelection::kNone)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 #if BUILDFLAG(FULL_SAFE_BROWSING)
