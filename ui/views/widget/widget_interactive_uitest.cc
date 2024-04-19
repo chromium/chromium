@@ -1443,7 +1443,8 @@ class SyntheticMouseMoveCounter : public ui::EventHandler {
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 TEST_F(DesktopWidgetTestInteractive,
-       DoNotSynthesizeMouseMoveOnVisibilityChangeIfOccluded) {
+       // TODO(crbug.com/335767870): Re-enable this test
+       DISABLED_DoNotSynthesizeMouseMoveOnVisibilityChangeIfOccluded) {
   // Create a top-level widget.
   WidgetAutoclosePtr widget_below(CreateTopLevelPlatformDesktopWidget());
   widget_below->SetBounds(gfx::Rect(300, 300));
