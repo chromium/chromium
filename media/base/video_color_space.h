@@ -68,6 +68,7 @@ class MEDIA_EXPORT VideoColorSpace {
     SMPTE240M = 7,
     YCOCG = 8,
     BT2020_NCL = 9,
+    // NOTE: BT2020_CL is no longer supported (b/333906350).
     BT2020_CL = 10,
     YDZDX = 11,
     INVALID = 255,

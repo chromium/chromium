@@ -159,10 +159,6 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
       base::Contains(edid_parser.supported_color_primary_matrix_ids(),
                      EdidParser::PrimaryMatrixPair(
                          gfx::ColorSpace::PrimaryID::BT2020,
-                         gfx::ColorSpace::MatrixID::BT2020_CL)) ||
-      base::Contains(edid_parser.supported_color_primary_matrix_ids(),
-                     EdidParser::PrimaryMatrixPair(
-                         gfx::ColorSpace::PrimaryID::BT2020,
                          gfx::ColorSpace::MatrixID::BT2020_NCL))) {
     if (base::Contains(edid_parser.supported_color_transfer_ids(),
                        gfx::ColorSpace::TransferID::PQ)) {

@@ -320,8 +320,6 @@ struct EnumTraits<media::stable::mojom::ColorSpaceMatrixID,
         return media::stable::mojom::ColorSpaceMatrixID::kYCOCG;
       case gfx::ColorSpace::MatrixID::BT2020_NCL:
         return media::stable::mojom::ColorSpaceMatrixID::kBT2020_NCL;
-      case gfx::ColorSpace::MatrixID::BT2020_CL:
-        return media::stable::mojom::ColorSpaceMatrixID::kBT2020_CL;
       case gfx::ColorSpace::MatrixID::YDZDX:
         return media::stable::mojom::ColorSpaceMatrixID::kYDZDX;
       case gfx::ColorSpace::MatrixID::GBR:
@@ -364,8 +362,7 @@ struct EnumTraits<media::stable::mojom::ColorSpaceMatrixID,
         *output = gfx::ColorSpace::MatrixID::BT2020_NCL;
         return true;
       case media::stable::mojom::ColorSpaceMatrixID::kBT2020_CL:
-        *output = gfx::ColorSpace::MatrixID::BT2020_CL;
-        return true;
+        return false;
       case media::stable::mojom::ColorSpaceMatrixID::kYDZDX:
         *output = gfx::ColorSpace::MatrixID::YDZDX;
         return true;

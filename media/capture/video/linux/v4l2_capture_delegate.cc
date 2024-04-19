@@ -1336,12 +1336,10 @@ gfx::ColorSpace V4L2CaptureDelegate::BuildColorSpaceFromv4l2() {
     case V4L2_YCBCR_ENC_BT2020:
       matrix = gfx::ColorSpace::MatrixID::BT2020_NCL;
       break;
-    case V4L2_YCBCR_ENC_BT2020_CONST_LUM:
-      matrix = gfx::ColorSpace::MatrixID::BT2020_CL;
-      break;
     case V4L2_YCBCR_ENC_SMPTE240M:
       matrix = gfx::ColorSpace::MatrixID::SMPTE240M;
       break;
+    case V4L2_YCBCR_ENC_BT2020_CONST_LUM:
     case V4L2_YCBCR_ENC_XV601:
     case V4L2_YCBCR_ENC_XV709:
     case V4L2_YCBCR_ENC_SYCC:

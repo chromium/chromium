@@ -337,6 +337,7 @@ enum ColorSpaceMatrixID {
   kSMPTE170M,
   kSMPTE240M,
   kYCOCG,
+  // DO NOT USE: Deprecated since BT2020_CL not used anymore (b/333906350).
   kBT2020_NCL,
   kBT2020_CL,
   kYDZDX,

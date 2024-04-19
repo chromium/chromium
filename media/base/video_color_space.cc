@@ -214,9 +214,6 @@ VideoColorSpace VideoColorSpace::FromGfxColorSpace(
     case gfx::ColorSpace::MatrixID::BT2020_NCL:
       matrix = VideoColorSpace::MatrixID::BT2020_NCL;
       break;
-    case gfx::ColorSpace::MatrixID::BT2020_CL:
-      matrix = VideoColorSpace::MatrixID::BT2020_CL;
-      break;
     case gfx::ColorSpace::MatrixID::YDZDX:
       matrix = VideoColorSpace::MatrixID::YDZDX;
       break;
@@ -380,12 +377,10 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpaceInternal(
     case MatrixID::BT2020_NCL:
       matrix_id = gfx::ColorSpace::MatrixID::BT2020_NCL;
       break;
-    case MatrixID::BT2020_CL:
-      matrix_id = gfx::ColorSpace::MatrixID::BT2020_CL;
-      break;
     case MatrixID::YDZDX:
       matrix_id = gfx::ColorSpace::MatrixID::YDZDX;
       break;
+    case MatrixID::BT2020_CL:
     case MatrixID::INVALID:
     case MatrixID::UNSPECIFIED:
       break;

@@ -216,9 +216,6 @@ gfx::ColorSpace WebRtcToGfxColorSpace(const webrtc::ColorSpace& color_space) {
     case webrtc::ColorSpace::MatrixID::kBT2020_NCL:
       matrix = gfx::ColorSpace::MatrixID::BT2020_NCL;
       break;
-    case webrtc::ColorSpace::MatrixID::kBT2020_CL:
-      matrix = gfx::ColorSpace::MatrixID::BT2020_CL;
-      break;
     case webrtc::ColorSpace::MatrixID::kSMPTE2085:
       matrix = gfx::ColorSpace::MatrixID::YDZDX;
       break;
@@ -362,9 +359,6 @@ webrtc::ColorSpace GfxToWebRtcColorSpace(const gfx::ColorSpace& color_space) {
       break;
     case gfx::ColorSpace::MatrixID::BT2020_NCL:
       matrix = webrtc::ColorSpace::MatrixID::kBT2020_NCL;
-      break;
-    case gfx::ColorSpace::MatrixID::BT2020_CL:
-      matrix = webrtc::ColorSpace::MatrixID::kBT2020_CL;
       break;
     case gfx::ColorSpace::MatrixID::YDZDX:
       matrix = webrtc::ColorSpace::MatrixID::kSMPTE2085;

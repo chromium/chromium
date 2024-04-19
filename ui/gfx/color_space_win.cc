@@ -51,7 +51,6 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     case gfx::ColorSpace::MatrixID::FCC:
     case gfx::ColorSpace::MatrixID::YCOCG:
     case gfx::ColorSpace::MatrixID::BT2020_NCL:
-    case gfx::ColorSpace::MatrixID::BT2020_CL:
     case gfx::ColorSpace::MatrixID::YDZDX:
     case gfx::ColorSpace::MatrixID::INVALID:
       // Not handled
@@ -273,7 +272,6 @@ D3D11_VIDEO_PROCESSOR_COLOR_SPACE ColorSpaceWin::GetD3D11ColorSpace(
     case gfx::ColorSpace::MatrixID::FCC:
     case gfx::ColorSpace::MatrixID::YCOCG:
     case gfx::ColorSpace::MatrixID::BT2020_NCL:
-    case gfx::ColorSpace::MatrixID::BT2020_CL:
     case gfx::ColorSpace::MatrixID::YDZDX:
     case gfx::ColorSpace::MatrixID::INVALID:
       // Not handled

@@ -746,7 +746,6 @@ const char* ColorSpaceMatrixIdToString(gfx::ColorSpace::MatrixID id) {
     MATCH_ENUM_CASE(MatrixID, SMPTE240M)
     MATCH_ENUM_CASE(MatrixID, YCOCG)
     MATCH_ENUM_CASE(MatrixID, BT2020_NCL)
-    MATCH_ENUM_CASE(MatrixID, BT2020_CL)
     MATCH_ENUM_CASE(MatrixID, YDZDX)
     MATCH_ENUM_CASE(MatrixID, GBR)
   }
@@ -826,7 +825,6 @@ uint8_t StringToColorSpaceMatrixId(const std::string& token) {
   MATCH_ENUM_CASE(MatrixID, SMPTE240M)
   MATCH_ENUM_CASE(MatrixID, YCOCG)
   MATCH_ENUM_CASE(MatrixID, BT2020_NCL)
-  MATCH_ENUM_CASE(MatrixID, BT2020_CL)
   MATCH_ENUM_CASE(MatrixID, YDZDX)
   MATCH_ENUM_CASE(MatrixID, GBR)
   return -1;

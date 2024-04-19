@@ -119,7 +119,6 @@ gfx::ColorSpace::MatrixID MFMatrixToColorSpace(uint32_t mf_matrix) {
     case MFVideoTransferMatrix_BT2020_10:
       return gfx::ColorSpace::MatrixID::BT2020_NCL;
     case MFVideoTransferMatrix_BT2020_12:
-      return gfx::ColorSpace::MatrixID::BT2020_CL;
     default:
       return gfx::ColorSpace::MatrixID::INVALID;
   }
@@ -136,8 +135,6 @@ MFVideoTransferMatrix ColorSpaceToMFMatrix(
       return MFVideoTransferMatrix_SMPTE240M;
     case gfx::ColorSpace::MatrixID::BT2020_NCL:
       return MFVideoTransferMatrix_BT2020_10;
-    case gfx::ColorSpace::MatrixID::BT2020_CL:
-      return MFVideoTransferMatrix_BT2020_12;
     default:
       return MFVideoTransferMatrix_Unknown;
   }
