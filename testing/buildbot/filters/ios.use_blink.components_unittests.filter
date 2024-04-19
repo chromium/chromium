@@ -91,16 +91,46 @@
 -FormMutationFormControlElements.RemovedFormControlElement/7
 -FormMutationFormControlElements.RemovedFormControlElement/8
 -FormMutationFormControlElements.RemovedFormControlElement/9
+
+# TODO(crbug.com/335686693): FormMutationTests have been failing since
+# https://crrev.com/c/5460162. Currently they fail with use_blink due to
+# spinning up on an unexpected thread.
 -FormMutationTest.AddForm/0
 -FormMutationTest.AddForm/1
--FormMutationTest.FormRemovalRegistered/0
--FormMutationTest.FormRemovalRegistered/1
+-FormMutationTest.AddForm/2
+-FormMutationTest.AddForm/3
+-FormMutationTest.PasswordFormRemovalRegistered/0
+-FormMutationTest.PasswordFormRemovalRegistered/1
+-FormMutationTest.PasswordFormRemovalRegistered/2
+-FormMutationTest.PasswordFormRemovalRegistered/3
+-FormMutationTest.RemoveFormlessFields/0
+-FormMutationTest.RemoveFormlessFields/1
+-FormMutationTest.RemoveFormlessFields/2
+-FormMutationTest.RemoveFormlessFields/3
 -FormMutationTest.RemoveFormlessPasswordFields/0
 -FormMutationTest.RemoveFormlessPasswordFields/1
+-FormMutationTest.RemoveFormlessPasswordFields/2
+-FormMutationTest.RemoveFormlessPasswordFields/3
+-FormMutationTest.RemoveMultipleForms/0
+-FormMutationTest.RemoveMultipleForms/1
+-FormMutationTest.RemoveMultipleForms/2
+-FormMutationTest.RemoveMultipleForms/3
+-FormMutationTest.RemoveMultipleFormsAndFormlessFields/0
+-FormMutationTest.RemoveMultipleFormsAndFormlessFields/1
+-FormMutationTest.RemoveMultipleFormsAndFormlessFields/2
+-FormMutationTest.RemoveMultipleFormsAndFormlessFields/3
+-FormMutationTest.RemoveNonPasswordForm/0
+-FormMutationTest.RemoveNonPasswordForm/1
+-FormMutationTest.RemoveNonPasswordForm/2
+-FormMutationTest.RemoveNonPasswordForm/3
 -FormMutationTest.RemovedAndAddedFormsRegistered/0
 -FormMutationTest.RemovedAndAddedFormsRegistered/1
+-FormMutationTest.RemovedAndAddedFormsRegistered/2
+-FormMutationTest.RemovedAndAddedFormsRegistered/3
 -FormMutationTest.RemovedAndAddedFormsRegistered_WithDroppedMessages/0
 -FormMutationTest.RemovedAndAddedFormsRegistered_WithDroppedMessages/1
+-FormMutationTest.RemovedAndAddedFormsRegistered_WithDroppedMessages/2
+-FormMutationTest.RemovedAndAddedFormsRegistered_WithDroppedMessages/3
 
 # TODO(crbug.com/1505328): Test currently fails on iOS blink.
 -FormJsTest.GetIframeElements
