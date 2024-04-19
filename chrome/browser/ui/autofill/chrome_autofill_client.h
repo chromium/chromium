@@ -158,10 +158,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       base::OnceClosure cancel_mandatory_reauth_callback,
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   void ShowMandatoryReauthOptInConfirmation() override;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void HideVirtualCardEnrollBubbleAndIconIfVisible() override;
-#endif
 #if !BUILDFLAG(IS_ANDROID)
+  void HideVirtualCardEnrollBubbleAndIconIfVisible() override;
   void ShowWebauthnOfferDialog(
       WebauthnDialogCallback offer_dialog_callback) override;
   void ShowWebauthnVerifyPendingDialog(
