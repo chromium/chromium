@@ -320,6 +320,7 @@ public class ToolbarManager
             new ObservableSupplierImpl<>();
     private TabStripHeightSupplier mTabStripHeightSupplier;
     private TabStripHeightObserver mTabStripHeightObserver;
+    private @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private TabGroupUi mTabGroupUi;
 
@@ -583,7 +584,7 @@ public class ToolbarManager
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable View baseChromeLayout,
             ObservableSupplier<ReadAloudController> readAloudControllerSupplier,
-            DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -614,6 +615,7 @@ public class ToolbarManager
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, profileSupplier, mHandler);
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
@@ -638,7 +640,6 @@ public class ToolbarManager
                         });
         mControlContainer = controlContainer;
         mToolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
-        assert mControlContainer != null;
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
         // We need to capture a reference to setBookmarkModel/setCurrentProfile in order to remove
@@ -679,7 +680,7 @@ public class ToolbarManager
                         ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)
                                 ? mActivityLifecycleDispatcher
                                 : null);
-        mAppThemeColorProvider.setAppHeaderStateProvider(desktopWindowStateProvider);
+        mAppThemeColorProvider.setAppHeaderStateProvider(mDesktopWindowStateProvider);
         // Observe tint changes to update sub-components that rely on the tint (crbug.com/1077684).
         mAppThemeColorProvider.addTintObserver(this);
         mCustomTabThemeColorProvider = new SettableThemeColorProvider(/* context= */ mActivity);
@@ -1312,6 +1313,11 @@ public class ToolbarManager
                                 this::onReadAloudReadabilityUpdated);
                     }
                 });
+
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.addObserver(mControlContainer);
+        }
+
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
 
@@ -2010,6 +2016,10 @@ public class ToolbarManager
             mReadAloudControllerSupplier
                     .get()
                     .removeReadabilityUpdateListener(this::onReadAloudReadabilityUpdated);
+        }
+
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.removeObserver(mControlContainer);
         }
 
         mTabObscuringHandler.removeObserver(this);

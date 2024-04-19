@@ -7,10 +7,15 @@ package org.chromium.chrome.browser.toolbar.top;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Rect;
+import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
 import org.junit.Before;
@@ -21,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.FeatureList;
@@ -46,6 +52,8 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter.ToolbarInMotionStage;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.ui.base.TestActivity;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
@@ -399,5 +407,67 @@ public class ToolbarControlContainerTest {
 
         when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(false);
         verifyIsDirtyWasAllowedForSnapshot(difference);
+    }
+
+    @Test
+    public void testTempDrawableWithAppHeaderState() {
+        TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
+        ToolbarControlContainer controlContainer = new ToolbarControlContainer(activity, null);
+        // This is needed for the control container to read the height of the toolbar.
+        controlContainer.setToolbarForTesting(mToolbar);
+
+        // Set app header with 10px padding on left, 20px on right, and 50px height.
+        doReturn(50).when(mToolbar).getTabStripHeight();
+        var appHeaderState = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50));
+        controlContainer.onAppHeaderStateChanged(appHeaderState);
+        assertNotNull(
+                "Control container background is null after app header state change.",
+                controlContainer.getBackground());
+
+        LayerDrawable background = (LayerDrawable) controlContainer.getBackground();
+        final int tabDrawableIndex = 1;
+        assertEquals(
+                "Left padding for tab drawable is wrong.",
+                10,
+                background.getLayerInsetLeft(tabDrawableIndex));
+        assertEquals(
+                "Right padding for tab drawable is wrong.",
+                20,
+                background.getLayerInsetRight(tabDrawableIndex));
+
+        controlContainer.onAppHeaderStateChanged(new AppHeaderState(new Rect(), new Rect()));
+        background = (LayerDrawable) controlContainer.getBackground();
+        assertEquals(
+                "Left padding for tab drawable is wrong.",
+                0,
+                background.getLayerInsetLeft(tabDrawableIndex));
+        assertEquals(
+                "Right padding for tab drawable is wrong.",
+                0,
+                background.getLayerInsetRight(tabDrawableIndex));
+
+        activity.finish();
+    }
+
+    @Test
+    public void testTempDrawableAfterCompositorInitialized() {
+        TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
+        ToolbarControlContainer controlContainer = new ToolbarControlContainer(activity, null);
+        // This is needed for the control container to read the height of the toolbar.
+        controlContainer.setToolbarForTesting(mToolbar);
+        controlContainer.setCompositorBackgroundInitialized();
+        assertNull(
+                "Control container background should be null after app header state change.",
+                controlContainer.getBackground());
+
+        // Set app header with 10px padding on left, 20px on right, and 50px height.
+        doReturn(50).when(mToolbar).getTabStripHeight();
+        var appHeaderState = new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50));
+        controlContainer.onAppHeaderStateChanged(appHeaderState);
+        assertNull(
+                "Control container background should not respond to app header state anymore.",
+                controlContainer.getBackground());
+
+        activity.finish();
     }
 }

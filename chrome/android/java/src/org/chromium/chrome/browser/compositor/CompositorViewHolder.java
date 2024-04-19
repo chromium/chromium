@@ -577,7 +577,7 @@ public class CompositorViewHolder extends FrameLayout
                     final ViewGroup controlContainerVG = (ViewGroup) mControlContainer;
                     mCompositorView.setBackgroundResource(0);
                     if (controlContainerVG != null) {
-                        controlContainerVG.setBackgroundResource(0);
+                        mControlContainer.setCompositorBackgroundInitialized();
                     }
                 };
     }
