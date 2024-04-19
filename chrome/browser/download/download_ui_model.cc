@@ -357,9 +357,7 @@ std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
       // TODO(crbug.com/1491184): Implement UX for this danger type.
       return u"";
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
-      // TODO(b/327392327): Implement UX for this danger type.
-      NOTREACHED();
-      break;
+      return l10n_util::GetStringUTF16(IDS_PROMPT_DOWNLOAD_BLOCKED_SCAN_FAILED);
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
@@ -1033,9 +1031,8 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
                 IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNED_FAILED_UPDATED),
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_SUSPICIOUS));
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
-      // TODO(b/327392327): Implement message for this danger type.
-      NOTREACHED();
-      break;
+      // "Blocked • Scan failed"
+      return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_STATUS_SCAN_FAILED);
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:

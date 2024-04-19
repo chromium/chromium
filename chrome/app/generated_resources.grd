@@ -2243,6 +2243,10 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown in the download shelf when a download contains sensitive content, and the admin has chosen to block the file">
         Your organization's policies aren't met
       </message>
+      <message name="IDS_PROMPT_DOWNLOAD_BLOCKED_SCAN_FAILED"
+        desc="Message shown in the download shelf when the deep scan of the file fails and the admin has chosen to block the file">
+        Scan failed. This file is blocked by your administrator
+      </message>
       <message name="IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_OPENED_DANGEROUS"
         desc="Message shown in the download shelf when a download is finished being scanned, and issues were found">
         This file is dangerous
@@ -3196,6 +3200,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Dangerous warning for a file with sensitive content">
         Sensitive content
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_SCAN_FAILED"
+               desc="Dangerous warning for a file with failed scan">
+        Scan failed
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_WARNING"
                desc="Subpage summary text of warning for download item that contains sensitive content">
         Your organization recommends deleting this file because it has sensitive content
@@ -3231,6 +3239,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_CANCEL"
         desc="Subpage button to cancel a download deep scan">
         Cancel
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SCAN_FAILED"
+               desc="Subpage summary of dangerous warning for a file with failed scan.">
+        Your organization blocked this file because the scan failed.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_TRY_AGAIN"
                desc="Retry button when a download is failed">

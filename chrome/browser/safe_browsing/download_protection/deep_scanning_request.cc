@@ -681,8 +681,11 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
   } else if (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
              analysis_settings_.block_password_protected_files) {
     download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
+  } else if (enterprise_connectors::ResultIsFailClosed(result) &&
+             analysis_settings_.default_action ==
+                 enterprise_connectors::DefaultAction::kBlock) {
+    download_result = DownloadCheckResult::BLOCKED_SCAN_FAILED;
   }
-  // TODO(b/327392327): Add fail closed enum (`BLOCKED_SCAN_FAILED`) logic here.
 
   LogDeepScanResult(download_result, trigger_,
                     DownloadItemWarningData::IsEncryptedArchive(item_));

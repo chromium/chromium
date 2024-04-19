@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -1615,6 +1616,81 @@ TEST_F(DeepScanningReportingTest, Timeout) {
   run_loop.Run();
 
   EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
+}
+
+class DeepScanningDownloadFailClosedTest
+    : public DeepScanningRequestTest,
+      public testing::WithParamInterface<
+          std::tuple<safe_browsing::BinaryUploadService::Result, bool>> {
+ public:
+  safe_browsing::BinaryUploadService::Result upload_result() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool should_fail_closed() const { return std::get<1>(GetParam()); }
+
+  // Use a string since the setting value is inserted into a JSON policy.
+  const char* default_action_setting_value() const {
+    return should_fail_closed() ? "block" : "allow";
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeepScanningDownloadFailClosedTest,
+    testing::Combine(
+        testing::Values(
+            safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE,
+            safe_browsing::BinaryUploadService::Result::TIMEOUT,
+            safe_browsing::BinaryUploadService::Result::FAILED_TO_GET_TOKEN,
+            safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS,
+            safe_browsing::BinaryUploadService::Result::UNKNOWN),
+        testing::Bool()));
+
+TEST_P(DeepScanningDownloadFailClosedTest, HandlesDefaultActionCorrectly) {
+  constexpr char kDefaultActionPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "default_action": "%s"
+    })";
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      base::StringPrintf(kDefaultActionPref, default_action_setting_value()));
+
+  base::RunLoop run_loop;
+  DeepScanningRequest request(
+      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      DownloadCheckResult::SAFE,
+      base::BindLambdaForTesting([this, quit_closure = run_loop.QuitClosure()](
+                                     DownloadCheckResult result) {
+        SetLastResult(result);
+        if (result != DownloadCheckResult::ASYNC_SCANNING) {
+          quit_closure.Run();
+        }
+      }),
+      &download_protection_service_, settings().value(),
+      /*password=*/std::nullopt);
+
+  download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+      download_path_, upload_result(),
+      enterprise_connectors::ContentAnalysisResponse());
+
+  request.Start();
+
+  run_loop.Run();
+
+  if (should_fail_closed()) {
+    EXPECT_EQ(DownloadCheckResult::BLOCKED_SCAN_FAILED, last_result_);
+  } else {
+    EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
+  }
 }
 
 class DeepScanningDownloadRestrictionsTest

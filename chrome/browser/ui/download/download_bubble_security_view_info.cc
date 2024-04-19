@@ -183,7 +183,8 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
       return;
     }
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED: {
-      // TODO(b/327392327): Implement UX for this danger type.
+      warning_summary_ = l10n_util::GetStringUTF16(
+          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SCAN_FAILED);
       return;
     }
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
