@@ -1541,6 +1541,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_PERFORMANCE_SETTINGS);
       break;
+    case IDC_SET_BROWSER_AS_DEFAULT:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.SetBrowserAsDefault", delta);
+      }
+      LogMenuAction(MENU_ACTION_SET_BROWSER_AS_DEFAULT);
+      break;
     default: {
       if (IsOtherProfileCommand(command_id)) {
         if (!uma_action_recorded_) {
