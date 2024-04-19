@@ -921,7 +921,7 @@
     <metric name="apn_source" type="int">
       <summary>
         Indicates the source of the APN. Options are: MODB == 0 , UI == 1,
-        MODEM == 2.
+        MODEM == 2, ADMIN == 4.
         </summary>
     </metric>
     <metric name="tech_used" type="int">
