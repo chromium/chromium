@@ -30,11 +30,6 @@
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 namespace extensions {
 
 namespace {
@@ -322,8 +317,7 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
 #if BUILDFLAG(ENABLE_PDF)
       // The PDF Viewer extension in a webview needs to be a privileged
       // extension in order to load.
-      if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-          extension->id() == extension_misc::kPdfExtensionId) {
+      if (extension->id() == extension_misc::kPdfExtensionId) {
         return mojom::ContextType::kPrivilegedExtension;
       }
 #endif  // BUILDFLAG(ENABLE_PDF)

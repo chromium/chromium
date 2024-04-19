@@ -27,11 +27,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 namespace extensions {
 
 ResourceRequestPolicy::ResourceRequestPolicy(Dispatcher* dispatcher)
@@ -129,10 +124,9 @@ bool ResourceRequestPolicy::CanRequestResource(
 
 #if BUILDFLAG(ENABLE_PDF)
   // Handle specific cases for the PDF viewer.
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      extension_origin.scheme() == kExtensionScheme &&
+  if (extension_origin.scheme() == kExtensionScheme &&
       extension_origin.host() == extension_misc::kPdfExtensionId) {
-    // For OOPIF PDF viewer, `page_origin` doesn't match the `extension_origin`,
+    // For the PDF viewer, `page_origin` doesn't match the `extension_origin`,
     // but the PDF extension frame should still be able to request resources
     // from itself. The PDF content frame should also be able to request
     // resources from the PDF extension. For both cases, the parent origin of

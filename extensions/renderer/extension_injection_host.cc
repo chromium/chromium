@@ -15,9 +15,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
 #include "components/pdf/common/pdf_util.h"
-#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
@@ -64,10 +62,8 @@ PermissionsData::PageAccess ExtensionInjectionHost::CanExecuteOnFrame(
   // Block executing scripts in the PDF content frame. The parent frame should
   // be the PDF extension frame.
   blink::WebFrame* parent_web_frame = web_local_frame->Parent();
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      parent_web_frame &&
-      IsPdfExtensionOrigin(
-          url::Origin(parent_web_frame->GetSecurityOrigin()))) {
+  if (parent_web_frame && IsPdfExtensionOrigin(url::Origin(
+                              parent_web_frame->GetSecurityOrigin()))) {
     return PermissionsData::PageAccess::kDenied;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
