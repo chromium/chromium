@@ -10,7 +10,7 @@ import {BrowserProxyImpl} from 'chrome://resources/ash/common/multidevice_setup/
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {FakeQuickUnlockPrivate} from '../../../settings/chromeos/fake_quick_unlock_private.js';
+import {FakeQuickUnlockPrivate} from '../../../chromeos/settings/fake_quick_unlock_private.js';
 import {eventToPromise} from '../../../test_util.js';
 
 import {TestMultideviceSetupBrowserProxy} from './setup_succeeded_page_test.js';

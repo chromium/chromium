@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_ui.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
-#include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
-#include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom.h"
+#include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -125,7 +125,7 @@ OSSettingsBrowserTestMixin::OpenOSSettings(const std::string& relative_url) {
   static const char* script = R"(
       (async function () {
          const {register} =
-             await import('chrome://webui-test/settings/chromeos/test_api.js');
+             await import('chrome://webui-test/chromeos/settings/test_api.js');
         await register();
         return true;
       })()

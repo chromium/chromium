@@ -14,7 +14,7 @@ mojom("test_api_mojom") {
     "os_people_page/set_local_password_input_api.test-mojom",
     "test_api.test-mojom",
   ]
-  webui_module_path = "chrome://webui-test/settings/chromeos"
+  webui_module_path = "chrome://webui-test/chromeos/settings"
 }
 
 build_webui_tests("build") {
@@ -374,10 +374,10 @@ build_webui_tests("build") {
   ]
 
   mojo_files = [
-    "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_api.test-mojom-webui.ts",
-    "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_people_page/password_settings_api.test-mojom-webui.ts",
-    "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_people_page/pin_settings_api.test-mojom-webui.ts",
-    "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_people_page/set_local_password_input_api.test-mojom-webui.ts",
+    "$root_gen_dir/chrome/test/data/webui/chromeos/settings/test_api.test-mojom-webui.ts",
+    "$root_gen_dir/chrome/test/data/webui/chromeos/settings/os_people_page/password_settings_api.test-mojom-webui.ts",
+    "$root_gen_dir/chrome/test/data/webui/chromeos/settings/os_people_page/pin_settings_api.test-mojom-webui.ts",
+    "$root_gen_dir/chrome/test/data/webui/chromeos/settings/os_people_page/set_local_password_input_api.test-mojom-webui.ts",
   ]
 
   mojo_files_deps = [ ":test_api_mojom_ts__generator" ]

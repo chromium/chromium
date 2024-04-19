@@ -117,10 +117,10 @@ source_set("browser_tests") {
       "chromeos/print_management/print_management_browsertest.cc",
       "chromeos/print_preview_cros/print_preview_cros_browsertest.cc",
       "chromeos/scanning/scanning_app_browsertest.cc",
+      "chromeos/settings/os_settings_browsertest.cc",
       "chromeos/shimless_rma/shimless_rma_browsertest.cc",
       "chromeos/shortcut_customization/shortcut_customization_browsertest.cc",
       "chromeos/vc_background_ui/vc_background_ui_browsertest.cc",
-      "settings/chromeos/os_settings_browsertest.cc",
     ]
   } else {
     sources += [
@@ -238,7 +238,7 @@ source_set("interactive_ui_tests") {
   if (is_chromeos_ash) {
     sources += [
       "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_test.cc",
-      "settings/chromeos/os_settings_focus_test.cc",
+      "chromeos/settings/os_settings_focus_test.cc",
     ]
   }
 
@@ -524,12 +524,12 @@ generate_grd("build_grd") {
       "chromeos/print_management:build_grdp",
       "chromeos/print_preview_cros:build_grdp",
       "chromeos/scanning:build_grdp",
+      "chromeos/settings:build_grdp",
       "chromeos/shimless_rma:build_grdp",
       "chromeos/shortcut_customization:build_grdp",
       "chromeos/vc_background_ui:build_grdp",
       "cr_components/chromeos:build_grdp",
       "nearby_share:build_grdp",
-      "settings/chromeos:build_grdp",
       "//ui/file_manager:build_tests_gen_grdp",
       "//ui/file_manager:build_tests_grdp",
     ]
@@ -556,6 +556,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/resources.grdp",
       "$target_gen_dir/chromeos/vc_background_ui/resources.grdp",
       "$target_gen_dir/chromeos/scanning/resources.grdp",
+      "$target_gen_dir/chromeos/settings/resources.grdp",
       "$target_gen_dir/chromeos/shimless_rma/resources.grdp",
       "$target_gen_dir/chromeos/os_feedback_ui/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
@@ -563,7 +564,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/web_ui_test_mojo_resources.grdp",
       "$target_gen_dir/cr_components/chromeos/resources.grdp",
       "$target_gen_dir/nearby_share/resources.grdp",
-      "$target_gen_dir/settings/chromeos/resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]

@@ -4,8 +4,8 @@
 
 module ash.settings.mojom;
 
-import "chrome/test/data/webui/settings/chromeos/os_people_page/password_settings_api.test-mojom";
-import "chrome/test/data/webui/settings/chromeos/os_people_page/pin_settings_api.test-mojom";
+import "chrome/test/data/webui/chromeos/settings/os_people_page/password_settings_api.test-mojom";
+import "chrome/test/data/webui/chromeos/settings/os_people_page/pin_settings_api.test-mojom";
 
 // This file contains the definition of the mojo service that can be used in
 // C++ browser tests to manipulate the settings UI. Browser tests that want to

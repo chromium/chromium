@@ -23,7 +23,7 @@ static_library("test_support") {
     "//chrome/test/data/webui:resources_grit",
   ]
   public_deps = [
-    "//chrome/test/data/webui/settings/chromeos:test_api_mojom",
+    "//chrome/test/data/webui/chromeos/settings:test_api_mojom",
     "//mojo/public/cpp/bindings",
   ]
 }

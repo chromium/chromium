@@ -34,9 +34,9 @@ class OSSettingsMochaTest : public WebUIMochaBrowserTest {
       const std::string& test_path,
       const std::string& trigger = std::string("mocha.run()")) {
     // All OS Settings test files are located in the directory
-    // settings/chromeos/.
+    // chromeos/settings/.
     const std::string path_with_parent_directory = base::StrCat({
-        "settings/chromeos/",
+        "chromeos/settings/",
         test_path,
     });
     RunTest(path_with_parent_directory, trigger);
@@ -223,9 +223,9 @@ class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
 
   void RunSettingsTest(const std::string& test_path) {
     // All OS Settings test files are located in the directory
-    // settings/chromeos/.
+    // chromeos/settings/.
     const std::string path_with_parent_directory = base::StrCat({
-        "settings/chromeos/",
+        "chromeos/settings/",
         test_path,
     });
     RunTest(path_with_parent_directory, "mocha.run()");

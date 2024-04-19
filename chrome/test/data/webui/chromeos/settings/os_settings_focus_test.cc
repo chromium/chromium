@@ -14,9 +14,9 @@ class OsSettingsFocusTest : public WebUIMochaFocusTest {
 
   void RunSettingsTest(const std::string& current_path) {
     // All OS Settings test files are located in the directory
-    // settings/chromeos/.
+    // chromeos/settings/.
     const std::string path_with_parent_directory =
-        base::StrCat({std::string("settings/chromeos/"), current_path});
+        base::StrCat({std::string("chromeos/settings/"), current_path});
     RunTest(path_with_parent_directory, "mocha.run()");
   }
 };
