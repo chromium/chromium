@@ -21,6 +21,7 @@ message AggregatableReportHistogramContribution {
   uint64 bucket_high = 1;
   uint64 bucket_low = 2;
   int32 value = 3;
+  optional uint64 filtering_id = 4;
 }
 
 // Proto equivalent of `content::AggregationServicePayloadContents`
@@ -34,6 +35,7 @@ message AggregationServicePayloadContents {
   AggregationServiceMode aggregation_mode = 3;
   int32 max_contributions_allowed = 5;
   optional string aggregation_coordinator_origin = 6;
+  optional uint32 filtering_id_byte_size = 7;
 
   reserved 4;
   reserved "aggregation_coordinator";

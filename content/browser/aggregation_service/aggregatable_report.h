@@ -38,17 +38,22 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
     kHistogram,
   };
 
+  static constexpr size_t kMaximumFilteringIdByteSize = 8;
+
   // The default aggregation coordinator origin will be used if
   // `aggregation_coordinator_origin` is `std::nullopt`.
   // `max_contributions_allowed` specifies the maximum number of contributions
-  // per report for use in padding.
+  // per report for use in padding. `filtering_id_bit_size` specifies how many
+  // bits should be used for the filtering ID encoding; if `std::nullopt`, the
+  // filtering ID must be omitted from the payload.
   AggregationServicePayloadContents(
       Operation operation,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
       blink::mojom::AggregationServiceMode aggregation_mode,
       std::optional<url::Origin> aggregation_coordinator_origin,
-      int max_contributions_allowed);
+      int max_contributions_allowed,
+      std::optional<size_t> filtering_id_byte_size);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -65,6 +70,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   blink::mojom::AggregationServiceMode aggregation_mode;
   std::optional<url::Origin> aggregation_coordinator_origin;
   int max_contributions_allowed;
+  std::optional<size_t> filtering_id_byte_size;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -290,7 +296,13 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // `shared_info.debug_mode` is `kDisabled`. Also returns `std::nullopt` if
   // `failed_send_attempts` is negative or if
   // `payload_contents.max_contributions_allowed` is less than the number of
-  // contributions.
+  // contributions. Also returns `std::nullopt` if
+  // `payload_contents.filtering_id_byte_size` is non-null and either
+  // non-positive or greater than `kMaximumFilteringIdByteSize`. Also returns
+  // `std::nullopt` if any contribution's filtering ID does not fit in the given
+  // `payload_contents.filtering_id_byte_size`; if the given byte size is null,
+  // only null filtering IDs are considered to 'fit', i.e. any non-null value
+  // will mean this returns `std::nullopt`.
   // TODO(alexmt): Add validation for scheduled_report_time being non-null/inf.
   static std::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,
@@ -300,15 +312,9 @@ class CONTENT_EXPORT AggregatableReportRequest {
       base::flat_map<std::string, std::string> additional_fields = {},
       int failed_send_attempts = 0);
 
-  // Returns `std::nullopt` if `payload_contents.contributions.size()` or
-  // `processing_url.size()` is not valid for the
-  // `payload_contents.aggregation_mode` (see
-  // `IsNumberOfHistogramContributionsValid()` and
-  // `IsNumberOfProcessingUrlsValid`, respectively). Also returns
-  // `std::nullopt` if any contribution has a negative value, if
-  // `shared_info.report_id` is not valid, or if `debug_key.has_value()` but
-  // `shared_info.debug_mode` is `kDisabled`. Also returns `std::nullopt` if
-  // `failed_send_attempts` is negative
+  // Returns `std:nullopt` whenever `Create()` would for that condition too.
+  // Also returns `std::nullopt` if `processing_url.size()` is not valid for the
+  // `payload_contents.aggregation_mode` (see `IsNumberOfProcessingUrlsValid`).
   static std::optional<AggregatableReportRequest> CreateForTesting(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,

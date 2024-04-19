@@ -20,6 +20,10 @@ extern CONTENT_EXPORT const base::FeatureParam<std::string>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrivacySandboxAggregationServiceReportPadding);
 
+// Enables filtering IDs. See crbug.com/330744610.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPrivacySandboxAggregationServiceFilteringIds);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_FEATURES_H_

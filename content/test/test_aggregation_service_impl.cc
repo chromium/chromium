@@ -130,7 +130,9 @@ void TestAggregationServiceImpl::AssembleReport(
           /*filtering_id=*/std::nullopt)},
       ConvertToAggregationMode(request.aggregation_mode),
       /*aggregation_coordinator_origin=*/std::nullopt,
-      /*max_contributions_allowed=*/20);
+      /*max_contributions_allowed=*/20,
+      // TODO(crbug.com/330744610): Allow setting.
+      /*filtering_id_byte_size=*/std::nullopt);
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),

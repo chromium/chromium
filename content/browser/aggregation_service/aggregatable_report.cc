@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+#include <bit>
 #include <limits>
 #include <optional>
 #include <ostream>
@@ -25,6 +27,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -55,6 +58,8 @@
 namespace content {
 
 namespace {
+
+constexpr size_t kBitsPerByte = 8;
 
 // Payload contents:
 constexpr char kHistogramValue[] = "histogram";
@@ -186,10 +191,35 @@ std::array<uint8_t, 16u> U128ToBigEndian(absl::uint128 integer) {
 
 void AppendEncodedContributionToCborArray(
     cbor::Value::ArrayValue& array,
-    const blink::mojom::AggregatableReportHistogramContribution& contribution) {
+    const blink::mojom::AggregatableReportHistogramContribution& contribution,
+    std::optional<size_t> filtering_id_byte_size) {
   cbor::Value::MapValue map;
   map.emplace("bucket", U128ToBigEndian(contribution.bucket));
   map.emplace("value", base::numerics::U32ToBigEndian(contribution.value));
+
+  // Only include filtering ID in the format if byte size is non-null.
+  if (filtering_id_byte_size.has_value()) {
+    uint64_t filtering_id = contribution.filtering_id.value_or(0);
+    CHECK_LE(static_cast<size_t>(std::bit_width(filtering_id)),
+             kBitsPerByte * filtering_id_byte_size.value());
+
+    static_assert(
+        AggregationServicePayloadContents::kMaximumFilteringIdByteSize == 8);
+    std::array<uint8_t, 8u> encoded_id;
+    encoded_id.fill(0);
+    base::make_span(encoded_id)
+        .copy_from(base::numerics::U64ToBigEndian(filtering_id));
+
+    // Note that the payload will have a length dependent on the choice of
+    // `filtering_id_byte_size` here. APIs using this field should ensure that
+    // this value is not dependent on cross-site data (or only allow it to vary
+    // in debug mode).
+    map.emplace("id",
+                base::span(encoded_id)
+                    .last(static_cast<size_t>(filtering_id_byte_size.value())));
+  } else {
+    CHECK(!contribution.filtering_id.has_value());
+  }
   array.emplace_back(std::move(map));
 }
 
@@ -205,9 +235,10 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
   cbor::Value::ArrayValue data;
   base::ranges::for_each(
       payload_contents.contributions,
-      [&data](const blink::mojom::AggregatableReportHistogramContribution&
-                  contribution) {
-        AppendEncodedContributionToCborArray(data, contribution);
+      [&](const blink::mojom::AggregatableReportHistogramContribution&
+              contribution) {
+        AppendEncodedContributionToCborArray(
+            data, contribution, payload_contents.filtering_id_byte_size);
       });
 
   int number_of_null_contributions_to_add = 0;
@@ -223,8 +254,10 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
 
   for (int i = 0; i < number_of_null_contributions_to_add; ++i) {
     AppendEncodedContributionToCborArray(
-        data, blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/0, /*value=*/0, /*filtering_id=*/std::nullopt));
+        data,
+        blink::mojom::AggregatableReportHistogramContribution(
+            /*bucket=*/0, /*value=*/0, /*filtering_id=*/std::nullopt),
+        payload_contents.filtering_id_byte_size);
   }
 
   value.emplace("data", std::move(data));
@@ -304,11 +337,14 @@ ConvertPayloadContentsFromProto(
       contributions;
   for (const proto::AggregatableReportHistogramContribution&
            contribution_proto : proto.contributions()) {
+    std::optional<uint64_t> filtering_id;
+    if (contribution_proto.has_filtering_id()) {
+      filtering_id = contribution_proto.filtering_id();
+    }
     contributions.emplace_back(
         /*bucket=*/absl::MakeUint128(contribution_proto.bucket_high(),
                                      contribution_proto.bucket_low()),
-        /*value=*/contribution_proto.value(),
-        /*filtering_id=*/std::nullopt);
+        /*value=*/contribution_proto.value(), filtering_id);
   }
 
   blink::mojom::AggregationServiceMode aggregation_mode =
@@ -338,10 +374,15 @@ ConvertPayloadContentsFromProto(
     max_contributions_allowed = contributions.size();
   }
 
-  // Report storage doesn't support multiple aggregation coordinators.
+  std::optional<size_t> filtering_id_byte_size;
+  if (proto.has_filtering_id_byte_size()) {
+    filtering_id_byte_size = proto.filtering_id_byte_size();
+  }
+
   return AggregationServicePayloadContents(
       operation, std::move(contributions), aggregation_mode,
-      std::move(aggregation_coordinator_origin), max_contributions_allowed);
+      std::move(aggregation_coordinator_origin), max_contributions_allowed,
+      filtering_id_byte_size);
 }
 
 std::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
@@ -424,9 +465,9 @@ void ConvertPayloadContentsToProto(
         absl::Uint128High64(contribution.bucket));
     contribution_proto->set_bucket_low(absl::Uint128Low64(contribution.bucket));
     contribution_proto->set_value(contribution.value);
-
-    // TODO(crbug.com/330744610): Add support for filtering IDs.
-    CHECK(!contribution.filtering_id.has_value());
+    if (contribution.filtering_id.has_value()) {
+      contribution_proto->set_filtering_id(contribution.filtering_id.value());
+    }
   }
 
   switch (payload_contents.aggregation_mode) {
@@ -448,6 +489,11 @@ void ConvertPayloadContentsToProto(
 
   out->set_max_contributions_allowed(
       payload_contents.max_contributions_allowed);
+
+  if (payload_contents.filtering_id_byte_size.has_value()) {
+    out->set_filtering_id_byte_size(
+        payload_contents.filtering_id_byte_size.value());
+  }
 }
 
 void ConvertSharedInfoToProto(const AggregatableReportSharedInfo& shared_info,
@@ -497,14 +543,47 @@ proto::AggregatableReportRequest ConvertReportRequestToProto(
 }
 
 void MaybeVerifyPayloadLength(size_t max_contributions_allowed,
-                              size_t payload_length) {
+                              size_t payload_length,
+                              std::optional<size_t> filtering_id_byte_size) {
   // TODO(alexmt): Replace with a more general method to ensure that the payload
   // length is deterministic.
   // Note that the 747 byte expectation derives from the following:
   // 27 (baseline size with no contributions) + 20 * 36 (size per contribution)
-  if (max_contributions_allowed == 20 && payload_length != 747) {
-    base::debug::DumpWithoutCrashing();
+  // Adding filtering IDs adds 20 * (4 + filtering_id_byte_size.value()).
+  if (max_contributions_allowed == 20) {
+    size_t expected_payload_length = 747;
+    if (filtering_id_byte_size.has_value()) {
+      expected_payload_length += 80 + 20 * filtering_id_byte_size.value();
+    }
+    if (payload_length != expected_payload_length) {
+      base::debug::DumpWithoutCrashing();
+    }
   }
+}
+
+// Note that null filtering IDs are considered to 'fit in' to all byte sizes and
+// only null filtering IDs are considered to 'fit in' to a null byte size.
+bool FilteringIdsFitInByteSize(
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        contributions,
+    std::optional<size_t> filtering_id_byte_size) {
+  if (!filtering_id_byte_size.has_value()) {
+    return base::ranges::none_of(
+        contributions,
+        [&](const blink::mojom::AggregatableReportHistogramContribution&
+                contribution) {
+          return contribution.filtering_id.has_value();
+        });
+  }
+
+  return base::ranges::none_of(
+      contributions,
+      [&](const blink::mojom::AggregatableReportHistogramContribution&
+              contribution) {
+        return static_cast<size_t>(
+                   std::bit_width(contribution.filtering_id.value_or(0))) >
+               kBitsPerByte * filtering_id_byte_size.value();
+      });
 }
 
 }  // namespace
@@ -523,12 +602,14 @@ AggregationServicePayloadContents::AggregationServicePayloadContents(
         contributions,
     blink::mojom::AggregationServiceMode aggregation_mode,
     std::optional<url::Origin> aggregation_coordinator_origin,
-    int max_contributions_allowed)
+    int max_contributions_allowed,
+    std::optional<size_t> filtering_id_byte_size)
     : operation(operation),
       contributions(std::move(contributions)),
       aggregation_mode(aggregation_mode),
       aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
-      max_contributions_allowed(max_contributions_allowed) {}
+      max_contributions_allowed(max_contributions_allowed),
+      filtering_id_byte_size(filtering_id_byte_size) {}
 
 AggregationServicePayloadContents::AggregationServicePayloadContents(
     const AggregationServicePayloadContents& other) = default;
@@ -677,12 +758,6 @@ AggregatableReportRequest::CreateInternal(
     return std::nullopt;
   }
 
-  // TODO(crbug.com/330744610): Add support for filtering IDs.
-  CHECK(base::ranges::none_of(
-      payload_contents.contributions,
-      [](const blink::mojom::AggregatableReportHistogramContribution&
-             contribution) { return contribution.filtering_id.has_value(); }));
-
   if (!shared_info.report_id.is_valid()) {
     return std::nullopt;
   }
@@ -700,6 +775,28 @@ AggregatableReportRequest::CreateInternal(
   if (payload_contents.max_contributions_allowed <
       static_cast<int>(payload_contents.contributions.size())) {
     return std::nullopt;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kPrivacySandboxAggregationServiceFilteringIds)) {
+    if (payload_contents.filtering_id_byte_size.has_value() &&
+        (*payload_contents.filtering_id_byte_size <= 0 ||
+         *payload_contents.filtering_id_byte_size >
+             AggregationServicePayloadContents::kMaximumFilteringIdByteSize)) {
+      return std::nullopt;
+    }
+
+    if (!FilteringIdsFitInByteSize(payload_contents.contributions,
+                                   payload_contents.filtering_id_byte_size)) {
+      return std::nullopt;
+    }
+  } else {
+    // Ignore any values provided if the feature is disabled.
+    payload_contents.filtering_id_byte_size.reset();
+    base::ranges::for_each(
+        payload_contents.contributions,
+        [](blink::mojom::AggregatableReportHistogramContribution&
+               contribution) { contribution.filtering_id.reset(); });
   }
 
   // Ensure the ordering of urls is deterministic. This is required for
@@ -851,7 +948,8 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
               kPrivacySandboxAggregationServiceReportPadding)) {
         MaybeVerifyPayloadLength(
             report_request.payload_contents().max_contributions_allowed,
-            /*payload_length=*/unencrypted_payloads[0].size());
+            /*payload_length=*/unencrypted_payloads[0].size(),
+            report_request.payload_contents().filtering_id_byte_size);
       }
       break;
     }

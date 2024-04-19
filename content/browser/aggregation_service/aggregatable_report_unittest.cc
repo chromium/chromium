@@ -7,12 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
@@ -174,6 +176,33 @@ void VerifyReport(
           uint32_t value = base::numerics::U32FromBigEndian(
               base::as_byte_span(value_byte_string).first<4u>());
           EXPECT_EQ(int64_t{value}, expected_contributions[j].value);
+
+          ASSERT_EQ(
+              CborMapContainsKeyAndType(data_map, "id",
+                                        cbor::Value::Type::BYTE_STRING),
+              expected_payload_contents.filtering_id_byte_size.has_value());
+          if (expected_payload_contents.filtering_id_byte_size.has_value()) {
+            size_t filtering_id_byte_size =
+                expected_payload_contents.filtering_id_byte_size.value();
+
+            const cbor::Value::BinaryValue& filtering_id_byte_string =
+                data_map.at(cbor::Value("id")).GetBytestring();
+            ASSERT_EQ(filtering_id_byte_string.size(), filtering_id_byte_size);
+
+            std::array<uint8_t, 8u> padded_filtering_id_bytestring;
+            padded_filtering_id_bytestring.fill(0);
+            base::as_writable_byte_span(padded_filtering_id_bytestring)
+                .last(filtering_id_byte_size)
+                .copy_from(filtering_id_byte_string);
+
+            CHECK_LE(expected_payload_contents.filtering_id_byte_size.value(),
+                     8u);
+            uint64_t filtering_id = base::numerics::U64FromBigEndian(
+                base::make_span(padded_filtering_id_bytestring));
+
+            EXPECT_EQ(filtering_id,
+                      expected_contributions[j].filtering_id.value_or(0));
+          }
         }
 
         EXPECT_FALSE(payload_map.contains(cbor::Value("dpf_key")));
@@ -459,6 +488,86 @@ TEST_P(AggregatableReportTest, AdditionalFieldsPresent_ValidReportReturned) {
       report, expected_payload_contents, example_request.shared_info(),
       expected_num_processing_urls, /*expected_debug_key=*/std::nullopt,
       expected_additional_fields, std::move(hpke_keys),
+      /*should_pad_contributions=*/GetParam()));
+}
+
+class AggregatableReportFilteringIdTest : public AggregatableReportTest {
+ public:
+  void SetUp() override {
+    AggregatableReportTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        kPrivacySandboxAggregationServiceFilteringIds);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(AggregatableReportFilteringIdTest,
+       FilteringIdByteSizeSpecified_ValidReportReturned) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.filtering_id_byte_size = 1;
+
+  std::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info().Clone());
+  ASSERT_TRUE(request.has_value());
+
+  size_t expected_num_processing_urls = request->processing_urls().size();
+
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
+
+  std::optional<AggregatableReport> report =
+      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
+          std::move(request.value()), {hpke_keys[0].GetPublicKey()});
+
+  ASSERT_NO_FATAL_FAILURE(VerifyReport(
+      report, payload_contents, example_request.shared_info(),
+      expected_num_processing_urls, /*expected_debug_key=*/std::nullopt,
+      /*expected_additional_fields=*/{}, std::move(hpke_keys),
+      /*should_pad_contributions=*/GetParam()));
+}
+
+TEST_P(AggregatableReportFilteringIdTest,
+       FilteringIdsSpecified_ValidReportReturned) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.contributions.clear();
+  payload_contents.contributions.emplace_back(/*bucket=*/123, /*value=*/456,
+                                              /*filtering_id=*/std::nullopt);
+  payload_contents.contributions.emplace_back(/*bucket=*/234, /*value=*/567,
+                                              /*filtering_id=*/0);
+  payload_contents.contributions.emplace_back(
+      /*bucket=*/345, /*value=*/678, /*filtering_id=*/(1ULL << (5 * 8)) - 1);
+
+  payload_contents.filtering_id_byte_size = 5;
+
+  std::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info().Clone());
+  ASSERT_TRUE(request.has_value());
+
+  size_t expected_num_processing_urls = request->processing_urls().size();
+
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
+
+  std::optional<AggregatableReport> report =
+      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
+          std::move(request.value()), {hpke_keys[0].GetPublicKey()});
+
+  ASSERT_NO_FATAL_FAILURE(VerifyReport(
+      report, payload_contents, example_request.shared_info(),
+      expected_num_processing_urls, /*expected_debug_key=*/std::nullopt,
+      /*expected_additional_fields=*/{}, std::move(hpke_keys),
       /*should_pad_contributions=*/GetParam()));
 }
 
@@ -1004,6 +1113,181 @@ TEST_P(AggregatableReportTest, EmptyPayloads) {
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
+TEST_P(AggregatableReportFilteringIdTest, FilteringIdByteSizeNullopt) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.filtering_id_byte_size.reset();
+
+  AggregatableReportRequest request =
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info().Clone())
+          .value();
+
+  // The filtering_id_byte_size is correctly serialized and deserialized
+  std::vector<uint8_t> proto = request.Serialize();
+  std::optional<AggregatableReportRequest> parsed_request =
+      AggregatableReportRequest::Deserialize(proto);
+  EXPECT_FALSE(parsed_request.value()
+                   .payload_contents()
+                   .filtering_id_byte_size.has_value());
+
+  // Trying to set any explicit filtering ID will cause an error
+  payload_contents.contributions[0].filtering_id = 0;
+  EXPECT_FALSE(AggregatableReportRequest::Create(
+                   payload_contents, example_request.shared_info().Clone())
+                   .has_value());
+}
+
+TEST_P(AggregatableReportFilteringIdTest, FilteringIdByteSizeMax) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.filtering_id_byte_size =
+      AggregationServicePayloadContents::kMaximumFilteringIdByteSize;
+
+  // Trying to set any explicit filtering ID (or none) should work.
+  const std::optional<uint64_t> kTestCases[] = {
+      std::nullopt, 0, 1, std::numeric_limits<uint64_t>::max()};
+
+  for (const std::optional<uint64_t> test_case : kTestCases) {
+    payload_contents.contributions[0].filtering_id = test_case;
+
+    AggregatableReportRequest request =
+        AggregatableReportRequest::Create(payload_contents,
+                                          example_request.shared_info().Clone())
+            .value();
+
+    // The report is correctly serialized and deserialized
+    std::vector<uint8_t> proto = request.Serialize();
+    std::optional<AggregatableReportRequest> parsed_request =
+        AggregatableReportRequest::Deserialize(proto);
+    EXPECT_EQ(parsed_request.value().payload_contents().filtering_id_byte_size,
+              AggregationServicePayloadContents::kMaximumFilteringIdByteSize);
+    EXPECT_EQ(
+        parsed_request.value().payload_contents().contributions[0].filtering_id,
+        test_case);
+  }
+}
+
+TEST_P(AggregatableReportFilteringIdTest, FilteringIdByteSizeNotMax) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.filtering_id_byte_size = 1;
+
+  // The filtering ID needs to fit in the specified space to be accepted.
+  const struct {
+    std::optional<uint64_t> filtering_id;
+    bool expect_success;
+  } kTestCases[] = {{std::nullopt, true},
+                    {0, true},
+                    {1, true},
+                    {255, true},
+                    {256, false},
+                    {std::numeric_limits<uint64_t>::max(), false}};
+
+  for (const auto& test_case : kTestCases) {
+    payload_contents.contributions[0].filtering_id = test_case.filtering_id;
+
+    std::optional<AggregatableReportRequest> request =
+        AggregatableReportRequest::Create(
+            payload_contents, example_request.shared_info().Clone());
+    EXPECT_EQ(request.has_value(), test_case.expect_success);
+
+    if (!request.has_value()) {
+      continue;
+    }
+
+    // The report is correctly serialized and deserialized
+    std::vector<uint8_t> proto = request->Serialize();
+    std::optional<AggregatableReportRequest> parsed_request =
+        AggregatableReportRequest::Deserialize(proto);
+    EXPECT_EQ(parsed_request.value().payload_contents().filtering_id_byte_size,
+              1);
+    EXPECT_EQ(
+        parsed_request.value().payload_contents().contributions[0].filtering_id,
+        test_case.filtering_id);
+  }
+}
+
+TEST_P(AggregatableReportTest, FilteringIdsIgnoredIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kPrivacySandboxAggregationServiceFilteringIds);
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+
+  // No matter what combination is used (even if typically invalid), the
+  // filtering IDs and byte sizes should be ignored.
+  const struct {
+    std::optional<uint64_t> filtering_id;
+    std::optional<int> filtering_id_byte_size;
+  } kTestCases[] = {
+      {std::nullopt, std::nullopt},
+      {0, std::nullopt},
+      {std::nullopt, 1},
+      {0, 1},
+      {std::numeric_limits<uint64_t>::max(), std::nullopt},
+      {std::numeric_limits<uint64_t>::max(), 1},
+      {std::nullopt, -1},
+      {std::nullopt,
+       AggregationServicePayloadContents::kMaximumFilteringIdByteSize + 1}};
+
+  for (const auto& test_case : kTestCases) {
+    payload_contents.contributions[0].filtering_id = test_case.filtering_id;
+    payload_contents.filtering_id_byte_size = test_case.filtering_id_byte_size;
+
+    AggregatableReportRequest request =
+        AggregatableReportRequest::Create(payload_contents,
+                                          example_request.shared_info().Clone())
+            .value();
+
+    EXPECT_FALSE(request.payload_contents().filtering_id_byte_size.has_value());
+    EXPECT_FALSE(
+        request.payload_contents().contributions[0].filtering_id.has_value());
+  }
+}
+
+TEST_P(AggregatableReportFilteringIdTest, FilteringIdByteSizeTooSmall) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.filtering_id_byte_size = 0;
+  EXPECT_FALSE(AggregatableReportRequest::Create(
+                   payload_contents, example_request.shared_info().Clone())
+                   .has_value());
+
+  payload_contents.filtering_id_byte_size = -1;
+  EXPECT_FALSE(AggregatableReportRequest::Create(
+                   payload_contents, example_request.shared_info().Clone())
+                   .has_value());
+}
+
+TEST_P(AggregatableReportFilteringIdTest, FilteringIdByteSizeTooLarge) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.filtering_id_byte_size =
+      AggregationServicePayloadContents::kMaximumFilteringIdByteSize + 1;
+  EXPECT_FALSE(AggregatableReportRequest::Create(
+                   payload_contents, example_request.shared_info().Clone())
+                   .has_value());
+}
+
 TEST(AggregatableReportProtoMigrationTest,
      NoDebugKeyOrFailedSendAttempts_ParsesCorrectly) {
   // An `AggregatableReport` serialized before the addition of the `debug_key`
@@ -1030,7 +1314,8 @@ TEST(AggregatableReportProtoMigrationTest,
                   /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
-              /*max_contributions_allowed=*/1),
+              /*max_contributions_allowed=*/1,
+              /*filtering_id_byte_size=*/std::nullopt),
           AggregatableReportSharedInfo(
               base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
               base::Uuid::ParseLowercase(
@@ -1076,7 +1361,8 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
                   /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
-              /*max_contributions_allowed=*/1),
+              /*max_contributions_allowed=*/1,
+              /*filtering_id_byte_size=*/std::nullopt),
           AggregatableReportSharedInfo(
               base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
               base::Uuid::ParseLowercase(
@@ -1095,10 +1381,12 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
       deserialized_request.value(), expected_request));
 }
 
-TEST(AggregatableReportProtoMigrationTest,
-     NoAdditionalFieldsOrAggregationCoordinatorOrigin_ParsesCorrectly) {
-  // An `AggregatableReport` serialized before `additional_fields` and
-  // `aggregataion_coordinator_origin` were added to the proto definition.
+TEST(
+    AggregatableReportProtoMigrationTest,
+    NoAdditionalFieldsOrAggregationCoordinatorOriginOrFilteringId_ParsesCorrectly) {
+  // An `AggregatableReport` serialized before `additional_fields`,
+  // `aggregataion_coordinator_origin`, `filtering_id` and
+  // `filtering_id_byte_size` were added to the proto definition.
   const char kHexEncodedOldProto[] =
       "0A071205107B18C803126208D0DA8693FDBECF17122431323334353637382D393061622D"
       "346364652D386631322D3334353637383930616263641A1368747470733A2F2F6578616D"
@@ -1121,7 +1409,8 @@ TEST(AggregatableReportProtoMigrationTest,
                   /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
-              /*max_contributions_allowed=*/1),
+              /*max_contributions_allowed=*/1,
+              /*filtering_id_byte_size=*/std::nullopt),
           AggregatableReportSharedInfo(
               base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
               base::Uuid::ParseLowercase(
@@ -1189,7 +1478,8 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
                     /*filtering_id=*/std::nullopt)},
                 blink::mojom::AggregationServiceMode::kDefault,
                 test_case.aggregation_coordinator_origin,
-                /*max_contributions_allowed=*/20),
+                /*max_contributions_allowed=*/20,
+                /*filtering_id_byte_size=*/std::nullopt),
             AggregatableReportSharedInfo(
                 /*scheduled_report_time=*/base::Time::Now(),
                 /*report_id=*/
@@ -1242,6 +1532,10 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_SetInReport) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AggregatableReportTest, testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AggregatableReportFilteringIdTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace content
