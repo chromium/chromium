@@ -937,12 +937,13 @@ suite('NewTabPageRealboxTest', () => {
     // Input is expected to have been focused before any navigation.
     realbox.$.input.dispatchEvent(new Event('focus'));
 
-    realbox.$.input.value = '  hello  ';
+    realbox.$.input.value = 'hello ';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [
       createSearchMatch({
         allowedToBeDefaultMatch: true,
+        inlineAutocompletion: mojoString16('world'),
       }),
       createUrlMatch(),
     ];
@@ -960,6 +961,13 @@ suite('NewTabPageRealboxTest', () => {
     // First match is selected.
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
 
+    // Before navigation, input should be inline autocompleted.
+    assertEquals('hello world', realbox.$.input.value);
+    let start = realbox.$.input.selectionStart!;
+    let end = realbox.$.input.selectionEnd!;
+    assertEquals('world', realbox.$.input.value.substring(start, end));
+
+    // Pressing enter...
     const shiftEnter = new KeyboardEvent('keydown', {
       bubbles: true,
       cancelable: true,
@@ -980,6 +988,13 @@ suite('NewTabPageRealboxTest', () => {
 
     // Navigation should close the dropdown.
     assertFalse(await areMatchesShowing());
+
+    // After navigation, the inline autocompletion should be applied to the text
+    // shown in the input and there should be no visible selection.
+    assertEquals('hello world', realbox.$.input.value);
+    start = realbox.$.input.selectionStart!;
+    end = realbox.$.input.selectionEnd!;
+    assertEquals('', realbox.$.input.value.substring(start, end));
   });
 
   test(
@@ -1215,6 +1230,9 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
+    // As soon as the new matches arrive, the pending enter triggers a
+    // navigation, which closes the dropdown.
+    assertFalse(await areMatchesShowing());
 
     // First match is selected.
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -1226,9 +1244,6 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(args.areMatchesShowing);
     assertTrue(args.shiftKey);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
-
-    // Navigation should close the dropdown.
-    assertFalse(await areMatchesShowing());
   });
 
   test('pressing Enter on the selected match navigates to it', async () => {
