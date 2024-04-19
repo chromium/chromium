@@ -419,11 +419,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallResult"
-    enum="BooleanSuccess" expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Whether or not computed_hashes.json file was successfully generated and
@@ -436,11 +436,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallTime"
-    units="ms" expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
+    units="ms" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The time taken to successfully create the computed_hashes.json file for an
@@ -451,11 +451,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ContentVerification.FetchFailureError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Error info for fetching verified_contents.json. Recorded when the file
@@ -466,10 +466,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ContentVerification.FetchResult"
-    enum="BooleanSuccess" expires_after="2024-09-22">
-  <owner>vkovalova@google.com</owner>
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Whether or not fetching verified_contents.json succeeded. Recorded when the
@@ -599,11 +600,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.CorruptPolicyExtensionDetected3"
-    enum="ExtensionPolicyReinstallReason" expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
-  <owner>lazyboy@chromium.org</owner>
-  <owner>poromov@chromium.org</owner>
+    enum="ExtensionPolicyReinstallReason" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Fires when we suspect corruption in an enterprise policy forced install
@@ -617,10 +618,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.CorruptPolicyExtensionResolved" units="ms"
-    expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
-  <owner>lazyboy@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>extensions-core@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1707,9 +1709,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheCount" units="units"
-    expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of cached extensions on disk. Reported on Chrome OS during user
@@ -1718,9 +1722,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheSize" units="MB"
-    expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Total size of .crx files in cache on disk. Reported on Chrome OS during user
@@ -1912,9 +1918,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledAndBlockListed" units="count"
-    expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of enterprise policy forced extensions that are blocklisted and thus
@@ -1924,11 +1932,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledCacheStatus"
-    enum="ExtensionInstallationDownloadingCacheStatus"
-    expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
-  <owner>poromov@chromium.org</owner>
+    enum="ExtensionInstallationDownloadingCacheStatus" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <summary>
     Status of cache entry about enterprise policy forced extension. Recorded for
     each forced extension.
@@ -1936,9 +1944,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledCreationStage"
-    enum="ExtensionInstallCreationStage" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ExtensionInstallCreationStage" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The last known intermediate stage of extension when the extension
@@ -1951,9 +1961,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledDownloadingStage"
-    enum="ExtensionInstallationDownloadingStage" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ExtensionInstallationDownloadingStage" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The last known downloading stage of extension downloading process if failure
@@ -1966,10 +1978,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureCacheStatus"
-    enum="ExtensionInstallationDownloadingCacheStatus"
-    expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ExtensionInstallationDownloadingCacheStatus" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Status of cache entry about enterprise policy forced extension which failed
@@ -1981,9 +1994,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureCrxInstallError"
-    enum="ExtensionInstallationCrxInstallError" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ExtensionInstallationCrxInstallError" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Detailed reason why CRX installation failed for enterprise policy forced
@@ -1994,9 +2009,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureManifestInvalidAppStatusError"
-    enum="ManifestInvalidAppStatusError" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ManifestInvalidAppStatusError" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The detailed reason why enterprise policy forced extensions had failed to
@@ -2009,9 +2026,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureNoUpdatesInfo"
-    enum="ExtensionNoUpdatesInfo" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ExtensionNoUpdatesInfo" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The info field in the update manifest fetched from the server for enterprise
@@ -2024,9 +2043,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureSandboxUnpackFailureReason2"
-    enum="ExtensionUnpackFailureReason" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ExtensionUnpackFailureReason" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The reason why enterprise policy forced extensions had failed to unpack.
@@ -2040,9 +2061,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureSessionType{FailureReason}"
-    enum="SessionType" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="SessionType" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The type of session in case enterprise policy forced extensions were not
@@ -2065,9 +2088,11 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled"
-    enum="BooleanEnabled" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Records whether the extensions are enabled or not. Recorded for each forced
@@ -2085,9 +2110,11 @@ of interesting buckets, such as "internal + external".
 
 <histogram name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS"
     enum="IsForceInstalledExtensionFailedWithCrxHeaderInvalidFromCWSBoolean"
-    expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Records whether the extension is from the Chrome Web Store or not. Recorded
@@ -2099,9 +2126,11 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache"
-    enum="BooleanCacheHit" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="BooleanCacheHit" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Records whether the extension is downloaded from cache or not. Recorded for
@@ -2112,9 +2141,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledLoadTime" units="ms"
-    expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The amount of time elapsed during installation of enterprise policy forced
@@ -2123,9 +2154,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledNotLoadedDisableReason"
-    enum="ExtensionDisableReason" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ExtensionDisableReason" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Records the disable reason for the enterpise policy forced extensions.
@@ -2148,9 +2181,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledReadyTime" units="ms"
-    expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The amount of time elapsed for enterprise policy forced extensions to become
@@ -2160,9 +2195,11 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured"
-    enum="Boolean" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="Boolean" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Records whether there was a possible non-misconfiguration failure for the
@@ -2176,9 +2213,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledStage2"
-    enum="ExtensionInstallationStage" expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ExtensionInstallationStage" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The last known stage of extension installation process if failure reason was
@@ -2194,9 +2233,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTimedOutAndNotInstalledCount"
-    units="units" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    units="units" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of enterprise policy forced extensions that are not installed after 5
@@ -2205,9 +2246,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTimedOutCount" units="units"
-    expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of enterprise policy forced extensions that are not loaded after 5
@@ -2216,9 +2259,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTime{ExtensionInstallStages}"
-    units="ms" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    units="ms" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The amount of time elapsed during different stage of the installation
@@ -2248,9 +2293,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTotalCandidateCount" units="units"
-    expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Total amount of extensions in force installed list. Gets recorded on profile
@@ -2262,9 +2309,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalled{ErrorType}FetchTries"
-    units="retries" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    units="retries" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of fetch retries made when enterprise policy forced extensions failed
@@ -2284,9 +2333,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalled{ErrorType}NetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2024-09-15">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Network error code for the last retry attempt when CRX fetch failed for
@@ -5095,9 +5146,11 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.{ExtensionSource}ForceInstalledFailureManifestInvalidErrorDetail2"
-    enum="ManifestInvalidError" expires_after="2024-12-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ManifestInvalidError" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The detailed reason why enterprise policy forced extensions had failed to
@@ -5118,9 +5171,11 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.{ExtensionSource}ForceInstalledFailureReason3"
-    enum="ExtensionInstallationFailureReason" expires_after="2024-09-01">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="ExtensionInstallationFailureReason" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The reason why enterprise policy forced extensions were not installed
@@ -5144,9 +5199,11 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.{ExtensionSource}ForceInstalled{ErrorType}HttpErrorCode2"
-    enum="HttpResponseCode" expires_after="2024-04-28">
-  <owner>vkovalova@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
+    enum="HttpResponseCode" expires_after="never">
+<!-- expires-never: Monitoring outcomes of admin installed extensions -->
+
+  <owner>giovax@google.com</owner>
+  <owner>chromeos-commercial-chrome-apps-and-extensions@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     HTTP error code for the last retry attempt when for enterprise policy forced
