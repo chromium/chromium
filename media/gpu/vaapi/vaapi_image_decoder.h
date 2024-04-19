@@ -87,10 +87,6 @@ class VaapiImageDecoder {
   // returned by ExportAsNativePixmapDmaBuf() from YUV to RGB.
   virtual SkYUVColorSpace GetYUVColorSpace() const = 0;
 
-  // Returns the image profile supported by this decoder.
-  virtual gpu::ImageDecodeAcceleratorSupportedProfile GetSupportedProfile()
-      const;
-
   // Exports the decoded data from the last Decode() call as a
   // gfx::NativePixmapDmaBuf. Returns nullptr on failure and sets *|status| to
   // the reason for failure. On success, the image decoder gives up ownership of

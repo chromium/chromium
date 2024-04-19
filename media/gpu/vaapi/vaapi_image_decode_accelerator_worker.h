@@ -60,7 +60,9 @@ class VaapiImageDecodeAcceleratorWorker
  private:
   friend class VaapiImageDecodeAcceleratorWorkerTest;
 
-  explicit VaapiImageDecodeAcceleratorWorker(VaapiImageDecoderVector decoders);
+  VaapiImageDecodeAcceleratorWorker(
+      VaapiImageDecoderVector decoders,
+      gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles);
 
   VaapiImageDecoder* GetDecoderForImage(
       const std::vector<uint8_t>& encoded_data);
@@ -68,7 +70,7 @@ class VaapiImageDecodeAcceleratorWorker
   // We delegate the decoding to the appropriate decoder in |decoders_| which
   // are used and destroyed on |decoder_task_runner_|.
   VaapiImageDecoderMap decoders_;
-  gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles_;
+  const gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles_;
   scoped_refptr<base::SequencedTaskRunner> decoder_task_runner_;
 
   SEQUENCE_CHECKER(main_sequence_checker_);

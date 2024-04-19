@@ -24,6 +24,10 @@ class VaapiWebPDecoder : public VaapiImageDecoder {
   gpu::ImageDecodeAcceleratorType GetType() const override;
   SkYUVColorSpace GetYUVColorSpace() const override;
 
+  // Returns the image profile supported.
+  static std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
+  GetSupportedProfile();
+
  private:
   // VaapiImageDecoder implementation.
   VaapiImageDecodeStatus AllocateVASurfaceAndSubmitVABuffers(

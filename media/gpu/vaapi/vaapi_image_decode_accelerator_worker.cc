@@ -115,37 +115,45 @@ VaapiImageDecodeAcceleratorWorker::Create() {
       base::BindRepeating(&ReportVaapiErrorToUMA,
                           "Media.VaapiImageDecodeAcceleratorWorker.VAAPIError");
   VaapiImageDecoderVector decoders;
+  gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles;
 
   auto jpeg_decoder = std::make_unique<VaapiJpegDecoder>();
-  // TODO(crbug.com/974438): we can't advertise accelerated image decoding in
-  // AMD until we support VAAPI surfaces with multiple buffer objects.
-  if (VaapiWrapper::GetImplementationType() != VAImplementation::kMesaGallium &&
-      jpeg_decoder->Initialize(uma_cb)) {
+  std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
+      jpeg_decoder_supported_profile = VaapiJpegDecoder::GetSupportedProfile();
+  if (jpeg_decoder_supported_profile && jpeg_decoder->Initialize(uma_cb)) {
     decoders.push_back(std::move(jpeg_decoder));
+    supported_profiles.push_back(*jpeg_decoder_supported_profile);
   }
 
   auto webp_decoder = std::make_unique<VaapiWebPDecoder>();
-  if (webp_decoder->Initialize(uma_cb))
+  std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
+      webp_decoder_supported_profile = VaapiWebPDecoder::GetSupportedProfile();
+  if (webp_decoder_supported_profile && webp_decoder->Initialize(uma_cb)) {
     decoders.push_back(std::move(webp_decoder));
+    supported_profiles.push_back(*webp_decoder_supported_profile);
+  }
 
   // If there are no decoders due to disabled flags or initialization failure,
   // return nullptr.
   if (decoders.empty())
     return nullptr;
 
-  return base::WrapUnique(
-      new VaapiImageDecodeAcceleratorWorker(std::move(decoders)));
+  return base::WrapUnique(new VaapiImageDecodeAcceleratorWorker(
+      std::move(decoders), std::move(supported_profiles)));
 }
 
 VaapiImageDecodeAcceleratorWorker::VaapiImageDecodeAcceleratorWorker(
-    VaapiImageDecoderVector decoders) {
+    VaapiImageDecoderVector decoders,
+    gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles)
+    : supported_profiles_(std::move(supported_profiles)) {
   DETACH_FROM_SEQUENCE(io_sequence_checker_);
   decoder_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
   DCHECK(decoder_task_runner_);
 
-  DCHECK(!decoders.empty());
+  CHECK(!supported_profiles_.empty());
+  CHECK(!decoders.empty());
+  CHECK_EQ(decoders.size(), supported_profiles_.size());
   for (auto& decoder : decoders) {
-    supported_profiles_.push_back(decoder->GetSupportedProfile());
     const gpu::ImageDecodeAcceleratorType type = decoder->GetType();
     decoders_[type] = std::move(decoder);
   }

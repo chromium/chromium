@@ -106,11 +106,6 @@ class MockVaapiImageDecoder : public VaapiImageDecoder {
     }
   }
 
-  gpu::ImageDecodeAcceleratorSupportedProfile GetSupportedProfile()
-      const override {
-    return gpu::ImageDecodeAcceleratorSupportedProfile();
-  }
-
   MOCK_METHOD1(Initialize, bool(const ReportErrorToUMACB&));
   MOCK_METHOD1(Decode, VaapiImageDecodeStatus(base::span<const uint8_t>));
   MOCK_CONST_METHOD0(GetScopedVASurface, const ScopedVASurface*());
@@ -134,18 +129,34 @@ class VaapiImageDecodeAcceleratorWorkerTest : public testing::Test {
          features::kVaapiWebPImageDecodeAcceleration} /* enabled_features */,
         {} /* disabled_features */);
     VaapiImageDecoderVector decoders;
+    gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles;
+
+    auto fake_jpeg_profile =
+        GetFakeSupportedProfile(gpu::ImageDecodeAcceleratorType::kJpeg);
+    supported_profiles.push_back(fake_jpeg_profile);
+    auto fake_webp_profile =
+        GetFakeSupportedProfile(gpu::ImageDecodeAcceleratorType::kWebP);
+    supported_profiles.push_back(fake_webp_profile);
+
     decoders.push_back(std::make_unique<StrictMock<MockVaapiImageDecoder>>(
         gpu::ImageDecodeAcceleratorType::kJpeg));
     decoders.push_back(std::make_unique<StrictMock<MockVaapiImageDecoder>>(
         gpu::ImageDecodeAcceleratorType::kWebP));
-    worker_ = base::WrapUnique(
-        new VaapiImageDecodeAcceleratorWorker(std::move(decoders)));
+    worker_ = base::WrapUnique(new VaapiImageDecodeAcceleratorWorker(
+        std::move(decoders), std::move(supported_profiles)));
   }
 
   VaapiImageDecodeAcceleratorWorkerTest(
       const VaapiImageDecodeAcceleratorWorkerTest&) = delete;
   VaapiImageDecodeAcceleratorWorkerTest& operator=(
       const VaapiImageDecodeAcceleratorWorkerTest&) = delete;
+
+  gpu::ImageDecodeAcceleratorSupportedProfile GetFakeSupportedProfile(
+      gpu::ImageDecodeAcceleratorType type) {
+    gpu::ImageDecodeAcceleratorSupportedProfile profile;
+    profile.image_type = type;
+    return profile;
+  }
 
   MockVaapiImageDecoder* GetJpegDecoder() const {
     auto result =
