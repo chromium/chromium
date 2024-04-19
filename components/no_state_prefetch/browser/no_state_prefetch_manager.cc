@@ -294,17 +294,6 @@ NoStatePrefetchManager::StartPrefetchingFromExternalRequest(
                                                 session_storage_namespace);
 }
 
-std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::AddForcedPrerenderFromExternalRequest(
-    const GURL& url,
-    const content::Referrer& referrer,
-    SessionStorageNamespace* session_storage_namespace,
-    const gfx::Rect& bounds) {
-  return StartPrefetchingWithPreconnectFallback(
-      ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER, url, referrer, std::nullopt,
-      bounds, session_storage_namespace);
-}
-
 void NoStatePrefetchManager::CancelAllPrerenders() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   while (!active_prefetches_.empty()) {

@@ -1119,33 +1119,6 @@ TEST_F(
   ASSERT_EQ(no_state_prefetch_contents, entry.get());
 }
 
-TEST_F(NoStatePrefetchTest, PrerenderAllowedForForcedCellular) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4GMetered);
-  EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents = nullptr;
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle;
-  no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
-          FINAL_STATUS_USED);
-  no_state_prefetch_handle =
-      no_state_prefetch_manager()->AddForcedPrerenderFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_handle->IsPrefetching());
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  EXPECT_EQ(no_state_prefetch_contents, no_state_prefetch_handle->contents());
-  EXPECT_EQ(ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
-            no_state_prefetch_handle->contents()->origin());
-  std::unique_ptr<NoStatePrefetchContents> entry =
-      no_state_prefetch_manager()->FindAndUseEntry(url);
-  ASSERT_EQ(no_state_prefetch_contents, entry.get());
-}
-
 TEST_F(NoStatePrefetchTest, LinkManagerCancel) {
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");

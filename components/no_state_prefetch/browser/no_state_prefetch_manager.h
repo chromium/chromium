@@ -139,14 +139,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Rect& bounds);
 
-  // Adds a prerender from an external request that will prerender even on
-  // cellular networks as long as the user setting for prerendering is ON.
-  std::unique_ptr<NoStatePrefetchHandle> AddForcedPrerenderFromExternalRequest(
-      const GURL& url,
-      const content::Referrer& referrer,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Rect& bounds);
-
   // Cancels all active prerenders.
   void CancelAllPrerenders();
 

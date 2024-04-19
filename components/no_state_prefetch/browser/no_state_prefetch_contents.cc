@@ -178,7 +178,6 @@ NoStatePrefetchContents::NoStatePrefetchContents(
   switch (origin) {
     case ORIGIN_OMNIBOX:
     case ORIGIN_EXTERNAL_REQUEST:
-    case ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER:
     case ORIGIN_NAVIGATION_PREDICTOR:
       DCHECK(!initiator_origin_.has_value());
       break;
