@@ -28,11 +28,6 @@ class NoStatePrefetchHandle : public NoStatePrefetchContents::Observer {
     // Signals that the prefetch has stopped running.
     virtual void OnPrefetchStop(NoStatePrefetchHandle* handle) = 0;
 
-    // Signals that a resource finished loading and altered the running byte
-    // count.
-    virtual void OnPrefetchNetworkBytesChanged(
-        NoStatePrefetchHandle* handle) = 0;
-
    protected:
     Observer();
     virtual ~Observer();
@@ -83,8 +78,6 @@ class NoStatePrefetchHandle : public NoStatePrefetchContents::Observer {
 
   // From NoStatePrefetchContents::Observer:
   void OnPrefetchStop(
-      NoStatePrefetchContents* no_state_prefetch_contents) override;
-  void OnPrefetchNetworkBytesChanged(
       NoStatePrefetchContents* no_state_prefetch_contents) override;
 
   raw_ptr<Observer> observer_;

@@ -1041,13 +1041,6 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
       "Consider whether a failed prefetch should fallback to preconnect");
 }
 
-void NoStatePrefetchManager::RecordNetworkBytesConsumed(
-    Origin origin,
-    int64_t prerender_bytes) {
-  last_recorded_browser_context_network_bytes_ = browser_context_network_bytes_;
-  histograms_->RecordNetworkBytesConsumed(origin, prerender_bytes);
-}
-
 void NoStatePrefetchManager::AddPrerenderProcessHost(
     content::RenderProcessHost* process_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

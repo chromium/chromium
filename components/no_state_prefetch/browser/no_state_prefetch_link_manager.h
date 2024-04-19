@@ -139,8 +139,6 @@ class NoStatePrefetchLinkManager : public KeyedService,
 
   // From NoStatePrefetchHandle::Observer:
   void OnPrefetchStop(NoStatePrefetchHandle* no_state_prefetch_handle) override;
-  void OnPrefetchNetworkBytesChanged(
-      NoStatePrefetchHandle* no_state_prefetch_handle) override;
 
   bool has_shutdown_;
 

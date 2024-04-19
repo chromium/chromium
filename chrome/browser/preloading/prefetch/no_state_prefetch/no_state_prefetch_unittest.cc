@@ -69,7 +69,7 @@ namespace {
 class TestNetworkBytesChangedObserver
     : public prerender::NoStatePrefetchHandle::Observer {
  public:
-  TestNetworkBytesChangedObserver() : network_bytes_changed_(false) {}
+  TestNetworkBytesChangedObserver() = default;
 
   TestNetworkBytesChangedObserver(const TestNetworkBytesChangedObserver&) =
       delete;
@@ -79,15 +79,6 @@ class TestNetworkBytesChangedObserver
   // prerender::NoStatePrefetchHandle::Observer
   void OnPrefetchStop(
       NoStatePrefetchHandle* no_state_prefetch_handle) override {}
-  void OnPrefetchNetworkBytesChanged(
-      NoStatePrefetchHandle* no_state_prefetch_handle) override {
-    network_bytes_changed_ = true;
-  }
-
-  bool network_bytes_changed() const { return network_bytes_changed_; }
-
- private:
-  bool network_bytes_changed_;
 };
 
 const gfx::Size kDefaultViewSize(640, 480);
@@ -1517,24 +1508,6 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchContentsIsValidHttpMethod) {
   EXPECT_FALSE(IsValidHttpMethod("POST"));
   EXPECT_FALSE(IsValidHttpMethod("TRACE"));
   EXPECT_FALSE(IsValidHttpMethod("WHATEVER"));
-}
-
-TEST_F(NoStatePrefetchTest, NoStatePrefetchContentsIncrementsByteCount) {
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
-          FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle =
-      no_state_prefetch_manager()->AddForcedPrerenderFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize));
-
-  TestNetworkBytesChangedObserver observer;
-  no_state_prefetch_handle->SetObserver(&observer);
-
-  no_state_prefetch_contents->AddNetworkBytes(12);
-  EXPECT_TRUE(observer.network_bytes_changed());
-  EXPECT_EQ(12, no_state_prefetch_contents->network_bytes());
 }
 
 TEST_F(NoStatePrefetchTest, NoPrerenderInSingleProcess) {

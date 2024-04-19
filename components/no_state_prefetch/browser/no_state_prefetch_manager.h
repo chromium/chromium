@@ -219,10 +219,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   void AddObserver(std::unique_ptr<NoStatePrefetchManagerObserver> observer);
 
-  // Notification that a prerender has completed and its bytes should be
-  // recorded.
-  void RecordNetworkBytesConsumed(Origin origin, int64_t prerender_bytes);
-
   // Registers a new ProcessHost performing a prerender. Called by
   // NoStatePrefetchContents.
   void AddPrerenderProcessHost(content::RenderProcessHost* process_host);
@@ -507,13 +503,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   const std::unique_ptr<NoStatePrefetchHistory> prefetch_history_;
 
   const std::unique_ptr<PrerenderHistograms> histograms_;
-
-  // The number of bytes transferred over the network for the browser_context
-  // this NoStatePrefetchManager is attached to.
-  int64_t browser_context_network_bytes_ = 0;
-
-  // The value of browser_context_network_bytes_ that was last recorded.
-  int64_t last_recorded_browser_context_network_bytes_ = 0;
 
   // Set of process hosts being prerendered.
   using PrerenderProcessSet =

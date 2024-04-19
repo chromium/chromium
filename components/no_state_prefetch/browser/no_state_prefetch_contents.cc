@@ -174,8 +174,7 @@ NoStatePrefetchContents::NoStatePrefetchContents(
       browser_context_(browser_context),
       final_status_(FINAL_STATUS_UNKNOWN),
       process_pid_(base::kNullProcessId),
-      origin_(origin),
-      network_bytes_(0) {
+      origin_(origin) {
   switch (origin) {
     case ORIGIN_OMNIBOX:
     case ORIGIN_EXTERNAL_REQUEST:
@@ -335,8 +334,6 @@ NoStatePrefetchContents::~NoStatePrefetchContents() {
   DCHECK_NE(ORIGIN_MAX, origin());
 
   no_state_prefetch_manager_->RecordFinalStatus(origin(), final_status());
-  no_state_prefetch_manager_->RecordNetworkBytesConsumed(origin(),
-                                                         network_bytes_);
 
   if (no_state_prefetch_contents_) {
     no_state_prefetch_contents_->SetDelegate(nullptr);
@@ -617,12 +614,6 @@ void NoStatePrefetchContents::CancelPrerenderForNoStatePrefetch() {
 void NoStatePrefetchContents::AddPrerenderCancelerReceiver(
     mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver) {
   prerender_canceler_receiver_set_.Add(this, std::move(receiver));
-}
-
-void NoStatePrefetchContents::AddNetworkBytes(int64_t bytes) {
-  network_bytes_ += bytes;
-  for (Observer& observer : observer_list_)
-    observer.OnPrefetchNetworkBytesChanged(this);
 }
 
 }  // namespace prerender

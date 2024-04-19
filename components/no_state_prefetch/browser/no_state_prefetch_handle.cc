@@ -87,13 +87,6 @@ void NoStatePrefetchHandle::OnPrefetchStop(
     observer_->OnPrefetchStop(this);
 }
 
-void NoStatePrefetchHandle::OnPrefetchNetworkBytesChanged(
-    NoStatePrefetchContents* no_state_prefetch_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (observer_)
-    observer_->OnPrefetchNetworkBytesChanged(this);
-}
-
 bool NoStatePrefetchHandle::RepresentingSamePrefetchAs(
     NoStatePrefetchHandle* other) const {
   return other && other->prefetch_data_ && prefetch_data_ &&

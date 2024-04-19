@@ -345,7 +345,4 @@ void NoStatePrefetchLinkManager::OnPrefetchStop(
   StartLinkTriggers();
 }
 
-void NoStatePrefetchLinkManager::OnPrefetchNetworkBytesChanged(
-    NoStatePrefetchHandle* no_state_prefetch_handle) {}
-
 }  // namespace prerender

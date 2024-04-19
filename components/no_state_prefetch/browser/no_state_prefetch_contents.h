@@ -88,11 +88,6 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     // OnPrefetchStop before being destroyed.
     virtual void OnPrefetchStop(NoStatePrefetchContents* contents) {}
 
-    // Signals that a resource finished loading and altered the running byte
-    // count.
-    virtual void OnPrefetchNetworkBytesChanged(
-        NoStatePrefetchContents* contents) {}
-
    protected:
     Observer() {}
     virtual ~Observer() = 0;
@@ -189,15 +184,9 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // the future: https://crbug.com/1126305
   void MarkAsUsedForTesting();
 
-  // Increments the number of bytes fetched over the network for this prerender.
-  void AddNetworkBytes(int64_t bytes);
-
   bool prefetching_has_been_cancelled() const {
     return prefetching_has_been_cancelled_;
   }
-
-  // Running byte count. Increased when each resource completes loading.
-  int64_t network_bytes() { return network_bytes_; }
 
   void AddPrerenderCancelerReceiver(
       mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver);
@@ -314,10 +303,6 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
 
   // The bounds of the WebView from the launching page.
   gfx::Rect bounds_;
-
-  // A running tally of the number of bytes this prerender has caused to be
-  // transferred over the network for resources.  Updated with AddNetworkBytes.
-  int64_t network_bytes_;
 
   base::WeakPtrFactory<NoStatePrefetchContents> weak_factory_{this};
 };

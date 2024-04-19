@@ -69,22 +69,4 @@ void PrerenderHistograms::RecordFinalStatus(Origin origin,
                                 final_status, FINAL_STATUS_MAX);
 }
 
-void PrerenderHistograms::RecordNetworkBytesConsumed(
-    Origin origin,
-    int64_t prerender_bytes) const {
-  const int kHistogramMin = 1;
-  const int kHistogramMax = 100000000;  // 100M.
-  const int kBucketCount = 50;
-
-  if (prerender_bytes == 0)
-    return;
-
-  base::UmaHistogramCustomCounts(GetHistogramName(origin, "NetworkBytesWasted"),
-                                 prerender_bytes, kHistogramMin, kHistogramMax,
-                                 kBucketCount);
-  base::UmaHistogramCustomCounts(ComposeHistogramName("", "NetworkBytesWasted"),
-                                 prerender_bytes, kHistogramMin, kHistogramMax,
-                                 kBucketCount);
-}
-
 }  // namespace prerender

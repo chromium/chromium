@@ -680,9 +680,6 @@ class TestPrerenderStopObserver
     }
   }
 
-  void OnPrefetchNetworkBytesChanged(
-      prerender::NoStatePrefetchHandle* handle) override {}
-
  private:
   base::OnceClosure on_stop_closure_;
 };
