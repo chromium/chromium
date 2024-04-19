@@ -650,7 +650,7 @@ TEST_F(VideoDecoderTest, InitializeWithNonSupportedConfig) {
 int main(int argc, char** argv) {
   media::test::g_env =
       media::test::VideoDecodeAcceleratorTestSuite::Create(argc, argv);
-  if (!media::test::g_env->ValidVideoTestEnvironment()) {
+  if (!media::test::g_env) {
     LOG(ERROR) << "Invalid video test environment";
     return EXIT_FAILURE;
   }
