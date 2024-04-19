@@ -149,9 +149,15 @@ interface ServerSocket {
   Disconnect() => ();
 };
 
-// Representation of a BLE GATT service.
-// TODO(b/311430390): Implement additional methods that will create and update a
-// GATT characteristic, and delete the GATT service.
+// Representation of a BLE GATT service. A `GattService` is created by
+// `Adapter::CreateLocalGattService()`. To use this interface, first create all
+// characteristics belonging to the service via `CreateCharacteristic()`. Then,
+// when ready to publish the service and its characteristics on the local
+// adapter's GATT database, call `Register()`. Requests from GATT clients to
+// read/write values on the characteristics are executed via the
+// `GattServiceObserver`. When finished with the `GattService`, callers should
+// delete their Mojo remote, which triggers the underlying GATT service in
+// the local adapter to be deleted.
 interface GattService {
   // Creates a characteristic and adds it to the GATT service under the given
   // characteristic uuid, using the service UUID tied to the `GattService`.
@@ -162,10 +168,17 @@ interface GattService {
   CreateCharacteristic(UUID characteristic_uuid,
     GattCharacteristicPermissions permissions,
     GattCharacteristicProperties properties) => (bool success);
+
+  // Registers this `GattService` with the local Bluetooth Adapter.
+  // Calling `Register()` will make this service and all of its associated
+  // attributes available on the local adapter's GATT database. This should be
+  // called once all the requested characteristics have been created, before
+  // advertising begins. No `error_code` indicates success.
+  Register() => (GattServiceErrorCode? error_code);
 };
 
 // Listener on `GattService` events.
-// TODO(b/311430390): Implement additional methods that communicate read/write
+// TODO(b/311430390): Implement additional methods that communicate write
 // requests on GATT characteristics.
 interface GattServiceObserver {
   // Called when a remote peripheral is reading from the characteristic.

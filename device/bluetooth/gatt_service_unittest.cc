@@ -356,4 +356,32 @@ TEST_F(GattServiceTest, MojoDisconnect_GattServiceObserverRemote) {
   EXPECT_TRUE(fake_local_gatt_service_->WasDeleted());
 }
 
+TEST_F(GattServiceTest, Register_Success) {
+  // Simulate that the GATT service is created successfully, and is never
+  // destroyed during the lifetime of this test.
+  ON_CALL(*mock_bluetooth_adapter_, GetGattService)
+      .WillByDefault(testing::Return(fake_local_gatt_service_.get()));
+  fake_local_gatt_service_->set_should_registration_succeed(true);
+
+  base::test::TestFuture<
+      std::optional<device::BluetoothGattService::GattErrorCode>>
+      future;
+  remote_->Register(future.GetCallback());
+  EXPECT_FALSE(future.Take());
+}
+
+TEST_F(GattServiceTest, Register_Failure) {
+  // Simulate that the GATT service is created successfully, and is never
+  // destroyed during the lifetime of this test.
+  ON_CALL(*mock_bluetooth_adapter_, GetGattService)
+      .WillByDefault(testing::Return(fake_local_gatt_service_.get()));
+  fake_local_gatt_service_->set_should_registration_succeed(false);
+
+  base::test::TestFuture<
+      std::optional<device::BluetoothGattService::GattErrorCode>>
+      future;
+  remote_->Register(future.GetCallback());
+  EXPECT_TRUE(future.Take());
+}
+
 }  // namespace bluetooth

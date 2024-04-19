@@ -27,6 +27,7 @@ class FakeGattService : public mojom::GattService {
       const device::BluetoothGattCharacteristic::Permissions& permission,
       const device::BluetoothGattCharacteristic::Properties& property,
       CreateCharacteristicCallback callback) override;
+  void Register(RegisterCallback callback) override;
 
   void SetObserver(mojo::PendingRemote<mojom::GattServiceObserver> observer);
 

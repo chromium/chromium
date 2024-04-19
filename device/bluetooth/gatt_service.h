@@ -49,6 +49,7 @@ class GattService : public mojom::GattService,
       const device::BluetoothGattCharacteristic::Permissions& permission,
       const device::BluetoothGattCharacteristic::Properties& property,
       CreateCharacteristicCallback callback) override;
+  void Register(RegisterCallback callback) override;
 
   // device::BluetoothLocalGattService::Delegate:
   void OnCharacteristicReadRequest(
@@ -96,6 +97,11 @@ class GattService : public mojom::GattService,
       mojom::LocalCharacteristicReadResultPtr read_result);
 
   void OnMojoDisconnect();
+
+  void OnRegisterSuccess(RegisterCallback callback);
+  void OnRegisterFailure(
+      RegisterCallback callback,
+      device::BluetoothGattService::GattErrorCode error_code);
 
   base::OnceCallback<void(device::BluetoothUUID)> on_gatt_service_invalidated_;
   const device::BluetoothUUID service_id_;

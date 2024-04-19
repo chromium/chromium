@@ -29,6 +29,12 @@ void FakeGattService::CreateCharacteristic(
   std::move(callback).Run(/*success=*/set_create_characteristic_result_);
 }
 
+void FakeGattService::Register(RegisterCallback callback) {
+  // TODO(b/311430390): Implement with `Register` is being used in
+  // `BleV2GattServer` for testing.
+  NOTIMPLEMENTED();
+}
+
 void FakeGattService::SetObserver(
     mojo::PendingRemote<mojom::GattServiceObserver> observer) {
   observer_remote_.Bind(std::move(observer));

@@ -111,6 +111,25 @@ void GattService::CreateCharacteristic(
   std::move(callback).Run(/*success=*/true);
 }
 
+void GattService::Register(RegisterCallback callback) {
+  device::BluetoothLocalGattService* service =
+      adapter_->GetGattService(service_id_.value());
+  if (!service) {
+    LOG(WARNING) << __func__ << ": local GATT service destroyed.";
+    std::move(callback).Run(
+        device::BluetoothGattService::GattErrorCode::kFailed);
+    return;
+  }
+
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  service->Register(/*callback=*/base::BindOnce(
+                        &GattService::OnRegisterSuccess, base::Unretained(this),
+                        std::move(split_callback.first)),
+                    /*error_callback=*/base::BindOnce(
+                        &GattService::OnRegisterFailure, base::Unretained(this),
+                        std::move(split_callback.second)));
+}
+
 void GattService::OnCharacteristicReadRequest(
     const device::BluetoothDevice* device,
     const device::BluetoothLocalGattCharacteristic* characteristic,
@@ -214,6 +233,19 @@ void GattService::OnMojoDisconnect() {
   // this `GattService` is expected to be destroyed after calling
   // `on_gatt_service_invalidated_`.
   std::move(on_gatt_service_invalidated_).Run(service_id_);
+}
+
+void GattService::OnRegisterSuccess(RegisterCallback callback) {
+  VLOG(1) << __func__;
+  std::move(callback).Run(/*error_code=*/std::nullopt);
+}
+
+void GattService::OnRegisterFailure(
+    RegisterCallback callback,
+    device::BluetoothGattService::GattErrorCode error_code) {
+  LOG(WARNING) << __func__ << ": failed due to error: "
+               << GattErrorCodeToString(error_code);
+  std::move(callback).Run(error_code);
 }
 
 }  // namespace bluetooth
