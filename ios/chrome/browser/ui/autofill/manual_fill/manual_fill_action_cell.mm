@@ -81,6 +81,10 @@
   NSAttributedString* attributedTitleString =
       [[NSAttributedString alloc] initWithString:title attributes:attributes];
   buttonConfiguration.attributedTitle = attributedTitleString;
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kBlue600Color];
+  }
   self.titleButton.configuration = buttonConfiguration;
   self.titleButton.accessibilityIdentifier = accessibilityID;
   self.action = action;
