@@ -8447,6 +8447,8 @@ test("unit_tests") {
       "../browser/hid/hid_status_icon_unittest.cc",
       "../browser/usb/usb_status_icon_unittest.cc",
     ]
+
+    deps += [ "//chrome/browser/shortcuts:unit_tests" ]
   }
 
   if (is_chromeos) {
@@ -9355,7 +9357,6 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/extensions:cws_item_service_proto",
       "//chrome/browser/extensions:test_support",
-      "//chrome/browser/shortcuts:unit_tests",
       "//chrome/browser/ui/web_applications:unit_tests",
       "//chrome/browser/web_applications:unit_tests",
       "//chrome/browser/web_applications:web_applications_unit_tests",

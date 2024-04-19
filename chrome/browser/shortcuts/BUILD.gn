@@ -5,6 +5,7 @@
 import("//chrome/browser/buildflags.gni")
 
 assert(!is_android)
+assert(!is_chromeos)
 
 source_set("shortcuts") {
   sources = [
