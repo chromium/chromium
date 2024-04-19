@@ -1878,7 +1878,9 @@ bool AuthenticatorGPMArbitraryPinSheetModel::IsActivityIndicatorVisible()
 
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetAcceptButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+  return mode_ == Mode::kPinEntry
+             ? l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_NEXT)
+             : l10n_util::GetStringUTF16(IDS_CONFIRM);
 }
 
 void AuthenticatorGPMArbitraryPinSheetModel::OnAccept() {
