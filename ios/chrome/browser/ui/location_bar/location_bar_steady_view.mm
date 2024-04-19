@@ -304,8 +304,6 @@ const CGFloat kLeadingMargin = 20;
             constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
                                         constant:kLocationBarLeadingPadding];
 
-    // TODO(crbug.com/334891575): Investigate and implement fix for UI
-    // interaction blocking badges container when exiting fullscreen.
     if (IsContextualPanelEnabled()) {
       // Setup the layout guide centered between the contents of the location
       // bar.
