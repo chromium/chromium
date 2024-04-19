@@ -1565,6 +1565,15 @@ BASE_FEATURE(kRecordWebAudioEngagement,
              "RecordWebAudioEngagement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// Reduces the number of buffers needed in the output video frame pool to
+// populate the Renderer pipeline for hardware accelerated VideoDecoder in
+// non-low latency scenarios.
+BASE_FEATURE(kReduceHardwareVideoDecoderBuffers,
+             "ReduceHardwareVideoDecoderBuffers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // The following Media Engagement flags are not enabled on mobile platforms:
 // - MediaEngagementBypassAutoplayPolicies: enables the Media Engagement Index
 //   data to be esude to override autoplay policies. An origin with a high MEI

@@ -83,10 +83,15 @@ size_t EstimateRequiredRendererPipelineBuffers(bool low_delay) {
   constexpr size_t kExpectedNonLatencyPipelineDepth = 16;
   static_assert(kExpectedNonLatencyPipelineDepth > limits::kMaxVideoFrames,
                 "kMaxVideoFrames is expected to be relatively small");
+  constexpr size_t kReducedNonLatencyPipelineDepth = 8;
+
   if (low_delay)
     return limits::kMaxVideoFrames + 1;
-  else
+  else if (base::FeatureList::IsEnabled(kReduceHardwareVideoDecoderBuffers)) {
+    return kReducedNonLatencyPipelineDepth;
+  } else {
     return kExpectedNonLatencyPipelineDepth;
+  }
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetDecoderTaskRunner(
