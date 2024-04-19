@@ -17,7 +17,7 @@ build_webui_tests("build_webui_tests") {
   files = [
     "battery_status_card_test.ts",
     "cellular_info_test.ts",
-    "connectivity_card_test.js",
+    "connectivity_card_test.ts",
     "cpu_card_test.js",
     "data_point_test.js",
     "diagnostics_app_input_hiding_test.js",

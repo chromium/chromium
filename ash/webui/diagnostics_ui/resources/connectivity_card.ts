@@ -109,6 +109,10 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
     this.getRoutineSectionElem().stopTests();
   }
 
+  getRoutineGroupsForTesting(): RoutineGroup[] {
+    return this.routineGroups;
+  }
+
   protected hasRoutines(): boolean {
     return this.routineGroups && this.routineGroups.length > 0;
   }
@@ -180,6 +184,10 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
       return '';
     }
     return formatMacAddress(this.macAddress);
+  }
+
+  getRoutineSectionElemForTesting(): RoutineSectionElement {
+    return this.getRoutineSectionElem();
   }
 }
 
