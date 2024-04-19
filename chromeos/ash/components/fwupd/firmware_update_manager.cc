@@ -29,6 +29,8 @@
 #include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/fwupd/histogram_util.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
@@ -405,7 +407,8 @@ void FirmwareUpdateManager::FetchInProgressUpdate(
 
 // Query all updates for all devices.
 void FirmwareUpdateManager::RequestAllUpdates(Source source) {
-  if (!FwupdClient::Get()) {
+  // Return if FwupdClient or NetworkHandler not initialized for unittests
+  if (!FwupdClient::Get() || !NetworkHandler::IsInitialized()) {
     return;
   }
 
@@ -418,12 +421,21 @@ void FirmwareUpdateManager::RequestAllUpdates(Source source) {
   if (is_fetching_updates_) {
     return;
   }
-  // If connection is metered, only refresh remote if firmware update UI has
+
+  const bool is_metered = NetworkHandler::Get()
+                              ->network_state_handler()
+                              ->default_network_is_metered();
+  // If connection is metered, refresh remote only if firmware update UI has
   // been opened by the user.
-  if (/*!is_metered || (is_metered &&*/ source == Source::kUI) {
-    FIRMWARE_LOG(USER) << "Requesting Updates: From UI";
+  if (!is_metered || (is_metered && source == Source::kUI)) {
+    FIRMWARE_LOG(USER) << "Refreshing LVFS remote";
     // TODO(rishabhagr): Add logic for refresh metadata
+  } else {
+    FIRMWARE_LOG(DEBUG) << "Skipping refresh remote for LVFS, metered: "
+                        << is_metered
+                        << ", source: " << static_cast<int>(source);
   }
+
   FIRMWARE_LOG(USER) << "RequestAllUpdates()";
   is_fetching_updates_ = true;
   RequestDevices();

@@ -13,6 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -104,6 +107,11 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
   ~FirmwareUpdateStartupNotificationTest() override = default;
 
   void SetUp() override {
+    network_handler_test_helper_.RegisterPrefs(profile_prefs_.registry(),
+                                               local_state_.registry());
+
+    network_handler_test_helper_.InitializePrefs(&profile_prefs_,
+                                                 &local_state_);
     FwupdClient::InitializeFake();
     dbus_client_ = FwupdClient::Get();
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
@@ -116,6 +124,7 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
     firmware_update_notification_controller_.reset();
     firmware_update_manager_.reset();
     FwupdClient::Shutdown();
+    NetworkHandler::Get()->ShutdownPrefServices();
     NoSessionAshTestBase::TearDown();
   }
 
@@ -146,6 +155,9 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
   }
 
   raw_ptr<FwupdClient, DanglingUntriaged> dbus_client_ = nullptr;
+  NetworkHandlerTestHelper network_handler_test_helper_;
+  TestingPrefServiceSimple profile_prefs_;
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
   std::unique_ptr<FirmwareUpdateNotificationController>
       firmware_update_notification_controller_;

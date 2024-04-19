@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
 #include "chromeos/ash/components/fwupd/histogram_util.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -171,6 +172,7 @@ namespace ash {
 class FirmwareUpdateManagerTest : public testing::Test {
  public:
   FirmwareUpdateManagerTest() {
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
     bus_ = base::MakeRefCounted<dbus::MockBus>(options);
@@ -208,6 +210,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
     // Destructor depends on FwupdClient.
     firmware_update_manager_.reset();
     FwupdClient::Shutdown();
+    network_handler_test_helper_.reset();
   }
 
   void OnMethodCalled(dbus::MethodCall* method_call,
@@ -602,6 +605,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
   raw_ptr<FwupdClient, DanglingUntriaged> dbus_client_ = nullptr;
   std::unique_ptr<FakeFwupdDownloadClient> fake_fwupd_download_client_;
