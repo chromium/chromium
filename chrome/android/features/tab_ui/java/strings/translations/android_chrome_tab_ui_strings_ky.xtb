@@ -48,6 +48,7 @@
 <translation id="3996880007329611795">Ооба</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> күн мурун түзүлдү}other{<ph name="NUM_DAYS_MANY" /> күн мурун түзүлдү}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> тобун жабуу, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> тобун жабуу, түсү: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Кызгылт көгүш</translation>
 <translation id="4212246570487010370">Серептөөнү улантуу</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жайып көрсөтүү.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жайып көрсөтүү.}}</translation>
@@ -71,6 +72,7 @@
 <translation id="5490235265819901748">Өтмөктөр тобу жайылып көрсөтүлдү</translation>
 <translation id="5494920125229734069">Баарын тандоо</translation>
 <translation id="5545379293264651575">Текшербей жабуу</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган өтмөктөр тобун жабуу, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобун жабуу, түсү: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Дүкөн тууралуу маалыматты көрүңүз. Параметр экрандын жогору жагында берилген</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'дон <ph name="TABS_COUNT_ONE" /> шилтеме}other{Chrome'дон <ph name="TABS_COUNT_MANY" /> шилтеме}}</translation>
 <translation id="575494663145460764">Баалардын арзандаганы жөнүндө эскертүүлөрдү алгыңыз келеби?</translation>
@@ -112,6 +114,7 @@
 <translation id="7942349550061667556">Кызыл</translation>
 <translation id="7966321538264951561">Сунушту жабуу.</translation>
 <translation id="8029301326595421733">Бул дүкөн тууралуу маалымат толук экранда ачылды</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Өтмөктү жогору жылдыруу</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
 <translation id="8398929769197326728">Жаңы папка - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -124,6 +127,7 @@
 <translation id="9090098097337832354">Бул дүкөн тууралуу маалымат жабык</translation>
 <translation id="9150694013019234766">Экраныңыздын ылдый жагында жайгашкан өтмөктөрдүн тобунан өтмөктөрүңүздү которуштуруңуз</translation>
 <translation id="9169594135889675189">Топко жаңы өтмөк кошуу</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="955558140275419384">Бардык архивделген өтмөктөрдү бул түзөткүчтө карап чыгып, иреттеп алыңыз.</translation>
 <translation id="959682366969460160">Иреттеп алыңыз</translation>
 <translation id="992256792861109788">Кызгылтым</translation>

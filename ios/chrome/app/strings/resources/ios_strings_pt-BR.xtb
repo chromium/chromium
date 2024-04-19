@@ -842,6 +842,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5407969256130905701">Descartar alterações</translation>
 <translation id="5414763847370083940">Você vai receber um alerta se houver uma redução no preço em algum site.</translation>
 <translation id="5416022985862681400">Últimos sete dias</translation>
+<translation id="5416455648658732408">Mover para grupo de guias</translation>
 <translation id="5423269318075950257">Monitorar preço</translation>
 <translation id="543338862236136125">Editar senha</translation>
 <translation id="5433691172869980887">Nome de usuário copiado</translation>
@@ -1106,6 +1107,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6647441008198474441">Os URLs que você acessa são enviados ao Google para prever quais sites podem ser do seu interesse</translation>
 <translation id="6656103420185847513">Editar pasta</translation>
 <translation id="6657585470893396449">Senha</translation>
+<translation id="6659660757330712663">Você pode deslizar a barra de ferramentas para trocar de guia.</translation>
 <translation id="6668619169535738264">Editar favorito</translation>
 <translation id="6672241253012342409">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras.
 
@@ -1326,6 +1328,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Falha no download</translation>
 <translation id="7859704718976024901">Histórico de navegação</translation>
+<translation id="7860900259978879139">Remover do grupo</translation>
 <translation id="7866501058614003444">O rastreamento do pacote foi cancelado.</translation>
 <translation id="7866872729285243843">Para ter sua Lista de leitura em todos os seus dispositivos, ative esse recurso nas Configurações.</translation>
 <translation id="7866993391592926595">Ocultar este card desativa o rastreamento de pacote e remove todos os seus dados</translation>
@@ -1413,9 +1416,11 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8273982424131314219">Você vai preencher informações em <ph name="URL" /></translation>
 <translation id="8281781826761538115">Padrão: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pular</translation>
+<translation id="8282657446819506217">Abrir no grupo de guias</translation>
 <translation id="828291969289324795">{count,plural, =1{Adicionar guia ao novo grupo}one{Adicionar guia ao novo grupo}other{Adicionar guias ao novo grupo}}</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8286036467436129157">Fazer login</translation>
+<translation id="8289930144142009940">Notificações de <ph name="FEATURE_NAME" /> desativadas</translation>
 <translation id="8292843446079898078">Receba alertas de redução no preço para os produtos que você monitora.</translation>
 <translation id="8299417921174340354">Para usar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="8299613349954694191">Abra uma guia anônima para navegar com privacidade.</translation>
@@ -1423,6 +1428,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8313645224014086262">Salvar arquivo</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8328777765163860529">Fechar todos</translation>
+<translation id="8343286328361420468">Desativar as notificações de <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Faça backup e use seus dados em qualquer dispositivo.</translation>
 <translation id="834783239627985533">Sites mais visitados</translation>
 <translation id="8358401059263985056">Ativar notificações</translation>

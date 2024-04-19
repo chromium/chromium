@@ -698,7 +698,9 @@
 <translation id="4732120983431207637">स्टैक अनवाइंडर</translation>
 <translation id="4736934858538408121">वर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
+<translation id="4738065825338914557">सदस्यता छोड़ी जा रही है…</translation>
 <translation id="4738836084190194332">अंतिम बार सिंक किया गया: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">ऐप्लिकेशन के हिसाब से फ़िल्टर करें</translation>
 <translation id="4741753828624614066">आपको पता बार में बेहतर सुझाव मिलेंगे</translation>
 <translation id="4742970037960872810">हाइलाइट हटाएं</translation>
 <translation id="4749960740855309258">नया टैब खोलें</translation>
@@ -782,6 +784,7 @@
 <translation id="5099845111805573968">डेस्कटॉप साइट की सेटिंग का विकल्प चुनने पर, यह साइट हर बार डेस्कटॉप वर्शन में ही खुलेगी</translation>
 <translation id="5102401324271069229">अगर कोई साइट आपका पासवर्ड चुराने की कोशिश करती है या नुकसान पहुंचाने वाली कोई फ़ाइल डाउनलोड होती है, तो Chrome उनके यूआरएल, सुरक्षित ब्राउज़िंग की सेवा को भेज सकता है. यूआरएल के साथ-साथ, पेज का कुछ कॉन्टेंट भी भेजा जाता है</translation>
 <translation id="510275257476243843">1 घंटा शेष</translation>
+<translation id="5114895953710637392">ऐप्लिकेशन फ़िल्टर करने वाली शीट बंद है.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> में ले जाया गया</translation>
 <translation id="5118713593561876160">रुचि</translation>
 <translation id="5122378528687922675">अगर आपको मदद चाहिए, तो अपने माता-पिता (<ph name="PARENT_NAME_1" /> या <ph name="PARENT_NAME_2" />) से पूछें</translation>
@@ -1132,6 +1135,7 @@
 <translation id="685850645784703949">Google का 'डिस्कवर' - बंद है</translation>
 <translation id="686366188661646310">क्या आप पासवर्ड मिटाना चाहते हैं?</translation>
 <translation id="6864459304226931083">इमेज डाउनलोड करें</translation>
+<translation id="686490460830618322">ऐप्लिकेशन फ़िल्टर करने वाली शीट</translation>
 <translation id="6865313869410766144">फ़ॉर्म में अपने-आप भरने वाला डेटा</translation>
 <translation id="6867400383614725881">नया गुप्त टैब</translation>
 <translation id="6869056123412990582">कंप्यूटर</translation>
@@ -1197,6 +1201,7 @@
 <translation id="7177466738963138057">आप इसे बाद में सेटिंग में जाकर बदल सकते हैं</translation>
 <translation id="7177873915659574692">क्यूआर कोड नहीं बनाया जा सकता. यूआरएल <ph name="CHARACTER_LIMIT" /> वर्णों से ज़्यादा का है.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
+<translation id="7183517696921903380">ऐप्लिकेशन फ़िल्टर करने वाली शीट खुली है.</translation>
 <translation id="7183693674623539380">टैब ग्रुप - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">यह सुविधा Chrome पर आपको सुरक्षित रखती है. साथ ही, अगर आप साइन इन हैं, तो Google के अन्य ऐप्लिकेशन में भी आपकी सुरक्षा को बेहतर बनाने के लिए इसका इस्तेमाल किया जा सकता है.</translation>
 <translation id="7191430249889272776">पृष्ठभूमि में टैब खोला गया.</translation>
@@ -1322,6 +1327,7 @@
 <translation id="7780645209293383778">आपके साइन इन होने पर, थोड़ी देर के लिए इस डेटा को आपके Google खाते से जोड़ा जाता है. ऐसा Google के सभी ऐप्लिकेशन पर आपके डेटा की सुरक्षा के लिए किया जाता है</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टैब वापस लाए गए</translation>
+<translation id="780287761701992588">अपने सभी डिवाइसों पर बुकमार्क, पासवर्ड वगैरह का ऐक्सेस पाएं</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7808889146555843082">इस पासवर्ड को मिटाने से, आपका <ph name="SITE" /> वाला खाता नहीं मिटेगा. दूसरों से सुरक्षित रखने के लिए, अपना पासवर्ड बदलें या अपना <ph name="SITE" /> वाला खाता मिटाएं.</translation>
 <translation id="7810647596859435254">इसमें खोलें…</translation>

@@ -247,7 +247,7 @@
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1178601482396475810">管理裝置同步設定</translation>
 <translation id="117916940443676133">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理登入資料。</translation>
-<translation id="1179902906564467236">按照手機上的指示操作或使用相機應用程式</translation>
+<translation id="1179902906564467236">按照手機的指示操作，或使用相機應用程式</translation>
 <translation id="118057123461613219">節省極大量記憶體</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1181366777303791449">在 <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -5587,10 +5587,10 @@
 <translation id="5235050375939235066">要解除安裝應用程式嗎？</translation>
 <translation id="523505283826916779">協助工具設定</translation>
 <translation id="5235750401727657667">取代新分頁開啟時顯示的網頁</translation>
-<translation id="5237124927415201087">使用手機就能輕鬆設定 <ph name="DEVICE_TYPE" />，不必手動輸入密碼即可新增 Wi-Fi 和 Google 帳戶。
+<translation id="5237124927415201087">使用手機輕鬆設定 <ph name="DEVICE_TYPE" />。你可新增 Wi-Fi 和 Google 帳戶，無需手動輸入密碼。
     <ph name="BR" />
     <ph name="BR" />
-    顯示名稱：<ph name="DEVICE_TYPE" />...</translation>
+    顯示名稱：<ph name="DEVICE_TYPE" />…</translation>
 <translation id="523862956770478816">網站權限</translation>
 <translation id="5240931875940563122">透過 Android 手機登入</translation>
 <translation id="5242724311594467048">啟用「<ph name="EXTENSION_NAME" />」？</translation>
@@ -10829,10 +10829,10 @@
 <translation id="940212040923880623">尋找並編輯(&amp;F)</translation>
 <translation id="942296794412775122">開啟/關閉麥克風</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共用 Chrome 分頁和音效。</translation>
-<translation id="943673863723789781">使用手機就能輕鬆設定 <ph name="DEVICE_TYPE" />，不必手動輸入密碼即可直接新增 Google 帳戶。
+<translation id="943673863723789781">使用手機輕鬆設定 <ph name="DEVICE_TYPE" />。你可新增 Google 帳戶，無需手動輸入密碼。
     <ph name="BR" />
     <ph name="BR" />
-    顯示名稱：<ph name="DEVICE_TYPE" />...</translation>
+    顯示名稱：<ph name="DEVICE_TYPE" />…</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>

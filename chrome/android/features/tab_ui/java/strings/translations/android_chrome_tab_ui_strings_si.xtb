@@ -86,6 +86,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක. ඔබේ අප්‍රකට පටිත්ත නොතිබෙනු ඇත.}one{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}other{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" />ක්}other{පටිති <ph name="TABS_COUNT_MANY" />ක්}}</translation>
 <translation id="6549021453810473782">වෙළඳසැල් තොරතුරු බලන්න</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">පටිත්ත වමට ගෙන යන්න</translation>
 <translation id="6615455863669487791">මට පෙන්වන්න</translation>
 <translation id="661742612106409204">Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක.</translation>

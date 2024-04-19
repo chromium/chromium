@@ -702,7 +702,9 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4732120983431207637">Dérouleur de pile</translation>
 <translation id="4736934858538408121">Carte virtuelle</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
+<translation id="4738065825338914557">Désabonnement…</translation>
 <translation id="4738836084190194332">Dernière synchronisation : <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Filtrer par appli</translation>
 <translation id="4741753828624614066">Vous obtiendrez des suggestions améliorées dans la barre d'adresse</translation>
 <translation id="4742970037960872810">Supprimer la surbrillance</translation>
 <translation id="4749960740855309258">Ouvrir un nouvel onglet</translation>
@@ -786,6 +788,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5099845111805573968">Si vous sélectionnez la version pour ordinateur, ce paramètre sera appliqué chaque fois que vous accéderez à ce site.</translation>
 <translation id="5102401324271069229">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut envoyer les URL concernées, y compris des extraits du contenu des pages, à la fonctionnalité de navigation sécurisée</translation>
 <translation id="510275257476243843">1 heure restante</translation>
+<translation id="5114895953710637392">La feuille de filtrage des applis est fermée.</translation>
 <translation id="5115811374190515607">vers <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5122378528687922675">Si tu as besoin d'aide, demande à ton parent (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
@@ -1137,6 +1140,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="685850645784703949">Discover de Google : désactivé</translation>
 <translation id="686366188661646310">Supprimer le mot de passe ?</translation>
 <translation id="6864459304226931083">Télécharger l'image</translation>
+<translation id="686490460830618322">Feuille de filtrage des applis</translation>
 <translation id="6865313869410766144">Données de saisie automatique</translation>
 <translation id="6867400383614725881">Nouvel onglet de navigation privée</translation>
 <translation id="6869056123412990582">ordinateur</translation>
@@ -1204,6 +1208,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7177466738963138057">Vous pourrez modifier le moteur de recherche plus tard dans les paramètres</translation>
 <translation id="7177873915659574692">Impossible de créer le code QR, car l'URL comporte plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
+<translation id="7183517696921903380">La feuille de filtrage des applis est ouverte.</translation>
 <translation id="7183693674623539380">Groupe d'onglets – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Contrôlez la façon dont l'historique de navigation est utilisé avec vos autres données dans l'ensemble des services Google</translation>
 <translation id="7187993566681480880">Ce mode vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applications Google lorsque vous êtes connecté.</translation>
@@ -1330,6 +1335,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7780645209293383778">Ces données sont temporairement associées à votre compte Google lorsque vous êtes connecté afin de vous protéger dans les applis Google</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> onglets sont restaurés</translation>
+<translation id="780287761701992588">Accédez à vos favoris, à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="780301667611848630">Non, merci</translation>
 <translation id="7808889146555843082">La suppression de ce mot de passe n'entraînera pas la suppression de votre compte sur <ph name="SITE" />. Modifiez votre mot de passe ou supprimez votre compte sur <ph name="SITE" /> pour le protéger des autres utilisateurs.</translation>
 <translation id="7810647596859435254">Ouvrir avec…</translation>

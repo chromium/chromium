@@ -2076,6 +2076,10 @@ REMARQUE : Cette règle avait une valeur par défaut ("True") incorrectement do
       Si cette règle n'est pas configurée, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit elle-même configurée. Sinon, le paramètre défini par l'utilisateur s'applique.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
+<translation id="2585535930727399201">Les extensions d'entreprise permettent d'ajouter des journaux à un fichier journal système à l'aide de l'API chrome.systemLog.
+
+Si cette règle est activée, les journaux sont conservés dans le fichier journal système pendant une durée limitée.
+Si cette règle est désactivée ou si elle n'est pas configurée, les journaux ne peuvent pas être ajoutés au fichier journal système. Ils ne sont donc pas conservés d'une session à l'autre.</translation>
 <translation id="2586117300379904732">Autoriser les wakelocks pour la gestion de l'alimentation</translation>
 <translation id="2586231026319371211">Heure au format 24h local.</translation>
 <translation id="2587719089023392205">Définir <ph name="PRODUCT_NAME" /> comme navigateur par défaut</translation>
@@ -6182,6 +6186,11 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
 
       Lorsqu'elle est définie sur "False", les sites peuvent uniquement envoyer des modules WebAssembly vers des fenêtres et des nœuds de calcul dans la même origine.</translation>
 <translation id="6008497706608447728">Liste des domaines bloqués du service SSO flottant</translation>
+<translation id="6009419785187615211">Permet de spécifier comment sont traités dans le navigateur les formulaires non sécurisés (soumis via HTTP) qui sont intégrés à des sites sécurisés (HTTPS).
+       Si cette règle est activée ou si elle n'est pas configurée, un avertissement s'affiche en pleine page lorsqu'un formulaire non sécurisé est soumis. De plus, lorsque l'utilisateur place le curseur sur un champ de ce formulaire, une info-bulle d'avertissement s'affiche juste à côté. La saisie automatique est aussi désactivée pour ce type de formulaire.
+       Si cette règle est désactivée, aucun avertissement ne s'affiche quand un formulaire non sécurisé est soumis, et la saisie automatique fonctionne normalement.
+
+       Cette règle devrait être supprimée dans Chrome 130.</translation>
 <translation id="6011193465932186973">Empreinte digitale</translation>
 <translation id="6011969832398368671">Autoriser les sites à demander aux utilisateurs l'accès en écriture aux fichiers et répertoires</translation>
 <translation id="601234435141599215">Autoriser le transfert de port vers les machines virtuelles Linux</translation>

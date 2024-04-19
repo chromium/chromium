@@ -702,9 +702,9 @@
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">虛擬卡</translation>
 <translation id="473775607612524610">更新</translation>
-<translation id="4738065825338914557">取消訂閱中…</translation>
+<translation id="4738065825338914557">正在取消訂閱…</translation>
 <translation id="4738836084190194332">最後同步處理時間：<ph name="WHEN" /></translation>
-<translation id="474121291218385686">依應用程式篩選</translation>
+<translation id="474121291218385686">按應用程式篩選</translation>
 <translation id="4741753828624614066">您會在網址列取得更貼近需求的建議</translation>
 <translation id="4742970037960872810">移除焦點內容</translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
@@ -788,7 +788,7 @@
 <translation id="5099845111805573968">只要選取一次桌面版網站，往後每次瀏覽時，網站都會套用此設定</translation>
 <translation id="5102401324271069229">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
 <translation id="510275257476243843">尚餘 1 小時</translation>
-<translation id="5114895953710637392">應用程式篩選功能表已關閉。</translation>
+<translation id="5114895953710637392">應用程式篩選器工作表閂咗。</translation>
 <translation id="5115811374190515607">移至<ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">興趣</translation>
 <translation id="5122378528687922675">如需協助，請找家長 (<ph name="PARENT_NAME_1" /> 或 <ph name="PARENT_NAME_2" />) 幫忙</translation>
@@ -1141,7 +1141,7 @@
 <translation id="685850645784703949">Google 探索 - 關閉</translation>
 <translation id="686366188661646310">要刪除密碼嗎？</translation>
 <translation id="6864459304226931083">下載圖片</translation>
-<translation id="686490460830618322">應用程式篩選功能表</translation>
+<translation id="686490460830618322">應用程式篩選器工作表</translation>
 <translation id="6865313869410766144">自動填入表格數據</translation>
 <translation id="6867400383614725881">新無痕式分頁</translation>
 <translation id="6869056123412990582">電腦</translation>
@@ -1209,7 +1209,7 @@
 <translation id="7177466738963138057">您稍後可在「設定」中作出變更</translation>
 <translation id="7177873915659574692">無法建立 QR 碼。網址超過 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
 <translation id="7180611975245234373">重新整理</translation>
-<translation id="7183517696921903380">應用程式篩選功能表已開啟。</translation>
+<translation id="7183517696921903380">應用程式篩選器工作表開咗。</translation>
 <translation id="7183693674623539380">分頁群組 - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">控管在各項 Google 服務中將瀏覽記錄和其他資料搭配使用的方式</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
@@ -1336,7 +1336,7 @@
 <translation id="7780645209293383778">當您登入 Google 帳戶時，這些資料會暫時連結至您的帳戶，保護各個 Google 應用程式使用安全</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">還原咗 <ph name="TAB_COUNT" /> 個分頁</translation>
-<translation id="780287761701992588">無論使用任何裝置，都能存取書籤、密碼和其他設定</translation>
+<translation id="780287761701992588">在任何裝置上存取書籤、密碼及其他設定</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7808889146555843082">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶。請變更密碼或刪除您在 <ph name="SITE" /> 的帳戶，以免被他人盜用。</translation>
 <translation id="7810647596859435254">選擇開啟應用程式…</translation>

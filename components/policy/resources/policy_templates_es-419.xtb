@@ -2148,6 +2148,10 @@ NOTA: Esta política tenía un valor predeterminado "verdadero" documentado de f
       Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
+<translation id="2585535930727399201">Las extensiones empresariales pueden agregar registros a un archivo de registro del sistema con la API de chrome.systemLog.
+
+Si habilitas la política, los registros se conservarán en el archivo de registro del sistema durante un período limitado.
+Si la inhabilitas o no la estableces, no se podrán agregar los registros al archivo de registro del sistema, por lo que no se conservarán los registros entre sesiones.</translation>
 <translation id="2586117300379904732">Permite los bloqueos de activación para la administración de energía</translation>
 <translation id="2586231026319371211">Hora local en formato de reloj de pared de 24 horas.</translation>
 <translation id="2587719089023392205">Establecer <ph name="PRODUCT_NAME" /> como navegador predeterminado</translation>
@@ -6401,6 +6405,11 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si la estableces como falsa o no la estableces, los sitios solo podrán enviar módulos de WebAssembly a ventanas y trabajadores del mismo origen.</translation>
 <translation id="6008497706608447728">Lista de dominios bloqueados del servicio de SSO flotante</translation>
+<translation id="6009419785187615211">Esta política controla el tratamiento de los formularios no seguros (formularios que se envían a través de HTTP) incorporados en sitios (HTTPS) seguros en el navegador.
+       Si habilitas la política o no la estableces, se mostrará una advertencia de página completa cuando se envíe un formulario no seguro. Además, se mostrará un cuadro de advertencia junto a los campos del formulario cuando coloques el cursor sobre ellos y se inhabilitará la función autocompletar para esos formularios.
+       Si se inhabilita la política, no se mostrarán las advertencias para los formularios no seguros, y autocompletar funcionará con normalidad.
+
+       Se planea quitar esta política en la versión 130 de Chrome.</translation>
 <translation id="6011193465932186973">Huella dactilar</translation>
 <translation id="6011969832398368671">Permite que los sitios soliciten al usuario acceso de escritura a archivos y directorios</translation>
 <translation id="601234435141599215">Permitir la redirección de puertos a máquinas virtuales Linux</translation>

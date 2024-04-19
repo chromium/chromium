@@ -247,6 +247,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1178581264944972037">Sitisha</translation>
 <translation id="1178601482396475810">Dhibiti usawazishaji wa kifaa</translation>
 <translation id="117916940443676133">Ufunguo wako wa usalama haujalindwa kwa PIN. Ili udhibiti data ya kuingia katika akaunti, tunga PIN kwanza.</translation>
+<translation id="1179902906564467236">Fuata maagizo kwenye simu yako au utumie programu ya kamera</translation>
 <translation id="118057123461613219">Nafasi kubwa zaidi iliyookolewa na kiokoa hifadhi</translation>
 <translation id="1181037720776840403">Ondoa</translation>
 <translation id="1181366777303791449">kwenye <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -659,6 +660,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1500801317528437432">Pata maelezo zaidi kuhusu programu za Chrome zisizotumika</translation>
 <translation id="1501480321619201731">Futa kikundi</translation>
 <translation id="1503392482221435031">Hutuma kiotomatiki takwimu za matumizi kwenda Google. Unaweza kuwasha au kuzima ripoti za kuacha kufanya kazi katika mipangilio ya kifaa chako.</translation>
+<translation id="1503556098270577657">Umeingia katika akaunti ya <ph name="USER_EMAIL" /> ukitumia simu yako ya Android</translation>
 <translation id="150411034776756821">Ondoa <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Folda zinazoshirikiwa zinapatikana kwenye Windows katika <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">Pakua manenosiri</translation>
@@ -5584,6 +5586,10 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5235050375939235066">Ungependa kuondoa programu?</translation>
 <translation id="523505283826916779">Mipangilio ya ufikiaji</translation>
 <translation id="5235750401727657667">Badilisha ukurasa unaoona unapokifungua kichupo kipya</translation>
+<translation id="5237124927415201087">Weka mipangilio kwenye <ph name="DEVICE_TYPE" /> yako kwa urahisi ukitumia simu yako. Unaweza kuweka Wi-Fi na Akaunti yako ya Google bila kuweka manenosiri mwenyewe.
+    <ph name="BR" />
+    <ph name="BR" />
+    Huonekana kwa jina la <ph name="DEVICE_TYPE" />...</translation>
 <translation id="523862956770478816">Ruhusa za tovuti</translation>
 <translation id="5240931875940563122">Ingia katika akaunti ukitumia simu ya Android</translation>
 <translation id="5242724311594467048">Ungependa kuwasha "<ph name="EXTENSION_NAME" />"?</translation>
@@ -8895,6 +8901,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Usiruhusu tovuti zifunge kibodi yako</translation>
 <translation id="7789963078219276159">Mandhari ya ukurasa wa kwanza yamebadilishwa kuwa <ph name="CATEGORY" />.</translation>
+<translation id="7790689625219600437">Utambuzi wa Maandishi (OCR) katika PDF</translation>
 <translation id="7791269138074599214">Mbinu ya kuingiza data</translation>
 <translation id="7791429245559955092">Programu hii itawekwa kwenye wasifu wa Chrome unaotumia sasa</translation>
 <translation id="7791436592012979144">Usogezaji nyuma umewashwa</translation>
@@ -10825,6 +10832,10 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="940212040923880623">&amp;Tafuta na Ubadilishe</translation>
 <translation id="942296794412775122">Washa au uzime maikrofoni</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> inashiriki kichupo cha Chrome na sauti.</translation>
+<translation id="943673863723789781">Weka mipangilio kwenye <ph name="DEVICE_TYPE" /> yako kwa urahisi ukitumia simu yako. Unaweza kuongeza Akaunti yako ya Google bila kuweka nenosiri lako mwenyewe.
+    <ph name="BR" />
+    <ph name="BR" />
+    Huonekana kwa jina la <ph name="DEVICE_TYPE" />...</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
 <translation id="947156494302904893">Tovuti unazotembelea zinaweza kuthibitisha kuwa wewe ni mtu halisi na si roboti</translation>
 <translation id="947329552760389097">&amp;Kagua Vipengee</translation>

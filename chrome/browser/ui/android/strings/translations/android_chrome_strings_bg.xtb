@@ -702,7 +702,9 @@
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Виртуална карта</translation>
 <translation id="473775607612524610">Актуализиране</translation>
+<translation id="4738065825338914557">Отписвате се…</translation>
 <translation id="4738836084190194332">Последно синхронизиране: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Филтриране по приложение</translation>
 <translation id="4741753828624614066">Ще получавате подобрени предложения в адресната лента</translation>
 <translation id="4742970037960872810">Премахване на открояването</translation>
 <translation id="4749960740855309258">Отваряне на нов раздел</translation>
@@ -786,6 +788,7 @@
 <translation id="5099845111805573968">След като изберете настолната версия веднъж, настройката се прилага за сайта при всяко посещение</translation>
 <translation id="5102401324271069229">Ако сайт се опита да открадне паролата ви или ако изтеглите опасен файл, Chrome може да изпрати до Безопасно сърфиране URL адресите и част от съдържанието на страницата</translation>
 <translation id="510275257476243843">Остава 1 час</translation>
+<translation id="5114895953710637392">Листът за филтриране по приложение е затворен.</translation>
 <translation id="5115811374190515607">до <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Интереси</translation>
 <translation id="5122378528687922675">Ако се нуждаете от помощ, попитайте родителя си (<ph name="PARENT_NAME_1" /> или <ph name="PARENT_NAME_2" />)</translation>
@@ -1138,6 +1141,7 @@
 <translation id="685850645784703949">Discover от Google – изкл.</translation>
 <translation id="686366188661646310">Искате ли да изтриете паролата?</translation>
 <translation id="6864459304226931083">Изтегляне на изображението</translation>
+<translation id="686490460830618322">Лист за филтриране по приложение</translation>
 <translation id="6865313869410766144">Данни за автоматично попълване на формуляри</translation>
 <translation id="6867400383614725881">Нов раздел „инкогнито“</translation>
 <translation id="6869056123412990582">компютъра</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7177466738963138057">Можете да промените това по-късно от настройките</translation>
 <translation id="7177873915659574692">Не може да се създаде QR код. URL адресът е по-дълъг от <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="7180611975245234373">Опресняване</translation>
+<translation id="7183517696921903380">Листът за филтриране по приложение е отворен.</translation>
 <translation id="7183693674623539380">Група раздели – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Контролирайте начина, по който историята на сърфиране се използва с другите ви данни в услугите на Google</translation>
 <translation id="7187993566681480880">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
@@ -1331,6 +1336,7 @@
 <translation id="7780645209293383778">Временно свързва тези данни с профила ви в Google, докато сте в него, за да ви защитава в приложенията на Google</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7798392620021911922">Бяха възстановени <ph name="TAB_COUNT" /> раздела</translation>
+<translation id="780287761701992588">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7808889146555843082">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" />. За да го защитите от други хора, променете паролата си или изтрийте профила си за <ph name="SITE" />.</translation>
 <translation id="7810647596859435254">Отваряне със…</translation>

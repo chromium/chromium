@@ -48,7 +48,7 @@
 <translation id="3996880007329611795">接收通知</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 日前建立}other{<ph name="NUM_DAYS_MANY" /> 日前建立}}</translation>
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要唔要將佢哋分組？</translation>
-<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組，顏色為<ph name="COLOR_NAME" />。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{閂有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}other{閂有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{打開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅<ph name="TITLE_OF_GROUP" />分頁群組。}other{打開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅<ph name="TITLE_OF_GROUP" />分頁群組。}}</translation>
@@ -72,7 +72,7 @@
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5545379293264651575">不查看直接關閉</translation>
-<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{閂有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{閂有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個來自 Chrome 的連結}other{<ph name="TABS_COUNT_MANY" /> 個來自 Chrome 的連結}}</translation>
 <translation id="575494663145460764">要接收降價快訊嗎？</translation>
@@ -114,7 +114,7 @@
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7966321538264951561">閂建議。</translation>
 <translation id="8029301326595421733">關於呢間商店嘅資料宜家顯示喺成個畫面</translation>
-<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色為<ph name="COLOR_NAME" />。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="8205266828577616993">將分頁上移</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{閂 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁}other{閂 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁}}</translation>
 <translation id="8398929769197326728">新增資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -127,7 +127,7 @@
 <translation id="9090098097337832354">閂咗關於呢間商店嘅資料</translation>
 <translation id="9150694013019234766">喺接近畫面底部附近嘅分頁群組入面切換分頁</translation>
 <translation id="9169594135889675189">喺群組入面加新嘅分頁</translation>
-<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="955558140275419384">你可以用呢個編輯器睇下同整理所有封存咗嘅分頁。</translation>
 <translation id="959682366969460160">讓所有內容變得井井有條</translation>
 <translation id="992256792861109788">粉紅色</translation>

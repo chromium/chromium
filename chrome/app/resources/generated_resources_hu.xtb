@@ -247,6 +247,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1178601482396475810">Eszközszinkronizálás kezelése</translation>
 <translation id="117916940443676133">Biztonsági hardverkulcsát nem védi PIN-kód. A bejelentkezési adatok kezeléséhez előbb hozzon létre PIN-kódot.</translation>
+<translation id="1179902906564467236">Kövesse a telefonon megjelenő utasításokat, vagy használja a Fényképezőgép alkalmazást</translation>
 <translation id="118057123461613219">Hatalmas megtakarítás</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1181366777303791449">itt: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -659,6 +660,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1500801317528437432">További információ a nem támogatott Chrome-alkalmazásokról</translation>
 <translation id="1501480321619201731">Csoport törlése</translation>
 <translation id="1503392482221435031">Automatikusan elküldi a használati statisztikákat a Google-nak. A hibajelentéseket az eszköz beállításaiban kapcsolhatja be és ki.</translation>
+<translation id="1503556098270577657">Androidos telefonjával bejelentkezett a(z) <ph name="USER_EMAIL" /> fiókba</translation>
 <translation id="150411034776756821"><ph name="SITE" /> eltávolítása</translation>
 <translation id="1504551620756424144">A megosztott mappák a következő helyen találhatók a Windows rendszerben: <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">jelszavak exportálása</translation>
@@ -5587,6 +5589,10 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5235050375939235066">Eltávolítja az alkalmazást?</translation>
 <translation id="523505283826916779">Kisegítő beállítások</translation>
 <translation id="5235750401727657667">Új lap megnyitásakor látható oldal cseréje</translation>
+<translation id="5237124927415201087">Telefonjával könnyedén beállíthatja a(z) <ph name="DEVICE_TYPE" /> eszközt. Jelszavai manuális megadása nélkül is hozzáadhat Wi-Fi-hálózatot és Google-fiókot.
+    <ph name="BR" />
+    <ph name="BR" />
+    A következőként látható: <ph name="DEVICE_TYPE" />…</translation>
 <translation id="523862956770478816">Webhelyengedélyek</translation>
 <translation id="5240931875940563122">Belépés androidos telefonnal</translation>
 <translation id="5242724311594467048">Engedélyezi a következőt: „<ph name="EXTENSION_NAME" />”?</translation>
@@ -8897,6 +8903,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">A webhelyek nem zárolhatják a billentyűzetet</translation>
 <translation id="7789963078219276159">A kezdőoldal háttérképe a következőre változott: <ph name="CATEGORY" />.</translation>
+<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">Beviteli mód</translation>
 <translation id="7791429245559955092">Ez az alkalmazás a jelenleg használt Chrome-profilba lesz telepítve</translation>
 <translation id="7791436592012979144">Fordított görgetés bekapcsolva</translation>
@@ -10827,6 +10834,10 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="940212040923880623">&amp;Keresés és szerkesztés</translation>
 <translation id="942296794412775122">Mikrofon be/ki</translation>
 <translation id="942532530371314860">A(z) <ph name="APP_NAME" /> megosztja a Chrome egy lapját és a hangot.</translation>
+<translation id="943673863723789781">Telefonjával könnyedén beállíthatja a(z) <ph name="DEVICE_TYPE" /> eszközt. Google-fiókját jelszava manuális megadása nélkül is hozzáadhatja.
+    <ph name="BR" />
+    <ph name="BR" />
+    A következőként látható: <ph name="DEVICE_TYPE" />…</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="947156494302904893">A felkeresett webhelyek ellenőrizni tudják, hogy Ön valódi személy, nem pedig robot</translation>
 <translation id="947329552760389097">&amp;Elemek vizsgálata</translation>

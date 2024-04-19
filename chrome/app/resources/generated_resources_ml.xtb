@@ -247,6 +247,7 @@
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1178601482396475810">ഉപകരണ സമന്വയം മാനേജ് ചെയ്യുക</translation>
 <translation id="117916940443676133">പിൻ ഉപയോഗിച്ച് നിങ്ങളുടെ സുരക്ഷാ കീ പരിരക്ഷിച്ചിട്ടില്ല. സൈൻ ഇൻ ഡാറ്റ മാനേജ് ചെയ്യാൻ, ആദ്യം ഒരു പിൻ സൃഷ്‌ടിക്കുക.</translation>
+<translation id="1179902906564467236">നിങ്ങളുടെ ഫോണിലെ നിർദ്ദേശങ്ങൾ പാലിക്കുക അല്ലെങ്കിൽ ക്യാമറാ ആപ്പ് ഉപയോഗിക്കുക</translation>
 <translation id="118057123461613219">വളരെയധികം ലാഭിക്കൽ</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> എന്നതിൽ</translation>
@@ -658,6 +659,7 @@
 <translation id="1500801317528437432">പിന്തുണയ്ക്കാത്ത Chrome ആപ്പുകളെക്കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="1501480321619201731">ഗ്രൂപ്പ് ഇല്ലാതാക്കൂ</translation>
 <translation id="1503392482221435031">ഉപയോഗ വിവരക്കണക്കുകൾ സ്വയമേവ Google-ലേക്ക് അയയ്ക്കുന്നു. നിങ്ങളുടെ ഉപകരണത്തിന്റെ ക്രമീകരണത്തിൽ ക്രാഷ് റിപ്പോർട്ടുകൾ ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യാം.</translation>
+<translation id="1503556098270577657">Android ഫോൺ ഉപയോഗിച്ച് <ph name="USER_EMAIL" /> എന്ന വിലാസത്തിലേക്ക് നിങ്ങൾ സൈൻ ഇൻ ചെയ്തു</translation>
 <translation id="150411034776756821"><ph name="SITE" /> നീക്കംചെയ്യുക</translation>
 <translation id="1504551620756424144">പങ്കിട്ട ഫോൾഡറുകൾ Windows-ലെ <ph name="BASE_DIR" /> എന്നതിൽ ലഭ്യമാണ്.</translation>
 <translation id="1505494256539862015">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
@@ -5571,6 +5573,10 @@
 <translation id="5235050375939235066">ആപ്പ് അൺഇൻസ്റ്റാൾ ചെയ്യണോ?</translation>
 <translation id="523505283826916779">ഉപയോഗസഹായി ക്രമീകരണങ്ങൾ</translation>
 <translation id="5235750401727657667">പുതിയ ടാബ് തുറക്കുമ്പോൾ കാണിക്കേണ്ട പേജ് മാറ്റുക</translation>
+<translation id="5237124927415201087">നിങ്ങളുടെ ഫോൺ ഉപയോഗിച്ച് <ph name="DEVICE_TYPE" /> എളുപ്പത്തിൽ സജ്ജീകരിക്കുക. നിങ്ങളുടെ പാസ്‌വേഡുകൾ നേരിട്ട് നൽകാതെ തന്നെ നിങ്ങൾക്ക് വൈഫൈ, Google Account എന്നിവ ചേർക്കാനാകും.
+    <ph name="BR" />
+    <ph name="BR" />
+    <ph name="DEVICE_TYPE" /> ആയി ദൃശ്യമാകും...</translation>
 <translation id="523862956770478816">സൈറ്റ് അനുമതികൾ</translation>
 <translation id="5240931875940563122">Android ഫോൺ ഉപയോഗിച്ച് സെെൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" പ്രവർത്തനക്ഷമമാക്കണോ?</translation>
@@ -8881,6 +8887,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">നിങ്ങളുടെ കീബോർഡ് ലോക്ക് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="7789963078219276159">ആരംഭ പേജിൻ്റെ പശ്‌ചാത്തലം <ph name="CATEGORY" /> എന്നതിലേക്ക് മാറ്റി.</translation>
+<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">ഇൻപുട്ട് രീതി</translation>
 <translation id="7791429245559955092">നിങ്ങൾ നിലവിൽ ഉപയോഗിക്കുന്ന Chrome പ്രൊഫൈലിൽ ഈ ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യും</translation>
 <translation id="7791436592012979144">വിപരീതക്രമത്തിൽ സ്‌ക്രോൾ ചെയ്യൽ പ്രവർത്തനക്ഷമമാക്കി</translation>
@@ -10810,6 +10817,10 @@
 <translation id="940212040923880623">&amp;കണ്ടെത്തി എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="942296794412775122">മൈക്രോഫോൺ ഓണാക്കുക/ഓഫാക്കുക</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> Chrome ടാബും ഓഡിയോയും പങ്കിടുന്നു.</translation>
+<translation id="943673863723789781">നിങ്ങളുടെ ഫോൺ ഉപയോഗിച്ച് <ph name="DEVICE_TYPE" /> എളുപ്പത്തിൽ സജ്ജീകരിക്കുക. നിങ്ങളുടെ പാസ്‌വേഡ് നേരിട്ട് നൽകാതെ തന്നെ Google Account ചേർക്കാനാകും.
+    <ph name="BR" />
+    <ph name="BR" />
+    <ph name="DEVICE_TYPE" /> ആയി ദൃശ്യമാകും...</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="947156494302904893">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകൾക്ക് നിങ്ങൾ ഒരു യഥാർത്ഥ വ്യക്തിയാണെന്നും ബോട്ട് അല്ലെന്നും പരിശോധിച്ചുറപ്പിക്കാൻ കഴിയും</translation>
 <translation id="947329552760389097">&amp;ഘടകങ്ങൾ പരിശോധിക്കുക</translation>

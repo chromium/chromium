@@ -48,6 +48,7 @@
 <translation id="3996880007329611795">Λήψη ειδοποιήσεων</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_DAYS_ONE" /> ημέρα}other{Δημιουργήθηκε πριν από <ph name="NUM_DAYS_MANY" /> ημέρες}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Κλείσιμο της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Κλείσιμο της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Μοβ</translation>
 <translation id="4212246570487010370">Συνέχεια περιήγησης</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη της ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Ανάπτυξη της ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
@@ -71,6 +72,7 @@
 <translation id="5490235265819901748">Η ομάδα καρτελών αναπτύχθηκε</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5545379293264651575">Κλείσιμο χωρίς έλεγχο</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Δείτε πληροφορίες καταστήματος, η επιλογή είναι διαθέσιμη στο επάνω μέρος της οθόνης</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> σύνδεσμος από το Chrome}other{<ph name="TABS_COUNT_MANY" /> σύνδεσμοι από το Chrome}}</translation>
 <translation id="575494663145460764">Θέλετε να λαμβάνετε ειδοποιήσεις για πτώσεις τιμών;</translation>
@@ -112,6 +114,7 @@
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7966321538264951561">Παράβλεψη των προτάσεων.</translation>
 <translation id="8029301326595421733">Άνοιγμα σε πλήρες ύψος των πληροφοριών σχετικά με αυτό το κατάστημα</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Ανάπτυξη ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Μετακίνηση καρτέλας επάνω</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="8398929769197326728">Νέος φάκελος - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -124,6 +127,7 @@
 <translation id="9090098097337832354">Κλείσιμο πληροφοριών σχετικά με αυτό το κατάστημα</translation>
 <translation id="9150694013019234766">Κάντε εναλλαγή μεταξύ των καρτελών στην ομάδα καρτελών σας κοντά στο κάτω μέρος της οθόνης</translation>
 <translation id="9169594135889675189">Προσθήκη νέας καρτέλας στην ομάδα</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Ανάπτυξη ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="955558140275419384">Εισέλθετε σε αυτό το πρόγραμμα επεξεργασίας για να ελέγξετε όλες τις αρχειοθετημένες καρτέλες για τακτοποίηση.</translation>
 <translation id="959682366969460160">Οργανωθείτε</translation>
 <translation id="992256792861109788">Ροζ</translation>

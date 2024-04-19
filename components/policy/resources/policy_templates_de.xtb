@@ -2072,6 +2072,10 @@ HINWEIS: Diese Richtlinie hatte in M117 den falsch dokumentierten Standardwert �
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
+<translation id="2585535930727399201">Mit Unternehmenserweiterungen lassen sich über die chrome.systemLog API einer Systemprotokolldatei Protokolle hinzufügen.
+
+Wenn die Richtlinie aktiviert ist, können die Protokolle für einen begrenzten Zeitraum in der Systemprotokolldatei gespeichert werden.
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können die Protokolle nicht der Systemprotokolldatei hinzugefügt werden. Das bedeutet, dass Protokolle zwischen Sitzungen nicht gespeichert werden.</translation>
 <translation id="2586117300379904732">Wakelocks für die Energieverwaltung zulassen</translation>
 <translation id="2586231026319371211">Die Zeit wird in der jeweiligen Ortszeit im 24-Stunden-Format angegeben.</translation>
 <translation id="2587719089023392205"><ph name="PRODUCT_NAME" /> als Standardbrowser festlegen</translation>
@@ -6158,6 +6162,11 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Wird sie auf „falsch“ gesetzt oder nicht konfiguriert, können Websites WebAssembly-Module nur an Fenster und Worker im selben Ursprung senden.</translation>
 <translation id="6008497706608447728">Für den Floating-SSO-Dienst blockierte Domains</translation>
+<translation id="6009419785187615211">Mit dieser Richtlinie legst du fest, wie nicht sichere Formulare (die über HTTP gesendet werden), die in sichere Websites (HTTPS) eingebettet sind, im Browser gehandhabt werden.
+       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird beim Senden eines unsicheren Formulars eine ganzseitige Warnmeldung angezeigt. Außerdem wird ein Warn-Infofeld neben den Formularfeldern angezeigt, wenn sie ausgewählt werden, und das automatische Ausfüllen für diese Formulare wird deaktiviert.
+       Wenn die Richtlinie deaktiviert ist, werden keine Warnmeldungen für unsichere Formulare angezeigt und das automatische Ausfüllen funktioniert normal.
+
+       Diese Richtlinie wird voraussichtlich in Chrome 130 entfernt.</translation>
 <translation id="6011193465932186973">Fingerabdruck</translation>
 <translation id="6011969832398368671">Websites dürfen den Nutzer um Schreibzugriff auf Dateien und Verzeichnisse bitten</translation>
 <translation id="601234435141599215">Portweiterleitung auf virtuelle Maschinen mit Linux zulassen</translation>

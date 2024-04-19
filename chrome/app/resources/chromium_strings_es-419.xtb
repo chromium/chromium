@@ -411,6 +411,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8166782796394721554">Activar la protección adicional en el motor de WebAssembly y de JavaScript de Chromium</translation>
 <translation id="81770708095080097">Chromium bloqueó este archivo porque es peligroso.</translation>
+<translation id="8232193495299001329">Chromium no puede verificar de dónde proviene esta extensión y es posible que no sea segura. Quítala de Chromium para que ya no pueda ver ni cambiar tus datos en los sitios que visitas, incluida la información personal.</translation>
 <translation id="8248265253516264921">Si una imagen no tiene una descripción útil, Chromium intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google. Puedes desactivar esta opción en la configuración en cualquier momento.</translation>
 <translation id="8266560134891435528">Chromium no puede revisar las contraseñas porque no accediste a tu cuenta</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium te advierte<ph name="END_LINK" /> sobre descargas y sitios no seguros</translation>

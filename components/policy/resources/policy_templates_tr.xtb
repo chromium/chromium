@@ -2106,6 +2106,10 @@ NOT: Bu politikanın varsayılan değeri M117 dokümanında hatalı bir şekilde
       Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
+<translation id="2585535930727399201">Kurumsal uzantılar, chrome.systemLog API aracılığıyla günlükleri bir sistem günlük dosyasına ekleyebilir.
+
+Politika, Etkin değerine ayarlanırsa günlüklerin sınırlı bir süre boyunca sistem günlük dosyasında saklanmasına izin verilir.
+Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa günlüklerin, sistem günlük dosyasına eklenmesine izin verilmez. Dolayısıyla, günlükler oturumlar arasında saklanmaz.</translation>
 <translation id="2586117300379904732">Güç yönetimi için uyanık kalma kilitlerine izin ver</translation>
 <translation id="2586231026319371211">Zaman, 24 saatlik yerel duvar saati biçiminde değerlendirilir.</translation>
 <translation id="2587719089023392205"><ph name="PRODUCT_NAME" /> ürününü varsayılan tarayıcım olarak ayarla</translation>
@@ -6288,6 +6292,11 @@ geçerlidir ve politika ayarlanmadan bırakılırsa varsayılan olarak devre dı
       Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa siteler, WebAssembly modüllerini yalnızca
       aynı kaynaktaki pencerelere veya çalışanlara gönderir.</translation>
 <translation id="6008497706608447728">Kayan TOA Hizmeti engellenen alan adı listesi</translation>
+<translation id="6009419785187615211">Bu politika, tarayıcıdaki güvenli (HTTPS) sitelere yerleştirilmiş güvenli olmayan formların (HTTP üzerinden gönderilen formlar) işlenme şeklini denetler.
+       Bu politika etkinleştirilir veya ayarlanmazsa güvenli olmayan bir form gönderilirken tam sayfa uyarı gösterilir. Ayrıca imleçle üzerine gelindiği zaman form alanlarının yanında bir uyarı balonu gösterilir ve bu formlarda otomatik doldurma özelliği devre dışı bırakılır.
+       Bu politika devre dışı bırakılırsa güvenli olmayan formlar için uyarı gösterilmez ve otomatik doldurma özelliği normal bir şekilde çalışır.
+
+       Bu politika, Chrome 130 sürümünde kaldırılacak şekilde tasarlanmıştır.</translation>
 <translation id="6011193465932186973">Parmak izi</translation>
 <translation id="6011969832398368671">Sitelerin kullanıcıdan dosya ve dizinlere yazma erişimi istemesine izin ver</translation>
 <translation id="601234435141599215">Linux sanal makinelerine bağlantı noktası yönlendirmeye izin ver</translation>

@@ -702,7 +702,9 @@
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Віртуальна картка</translation>
 <translation id="473775607612524610">Оновити</translation>
+<translation id="4738065825338914557">Скасування підписки…</translation>
 <translation id="4738836084190194332">Остання синхронізація: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Фільтрувати за додатком</translation>
 <translation id="4741753828624614066">В адресному рядку з’являтимуться покращені підказки</translation>
 <translation id="4742970037960872810">Зняти виділення</translation>
 <translation id="4749960740855309258">Відкрити нову вкладку</translation>
@@ -786,6 +788,7 @@
 <translation id="5099845111805573968">Якщо вибрати опцію "Версія для комп’ютера", вона застосовуватиметься до цього сайту щоразу, коли ви його відвідуєте</translation>
 <translation id="5102401324271069229">Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chrome може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки</translation>
 <translation id="510275257476243843">Залишилась 1 година</translation>
+<translation id="5114895953710637392">Панель фільтра додатків закрито.</translation>
 <translation id="5115811374190515607">в <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Інтереси</translation>
 <translation id="5122378528687922675">Якщо тобі потрібна допомога, звернися до батька або матері (<ph name="PARENT_NAME_1" /> чи <ph name="PARENT_NAME_2" />)</translation>
@@ -1138,6 +1141,7 @@
 <translation id="685850645784703949">Рекомендації від Google вимкнено</translation>
 <translation id="686366188661646310">Видалити пароль?</translation>
 <translation id="6864459304226931083">Завантажити зображення</translation>
+<translation id="686490460830618322">Панель фільтра додатків</translation>
 <translation id="6865313869410766144">Дані автозаповнення форм</translation>
 <translation id="6867400383614725881">Нова анонімна вкладка</translation>
 <translation id="6869056123412990582">комп’ютері</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7177466738963138057">Це можна змінити пізніше в налаштуваннях</translation>
 <translation id="7177873915659574692">Не вдається створити QR-код. URL-адреса перевищує ліміт символів (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="7180611975245234373">Оновити</translation>
+<translation id="7183517696921903380">Панель фільтра додатків відкрито.</translation>
 <translation id="7183693674623539380">Група вкладок – "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="7186568385131859684">Виберіть, як історія вебперегляду використовуватиметься з іншими даними в сервісах Google</translation>
 <translation id="7187993566681480880">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>
@@ -1331,6 +1336,7 @@
 <translation id="7780645209293383778">Тимчасово зв’язує ці дані з обліковим записом Google, у який ви ввійшли, щоб захищати вас у всіх додатках Google</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="7798392620021911922">Відновлено стільки вкладок: <ph name="TAB_COUNT" /></translation>
+<translation id="780287761701992588">Отримуйте доступ до своїх закладок, паролів і інших даних на всіх пристроях</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7808889146555843082">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="SITE" /> залишиться. Змініть пароль або видаліть обліковий запис на сайті <ph name="SITE" />, щоб захистити його.</translation>
 <translation id="7810647596859435254">Відкрити за допомогою…</translation>

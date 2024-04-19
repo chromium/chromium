@@ -247,6 +247,7 @@
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="1178601482396475810">डिवाइस पर सिंक करने की सुविधा को मैनेज करना</translation>
 <translation id="117916940443676133">आपकी सुरक्षा कुंजी को पिन से सुरक्षित नहीं किया गया है. साइन इन करने के लिए डेटा प्रबंधित करने के लिए, पहले पिन बनाएं.</translation>
+<translation id="1179902906564467236">अपने फ़ोन पर दिए गए निर्देशों का पालन करें या Camera ऐप्लिकेशन का इस्तेमाल करें</translation>
 <translation id="118057123461613219">ज़्यादा बचत</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> पर</translation>
@@ -659,6 +660,7 @@
 <translation id="1500801317528437432">ऐसे 'Chrome ऐप्स' के बारे में ज़्यादा जानें जो अब उपलब्ध नहीं हैं</translation>
 <translation id="1501480321619201731">समूह मिटाएं</translation>
 <translation id="1503392482221435031">Google को इस्तेमाल के आंकड़े अपने-आप भेजता है. डिवाइस की सेटिंग में जाकर, क्रैश रिपोर्ट बनाने की सुविधा को चालू या बंद किया जा सकता है.</translation>
+<translation id="1503556098270577657">अपने Android फ़ोन का इस्तेमाल करके <ph name="USER_EMAIL" /> से साइन इन किया है</translation>
 <translation id="150411034776756821"><ph name="SITE" /> को निकालें</translation>
 <translation id="1504551620756424144">शेयर किए गए फ़ोल्डर, Windows में <ph name="BASE_DIR" /> पर उपलब्ध हैं.</translation>
 <translation id="1505494256539862015">पासवर्ड एक्सपोर्ट करना</translation>
@@ -5581,6 +5583,10 @@
 <translation id="5235050375939235066">ऐप्लिकेशन अनइंस्टॉल करें?</translation>
 <translation id="523505283826916779">सुलभता सेटिंग</translation>
 <translation id="5235750401727657667">नया टैब खोलते समय दिखाई देने वाला पेज बदलें</translation>
+<translation id="5237124927415201087">अपने फ़ोन की मदद से, <ph name="DEVICE_TYPE" /> को आसानी से सेट अप करें. पासवर्ड डाले बिना, मैन्युअल तरीके से आपका वाई-फ़ाई और Google खाता जोड़ा जा सकता है.
+    <ph name="BR" />
+    <ph name="BR" />
+    <ph name="DEVICE_TYPE" /> के रूप में दिखेगा...</translation>
 <translation id="523862956770478816">साइट के लिए अनुमतियां</translation>
 <translation id="5240931875940563122">Android फ़ोन की मदद से साइन इन करें</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" को चालू करें?</translation>
@@ -8882,6 +8888,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">साइटों को अपना कीबोर्ड लॉक करने की अनुमति न दें</translation>
 <translation id="7789963078219276159">शुरुआत वाला पेज बैकग्राउंड <ph name="CATEGORY" /> में बदल गया है.</translation>
+<translation id="7790689625219600437">PDF ओसीआर</translation>
 <translation id="7791269138074599214">इनपुट का तरीका</translation>
 <translation id="7791429245559955092">यह ऐप्लिकेशन, Chrome पर इस्तेमाल की जा रही आपकी मौजूदा प्रोफ़ाइल पर इंस्टॉल किया जाएगा</translation>
 <translation id="7791436592012979144">रिवर्स स्क्रोलिंग चालू है</translation>
@@ -10809,6 +10816,10 @@
 <translation id="940212040923880623">&amp;ढूंढें और बदलाव करें</translation>
 <translation id="942296794412775122">माइक्रोफ़ोन चालू/बंद है</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> एक Chrome टैब और ऑडियो शेयर कर रहा है.</translation>
+<translation id="943673863723789781">अपने फ़ोन की मदद से, <ph name="DEVICE_TYPE" /> को आसानी से सेट अप करें. पासवर्ड डाले बिना, मैन्युअल तरीके से अपना Google खाता जोड़ा जा सकता है.
+    <ph name="BR" />
+    <ph name="BR" />
+    <ph name="DEVICE_TYPE" /> के रूप में दिखेगा...</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="947156494302904893">किसी साइट को विज़िट करने पर, वह इस बात की पुष्टि कर सकती है कि आप बॉट के बजाय असली उपयोगकर्ता हैं</translation>
 <translation id="947329552760389097">&amp;एलिमेंट जाँचें</translation>
