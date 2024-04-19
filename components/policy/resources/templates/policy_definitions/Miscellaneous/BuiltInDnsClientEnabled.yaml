@@ -3,11 +3,9 @@ default: null
 desc: |-
   This policy controls which software stack is used to communicate with the DNS server: the Operating System DNS client, or <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s built-in DNS client. This policy does not affect which DNS servers are used: if, for example, the operating system is configured to use an enterprise DNS server, that same server would be used by the built-in DNS client. It also does not control if DNS-over-HTTPS is used; <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will always use the built-in resolver for DNS-over-HTTPS requests. Please see the <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME">DnsOverHttpsMode</ph> policy for information on controlling DNS-over-HTTPS.
 
-        If this policy is set to Enabled, the built-in DNS client will be used, if available.
+        If this policy is set to Enabled or is left unset, the built-in DNS client will be used.
 
         If this policy is set to Disabled, the built-in DNS client will only be used when DNS-over-HTTPS is in use.
-
-        If this policy is left unset, the built-in DNS client will be enabled by default on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="MAC_OS_NAME">macOS</ph>, <ph name="ANDROID_NAME">Android</ph> (when neither Private DNS nor VPN are enabled) and <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 example_value: true
 features:
   dynamic_refresh: true
@@ -15,11 +13,11 @@ features:
 future_on:
 - fuchsia
 items:
-- caption: Always use the built-in DNS client if available
+- caption: Always use the built-in DNS client
   value: true
 - caption: Never use the built-in DNS client
   value: false
-- caption: Use the built-in DNS client on Windows, macOS, Android and ChromeOS
+- caption: Always use the built-in DNS client
   value: null
 owners:
 - ericorth@chromium.org
