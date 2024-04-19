@@ -39,6 +39,8 @@ using ::blink::mojom::StorageType;
 namespace storage {
 namespace {
 
+static const int kDaysInTenYears = 10 * 365;
+
 // Version number of the database schema.
 //
 // We support migrating the database schema from versions that are at most 2
@@ -449,19 +451,52 @@ QuotaError QuotaDatabase::SetStorageKeyLastAccessTime(
   }
 
   // clang-format off
-  static constexpr char kSql[] =
+  static constexpr char kSqlReadLastAccessed[] =
+      "SELECT last_accessed FROM buckets "
+        "WHERE storage_key = ? AND type = ? AND name = ?";
+  // clang-format on
+  last_operation_ = "ReadStorageKeyLastAccessTime";
+  sql::Statement statement_read(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSqlReadLastAccessed));
+  statement_read.BindString(0, storage_key.Serialize());
+  statement_read.BindInt(1, static_cast<int>(type));
+  statement_read.BindString(2, kDefaultBucketName);
+
+  if (statement_read.Step()) {
+    base::Time earlier_last_accessed = statement_read.ColumnTime(0);
+    // We want to record the delta in days between the last_accessed field value
+    // and the new value so we better understand how often old quota buckets are
+    // loaded for new use.
+    if (!earlier_last_accessed.is_null() &&
+        last_accessed > earlier_last_accessed) {
+      int days_since_last_accessed =
+          (last_accessed - earlier_last_accessed).InDays();
+      if (days_since_last_accessed > 400) {
+        base::UmaHistogramCustomCounts("Quota.DaysSinceLastAccessed400DaysGT",
+                                       days_since_last_accessed, 401,
+                                       kDaysInTenYears, 100);
+      } else {
+        base::UmaHistogramCustomCounts("Quota.DaysSinceLastAccessed400DaysLTE",
+                                       days_since_last_accessed, 1, 400, 100);
+      }
+    }
+  }
+
+  // clang-format off
+  static constexpr char kSqlSetLastAccessed[] =
       "UPDATE buckets "
         "SET use_count = use_count + 1, last_accessed = ? "
         "WHERE storage_key = ? AND type = ? AND name = ?";
   // clang-format on
   last_operation_ = "SetStorageKeyLastAccessTime";
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindTime(0, last_accessed);
-  statement.BindString(1, storage_key.Serialize());
-  statement.BindInt(2, static_cast<int>(type));
-  statement.BindString(3, kDefaultBucketName);
+  sql::Statement statement_set(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSqlSetLastAccessed));
+  statement_set.BindTime(0, last_accessed);
+  statement_set.BindString(1, storage_key.Serialize());
+  statement_set.BindInt(2, static_cast<int>(type));
+  statement_set.BindString(3, kDefaultBucketName);
 
-  if (!statement.Run()) {
+  if (!statement_set.Run()) {
     return QuotaError::kDatabaseError;
   }
 
