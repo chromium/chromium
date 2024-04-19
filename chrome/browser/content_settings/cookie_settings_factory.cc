@@ -58,11 +58,6 @@ CookieSettingsFactory::CookieSettingsFactory()
 
 CookieSettingsFactory::~CookieSettingsFactory() = default;
 
-void CookieSettingsFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  content_settings::CookieSettings::RegisterProfilePrefs(registry);
-}
-
 scoped_refptr<RefcountedKeyedService>
 CookieSettingsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

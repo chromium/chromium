@@ -7,9 +7,11 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -35,7 +37,9 @@ namespace first_party_sets {
 // This service always exists for a BrowserContext, regardless of whether the
 // First-Party Sets feature is enabled globally or for this particular
 // BrowserContext.
-class FirstPartySetsPolicyService : public KeyedService {
+class FirstPartySetsPolicyService
+    : public KeyedService,
+      public privacy_sandbox::PrivacySandboxSettings::Observer {
  public:
   enum class ServiceState {
     // Related Website Sets is permanently disabled for this profile.
@@ -80,9 +84,8 @@ class FirstPartySetsPolicyService : public KeyedService {
       mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
           access_delegate);
 
-  // Triggers changes to `access_delegates` that should occur when the
-  // First-Party Sets enabled pref changes.
-  void OnFirstPartySetsEnabledChanged(bool enabled);
+  // PrivacySandboxSettings::Observer
+  void OnFirstPartySetsEnabledChanged(bool enabled) override;
 
   // Stores the callback to be invoked when this service is ready to do so. Must
   // not be called when FPS is not enabled or the service is already ready.
@@ -238,6 +241,12 @@ class FirstPartySetsPolicyService : public KeyedService {
   // Keeps track of whether this instance has ever been initialized fully. Must
   // not be reset in `ResetForTesting`.
   bool first_initialization_complete_for_testing_ = false;
+
+  raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
+                          privacy_sandbox::PrivacySandboxSettings::Observer>
+      privacy_sandbox_settings_observer_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

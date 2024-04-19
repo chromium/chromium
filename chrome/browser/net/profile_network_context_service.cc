@@ -323,8 +323,6 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
                           base::Unretained(this)));
   cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
   cookie_settings_observation_.Observe(cookie_settings_.get());
-  privacy_sandbox_settings_observer_.Observe(
-      PrivacySandboxSettingsFactory::GetForProfile(profile));
 
   DisableQuicIfNotAllowed();
 
@@ -515,14 +513,6 @@ void ProfileNetworkContextService::OnTruncatedCookieBlockingChanged() {
         storage_partition->GetCookieManagerForBrowserProcess()
             ->BlockTruncatedCookies(block_truncated_cookies);
       });
-}
-
-void ProfileNetworkContextService::OnFirstPartySetsEnabledChanged(
-    bool enabled) {
-  // Update all FPS Access Delegates on the FPS service to be `enabled`.
-  first_party_sets::FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
-      profile_)
-      ->OnFirstPartySetsEnabledChanged(enabled);
 }
 
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {

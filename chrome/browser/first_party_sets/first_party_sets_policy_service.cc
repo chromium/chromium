@@ -12,6 +12,7 @@
 #include "base/types/optional_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -85,6 +86,10 @@ FirstPartySetsPolicyService::FirstPartySetsPolicyService(
     : browser_context_(browser_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(browser_context);
+  privacy_sandbox_settings_ = PrivacySandboxSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context_));
+  CHECK(privacy_sandbox_settings_);
+  privacy_sandbox_settings_observer_.Observe(privacy_sandbox_settings_);
   Init();
 }
 
@@ -236,6 +241,8 @@ void FirstPartySetsPolicyService::Shutdown() {
   access_delegates_.Clear();
   on_ready_callbacks_.clear();
   browser_context_ = nullptr;
+  privacy_sandbox_settings_ = nullptr;
+  privacy_sandbox_settings_observer_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 

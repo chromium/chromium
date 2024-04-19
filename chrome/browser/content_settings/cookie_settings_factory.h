@@ -35,8 +35,6 @@ class CookieSettingsFactory : public RefcountedProfileKeyedServiceFactory {
   ~CookieSettingsFactory() override;
 
   // |RefcountedBrowserContextKeyedServiceFactory| methods:
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };
