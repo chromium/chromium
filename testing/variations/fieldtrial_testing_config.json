@@ -1600,6 +1600,21 @@
             ]
         }
     ],
+    "AutofillEnableVirtualCards": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableVirtualCards"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillGranularFillingAndManualFallbackForUnclassifiedFieldsAvailable": [
         {
             "platforms": [
