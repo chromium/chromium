@@ -126,6 +126,8 @@ std::ostream& operator<<(std::ostream& os, const LcppData& data);
 std::ostream& operator<<(std::ostream& os, const LcppStat& stat);
 std::ostream& operator<<(std::ostream& os,
                          const LcpElementLocatorBucket& bucket);
+std::ostream& operator<<(std::ostream& os,
+                         const LcppStringFrequencyStatData& data);
 
 bool operator==(const RedirectData& lhs, const RedirectData& rhs);
 bool operator==(const RedirectStat& lhs, const RedirectStat& rhs);

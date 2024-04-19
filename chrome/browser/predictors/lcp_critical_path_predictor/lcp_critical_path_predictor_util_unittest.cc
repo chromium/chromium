@@ -5,11 +5,82 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace predictors {
+namespace {
+class Updater {
+ public:
+  Updater(size_t sliding_window_size, size_t max_histogram_buckets)
+      : sliding_window_size_(sliding_window_size),
+        max_histogram_buckets_(max_histogram_buckets) {}
+  ~Updater() = default;
+
+  void Update(const std::string& new_entry) {
+    UpdateLcppStringFrequencyStatData(
+        sliding_window_size_, max_histogram_buckets_, new_entry, stat_data_);
+  }
+
+  const LcppStringFrequencyStatData& Data() { return stat_data_; }
+
+ private:
+  LcppStringFrequencyStatData stat_data_;
+  const size_t sliding_window_size_;
+  const size_t max_histogram_buckets_;
+};
+
+LcppStringFrequencyStatData MakeData(std::map<std::string, double> main_buckets,
+                                     double others) {
+  LcppStringFrequencyStatData data;
+  for (auto& [key, freq] : main_buckets) {
+    data.mutable_main_buckets()->insert({key, freq});
+  }
+  data.set_other_bucket_frequency(others);
+  return data;
+}
+
+}  // namespace
+
+TEST(UpdateLcppStringFrequencyStatDataTest, Base) {
+  Updater updater(/*sliding_window_size=*/5u,
+                  /*max_histogram_buckets=*/2u);
+  EXPECT_EQ(updater.Data(), MakeData({}, 0)) << updater.Data();
+
+  updater.Update("foo");
+  EXPECT_EQ(updater.Data(), MakeData({{"foo", 1}}, 0)) << updater.Data();
+
+  updater.Update("bar");
+  EXPECT_EQ(updater.Data(), MakeData({{"foo", 1}, {"bar", 1}}, 0))
+      << updater.Data();
+
+  updater.Update("foo");
+  updater.Update("foo");
+  EXPECT_EQ(updater.Data(), MakeData({{"foo", 3}, {"bar", 1}}, 0))
+      << updater.Data();
+
+  updater.Update("baz");
+  // If kinds of entry are over 'max_histogram_buckets', the oldest bucket is
+  // converted to 'other_bucket_frequency'.
+  EXPECT_EQ(updater.Data(), MakeData({{"foo", 3}, {"baz", 1}}, 1))
+      << updater.Data();
+
+  updater.Update("foobar");
+  // When an entry is dropped out of 'sliding_window_size', existing frequencies
+  // are recalculated as:
+  // next_freq = current_freq/sliding_window_size * (sliding_window_size - 1)
+  // next_others_frequency = (current_others_freq + dropped_entry_freq)
+  //                         /sliding_window_size * (sliding_window_size - 1)
+  // new_freq = 1
+  // then
+  // "foo" = 3/5 * 4
+  // "others" = (1 + 1)/5 * 4
+  // See lcp_critical_path_predictor_util.cc for detail.
+  EXPECT_EQ(updater.Data(), MakeData({{"foo", 2.4}, {"foobar", 1}}, 1.6))
+      << updater.Data();
+}
 
 TEST(IsValidLcppStatTest, Empty) {
   LcppStat lcpp_stat;

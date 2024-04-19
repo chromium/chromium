@@ -89,6 +89,12 @@ bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
                                       const LcppDataInputs& inputs,
                                       LcppData& data);
 
+void UpdateLcppStringFrequencyStatData(
+    size_t sliding_window_size,
+    size_t max_histogram_buckets,
+    const std::string& new_entry,
+    LcppStringFrequencyStatData& lcpp_stat_data);
+
 // Returns true if the LcppData is valid. i.e. looks not corrupted.
 // Otherwise, data might be corrupted.
 bool IsValidLcppStat(const LcppStat& lcpp_stat);
