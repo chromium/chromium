@@ -376,6 +376,7 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/335867572")
     public void testWithNoAccount_bottomSheetSignin_requiredHistorySync() {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
