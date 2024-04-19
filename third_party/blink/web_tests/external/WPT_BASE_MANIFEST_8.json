@@ -97189,7 +97189,7 @@
         ]
        ],
        "color-scheme-iframe-background-about-blank.tentative.html": [
-        "a5a9843ac80d97d529d04f65c9f2250d3ba0dc25",
+        "f9ab24fdc19b54ab3ba062c4fcc6d0a5a2fbade2",
         [
          null,
          [
@@ -426415,7 +426415,7 @@
      ]
     ],
     "clipboard-item.https.html": [
-     "7e148703a2679286d563053904d3accc820900a9",
+     "78acd1104a96bc78942fa93427bccdaf68f2ba9f",
      [
       null,
       {}
@@ -446545,6 +446545,13 @@
         {}
        ]
       ],
+      "registered-color-style-queries.html": [
+       "6e2bfb896bbaa67bcb6933bebf13829c0f0a74e8",
+       [
+        null,
+        {}
+       ]
+      ],
       "sibling-layout-dependency.html": [
        "5e30a998d23b03dd73f1ff290876243bd2eb9417",
        [
@@ -459346,7 +459353,7 @@
       ]
      ],
      "registered-property-computation.html": [
-      "f4c718b139baffda6bb7d20254bdca7c37265a56",
+      "8ca9d4499abc11be534cc41f6ea663181adc8978",
       [
        null,
        {}
@@ -650576,6 +650583,13 @@
         ]
        ]
       }
+     ]
+    ],
+    "modify-attributes-in-callback.html": [
+     "96b4501128bf659e286e6ac41250538155e7156a",
+     [
+      null,
+      {}
      ]
     ],
     "no-require-trusted-types-for-report-only.html": [
