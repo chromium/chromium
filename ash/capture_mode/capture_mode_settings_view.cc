@@ -363,14 +363,14 @@ void CaptureModeSettingsView::OnOptionSelected(int option_id) const {
       controller->SetUsesDefaultCaptureFolder(false);
       break;
     case kCameraOff:
-      camera_controller->SetSelectedCamera(CameraId());
+      camera_controller->SetSelectedCamera(CameraId(), /*by_user=*/true);
       break;
     default:
       DCHECK(!camera_controller->IsCameraDisabledByPolicy());
       DCHECK_GE(option_id, kCameraDevicesBegin);
       const CameraId* camera_id = FindCameraIdByOptionId(option_id);
       DCHECK(camera_id);
-      camera_controller->SetSelectedCamera(*camera_id);
+      camera_controller->SetSelectedCamera(*camera_id, /*by_user=*/true);
       break;
   }
 }
