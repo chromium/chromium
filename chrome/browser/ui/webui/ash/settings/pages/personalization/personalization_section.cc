@@ -49,7 +49,7 @@ PersonalizationSection::PersonalizationSection(
     : OsSettingsSection(profile, search_tag_registry),
       isRevampEnabled_(ash::features::IsOsSettingsRevampWayfindingEnabled()),
       multitasking_subsection_(
-          ShouldShowMultitaskingInPersonalization()
+          !isRevampEnabled_
               ? std::make_optional<MultitaskingSection>(profile,
                                                         search_tag_registry)
               : std::nullopt) {
@@ -83,14 +83,14 @@ void PersonalizationSection::AddLoadTimeData(
   };
 
   html_source->AddLocalizedStrings(kWallpaperLocalizedStrings);
-  if (ShouldShowMultitaskingInPersonalization()) {
+  if (multitasking_subsection_) {
     multitasking_subsection_->AddLoadTimeData(html_source);
   }
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PersonalizationHubHandler>());
-  if (ShouldShowMultitaskingInPersonalization()) {
+  if (multitasking_subsection_) {
     multitasking_subsection_->AddHandlers(web_ui);
   }
 }
@@ -121,7 +121,7 @@ bool PersonalizationSection::LogMetric(mojom::Setting setting,
 void PersonalizationSection::RegisterHierarchy(
     HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kOpenWallpaper);
-  if (ShouldShowMultitaskingInPersonalization()) {
+  if (multitasking_subsection_) {
     multitasking_subsection_->RegisterHierarchy(generator);
   }
 }

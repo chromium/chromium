@@ -1924,6 +1924,58 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ParentalControlsSettingsCard) {
       "parental_controls_page/parental_controls_settings_card_test.js");
 }
 
+class OSSettingsRevampMochaTestFasterSplitScreenEnabled
+    : public OSSettingsRevampMochaTest {
+ public:
+  OSSettingsRevampMochaTestFasterSplitScreenEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/{ash::features::kFasterSplitScreenSetup},
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestFasterSplitScreenEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestFasterSplitScreenEnabled::DescribeParams);
+
+class OSSettingsRevampMochaTestFasterSplitScreenDisabled
+    : public OSSettingsRevampMochaTest {
+ public:
+  OSSettingsRevampMochaTestFasterSplitScreenDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/{},
+        /*disabled=*/{ash::features::kFasterSplitScreenSetup});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestFasterSplitScreenDisabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestFasterSplitScreenDisabled::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFasterSplitScreenEnabled,
+                       PersonalizationPageWithPersonalizationHub) {
+  RunSettingsTest(
+      "personalization_page/"
+      "personalization_page_with_personalization_hub_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFasterSplitScreenDisabled,
+                       PersonalizationPageWithPersonalizationHub) {
+  RunSettingsTest(
+      "personalization_page/"
+      "personalization_page_with_personalization_hub_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        PersonalizationPageWithPersonalizationHub) {
   RunSettingsTest(
