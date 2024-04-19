@@ -183,7 +183,7 @@ chrome.automation.RoleType = {
   DESKTOP: 'desktop',
   DETAILS: 'details',
   DIALOG: 'dialog',
-  DIRECTORY: 'directory',
+  DIRECTORY_DEPRECATED: 'directoryDeprecated',
   DISCLOSURE_TRIANGLE: 'disclosureTriangle',
   DISCLOSURE_TRIANGLE_GROUPED: 'disclosureTriangleGrouped',
   DOC_ABSTRACT: 'docAbstract',

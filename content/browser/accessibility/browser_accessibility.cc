@@ -1619,8 +1619,6 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
       return content_client->GetLocalizedString(IDS_AX_ROLE_DETAILS);
     case ax::mojom::Role::kDialog:
       return content_client->GetLocalizedString(IDS_AX_ROLE_DIALOG);
-    case ax::mojom::Role::kDirectory:
-      return content_client->GetLocalizedString(IDS_AX_ROLE_DIRECTORY);
     case ax::mojom::Role::kDisclosureTriangle:
     case ax::mojom::Role::kDisclosureTriangleGrouped:
       return content_client->GetLocalizedString(
@@ -1783,6 +1781,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kDescriptionListTermDeprecated:
     case ax::mojom::Role::kPreDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
+    case ax::mojom::Role::kDirectoryDeprecated:
       NOTREACHED_NORETURN();
   }
 }

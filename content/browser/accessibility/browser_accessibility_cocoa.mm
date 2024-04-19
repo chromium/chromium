@@ -1395,7 +1395,7 @@ bool content::IsNSRange(id value) {
   if ([self internalRole] == ax::mojom::Role::kDescriptionList)
     return NSAccessibilityDefinitionListSubrole;
 
-  if ([self internalRole] == ax::mojom::Role::kDirectory ||
+  if ([self internalRole] == ax::mojom::Role::kDirectoryDeprecated ||
       [self internalRole] == ax::mojom::Role::kList) {
     return NSAccessibilityContentListSubrole;
   }

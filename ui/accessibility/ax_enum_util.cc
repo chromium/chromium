@@ -210,8 +210,8 @@ const char* ToString(ax::mojom::Role role) {
       return "details";
     case ax::mojom::Role::kDialog:
       return "dialog";
-    case ax::mojom::Role::kDirectory:
-      return "directory";
+    case ax::mojom::Role::kDirectoryDeprecated:
+      return "directoryDeprecated";
     case ax::mojom::Role::kDisclosureTriangle:
       return "disclosureTriangle";
     case ax::mojom::Role::kDisclosureTriangleGrouped:
@@ -638,8 +638,8 @@ ax::mojom::Role StringToRole(const std::string& role) {
     return ax::mojom::Role::kDetails;
   } else if (role == "kDialog") {
     return ax::mojom::Role::kDialog;
-  } else if (role == "kDirectory") {
-    return ax::mojom::Role::kDirectory;
+  } else if (role == "kDirectoryDeprecated") {
+    return ax::mojom::Role::kDirectoryDeprecated;
   } else if (role == "kDisclosureTriangle") {
     return ax::mojom::Role::kDisclosureTriangle;
   } else if (role == "kDisclosureTriangleGrouped") {

@@ -7526,7 +7526,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kDate:
     case ax::mojom::blink::Role::kDateTime:
     case ax::mojom::blink::Role::kDialog:
-    case ax::mojom::blink::Role::kDirectory:
     case ax::mojom::blink::Role::kDocCover:
     case ax::mojom::blink::Role::kDocBiblioEntry:
     case ax::mojom::blink::Role::kDocEndnote:
@@ -7779,6 +7778,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kDescriptionListTermDeprecated:
     case ax::mojom::blink::Role::kDesktop:
     case ax::mojom::blink::Role::kDescriptionListDetailDeprecated:
+    case ax::mojom::blink::Role::kDirectoryDeprecated:
     case ax::mojom::blink::Role::kKeyboard:
     case ax::mojom::blink::Role::kImeCandidate:
     case ax::mojom::blink::Role::kListGrid:

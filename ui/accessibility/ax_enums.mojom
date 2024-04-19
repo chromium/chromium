@@ -160,7 +160,7 @@ enum Role {
   kDesktop = 33,  // internal
   kDetails = 34,
   kDialog = 35,
-  kDirectory = 36,
+  kDirectoryDeprecated = 36,
   kDisclosureTriangle = 37,
   [MinVersion=5] kDisclosureTriangleGrouped = 210,
   // --------------------------------------------------------------

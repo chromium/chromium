@@ -444,7 +444,6 @@ bool IsLink(const ax::mojom::Role role) {
 bool IsList(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kDocBibliography:
     case ax::mojom::Role::kList:
     case ax::mojom::Role::kListBox:
@@ -629,7 +628,6 @@ bool IsSection(const ax::mojom::Role role) {
     case ax::mojom::Role::kCell:
     case ax::mojom::Role::kColumnHeader:  // Subclass of kCell.
     case ax::mojom::Role::kDefinition:
-    case ax::mojom::Role::kDirectory:  // Subclass of kList.
     case ax::mojom::Role::kFeed:       // Subclass of kList.
     case ax::mojom::Role::kFigure:
     case ax::mojom::Role::kGrid:  // Subclass of kTable.
@@ -733,7 +731,6 @@ bool IsSetLike(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kComboBoxSelect:
     case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kDocBibliography:
     case ax::mojom::Role::kFeed:
     case ax::mojom::Role::kGroup:
@@ -846,7 +843,6 @@ bool IsTableLike(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kGrid:
     case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kList:
     case ax::mojom::Role::kListBox:
     case ax::mojom::Role::kListGrid:
@@ -925,7 +921,6 @@ bool IsUIAEmbeddedObject(ax::mojom::Role role) {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kDisclosureTriangle:
     case ax::mojom::Role::kDisclosureTriangleGrouped:
     case ax::mojom::Role::kDocBackLink:
@@ -1019,7 +1014,6 @@ bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
     case ax::mojom::Role::kArticle:
     case ax::mojom::Role::kDefinition:
     case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kDocument:
     case ax::mojom::Role::kGraphicsDocument:
     case ax::mojom::Role::kImage:

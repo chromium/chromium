@@ -548,8 +548,6 @@ void CollectAncestorRoles(
       return @"AXDateField";
     case ax::mojom::Role::kDescriptionList:
       return NSAccessibilityListRole;
-    case ax::mojom::Role::kDirectory:
-      return NSAccessibilityListRole;
     case ax::mojom::Role::kDisclosureTriangle:
     case ax::mojom::Role::kDisclosureTriangleGrouped:
       // If Mac supports AXExpandedChanged event with
@@ -683,6 +681,7 @@ void CollectAncestorRoles(
       return NSAccessibilityGroupRole;
     case ax::mojom::Role::kDescriptionListTermDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
+    case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
       NOTREACHED_NORETURN();
   }
