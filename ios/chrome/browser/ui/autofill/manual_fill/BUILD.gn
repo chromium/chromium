@@ -223,6 +223,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/settings/password/password_settings:common",
     "//ios/chrome/browser/ui/settings/password/reauthentication:reauthentication_ui",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/web/public/js_messaging",

@@ -27,10 +27,6 @@ constexpr CGFloat kHeaderAttributedStringLineSpacing = 2;
 // Minimum height for the header view.
 constexpr CGFloat kHeaderViewMinHeight = 44;
 
-// Horizontal spacing between views used in
-// `AppendHorizontalConstraintsForViews`.
-constexpr CGFloat kHorizontalSpacing = 16;
-
 // Height of the grey separator.
 constexpr CGFloat kSeparatorHeight = 1;
 
@@ -48,6 +44,24 @@ constexpr CGFloat kSmallVerticalSpacingBetweenViews = 4;
 
 // Vertical spacing between two labeled chip buttons.
 constexpr CGFloat kVerticalSpacingBetweenLabeledChips = 8;
+
+// Adds all baseline anchor constraints for the given `views` to match the first
+// one. Constraints are not activated.
+void AppendEqualBaselinesConstraints(
+    NSMutableArray<NSLayoutConstraint*>* constraints,
+    NSArray<UIView*>* views) {
+  UIView* leadingView = views.firstObject;
+  for (UIView* view in views) {
+    DCHECK([view isKindOfClass:[UIButton class]] ||
+           [view isKindOfClass:[UILabel class]]);
+    if (view == leadingView) {
+      continue;
+    }
+    [constraints
+        addObject:[view.lastBaselineAnchor
+                      constraintEqualToAnchor:leadingView.lastBaselineAnchor]];
+  }
+}
 
 // Returns the vertical spacing that should be added above a UI element of given
 // `type`.
@@ -69,10 +83,35 @@ CGFloat GetVerticalSpacingForElementType(
   }
 }
 
+// Returns the width of the given `layout_guide`.
+CGFloat GetLayoutGuideWidth(UILayoutGuide* layout_guide) {
+  return layout_guide.layoutFrame.size.width;
+}
+
+// Returns the width of the given `view`.
+CGFloat GetViewWidth(UIView* view) {
+  return view.intrinsicContentSize.width;
+}
+
+// Creates and adds constraints to `constraints`, so as to horizontally lay out
+// the given `views`. Then, adds the first view to `vertical_lead_views` to mark
+// the start of a new row of views.
+void LayViewsHorizontally(NSArray<UIView*>* views,
+                          UILayoutGuide* guide,
+                          NSMutableArray<NSLayoutConstraint*>* constraints,
+                          NSMutableArray<UIView*>* vertical_lead_views) {
+  AppendHorizontalConstraintsForViews(
+      constraints, views, guide, 0,
+      AppendConstraintsHorizontalSyncBaselines |
+          AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+  [vertical_lead_views addObject:views.firstObject];
+}
+
 }  // namespace
 
 const CGFloat kCellMargin = 16;
 const CGFloat kChipsHorizontalMargin = -1;
+const CGFloat kCellViewsHorizontalSpacing = 16;
 
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target) {
   UIButton* button = [ChipButton buttonWithType:UIButtonTypeCustom];
@@ -174,7 +213,7 @@ void AppendHorizontalConstraintsForViews(
 
   BOOL is_first_view = YES;
   for (UIView* view in views) {
-    CGFloat spacing = is_first_view ? margin : kHorizontalSpacing;
+    CGFloat spacing = is_first_view ? margin : kCellViewsHorizontalSpacing;
     [constraints
         addObject:[view.leadingAnchor constraintEqualToAnchor:previous_anchor
                                                      constant:spacing]];
@@ -214,20 +253,36 @@ void AppendHorizontalConstraintsForViews(
   }
 }
 
-void AppendEqualBaselinesConstraints(
+void LayViewsHorizontallyWhenPossible(
+    NSArray<UIView*>* views,
+    UILayoutGuide* guide,
     NSMutableArray<NSLayoutConstraint*>* constraints,
-    NSArray<UIView*>* views) {
-  UIView* leadingView = views.firstObject;
+    NSMutableArray<UIView*>* vertical_lead_views) {
+  CGFloat available_width = GetLayoutGuideWidth(guide);
+  NSMutableArray<UIView*>* horizontal_views = [[NSMutableArray alloc] init];
+
   for (UIView* view in views) {
-    DCHECK([view isKindOfClass:[UIButton class]] ||
-           [view isKindOfClass:[UILabel class]]);
-    if (view == leadingView) {
-      continue;
+    CGFloat view_width = GetViewWidth(view);
+    BOOL fits_horizontally =
+        !horizontal_views.count || available_width - view_width >= 0;
+
+    if (fits_horizontally) {
+      [horizontal_views addObject:view];
+      available_width -= (view_width + kCellViewsHorizontalSpacing);
+    } else {
+      LayViewsHorizontally(horizontal_views, guide, constraints,
+                           vertical_lead_views);
+
+      // Start new row of views.
+      [horizontal_views removeAllObjects];
+      [horizontal_views addObject:view];
+      available_width =
+          GetLayoutGuideWidth(guide) - view_width - kCellViewsHorizontalSpacing;
     }
-    [constraints
-        addObject:[view.lastBaselineAnchor
-                      constraintEqualToAnchor:leadingView.lastBaselineAnchor]];
   }
+
+  LayViewsHorizontally(horizontal_views, guide, constraints,
+                       vertical_lead_views);
 }
 
 UILabel* CreateLabel() {

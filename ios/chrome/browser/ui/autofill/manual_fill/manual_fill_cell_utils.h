@@ -15,6 +15,10 @@ extern const CGFloat kCellMargin;
 // Left and right margins for the chips.
 extern const CGFloat kChipsHorizontalMargin;
 
+// Horizontal spacing between views used in
+// `AppendHorizontalConstraintsForViews`.
+extern const CGFloat kCellViewsHorizontalSpacing;
+
 // Options for `AppendHorizontalConstraintsForViews`.
 typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
   AppendConstraintsNone = 0,
@@ -109,6 +113,8 @@ void AppendHorizontalConstraintsForViews(
 
 // Adds constraints like `AppendHorizontalConstraintsForViews` above
 // but with given `options`.
+// TODO(crbug.com/326398845): Remove the `margin` parameter once the Keyboard
+// Accessory Upgrade feature has launched both on iPhone and iPad.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
@@ -116,11 +122,17 @@ void AppendHorizontalConstraintsForViews(
     CGFloat margin,
     AppendConstraints options);
 
-// Adds all baseline anchor constraints for the given `views` to match the first
-// one. Constraints are not activated.
-void AppendEqualBaselinesConstraints(
+// Creates and adds constraints to `constraints` with the goal of laying as many
+// `views` as possible horizontally. The available horizontal space is
+// determined by the width of `layout_guide`. Whenever there's not enough
+// horizontal space left to welcome the next view, a new row of views is
+// generated below. The starting view of every row is then added to
+// `vertical_lead_views`.
+void LayViewsHorizontallyWhenPossible(
+    NSArray<UIView*>* views,
+    UILayoutGuide* guide,
     NSMutableArray<NSLayoutConstraint*>* constraints,
-    NSArray<UIView*>* views);
+    NSMutableArray<UIView*>* vertical_lead_views);
 
 // Creates a blank label with autoresize mask off and adjustable font size.
 UILabel* CreateLabel();
