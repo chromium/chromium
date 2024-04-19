@@ -468,6 +468,8 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest, ConversionReportDeleted_RemovedFromStorage) {
+  base::HistogramTester histograms;
+
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -478,6 +480,7 @@ TEST_F(AttributionStorageTest, ConversionReportDeleted_RemovedFromStorage) {
   DeleteReports(reports);
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
+  histograms.ExpectTotalCount("Conversions.DbVersionOnReportSentAndDeleted", 1);
 }
 
 TEST_F(AttributionStorageTest,

@@ -3368,6 +3368,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DbVersionOnReportSentAndDeleted" units="Report"
+    expires_after="2024-09-15">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the DB version every time `AttributionStorageSql::DeleteReport` is
+    invoked, i.e. whenever a report is sent or hits the max number of send
+    attempts and is subsequently deleted. This metric was added starting with DB
+    version 58.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.DbVersionOnSourceStored" units="Source"
     expires_after="2024-09-15">
   <owner>tquintanilla@chromium.org</owner>

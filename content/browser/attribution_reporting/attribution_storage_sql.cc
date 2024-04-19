@@ -1824,7 +1824,15 @@ bool AttributionStorageSql::DeleteReport(AttributionReport::Id report_id) {
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return true;
   }
-  return DeleteReportInternal(report_id);
+
+  bool success = DeleteReportInternal(report_id);
+  if (success) {
+    base::UmaHistogramCustomCounts(
+        "Conversions.DbVersionOnReportSentAndDeleted", kCurrentVersionNumber,
+        /*min=*/58,
+        /*exclusive_max=*/88, /*buckets=*/30);
+  }
+  return success;
 }
 
 bool AttributionStorageSql::DeleteReportInternal(
