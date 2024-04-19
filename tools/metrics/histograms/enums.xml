@@ -17247,6 +17247,7 @@ from previous Chrome versions.
   <int value="-1746255521" label="NewOverviewUi:enabled"/>
   <int value="-1745909884" label="LibAssistantV2:disabled"/>
   <int value="-1745844997" label="AvifGainmapHdrImages:enabled"/>
+  <int value="-1744231895" label="CCTEphemeralMode:enabled"/>
   <int value="-1743214399" label="TrustSafetySentimentSurveyV2:disabled"/>
   <int value="-1743079191" label="SyncPseudoUSSPriorityPreferences:enabled"/>
   <int value="-1742376665" label="SyncPseudoUSSPasswords:disabled"/>
@@ -20122,6 +20123,7 @@ from previous Chrome versions.
   <int value="-468697885" label="ArcInputMethod:enabled"/>
   <int value="-468657548" label="ReduceGpuPriorityOnBackground:enabled"/>
   <int value="-467792766" label="ReengagementNotification:enabled"/>
+  <int value="-466925718" label="CCTEphemeralMode:disabled"/>
   <int value="-466704882" label="webview-log-js-console-messages"/>
   <int value="-466164593"
       label="CacheControlNoStoreEnterBackForwardCache:disabled"/>

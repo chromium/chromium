@@ -184,6 +184,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTEmbedderSpecialBehaviorTrigger,
     &kCCTExtendTrustedCdnPublisher,
     &kCCTFeatureUsage,
+    &kCCTEphemeralMode,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTIntentFeatureOverrides,
     &kCCTMinimized,
@@ -503,6 +504,10 @@ BASE_FEATURE(kCCTClientDataHeader,
 
 BASE_FEATURE(kCCTEmbedderSpecialBehaviorTrigger,
              "CCTEmbedderSpecialBehaviorTrigger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTEphemeralMode,
+             "CCTEphemeralMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTExtendTrustedCdnPublisher,

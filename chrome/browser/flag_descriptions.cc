@@ -3893,6 +3893,12 @@ const char kCCTEmbedderSpecialBehaviorTriggerName[] =
 const char kCCTEmbedderSpecialBehaviorTriggerDescription[] =
     "For testing purposes only.";
 
+const char kCCTEphemeralModeName[] =
+    "Allow CCT embedders to open CCTs in ephemeral mode";
+const char kCCTEphemeralModeDescription[] =
+    "Enabling it would allow apps to open ephemeral mode for "
+    "Chrome Custom Tabs, on Android.";
+
 const char kCCTIncognitoAvailableToThirdPartyName[] =
     "Allow third party to open Custom Tabs Incognito mode";
 const char kCCTIncognitoAvailableToThirdPartyDescription[] =

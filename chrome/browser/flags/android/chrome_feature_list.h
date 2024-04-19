@@ -48,6 +48,7 @@ BASE_DECLARE_FEATURE(kClearOmniboxFocusAfterNavigation);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);
 BASE_DECLARE_FEATURE(kCCTEmbedderSpecialBehaviorTrigger);
+BASE_DECLARE_FEATURE(kCCTEphemeralMode);
 BASE_DECLARE_FEATURE(kCCTExtendTrustedCdnPublisher);
 BASE_DECLARE_FEATURE(kCCTFeatureUsage);
 BASE_DECLARE_FEATURE(kCCTIncognitoAvailableToThirdParty);

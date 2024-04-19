@@ -7241,6 +7241,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"cct-ephemeral-mode", flag_descriptions::kCCTEphemeralModeName,
+     flag_descriptions::kCCTEphemeralModeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTEphemeralMode)},
+
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"cct-incognito-available-to-third-party",
      flag_descriptions::kCCTIncognitoAvailableToThirdPartyName,
      flag_descriptions::kCCTIncognitoAvailableToThirdPartyDescription,

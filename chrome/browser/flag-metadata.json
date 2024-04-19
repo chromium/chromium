@@ -1267,14 +1267,14 @@
     "expiry_milestone": 126
   },
   {
-    "name": "cct-google-bottom-bar",
-    "owners": [ "jinsukkim@chromium.org", "kgrosu@google.com", "twellington@chromium.org", "edmundw@google.com", "pemilia@google.com" ],
+    "name": "cct-ephemeral-mode",
+    "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
     "expiry_milestone": 130
   },
   {
-    "name": "cct-incognito",
-    "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
-    "expiry_milestone": 140
+    "name": "cct-google-bottom-bar",
+    "owners": [ "jinsukkim@chromium.org", "kgrosu@google.com", "twellington@chromium.org", "edmundw@google.com", "pemilia@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "cct-incognito-available-to-third-party",

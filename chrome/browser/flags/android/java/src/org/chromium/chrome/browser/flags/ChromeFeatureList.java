@@ -220,6 +220,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
     public static final String CCT_EMBEDDER_SPECIAL_BEHAVIOR_TRIGGER =
             "CCTEmbedderSpecialBehaviorTrigger";
+    public static final String CCT_EPHEMERAL_MODE = "CCTEphemeralMode";
     public static final String CCT_EXTEND_TRUSTED_CDN_PUBLISHER = "CCTExtendTrustedCdnPublisher";
     public static final String CCT_FEATURE_USAGE = "CCTFeatureUsage";
     public static final String CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY =
@@ -539,6 +540,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctFeatureUsage = newCachedFlag(CCT_FEATURE_USAGE, false);
+    public static final CachedFlag sCctEphemeralMode = newCachedFlag(CCT_EPHEMERAL_MODE, false);
     public static final CachedFlag sCctIncognitoAvailableToThirdParty =
             newCachedFlag(CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);
     public static final CachedFlag sCctIntentFeatureOverrides =
@@ -689,6 +691,7 @@ public abstract class ChromeFeatureList {
                     sBackToHomeAnimation,
                     sBlockIntentsWhileLocked,
                     sCctAutoTranslate,
+                    sCctEphemeralMode,
                     sCctFeatureUsage,
                     sCctIncognitoAvailableToThirdParty,
                     sCctIntentFeatureOverrides,
