@@ -45,6 +45,13 @@ enum class ClientKeyType {
   kUserVerified,
 };
 
+// Describes the result of a PIN claim validation by the enclave service.
+enum class PINValidationResult {
+  kSuccess,
+  kIncorrect,
+  kLocked,
+};
+
 // A ClientSignature is the result of signing an enclave request with a
 // client-side identity key.
 struct COMPONENT_EXPORT(DEVICE_FIDO) ClientSignature {
@@ -65,6 +72,11 @@ using SignedMessage = std::array<uint8_t, 2 * crypto::kSHA256Length>;
 using SigningCallback = base::OnceCallback<void(
     SignedMessage,
     base::OnceCallback<void(std::optional<ClientSignature>)>)>;
+
+// A callback that is called when the Enclave responds to a request using a PIN
+// for UV. PIN errors can be handled, and PIN success allows the failed attempt
+// counter to be reset.
+using PINResultCallback = base::OnceCallback<void(PINValidationResult)>;
 
 // A PIN entered by the user, after hashing and encoding.
 struct COMPONENT_EXPORT(DEVICE_FIDO) ClaimedPIN {
@@ -88,6 +100,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   CredentialRequest(CredentialRequest&&);
 
   SigningCallback signing_callback;
+  // `pin_result_callback` is invoked when the Enclave rejects or accepts the
+  // claimed PIN.
+  PINResultCallback pin_result_callback;
   // access_token contains an OAuth2 token to authenticate access to the enclave
   // at the account level.
   std::string access_token;

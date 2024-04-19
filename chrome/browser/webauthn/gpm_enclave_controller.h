@@ -154,6 +154,15 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // Invoked when a new GPM passkey is created, to save it to sync data.
   void OnPasskeyCreated(sync_pb::WebauthnCredentialSpecifics passkey);
 
+  // Accessors for the profile pref that counts the number of consecutive failed
+  // PIN attempts to know when a lockout will happen.
+  bool GetFailedPINAttemptCount();
+  void SetFailedPINAttemptCount(int count);
+
+  // Invoked when a passkey request has been sent to the enclave service with
+  // PIN UV, and the request succeeded or a PIN validation error occurred.
+  void HandlePINValidationResult(device::enclave::PINValidationResult type);
+
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const std::string rp_id_;
   const device::FidoRequestType request_type_;

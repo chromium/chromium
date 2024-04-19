@@ -33,6 +33,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedEnclaveOverride {
   const std::unique_ptr<EnclaveIdentity> enclave_identity_;
 };
 
+// Maximum number of consecutive failed PIN attempts for a UV passkey request
+// before getting locked out. This is enforced by the service, so it needs to
+// match MAX_PIN_ATTEMPTS in
+// third_party/cloud_authenticator/processor/src/passkeys.rs.
+inline constexpr int kMaxFailedPINAttempts = 5;
+
 // The length of a recovery key store counter ID.
 inline constexpr size_t kCounterIDLen = 8;
 // The length of a recovery key store "vault handle" value.

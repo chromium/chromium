@@ -13,7 +13,9 @@
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
@@ -426,6 +428,7 @@ void GPMEnclaveController::OnDeviceAdded(bool success) {
 
   have_added_device_ = true;
   SetAccountStateReady();
+  SetFailedPINAttemptCount(0);
 
   switch (account_state_) {
     case AccountState::kReady:
@@ -570,6 +573,8 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 }
 
 void GPMEnclaveController::PromptForPin() {
+  // TODO(enclave): Check for failed PIN attempts having been exhausted, and
+  // trigger a PIN reset flow in that case.
   model_->SetStep(pin_is_arbitrary_ ? Step::kGPMEnterArbitraryPin
                                     : Step::kGPMEnterPin);
 }
@@ -709,6 +714,9 @@ void GPMEnclaveController::StartEnclaveTransaction(
           enclave_manager_->HardwareKeySigningCallback();
       CHECK(claimed_pin);
       request->claimed_pin = std::move(claimed_pin);
+      request->pin_result_callback =
+          base::BindOnce(&GPMEnclaveController::HandlePINValidationResult,
+                         weak_ptr_factory_.GetWeakPtr());
       break;
 
     case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
@@ -785,4 +793,35 @@ void GPMEnclaveController::OnPasskeyCreated(
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetInstance()->GetForProfile(GetProfile());
   passkey_model->CreatePasskey(passkey);
+}
+
+bool GPMEnclaveController::GetFailedPINAttemptCount() {
+  return GetProfile()->GetPrefs()->GetInteger(
+      webauthn::pref_names::kEnclaveFailedPINAttemptsCount);
+}
+
+void GPMEnclaveController::SetFailedPINAttemptCount(int count) {
+  GetProfile()->GetPrefs()->SetInteger(
+      webauthn::pref_names::kEnclaveFailedPINAttemptsCount, count);
+}
+
+void GPMEnclaveController::HandlePINValidationResult(
+    device::enclave::PINValidationResult result) {
+  switch (result) {
+    case device::enclave::PINValidationResult::kSuccess:
+      SetFailedPINAttemptCount(0);
+      break;
+    case device::enclave::PINValidationResult::kIncorrect: {
+      int count = GetFailedPINAttemptCount();
+      // TODO(enclave): If the new count is 5, go to the locked PIN UI.
+      SetFailedPINAttemptCount(++count);
+      // TODO(enclave): This needs better UI, but for now just pops up PIN
+      // entry again.
+      model_->SetStep(Step::kGPMEnterPin);
+      break;
+    }
+    case device::enclave::PINValidationResult::kLocked:
+      // TODO(enclave): Handle locked PIN.
+      break;
+  }
 }

@@ -125,7 +125,6 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   pending_make_credential_request_ =
       std::make_unique<PendingMakeCredentialRequest>(
           std::move(request), std::move(options), std::move(callback));
-
   Transact(network_context_factory_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
            /*reauthentication_token=*/std::nullopt,
@@ -149,7 +148,6 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
 
   pending_get_assertion_request_ = std::make_unique<PendingGetAssertionRequest>(
       request, options, std::move(callback));
-
   Transact(network_context_factory_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
            /*reauthentication_token=*/std::nullopt,
@@ -185,13 +183,23 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
     return;
   }
   if (absl::holds_alternative<int>(parse_result)) {
-    // TODO(enclave): Specially handle `kIncorrectPIN`.
     int code = absl::get<int>(parse_result);
+    if (ui_request_->pin_result_callback &&
+        (code == kIncorrectPIN || code == kPINLocked)) {
+      std::move(ui_request_->pin_result_callback)
+          .Run(code == kIncorrectPIN ? PINValidationResult::kIncorrect
+                                     : PINValidationResult::kLocked);
+    }
     FIDO_LOG(DEBUG) << base::StrCat(
         {"Received an error response from the enclave: ",
          base::NumberToString(code)});
     CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
     return;
+  }
+
+  if (ui_request_->pin_result_callback) {
+    std::move(ui_request_->pin_result_callback)
+        .Run(PINValidationResult::kSuccess);
   }
   auto& success_result =
       absl::get<std::pair<AuthenticatorMakeCredentialResponse,
@@ -218,13 +226,22 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
     return;
   }
   if (absl::holds_alternative<int>(parse_result)) {
-    // TODO(enclave): Specially handle `kIncorrectPIN`.
     int code = absl::get<int>(parse_result);
+    if (ui_request_->pin_result_callback &&
+        (code == kIncorrectPIN || code == kPINLocked)) {
+      std::move(ui_request_->pin_result_callback)
+          .Run(code == kIncorrectPIN ? PINValidationResult::kIncorrect
+                                     : PINValidationResult::kLocked);
+    }
     FIDO_LOG(DEBUG) << base::StrCat(
         {"Received an error response from the enclave: ",
          base::NumberToString(code)});
     CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
     return;
+  }
+  if (ui_request_->pin_result_callback) {
+    std::move(ui_request_->pin_result_callback)
+        .Run(PINValidationResult::kSuccess);
   }
   std::vector<AuthenticatorGetAssertionResponse> responses;
   responses.emplace_back(

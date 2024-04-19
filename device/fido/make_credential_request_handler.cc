@@ -770,8 +770,8 @@ void MakeCredentialRequestHandler::HandleResponse(
   }
 #endif
 
-  // If we requested UV from an authentiator without uvToken support, UV failed,
-  // and the authenticator supports PIN, fall back to that.
+  // If we requested UV from an authenticator without uvToken support, UV
+  // failed, and the authenticator supports PIN, fall back to that.
   if (request->user_verification != UserVerificationRequirement::kDiscouraged &&
       !request->pin_auth &&
       (status == CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid ||
@@ -790,6 +790,12 @@ void MakeCredentialRequestHandler::HandleResponse(
     }
     ObtainPINUVAuthToken(authenticator, /*skip_pin_touch=*/true,
                          /*internal_uv_locked=*/true);
+    return;
+  }
+
+  if (authenticator->GetType() == AuthenticatorType::kEnclave &&
+      status == CtapDeviceResponseCode::kCtap2ErrPinInvalid) {
+    // EnclaveAuthenticator will trigger UI that can cause a retry.
     return;
   }
 

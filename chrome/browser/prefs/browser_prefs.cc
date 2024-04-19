@@ -2174,6 +2174,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterStringPref(
       webauthn::pref_names::kLastUsedPairingFromSyncPublicKey, "");
 
+  registry->RegisterIntegerPref(
+      webauthn::pref_names::kEnclaveFailedPINAttemptsCount, 0);
+
   side_panel_prefs::RegisterProfilePrefs(registry);
 #endif
 
