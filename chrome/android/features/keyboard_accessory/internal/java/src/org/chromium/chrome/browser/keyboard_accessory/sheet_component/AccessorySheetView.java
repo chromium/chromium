@@ -20,6 +20,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
 /** Displays the data provided by the {@link AccessorySheetViewBinder}. */
@@ -37,6 +38,10 @@ class AccessorySheetView extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID)) {
+            return super.onInterceptTouchEvent(event);
+        }
         final boolean isObscured =
                 (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0
                         || (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_OBSCURED) != 0;

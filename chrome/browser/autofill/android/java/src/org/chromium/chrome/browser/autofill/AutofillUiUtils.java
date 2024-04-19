@@ -805,6 +805,10 @@ public class AutofillUiUtils {
      */
     @SuppressLint("ClickableViewAccessibility")
     public static void setFilterTouchForSecurity(View view) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID)) {
+            return;
+        }
         view.setFilterTouchesWhenObscured(true);
         view.setOnTouchListener(
                 (View v, MotionEvent ev) ->

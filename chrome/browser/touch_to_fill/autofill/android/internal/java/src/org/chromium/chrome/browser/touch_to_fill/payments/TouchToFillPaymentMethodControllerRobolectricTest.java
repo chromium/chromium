@@ -81,10 +81,16 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-/** Tests for {@link TouchToFillPaymentMethodCoordinator} and {@link TouchToFillPaymentMethodMediator} */
+/**
+ * Tests for {@link TouchToFillPaymentMethodCoordinator} and {@link
+ * TouchToFillPaymentMethodMediator}
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(AutofillFeatures.AUTOFILL_ENABLE_CARD_ART_IMAGE)
+@DisableFeatures({
+    AutofillFeatures.AUTOFILL_ENABLE_CARD_ART_IMAGE,
+    AutofillFeatures.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID
+})
 public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final CreditCard VISA =
             createCreditCard(

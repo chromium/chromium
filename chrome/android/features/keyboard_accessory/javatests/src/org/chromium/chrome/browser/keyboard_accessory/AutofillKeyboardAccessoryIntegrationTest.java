@@ -37,7 +37,9 @@ import org.chromium.autofill.mojom.FocusedFieldType;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeWindow;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -168,6 +170,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testClicksThroughOtherSurfaceAreIgnored()
             throws ExecutionException, TimeoutException, InterruptedException {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
