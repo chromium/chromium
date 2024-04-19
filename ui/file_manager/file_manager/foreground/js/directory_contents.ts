@@ -18,9 +18,10 @@ import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders, TRASH_CONFIG} from '../../common/js/trash.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import {directoryContentSelector, fetchDirectoryContents} from '../../state/ducks/current_directory.js';
 import {getDefaultSearchOptions} from '../../state/ducks/search.js';
-import {type FileKey, SearchLocation, type SearchOptions} from '../../state/state.js';
-import {getStore} from '../../state/store.js';
+import {type DirectoryContent, type FileKey, PropStatus, SearchLocation, type SearchOptions} from '../../state/state.js';
+import {getFileData, getStore, type Store} from '../../state/store.js';
 
 import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
 import {FileListModel} from './file_list_model.js';
@@ -57,6 +58,13 @@ export abstract class ContentScanner {
    */
   cancel() {
     this.canceled_ = true;
+  }
+
+  /**
+   * Whether the scanner pushes the entry directly to the store.
+   */
+  isStoreBased(): boolean {
+    return false;
   }
 }
 
@@ -1217,8 +1225,8 @@ export class DirectoryContents extends
     // called at most once. Remove such a limitation.
     this.scanner_ = this.scannerFactory_();
     this.scanner_.scan(
-        this.onNewEntries_.bind(this, refresh), completionCallback,
-        errorCallback, invalidateCache);
+        this.onNewEntries_.bind(this, refresh, this.scanner_.isStoreBased()),
+        completionCallback, errorCallback, invalidateCache);
   }
 
   /**
@@ -1278,7 +1286,7 @@ export class DirectoryContents extends
     }
 
     this.prefetchMetadata(updatedList, true, () => {
-      this.onNewEntries_(true, addedList);
+      this.onNewEntries_(true, false, addedList);
       this.onScanFinished_();
       this.onScanCompleted_();
     });
@@ -1348,11 +1356,12 @@ export class DirectoryContents extends
   /**
    * Called when some chunk of entries are read by scanner.
    *
-   * @param refresh True to refresh metadata, or false to use cached
-   *     one.
+   * @param refresh True to refresh metadata, or false to use cached one.
+   * @param storeBased Whether the scan for `entries` was done in the store.
    * @param entries The list of the scanned entries.
    */
-  private onNewEntries_(refresh: boolean, entries: UniversalEntry[]) {
+  private onNewEntries_(
+      refresh: boolean, storeBased: boolean, entries: UniversalEntry[]) {
     if (this.scanCanceled_) {
       return;
     }
@@ -1378,7 +1387,7 @@ export class DirectoryContents extends
           this.fileList_.push.apply(this.fileList_, entriesFiltered);
           const event = new CustomEvent('dir-contents-scan-updated', {
             detail: {
-              isStoreBased: false,
+              isStoreBased: storeBased,
             },
           });
           this.dispatchEvent(event);
@@ -1430,5 +1439,104 @@ export class DirectoryContents extends
     this.context_.metadataModel
         .get(entries, this.context_.prefetchPropertyNames)
         .then(callback);
+  }
+}
+
+/**
+ * Scan entries using the Store and ActionsProducer to talk to the backend and
+ * propagate the state.
+ *
+ * This adapts the Store to the existing ContentScanner architecture.
+ */
+export class StoreScanner extends ContentScanner {
+  private store_: Store;
+  private entriesCallback_?: ScanResultCallback;
+  private successCallbcak_?: VoidCallback;
+  private errorCallback_?: ScanErrorCallback;
+  private unsubscribe_?: VoidCallback;
+
+  constructor(private fileKey_: FileKey) {
+    super();
+    this.store_ = getStore();
+  }
+
+  private onDirectoryContentUpdated_(dirContent?: DirectoryContent) {
+    if (!dirContent) {
+      return;
+    }
+    if (!(this.entriesCallback_ && this.errorCallback_ &&
+          this.successCallbcak_)) {
+      return;
+    }
+
+    if (dirContent.status === PropStatus.ERROR) {
+      // TODO(lucmult): Figure out the DOMError here.
+      this.errorCallback_({} as DOMError);
+      this.finalize_();
+      return;
+    }
+
+    if (dirContent.status === PropStatus.STARTED &&
+        dirContent.keys.length > 0) {
+      const entries = this.getEntries_(dirContent.keys);
+      this.entriesCallback_(entries);
+      return;
+    }
+
+    if (dirContent.status === PropStatus.SUCCESS) {
+      const entries = this.getEntries_(dirContent.keys);
+      this.entriesCallback_(entries);
+      this.successCallbcak_();
+      this.finalize_();
+      return;
+    }
+  }
+
+  private getEntries_(keys: FileKey[]): UniversalEntry[] {
+    const state = this.store_.getState();
+    const entries: UniversalEntry[] = [];
+    for (const k of keys) {
+      const entry = getFileData(state, k)?.entry;
+      if (!entry) {
+        console.debug(`Failed to find entry for ${k}`);
+        continue;
+      }
+      entries.push(entry);
+    }
+    return entries;
+  }
+
+  override async scan(
+      entriesCallback: ScanResultCallback, successCallback: VoidCallback,
+      errorCallback: ScanErrorCallback, _invalidateCache: boolean = false) {
+    this.entriesCallback_ = entriesCallback;
+    this.errorCallback_ = errorCallback;
+    this.successCallbcak_ = successCallback;
+    // Start listening to the store.
+    this.unsubscribe_ = directoryContentSelector.subscribe(
+        this.onDirectoryContentUpdated_.bind(this));
+
+    // Dispatch action to scan in the store.
+    this.store_.dispatch(fetchDirectoryContents(this.fileKey_));
+  }
+
+  override cancel() {
+    super.cancel();
+    this.finalize_();
+  }
+
+  private finalize_() {
+    // Usubscribe from the store.
+    if (this.unsubscribe_) {
+      this.unsubscribe_();
+    }
+    this.unsubscribe_ = undefined;
+    this.successCallbcak_ = undefined;
+    this.errorCallback_ = undefined;
+    this.entriesCallback_ = undefined;
+  }
+
+  override isStoreBased(): boolean {
+    return true;
   }
 }

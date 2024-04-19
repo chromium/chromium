@@ -26,7 +26,7 @@ import {getFileData, getStore, getVolume, type Store} from '../../state/store.js
 
 import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
 import type {ContentScanner, DirContentsScanFailedEvent, DirContentsScanUpdatedEvent, FileFilter} from './directory_contents.js';
-import {CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
+import {CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, StoreScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher, type WatcherDirectoryChangedEvent} from './file_watcher.js';
 import type {MetadataKey} from './metadata/metadata_item.js';
@@ -1242,6 +1242,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     const {myFilesEntry} = getMyFiles(getStore().getState());
     return myFilesEntry;
   }
+
   async changeDirectoryFileData(fileData: FileData): Promise<boolean> {
     if (fileData.entry) {
       const result = await new Promise<boolean>(resolve => {
@@ -1659,12 +1660,14 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   createScannerFactory(
       fileKey: FileKey, entry?: DirectoryEntry|FilesAppEntry, query?: string,
       options?: SearchOptions): () => ContentScanner {
-    if (!entry) {
+    if (!entry && !!fileKey) {
+      // Store-based scanner, it doesn't use Entry. E.g: Materialized View.
       return () => {
-        console.debug(`TODO: Implement scanner for ${fileKey}`);
-        return new EmptyContentScanner();
+        return new StoreScanner(fileKey);
       };
     }
+
+    assert(entry);
 
     const sanitizedQuery = (query || '').trimStart();
     const locationInfo = this.volumeManager_.getLocationInfo(entry);

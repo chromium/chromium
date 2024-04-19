@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {updateDirectoryContent} from '../../state/ducks/current_directory.js';
 import {PropStatus} from '../../state/state.js';
 import {getStore, type Store} from '../../state/store.js';
 
-import type {DirectoryModel} from './directory_model.js';
+import type {CurDirScanUpdatedEvent, DirectoryModel} from './directory_model.js';
 import type {FileSelectionHandler} from './file_selection.js';
 import type {SpinnerController} from './spinner_controller.js';
 import type {ListContainer} from './ui/list_container.js';
@@ -125,25 +124,26 @@ export class ScanController {
    * Sends the scanned directory content to the Store.
    */
   private updateStore_() {
-    const entries: Array<Entry|FilesAppEntry> =
-        this.directoryModel_.getFileList().slice();
+    const entries = this.directoryModel_.getFileList().slice();
     this.store_.dispatch(
         updateDirectoryContent({entries, status: PropStatus.SUCCESS}));
   }
 
   /**
    */
-  private onScanUpdated_() {
+  private onScanUpdated_(e: CurDirScanUpdatedEvent) {
     if (!this.scanInProgress_) {
       console.warn('Scan-updated event received. But scan is not started.');
       return;
     }
 
-    // Call this immediately (instead of debouncing it with
-    // `scanUpdatedTimer_`) so the current directory entries don't get
-    // accidentally removed from the store by `clearCachedEntries` in
-    // `state/reducers/all_entries.ts`.
-    this.updateStore_();
+    // Call this immediately (instead of debouncing it with `scanUpdatedTimer_`)
+    // so the current directory entries don't get accidentally removed from the
+    // store by `clearCachedEntries()`, when the scan is store-based the entries
+    // are already in the store.
+    if (!e.detail.isStoreBased) {
+      this.updateStore_();
+    }
 
     if (this.scanUpdatedTimer_) {
       return;
