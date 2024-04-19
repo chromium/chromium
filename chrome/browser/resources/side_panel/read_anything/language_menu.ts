@@ -75,21 +75,27 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     if (!availableVoices) {
       return [];
     }
-    const allLanguages = availableVoices.map(
-        voice => (localeToDisplayName && voice.lang in localeToDisplayName) ?
-            localeToDisplayName[voice.lang] :
-            voice.lang);
-    return [...new Set(allLanguages)]
-        .filter(lang => {
+
+    const langsAndReadableLangs: Array<[string, string]> =
+        [...new Set(availableVoices.map(({lang}) => lang))].map(
+            lang => ([
+              lang,
+              (localeToDisplayName && lang in localeToDisplayName) ?
+                  localeToDisplayName[lang] :
+                  lang,
+            ]));
+
+    return langsAndReadableLangs
+        .filter(([_, readableLang]) => {
           if (languageSearchValue) {
-            return lang.toLowerCase().includes(
+            return readableLang.toLowerCase().includes(
                 languageSearchValue.toLowerCase());
           } else {
             return true;
           }
         })
-        .map(lang => ({
-               language: lang,
+        .map(([lang, readableLang]) => ({
+               language: readableLang,
                checked: enabledLanguagesInPref &&
                    enabledLanguagesInPref.includes(lang),
                callback: () =>

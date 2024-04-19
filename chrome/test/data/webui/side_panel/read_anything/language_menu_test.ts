@@ -199,26 +199,6 @@ suite('LanguageMenuElement', () => {
             getLanguageLineItems()[1]!, 'English');
       });
 
-      test('it groups languages with same name', () => {
-        availableVoices = [
-          {name: 'test voice 0', lang: 'en-unknown'} as SpeechSynthesisVoice,
-          {name: 'test voice 3', lang: 'en'} as SpeechSynthesisVoice,
-        ];
-        setAvailableVoices();
-        // Bypass Typescript compiler to allow us to set a private readonly
-        // property
-        // @ts-ignore
-        languageMenu.localeToDisplayName = {
-          'en-unknown': 'English',
-          'en': 'English',
-        };
-        flush();
-        assertTrue(isPositionedOnPage(languageMenu));
-        assertEquals(getLanguageLineItems().length, 1);
-        assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[0]!, 'English');
-      });
-
       test('it toggles switch on for initially enabled line', async () => {
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(getLanguageLineItems().length, 3);

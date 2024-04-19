@@ -1352,6 +1352,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const toggledLanguage = event.detail.language;
     const currentlyEnabled =
         this.enabledLanguagesInPref.includes(toggledLanguage);
+
+    if (!currentlyEnabled) {
+      this.installVoicePackIfPossible(toggledLanguage);
+    }
     this.enabledLanguagesInPref = currentlyEnabled ?
         this.enabledLanguagesInPref.filter(lang => lang !== toggledLanguage) :
         [...this.enabledLanguagesInPref, toggledLanguage];
@@ -1670,11 +1674,23 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   languageChanged() {
     this.$.toolbar.updateFonts();
     this.selectPreferredVoice_();
-
     const baseLang = chrome.readingMode.baseLanguageForSpeech;
+    this.installVoicePackIfPossible(baseLang);
+  }
+
+  // Kicks off a workflow to install a voice pack.
+  // 1) Checks if Language Pack Manager supports a version of this voice/locale
+  // 2) If so, adds voice to installVoiceIfPossible set
+  // 3) Kicks off request GetVoicePackInfo to see if the voice is installed
+  // 4) Upon response, if we see the voice is not installed and that it's in
+  // installVoiceIfPossible, then we trigger an install request
+  private installVoicePackIfPossible(langOrLocale: string) {
     const langCodeForVoicePackManager =
-        convertLangOrLocaleForVoicePackManager(baseLang);
-    if (langCodeForVoicePackManager) {
+        convertLangOrLocaleForVoicePackManager(langOrLocale);
+
+    if (langCodeForVoicePackManager &&
+        this.voicePackInstallStatus[langCodeForVoicePackManager] !==
+            VoicePackStatus.INSTALLED) {
       this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
       // Inquire if the voice pack is downloaded. If not, it'll trigger a
       // download when we get the response in updateVoicePackStatus()
