@@ -6,15 +6,22 @@ package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
-import org.chromium.base.test.transit.TransitAsserts;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -22,7 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.transit.PopupBlockedMessageFacility;
 import org.chromium.chrome.test.transit.testhtmls.PopupOnClickPageStation;
@@ -32,54 +39,90 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 /** Tests whether popup windows appear or get blocked as expected. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PopupPTTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
-    ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(mActivityTestRule);
+    @Rule
+    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
+            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
 
     private static final String METADATA_FOR_ABUSIVE_ENFORCEMENT =
             "{\"matches\":[{\"threat_type\":\"13\",\"sf_absv\":\"\"}]}";
 
     private PageStation mEntryPage;
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUpClass() {
+        // TODO(crbug.com/329302688): Use ResettersForTesting instead.
         SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
-        mEntryPage = mEntryPoints.startOnBlankPage();
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+        SafeBrowsingApiBridge.clearHandlerForTesting();
+    }
+
+    @Before
+    public void setUp() {
+        mEntryPage = mInitialStateRule.startOnBlankPageBatched();
     }
 
     @After
     public void tearDown() {
-        // TODO(crbug.com/329302688): Use ResettersForTesting instead.
         MockSafetyNetApiHandler.clearMockResponses();
         MockSafeBrowsingApiHandler.clearMockResponses();
-        SafeBrowsingApiBridge.clearHandlerForTesting();
     }
 
     @Test
     @MediumTest
-    public void testPopupOnLoadBlocked() {
+    public void test010PopupOnLoadBlocked() {
         var pair =
-                PopupOnLoadPageStation.loadInCurrentTabExpectBlocked(mActivityTestRule, mEntryPage);
+                PopupOnLoadPageStation.loadInCurrentTabExpectBlocked(sActivityTestRule, mEntryPage);
         PopupOnLoadPageStation page = pair.first;
         PopupBlockedMessageFacility popupBlockedMessage = pair.second;
 
-        assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
-        TransitAsserts.assertFinalDestination(page, popupBlockedMessage);
+        assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
+        assertFinalDestination(page, popupBlockedMessage);
     }
 
     @Test
     @MediumTest
-    public void testSafeGestureTabNotBlocked() {
+    public void test020SafeGestureTabNotBlocked() {
         PopupOnClickPageStation page =
-                PopupOnClickPageStation.loadInCurrentTab(mActivityTestRule, mEntryPage);
+                PopupOnClickPageStation.loadInCurrentTab(sActivityTestRule, mEntryPage);
         page = page.clickLinkToOpenPopup();
 
-        assertEquals(2, mActivityTestRule.tabsCount(/* incognito= */ false));
-        TransitAsserts.assertFinalDestination(page);
+        assertEquals(2, sActivityTestRule.tabsCount(/* incognito= */ false));
+        assertFinalDestination(page);
+    }
+
+    // Run last in the batch because clicking "Always allow" will cause the popups to be allowed
+    // in the next tests as well.
+    @Test
+    @MediumTest
+    public void test900PopupWindowsAppearWhenAllowed() {
+        PopupBlockedMessageFacility popupBlockedMessage =
+                PopupOnLoadPageStation.loadInCurrentTabExpectBlocked(sActivityTestRule, mEntryPage)
+                        .second;
+        assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
+
+        // Click the "Always allow" button.
+        PageStation poppedUpPage = popupBlockedMessage.clickAlwaysAllow();
+        assertEquals(3, sActivityTestRule.tabsCount(/* incognito= */ false));
+
+        // Test that revisiting the original page makes pop-up windows show immediately.
+        // The second pop-up opens navigate/page_two.html.
+        PageStation pageTwo =
+                PopupOnLoadPageStation.loadInCurrentTabExpectPopups(
+                        sActivityTestRule, poppedUpPage);
+
+        assertEquals(5, sActivityTestRule.tabsCount(/* incognito= */ false));
+        assertFinalDestination(pageTwo);
     }
 
     @Test
@@ -87,16 +130,16 @@ public class PopupPTTest {
     @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK)
     public void testAbusiveGesturePopupBlocked() {
         MockSafeBrowsingApiHandler.addMockResponse(
-                mActivityTestRule.getTestServer().getURL(PopupOnClickPageStation.PATH),
+                sActivityTestRule.getTestServer().getURL(PopupOnClickPageStation.PATH),
                 MockSafeBrowsingApiHandler.ABUSIVE_EXPERIENCE_VIOLATION_CODE);
 
         PopupOnClickPageStation page =
-                PopupOnClickPageStation.loadInCurrentTab(mActivityTestRule, mEntryPage);
+                PopupOnClickPageStation.loadInCurrentTab(sActivityTestRule, mEntryPage);
         PopupBlockedMessageFacility popupBlockedMessage =
                 page.clickLinkAndExpectPopupBlockedMessage();
 
-        assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
-        TransitAsserts.assertFinalDestination(page, popupBlockedMessage);
+        assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
+        assertFinalDestination(page, popupBlockedMessage);
     }
 
     @Test
@@ -104,37 +147,15 @@ public class PopupPTTest {
     @DisableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK)
     public void testAbusiveGesturePopupBlocked_NewGmsApiDisabled() {
         MockSafetyNetApiHandler.addMockResponse(
-                mActivityTestRule.getTestServer().getURL(PopupOnClickPageStation.PATH),
+                sActivityTestRule.getTestServer().getURL(PopupOnClickPageStation.PATH),
                 METADATA_FOR_ABUSIVE_ENFORCEMENT);
 
         PopupOnClickPageStation page =
-                PopupOnClickPageStation.loadInCurrentTab(mActivityTestRule, mEntryPage);
+                PopupOnClickPageStation.loadInCurrentTab(sActivityTestRule, mEntryPage);
         PopupBlockedMessageFacility popupBlockedMessage =
                 page.clickLinkAndExpectPopupBlockedMessage();
 
-        assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
-        TransitAsserts.assertFinalDestination(page, popupBlockedMessage);
-    }
-
-    @Test
-    @MediumTest
-    public void testPopupWindowsAppearWhenAllowed() {
-        PopupBlockedMessageFacility popupBlockedMessage =
-                PopupOnLoadPageStation.loadInCurrentTabExpectBlocked(mActivityTestRule, mEntryPage)
-                        .second;
-        assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
-
-        // Click the "Always allow" button.
-        PageStation poppedUpPage = popupBlockedMessage.clickAlwaysAllow();
-        assertEquals(3, mActivityTestRule.tabsCount(/* incognito= */ false));
-
-        // Test that revisiting the original page makes pop-up windows show immediately.
-        // The second pop-up opens navigate/page_two.html.
-        PageStation pageTwo =
-                PopupOnLoadPageStation.loadInCurrentTabExpectPopups(
-                        mActivityTestRule, poppedUpPage);
-
-        assertEquals(5, mActivityTestRule.tabsCount(/* incognito= */ false));
-        TransitAsserts.assertFinalDestination(pageTwo);
+        assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
+        assertFinalDestination(page, popupBlockedMessage);
     }
 }
