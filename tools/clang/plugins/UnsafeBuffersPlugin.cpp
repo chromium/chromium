@@ -168,6 +168,19 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
   // cause it to generate a warning.
   bool FileHasSafeBuffersWarnings(const clang::SourceManager& sm,
                                   clang::SourceLocation loc) {
+    // ClassifySourceLocation() does not report kMacro as the location unless it
+    // happens to be inside a scratch buffer, which not all macro use does. For
+    // the unsafe-buffers warning, we want the SourceLocation where the macro is
+    // expanded to always be the decider about whether to fire a warning or not.
+    //
+    // The reason we do this is that the expansion site should be wrapped in
+    // UNSAFE_BUFFERS() if the unsafety is warranted. It can be done inside the
+    // macro itself too (in which case the warning will not fire), but the
+    // finest control is always at each expansion site.
+    while (loc.isMacroID()) {
+      loc = sm.getExpansionLoc(loc);
+    }
+
     // TODO(crbug.com/40284755): Expand this diagnostic to more code. It should
     // include everything except kSystem eventually.
     LocationClassification loc_class =
@@ -186,8 +199,7 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       case LocationClassification::kBlink:
         break;
       case LocationClassification::kMacro:
-        // Try again where the macro is being called.
-        return FileHasSafeBuffersWarnings(sm, sm.getExpansionLoc(loc));
+        break;
     }
 
     // We default to everything opting into checks (except categories that early
@@ -195,7 +207,8 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
 
     // TODO(danakj): It would be an optimization to find a way to avoid creating
     // a std::string here.
-    std::string filename = GetFilename(sm, loc, FilenamesFollowPresumed::kNo);
+    std::string filename = GetFilename(sm, loc, FilenameLocationType::kExactLoc,
+                                       FilenamesFollowPresumed::kNo);
 
     // Avoid searching `check_file_prefixes_` more than once for a file.
     auto cache_it = g_checked_files_cache.find(filename);
@@ -421,7 +434,8 @@ class AllowUnsafeBuffersPragmaHandler : public clang::PragmaHandler {
     // TODO(danakj): It would be an optimization to find a way to avoid creating
     // a std::string here.
     std::string filename =
-        GetFilename(preprocessor.getSourceManager(), introducer.Loc);
+        GetFilename(preprocessor.getSourceManager(), introducer.Loc,
+                    FilenameLocationType::kExpansionLoc);
     // The pragma opts the file out of checks.
     g_checked_files_cache.insert({filename, false});
   }
@@ -439,7 +453,8 @@ class CheckUnsafeBuffersPragmaHandler : public clang::PragmaHandler {
     // TODO(danakj): It would be an optimization to find a way to avoid creating
     // a std::string here.
     std::string filename =
-        GetFilename(preprocessor.getSourceManager(), introducer.Loc);
+        GetFilename(preprocessor.getSourceManager(), introducer.Loc,
+                    FilenameLocationType::kExpansionLoc);
     // The pragma opts the file into checks.
     g_checked_files_cache.insert({filename, true});
   }

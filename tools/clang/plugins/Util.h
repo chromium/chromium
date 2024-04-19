@@ -25,11 +25,29 @@ enum class FilenamesFollowPresumed {
   kNo,
 };
 
-// Attempts to determine the filename for the given SourceLocation.
-// Returns an empty string if the filename could not be determined.
+enum class FilenameLocationType {
+  // Use the location as is.
+  kExactLoc,
+  // Use the spelling location of the current location. This leaves a macro if
+  // the token at the location came from a macro parameter.
+  kSpellingLoc,
+  // Use the expansion location of the current location. This always leaves a
+  // macro.
+  kExpansionLoc,
+};
+
+// Attempts to determine the filename for the given SourceLocation. Returns an
+// empty string if the filename could not be determined.
+//
+// Most callers use FilenameLocationType::kSpellingLoc which gets the filename
+// where a macro is used, if the name at the location is coming from a macro
+// parameter. This would be used when a warning is being generated based on the
+// macro inputs, rather than the macro's structure itself. It may be an
+// incorrect approximation of kExpansionLoc, though.
 std::string GetFilename(
     const clang::SourceManager& instance,
     clang::SourceLocation location,
+    FilenameLocationType type,
     FilenamesFollowPresumed follow_presumed = FilenamesFollowPresumed::kYes);
 
 // Utility method to obtain a "representative" source location polymorphically.

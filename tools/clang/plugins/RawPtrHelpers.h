@@ -98,8 +98,9 @@ AST_POLYMORPHIC_MATCHER(isInThirdPartyLocation,
                         AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
                                                         clang::Stmt,
                                                         clang::TypeLoc)) {
-  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
-                                     getRepresentativeLocation(Node));
+  clang::SourceManager& sm = Finder->getASTContext().getSourceManager();
+  std::string filename = GetFilename(sm, getRepresentativeLocation(Node),
+                                     FilenameLocationType::kSpellingLoc);
 
   // Blink is part of the Chromium git repo, even though it contains
   // "third_party" in its path.
@@ -117,14 +118,16 @@ AST_POLYMORPHIC_MATCHER(isInThirdPartyLocation,
 }
 
 AST_MATCHER(clang::Stmt, isInStdBitCastHeader) {
-  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
-                                     Node.getSourceRange().getBegin());
+  clang::SourceManager& sm = Finder->getASTContext().getSourceManager();
+  std::string filename = GetFilename(sm, Node.getSourceRange().getBegin(),
+                                     FilenameLocationType::kSpellingLoc);
   return filename.find("__bit/bit_cast.h") != std::string::npos;
 }
 
 AST_MATCHER(clang::Stmt, isInRawPtrCastHeader) {
-  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
-                                     Node.getSourceRange().getBegin());
+  clang::SourceManager& sm = Finder->getASTContext().getSourceManager();
+  std::string filename = GetFilename(sm, Node.getSourceRange().getBegin(),
+                                     FilenameLocationType::kSpellingLoc);
   return filename.find(
              "base/allocator/partition_allocator/src/partition_alloc/pointers/"
              "raw_ptr_cast.h") != std::string::npos;
@@ -134,8 +137,9 @@ AST_POLYMORPHIC_MATCHER(isInGeneratedLocation,
                         AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
                                                         clang::Stmt,
                                                         clang::TypeLoc)) {
-  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
-                                     getRepresentativeLocation(Node));
+  clang::SourceManager& sm = Finder->getASTContext().getSourceManager();
+  std::string filename = GetFilename(sm, getRepresentativeLocation(Node),
+                                     FilenameLocationType::kSpellingLoc);
 
   return filename.find("/gen/") != std::string::npos ||
          filename.rfind("gen/", 0) == 0;
@@ -158,8 +162,9 @@ AST_POLYMORPHIC_MATCHER_P(isInLocationListedInFilterFile,
   if (loc.isInvalid()) {
     return false;
   }
+  clang::SourceManager& sm = Finder->getASTContext().getSourceManager();
   std::string file_path =
-      GetFilename(Finder->getASTContext().getSourceManager(), loc);
+      GetFilename(sm, loc, FilenameLocationType::kSpellingLoc);
   return Filter->ContainsSubstringOf(file_path);
 }
 

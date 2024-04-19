@@ -65,7 +65,8 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
 
     const clang::SourceManager& source_manager = *result.SourceManager;
     clang::SourceLocation loc = cast_expr->getSourceRange().getBegin();
-    std::string file_path = GetFilename(source_manager, loc);
+    std::string file_path =
+        GetFilename(source_manager, loc, FilenameLocationType::kSpellingLoc);
 
     clang::PrintingPolicy printing_policy(result.Context->getLangOpts());
     const std::string src_name =

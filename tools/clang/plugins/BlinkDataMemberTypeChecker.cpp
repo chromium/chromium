@@ -51,7 +51,8 @@ BlinkDataMemberTypeChecker::BlinkDataMemberTypeChecker(
 
 void BlinkDataMemberTypeChecker::CheckClass(SourceLocation location,
                                             const CXXRecordDecl* record) {
-  std::string filename = GetFilename(instance_.getSourceManager(), location);
+  std::string filename = GetFilename(instance_.getSourceManager(), location,
+                                     FilenameLocationType::kSpellingLoc);
   if (!included_filenames_regex_.match(filename))
     return;
   if (excluded_filenames_regex_.match(filename))
@@ -148,7 +149,8 @@ void BlinkDataMemberTypeChecker::CheckField(const FieldDecl* field) {
     // type is defined in a file that should not be checked, e.g. in a file
     // under third_party/blink/public/common.
     std::string filename =
-        GetFilename(instance_.getSourceManager(), decl->getLocation());
+        GetFilename(instance_.getSourceManager(), decl->getLocation(),
+                    FilenameLocationType::kSpellingLoc);
     if (!included_filenames_regex_.match(filename))
       return;
   }

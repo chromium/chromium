@@ -41,4 +41,22 @@ struct FooChecked {
 // In a clean file, the macro use will error.
 INSIDE_MACRO_CHECKED(FooChecked, ptr, int*);
 
+// Macro with unsafe buffers errors in it. We'll use it from places that are
+// checked and places that are not. The decision to fire the warning should
+// come from where it's used.
+#define DO_UNSAFE_THING_FROM_CHECKED_HEADER(n, v, i, s)                       \
+  int CheckStructThingTryToMakeScratchBufferFunction##n(int* v, unsigned s) { \
+    return v[s];                                                              \
+  }                                                                           \
+  struct CheckStructThingTryToMakeScratchBuffer##n {                          \
+    CheckStructThingTryToMakeScratchBuffer##n() {                             \
+      int i = 0;                                                              \
+      for (unsigned s; s < 100u; ++s) {                                       \
+        CheckStructThingTryToMakeScratchBufferFunction##n(&i, s);             \
+      }                                                                       \
+    }                                                                         \
+  };
+
+#define MACRO_CALL_FUNCTION_FROM_CHECKED_HEADER(x) x()
+
 #endif  // TOOLS_CLANG_PLUGINS_TESTS_UNSAFE_BUFFERS_NOT_CLEAN_DIR_CLEAN_HEADER_H_

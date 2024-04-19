@@ -58,14 +58,22 @@ std::string GetNamespace(const clang::Decl* record) {
 }
 
 std::string GetFilename(const clang::SourceManager& source_manager,
-                        clang::SourceLocation location,
+                        clang::SourceLocation loc,
+                        FilenameLocationType type,
                         FilenamesFollowPresumed follow_presumed) {
-  clang::SourceLocation spelling_location =
-      source_manager.getSpellingLoc(location);
-
+  switch (type) {
+    case FilenameLocationType::kExactLoc:
+      break;
+    case FilenameLocationType::kSpellingLoc:
+      loc = source_manager.getSpellingLoc(loc);
+      break;
+    case FilenameLocationType::kExpansionLoc:
+      loc = source_manager.getExpansionLoc(loc);
+      break;
+  }
   std::string name;
   if (follow_presumed == FilenamesFollowPresumed::kYes) {
-    clang::PresumedLoc ploc = source_manager.getPresumedLoc(spelling_location);
+    clang::PresumedLoc ploc = source_manager.getPresumedLoc(loc);
     if (ploc.isInvalid()) {
       // If we're in an invalid location, we're looking at things that aren't
       // actually stated in the source.
@@ -73,7 +81,7 @@ std::string GetFilename(const clang::SourceManager& source_manager,
     }
     name = ploc.getFilename();
   } else {
-    name = source_manager.getFilename(spelling_location);
+    name = source_manager.getFilename(loc);
   }
 
   // File paths can have separators which differ from ones at this platform.
@@ -92,7 +100,7 @@ LocationClassification ClassifySourceLocation(
     return LocationClassification::kSystem;
   }
 
-  std::string filename = GetFilename(sm, loc);
+  std::string filename = GetFilename(sm, loc, FilenameLocationType::kExactLoc);
   if (filename.empty()) {
     // If the filename cannot be determined, simply treat this as third-party
     // code, where we avoid enforcing rules, instead of going through the full
