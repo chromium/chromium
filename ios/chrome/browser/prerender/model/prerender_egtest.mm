@@ -127,19 +127,11 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
 @implementation PrerenderTestCase
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
-  DISABLED_testLegacyOpenTabInTabStripBeforePrerenderedTab
-#else
-#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
-  testLegacyOpenTabInTabStripBeforePrerenderedTab
-#endif
-
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
-            (MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
-      [self isRunningTest:@selector(FLAKY_testMovePrerenderedTabInTabStrip)]) {
+            (testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
+      [self isRunningTest:@selector(testMovePrerenderedTabInTabStrip)]) {
     config.features_disabled.push_back(kModernTabStrip);
   } else {
     config.features_enabled.push_back(kModernTabStrip);
@@ -297,8 +289,7 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 // Regression test for crbug.com/1477499. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after moving it in the tab
 // strip.
-// TODO(b/324216491): This test is flaky on official bot.
-- (void)FLAKY_testMovePrerenderedTabInTabStrip {
+- (void)testMovePrerenderedTabInTabStrip {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
@@ -319,6 +310,8 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
   // Type the beginning of the address to have the autocomplete suggestion.
   [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(@"")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(
                         [pageString substringToIndex:[pageString length] - 6])];
@@ -356,8 +349,7 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 // Regression test for crbug.com/1482622. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after opening a new tab in
 // the background before the pre-rendered tab.
-// TODO(crbug.com/1487677): Test fails on official builds.
-- (void)MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab {
+- (void)testLegacyOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
@@ -381,6 +373,8 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
   // Type the beginning of the address to have the autocomplete suggestion.
   [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(@"")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(
                         [pageString substringToIndex:[pageString length] - 6])];
@@ -422,9 +416,7 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   [ChromeEarlGrey waitForMainTabCount:3];
 }
 
-// TODO(crbug.com/334874066): This test is flaky on ios-tests and
-// ios-dcheck-tests.
-- (void)DISABLED_testOpenTabInTabStripBeforePrerenderedTab {
+- (void)testOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
@@ -448,6 +440,8 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
   // Type the beginning of the address to have the autocomplete suggestion.
   [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(@"")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(
                         [pageString substringToIndex:[pageString length] - 6])];
