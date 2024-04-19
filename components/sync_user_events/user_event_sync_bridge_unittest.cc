@@ -135,7 +135,7 @@ class UserEventSyncBridgeTest : public testing::Test {
   MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
   TestGlobalIdMapper* mapper() { return &test_global_id_mapper_; }
 
-  std::map<std::string, sync_pb::EntitySpecifics> GetAllData() {
+  std::map<std::string, sync_pb::EntitySpecifics> GetAllDataForDebugging() {
     base::RunLoop loop;
     std::unique_ptr<DataBatch> batch;
     bridge_->GetAllDataForDebugging(base::BindOnce(
@@ -158,11 +158,11 @@ class UserEventSyncBridgeTest : public testing::Test {
     return storage_key_to_specifics;
   }
 
-  std::unique_ptr<sync_pb::EntitySpecifics> GetData(
+  std::unique_ptr<sync_pb::EntitySpecifics> GetDataForCommit(
       const std::string& storage_key) {
     base::RunLoop loop;
     std::unique_ptr<DataBatch> batch;
-    bridge_->GetData(
+    bridge_->GetDataForCommit(
         {storage_key},
         base::BindOnce(
             [](base::RunLoop* loop, std::unique_ptr<DataBatch>* out_batch,
@@ -195,6 +195,20 @@ TEST_F(UserEventSyncBridgeTest, MetadataIsInitialized) {
   WaitUntilModelReadyToSync();
 }
 
+TEST_F(UserEventSyncBridgeTest, GetDataForCommit) {
+  WaitUntilModelReadyToSync();
+  const UserEventSpecifics specifics(CreateSpecifics(1u, 2u, 3u));
+  std::string storage_key;
+  EXPECT_CALL(*processor(), Put).WillOnce(WithArg<0>(SaveArg<0>(&storage_key)));
+  bridge()->RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics));
+
+  // Existing specifics should be returned.
+  EXPECT_THAT(GetDataForCommit(storage_key),
+              Pointee(MatchesUserEvent(specifics)));
+  // GetDataForCommit() should handle arbitrary storage key.
+  EXPECT_THAT(GetDataForCommit("bogus"), IsNull());
+}
+
 TEST_F(UserEventSyncBridgeTest, SingleRecord) {
   WaitUntilModelReadyToSync();
   const UserEventSpecifics specifics(CreateSpecifics(1u, 2u, 3u));
@@ -202,9 +216,9 @@ TEST_F(UserEventSyncBridgeTest, SingleRecord) {
   EXPECT_CALL(*processor(), Put).WillOnce(WithArg<0>(SaveArg<0>(&storage_key)));
   bridge()->RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics));
 
-  EXPECT_THAT(GetData(storage_key), Pointee(MatchesUserEvent(specifics)));
-  EXPECT_THAT(GetData("bogus"), IsNull());
-  EXPECT_THAT(GetAllData(),
+  EXPECT_THAT(GetDataForCommit(storage_key),
+              Pointee(MatchesUserEvent(specifics)));
+  EXPECT_THAT(GetAllDataForDebugging(),
               ElementsAre(Pair(storage_key, MatchesUserEvent(specifics))));
 }
 
@@ -212,13 +226,13 @@ TEST_F(UserEventSyncBridgeTest, ApplyDisableSyncChanges) {
   WaitUntilModelReadyToSync();
   const UserEventSpecifics specifics(CreateSpecifics(1u, 2u, 3u));
   bridge()->RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics));
-  ASSERT_THAT(GetAllData(), SizeIs(1));
+  ASSERT_THAT(GetAllDataForDebugging(), SizeIs(1));
 
   bridge()->ApplyDisableSyncChanges(WriteBatch::CreateMetadataChangeList());
   // The bridge may asynchronously query the store to choose what to delete.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(GetAllData(), IsEmpty());
+  EXPECT_THAT(GetAllDataForDebugging(), IsEmpty());
 }
 
 TEST_F(UserEventSyncBridgeTest, MultipleRecords) {
@@ -239,7 +253,7 @@ TEST_F(UserEventSyncBridgeTest, MultipleRecords) {
   bridge()->RecordUserEvent(SpecificsUniquePtr(2u, 2u, 2u));
 
   EXPECT_EQ(2u, unique_storage_keys.size());
-  EXPECT_THAT(GetAllData(), SizeIs(2));
+  EXPECT_THAT(GetAllDataForDebugging(), SizeIs(2));
 }
 
 TEST_F(UserEventSyncBridgeTest, ApplyIncrementalSyncChanges) {
@@ -252,16 +266,16 @@ TEST_F(UserEventSyncBridgeTest, ApplyIncrementalSyncChanges) {
 
   bridge()->RecordUserEvent(SpecificsUniquePtr(1u, 1u, 1u));
   bridge()->RecordUserEvent(SpecificsUniquePtr(2u, 2u, 2u));
-  EXPECT_THAT(GetAllData(), SizeIs(2));
+  EXPECT_THAT(GetAllDataForDebugging(), SizeIs(2));
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(EntityChange::CreateDelete(storage_key1));
   auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
-  EXPECT_THAT(GetAllData(), SizeIs(1));
-  EXPECT_THAT(GetData(storage_key1), IsNull());
-  EXPECT_THAT(GetData(storage_key2), NotNull());
+  EXPECT_THAT(GetAllDataForDebugging(), SizeIs(1));
+  EXPECT_THAT(GetDataForCommit(storage_key1), IsNull());
+  EXPECT_THAT(GetDataForCommit(storage_key2), NotNull());
 }
 
 TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
@@ -279,7 +293,7 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
   // recorded.
   mapper()->ChangeId(first_id, second_id);
   bridge()->RecordUserEvent(SpecificsUniquePtr(1u, first_id, 2u));
-  EXPECT_THAT(GetAllData(),
+  EXPECT_THAT(GetAllDataForDebugging(),
               ElementsAre(Pair(storage_key, MatchesUserEvent(CreateSpecifics(
                                                 1u, second_id, 2u)))));
 
@@ -287,7 +301,7 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
   // it being updated and re-sent to sync.
   EXPECT_CALL(*processor(), Put(storage_key, _, _));
   mapper()->ChangeId(second_id, third_id);
-  EXPECT_THAT(GetAllData(),
+  EXPECT_THAT(GetAllDataForDebugging(),
               ElementsAre(Pair(storage_key, MatchesUserEvent(CreateSpecifics(
                                                 1u, third_id, 2u)))));
   syncer::EntityChangeList entity_change_list;
@@ -295,13 +309,13 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
   auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
-  EXPECT_THAT(GetAllData(), IsEmpty());
+  EXPECT_THAT(GetAllDataForDebugging(), IsEmpty());
 
   // This id update should be ignored, since we received commit confirmation
   // above.
   EXPECT_CALL(*processor(), Put).Times(0);
   mapper()->ChangeId(third_id, fourth_id);
-  EXPECT_THAT(GetAllData(), IsEmpty());
+  EXPECT_THAT(GetAllDataForDebugging(), IsEmpty());
 }
 
 TEST_F(UserEventSyncBridgeTest, MulipleEventsChanging) {
@@ -324,14 +338,14 @@ TEST_F(UserEventSyncBridgeTest, MulipleEventsChanging) {
   bridge()->RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics1));
   bridge()->RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics2));
   bridge()->RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics3));
-  ASSERT_THAT(GetAllData(),
+  ASSERT_THAT(GetAllDataForDebugging(),
               UnorderedElementsAre(Pair(key1, MatchesUserEvent(specifics1)),
                                    Pair(key2, MatchesUserEvent(specifics2)),
                                    Pair(key3, MatchesUserEvent(specifics3))));
 
   mapper()->ChangeId(second_id, fourth_id);
   EXPECT_THAT(
-      GetAllData(),
+      GetAllDataForDebugging(),
       UnorderedElementsAre(
           Pair(key1, MatchesUserEvent(specifics1)),
           Pair(key2, MatchesUserEvent(CreateSpecifics(102u, fourth_id, 4u))),
@@ -340,7 +354,7 @@ TEST_F(UserEventSyncBridgeTest, MulipleEventsChanging) {
   mapper()->ChangeId(first_id, fourth_id);
   mapper()->ChangeId(third_id, fourth_id);
   EXPECT_THAT(
-      GetAllData(),
+      GetAllDataForDebugging(),
       UnorderedElementsAre(
           Pair(key1, MatchesUserEvent(CreateSpecifics(101u, fourth_id, 2u))),
           Pair(key2, MatchesUserEvent(CreateSpecifics(102u, fourth_id, 4u))),
@@ -353,7 +367,7 @@ TEST_F(UserEventSyncBridgeTest, RecordBeforeMetadataLoads) {
   bridge()->RecordUserEvent(SpecificsUniquePtr(1u, 2u, 3u));
   EXPECT_CALL(*processor(), ModelReadyToSync);
   WaitUntilModelReadyToSync("account_id");
-  EXPECT_THAT(GetAllData(), IsEmpty());
+  EXPECT_THAT(GetAllDataForDebugging(), IsEmpty());
 }
 
 }  // namespace

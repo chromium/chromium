@@ -114,8 +114,8 @@ std::optional<ModelError> ConsentSyncBridgeImpl::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void ConsentSyncBridgeImpl::GetData(StorageKeyList storage_keys,
-                                    DataCallback callback) {
+void ConsentSyncBridgeImpl::GetDataForCommit(StorageKeyList storage_keys,
+                                             DataCallback callback) {
   store_->ReadData(
       storage_keys,
       base::BindOnce(&ConsentSyncBridgeImpl::OnReadData,

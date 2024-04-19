@@ -122,8 +122,8 @@ std::optional<ModelError> UserEventSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void UserEventSyncBridge::GetData(StorageKeyList storage_keys,
-                                  DataCallback callback) {
+void UserEventSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                           DataCallback callback) {
   store_->ReadData(
       storage_keys,
       base::BindOnce(&UserEventSyncBridge::OnReadData,
