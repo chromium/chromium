@@ -45,6 +45,7 @@ class AppMenuIconController : public GlobalErrorObserver,
   struct TypeAndSeverity {
     IconType type;
     Severity severity;
+    bool use_primary_colors = false;
   };
 
   // Delegate interface for receiving icon update notifications.

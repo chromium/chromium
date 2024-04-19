@@ -94,6 +94,9 @@ const base::FeatureParam<int> kRepromptDurationMultiplier{
 const base::FeatureParam<base::TimeDelta> kDefaultBrowserAppMenuDuration{
     &kDefaultBrowserPromptRefresh, "app_menu_duration", base::Days(3)};
 
+const base::FeatureParam<bool> kAppMenuChipColorPrimary{
+    &kDefaultBrowserPromptRefresh, "app_menu_chip_color_primary", false};
+
 // Create new Extensions app menu option (removing "More Tools -> Extensions")
 // with submenu to manage extensions and visit chrome web store.
 BASE_FEATURE(kExtensionsMenuInAppMenu,
