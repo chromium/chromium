@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams.SuggestionViewType;
@@ -149,18 +148,10 @@ class SuggestionLayout extends ViewGroup {
     public SuggestionLayout(Context context) {
         super(context);
 
-        boolean useModernUI = OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         var res = context.getResources();
 
-        if (!useModernUI) {
-            // Align the Action Buttons with the Omnibox icons (clear, mic etc).
-            int startSpace = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_start_padding);
-            int endSpace = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding);
-            setPaddingRelative(startSpace, 0, endSpace, 0);
-        } else {
-            int endSpace = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding_modern);
-            setPaddingRelative(0, 0, endSpace, 0);
-        }
+        int endSpace = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding_modern);
+        setPaddingRelative(0, 0, endSpace, 0);
 
         mDecorationIconWidthPx =
                 OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(context);
@@ -367,13 +358,9 @@ class SuggestionLayout extends ViewGroup {
         assert contentView != null : "No content views";
 
         // Pad suggestion around to guarantee appropriate spacing around suggestions.
-        // "Shorter" suggestions (no extra padding) are used to present footer closer to
-        // the suggestions content to make them show as related.
         // Modernized UI present their content in distinc blocks, and the extra space
         // does not break visually the relationship between the content and footer parts.
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext()) || !hasFooter) {
-            contentHeightPx += mContentPaddingPx;
-        }
+        contentHeightPx += mContentPaddingPx;
 
         // Guarantee that the suggestion height meets our required minimum tap target size.
         var height =

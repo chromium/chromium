@@ -24,8 +24,6 @@ found in the LICENSE file.
 
   <dimen name="omnibox_suggestion_icon_area_size">40dp</dimen>
   <dimen name="omnibox_suggestion_icon_area_size_modern">56dp</dimen>
-  <dimen name="omnibox_suggestion_start_padding">4dp</dimen>
-  <dimen name="omnibox_suggestion_end_padding">8dp</dimen>
   <!-- Spacing on the left and right of the suggestion content -->
   <dimen name="omnibox_suggestion_side_spacing_smallest">12dp</dimen>
   <dimen name="omnibox_suggestion_list_padding_top">12dp</dimen>
