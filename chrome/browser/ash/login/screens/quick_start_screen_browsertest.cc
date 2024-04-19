@@ -75,6 +75,8 @@ constexpr char kScreenClosedNetworkScreen[] =
     "QuickStart.ScreenClosed.NetworkScreen";
 constexpr char kAuthenticationMethodHistogram[] =
     "QuickStart.AuthenticationMethod";
+constexpr char kFlowAbortedReason[] = "QuickStart.FlowAborted.Reason";
+
 constexpr test::UIPath kQuickStartEntryPointPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartEntryPoint};
 constexpr test::UIPath kQuickStartButtonPath = {
@@ -529,6 +531,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ClickingCancelReturnsToWelcome) {
   histogram_tester_.ExpectBucketCount(
       std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
       quick_start::QuickStartMetrics::ScreenClosedReason::kUserCancelled, 0);
+  histogram_tester_.ExpectBucketCount(
+      kFlowAbortedReason,
+      quick_start::QuickStartMetrics::AbortFlowReason::USER_CLICKED_CANCEL, 0);
 
   // Cancel button must be present.
   test::OobeJS()
@@ -541,6 +546,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ClickingCancelReturnsToWelcome) {
   histogram_tester_.ExpectBucketCount(
       std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
       quick_start::QuickStartMetrics::ScreenClosedReason::kUserCancelled, 1);
+  histogram_tester_.ExpectBucketCount(
+      kFlowAbortedReason,
+      quick_start::QuickStartMetrics::AbortFlowReason::USER_CLICKED_CANCEL, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelOnQRCode) {

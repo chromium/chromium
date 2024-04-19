@@ -227,6 +227,21 @@ class QuickStartMetrics {
     kMaxValue = kEmptyEmail,
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
+  enum class AbortFlowReason {
+    USER_CLICKED_BACK = 0,
+    USER_CLICKED_CANCEL = 1,
+    SIGNIN_SCHOOL = 2,
+    ENTERPRISE_ENROLLMENT = 3,
+    ERROR = 4,
+    // Child accounts are not yet supported.
+    ADD_CHILD = 5,
+    kMaxValue = ADD_CHILD,
+  };
+
   enum class EntryPoint {
     kWelcome,
     kWifi,
@@ -237,6 +252,9 @@ class QuickStartMetrics {
   // QuickStartResponseType.
   static MessageType MapResponseToMessageType(
       QuickStartResponseType response_type);
+
+  static ScreenClosedReason MapAbortFlowReasonToScreenClosedReason(
+      AbortFlowReason reason);
 
   static void RecordWifiTransferResult(
       bool succeeded,
@@ -257,6 +275,8 @@ class QuickStartMetrics {
   static void RecordEntryPoint(EntryPoint entry_point);
 
   static void RecordAuthenticationMethod(AuthenticationMethod auth_method);
+
+  static void RecordAbortFlowReason(AbortFlowReason reason);
 
   QuickStartMetrics();
   QuickStartMetrics(const QuickStartMetrics&) = delete;

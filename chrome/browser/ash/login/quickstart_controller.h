@@ -35,6 +35,8 @@ class QuickStartController
       public TargetDeviceBootstrapController::Observer,
       public bluetooth_config::mojom::SystemPropertiesObserver {
  public:
+  using AbortFlowReason = QuickStartMetrics::AbortFlowReason;
+
   // QuickStart flow entry point locations.
   enum class EntryPoint {
     WELCOME_SCREEN,
@@ -57,16 +59,6 @@ class QuickStartController
     CONTINUING_AFTER_ENROLLMENT_CHECKS,
     FALLBACK_URL_FLOW_ON_GAIA_SCREEN,
     SETUP_COMPLETE,
-  };
-
-  enum class AbortFlowReason {
-    USER_CLICKED_BACK,
-    USER_CLICKED_CANCEL,
-    SIGNIN_SCHOOL,
-    ENTERPRISE_ENROLLMENT,
-    ERROR,
-    // Child accounts are not yet supported.
-    ADD_CHILD,
   };
 
   // Implemented by the QuickStartScreen

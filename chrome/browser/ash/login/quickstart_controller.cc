@@ -148,24 +148,6 @@ QuickStartMetrics::ScreenName ScreenNameFromUiState(
   }
 }
 
-QuickStartMetrics::ScreenClosedReason ScreenClosedReasonFromAbortFlowReason(
-    QuickStartController::AbortFlowReason reason) {
-  switch (reason) {
-    case QuickStartController::AbortFlowReason::USER_CLICKED_BACK:
-      return QuickStartMetrics::ScreenClosedReason::kUserClickedBack;
-    case QuickStartController::AbortFlowReason::USER_CLICKED_CANCEL:
-      return QuickStartMetrics::ScreenClosedReason::kUserCancelled;
-    case QuickStartController::AbortFlowReason::SIGNIN_SCHOOL:
-      [[fallthrough]];
-    case QuickStartController::AbortFlowReason::ADD_CHILD:
-      [[fallthrough]];
-    case QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT:
-      return QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow;
-    case QuickStartController::AbortFlowReason::ERROR:
-      return QuickStartMetrics::ScreenClosedReason::kError;
-  }
-}
-
 bool IsConnectedToWiFi() {
   NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
   return nsh->ConnectedNetworkByType(NetworkTypePattern::WiFi()) != nullptr;
@@ -323,6 +305,7 @@ void QuickStartController::DetermineEntryPointVisibility(
 
 void QuickStartController::AbortFlow(AbortFlowReason reason) {
   CHECK(bootstrap_controller_);
+  QuickStartMetrics::RecordAbortFlowReason(reason);
 
   // Screen is closed when flow aborts on these screens.
   if (current_screen_ == QuickStartScreenHandler::kScreenId ||
@@ -331,8 +314,9 @@ void QuickStartController::AbortFlow(AbortFlowReason reason) {
         current_screen_ == QuickStartScreenHandler::kScreenId
             ? ScreenNameFromUiState(ui_state_, controller_state_)
             : ScreenNameFromOobeScreenId(current_screen_.value());
-    metrics_->RecordScreenClosed(current_screen_name,
-                                 ScreenClosedReasonFromAbortFlowReason(reason));
+    metrics_->RecordScreenClosed(
+        current_screen_name,
+        QuickStartMetrics::MapAbortFlowReasonToScreenClosedReason(reason));
   }
 
   // If user proceeds with school, enterprise, or unicorn setup, allow source

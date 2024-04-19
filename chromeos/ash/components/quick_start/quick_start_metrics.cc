@@ -141,6 +141,8 @@ constexpr const char kScreenClosedQSCreatingAccount[] =
     "QuickStart.ScreenClosed.QSCreatingAccount";
 constexpr const char kScreenClosedQSFallbackURL[] =
     "QuickStart.ScreenClosed.QSFallbackURL";
+constexpr const char kAbortFlowReasonHistogramName[] =
+    "QuickStart.FlowAborted.Reason";
 
 std::string MapMessageTypeToMetric(
     QuickStartMetrics::MessageType message_type) {
@@ -242,6 +244,26 @@ QuickStartMetrics::MessageType QuickStartMetrics::MapResponseToMessageType(
 }
 
 // static
+QuickStartMetrics::ScreenClosedReason
+QuickStartMetrics::MapAbortFlowReasonToScreenClosedReason(
+    AbortFlowReason reason) {
+  switch (reason) {
+    case AbortFlowReason::USER_CLICKED_BACK:
+      return ScreenClosedReason::kUserClickedBack;
+    case AbortFlowReason::USER_CLICKED_CANCEL:
+      return ScreenClosedReason::kUserCancelled;
+    case AbortFlowReason::SIGNIN_SCHOOL:
+      [[fallthrough]];
+    case AbortFlowReason::ADD_CHILD:
+      [[fallthrough]];
+    case AbortFlowReason::ENTERPRISE_ENROLLMENT:
+      return ScreenClosedReason::kAdvancedInFlow;
+    case AbortFlowReason::ERROR:
+      return ScreenClosedReason::kError;
+  }
+}
+
+// static
 void QuickStartMetrics::RecordWifiTransferResult(
     bool succeeded,
     std::optional<WifiTransferResultFailureReason> failure_reason) {
@@ -258,6 +280,11 @@ void QuickStartMetrics::RecordWifiTransferResult(
 // static
 void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
   base::UmaHistogramBoolean(kGaiaTransferAttemptedName, attempted);
+}
+
+// static
+void QuickStartMetrics::RecordAbortFlowReason(AbortFlowReason reason) {
+  base::UmaHistogramEnumeration(kAbortFlowReasonHistogramName, reason);
 }
 
 void QuickStartMetrics::RecordChallengeBytesRequested() {
