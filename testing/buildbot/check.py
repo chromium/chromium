@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 """Runs checks on the files defining tests.
-d
+
 This performs the following checks:
 * Checks that any entry in gn_isolate_map.pyl is referenced by some
   builder (modulo targets known to be used by builders in other projects
