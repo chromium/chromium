@@ -718,7 +718,9 @@ TEST_F(NetworkContextTest, EnableBrotli) {
   }
 }
 
-TEST_F(NetworkContextTest, BoundNetwork) {
+// Confirms that when NetworkContextParams.bound_network is set, the
+// NetworkContext properly targets that network.
+TEST_F(NetworkContextTest, NetworkBoundNetworkContext) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SDK_VERSION_MARSHMALLOW) {
@@ -751,6 +753,55 @@ TEST_F(NetworkContextTest, BoundNetwork) {
                 ->GetManagerForTesting()
                 ->target_network_for_testing(),
             network);
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "bound_network is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+// Confirms that URLLoaderFactories created out of network-bound NetworkContexts
+// correctly target that network.
+TEST_F(NetworkContextTest, NetworkBoundURLLoaderFactory) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    GTEST_SKIP()
+        << "bound_network is supported starting from Android Marshmallow";
+  }
+
+  // The actual network handle doesn't really matter, this test just wants to
+  // confirm that it is correctly passed down to the owned URLRequestContext.
+  constexpr net::handles::NetworkHandle network = 2;
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<net::test::ScopedMockNetworkChangeNotifier>();
+  auto* mock_ncn =
+      scoped_mock_network_change_notifier->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->bound_network = network;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  auto start_num_url_loader_factories =
+      network_context->num_url_loader_factories_for_testing();
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  // This needs to be different than mojom::kInvalidProcessId to stop Mojo
+  // from yelling.
+  params->process_id = mojom::kBrowserProcessId;
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+  EXPECT_TRUE(loader_factory.is_bound());
+  EXPECT_TRUE(loader_factory.is_connected());
+  // To be on the safe side, confirm that the NetworkContext is aware of the
+  // new URLLoaderFactory that has just been created.
+  EXPECT_EQ(network_context->num_url_loader_factories_for_testing() -
+                start_num_url_loader_factories,
+            1u);
+  EXPECT_TRUE(network_context->AllURLLoaderFactoriesAreBoundToNetworkForTesting(
+      network));
 #else   // !BUILDFLAG(IS_ANDROID)
   GTEST_SKIP() << "bound_network is supported only on Android";
 #endif  // BUILDFLAG(IS_ANDROID)

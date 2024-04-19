@@ -93,6 +93,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   mojom::SharedDictionaryAccessObserver* GetSharedDictionaryAccessObserver()
       const;
 
+  // Returns the network that URLLoaders, created out of this factory, will
+  // target. If == net::handles::kInvalidNetworkHandle, then no network is being
+  // targeted and the system default network will be used (see
+  // network.mojom.NetworkContextParams::bound_network for more info).
+  // Note: this is not supported for factories that received a
+  // `factory_override_` (via
+  // network.mojo.URLLoaderFactoryParams::factory_override). In this case, the
+  // factory will use the remote specified within that construct, instead of
+  // `network_loader_factory_`. Supporting this would mean exposing this API via
+  // network.mojom.URLLoaderFactory, instead of CorsURLLoaderFactory, which is a
+  // lot more work for very little benefit (network::URLLoaderFactory's tests
+  // guarantee that the overriding factory behaves correctly).
+  net::handles::NetworkHandle GetBoundNetworkForTesting() const;
+
  private:
   class FactoryOverride;
 

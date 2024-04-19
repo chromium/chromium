@@ -603,6 +603,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return url_loader_factories_.size();
   }
 
+  // Returns whether all URLLoaderFactories owned by `this` are bound to
+  // `bound_network`.
+  bool AllURLLoaderFactoriesAreBoundToNetworkForTesting(
+      net::handles::NetworkHandle bound_network) const;
+
   // Maintains Trust Tokens protocol state
   // (https://github.com/WICG/trust-token-api). Used by URLLoader to check
   // preconditions before annotating requests with protocol-related headers

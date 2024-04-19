@@ -833,4 +833,10 @@ CorsURLLoaderFactory::GetSharedDictionaryAccessObserver() const {
                                      : nullptr;
 }
 
+net::handles::NetworkHandle CorsURLLoaderFactory::GetBoundNetworkForTesting()
+    const {
+  CHECK(!factory_override_);
+  return network_loader_factory_->GetBoundNetworkForTesting();  // IN-TEST
+}
+
 }  // namespace network::cors

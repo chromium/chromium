@@ -2259,6 +2259,16 @@ size_t NetworkContext::NumOpenWebTransports() const {
   return base::ranges::count(web_transports_, false, &WebTransport::torn_down);
 }
 
+bool NetworkContext::AllURLLoaderFactoriesAreBoundToNetworkForTesting(
+    net::handles::NetworkHandle target_network) const {
+  for (const auto& factory : url_loader_factories_) {
+    if (factory->GetBoundNetworkForTesting() != target_network) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void NetworkContext::OnHttpAuthDynamicParamsChanged(
     const mojom::HttpAuthDynamicParams*
         http_auth_dynamic_network_service_params) {

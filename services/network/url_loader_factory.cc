@@ -383,6 +383,11 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }
 
+net::handles::NetworkHandle URLLoaderFactory::GetBoundNetworkForTesting()
+    const {
+  return context_->url_request_context()->bound_network();
+}
+
 mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {
   if (devtools_observer_)
     return devtools_observer_.get();
