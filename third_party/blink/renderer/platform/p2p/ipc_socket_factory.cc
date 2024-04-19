@@ -834,8 +834,6 @@ rtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
 rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
     const rtc::SocketAddress& local_address,
     const rtc::SocketAddress& remote_address,
-    const rtc::ProxyInfo& proxy_info,
-    const std::string& user_agent,
     const rtc::PacketSocketTcpOptions& opts) {
   if (!net::IsPortAllowedForScheme(remote_address.port(), "stun")) {
     // Attempt to create IPC TCP socket on blocked port

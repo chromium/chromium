@@ -718,8 +718,6 @@ rtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
 rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
     const rtc::SocketAddress& local_address,
     const rtc::SocketAddress& remote_address,
-    const rtc::ProxyInfo& proxy_info,
-    const std::string& user_agent,
     const rtc::PacketSocketTcpOptions& opts) {
   network::P2PSocketType type;
   if (opts.opts & rtc::PacketSocketFactory::OPT_SSLTCP) {
