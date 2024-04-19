@@ -321,13 +321,13 @@ suite('AppReceivesToolbarChanges', () => {
       });
 
       test('first press plays', () => {
-        app.$.flexParent!.dispatchEvent(kPress);
+        app.$.appFlexParent!.dispatchEvent(kPress);
         assertFalse(app.speechPlayingState.paused);
       });
 
       test('second press pauses', () => {
-        app.$.flexParent!.dispatchEvent(kPress);
-        app.$.flexParent!.dispatchEvent(kPress);
+        app.$.appFlexParent!.dispatchEvent(kPress);
+        app.$.appFlexParent!.dispatchEvent(kPress);
         assertTrue(app.speechPlayingState.paused);
       });
     });

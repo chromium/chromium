@@ -23,8 +23,8 @@
     }
   }
 
-  const container = document.querySelector('read-anything-app')
-                        ?.shadowRoot?.querySelector('#container');
+  const container =
+      document.querySelector('read-anything-app')?.querySelector('#container');
   assert(container);
   prune(container);
 

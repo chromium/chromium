@@ -11,8 +11,7 @@
 (() => {
   chrome.readingMode.onConnected = () => {};
 
-  const readAnythingApp =
-      document.querySelector('read-anything-app').shadowRoot;
+  const readAnythingApp = document.querySelector('read-anything-app');
   let result = true;
 
   const assertEquals = (actual, expected) => {
@@ -53,8 +52,7 @@
   };
   chrome.readingMode.setContentForTesting(axTree, [2]);
 
-  assertEquals(
-      readAnythingApp.getElementById('empty-state-container').hidden, true);
+  assertEquals(document.getElementById('empty-state-container').hidden, true);
 
   return result;
 })();
