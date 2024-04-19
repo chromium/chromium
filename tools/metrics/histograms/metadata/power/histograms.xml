@@ -1041,57 +1041,68 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.DarkResumeWakeDurationMs" units="ms" expires_after="M85">
-  <owner>chirantan@chromium.org</owner>
-  <owner>abhishekbh@chromium.org</owner>
-  <owner>ravisadineni@chromium.org</owner>
+<histogram name="Power.DarkResumeWakeDurationMs" units="ms"
+    expires_after="2025-04-10">
+  <owner>mka@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The amount of time a system spent awake every time it woke up in dark
     resume.
+
+    Warning: this histogram was expired from M85 to 2024-04-12; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.Other" units="ms"
-    expires_after="2020-08-02">
-  <owner>chirantan@chromium.org</owner>
-  <owner>abhishekbh@chromium.org</owner>
-  <owner>ravisadineni@chromium.org</owner>
+    expires_after="2025-04-10">
+  <owner>mka@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The amount of time a system spent awake every time it woke up in dark resume
     triggered by an unknown or unsupported wake trigger.
+
+    Warning: this histogram was expired from 2020-08-03 to 2024-04-12; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.WiFi.Disconnect" units="ms"
-    expires_after="M85">
-  <owner>chirantan@chromium.org</owner>
-  <owner>abhishekbh@chromium.org</owner>
-  <owner>ravisadineni@chromium.org</owner>
+    expires_after="2025-04-10">
+  <owner>mka@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The amount of time a system spent awake every time it woke up in dark resume
     triggered by a WiFi disconnect.
+
+    Warning: this histogram was expired from M85 to 2024-04-12; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.WiFi.Pattern" units="ms"
-    expires_after="M85">
-  <owner>chirantan@chromium.org</owner>
-  <owner>abhishekbh@chromium.org</owner>
-  <owner>ravisadineni@chromium.org</owner>
+    expires_after="2025-04-10">
+  <owner>mka@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The amount of time a system spent awake every time it woke up in dark resume
     triggered by a WiFi packet pattern match.
+
+    Warning: this histogram was expired from M85 to 2024-04-12; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.WiFi.SSID" units="ms"
-    expires_after="M85">
-  <owner>chirantan@chromium.org</owner>
-  <owner>abhishekbh@chromium.org</owner>
-  <owner>ravisadineni@chromium.org</owner>
+    expires_after="2025-04-10">
+  <owner>mka@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The amount of time a system spent awake every time it woke up in dark resume
     triggered by a net detect SSID match.
+
+    Warning: this histogram was expired from M85 to 2024-04-12; data may be
+    missing.
   </summary>
 </histogram>
 
