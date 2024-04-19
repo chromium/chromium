@@ -29,6 +29,7 @@ class IsolationInfo;
 class SchemefulSite;
 class CookieAccessDelegate;
 class CookieInclusionStatus;
+class ParsedCookie;
 
 namespace cookie_util {
 
@@ -95,6 +96,12 @@ NET_EXPORT std::string CookieDomainAsHost(const std::string& cookie_domain);
 // Time::Max(), respectively.
 NET_EXPORT base::Time ParseCookieExpirationTime(const std::string& time_string);
 
+// Returns the canonical path based on the specified url and path attribute
+// value. Note that this method does not enforce character set or size
+// checks on `path_string`.
+NET_EXPORT std::string CanonPathWithString(const GURL& url,
+                                           const std::string& path_string);
+
 // Get a cookie's URL from it's domain, path, and source scheme.
 // The first field can be the combined domain-and-host-only-flag (e.g. the
 // string returned by CanonicalCookie::Domain()) as opposed to the domain
@@ -141,6 +148,42 @@ NET_EXPORT bool IsDomainMatch(const std::string& domain,
 // |cookie_path|.
 NET_EXPORT bool IsOnPath(const std::string& cookie_path,
                          const std::string& url_path);
+
+// Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
+// applies to the given cookie |name|. If `check_insensitively` is true then
+// the string comparison will be performed case insensitively.
+CookiePrefix GetCookiePrefix(const std::string& name, bool check_insensitively);
+
+// As above, but infers `check_insensitively` from a Feature state.
+// Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
+// applies to the given cookie |name|.
+CookiePrefix GetCookiePrefix(const std::string& name);
+
+// Returns true if the cookie does not violate any constraints imposed
+// by the cookie name's prefix, as described in
+// https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-13#name-cookie-name-prefixes
+bool IsCookiePrefixValid(CookiePrefix prefix,
+                         const GURL& url,
+                         const ParsedCookie& parsed_cookie);
+// As above. `secure`, `domain`, and `path` are the raw attribute values (i.e.
+// as taken from a ParsedCookie), NOT in normalized form as represented in
+// CookieBase.
+bool IsCookiePrefixValid(CookiePrefix prefix,
+                         const GURL& url,
+                         bool secure,
+                         const std::string& domain,
+                         const std::string& path);
+
+// Returns true iff the cookie is a partitioned cookie with a nonce or that
+// does not violate the semantics of the Partitioned attribute:
+// - Must have the Secure attribute OR the cookie partition contains a nonce.
+bool IsCookiePartitionedValid(const GURL& url,
+                              const ParsedCookie& parsed_cookie,
+                              bool partition_has_nonce);
+bool IsCookiePartitionedValid(const GURL& url,
+                              bool secure,
+                              bool is_partitioned,
+                              bool partition_has_nonce);
 
 // A ParsedRequestCookie consists of the key and value of the cookie.
 using ParsedRequestCookie = std::pair<std::string, std::string>;

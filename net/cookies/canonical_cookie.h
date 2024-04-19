@@ -309,12 +309,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
 
   std::string DebugString() const;
 
-  // Returns the canonical path based on the specified url and path attribute
-  // value. Note that this method does not enforce character set or size
-  // checks on `path_string`.
-  static std::string CanonPathWithString(const GURL& url,
-                                         const std::string& path_string);
-
   // Returns a "null" time if expiration was unspecified or invalid.
   static base::Time ParseExpiration(const ParsedCookie& pc,
                                     const base::Time& current,
@@ -392,45 +386,11 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestPrefixHistograms);
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestHasHiddenPrefixName);
 
-  // The special cookie prefixes as defined in
-  // https://tools.ietf.org/html/draft-west-cookie-prefixes
-  //
-  // This enum is being histogrammed; do not reorder or remove values.
-  enum CookiePrefix {
-    COOKIE_PREFIX_NONE = 0,
-    COOKIE_PREFIX_SECURE,
-    COOKIE_PREFIX_HOST,
-    COOKIE_PREFIX_LAST
-  };
-
-  // Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
-  // applies to the given cookie |name|.
-  static CookiePrefix GetCookiePrefix(const std::string& name) {
-    return GetCookiePrefix(name,
-                           base::FeatureList::IsEnabled(
-                               net::features::kCaseInsensitiveCookiePrefix));
-  }
-
-  // Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
-  // applies to the given cookie |name|. If `check_insensitively` is true then
-  // the string comparison will be performed case insensitively.
-  static CookiePrefix GetCookiePrefix(const std::string& name,
-                                      bool check_insensitively);
   // Records histograms to measure how often cookie prefixes appear in
   // the wild and how often they would be blocked.
   static void RecordCookiePrefixMetrics(CookiePrefix prefix_case_sensitive,
                                         CookiePrefix prefix_case_insensitive,
                                         bool is_insensitive_prefix_valid);
-  // Returns true if a prefixed cookie does not violate any of the rules
-  // for that cookie.
-  static bool IsCookiePrefixValid(CookiePrefix prefix,
-                                  const GURL& url,
-                                  const ParsedCookie& parsed_cookie);
-  static bool IsCookiePrefixValid(CookiePrefix prefix,
-                                  const GURL& url,
-                                  bool secure,
-                                  const std::string& domain,
-                                  const std::string& path);
 
   // Returns the appropriate port value for the given `source_url` depending on
   // if the url is considered trustworthy or not.
@@ -448,17 +408,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // Checks for values that could be misinterpreted as a cookie name prefix.
   static bool HasHiddenPrefixName(const std::string_view cookie_value);
 
-  // Returns true iff the cookie is a partitioned cookie with a nonce or that
-  // does not violate the semantics of the Partitioned attribute:
-  // - Must have the Secure attribute OR the cookie partition contains a nonce.
-  static bool IsCookiePartitionedValid(const GURL& url,
-                                       const ParsedCookie& parsed_cookie,
-                                       bool partition_has_nonce);
-  static bool IsCookiePartitionedValid(const GURL& url,
-                                       bool secure,
-                                       bool is_partitioned,
-                                       bool partition_has_nonce);
-
   // CookieBase:
   void PostIncludeForRequestURL(
       const CookieAccessResult& access_result,
@@ -473,6 +422,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // services/network/public/interfaces/cookie_manager.mojom.
   // These are the fields specific to CanonicalCookie. See CookieBase for other
   // data fields.
+  // If adding more data fields, please also adjust GetAllDataMembersAsTuple().
   std::string value_;
   base::Time expiry_date_;
   base::Time last_access_date_;

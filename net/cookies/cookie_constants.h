@@ -386,6 +386,17 @@ enum class CookieSourceType {
   kMaxValue = kOther,  // Keep as the last value.
 };
 
+// The special cookie prefixes as defined in
+// https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-13#name-cookie-name-prefixes
+//
+// This enum is being histogrammed; do not reorder or remove values.
+enum CookiePrefix {
+  COOKIE_PREFIX_NONE = 0,
+  COOKIE_PREFIX_SECURE,
+  COOKIE_PREFIX_HOST,
+  COOKIE_PREFIX_LAST
+};
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_CONSTANTS_H_

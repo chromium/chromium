@@ -31,6 +31,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/parsed_cookie.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/http/http_util.h"
@@ -89,6 +90,18 @@ bool SaturatedTimeFromUTCExploded(const base::Time::Exploded& exploded,
   }
 
   return false;
+}
+
+// Tests that a cookie has the attributes for a valid __Host- prefix without
+// testing that the prefix is in the cookie name.
+bool HasValidHostPrefixAttributes(const GURL& url,
+                                  bool secure,
+                                  const std::string& domain,
+                                  const std::string& path) {
+  if (!secure || !url.SchemeIsCryptographic() || path != "/") {
+    return false;
+  }
+  return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
 }
 
 struct ComputeSameSiteContextResult {
@@ -515,6 +528,32 @@ base::Time ParseCookieExpirationTime(const std::string& time_string) {
   return base::Time();
 }
 
+std::string CanonPathWithString(const GURL& url,
+                                const std::string& path_string) {
+  // The path was supplied in the cookie, we'll take it.
+  if (!path_string.empty() && path_string[0] == '/') {
+    return path_string;
+  }
+
+  // The path was not supplied in the cookie or invalid, we will default
+  // to the current URL path.
+  // """Defaults to the path of the request URL that generated the
+  //    Set-Cookie response, up to, but not including, the
+  //    right-most /."""
+  // How would this work for a cookie on /?  We will include it then.
+  const std::string& url_path = url.path();
+
+  size_t idx = url_path.find_last_of('/');
+
+  // The cookie path was invalid or a single '/'.
+  if (idx == 0 || idx == std::string::npos) {
+    return std::string("/");
+  }
+
+  // Return up to the rightmost '/'.
+  return url_path.substr(0, idx);
+}
+
 GURL CookieDomainAndPathToURL(const std::string& domain,
                               const std::string& path,
                               const std::string& source_scheme) {
@@ -625,6 +664,77 @@ bool IsOnPath(const std::string& cookie_path, const std::string& url_path) {
   }
 
   return true;
+}
+
+CookiePrefix GetCookiePrefix(const std::string& name,
+                             bool check_insensitively) {
+  const char kSecurePrefix[] = "__Secure-";
+  const char kHostPrefix[] = "__Host-";
+
+  base::CompareCase case_sensitivity =
+      check_insensitively ? base::CompareCase::INSENSITIVE_ASCII
+                          : base::CompareCase::SENSITIVE;
+
+  if (base::StartsWith(name, kSecurePrefix, case_sensitivity)) {
+    return COOKIE_PREFIX_SECURE;
+  }
+  if (base::StartsWith(name, kHostPrefix, case_sensitivity)) {
+    return COOKIE_PREFIX_HOST;
+  }
+  return COOKIE_PREFIX_NONE;
+}
+
+CookiePrefix GetCookiePrefix(const std::string& name) {
+  return GetCookiePrefix(name,
+                         base::FeatureList::IsEnabled(
+                             net::features::kCaseInsensitiveCookiePrefix));
+}
+
+bool IsCookiePrefixValid(CookiePrefix prefix,
+                         const GURL& url,
+                         const ParsedCookie& parsed_cookie) {
+  return IsCookiePrefixValid(
+      prefix, url, parsed_cookie.IsSecure(),
+      parsed_cookie.HasDomain() ? parsed_cookie.Domain() : "",
+      parsed_cookie.HasPath() ? parsed_cookie.Path() : "");
+}
+
+bool IsCookiePrefixValid(CookiePrefix prefix,
+                         const GURL& url,
+                         bool secure,
+                         const std::string& domain,
+                         const std::string& path) {
+  if (prefix == COOKIE_PREFIX_SECURE) {
+    return secure && url.SchemeIsCryptographic();
+  }
+  if (prefix == COOKIE_PREFIX_HOST) {
+    return HasValidHostPrefixAttributes(url, secure, domain, path);
+  }
+  return true;
+}
+
+bool IsCookiePartitionedValid(const GURL& url,
+                              const ParsedCookie& parsed_cookie,
+                              bool partition_has_nonce) {
+  return IsCookiePartitionedValid(
+      url, /*secure=*/parsed_cookie.IsSecure(),
+      /*is_partitioned=*/parsed_cookie.IsPartitioned(), partition_has_nonce);
+}
+
+bool IsCookiePartitionedValid(const GURL& url,
+                              bool secure,
+                              bool is_partitioned,
+                              bool partition_has_nonce) {
+  if (!is_partitioned) {
+    return true;
+  }
+  if (partition_has_nonce) {
+    return true;
+  }
+  CookieAccessScheme scheme = cookie_util::ProvisionalAccessScheme(url);
+  bool result = (scheme != CookieAccessScheme::kNonCryptographic) && secure;
+  DLOG_IF(WARNING, !result) << "Cookie has invalid Partitioned attribute";
+  return result;
 }
 
 void ParseRequestCookieLine(const std::string& header_value,
