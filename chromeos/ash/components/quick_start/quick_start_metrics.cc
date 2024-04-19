@@ -86,8 +86,6 @@ constexpr const char kHandshakeResultDurationName[] =
 constexpr const char kHandshakeResultErrorCodeName[] =
     "QuickStart.HandshakeResult.ErrorCode";
 constexpr const char kHandshakeStartedName[] = "QuickStart.HandshakeStarted";
-constexpr const char kGaiaTransferAttemptedName[] =
-    "QuickStart.GaiaTransferAttempted";
 constexpr const char kGaiaTransferResultName[] =
     "QuickStart.GaiaTransferResult";
 constexpr const char kGaiaTransferResultFailureReasonName[] =
@@ -276,11 +274,6 @@ void QuickStartMetrics::RecordWifiTransferResult(
                                   failure_reason.value());
   }
   base::UmaHistogramBoolean(kWifiTransferResultHistogramName, succeeded);
-}
-
-// static
-void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
-  base::UmaHistogramBoolean(kGaiaTransferAttemptedName, attempted);
 }
 
 // static

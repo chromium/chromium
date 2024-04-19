@@ -448,6 +448,9 @@ void QuickStartController::OnStatusChanged(
       // If there aren't any accounts on the phone, the flow is aborted.
       if (absl::get<EmailString>(status.payload)->empty()) {
         QS_LOG(ERROR) << "No account on Android phone. No email received.";
+        QuickStartMetrics::RecordGaiaTransferResult(
+            /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
+                GaiaTransferResultFailureReason::kNoAccountOnPhone);
         AbortFlow(AbortFlowReason::ERROR);
         return;
       }
@@ -471,6 +474,9 @@ void QuickStartController::OnStatusChanged(
         QS_LOG(ERROR) << "Expected controller_state_ to be CONNECTED. Actual "
                          "controller_state_: "
                       << controller_state_;
+        QuickStartMetrics::RecordGaiaTransferResult(
+            /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
+                GaiaTransferResultFailureReason::kConnectionLost);
         AbortFlow(AbortFlowReason::ERROR);
         return;
       }
@@ -488,6 +494,9 @@ void QuickStartController::OnStatusChanged(
           QS_LOG(INFO) << "QuickStart flow will continue via fallback URL";
           CHECK(!gaia_creds.fallback_url_path->empty());
           fallback_url_ = gaia_creds.fallback_url_path.value();
+          QuickStartMetrics::RecordGaiaTransferResult(
+              /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
+                  GaiaTransferResultFailureReason::kFallbackURLRequired);
           controller_state_ = ControllerState::FALLBACK_URL_FLOW_ON_GAIA_SCREEN;
           UpdateUiState(UiState::FALLBACK_URL_FLOW);
         }
@@ -495,6 +504,9 @@ void QuickStartController::OnStatusChanged(
         CHECK(absl::holds_alternative<ErrorCode>(status.payload));
         QS_LOG(ERROR) << "Error receiving FIDO assertion. Error Code = "
                       << static_cast<int>(absl::get<ErrorCode>(status.payload));
+        QuickStartMetrics::RecordGaiaTransferResult(
+            /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
+                GaiaTransferResultFailureReason::kErrorReceivingFIDOAssertion);
 
         // TODO(b:286873060) - Implement retry mechanism/graceful exit.
         NOTIMPLEMENTED();
@@ -567,6 +579,9 @@ void QuickStartController::OnOAuthTokenReceived(
 
   if (gaia_creds_.gaia_id.empty()) {
     QS_LOG(ERROR) << "Obfuscated Gaia ID missing!";
+    QuickStartMetrics::RecordGaiaTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
+            GaiaTransferResultFailureReason::kObfuscatedGaiaIdMissing);
     AbortFlow(AbortFlowReason::ERROR);
     return;
   }
@@ -713,6 +728,8 @@ void QuickStartController::FinishAccountCreation() {
 
   UpdateUiState(UiState::CREATING_ACCOUNT);
   controller_state_ = ControllerState::SETUP_COMPLETE;
+  QuickStartMetrics::RecordGaiaTransferResult(
+      /*succeeded=*/true, /*failure_reason=*/std::nullopt);
 
   const AccountId account_id = AccountId::FromNonCanonicalEmail(
       gaia_creds_.email, gaia_creds_.gaia_id, AccountType::GOOGLE);

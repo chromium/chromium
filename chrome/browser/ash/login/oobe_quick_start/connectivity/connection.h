@@ -194,7 +194,7 @@ class Connection
   std::string challenge_b64url_;
   mojo::SharedRemote<mojom::QuickStartDecoder> decoder_;
   std::unique_ptr<AccountTransferClientData> client_data_;
-  QuickStartMetrics quick_start_metrics_;
+  std::unique_ptr<QuickStartMetrics> quick_start_metrics_;
 
   // Separate WeakPtrFactory for use with |OnResponseReceived()| to allow for
   // canceling the response.

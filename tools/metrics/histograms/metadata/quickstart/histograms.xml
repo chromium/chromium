@@ -213,26 +213,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="QuickStart.GaiaTransferAttempted" enum="BooleanAttempted"
-    expires_after="2024-12-01">
-  <owner>bhartmire@google.com</owner>
-  <owner>joeantonetti@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Whether account transfer is being attempted. Recorded when there is an error
-    with the challenge bytes received or before requesting assertion.
-  </summary>
-</histogram>
-
 <histogram name="QuickStart.GaiaTransferResult" enum="BooleanSuccess"
     expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Whether Gaia transfer was successful. Recorded after succesfully generating
-    FIDO assertion information or when an error occurs when receiving an
-    assertion response.
+    Whether Gaia transfer was successful. Recorded after succesfully completing
+    account creation or when an error occurs during account transfer process.
   </summary>
 </histogram>
 

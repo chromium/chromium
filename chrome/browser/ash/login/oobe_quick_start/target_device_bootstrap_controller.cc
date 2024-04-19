@@ -360,9 +360,12 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
   if (!challenge.has_value()) {
     quick_start::QS_LOG(ERROR) << "Error fetching challenge bytes from Gaia. "
                                << "Reason: " << challenge.error().ToString();
+    QuickStartMetrics::RecordGaiaTransferResult(
+        /*succeeded=*/false,
+        /*failure_reason=*/QuickStartMetrics::GaiaTransferResultFailureReason::
+            kFailedFetchingChallengeBytesFromGaia);
     UpdateStatus(/*step=*/Step::ERROR,
                  /*payload=*/ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED);
-    QuickStartMetrics::RecordGaiaTransferAttempted(/*attempted=*/false);
     return;
     // TODO(b:286853512) - Implement retry mechanism.
   }
@@ -370,6 +373,9 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
   if (!authenticated_connection_) {
     quick_start::QS_LOG(ERROR)
         << "Received challenge bytes, but a phone connection no longer exists.";
+    QuickStartMetrics::RecordGaiaTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
+            GaiaTransferResultFailureReason::kConnectionLost);
     NOTIMPLEMENTED();
   }
 
@@ -377,7 +383,6 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
       << "Received challenge bytes from Gaia. Requesting FIDO assertion.";
   challenge_bytes_ = challenge.value();
 
-  QuickStartMetrics::RecordGaiaTransferAttempted(/*attempted=*/true);
   authenticated_connection_->RequestAccountTransferAssertion(
       challenge_bytes_,
       base::BindOnce(&TargetDeviceBootstrapController::OnFidoAssertionReceived,
@@ -387,6 +392,9 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
 void TargetDeviceBootstrapController::OnFidoAssertionReceived(
     std::optional<FidoAssertionInfo> assertion) {
   if (!assertion.has_value()) {
+    QuickStartMetrics::RecordGaiaTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
+            GaiaTransferResultFailureReason::kGaiaAssertionNotReceived);
     UpdateStatus(/*step=*/Step::ERROR,
                  /*payload=*/ErrorCode::GAIA_ASSERTION_NOT_RECEIVED);
     return;
@@ -416,6 +424,10 @@ void TargetDeviceBootstrapController::OnAttestationCertificateReceived(
     // TODO(b/287006890) - Implement retry logic.
     quick_start::QS_LOG(ERROR) << "Error fetching attestation certificate. "
                                << "Reason: " << attestation_certificate.error();
+    QuickStartMetrics::RecordGaiaTransferResult(
+        /*succeeded=*/false,
+        /*failure_reason=*/QuickStartMetrics::GaiaTransferResultFailureReason::
+            kFailedFetchingAttestationCertificate);
     UpdateStatus(
         /*step=*/Step::ERROR,
         /*payload=*/ErrorCode::FETCHING_ATTESTATION_CERTIFICATE_FAILED);
@@ -479,6 +491,9 @@ void TargetDeviceBootstrapController::OnAuthCodeReceived(
           }},
       response);
   if (is_error) {
+    QuickStartMetrics::RecordGaiaTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
+            GaiaTransferResultFailureReason::kFailedFetchingRefreshToken);
     UpdateStatus(/*step=*/Step::ERROR,
                  /*payload=*/ErrorCode::FETCHING_REFRESH_TOKEN_FAILED);
   }

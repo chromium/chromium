@@ -101,8 +101,6 @@ constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
 
 constexpr base::TimeDelta kResponseTimeout = base::Seconds(60);
 
-constexpr char kGaiaTransferResultName[] = "QuickStart.GaiaTransferResult";
-
 const char kDeviceNameKey[] = "deviceName";
 // Device name values
 const char kChromebook[] = "Chromebook";
@@ -621,7 +619,6 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   EXPECT_EQ(expected_credential_id, assertion_info_->credential_id);
   EXPECT_EQ(auth_data, assertion_info_->authenticator_data);
   EXPECT_EQ(signature, assertion_info_->signature);
-  histogram_tester_.ExpectBucketCount(kGaiaTransferResultName, true, 1);
 }
 
 TEST_F(ConnectionTest, RequestAccountTransferAssertion_UnexpectedMessage) {

@@ -81,20 +81,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="QuickStartGaiaTransferResultFailureReason">
-  <int value="0" label="No account received from phone"/>
-  <int value="1" label="Ineligible account"/>
-  <int value="2" label="Failed to sign in"/>
-  <int value="3" label="Empty response bytes"/>
-  <int value="4" label="Unable to read as JSON"/>
-  <int value="5" label="Unexpected response size"/>
-  <int value="6" label="Ctap device response status is not success"/>
-  <int value="7" label="Cbor decoding error"/>
-  <int value="8"
-      label="Cbor decoded response values are not valid Cbor value map"/>
-  <int value="9" label="Empty credential ID"/>
-  <int value="10" label="Empty auth data"/>
-  <int value="11" label="Empty signature"/>
-  <int value="12" label="Empty email"/>
+  <int value="0" label="No account on phone"/>
+  <int value="1" label="Failed fetching challenge bytes from Gaia"/>
+  <int value="2" label="Connection lost"/>
+  <int value="3" label="Gaia assertion not received"/>
+  <int value="4" label="Failed fetching attestation certificate"/>
+  <int value="5" label="Failed fetching refresh token"/>
+  <int value="6" label="Fallback URL required"/>
+  <int value="7" label="Error receiving FIDO assertion"/>
+  <int value="8" label="Obfuscated Gaia ID missing"/>
 </enum>
 
 <enum name="QuickStartHandshakeResultErrorCode">

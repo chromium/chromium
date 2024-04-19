@@ -211,20 +211,16 @@ class QuickStartMetrics {
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
   enum class GaiaTransferResultFailureReason {
-    kNoAccountsReceivedFromPhone = 0,
-    kIneligibleAccount = 1,
-    kFailedToSignIn = 2,
-    kEmptyResponseBytes = 3,
-    kUnableToReadAsJSON = 4,
-    kUnexpectedResponseSize = 5,
-    kUnsuccessfulCtapDeviceResponseStatus = 6,
-    kCborDecodingError = 7,
-    kInvalidCborDecodedValuesMap = 8,
-    kEmptyCredentialId = 9,
-    kEmptyAuthData = 10,
-    kEmptySignature = 11,
-    kEmptyEmail = 12,
-    kMaxValue = kEmptyEmail,
+    kNoAccountOnPhone = 0,
+    kFailedFetchingChallengeBytesFromGaia = 1,
+    kConnectionLost = 2,
+    kGaiaAssertionNotReceived = 3,
+    kFailedFetchingAttestationCertificate = 4,
+    kFailedFetchingRefreshToken = 5,
+    kFallbackURLRequired = 6,
+    kErrorReceivingFIDOAssertion = 7,
+    kObfuscatedGaiaIdMissing = 8,
+    kMaxValue = kObfuscatedGaiaIdMissing,
   };
 
   // This enum is tied directly to a UMA enum defined in

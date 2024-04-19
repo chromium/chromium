@@ -54,8 +54,10 @@ using ConnectionClosedReason =
 
 constexpr char kWifiTransferResultHistogramName[] =
     "QuickStart.WifiTransferResult";
-constexpr char kGaiaTransferAttemptedName[] =
-    "QuickStart.GaiaTransferAttempted";
+constexpr char kGaiaTransferResultHistogramName[] =
+    "QuickStart.GaiaTransferResult";
+constexpr char kGaiaTransferResultFailureReasonHistogramName[] =
+    "QuickStart.GaiaTransferResult.FailureReason";
 
 class FakeObserver : public Observer {
  public:
@@ -609,6 +611,13 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        FailureFetchingChallengeBytesIsProperlySurfaced) {
+  histogram_tester_.ExpectBucketCount(kGaiaTransferResultHistogramName, false,
+                                      0);
+  histogram_tester_.ExpectBucketCount(
+      kGaiaTransferResultFailureReasonHistogramName,
+      QuickStartMetrics::GaiaTransferResultFailureReason::
+          kFailedFetchingChallengeBytesFromGaia,
+      0);
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
@@ -626,7 +635,13 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED);
-  histogram_tester_.ExpectBucketCount(kGaiaTransferAttemptedName, false, 1);
+  histogram_tester_.ExpectBucketCount(kGaiaTransferResultHistogramName, false,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kGaiaTransferResultFailureReasonHistogramName,
+      QuickStartMetrics::GaiaTransferResultFailureReason::
+          kFailedFetchingChallengeBytesFromGaia,
+      1);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
@@ -686,12 +701,17 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       absl::get<TargetDeviceBootstrapController::GaiaCredentials>(payload);
   EXPECT_EQ(gaia_creds.auth_code, kTestAuthCode);
   EXPECT_TRUE(GetSessionContext()->did_set_up_gaia());
-
-  histogram_tester_.ExpectBucketCount(kGaiaTransferAttemptedName, true, 1);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        TransferGaiaAccountDetailsFailsIfEmpty) {
+  histogram_tester_.ExpectBucketCount(kGaiaTransferResultHistogramName, false,
+                                      0);
+  histogram_tester_.ExpectBucketCount(
+      kGaiaTransferResultFailureReasonHistogramName,
+      QuickStartMetrics::GaiaTransferResultFailureReason::
+          kGaiaAssertionNotReceived,
+      0);
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
@@ -713,7 +733,13 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::GAIA_ASSERTION_NOT_RECEIVED);
-  histogram_tester_.ExpectBucketCount(kGaiaTransferAttemptedName, true, 1);
+  histogram_tester_.ExpectBucketCount(kGaiaTransferResultHistogramName, false,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kGaiaTransferResultFailureReasonHistogramName,
+      QuickStartMetrics::GaiaTransferResultFailureReason::
+          kGaiaAssertionNotReceived,
+      1);
 }
 
 // Ensures that the discoverable name that is shown Chromebook (123) matches
