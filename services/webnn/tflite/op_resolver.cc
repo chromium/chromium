@@ -28,6 +28,10 @@ OpResolver::OpResolver() {
              ::tflite::ops::builtin::Register_ARG_MIN(),
              /* min_version = */ 1,
              /* max_version = */ 2);
+  AddBuiltin(::tflite::BuiltinOperator_BATCH_MATMUL,
+             ::tflite::ops::builtin::Register_BATCH_MATMUL(),
+             /* min_version = */ 1,
+             /* max_version = */ 4);
   AddBuiltin(::tflite::BuiltinOperator_CONCATENATION,
              ::tflite::ops::builtin::Register_CONCATENATION(),
              /* min_version = */ 1,

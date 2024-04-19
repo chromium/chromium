@@ -342,6 +342,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
     case mojom::Operation::Tag::kLeakyRelu:
       operator_offset = SerializeLeakyRelu(*op.get_leaky_relu());
       break;
+    case mojom::Operation::Tag::kMatmul:
+      operator_offset = SerializeMatmul(*op.get_matmul());
+      break;
     case mojom::Operation::Tag::kPad: {
       ASSIGN_OR_RETURN(operator_offset, SerializePad(*op.get_pad()));
       break;
@@ -409,8 +412,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("lstm is not implemented");
     case mojom::Operation::Tag::kLstmCell:
       return base::unexpected("lstmCell is not implemented");
-    case mojom::Operation::Tag::kMatmul:
-      return base::unexpected("matmul is not implemented");
     case mojom::Operation::Tag::kPrelu:
       return base::unexpected("prelu is not implemented");
     case mojom::Operation::Tag::kSoftplus:
@@ -1168,6 +1169,24 @@ auto GraphBuilder::SerializeLogicalNot(
       /*input_tensor_type=*/::tflite::TensorType_BOOL,
       operand_to_index_map_.at(logical_not.output_operand_id),
       /*output_tensor_type=*/::tflite::TensorType_UINT8);
+}
+
+auto GraphBuilder::SerializeMatmul(const mojom::Matmul& matmul)
+    -> OperatorOffset {
+  const auto matmul_options =
+      ::tflite::CreateBatchMatMulOptions(builder_, /*adj_x=*/false,
+                                         /*adj_y=*/false);
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_BATCH_MATMUL);
+  const std::array<int32_t, 2> op_inputs = {
+      operand_to_index_map_.at(matmul.a_operand_id),
+      operand_to_index_map_.at(matmul.b_operand_id)};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(matmul.output_operand_id)};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_BatchMatMulOptions, matmul_options.Union());
 }
 
 auto GraphBuilder::SerializePad(const mojom::Pad& pad)

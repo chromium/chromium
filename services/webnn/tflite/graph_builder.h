@@ -167,6 +167,7 @@ class GraphBuilder final {
   OperatorOffset SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu);
   OperatorOffset SerializeLogicalNot(
       const mojom::ElementWiseUnary& logical_not);
+  OperatorOffset SerializeMatmul(const mojom::Matmul& matmul);
   base::expected<OperatorOffset, std::string> SerializePad(
       const mojom::Pad& pad);
   base::expected<OperatorOffset, std::string> SerializePool2d(
