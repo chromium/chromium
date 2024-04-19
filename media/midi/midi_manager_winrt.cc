@@ -28,6 +28,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_util.h"
@@ -138,15 +139,15 @@ void GetDevPropString(DEVINST handle,
     return;
   }
 
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[buffer_size]);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(buffer_size);
 
   // Receive property data.
-  cr = CM_Get_DevNode_Property(handle, devprop_key, &devprop_type, buffer.get(),
-                               &buffer_size, 0);
+  cr = CM_Get_DevNode_Property(handle, devprop_key, &devprop_type,
+                               buffer.data(), &buffer_size, 0);
   if (cr != CR_SUCCESS)
     VLOG(1) << "CM_Get_DevNode_Property failed: CONFIGRET 0x" << std::hex << cr;
   else
-    *out = base::WideToUTF8(reinterpret_cast<wchar_t*>(buffer.get()));
+    *out = base::WideToUTF8(reinterpret_cast<wchar_t*>(buffer.data()));
 }
 
 // Retrieves manufacturer (provider) and version information of underlying

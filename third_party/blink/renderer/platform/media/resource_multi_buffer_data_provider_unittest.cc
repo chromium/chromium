@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -184,8 +186,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   }
 
   void WriteData(int size) {
-    std::unique_ptr<char[]> data(new char[size]);
-    loader_->DidReceiveData(data.get(), size);
+    auto data = base::HeapArray<char>::Uninit(size);
+    loader_->DidReceiveData(data.data(), size);
   }
 
   // Verifies that data in buffer[0...size] is equal to data_[pos...pos+size].

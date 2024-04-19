@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -339,10 +340,10 @@ class MultiBufferDataSourceTest : public testing::Test {
 
   void ReceiveDataLow(int size) {
     EXPECT_TRUE(active_loader());
-    std::unique_ptr<char[]> data(new char[size]);
-    memset(data.get(), 0xA5, size);  // Arbitrary non-zero value.
+    auto data = base::HeapArray<char>::Uninit(size);
+    memset(data.data(), 0xA5, size);  // Arbitrary non-zero value.
 
-    data_provider()->DidReceiveData(data.get(), size);
+    data_provider()->DidReceiveData(data.data(), size);
   }
 
   void ReceiveData(int size) {
