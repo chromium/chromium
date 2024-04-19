@@ -1332,6 +1332,7 @@ if (is_android) {
       "../browser/accessibility/accessibility_prefs/android/accessibility_android_policy_browsertest.cc",
       "../browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller_browsertest.cc",
       "../browser/android/auxiliary_search/auxiliary_search_provider_browsertest.cc",
+      "../browser/android/cookies/cookies_fetcher_restore_util_browsertest.cc",
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/customtabs/tab_interaction_recorder_browsertest.cc",
       "../browser/android/historical_tab_saver_browsertest.cc",
