@@ -30,6 +30,7 @@ public class AutocompleteMatchBuilder {
     private String mDescription;
     private List<AutocompleteMatch.MatchClassification> mDescriptionClassifications;
     private SuggestionAnswer mAnswer;
+    private byte[] mSerializedAnswerTemplate;
     private String mFillIntoEdit;
     private GURL mUrl;
     private GURL mImageUrl;
@@ -76,6 +77,7 @@ public class AutocompleteMatchBuilder {
         mDescription = null;
         mDescriptionClassifications = new ArrayList<>();
         mAnswer = null;
+        mSerializedAnswerTemplate = null;
         mFillIntoEdit = null;
         mUrl = GURL.emptyGURL();
         mImageUrl = GURL.emptyGURL();
@@ -114,6 +116,7 @@ public class AutocompleteMatchBuilder {
                 mDescription,
                 mDescriptionClassifications,
                 mAnswer,
+                mSerializedAnswerTemplate,
                 mFillIntoEdit,
                 mUrl,
                 mImageUrl,

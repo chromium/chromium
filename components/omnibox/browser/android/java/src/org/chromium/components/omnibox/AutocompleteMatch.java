@@ -69,6 +69,7 @@ public class AutocompleteMatch {
     private String mDescription;
     private List<MatchClassification> mDescriptionClassifications;
     private SuggestionAnswer mAnswer;
+    private byte[] mSerializedAnswerTemplate;
     private final String mFillIntoEdit;
     private GURL mUrl;
     private final GURL mImageUrl;
@@ -95,6 +96,7 @@ public class AutocompleteMatch {
             String description,
             List<MatchClassification> descriptionClassifications,
             SuggestionAnswer answer,
+            byte[] serializedAnswerTemplate,
             String fillIntoEdit,
             GURL url,
             GURL imageUrl,
@@ -119,6 +121,7 @@ public class AutocompleteMatch {
         mDescription = description;
         mDescriptionClassifications = descriptionClassifications;
         mAnswer = answer;
+        mSerializedAnswerTemplate = serializedAnswerTemplate;
         mFillIntoEdit = TextUtils.isEmpty(fillIntoEdit) ? displayText : fillIntoEdit;
         assert url != null;
         mUrl = url;
@@ -149,6 +152,7 @@ public class AutocompleteMatch {
             int[] descriptionClassificationOffsets,
             int[] descriptionClassificationStyles,
             SuggestionAnswer answer,
+            byte[] serializedAnswerTemplate,
             String fillIntoEdit,
             GURL url,
             GURL imageUrl,
@@ -185,6 +189,7 @@ public class AutocompleteMatch {
                         description,
                         new ArrayList<>(),
                         answer,
+                        serializedAnswerTemplate,
                         fillIntoEdit,
                         url,
                         imageUrl,
@@ -303,6 +308,10 @@ public class AutocompleteMatch {
 
     public boolean hasAnswer() {
         return mAnswer != null;
+    }
+
+    public byte[] getSerializedAnswerTemplate() {
+        return mSerializedAnswerTemplate;
     }
 
     public @NonNull String getFillIntoEdit() {
