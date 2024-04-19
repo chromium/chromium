@@ -17,6 +17,7 @@
 namespace {
 
 const char kFakeDeviceIdForTesting[] = "0123";
+const char kFakeRemoteIdForTesting[] = "test-remote";
 
 }  // namespace
 
@@ -123,6 +124,18 @@ base::FilePath FakeFwupdClient::CreateUpdateFilePath() {
   base::FilePath fake_update_file_with_URI(
       base::StrCat({"file://", full_path_to_fake_update.value()}));
   return fake_update_file_with_URI;
+}
+
+void FakeFwupdClient::UpdateMetadata(
+    const std::string& remote_id,
+    base::ScopedFD data_file_descriptor,
+    base::ScopedFD sig_file_descriptor,
+    base::OnceCallback<void(FwupdResult)> callback) {
+  if (remote_id != kFakeRemoteIdForTesting) {
+    std::move(callback).Run(FwupdResult::kInternalError);
+    return;
+  }
+  std::move(callback).Run(FwupdResult::kSuccess);
 }
 
 }  // namespace ash

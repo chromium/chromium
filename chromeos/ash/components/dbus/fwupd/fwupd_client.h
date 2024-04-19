@@ -119,6 +119,13 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
       FirmwareInstallOptions options,
       base::OnceCallback<void(FwupdResult)> callback) = 0;
 
+  // Updates metadata for |remote_id| with given old and new file descriptors.
+  virtual void UpdateMetadata(
+      const std::string& remote_id,
+      base::ScopedFD data_file_descriptor,
+      base::ScopedFD sig_file_descriptor,
+      base::OnceCallback<void(FwupdResult)> callback) = 0;
+
  protected:
   friend class FwupdClientTest;
 

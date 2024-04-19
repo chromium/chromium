@@ -46,6 +46,7 @@ const char kPriorityKey[] = "Urgency";
 const char kUriKey[] = "Uri";
 const char kChecksumKey[] = "Checksum";
 const char kTrustFlagsKey[] = "TrustFlags";
+const char kFakeRemoteIdForTesting[] = "test-remote";
 
 void RunResponseOrErrorCallback(
     dbus::ObjectProxy::ResponseOrErrorCallback callback,
@@ -833,6 +834,29 @@ TEST_P(FwupdClientTest_DeviceRequest, OnDeviceRequestReceived) {
   EmitSignal(kFwupdDeviceRequestReceivedSignalName, signal);
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FwupdClientTest, UpdateMetadata) {
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  auto response = dbus::Response::CreateEmpty();
+
+  dbus::MessageWriter response_writer(response.get());
+
+  const bool update_success = true;
+  response_writer.AppendBool(update_success);
+
+  AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+
+  base::RunLoop run_loop;
+  fwupd_client_->UpdateMetadata(
+      kFakeRemoteIdForTesting, base::ScopedFD(0), base::ScopedFD(1),
+      base::BindLambdaForTesting([&](FwupdResult result) {
+        EXPECT_EQ(result, FwupdResult::kSuccess);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace ash

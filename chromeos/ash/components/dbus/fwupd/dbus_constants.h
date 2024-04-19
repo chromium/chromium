@@ -16,6 +16,7 @@ const char kFwupdGetUpgradesMethodName[] = "GetUpgrades";
 const char kFwupdGetDevicesMethodName[] = "GetDevices";
 const char kFwupdInstallMethodName[] = "Install";
 const char kFwupdSetFeatureFlagsMethodName[] = "SetFeatureFlags";
+const char kFwupdUpdateMetadataMethodName[] = "UpdateMetadata";
 
 // Names of keys returned by the "DeviceRequest" signal:
 // The RequestID is stored in the AppstreamId key in fwupd for legacy reasons.

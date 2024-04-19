@@ -278,6 +278,26 @@ class FwupdClientImpl : public FwupdClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void UpdateMetadata(const std::string& remote_id,
+                      base::ScopedFD data_file_descriptor,
+                      base::ScopedFD sig_file_descriptor,
+                      base::OnceCallback<void(FwupdResult)> callback) override {
+    FIRMWARE_LOG(USER) << "fwupd: UpdateMetadata called for remote id: "
+                       << remote_id;
+    dbus::MethodCall method_call(kFwupdServiceInterface,
+                                 kFwupdUpdateMetadataMethodName);
+    dbus::MessageWriter writer(&method_call);
+
+    writer.AppendString(remote_id);
+    writer.AppendFileDescriptor(data_file_descriptor.get());
+    writer.AppendFileDescriptor(sig_file_descriptor.get());
+
+    proxy_->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&FwupdClientImpl::UpdateMetadataCallback,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
  private:
   // Pops a string-to-variant-string dictionary from the reader.
   base::Value::Dict PopStringToStringDictionary(dbus::MessageReader* reader) {
@@ -609,6 +629,21 @@ class FwupdClientImpl : public FwupdClient {
       FIRMWARE_LOG(ERROR) << "No D-Bus response received from fwupd.";
       return;
     }
+  }
+
+  void UpdateMetadataCallback(base::OnceCallback<void(FwupdResult)> callback,
+                              dbus::Response* response,
+                              dbus::ErrorResponse* error_response) {
+    FwupdResult result = FwupdResult::kSuccess;
+    if (error_response) {
+      FIRMWARE_LOG(ERROR) << "UpdateMetadata failed with error message: "
+                          << error_response->ToString();
+      result = GetFwupdResult(error_response->GetErrorName());
+    }
+
+    FIRMWARE_LOG(USER) << "UpdateMetadata returned with: "
+                       << static_cast<int>(result);
+    std::move(callback).Run(result);
   }
 
   raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;

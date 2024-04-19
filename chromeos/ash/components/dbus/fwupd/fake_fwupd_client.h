@@ -27,6 +27,10 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
                      base::ScopedFD file_descriptor,
                      FirmwareInstallOptions options,
                      base::OnceCallback<void(FwupdResult)> callback) override;
+  void UpdateMetadata(const std::string& remote_id,
+                      base::ScopedFD data_file_descriptor,
+                      base::ScopedFD sig_file_descriptor,
+                      base::OnceCallback<void(FwupdResult)> callback) override;
 
   void TriggerPropertiesChangeForTesting(uint32_t percentage, uint32_t status);
   void TriggerSuccessfulUpdateForTesting();
