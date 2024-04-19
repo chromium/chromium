@@ -327,37 +327,6 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionEnd) {
   ASSERT_EQ(blink::mojom::SpeechRecognitionErrorCode::kNotAllowed, error_);
 }
 
-TEST_F(SodaSpeechRecognitionEngineImplTest,
-       SpeechRecognitionManagerDelegateNotAvaiable) {
-  SpeechRecognitionSessionConfig config;
-  client_under_test_ = CreateSpeechRecognition(config, nullptr, true);
-  ASSERT_FALSE(client_under_test_->Initialize());
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(recognition_ready_);
-
-  client_under_test_->StartRecognition();
-
-  ASSERT_EQ(blink::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed,
-            error_);
-}
-
-TEST_F(SodaSpeechRecognitionEngineImplTest, NoSpeechRecognitionService) {
-  fake_speech_recognition_mgr_delegate_->Reset(nullptr);
-  mock_service_ = nullptr;
-
-  SpeechRecognitionSessionConfig config;
-  client_under_test_ = CreateSpeechRecognition(
-      config, fake_speech_recognition_mgr_delegate_.get(), true);
-  ASSERT_TRUE(client_under_test_->Initialize());
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(recognition_ready_);
-
-  client_under_test_->StartRecognition();
-
-  ASSERT_EQ(blink::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed,
-            error_);
-}
-
 TEST_F(SodaSpeechRecognitionEngineImplTest, SetOnReadyCallbackAfterBind) {
   SpeechRecognitionSessionConfig config;
   client_under_test_ = CreateSpeechRecognition(

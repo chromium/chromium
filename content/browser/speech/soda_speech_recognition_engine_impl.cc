@@ -99,10 +99,6 @@ bool SodaSpeechRecognitionEngineImpl::Initialize() {
 
 void SodaSpeechRecognitionEngineImpl::StartRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  if (!IsSpeechRecognitionAvailable()) {
-    Abort(blink::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed);
-    return;
-  }
 
   is_start_recognition_ = true;
 }
@@ -181,7 +177,7 @@ void SodaSpeechRecognitionEngineImpl::SetOnReadyCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   on_ready_callback_ = std::move(callback);
 
-  if (IsSpeechRecognitionAvailable() && on_ready_callback_) {
+  if (on_ready_callback_) {
     std::move(on_ready_callback_).Run();
   }
 }
@@ -189,7 +185,6 @@ void SodaSpeechRecognitionEngineImpl::SetOnReadyCallback(
 void SodaSpeechRecognitionEngineImpl::OnRecognizerBound(
     bool is_multichannel_supported) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  is_recognizer_bound_ = true;
 
   if (on_ready_callback_) {
     std::move(on_ready_callback_).Run();
@@ -198,32 +193,21 @@ void SodaSpeechRecognitionEngineImpl::OnRecognizerBound(
 
 void SodaSpeechRecognitionEngineImpl::OnRecognizerDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  is_recognizer_bound_ = false;
   Abort(blink::mojom::SpeechRecognitionErrorCode::kAborted);
-}
-
-bool SodaSpeechRecognitionEngineImpl::IsSpeechRecognitionAvailable() {
-  return is_recognizer_bound_;
 }
 
 void SodaSpeechRecognitionEngineImpl::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr audio_data) {
   DCHECK(audio_data);
-  if (speech_recognition_recognizer_.is_bound() &&
-      IsSpeechRecognitionAvailable()) {
+  if (speech_recognition_recognizer_.is_bound()) {
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
         std::move(audio_data));
-  } else {
-    Abort(blink::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed);
   }
 }
 
 void SodaSpeechRecognitionEngineImpl::MarkDone() {
-  if (speech_recognition_recognizer_.is_bound() &&
-      IsSpeechRecognitionAvailable()) {
+  if (speech_recognition_recognizer_.is_bound()) {
     speech_recognition_recognizer_->MarkDone();
-  } else {
-    Abort(blink::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed);
   }
 }
 
