@@ -3899,7 +3899,6 @@ crbug.com/848398 http/tests/devtools/oopif/oopif-performance-cpu-profiles.js [ F
 
 # Sheriff 2018-06-07
 crbug.com/850358 http/tests/devtools/editor/text-editor-enter-behaviour.js [ Failure Pass Timeout ]
-crbug.com/849978 http/tests/devtools/elements/styles-4/stylesheet-source-url-comment.js [ Failure Pass Timeout ]
 
 # User Activation
 crbug.com/736415 crbug.com/1066190 [ Debug ] external/wpt/html/user-activation/navigation-state-reset-crossorigin.sub.html [ Failure Timeout ]
@@ -4508,7 +4507,6 @@ crbug.com/1144171 http/tests/devtools/report-API-errors.js [ Crash Failure Pass 
 # Sheriff 2020-12-11
 # Flaking on Linux
 crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Failure Pass ]
-crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [ Failure Pass ]
 
 # Wpt importer sheriff 2021-01-05
 crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space.html [ Failure ]
@@ -7369,3 +7367,41 @@ crbug.com/333739617 [ Mac ] fast/peerconnection/RTCEncodedVideoFrameMetadata-tim
 # Gardener 2024-04-16
 crbug.com/335003887 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/arg_min_max.https.any.worker.html [ Failure Pass ]
 crbug.com/335003887 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/arg_min_max.https.any.worker.html [ Failure Pass ]
+
+#Gardener 2024-04-19
+crbug.com/40933623 [ Linux ] http/tests/devtools/console/command-line-api.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/console/console-api-on-call-frame.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/console/console-error-on-call-frame.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/console/console-link-to-snippet.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/console/console-links-on-messages-before-inspection.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/console/console-xml-document.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/console/paintworklet-console-selector.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Mac ] http/tests/devtools/console/paintworklet-console-selector.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Win ] http/tests/devtools/console/paintworklet-console-selector.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/console/shadow-element.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/accessibility/autocomplete-attribute.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/event-listener-sidebar-custom-framework.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/event-listener-sidebar-jquery1.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/event-listener-sidebar-jquery2.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/event-listener-sidebar-remove.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/event-listener-sidebar.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/event-listeners-about-blank.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/event-listeners-framework-with-service-worker.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/highlight/highlight-dom-updates.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/styles-4/styles-do-not-detach-sourcemap-on-edits.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/styles-4/styles-edit-property-after-invalid-rule.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/styles-4/styles-update-links-3.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/styles-4/stylesheet-source-url-comment.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Mac ] http/tests/devtools/elements/styles-4/stylesheet-source-url-comment.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Win ] http/tests/devtools/elements/styles-4/stylesheet-source-url-comment.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/styles/selector-line.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/styles/styles-do-not-add-inline-stylesheets-in-navigator.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/elements/styles/undo-after-cancelled-editing.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/extensions/extensions-sidebar.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/reveal-objects.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/service-workers/service-worker-pause.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-reload.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Crash Failure Pass ]
+crbug.com/40933623 [ Linux ] http/tests/devtools/sources/sources-panel-focus-editor-on-select.js [ Crash Failure Pass ]
