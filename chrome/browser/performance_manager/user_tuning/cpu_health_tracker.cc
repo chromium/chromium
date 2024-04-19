@@ -11,12 +11,18 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/resource_context.h"
 
 namespace performance_manager::user_tuning {
 
@@ -58,6 +64,7 @@ CpuHealthTracker::HealthLevel CpuHealthTracker::GetHealthLevelForTesting() {
 
 void CpuHealthTracker::OnPassedToGraph(performance_manager::Graph* graph) {
   graph->RegisterObject(this);
+  graph_ = graph;
 }
 
 void CpuHealthTracker::OnTakenFromGraph(performance_manager::Graph* graph) {
@@ -107,11 +114,74 @@ void CpuHealthTracker::GetFilteredActionableTabs(
     PageResourceMeasurements unfiltered_measurements,
     int recent_measurement,
     base::OnceCallback<void(ActionableTabsResult)> callback) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), ActionableTabsResult()));
+  // Sort the measurements in descending order
+  std::vector<std::pair<resource_attribution::PageContext, int>>
+      sorted_measurements = base::ToVector(unfiltered_measurements);
+  std::sort(sorted_measurements.begin(), sorted_measurements.end(),
+            [](const std::pair<resource_attribution::PageContext, int>& pair1,
+               const std::pair<resource_attribution::PageContext, int>& pair2) {
+              return pair1.second > pair2.second;
+            });
 
-  // TODO(crbug.com/324261765): determine which page contexts are actionable
-  // and run the 'on_results_callback' with the list of actionable pages
+  ActionableTabsResult actionable_tabs;
+  int total_actionable_cpu = 0;
+  bool take_action_improves_health = false;
+  const size_t max_actionable_tabs =
+      std::min(unfiltered_measurements.size(),
+               size_t(features::kCPUMaxActionableTabs.Get()));
+
+  for (size_t i = 0; i < max_actionable_tabs; i++) {
+    const auto& [context, measurement] = sorted_measurements.at(i);
+    if (CanDiscardPage(context)) {
+      total_actionable_cpu += measurement;
+      actionable_tabs.push_back(context);
+      if (GetHealthLevelForMeasurement(recent_measurement -
+                                       total_actionable_cpu) !=
+          current_health_status_) {
+        take_action_improves_health = true;
+        break;
+      }
+    }
+  }
+
+  // If health status can't change after taking action, then we should consider
+  // all of the tabs as not actionable.
+  if (!take_action_improves_health) {
+    actionable_tabs = {};
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), actionable_tabs));
+  actionable_tabs_ = actionable_tabs;
+}
+
+bool CpuHealthTracker::CanDiscardPage(
+    resource_attribution::PageContext context) {
+  PageNode* const page_node = context.GetPageNode();
+
+  // Page is not discardable since the page no longer exists
+  if (page_node == nullptr) {
+    return false;
+  }
+
+  policies::PageDiscardingHelper* const discard_helper =
+      policies::PageDiscardingHelper::GetFromGraph(graph_);
+  CHECK(discard_helper);
+
+  const base::TimeDelta measurement_window =
+      features::kCPUTimeOverThreshold.Get();
+
+  // We should not discard pages that played audio during the measurement window
+  // as it may affect CPU measurements.
+  const bool did_audio_status_change =
+      page_node->GetTimeSinceLastAudibleChange().value_or(
+          base::TimeDelta::Max()) < measurement_window;
+
+  return !did_audio_status_change &&
+         discard_helper->CanDiscard(
+             page_node, ::mojom::LifecycleUnitDiscardReason::PROACTIVE,
+             measurement_window) ==
+             policies::PageDiscardingHelper::CanDiscardResult::kEligible;
 }
 
 bool CpuHealthTracker::RecordAndUpdateHealthStatus(int measurement) {
@@ -183,7 +253,7 @@ void CpuHealthTracker::ProcessQueryResultMap(
     std::map<resource_attribution::ResourceContext, double> page_cpu =
         page_cpu_proportion_tracker_.StartNextInterval(measurement_time,
                                                        results);
-    possible_actionable_pages_ = GetPagesMeetMinimumCpuUsage(page_cpu);
+    possible_actionable_pages_ = FilterForPossibleActionablePages(page_cpu);
 
     GetFilteredActionableTabs(possible_actionable_pages_,
                               system_cpu_usage_percentage,
@@ -193,24 +263,27 @@ void CpuHealthTracker::ProcessQueryResultMap(
 }
 
 CpuHealthTracker::PageResourceMeasurements
-CpuHealthTracker::GetPagesMeetMinimumCpuUsage(
+CpuHealthTracker::FilterForPossibleActionablePages(
     std::map<resource_attribution::ResourceContext, double> page_cpu) {
   std::vector<std::pair<resource_attribution::PageContext, int>> eligible_pages;
+  for (const auto& [context, cpu_usage] : page_cpu) {
+    resource_attribution::PageContext page_context =
+        resource_attribution::AsContext<resource_attribution::PageContext>(
+            context);
+    PageNode* const page_node = page_context.GetPageNode();
+    const bool is_tab = page_node && page_node->GetType() == PageType::kTab;
 
-  for (auto& it : page_cpu) {
     const int cpu_usage_percentage =
-        it.second * 100 / base::SysInfo::NumberOfProcessors();
-    if (cpu_usage_percentage >=
-        performance_manager::features::kMinimumActionableTabCPUPercentage
-            .Get()) {
-      eligible_pages.emplace_back(
-          resource_attribution::AsContext<resource_attribution::PageContext>(
-              it.first),
-          cpu_usage_percentage);
+        cpu_usage * 100 / base::SysInfo::NumberOfProcessors();
+    if (is_tab &&
+        cpu_usage_percentage >=
+            performance_manager::features::kMinimumActionableTabCPUPercentage
+                .Get()) {
+      eligible_pages.emplace_back(page_context, cpu_usage_percentage);
     }
   }
 
   return base::MakeFlatMap<resource_attribution::PageContext, int>(
-      eligible_pages);
+      std::move(eligible_pages));
 }
 }  // namespace performance_manager::user_tuning

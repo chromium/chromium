@@ -36,7 +36,8 @@ void PerformanceDetectionManager::AddStatusObserver(
   for (auto resource_type : resource_types) {
     status_observers_[resource_type].AddObserver(observer);
     observer->OnStatusChanged(resource_type,
-                              current_health_status_[resource_type], false);
+                              current_health_status_[resource_type],
+                              !actionable_tabs_[resource_type].empty());
   }
 }
 

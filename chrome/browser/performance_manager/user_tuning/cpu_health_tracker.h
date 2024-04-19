@@ -50,11 +50,14 @@ class CpuHealthTracker
   void OnTakenFromGraph(performance_manager::Graph* graph) override;
 
  private:
+  friend class CpuHealthTrackerTestHelper;
+  friend class CpuHealthTrackerTest;
+  friend class CpuHealthTrackerBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(CpuHealthTrackerTest,
                            RecordCpuAndUpdateHealthStatus);
-  FRIEND_TEST_ALL_PREFIXES(CpuHealthTrackerTest, CpuStatusUpdates);
   FRIEND_TEST_ALL_PREFIXES(CpuHealthTrackerTest, HealthyCpuUsageFromProbe);
-  FRIEND_TEST_ALL_PREFIXES(CpuHealthTrackerTest, GetPagesMeetMinimumCpuUsage);
+  FRIEND_TEST_ALL_PREFIXES(CpuHealthTrackerBrowserTest,
+                           PagesMeetMinimumCpuUsage);
 
   using PageResourceMeasurements =
       base::flat_map<resource_attribution::PageContext, int>;
@@ -88,8 +91,10 @@ class CpuHealthTracker
   // actionable and returns the result as a map of page contexts with its
   // corresponding CPU usage percentage. CPU usage percentages are converted
   // to range from 0-100%.
-  PageResourceMeasurements GetPagesMeetMinimumCpuUsage(
+  PageResourceMeasurements FilterForPossibleActionablePages(
       std::map<resource_attribution::ResourceContext, double> page_cpu);
+
+  bool CanDiscardPage(resource_attribution::PageContext context);
 
   // Health tracker automatically call these callbacks after CPU metrics
   // refreshes and the status or tab actionability changes.
@@ -114,6 +119,7 @@ class CpuHealthTracker
   HealthLevel current_health_status_ = HealthLevel::kHealthy;
   base::RepeatingTimer cpu_probe_timer_;
   resource_attribution::CPUProportionTracker page_cpu_proportion_tracker_;
+  raw_ptr<Graph> graph_;
   base::WeakPtrFactory<CpuHealthTracker> weak_ptr_factory_{this};
 };
 
