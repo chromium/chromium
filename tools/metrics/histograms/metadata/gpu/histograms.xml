@@ -497,18 +497,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ChannelHost.SkippedFlush" enum="Boolean"
-    expires_after="2025-03-22">
-  <owner>olivierli@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Logged once every one hundred times GpuChannelHost() needs to verify
-    flushing of deferred messages. True when an actual IPC was issued and false
-    when flushing could be verified by other means and no IPC was necessary.
-  </summary>
-</histogram>
-
 <histogram name="GPU.CompositingMode" enum="CompositingMode"
     expires_after="never">
   <owner>kylechar@chromium.org</owner>

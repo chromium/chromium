@@ -120,7 +120,6 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
   InternalFlush(deferred_message_id);
 
   bool ipc_needed = false;
-  bool ipc_issued = false;
   const bool skip_flush_if_possible =
       base::FeatureList::IsEnabled(features::kConditionallySkipGpuChannelFlush);
 
@@ -143,7 +142,6 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
       // A sync IPC was just completed which serves the same purpose as Flush()
       // which is a noop sync IPC. No need to continue.
       ipc_needed = false;
-      ipc_issued = true;
     }
     // GPUChannel has not processed ids up to the ones that were flushed. IPC
     // needed.
@@ -159,12 +157,6 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
   if (ipc_needed) {
     mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
     GetGpuChannel().Flush();
-    ipc_issued = true;
-  }
-
-  constexpr double kMetricsLoggingFrequency = 0.01;
-  if (metrics_sub_sampler_.ShouldSample(kMetricsLoggingFrequency)) {
-    UMA_HISTOGRAM_BOOLEAN("GPU.ChannelHost.SkippedFlush", !ipc_issued);
   }
 }
 
