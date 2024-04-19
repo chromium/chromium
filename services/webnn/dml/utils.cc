@@ -24,7 +24,7 @@ namespace {
 
 const char kBackendName[] = "DirectML: ";
 
-// Note that the element count is considered as 1 when the give dimensions is
+// Note that the element count is considered as 1 when the given dimensions is
 // empty.
 uint64_t CalculateElementCount(const std::vector<uint32_t>& dimensions,
                                const std::vector<uint32_t>& strides = {}) {

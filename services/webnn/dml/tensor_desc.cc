@@ -201,4 +201,13 @@ void TensorDesc::MakeBroadcastCompatible(size_t minimum_rank,
   buffer_desc_.Sizes = dimensions_.data();
   buffer_desc_.Strides = strides_.data();
 }
+
+void TensorDesc::SetTotalTensorSizeInBytes(
+    uint64_t new_total_tensor_size_bytes) {
+  CHECK_GE(new_total_tensor_size_bytes,
+           CalculateDMLBufferTensorSize(buffer_desc_.DataType, dimensions_,
+                                        strides_));
+  CHECK_GE(new_total_tensor_size_bytes, buffer_desc_.TotalTensorSizeInBytes);
+  buffer_desc_.TotalTensorSizeInBytes = new_total_tensor_size_bytes;
+}
 }  // namespace webnn::dml
