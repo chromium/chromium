@@ -606,9 +606,11 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>
 DemuxerManager::CreateHlsDemuxer() {
+  bool would_taint_origin =
+      data_source_info_ ? data_source_info_->WouldTaintOrigin() : false;
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       client_->GetHlsDataSourceProvider(), media_task_runner_,
-      data_source_info_->WouldTaintOrigin(), loaded_url_, media_log_.get());
+      would_taint_origin, loaded_url_, media_log_.get());
   raw_ptr<DataSourceInfo> datasource_info = engine.get();
   return std::make_tuple(
       datasource_info,
