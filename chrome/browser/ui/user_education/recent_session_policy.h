@@ -61,13 +61,15 @@ class RecentSessionPolicyImpl : public RecentSessionPolicy {
   // last seven calendar days (including today).
   class ActiveWeeksConstraint : public Constraint {
    public:
-    explicit ActiveWeeksConstraint(int weeks) : weeks_(weeks) {}
+    explicit ActiveWeeksConstraint(int weeks, int active_days)
+        : weeks_(weeks), active_days_(active_days) {}
     ~ActiveWeeksConstraint() override = default;
     std::optional<int> GetCount(
         const RecentSessionData& recent_sessions) const override;
 
    private:
     const int weeks_;
+    const int active_days_;
   };
 
   // Counts the number of active days in the past number of `days`. Uses

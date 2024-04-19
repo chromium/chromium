@@ -19,7 +19,8 @@ constexpr int kMaxRecords = RecentSessionTracker::kMaxRecentSessionRecords;
 
 std::optional<int> GetActivePeriods(const RecentSessionData& recent_sessions,
                                     int num_periods,
-                                    int period_length_in_days) {
+                                    int period_length_in_days,
+                                    int min_count) {
   const base::Time end =
       (recent_sessions.recent_session_start_times.front() + base::Days(1))
           .LocalMidnight();
@@ -30,19 +31,20 @@ std::optional<int> GetActivePeriods(const RecentSessionData& recent_sessions,
   }
 
   const base::TimeDelta period_length = base::Days(period_length_in_days);
-  std::vector<bool> active_periods(num_periods);
+  std::vector<int> active_periods(num_periods, 0);
   for (const auto& start_time : recent_sessions.recent_session_start_times) {
     if (start_time < start) {
       continue;
     }
     if (start_time >= end) {
-      active_periods.back() = true;
+      ++active_periods.back();
       continue;
     }
     const size_t index = (start_time - start) / period_length;
-    active_periods[index] = true;
+    ++active_periods[index];
   }
-  return std::count(active_periods.begin(), active_periods.end(), true);
+  return std::count_if(active_periods.begin(), active_periods.end(),
+                       [min_count](int value) { return value >= min_count; });
 }
 
 std::optional<int> ValueOrNull(int value) {
@@ -69,12 +71,12 @@ std::optional<int> RecentSessionPolicyImpl::SessionCountConstraint::GetCount(
 
 std::optional<int> RecentSessionPolicyImpl::ActiveDaysConstraint::GetCount(
     const RecentSessionData& recent_sessions) const {
-  return GetActivePeriods(recent_sessions, days_, 1);
+  return GetActivePeriods(recent_sessions, days_, 1, 1);
 }
 
 std::optional<int> RecentSessionPolicyImpl::ActiveWeeksConstraint::GetCount(
     const RecentSessionData& recent_sessions) const {
-  return GetActivePeriods(recent_sessions, weeks_, 7);
+  return GetActivePeriods(recent_sessions, weeks_, 7, active_days_);
 }
 
 RecentSessionPolicyImpl::ConstraintInfo::ConstraintInfo() = default;
@@ -141,6 +143,10 @@ RecentSessionPolicyImpl::GetDefaultConstraints() {
       kAllowRecentSessionTracking, "max_active_weeks", 2);
   const int max_active_days = base::GetFieldTrialParamByFeatureAsInt(
       kAllowRecentSessionTracking, "max_active_days", 3);
+  const int super_active_days = base::GetFieldTrialParamByFeatureAsInt(
+      kAllowRecentSessionTracking, "super_active_days", 4);
+  const int max_super_active_weeks = base::GetFieldTrialParamByFeatureAsInt(
+      kAllowRecentSessionTracking, "max_super_active_weeks", 0);
   const int max_weekly_sessions = base::GetFieldTrialParamByFeatureAsInt(
       kAllowRecentSessionTracking, "max_weekly_sessions", 0);
   const int max_monthly_sessions = base::GetFieldTrialParamByFeatureAsInt(
@@ -149,9 +155,14 @@ RecentSessionPolicyImpl::GetDefaultConstraints() {
   result.emplace_back(std::make_unique<ActiveDaysConstraint>(kShortTermDays),
                       "UserEducation.Session.RecentActiveDays", kShortTermDays,
                       ValueOrNull(max_active_days));
-  result.emplace_back(std::make_unique<ActiveWeeksConstraint>(kLongTermWeeks),
-                      "UserEducation.Session.RecentActiveWeeks", kLongTermWeeks,
-                      ValueOrNull(max_active_weeks));
+  result.emplace_back(
+      std::make_unique<ActiveWeeksConstraint>(kLongTermWeeks, 1),
+      "UserEducation.Session.RecentActiveWeeks", kLongTermWeeks,
+      ValueOrNull(max_active_weeks));
+  result.emplace_back(std::make_unique<ActiveWeeksConstraint>(
+                          kLongTermWeeks, super_active_days),
+                      "UserEducation.Session.RecentSuperActiveWeeks",
+                      kLongTermWeeks, ValueOrNull(max_super_active_weeks));
   result.emplace_back(std::make_unique<SessionCountConstraint>(kShortTermDays),
                       "UserEducation.Session.ShortTermCount",
                       kShortTermDays + 1, ValueOrNull(max_weekly_sessions));
