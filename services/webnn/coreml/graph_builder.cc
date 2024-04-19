@@ -122,6 +122,15 @@ constexpr char kOpLogicalGreater[] = "greater";
 constexpr char kOpLogicalGreaterEqual[] = "greater_equal";
 constexpr char kOpLogicalLess[] = "less";
 constexpr char kOpLogicalLessEqual[] = "less_equal";
+constexpr char kOpCeilTypeName[] = "ceil";
+constexpr char kOpCosTypeName[] = "cos";
+constexpr char kOpExpTypeName[] = "exp";
+constexpr char kOpFloorTypeName[] = "floor";
+constexpr char kOpSinTypeName[] = "sin";
+constexpr char kOpTanTypeName[] = "tan";
+constexpr char kOpErfTypeName[] = "erf";
+constexpr char kOpSqrtTypeName[] = "sqrt";
+
 // Pooling operators.
 constexpr char kOpAvgPoolTypeName[] = "avg_pool";
 constexpr char kOpL2PoolTypeName[] = "l2_pool";
@@ -1202,15 +1211,41 @@ GraphBuilder::AddOperationForElementwiseUnary(
   switch (operation.kind) {
     case mojom::ElementWiseUnary::Kind::kCast: {
       const OperandInfo& input = GetOperandInfo(operation.input_operand_id);
-      RETURN_IF_ERROR(AddOperationForCast(input.coreml_name,
-                                          operation.output_operand_id,
-                                          input.data_type, block));
-      break;
+      return AddOperationForCast(input.coreml_name, operation.output_operand_id,
+                                 input.data_type, block);
     }
-    default:
+    case mojom::ElementWiseUnary::Kind::kCeil: {
+      return AddUnaryFloatsOperation(kOpCeilTypeName, operation, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kCos: {
+      return AddUnaryFloatsOperation(kOpCosTypeName, operation, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kExp: {
+      return AddUnaryFloatsOperation(kOpExpTypeName, operation, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kFloor: {
+      return AddUnaryFloatsOperation(kOpFloorTypeName, operation, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kSin: {
+      return AddUnaryFloatsOperation(kOpSinTypeName, operation, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kTan: {
+      return AddUnaryFloatsOperation(kOpTanTypeName, operation, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kErf: {
+      return AddUnaryFloatsOperation(kOpErfTypeName, operation, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kSqrt: {
+      return AddUnaryFloatsOperation(kOpSqrtTypeName, operation, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kReciprocal:
+    case mojom::ElementWiseUnary::Kind::kLog:
+    case mojom::ElementWiseUnary::Kind::kNeg:
+    case mojom::ElementWiseUnary::Kind::kAbs:
+    case mojom::ElementWiseUnary::Kind::kIdentity:
+    case mojom::ElementWiseUnary::Kind::kLogicalNot:
       return NewNotSupportedError("Unimplemented Unary Operator.");
   }
-  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLeakyRelu(

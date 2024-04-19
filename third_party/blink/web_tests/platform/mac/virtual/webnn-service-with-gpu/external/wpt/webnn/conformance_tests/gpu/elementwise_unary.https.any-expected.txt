@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] abs float32 1D constant tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 [FAIL] abs float32 1D tensor
@@ -13,67 +13,41 @@ Found 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] abs float32 5D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 [FAIL] ceil float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
 [FAIL] ceil float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
 [FAIL] ceil float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
 [FAIL] ceil float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
 [FAIL] ceil float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
 [FAIL] ceil float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
 [FAIL] cos float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
 [FAIL] cos float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
 [FAIL] cos float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
 [FAIL] cos float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
 [FAIL] cos float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
 [FAIL] cos float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] erf float32 0D scalar
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] erf float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] erf float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] erf float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] erf float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] erf float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] erf float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
 [FAIL] exp float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test exp float32 actual 1.4072265625 should be close enough to expected 1.4079625606536865 by the acceptable 32 ULP distance, but they have 6174 ULP distance expected true got false
 [FAIL] exp float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test exp float32 actual 1.4072265625 should be close enough to expected 1.4079625606536865 by the acceptable 32 ULP distance, but they have 6174 ULP distance expected true got false
 [FAIL] exp float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test exp float32 actual 1.4072265625 should be close enough to expected 1.4079625606536865 by the acceptable 32 ULP distance, but they have 6174 ULP distance expected true got false
 [FAIL] exp float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test exp float32 actual 1.4072265625 should be close enough to expected 1.4079625606536865 by the acceptable 32 ULP distance, but they have 6174 ULP distance expected true got false
 [FAIL] exp float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test exp float32 actual 1.4072265625 should be close enough to expected 1.4079625606536865 by the acceptable 32 ULP distance, but they have 6174 ULP distance expected true got false
 [FAIL] exp float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] floor float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] floor float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] floor float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] floor float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] floor float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] floor float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test exp float32 actual 1.4072265625 should be close enough to expected 1.4079625606536865 by the acceptable 32 ULP distance, but they have 6174 ULP distance expected true got false
 [FAIL] identity float32 0D scalar
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 [FAIL] identity float32 1D constant tensor
@@ -127,42 +101,32 @@ Found 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reciprocal float32 5D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 [FAIL] sin float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
 [FAIL] sin float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
 [FAIL] sin float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
 [FAIL] sin float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
 [FAIL] sin float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
 [FAIL] sin float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
 [FAIL] sqrt float32 0D scalar
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2 should be close enough to expected 2.001115560531616 by the acceptable 1 ULP distance, but they have 4679 ULP distance expected true got false
 [FAIL] sqrt float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
 [FAIL] sqrt float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
 [FAIL] sqrt float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
 [FAIL] sqrt float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
 [FAIL] sqrt float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
 [FAIL] sqrt float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
 [FAIL] tan float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] tan float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] tan float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] tan float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] tan float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] tan float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
+  assert_array_approx_equals: test tan float32 property 0, expected -0.8582430481910706 +/- 0.0009765625, expected -0.8582430481910706 but got -0.8763164281845093
 Harness: the test ran to completion.
 
