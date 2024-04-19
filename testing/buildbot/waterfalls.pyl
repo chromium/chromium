@@ -4793,8 +4793,8 @@
     },
   },
   {
-    # The following builders in this group groups have been migrated to set
-    # their targets in the builders' declarations in
+    # The following builders in this group have been migrated to set their
+    # targets in the builders' declarations in
     # //infra/config/subprojects/ci/chromium.linux.star
     #   Linux Builder (dbg)
     #   Linux Tests (dbg)(1)
