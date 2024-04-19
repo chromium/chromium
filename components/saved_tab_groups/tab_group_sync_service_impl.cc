@@ -4,25 +4,44 @@
 
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/model_type_controller_delegate.h"
 
 namespace tab_groups {
+TabGroupSyncServiceImpl::SyncDataTypeConfiguration::SyncDataTypeConfiguration(
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> processor,
+    syncer::OnceModelTypeStoreFactory store_factory)
+    : change_processor(std::move(processor)),
+      model_type_store_factory(std::move(store_factory)) {}
+
+TabGroupSyncServiceImpl::SyncDataTypeConfiguration::
+    ~SyncDataTypeConfiguration() = default;
 
 TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SavedTabGroupModel> model,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory model_type_store_factory)
+    std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
+    std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration)
     : model_(std::move(model)),
-      bridge_(model_.get(),
-              std::move(model_type_store_factory),
-              std::move(change_processor)) {
+      saved_bridge_(
+          model_.get(),
+          std::move(saved_tab_group_configuration->model_type_store_factory),
+          std::move(saved_tab_group_configuration->change_processor)) {
+  if (shared_tab_group_configuration) {
+    shared_bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
+        model_.get(),
+        std::move(shared_tab_group_configuration->model_type_store_factory),
+        std::move(shared_tab_group_configuration->change_processor));
+  }
   model_->AddObserver(this);
 }
 
@@ -46,8 +65,18 @@ void TabGroupSyncServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-syncer::ModelTypeSyncBridge* TabGroupSyncServiceImpl::bridge() {
-  return &bridge_;
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+TabGroupSyncServiceImpl::GetSavedTabGroupControllerDelegate() {
+  return saved_bridge_.change_processor()->GetControllerDelegate();
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
+  if (!shared_bridge_) {
+    return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
+  }
+
+  return shared_bridge_->change_processor()->GetControllerDelegate();
 }
 
 void TabGroupSyncServiceImpl::AddGroup(const SavedTabGroup& group) {

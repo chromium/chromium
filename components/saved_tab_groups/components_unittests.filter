@@ -3,4 +3,5 @@
 *SavedTabGroupModelTest.*
 *SavedTabGroupSyncBridgeTest.*
 *SavedTabGroupTest.*
+*SharedTabGroupDataSyncBridgeTest.*
 *TabGroupSyncServiceTest.*

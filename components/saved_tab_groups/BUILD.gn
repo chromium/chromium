@@ -10,25 +10,15 @@ if (is_android) {
 
 source_set("core") {
   sources = [
-    "features.cc",
-    "features.h",
-    "saved_tab_group.cc",
-    "saved_tab_group.h",
-    "saved_tab_group_model.cc",
-    "saved_tab_group_model.h",
-    "saved_tab_group_model_observer.h",
-    "saved_tab_group_sync_bridge.cc",
-    "saved_tab_group_sync_bridge.h",
-    "saved_tab_group_tab.cc",
-    "saved_tab_group_tab.h",
     "stats.cc",
     "stats.h",
     "tab_group_sync_service.h",
     "tab_group_sync_service_impl.cc",
     "tab_group_sync_service_impl.h",
-    "types.h",
   ]
   deps = [
+    ":saved_tab_group_bridge",
+    ":shared_tab_group_bridge",
     "//base",
     "//components/keyed_service/core",
     "//components/sync",
@@ -50,6 +40,29 @@ source_set("core") {
     deps += [ ":jni_headers" ]
   }
 
+  public_deps = [ ":model" ]
+}
+
+source_set("model") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "saved_tab_group.cc",
+    "saved_tab_group.h",
+    "saved_tab_group_model.cc",
+    "saved_tab_group_model.h",
+    "saved_tab_group_model_observer.h",
+    "saved_tab_group_tab.cc",
+    "saved_tab_group_tab.h",
+    "types.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync",
+    "//components/tab_groups",
+    "//ui/gfx",
+    "//url",
+  ]
   public_deps = []
 }
 
@@ -123,7 +136,6 @@ source_set("unit_tests") {
   sources = [
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
-    "saved_tab_group_sync_bridge_unittest.cc",
     "saved_tab_group_test_utils.cc",
     "saved_tab_group_test_utils.h",
     "saved_tab_group_unittest.cc",
@@ -131,6 +143,8 @@ source_set("unit_tests") {
   ]
   deps = [
     ":core",
+    ":saved_tab_group_bridge_unittests",
+    ":shared_tab_group_bridge_unittests",
     "//base",
     "//base/test:test_support",
     "//components/sync",
@@ -147,4 +161,81 @@ source_set("unit_tests") {
       ":native_java_unittests_java",
     ]
   }
+}
+
+source_set("saved_tab_group_bridge") {
+  visibility = [
+    ":*",
+
+    # This is allowed until usage of SavedTabGroupKeyedService has been migrated
+    # to TabGroupSyncService.
+    "//chrome/browser/ui",
+  ]
+
+  sources = [
+    "saved_tab_group_sync_bridge.cc",
+    "saved_tab_group_sync_bridge.h",
+  ]
+
+  deps = [ ":model" ]
+
+  public_deps = [
+    "//base",
+    "//components/sync/base",
+    "//components/sync/model",
+  ]
+}
+
+source_set("saved_tab_group_bridge_unittests") {
+  testonly = true
+
+  visibility = [ ":unit_tests" ]
+
+  sources = [ "saved_tab_group_sync_bridge_unittest.cc" ]
+
+  deps = [
+    ":model",
+    ":saved_tab_group_bridge",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync",
+    "//components/sync:test_support",
+    "//components/tab_groups",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("shared_tab_group_bridge") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "shared_tab_group_data_sync_bridge.cc",
+    "shared_tab_group_data_sync_bridge.h",
+  ]
+
+  deps = [ ":model" ]
+
+  public_deps = [
+    "//base",
+    "//components/sync/base",
+    "//components/sync/model",
+  ]
+}
+
+source_set("shared_tab_group_bridge_unittests") {
+  testonly = true
+
+  visibility = [ ":unit_tests" ]
+
+  sources = [ "shared_tab_group_data_sync_bridge_unittest.cc" ]
+
+  deps = [
+    ":shared_tab_group_bridge",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync",
+    "//components/sync:test_support",
+    "//testing/gtest",
+  ]
 }

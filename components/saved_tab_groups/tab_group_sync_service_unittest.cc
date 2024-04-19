@@ -9,6 +9,9 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/test/fake_model_type_controller.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
@@ -44,6 +47,7 @@ class TabGroupSyncServiceTest : public testing::Test {
  public:
   TabGroupSyncServiceTest()
       : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()),
+        fake_controller_delegate_(syncer::SAVED_TAB_GROUP),
         group_1_(test::CreateTestSavedTabGroup()),
         group_2_(test::CreateTestSavedTabGroup()),
         group_3_(test::CreateTestSavedTabGroup()),
@@ -56,11 +60,16 @@ class TabGroupSyncServiceTest : public testing::Test {
     auto model = std::make_unique<SavedTabGroupModel>();
     model_ = model.get();
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(
-        std::move(model), processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            store_.get()));
+        std::move(model),
+        std::make_unique<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>(
+            processor_.CreateForwardingProcessor(),
+            syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+                store_.get())),
+        nullptr);
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
+    ON_CALL(processor_, GetControllerDelegate())
+        .WillByDefault(testing::Return(fake_controller_delegate_.GetWeakPtr()));
     observer_ = std::make_unique<MockTabGroupSyncServiceObserver>();
     tab_group_sync_service_->AddObserver(observer_.get());
     task_environment_.RunUntilIdle();
@@ -128,6 +137,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   std::unique_ptr<syncer::ModelTypeStore> store_;
   std::unique_ptr<MockTabGroupSyncServiceObserver> observer_;
   std::unique_ptr<TabGroupSyncServiceImpl> tab_group_sync_service_;
+  syncer::FakeModelTypeControllerDelegate fake_controller_delegate_;
 
   SavedTabGroup group_1_;
   SavedTabGroup group_2_;
@@ -137,7 +147,7 @@ class TabGroupSyncServiceTest : public testing::Test {
 };
 
 TEST_F(TabGroupSyncServiceTest, ServiceConstruction) {
-  EXPECT_TRUE(tab_group_sync_service_->bridge());
+  EXPECT_TRUE(tab_group_sync_service_->GetSavedTabGroupControllerDelegate());
 }
 
 TEST_F(TabGroupSyncServiceTest, GetAllGroups) {

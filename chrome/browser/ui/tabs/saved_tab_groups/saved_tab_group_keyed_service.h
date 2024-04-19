@@ -35,7 +35,8 @@ class SavedTabGroupKeyedService : public KeyedService,
   SavedTabGroupModelListener* listener() { return &listener_; }
   const SavedTabGroupModel* model() const { return &model_; }
   SavedTabGroupModel* model() { return &model_; }
-  SavedTabGroupSyncBridge* bridge() { return &bridge_; }
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSavedTabGroupControllerDelegate();
   Profile* profile() { return profile_; }
 
   // Populates `saved_guid_to_local_group_id_mapping_` with a pair to link once

@@ -66,6 +66,12 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               (const LocalTabGroupID&, const base::Uuid&, const LocalTabID&));
 
   MOCK_METHOD(syncer::ModelTypeSyncBridge*, bridge, ());
+  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+              GetSavedTabGroupControllerDelegate,
+              ());
+  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+              GetSharedTabGroupControllerDelegate,
+              ());
 
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));

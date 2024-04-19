@@ -10,15 +10,16 @@
 #include <string>
 #include <vector>
 
-#include "components/saved_tab_groups/tab_group_sync_service.h"
-
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
+#include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/sync_data.h"
 
 namespace tab_groups {
 
@@ -26,10 +27,24 @@ namespace tab_groups {
 class TabGroupSyncServiceImpl : public TabGroupSyncService,
                                 public SavedTabGroupModelObserver {
  public:
+  // Configuration for a specific sync data type.
+  struct SyncDataTypeConfiguration {
+    SyncDataTypeConfiguration(
+        std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+        syncer::OnceModelTypeStoreFactory model_type_store_factory);
+    ~SyncDataTypeConfiguration();
+
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor;
+    syncer::OnceModelTypeStoreFactory model_type_store_factory;
+  };
+
+  // `saved_tab_group_configuration` must not be `nullptr`.
+  // `shared_tab_group_configuration` should be provided if feature is enabled.
   TabGroupSyncServiceImpl(
       std::unique_ptr<SavedTabGroupModel> model,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory model_type_store_factory);
+      std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
+      std::unique_ptr<SyncDataTypeConfiguration>
+          shared_tab_group_configuration);
   ~TabGroupSyncServiceImpl() override;
 
   // Disallow copy/assign.
@@ -63,7 +78,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
                         const base::Uuid& sync_tab_id,
                         const LocalTabID& local_tab_id) override;
-  syncer::ModelTypeSyncBridge* bridge() override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSavedTabGroupControllerDelegate() override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSharedTabGroupControllerDelegate() override;
+
   void AddObserver(TabGroupSyncService::Observer* observer) override;
   void RemoveObserver(TabGroupSyncService::Observer* observer) override;
 
@@ -81,7 +100,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   std::unique_ptr<SavedTabGroupModel> model_;
 
   // Stores SavedTabGroup data to the disk and to sync if enabled.
-  SavedTabGroupSyncBridge bridge_;
+  SavedTabGroupSyncBridge saved_bridge_;
+
+  // Stores SharedTabGroupData to the disk and to sync if enabled.
+  std::unique_ptr<SharedTabGroupDataSyncBridge> shared_bridge_;
 
   // Keeps track of the ids of session restored tab groups that were once saved
   // in order to link them together again once the SavedTabGroupModelLoaded is

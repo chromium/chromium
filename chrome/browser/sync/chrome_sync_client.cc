@@ -45,6 +45,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
@@ -58,6 +59,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/sync_api_component_factory_impl.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/data_sharing/public/features.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/metrics/demographics/user_demographics.h"
@@ -67,6 +69,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -112,9 +115,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #elif BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -479,6 +480,20 @@ ChromeSyncClient::CreateModelTypeControllers(
           /*delegate_for_transport_mode=*/nullptr));
     }
 
+    if (base::FeatureList::IsEnabled(
+            data_sharing::features::kDataSharingFeature)) {
+      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+          syncer::SHARED_TAB_GROUP_DATA,
+          /*delegate_for_full_sync_mode=*/
+          std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+              GetControllerDelegateForModelType(syncer::SHARED_TAB_GROUP_DATA)
+                  .get()),
+          /*delegate_for_transport_mode=*/
+          std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+              GetControllerDelegateForModelType(syncer::SHARED_TAB_GROUP_DATA)
+                  .get())));
+    }
+
 // Chrome prefers OS provided spell checkers where they exist. So only sync the
 // custom dictionary on platforms that typically don't provide one.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
@@ -642,15 +657,11 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
       auto* keyed_service =
           tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
       CHECK(keyed_service);
-      return keyed_service->bridge()
-          ->change_processor()
-          ->GetControllerDelegate();
+      return keyed_service->GetSavedTabGroupControllerDelegate();
 #elif BUILDFLAG(IS_ANDROID)
       DCHECK(base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid));
       return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_)
-          ->bridge()
-          ->change_processor()
-          ->GetControllerDelegate();
+          ->GetSavedTabGroupControllerDelegate();
 #else
       NOTREACHED();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
@@ -716,6 +727,11 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetModelTypeControllerDelegate();
     }
 #endif  //  !BUILDFLAG(IS_ANDROID)
+    case syncer::SHARED_TAB_GROUP_DATA:
+      CHECK(base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature));
+      return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_)
+          ->GetSharedTabGroupControllerDelegate();
     // We don't exercise this function for certain datatypes, because their
     // controllers get the delegate elsewhere.
     case syncer::AUTOFILL:

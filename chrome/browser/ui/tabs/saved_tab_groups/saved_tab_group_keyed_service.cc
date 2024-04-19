@@ -78,6 +78,11 @@ syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
       ->GetStoreFactory();
 }
 
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+SavedTabGroupKeyedService::GetSavedTabGroupControllerDelegate() {
+  return bridge_.change_processor()->GetControllerDelegate();
+}
+
 void SavedTabGroupKeyedService::StoreLocalToSavedId(
     const base::Uuid& saved_guid,
     const tab_groups::TabGroupId local_group_id) {

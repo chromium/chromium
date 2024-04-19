@@ -122,7 +122,10 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                                 const LocalTabID& local_tab_id) = 0;
 
   // For connecting to sync engine.
-  virtual syncer::ModelTypeSyncBridge* bridge() = 0;
+  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSavedTabGroupControllerDelegate() = 0;
+  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSharedTabGroupControllerDelegate() = 0;
 
   // Add / remove observers.
   virtual void AddObserver(Observer* observer) = 0;
