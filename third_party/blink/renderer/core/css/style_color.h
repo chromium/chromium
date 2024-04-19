@@ -87,6 +87,8 @@ class CORE_EXPORT StyleColor {
       visitor->Trace(color2_);
     }
 
+    cssvalue::CSSColorMixValue* ToCSSColorMixValue() const;
+
     Color Resolve(const Color& current_color) const;
 
     static bool Equals(const ColorOrUnresolvedColorMix& first,

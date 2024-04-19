@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/style_color.h"
+
 #include <memory>
 
+#include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 
@@ -63,6 +67,34 @@ Color StyleColor::UnresolvedColorMix::Resolve(
   return Color::FromColorMix(color_interpolation_space_,
                              hue_interpolation_method_, c1, c2, percentage_,
                              alpha_multiplier_);
+}
+
+cssvalue::CSSColorMixValue* StyleColor::UnresolvedColorMix::ToCSSColorMixValue()
+    const {
+  auto to_css_value = [](const ColorOrUnresolvedColorMix& color_or_mix,
+                         UnderlyingColorType type) -> const CSSValue* {
+    switch (type) {
+      case UnderlyingColorType::kColor:
+        return cssvalue::CSSColor::Create(color_or_mix.color);
+      case UnderlyingColorType::kColorMix:
+        CHECK(color_or_mix.unresolved_color_mix);
+        return color_or_mix.unresolved_color_mix->ToCSSColorMixValue();
+      case UnderlyingColorType::kCurrentColor:
+        return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+    }
+  };
+
+  const CSSPrimitiveValue* percent1 = CSSNumericLiteralValue::Create(
+      100 * (1.0 - percentage_) * alpha_multiplier_,
+      CSSPrimitiveValue::UnitType::kPercentage);
+  const CSSPrimitiveValue* percent2 =
+      CSSNumericLiteralValue::Create(100 * percentage_ * alpha_multiplier_,
+                                     CSSPrimitiveValue::UnitType::kPercentage);
+
+  return MakeGarbageCollected<cssvalue::CSSColorMixValue>(
+      to_css_value(color1_, color1_type_), to_css_value(color2_, color2_type_),
+      percent1, percent2, color_interpolation_space_,
+      hue_interpolation_method_);
 }
 
 void StyleColor::ColorOrUnresolvedColorMix::Trace(Visitor* visitor) const {

@@ -2924,6 +2924,8 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       state ? state->StyleBuilder().UsedColorScheme()
             : mojom::blink::ColorScheme::kLight;
 
+  const bool not_for_visited_link = false;
+
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
     if (value_id == CSSValueID::kCurrentcolor) {
@@ -2934,7 +2936,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       if (IsQuirkOrLinkOrFocusRingColor(value_id)) {
         color = ResolveQuirkOrLinkOrFocusRingColor(
             value_id, document.GetTextLinkColors(), color_scheme,
-            /*for_visited_link=*/false);
+            not_for_visited_link);
       } else {
         color = StyleColor::ColorFromKeyword(
             value_id, color_scheme,
@@ -2960,7 +2962,16 @@ static const CSSValue& ComputeRegisteredPropertyValue(
         document, state, css_to_length_conversion_data, color_value, context);
   }
 
-  // TODO(https://crbug.com/335383222): Handle color-mix() values.
+  if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
+    StyleColor style_color = ResolveColorValue(
+        *color_mix_value, document.GetTextLinkColors(), color_scheme,
+        document.GetColorProviderForPainting(color_scheme),
+        not_for_visited_link);
+    if (style_color.IsUnresolvedColorMixFunction()) {
+      return *style_color.GetUnresolvedColorMix().ToCSSColorMixValue();
+    }
+    return *cssvalue::CSSColor::Create(style_color.GetColor());
+  }
 
   return value;
 }
