@@ -39,6 +39,7 @@ namespace ash {
 namespace {
 
 using ::testing::Contains;
+using ::testing::FieldsAre;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Return;
@@ -377,14 +378,16 @@ TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
 TEST_F(PickerControllerTest, ShowEditorCallsCallbackFromClient) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
-  base::test::TestFuture<void> show_editor_future;
+  base::test::TestFuture<std::optional<std::string>, std::optional<std::string>>
+      show_editor_future;
   EXPECT_CALL(client, CacheEditorContext)
       .WillOnce(Return(show_editor_future.GetCallback()));
 
   controller.ToggleWidget();
-  controller.ShowEditor();
+  controller.ShowEditor(/*preset_query_id=*/"preset",
+                        /*freeform_text=*/"freeform");
 
-  EXPECT_TRUE(show_editor_future.Wait());
+  EXPECT_THAT(show_editor_future.Get(), FieldsAre("preset", "freeform"));
 }
 
 TEST_F(PickerControllerTest, AvailableCategoriesContainsEditorWhenEnabled) {
@@ -393,7 +396,6 @@ TEST_F(PickerControllerTest, AvailableCategoriesContainsEditorWhenEnabled) {
   EXPECT_CALL(client, CacheEditorContext).WillOnce(Return(base::DoNothing()));
 
   controller.ToggleWidget();
-  controller.ShowEditor();
 
   EXPECT_THAT(controller.GetAvailableCategories(),
               Contains(PickerCategory::kEditor));

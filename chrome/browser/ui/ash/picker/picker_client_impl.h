@@ -123,7 +123,8 @@ class PickerClientImpl
   std::unique_ptr<app_list::SearchProvider> CreateSearchProviderForCategory(
       ash::PickerCategory category);
 
-  void ShowEditor();
+  void ShowEditor(std::optional<std::string> preset_query_id,
+                  std::optional<std::string> freeform_text);
 
   raw_ptr<ash::PickerController> controller_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;

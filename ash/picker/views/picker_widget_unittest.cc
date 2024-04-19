@@ -40,7 +40,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
                    SearchResultsCallback callback) override {}
   void InsertResultOnNextFocus(const PickerSearchResult& result) override {}
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override {}
-  void ShowEditor() override {}
+  void ShowEditor(std::optional<std::string> preset_query_id,
+                  std::optional<std::string> freeform_text) override {}
   void SetCapsLockEnabled(bool enabled) override {}
   PickerAssetFetcher* GetAssetFetcher() override { return nullptr; }
 };

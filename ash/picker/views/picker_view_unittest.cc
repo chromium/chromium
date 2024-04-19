@@ -110,7 +110,10 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override {
     showed_emoji_picker_ = true;
   }
-  void ShowEditor() override { showed_editor_ = true; }
+  void ShowEditor(std::optional<std::string> preset_query_id,
+                  std::optional<std::string> freeform_text) override {
+    showed_editor_ = true;
+  }
   void SetCapsLockEnabled(bool enabled) override {
     caps_lock_enabled_ = enabled;
   }

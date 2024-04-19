@@ -28,7 +28,7 @@ MockSearchPickerClient::MockSearchPickerClient() {
   });
   ON_CALL(*this, CacheEditorContext).WillByDefault([]() {
     ADD_FAILURE() << "CacheEditorContext should not be called in this unittest";
-    return base::OnceClosure();
+    return ShowEditorCallback();
   });
 }
 

@@ -47,6 +47,7 @@ using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::NiceMock;
+using ::testing::Optional;
 using ::testing::Property;
 using ::testing::VariantWith;
 
@@ -1187,6 +1188,41 @@ TEST_F(PickerSearchRequestTest, RecordsClipboardMetrics) {
 
   histogram.ExpectUniqueTimeSample(
       "Ash.Picker.Search.ClipboardProvider.QueryTime", kMetricMetricTime, 1);
+}
+
+TEST_F(PickerSearchRequestTest, ShowsResultsFromEditorSearch) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(PickerSearchSource::kEditor,
+           ElementsAre(Property(
+               "data", &PickerSearchResult::data,
+               VariantWith<PickerSearchResult::EditorData>(Field(
+                   "freeform_text",
+                   &PickerSearchResult::EditorData::freeform_text,
+                   Optional(Eq("quick brown fox jumped over lazy dog")))))),
+           /*has_more_results=*/false))
+      .Times(1);
+
+  PickerSearchRequest request(
+      u"quick brown fox jumped over lazy dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+}
+
+TEST_F(PickerSearchRequestTest, RecordsEditorMetrics) {
+  base::HistogramTester histogram;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
+
+  PickerSearchRequest request(
+      u"quick brown fox jumped over lazy dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+
+  histogram.ExpectTotalCount("Ash.Picker.Search.EditorProvider.QueryTime", 1);
 }
 
 }  // namespace

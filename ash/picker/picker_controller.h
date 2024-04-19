@@ -84,7 +84,8 @@ class ASH_EXPORT PickerController
                    SearchResultsCallback callback) override;
   void InsertResultOnNextFocus(const PickerSearchResult& result) override;
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override;
-  void ShowEditor() override;
+  void ShowEditor(std::optional<std::string> preset_query_id,
+                  std::optional<std::string> freeform_text) override;
   void SetCapsLockEnabled(bool enabled) override;
   PickerAssetFetcher* GetAssetFetcher() override;
 
@@ -107,7 +108,9 @@ class ASH_EXPORT PickerController
   std::unique_ptr<PickerSearchController> search_controller_;
   std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
 
-  base::OnceClosure show_editor_callback_;
+  base::OnceCallback<void(std::optional<std::string> preset_query_id,
+                          std::optional<std::string> freeform_text)>
+      show_editor_callback_;
 
   // Periodically records usage metrics based on the Standard Feature Usage
   // Logging (SFUL) framework.

@@ -129,6 +129,7 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
     case PickerSectionType::kSuggestions:
     case PickerSectionType::kRecentlyUsed:
     case PickerSectionType::kExamples:
+    case PickerSectionType::kEditor:
       NOTREACHED_NORETURN();
     case PickerSectionType::kExpressions:
       return PickerCategory::kExpressions;
@@ -265,6 +266,10 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
                      &result.data())) {
     search_field_view_->SetQueryText(search_request_data->text);
     StartSearch(search_request_data->text);
+  } else if (const PickerSearchResult::EditorData* editor_data =
+                 std::get_if<PickerSearchResult::EditorData>(&result.data())) {
+    delegate_->ShowEditor(/*preset_query_id=*/std::nullopt,
+                          editor_data->freeform_text);
   } else {
     delegate_->InsertResultOnNextFocus(result);
     GetWidget()->Close();
@@ -297,7 +302,9 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
       // open Editor in the correct location in some other way.
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
-    delegate_->ShowEditor();
+    CHECK(query.empty());
+    delegate_->ShowEditor(/*preset_query_id*/ std::nullopt,
+                          /*freeform_text=*/std::nullopt);
     return;
   }
 

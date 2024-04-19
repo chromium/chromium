@@ -23,6 +23,7 @@ enum class ASH_EXPORT PickerSectionType {
   kGifs,
   kRecentlyUsed,
   kExamples,
+  kEditor,
 };
 
 // Search results are divided into different sections.

@@ -6072,6 +6072,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Clipboard"/>
     <variant name="Date"/>
     <variant name="Drive"/>
+    <variant name="Editor"/>
     <variant name="Emoji"/>
     <variant name="File"/>
     <variant name="Gif"/>

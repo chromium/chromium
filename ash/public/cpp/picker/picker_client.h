@@ -32,7 +32,9 @@ class ASH_PUBLIC_EXPORT PickerClient {
   using CrosSearchResultsCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType result_type,
                                    std::vector<PickerSearchResult> results)>;
-  using ShowEditorCallback = base::OnceClosure;
+  using ShowEditorCallback =
+      base::OnceCallback<void(std::optional<std::string> preset_query_id,
+                              std::optional<std::string> freeform_text)>;
   using RecentFilesCallback =
       base::OnceCallback<void(std::vector<PickerSearchResult>)>;
   using SuggestedLinksCallback =

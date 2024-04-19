@@ -86,6 +86,21 @@ bool PickerSearchResult::BrowsingHistoryData::operator==(
 bool PickerSearchResult::CategoryData::operator==(const CategoryData&) const =
     default;
 
+PickerSearchResult::EditorData::EditorData(
+    std::optional<std::string> freeform_text)
+    : freeform_text(std::move(freeform_text)) {}
+
+PickerSearchResult::EditorData::EditorData(
+    const PickerSearchResult::EditorData&) = default;
+
+PickerSearchResult::EditorData& PickerSearchResult::EditorData::operator=(
+    const PickerSearchResult::EditorData&) = default;
+
+PickerSearchResult::EditorData::~EditorData() = default;
+
+bool PickerSearchResult::EditorData::operator==(const EditorData&) const =
+    default;
+
 PickerSearchResult::~PickerSearchResult() = default;
 
 PickerSearchResult::PickerSearchResult(const PickerSearchResult&) = default;
@@ -173,6 +188,11 @@ PickerSearchResult PickerSearchResult::DriveFile(std::u16string title,
 
 PickerSearchResult PickerSearchResult::Category(PickerCategory category) {
   return PickerSearchResult(CategoryData{.category = category});
+}
+
+PickerSearchResult PickerSearchResult::Editor(
+    std::optional<std::string> freeform_text) {
+  return PickerSearchResult(EditorData(std::move(freeform_text)));
 }
 
 bool PickerSearchResult::operator==(const PickerSearchResult&) const = default;

@@ -431,11 +431,13 @@ PickerClientImpl::CreateSearchProviderForCategory(
   }
 }
 
-void PickerClientImpl::ShowEditor() {
+void PickerClientImpl::ShowEditor(std::optional<std::string> preset_query_id,
+                                  std::optional<std::string> freeform_text) {
   ash::input_method::EditorMediator* editor_mediator =
       GetEditorMediator(profile_);
   if (editor_mediator != nullptr) {
-    editor_mediator->HandleTrigger();
+    editor_mediator->HandleTrigger(std::move(preset_query_id),
+                                   std::move(freeform_text));
   }
 }
 

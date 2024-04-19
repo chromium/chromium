@@ -57,7 +57,8 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void ShowEmojiPicker(ui::EmojiPickerCategory category) = 0;
 
   // Shows the Editor.
-  virtual void ShowEditor() = 0;
+  virtual void ShowEditor(std::optional<std::string> preset_query_id,
+                          std::optional<std::string> freeform_text) = 0;
 
   // Sets the current caps lock state.
   virtual void SetCapsLockEnabled(bool enabled) = 0;

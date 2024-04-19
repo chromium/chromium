@@ -143,6 +143,17 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const CategoryData&) const;
   };
 
+  struct EditorData {
+    std::optional<std::string> freeform_text;
+
+    EditorData(std::optional<std::string> freeform_text);
+    EditorData(const EditorData&);
+    EditorData& operator=(const EditorData&);
+    ~EditorData();
+
+    bool operator==(const EditorData&) const;
+  };
+
   using Data = std::variant<TextData,
                             SearchRequestData,
                             EmojiData,
@@ -153,7 +164,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                             BrowsingHistoryData,
                             LocalFileData,
                             DriveFileData,
-                            CategoryData>;
+                            CategoryData,
+                            EditorData>;
 
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
@@ -188,6 +200,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                       base::FilePath file_path);
   static PickerSearchResult DriveFile(std::u16string title, const GURL& url);
   static PickerSearchResult Category(PickerCategory category);
+  static PickerSearchResult Editor(std::optional<std::string> freeform_text);
 
   const Data& data() const;
 

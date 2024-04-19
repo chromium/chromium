@@ -337,6 +337,15 @@ void PickerSearchResultsView::AddResultToSection(
             item_view->SetLeadingIcon(GetIconForPickerCategory(data.category));
             section_view->AddListItem(std::move(item_view));
           },
+          [&](const PickerSearchResult::EditorData& data) {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(
+                GetLabelForPickerCategory(PickerCategory::kEditor));
+            item_view->SetLeadingIcon(
+                GetIconForPickerCategory(PickerCategory::kEditor));
+            section_view->AddListItem(std::move(item_view));
+          },
       },
       result.data());
 }

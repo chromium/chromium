@@ -124,6 +124,8 @@ std::u16string GetSectionTitleForPickerSectionType(
       return u"Recently used";
     case PickerSectionType::kExamples:
       return u"Examples";
+    case PickerSectionType::kEditor:
+      return u"Editor";
   }
 }
 

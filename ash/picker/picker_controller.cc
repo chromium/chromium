@@ -178,7 +178,11 @@ InsertionContent GetInsertionContentForResult(
           },
           [](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
             return std::monostate();
-          }},
+          },
+          [](const PickerSearchResult::EditorData& data) -> ReturnType {
+            return std::monostate();
+          },
+      },
       result.data());
 }
 
@@ -453,9 +457,11 @@ void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category) {
                                    ui::EmojiPickerFocusBehavior::kAlwaysShow);
 }
 
-void PickerController::ShowEditor() {
+void PickerController::ShowEditor(std::optional<std::string> preset_query_id,
+                                  std::optional<std::string> freeform_text) {
   if (!show_editor_callback_.is_null()) {
-    std::move(show_editor_callback_).Run();
+    std::move(show_editor_callback_)
+        .Run(std::move(preset_query_id), std::move(freeform_text));
   }
 }
 
