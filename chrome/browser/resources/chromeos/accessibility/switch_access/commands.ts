@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {ActionManager} from './action_manager.js';
 import {AutoScanManager} from './auto_scan_manager.js';
 import {Navigator} from './navigator.js';
@@ -39,3 +41,5 @@ export class SACommands {
     AutoScanManager.restartIfRunning();
   }
 }
+
+TestImportManager.exportForTesting(SACommands);

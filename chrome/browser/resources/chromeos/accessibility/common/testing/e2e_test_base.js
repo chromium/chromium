@@ -40,6 +40,7 @@ E2ETestBase = class extends AccessibilityTestBase {
   #include "content/public/test/browser_test_utils.h"
   #include "extensions/browser/test_extension_console_observer.h"
   #include "extensions/browser/process_manager.h"
+  #include "ui/accessibility/accessibility_switches.h"
       `);
   }
 
@@ -418,3 +419,7 @@ E2ETestBase = class extends AccessibilityTestBase {
 
 /** @override */
 E2ETestBase.prototype.isAsync = true;
+
+/** @override */
+E2ETestBase.prototype.paramCommandLineSwitch =
+    `::switches::kEnableExperimentalAccessibilityManifestV3`;
