@@ -44,6 +44,9 @@ class SafetyConfig final {
       int check_idx,
       const google::protobuf::MessageLite& request_metadata) const;
 
+  // Whether this check is only for allowed languages.
+  bool IsRequestCheckLanguageOnly(int check_idx) const;
+
   // Evaluates scores for a request safety check.
   // check_idx must be < NumRequestChecks().
   bool IsRequestUnsafe(

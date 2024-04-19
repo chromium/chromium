@@ -47,6 +47,8 @@ class OnDeviceModelExecutor
       std::optional<uint32_t> adaptation_id) override;
   on_device_model::mojom::SafetyInfoPtr ClassifyTextSafety(
       const std::string& text) override;
+  on_device_model::mojom::LanguageDetectionResultPtr DetectLanguage(
+      const std::string& text) override;
   base::expected<uint32_t, on_device_model::mojom::LoadModelResult>
   LoadAdaptation(
       on_device_model::mojom::LoadAdaptationParamsPtr params) override;

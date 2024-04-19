@@ -37,6 +37,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
   virtual std::unique_ptr<Session> CreateSession(
       std::optional<uint32_t> adaptation_id) = 0;
   virtual mojom::SafetyInfoPtr ClassifyTextSafety(const std::string& text) = 0;
+  virtual mojom::LanguageDetectionResultPtr DetectLanguage(
+      const std::string& text) = 0;
   virtual base::expected<uint32_t, mojom::LoadModelResult> LoadAdaptation(
       mojom::LoadAdaptationParamsPtr params) = 0;
 };

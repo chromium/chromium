@@ -275,6 +275,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       int request_check_idx,
       std::string check_input_text,
       on_device_model::mojom::SafetyInfoPtr safety_info);
+  void OnRequestDetectLanguageResult(
+      on_device_model::mojom::InputOptionsPtr options,
+      int request_check_idx,
+      std::string check_input_text,
+      on_device_model::mojom::LanguageDetectionResultPtr result);
 
   // Begins request execution (leads to OnResponse/OnComplete).
   void BeginRequestExecution(on_device_model::mojom::InputOptionsPtr options);

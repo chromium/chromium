@@ -149,6 +149,10 @@ interface OnDeviceModel {
   // or there is no classifier available.
   ClassifyTextSafety(string text) => (SafetyInfo? safety_info);
 
+  // Detects the language of the text using the language classifier. Returns
+  // null if there is no classifier available.
+  DetectLanguage(string text) => (LanguageDetectionResult? result);
+
   // Loads an adaptation with the specified params. This will always load the
   // adaptation on top of the base model.
   LoadAdaptation(

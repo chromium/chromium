@@ -118,10 +118,17 @@ std::optional<SubstitutionResult> SafetyConfig::GetRequestCheckInput(
                              proto_->request_check(check_idx).input_template());
 }
 
+bool SafetyConfig::IsRequestCheckLanguageOnly(int check_idx) const {
+  return proto_->request_check(check_idx).check_language_only();
+}
+
 bool SafetyConfig::IsRequestUnsafe(
     int check_idx,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
   const auto& check = proto_->request_check(check_idx);
+  if (check.check_language_only()) {
+    return false;
+  }
   const auto& thresholds = check.safety_category_thresholds().empty()
                                ? proto_->safety_category_thresholds()
                                : check.safety_category_thresholds();
