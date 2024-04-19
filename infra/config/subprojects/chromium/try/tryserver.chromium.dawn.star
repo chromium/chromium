@@ -260,8 +260,21 @@ try_.builder(
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
-    # TODO(crbug.com/335426675): Add the same regular expressions as the non-ARM
-    # trybots once we know the builder is green.
+    tryjob = try_.job(
+        location_filters = [
+            cq.location_filter(path_regexp = "content/test/gpu/.+"),
+            cq.location_filter(path_regexp = "gpu/.+"),
+            cq.location_filter(path_regexp = "testing/buildbot/chromium.dawn.json"),
+            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgpu/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/web_tests/external/wpt/webgpu/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/web_tests/wpt_internal/webgpu/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/web_tests/WebGPUExpectations"),
+            cq.location_filter(path_regexp = "third_party/dawn/.+"),
+            cq.location_filter(path_regexp = "third_party/webgpu-cts/.+"),
+            cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
+            cq.location_filter(path_regexp = "ui/gl/features.gni"),
+        ],
+    ),
 )
 
 try_.builder(

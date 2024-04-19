@@ -66,5 +66,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.dawn",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }
