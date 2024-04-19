@@ -90,8 +90,12 @@ class AudioSelectionNotificationHandlerTest
 
  private:
   AudioSelectionNotificationHandler audio_selection_notification_handler_;
-  uint64_t active_input_id_;
-  uint64_t active_output_id_;
+
+  // Initialized with an invalid id, to fix an issue in build: MemorySanitizer:
+  // use-of-uninitialized-value.
+  uint64_t active_input_id_ = 0;
+  uint64_t active_output_id_ = 0;
+
   base::WeakPtrFactory<AudioSelectionNotificationHandlerTest> weak_ptr_factory_{
       this};
 };
