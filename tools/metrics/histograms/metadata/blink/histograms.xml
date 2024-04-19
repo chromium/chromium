@@ -1336,6 +1336,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Button.AccountChooserResult"
+    enum="FedCmAccountChooserResult" expires_after="M130">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the outcome of the account chooser in button flow. Recorded once per
+    user leaving the button flow account chooser. e.g. If the user selects an
+    account on the account chooser, one sample is recorded. If the user clicks
+    on the back button in the next dialog, an account chooser is shown again and
+    leaving records a second sample.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.CancelReason" enum="FedCmCancelReason"
     expires_after="2024-08-04">
   <owner>yigu@chromium.org</owner>

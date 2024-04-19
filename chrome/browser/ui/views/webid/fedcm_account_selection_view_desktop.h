@@ -163,6 +163,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            IdpSigninStatusPopupClosedAfterAccountsPopulated);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            ClosePopupAfterVerifyingSheetShouldNotify);
+  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
+                           AccountChooserResultMetric);
 
   enum class State {
     // User is shown message that they are not currently signed-in to IdP.
@@ -225,6 +227,19 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     kAccountsNotReceivedAndPopupNotClosedByIdp,
 
     kMaxValue = kAccountsNotReceivedAndPopupNotClosedByIdp
+  };
+
+  // This enum describes the outcome an account chooser and is used for
+  // histograms. Do not remove or modify existing values, but you may add new
+  // values at the end. This enum should be kept in sync with
+  // FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
+  enum class AccountChooserResult {
+    kAccountRow,
+    kCancelButton,
+    kUseOtherAccountButton,
+    kTabClosed,
+
+    kMaxValue = kTabClosed
   };
 
   // views::WidgetObserver:
@@ -338,6 +353,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // The current state of the IDP sign-in pop-up window, if initiated by user.
   // This is nullopt when no popup window has been opened.
   std::optional<PopupWindowResult> popup_window_state_;
+
+  // The current state of the modal account chooser, if initiated by user. This
+  // is nullopt when no modal account chooser has been opened.
+  std::optional<AccountChooserResult> modal_account_chooser_state_;
 
   // An AccountSelectionViewBase to render bubble dialogs for widget flows,
   // otherwise returns an AccountSelectionViewBase to render modal dialogs

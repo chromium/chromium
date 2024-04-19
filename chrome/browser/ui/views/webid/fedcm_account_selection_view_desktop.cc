@@ -272,6 +272,17 @@ void FedCmAccountSelectionView::Show(
         "IdpClosePopupToBrowserShowAccountsDuration",
         base::TimeTicks::Now() - idp_close_popup_time_);
   }
+
+  if (GetDialogType() == DialogType::MODAL &&
+      (state_ == State::SINGLE_ACCOUNT_PICKER ||
+       state_ == State::MULTI_ACCOUNT_PICKER)) {
+    // This is a placeholder assuming the tab containing the account chooser
+    // will be closed. This will be updated upon user action i.e. clicking on
+    // account row, cancel button or use other account button. If we do not
+    // receive any of these actions by time the dialog is closed, it means our
+    // placeholder assumption is true i.e. the user has closed the tab.
+    modal_account_chooser_state_ = AccountChooserResult::kTabClosed;
+  }
 }
 
 void FedCmAccountSelectionView::OnAccountsDisplayed() {
@@ -603,6 +614,10 @@ void FedCmAccountSelectionView::OnAccountSelected(
     return;
   }
 
+  if (modal_account_chooser_state_) {
+    modal_account_chooser_state_ = AccountChooserResult::kAccountRow;
+  }
+
   // If the account is a returning user or if the account is selected from UI
   // which shows the disclosure text or if the dialog doesn't need to ask for
   // the user's permission to share their id/email/name/picture, show the
@@ -676,12 +691,21 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.CloseVerifySheet.Desktop",
-                        state_ == State::VERIFYING);
+  if (GetDialogType() == DialogType::BUBBLE) {
+    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.CloseVerifySheet.Desktop",
+                          state_ == State::VERIFYING);
 
-  // Record the sheet type that the user was closing.
-  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.ClosedSheetType.Desktop",
-                            GetSheetType(), SheetType::COUNT);
+    // Record the sheet type that the user was closing.
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.ClosedSheetType.Desktop",
+                              GetSheetType(), SheetType::COUNT);
+  }
+
+  // Check that state_ at the time of closing is an account chooser, otherwise,
+  // closing other dialogs can override the modal_account_chooser_state_.
+  if (modal_account_chooser_state_ && (state_ == State::SINGLE_ACCOUNT_PICKER ||
+                                       state_ == State::MULTI_ACCOUNT_PICKER)) {
+    modal_account_chooser_state_ = AccountChooserResult::kCancelButton;
+  }
 
   // This may have been set to false when the user triggers the use other
   // account pop-up on the modal to prevent dismissing when the user closes the
@@ -700,11 +724,19 @@ void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
   }
 
   delegate_->OnLoginToIdP(idp_config_url, idp_login_url);
-  is_mismatch_continue_clicked_ = true;
-  popup_window_state_ =
-      PopupWindowResult::kAccountsNotReceivedAndPopupNotClosedByIdp;
-  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
-                            MismatchDialogResult::kContinued);
+
+  if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH) {
+    is_mismatch_continue_clicked_ = true;
+    popup_window_state_ =
+        PopupWindowResult::kAccountsNotReceivedAndPopupNotClosedByIdp;
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
+        MismatchDialogResult::kContinued);
+  }
+
+  if (modal_account_chooser_state_) {
+    modal_account_chooser_state_ = AccountChooserResult::kUseOtherAccountButton;
+  }
 }
 
 void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
@@ -894,6 +926,12 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
   if (is_mismatch_continue_clicked_ && popup_window_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.PopupWindowResult",
                               *popup_window_state_);
+  }
+
+  // If a modal account chooser was open, record the outcome.
+  if (modal_account_chooser_state_) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.AccountChooserResult",
+                              *modal_account_chooser_state_);
   }
 
   ResetAccountSelectionView();

@@ -283,6 +283,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     dialog_widget_.reset(CreateTestWidget().release());
     account_selection_view_ =
         std::make_unique<TestAccountSelectionView>(dialog_widget_.get());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   IdentityProviderDisplayData CreateIdentityProviderDisplayData(
@@ -301,6 +302,29 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         u"", content::IdentityProviderMetadata(),
         content::ClientMetadata(GURL(), GURL(), GURL()), std::move(accounts),
         request_permission, has_login_status_mismatch);
+  }
+
+  std::vector<content::IdentityRequestAccount> CreateAccount(
+      LoginState login_state,
+      std::string account_id = kAccountId1) {
+    return {{account_id, "", "", "", GURL(),
+             /*login_hints=*/std::vector<std::string>(),
+             /*domain_hints=*/std::vector<std::string>(),
+             /*labels=*/std::vector<std::string>(), /*login_state=*/login_state,
+             /*browser_trusted_login_state=*/login_state}};
+  }
+
+  content::IdentityProviderData CreateIdentityProviderData(
+      std::vector<content::IdentityRequestAccount> accounts,
+      bool has_login_status_mismatch = false,
+      bool request_permission = true) {
+    return {kIdpEtldPlusOne,
+            accounts,
+            content::IdentityProviderMetadata(),
+            content::ClientMetadata(GURL(), GURL(), GURL()),
+            blink::mojom::RpContext::kSignIn,
+            request_permission,
+            has_login_status_mismatch};
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
@@ -421,8 +445,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   views::ViewsTestBase::WidgetAutoclosePtr dialog_widget_;
   std::unique_ptr<TestAccountSelectionView> account_selection_view_;
   std::unique_ptr<StubAccountSelectionViewDelegate> delegate_;
-
-  base::HistogramTester histogram_tester_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
@@ -695,12 +718,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, CloseAutoReauthnSheetMetric) {
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kAuto);
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.ClosedSheetType.Desktop", 0);
+  histogram_tester_->ExpectTotalCount("Blink.FedCm.ClosedSheetType.Desktop", 0);
 
   AccountSelectionViewBase::Observer* observer =
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
   observer->OnCloseButtonClicked(CreateMouseEvent());
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.ClosedSheetType.Desktop",
       static_cast<int>(FedCmAccountSelectionView::SheetType::AUTO_REAUTHN), 1);
 }
@@ -711,7 +734,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        MismatchDialogDismissedByCloseIconMetric) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowMismatchDialog();
-  histogram_tester_.ExpectTotalCount(
+  histogram_tester_->ExpectTotalCount(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
   // Emulate user clicking the close icon.
@@ -719,7 +742,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       views::Widget::ClosedReason::kCloseButtonClicked);
   controller->OnWidgetDestroying(dialog_widget_.get());
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
       static_cast<int>(FedCmAccountSelectionView::MismatchDialogResult::
                            kDismissedByCloseIcon),
@@ -732,14 +755,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        MismatchDialogDismissedForOtherReasonsMetric) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowMismatchDialog();
-  histogram_tester_.ExpectTotalCount(
+  histogram_tester_->ExpectTotalCount(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
   // Emulate user closing the mismatch dialog for an unspecified reason.
   dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   controller->OnWidgetDestroying(dialog_widget_.get());
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
       static_cast<int>(FedCmAccountSelectionView::MismatchDialogResult::
                            kDismissedForOtherReasons),
@@ -752,11 +775,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MismatchDialogDestroyedMetric) {
   {
     std::unique_ptr<TestFedCmAccountSelectionView> controller =
         CreateAndShowMismatchDialog();
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
   }
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
       static_cast<int>(FedCmAccountSelectionView::MismatchDialogResult::
                            kDismissedForOtherReasons),
@@ -771,14 +794,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       CreateAndShowMismatchDialog();
   AccountSelectionViewBase::Observer* observer =
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
-  histogram_tester_.ExpectTotalCount(
+  histogram_tester_->ExpectTotalCount(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
       static_cast<int>(
           FedCmAccountSelectionView::MismatchDialogResult::kContinued),
@@ -795,7 +818,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         CreateAndShowMismatchDialog();
     AccountSelectionViewBase::Observer* observer =
         static_cast<AccountSelectionViewBase::Observer*>(controller.get());
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
@@ -804,7 +827,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     CreateAndShowPopupWindow(*controller);
   }
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
       static_cast<int>(
           FedCmAccountSelectionView::MismatchDialogResult::kContinued),
@@ -840,11 +863,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     // an accounts dialog yet.
     EXPECT_FALSE(dialog_widget_->IsVisible());
 
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus."
         "IdpClosePopupToBrowserShowAccountsDuration",
         0);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus.PopupWindowResult", 0);
 
     // Emulate IdP sending the IdP sign-in status header which updates the
@@ -861,10 +884,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     EXPECT_FALSE(account_selection_view_->show_back_button_);
   }
 
-  histogram_tester_.ExpectTotalCount(
+  histogram_tester_->ExpectTotalCount(
       "Blink.FedCm.IdpSigninStatus.IdpClosePopupToBrowserShowAccountsDuration",
       1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.PopupWindowResult",
       static_cast<int>(FedCmAccountSelectionView::PopupWindowResult::
                            kAccountsReceivedAndPopupClosedByIdp),
@@ -904,11 +927,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     // been closed yet.
     EXPECT_FALSE(dialog_widget_->IsVisible());
 
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus."
         "IdpClosePopupToBrowserShowAccountsDuration",
         0);
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus.PopupWindowResult", 0);
 
     // Emulate IdP closing the pop-up window.
@@ -918,11 +941,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     EXPECT_TRUE(dialog_widget_->IsVisible());
   }
 
-  histogram_tester_.ExpectTotalCount(
+  histogram_tester_->ExpectTotalCount(
       "Blink.FedCm.IdpSigninStatus."
       "IdpClosePopupToBrowserShowAccountsDuration",
       1);
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.PopupWindowResult",
       static_cast<int>(FedCmAccountSelectionView::PopupWindowResult::
                            kAccountsReceivedAndPopupClosedByIdp),
@@ -954,11 +977,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     Show(*controller, idp_data.accounts, SignInMode::kExplicit,
          blink::mojom::RpMode::kWidget);
 
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus.PopupWindowResult", 0);
   }
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.PopupWindowResult",
       static_cast<int>(FedCmAccountSelectionView::PopupWindowResult::
                            kAccountsReceivedAndPopupNotClosedByIdp),
@@ -985,11 +1008,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     // Emulate IdentityProvider.close() being called in the pop-up window.
     controller->CloseModalDialog();
 
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus.PopupWindowResult", 0);
   }
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.PopupWindowResult",
       static_cast<int>(FedCmAccountSelectionView::PopupWindowResult::
                            kAccountsNotReceivedAndPopupClosedByIdp),
@@ -1013,11 +1036,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
                            CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
-    histogram_tester_.ExpectTotalCount(
+    histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus.PopupWindowResult", 0);
   }
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.PopupWindowResult",
       static_cast<int>(FedCmAccountSelectionView::PopupWindowResult::
                            kAccountsNotReceivedAndPopupNotClosedByIdp),
@@ -1207,19 +1230,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
       {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
-  std::vector<content::IdentityRequestAccount> new_accounts = {
-      {kAccountId1, "", "", "", GURL(),
-       /*login_hints=*/std::vector<std::string>(),
-       /*domain_hints=*/std::vector<std::string>(),
-       /*labels=*/std::vector<std::string>(), LoginState::kSignUp}};
-  content::IdentityProviderData new_idp_data = {
-      kIdpEtldPlusOne,
-      new_accounts,
-      content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL(), GURL()),
-      blink::mojom::RpContext::kSignIn,
-      /*request_permission=*/true,
-      /*has_login_status_mismatch=*/false};
+  std::vector<content::IdentityRequestAccount> new_accounts =
+      CreateAccount(LoginState::kSignUp);
+  content::IdentityProviderData new_idp_data =
+      CreateIdentityProviderData(new_accounts);
 
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kWidget, new_idp_data);
@@ -1267,19 +1281,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccount) {
   IdentityProviderDisplayData idp_data2 = CreateIdentityProviderDisplayData(
       {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
   // The new account would be kAccountId2.
-  std::vector<content::IdentityRequestAccount> new_accounts = {
-      {kAccountId2, "", "", "", GURL(),
-       /*login_hints=*/std::vector<std::string>(),
-       /*domain_hints=*/std::vector<std::string>(),
-       /*labels=*/std::vector<std::string>(), LoginState::kSignUp}};
-  content::IdentityProviderData new_idp_data = {
-      kIdpEtldPlusOne,
-      new_accounts,
-      content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL(), GURL()),
-      blink::mojom::RpContext::kSignIn,
-      /*request_permission=*/true,
-      /*has_login_status_mismatch=*/false};
+  std::vector<content::IdentityRequestAccount> new_accounts =
+      CreateAccount(LoginState::kSignUp, kAccountId2);
+  content::IdentityProviderData new_idp_data =
+      CreateIdentityProviderData(new_accounts);
 
   Show(*controller, idp_data2.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kWidget, new_idp_data);
@@ -1331,19 +1336,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountModal) {
   IdentityProviderDisplayData idp_data2 = CreateIdentityProviderDisplayData(
       {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
   // The new account would be kAccountId2.
-  std::vector<content::IdentityRequestAccount> new_accounts = {
-      {kAccountId2, "", "", "", GURL(),
-       /*login_hints=*/std::vector<std::string>(),
-       /*domain_hints=*/std::vector<std::string>(),
-       /*labels=*/std::vector<std::string>(), LoginState::kSignUp}};
-  content::IdentityProviderData new_idp_data = {
-      kIdpEtldPlusOne,
-      new_accounts,
-      content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL(), GURL()),
-      blink::mojom::RpContext::kSignIn,
-      /*request_permission=*/true,
-      /*has_login_status_mismatch=*/false};
+  std::vector<content::IdentityRequestAccount> new_accounts =
+      CreateAccount(LoginState::kSignUp, kAccountId2);
+  content::IdentityProviderData new_idp_data =
+      CreateIdentityProviderData(new_accounts);
 
   Show(*controller, idp_data2.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kButton, new_idp_data);
@@ -1389,20 +1385,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   IdentityProviderDisplayData idp_data2 = CreateIdentityProviderDisplayData(
       {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
   // The new account would be kAccountId2 whose login state is kSignIn.
-  std::vector<content::IdentityRequestAccount> new_accounts = {
-      {kAccountId2, "", "", "", GURL(),
-       /*login_hints=*/std::vector<std::string>(),
-       /*domain_hints=*/std::vector<std::string>(),
-       /*labels=*/std::vector<std::string>(), LoginState::kSignIn,
-       LoginState::kSignIn}};
-  content::IdentityProviderData new_idp_data = {
-      kIdpEtldPlusOne,
-      new_accounts,
-      content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL(), GURL()),
-      blink::mojom::RpContext::kSignIn,
-      /*request_permission=*/true,
-      /*has_login_status_mismatch=*/false};
+  std::vector<content::IdentityRequestAccount> new_accounts =
+      CreateAccount(LoginState::kSignIn, kAccountId2);
+  content::IdentityProviderData new_idp_data =
+      CreateIdentityProviderData(new_accounts);
 
   Show(*controller, idp_data2.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kButton, new_idp_data);
@@ -1429,21 +1415,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // pop-up window and sending new accounts.
   controller->CloseModalDialog();
 
-  std::vector<content::IdentityRequestAccount> new_accounts = {
-      {kAccountId1, "", "", "", GURL(),
-       /*login_hints=*/std::vector<std::string>(),
-       /*domain_hints=*/std::vector<std::string>(),
-       /*labels=*/std::vector<std::string>(),
-       /*login_state=*/LoginState::kSignIn,
-       /*browser_trusted_login_state=*/LoginState::kSignIn}};
-  content::IdentityProviderData new_idp_data = {
-      kIdpEtldPlusOne,
-      new_accounts,
-      content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL(), GURL()),
-      blink::mojom::RpContext::kSignIn,
-      /*request_permission=*/true,
-      /*has_login_status_mismatch=*/false};
+  std::vector<content::IdentityRequestAccount> new_accounts =
+      CreateAccount(LoginState::kSignIn);
+  content::IdentityProviderData new_idp_data =
+      CreateIdentityProviderData(new_accounts);
 
   Show(*controller, new_accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kButton, new_idp_data);
@@ -2077,4 +2052,142 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
     EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
               account_selection_view_->sheet_type_);
   }
+}
+
+// Tests that the correct account chooser result metrics are recorded.
+TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  auto CheckForSampleAndReset(
+      [&](FedCmAccountSelectionView::AccountChooserResult result) {
+        histogram_tester_->ExpectUniqueSample(
+            "Blink.FedCm.Button.AccountChooserResult", static_cast<int>(result),
+            1);
+        histogram_tester_ = std::make_unique<base::HistogramTester>();
+      });
+
+  // The AccountChooserResult metric is recorded in OnDismiss, therefore, we
+  // check for the histogram after the TestFedCmAccountSelectionView goes out
+  // of scope.
+  {
+    // User clicks on account row.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(idp_data.accounts, SignInMode::kExplicit,
+                      blink::mojom::RpMode::kButton);
+    AccountSelectionViewBase::Observer* observer =
+        static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+    observer->OnAccountSelected(idp_data.accounts[0], idp_data,
+                                CreateMouseEvent());
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::AccountChooserResult::kAccountRow);
+
+  {
+    // User clicks on cancel button.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(idp_data.accounts, SignInMode::kExplicit,
+                      blink::mojom::RpMode::kButton);
+    AccountSelectionViewBase::Observer* observer =
+        static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+    observer->OnCloseButtonClicked(CreateMouseEvent());
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::AccountChooserResult::kCancelButton);
+
+  {
+    // User clicks on use other account button.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(idp_data.accounts, SignInMode::kExplicit,
+                      blink::mojom::RpMode::kButton);
+    AccountSelectionViewBase::Observer* observer =
+        static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
+                           CreateMouseEvent());
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::AccountChooserResult::kUseOtherAccountButton);
+
+  {
+    // User closes the tab or window.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(idp_data.accounts, SignInMode::kExplicit,
+                      blink::mojom::RpMode::kButton);
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::AccountChooserResult::kTabClosed);
+
+  {
+    // Widget flow should not record a sample.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(idp_data.accounts, SignInMode::kExplicit,
+                      blink::mojom::RpMode::kWidget);
+  }
+  histogram_tester_->ExpectTotalCount("Blink.FedCm.Button.AccountChooserResult",
+                                      0);
+
+  {
+    // Non-returning user signing in via IDP sign-in pop-up should not record a
+    // sample.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowLoadingDialog();
+    AccountSelectionViewBase::Observer* observer =
+        static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+    // Emulate the login to IdP flow.
+    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
+                           CreateMouseEvent());
+    CreateAndShowPopupWindow(*controller);
+
+    // Emulate user completing the sign-in flow and IdP prompts closing the
+    // pop-up window and sending new accounts.
+    controller->CloseModalDialog();
+
+    std::vector<content::IdentityRequestAccount> new_accounts =
+        CreateAccount(LoginState::kSignUp);
+    content::IdentityProviderData new_idp_data =
+        CreateIdentityProviderData(new_accounts);
+
+    Show(*controller, new_accounts, SignInMode::kExplicit,
+         blink::mojom::RpMode::kButton, new_idp_data);
+
+    // User is shown the request permission dialog, skipping the account
+    // chooser.
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+              account_selection_view_->sheet_type_);
+  }
+  histogram_tester_->ExpectTotalCount("Blink.FedCm.Button.AccountChooserResult",
+                                      0);
+
+  {
+    // Returning user signing in via IDP sign-in pop-up should not record a
+    // sample.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowLoadingDialog();
+    AccountSelectionViewBase::Observer* observer =
+        static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+    // Emulate the login to IdP flow.
+    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
+                           CreateMouseEvent());
+    CreateAndShowPopupWindow(*controller);
+
+    // Emulate user completing the sign-in flow and IdP prompts closing the
+    // pop-up window and sending new accounts.
+    controller->CloseModalDialog();
+
+    std::vector<content::IdentityRequestAccount> new_accounts =
+        CreateAccount(LoginState::kSignIn);
+    content::IdentityProviderData new_idp_data =
+        CreateIdentityProviderData(new_accounts);
+
+    Show(*controller, new_accounts, SignInMode::kExplicit,
+         blink::mojom::RpMode::kButton, new_idp_data);
+
+    // User is shown the verifying dialog, skipping both the account chooser and
+    // request permission dialog.
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+              account_selection_view_->sheet_type_);
+  }
+  histogram_tester_->ExpectTotalCount("Blink.FedCm.Button.AccountChooserResult",
+                                      0);
 }
