@@ -198,7 +198,8 @@ public class ContextualSearchPanel extends OverlayPanel {
 
     /** Create a new scene layer for this panel. This should be overridden by tests as necessary. */
     protected ContextualSearchSceneLayer createNewContextualSearchSceneLayer() {
-        return new ContextualSearchSceneLayer(mContext.getResources().getDisplayMetrics().density);
+        return new ContextualSearchSceneLayer(
+                getProfile(), mContext.getResources().getDisplayMetrics().density);
     }
 
     @Override
