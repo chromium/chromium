@@ -76,6 +76,10 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 
 - (void)saveDefaultSearchEngine {
   CHECK(_selectedSearchEngineKeyword);
+  // When the default search engine is saved, there is no reason to observe
+  // `_templateURLService` anymore since the dialog should disappear right
+  // after.
+  _observer.reset();
   std::u16string keyword =
       base::SysNSStringToUTF16(_selectedSearchEngineKeyword);
   TemplateURL* selectedTemplateURL = nil;
