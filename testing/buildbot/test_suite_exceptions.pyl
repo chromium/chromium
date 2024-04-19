@@ -3069,6 +3069,11 @@
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
       },
+      'Mac Builder Next': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
       'Mac12 Tests': {
         'swarming': {
           'shards': 6,
