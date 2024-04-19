@@ -318,9 +318,11 @@ that case—they do not pre-allocate their buckets).
 
 ### Timing Histograms
 
-You can easily emit a time duration (time delta) using UMA_HISTOGRAM_TIMES,
-UMA_HISTOGRAM_MEDIUM_TIMES, UMA_HISTOGRAM_LONG_TIMES macros, and their
-friends, as well as helpers like SCOPED_UMA_HISTOGRAM_TIMER. Many timing
+You can easily emit a time duration (time delta) using base::UmaHistogramTimes,
+base::UmaHistogramMediumTimes, base::UmaHistogramLongTimes, and their friends.
+For the critical path, UMA_HISTOGRAM_TIMES, UMA_HISTOGRAM_MEDIUM_TIMES,
+UMA_HISTOGRAM_LONG_TIMES macros, and their friends, as well as helpers like
+SCOPED_UMA_HISTOGRAM_TIMER are also available. Many timing
 histograms are used for performance monitoring; if this is the case for you,
 please read [this document about how to structure timing histograms to make
 them more useful and
