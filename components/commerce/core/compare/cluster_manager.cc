@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/barrier_callback.h"
 #include "components/commerce/core/compare/candidate_product.h"
 #include "components/commerce/core/compare/product_group.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
@@ -79,6 +80,23 @@ bool IsProductSimilarToGroup(
   }
   return false;
 }
+
+void OnGetCategoryDataDone(
+    base::OnceCallback<void(const CategoryData&)> callback,
+    const GURL& url,
+    const std::optional<const ProductInfo>& product_info) {
+  std::move(callback).Run(product_info ? product_info->category_data
+                                       : CategoryData());
+}
+
+void GetCategoryData(
+    const GURL& url,
+    const ClusterManager::GetProductInfoCallback& get_product_info_cb,
+    base::OnceCallback<void(const CategoryData&)> callback) {
+  get_product_info_cb.Run(
+      url, base::BindOnce(&OnGetCategoryDataDone, std::move(callback)));
+}
+
 }  // namespace
 
 ClusterManager::ClusterManager(
@@ -94,11 +112,22 @@ ClusterManager::~ClusterManager() = default;
 
 void ClusterManager::OnProductSpecificationsSetAdded(
     const ProductSpecificationsSet& product_specifications_set) {
-  // TODO(qinmin): need to get the category data for the products in
-  // `product_specifications_set`.
-  auto product_group = std::make_unique<ProductGroup>(
-      product_specifications_set.uuid(), product_specifications_set.urls());
-  UpdateProductGroup(std::move(product_group));
+  base::Uuid uuid = product_specifications_set.uuid();
+  product_group_map_[uuid] =
+      std::make_unique<ProductGroup>(uuid, product_specifications_set.urls());
+  const std::set<GURL>& urls = product_group_map_[uuid]->member_products;
+  if (urls.size() == 0) {
+    CHECK(false) << "Production specification set shouldn't be empty.";
+    return;
+  }
+
+  auto barrier_callback = base::BarrierCallback<const CategoryData&>(
+      urls.size(), base::BindOnce(&ClusterManager::OnAllCategoryDataRetrieved,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  product_specifications_set.uuid(), urls));
+  for (const auto& url : urls) {
+    GetCategoryData(url, get_product_info_cb_, barrier_callback);
+  }
 }
 
 void ClusterManager::OnProductSpecificationsSetUpdate(
@@ -107,7 +136,7 @@ void ClusterManager::OnProductSpecificationsSetUpdate(
 }
 
 void ClusterManager::OnProductSpecificationsSetRemoved(const base::Uuid& uuid) {
-  RemoveProductGroup(uuid);
+  product_group_map_.erase(uuid);
 }
 
 void ClusterManager::WebWrapperDestroyed(const GURL& url) {
@@ -147,6 +176,22 @@ void ClusterManager::OnProductInfoRetrieved(
   // whether it should be removed from `candidate_product_map_`.
   AddCandidateProduct(url, product_info);
   AddProductToProductGroupssIfNecessary(url, product_info);
+}
+
+void ClusterManager::OnAllCategoryDataRetrieved(
+    const base::Uuid& uuid,
+    const std::set<GURL>& urls,
+    const std::vector<CategoryData>& category_data) {
+  if (!product_group_map_[uuid]) {
+    return;
+  }
+
+  // Check whether product group has changed.
+  if (product_group_map_[uuid]->member_products == urls) {
+    product_group_map_[uuid]->categories = category_data;
+  }
+
+  PopulateCandidateProductsForGroup(uuid);
 }
 
 void ClusterManager::AddCandidateProduct(
@@ -207,20 +252,14 @@ void ClusterManager::RemoveProductFromProductGroupsIfNecessary(
   }
 }
 
-void ClusterManager::UpdateProductGroup(
-    std::unique_ptr<ProductGroup> product_group) {
-  ProductGroup* group = product_group.get();
-  product_group_map_[product_group->uuid] = std::move(product_group);
+void ClusterManager::PopulateCandidateProductsForGroup(const base::Uuid& uuid) {
+  ProductGroup* group = product_group_map_[uuid].get();
   for (const auto& candidate_product : candidate_product_map_) {
     if (IsProductSimilarToGroup(candidate_product.second->category_data,
                                 group->categories)) {
       group->candidate_products.insert(candidate_product.first);
     }
   }
-}
-
-void ClusterManager::RemoveProductGroup(const base::Uuid& uuid) {
-  product_group_map_.erase(uuid);
 }
 
 }  // namespace commerce

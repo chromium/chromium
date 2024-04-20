@@ -54,16 +54,19 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
  private:
   friend class ClusterManagerTest;
 
-  // Adds or updates a product group to the `product_group_map_`.
-  void UpdateProductGroup(std::unique_ptr<ProductGroup> product_group);
-
-  // Removes a product group from `product_group_map_`.
-  void RemoveProductGroup(const base::Uuid& uuid);
+  // Updates the product group that has the given uuid.
+  void PopulateCandidateProductsForGroup(const base::Uuid& uuid);
 
   // Called when information about a product is retrieved.
   void OnProductInfoRetrieved(
       const GURL& url,
       const std::optional<const ProductInfo>& product_info);
+
+  // Called when category data for a list of URLs are retrieved.
+  void OnAllCategoryDataRetrieved(
+      const base::Uuid& uuid,
+      const std::set<GURL>& urls,
+      const std::vector<CategoryData>& category_data);
 
   // Adds a candidate product to `candidate_product_map_`.
   void AddCandidateProduct(
