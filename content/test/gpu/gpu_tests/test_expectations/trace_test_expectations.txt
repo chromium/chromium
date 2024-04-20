@@ -231,6 +231,7 @@ crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_ComputePipel
 crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
+crbug.com/335564847 [ win graphite-enabled ] VideoPathTraceTest_DirectComposition_* [ Failure ]
 
 # Failures on fuchsia
 crbug.com/40935289 [ fuchsia web-engine-shell ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]

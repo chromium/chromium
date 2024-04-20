@@ -18330,7 +18330,8 @@
     "SkiaGraphite": [
         {
             "platforms": [
-                "mac"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
