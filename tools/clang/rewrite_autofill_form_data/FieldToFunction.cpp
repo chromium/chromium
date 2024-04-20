@@ -8,7 +8,8 @@
 // be rewritten, the rewriter replaces `foo.member = bar.member` with
 // `foo.set_member(bar.member())`.
 //
-// In particular, this is used to rewrite autofill::FormFieldData::value.
+// In particular, this rewriter is used to convert the structs
+// `autofill::FormData` and `autofill::FormFieldData` to classes.
 
 #include <cassert>
 #include <iostream>
@@ -72,9 +73,12 @@ std::vector<std::string> Explode(std::string_view s) {
   return substrings;
 }
 
-// Generates substitution directives.
-// We do not use `clang::tooling::Replacements` because it's restricted to
-// same-file substitutions.
+// Generates substitution directives according to the format documented in
+// tools/clang/scripts/run_tool.py.
+//
+// We do not use `clang::tooling::Replacements` because we don't need any
+// buffering, and we'd need to implement the serialization of
+// `clang::tooling::Replacement` anyway.
 class OutputHelper : public clang::tooling::SourceFileCallbacks {
  public:
   OutputHelper() = default;
@@ -180,7 +184,6 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
     return false;
   }
 
-  std::vector<std::string> output_lines_;
   clang::Language current_language_ = clang::Language::Unknown;
 };
 
