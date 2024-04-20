@@ -1,0 +1,14 @@
+This is a wdspec test.
+[FAIL] test_find_by_locator_limit_return_count[accessibility_role_single]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
+[FAIL] test_find_by_locator_limit_return_count[accessibility_name_single]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
+[FAIL] test_find_by_locator_limit_return_count[accessibility_role_name_single]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
+[FAIL] test_find_by_locator_limit_return_count[accessibility_role_multiple]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
+[FAIL] test_find_by_locator_limit_return_count[accessibility_name_multiple]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
+[FAIL] test_find_by_locator_limit_return_count[accessibility_role_name_multiple]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
+Harness: the test ran to completion.

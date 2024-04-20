@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_params_locator_value_invalid_value[accessibility-value3]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
+Harness: the test ran to completion.

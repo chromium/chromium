@@ -42,6 +42,6 @@ grid:hover item[style] {
 grid:hover::after {
   content: attr(title);
   position: absolute;
-  inset: 0.1em 0.5rem;
+  inset: 0.1em auto auto 0.5rem;
   font: bold smaller sans-serif;
 }
