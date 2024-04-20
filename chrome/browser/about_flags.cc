@@ -7705,6 +7705,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSearchCustomizableShortcutsInLauncher)},
 
+    {"enable-suspend-state-machine",
+     flag_descriptions::kEnableSuspendStateMachineName,
+     flag_descriptions::kEnableSuspendStateMachineDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSuspendStateMachine)},
+
     {"enable-input-device-settings-split",
      flag_descriptions::kEnableInputDeviceSettingsSplitName,
      flag_descriptions::kEnableInputDeviceSettingsSplitDescription, kOsCrOS,

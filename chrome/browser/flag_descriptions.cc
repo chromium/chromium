@@ -1277,6 +1277,11 @@ const char kEnableSearchCustomizableShortcutsInLauncherName[] =
 const char kEnableSearchCustomizableShortcutsInLauncherDescription[] =
     "Enable searching for customizable shortcuts in launcher.";
 
+const char kEnableSuspendStateMachineName[] = "Enable suspend state machine";
+const char kEnableSuspendStateMachineDescription[] =
+    "Enables a fix for the suspend keyboard shortcut to more consistently "
+    "execute.";
+
 const char kEnableInputDeviceSettingsSplitName[] =
     "Enable input device settings split";
 const char kEnableInputDeviceSettingsSplitDescription[] =

@@ -871,6 +871,9 @@ extern const char kEnableShortcutCustomizationDescription[];
 extern const char kEnableSearchCustomizableShortcutsInLauncherName[];
 extern const char kEnableSearchCustomizableShortcutsInLauncherDescription[];
 
+extern const char kEnableSuspendStateMachineName[];
+extern const char kEnableSuspendStateMachineDescription[];
+
 extern const char kEnableInputDeviceSettingsSplitName[];
 extern const char kEnableInputDeviceSettingsSplitDescription[];
 

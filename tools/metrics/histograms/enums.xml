@@ -18654,6 +18654,7 @@ from previous Chrome versions.
   <int value="-1133285806" label="MacLoopbackAudioForScreenShare:disabled"/>
   <int value="-1132704128" label="AndroidPaymentAppsFilter:disabled"/>
   <int value="-1131726331" label="BackGestureRefactorAndroid:disabled"/>
+  <int value="-1130835436" label="SuspendStateMachine:disabled"/>
   <int value="-1128981647" label="EnableOAuthIpp:enabled"/>
   <int value="-1128912963" label="MediaControlsExpandGesture:disabled"/>
   <int value="-1128221789"
@@ -20451,6 +20452,7 @@ from previous Chrome versions.
   <int value="-322937746" label="disable-desktop-capture-picker-new-ui"/>
   <int value="-322827131" label="tab-management-experiment-type-basil"/>
   <int value="-322684763" label="WebBluetoothRequestLargerMtu:disabled"/>
+  <int value="-321727218" label="SuspendStateMachine:enabled"/>
   <int value="-320820051" label="enable-zero-copy"/>
   <int value="-319235277" label="ShareMenu:disabled"/>
   <int value="-319002650" label="ArcUsbStorageUI:enabled"/>

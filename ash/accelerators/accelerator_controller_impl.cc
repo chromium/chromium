@@ -14,6 +14,7 @@
 #include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accelerators/accelerator_shift_disable_capslock_state_machine.h"
 #include "ash/accelerators/debug_commands.h"
+#include "ash/accelerators/suspend_state_machine.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/devicetype.h"
@@ -403,6 +404,8 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
       shift_disable_state_machine_(
           std::make_unique<AcceleratorShiftDisableCapslockStateMachine>(
               ui::OzonePlatform::GetInstance()->GetInputController())),
+      suspend_state_machine_(std::make_unique<SuspendStateMachine>(
+          ui::OzonePlatform::GetInstance()->GetInputController())),
       accelerator_configuration_(config),
       output_volume_metric_delay_timer_(
           FROM_HERE,
@@ -444,6 +447,11 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
         shift_disable_state_machine_.get(),
         ui::EventTarget::Priority::kAccessibility);
   }
+  if (features::IsSuspendStateMachineEnabled()) {
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        suspend_state_machine_.get(),
+        ui::EventTarget::Priority::kAccessibility);
+  }
 }
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
@@ -469,6 +477,10 @@ AcceleratorControllerImpl::~AcceleratorControllerImpl() {
         capslock_state_machine_.get());
     aura::Env::GetInstance()->RemovePreTargetHandler(
         shift_disable_state_machine_.get());
+  }
+  if (features::IsSuspendStateMachineEnabled()) {
+    aura::Env::GetInstance()->RemovePreTargetHandler(
+        suspend_state_machine_.get());
   }
 }
 
@@ -581,6 +593,7 @@ void AcceleratorControllerImpl::ApplyAcceleratorForTesting(
   launcher_state_machine_->OnEvent(&key_event);
   capslock_state_machine_->OnEvent(&key_event);
   shift_disable_state_machine_->OnEvent(&key_event);
+  suspend_state_machine_->OnEvent(&key_event);
 }
 
 bool AcceleratorControllerImpl::IsPreferred(
@@ -1327,7 +1340,11 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case AcceleratorAction::kSuspend:
       base::RecordAction(UserMetricsAction("Accel_Suspend"));
-      accelerators::Suspend();
+      if (!features::IsSuspendStateMachineEnabled()) {
+        accelerators::Suspend();
+      } else {
+        suspend_state_machine_->StartObservingToTriggerSuspend(accelerator);
+      }
       break;
     case AcceleratorAction::kSwapPrimaryDisplay:
       base::RecordAction(UserMetricsAction("Accel_Swap_Primary_Display"));

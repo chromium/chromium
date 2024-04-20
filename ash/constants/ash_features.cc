@@ -2706,6 +2706,11 @@ BASE_FEATURE(kSuspendToDisk,
              "CrOSSuspendToDisk",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the suspend state machine to better handle suspend accelerators.
+BASE_FEATURE(kSuspendStateMachine,
+             "SuspendStateMachine",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kHibernateAfterTimeHours{
     &kSuspendToDisk, "HibernateAfterTimeHours", 8};
 
@@ -4413,6 +4418,10 @@ bool IsSmartReaderEnabled() {
 
 bool IsSnapGroupEnabled() {
   return base::FeatureList::IsEnabled(kSnapGroup);
+}
+
+bool IsSuspendStateMachineEnabled() {
+  return base::FeatureList::IsEnabled(kSuspendStateMachine);
 }
 
 bool IsSystemLiveCaptionEnabled() {

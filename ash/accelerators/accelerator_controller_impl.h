@@ -20,6 +20,7 @@
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accelerators/exit_warning_handler.h"
+#include "ash/accelerators/suspend_state_machine.h"
 #include "ash/accelerators/tablet_volume_controller.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
@@ -247,6 +248,7 @@ class ASH_EXPORT AcceleratorControllerImpl
   std::unique_ptr<AcceleratorCapslockStateMachine> capslock_state_machine_;
   std::unique_ptr<AcceleratorShiftDisableCapslockStateMachine>
       shift_disable_state_machine_;
+  std::unique_ptr<SuspendStateMachine> suspend_state_machine_;
 
   // Manages all accelerator mappings.
   raw_ptr<AshAcceleratorConfiguration> accelerator_configuration_;
