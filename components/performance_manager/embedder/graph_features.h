@@ -51,7 +51,6 @@ class GraphFeatures {
       bool site_data_recorder : 1;
       bool tab_connectedness_decorator : 1;
       bool tab_page_decorator : 1;
-      bool tab_properties_decorator : 1;
       bool v8_context_tracker : 1;
     };
   };
@@ -120,11 +119,6 @@ class GraphFeatures {
     return *this;
   }
 
-  constexpr GraphFeatures& EnableTabPropertiesDecorator() {
-    flags_.tab_properties_decorator = true;
-    return *this;
-  }
-
   constexpr GraphFeatures& EnableV8ContextTracker() {
     EnableExecutionContextRegistry();
     flags_.v8_context_tracker = true;
@@ -153,7 +147,6 @@ class GraphFeatures {
     EnableSiteDataRecorder();
     EnableTabConnectednessDecorator();
     EnableTabPageDecorator();
-    EnableTabPropertiesDecorator();
     EnableV8ContextTracker();
     return *this;
   }
