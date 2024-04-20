@@ -641,3 +641,11 @@
 -WebUIImplBrowserTest.NavigateFromCrashedAboutBlank
 -WebContentsObserverBrowserTest.CookieCallbacks_Subframe
 -WebContentsObserverBrowserTest.CookieCallbacks_Subresource
+
+# TODO(crbug.com/41471694): The below tests related to the touchpad and gesture_detection
+# have been failing since https://crrev.com/c/5468600.
+-SitePerProcessHitTestBrowserTest.TouchAndGestureEventPositionChange
+-TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale
+-TouchpadPinchBrowserTest.WheelListenerAllowingPinch
+-TouchpadPinchBrowserTest.WheelListenerPreventingDoubleTap
+-TouchpadPinchBrowserTest.WheelListenerPreventingPinch
