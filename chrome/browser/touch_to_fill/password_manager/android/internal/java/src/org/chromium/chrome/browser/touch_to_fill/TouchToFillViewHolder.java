@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -28,10 +29,13 @@ class TouchToFillViewHolder extends RecyclerView.ViewHolder {
             ViewBinder<PropertyModel, View, PropertyKey> viewBinder) {
         super(LayoutInflater.from(parent.getContext()).inflate(layout, parent, false));
         mViewBinder = viewBinder;
-        itemView.setFilterTouchesWhenObscured(true);
-        itemView.setOnTouchListener(
-                (View v, MotionEvent ev) ->
-                        (ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID)) {
+            itemView.setFilterTouchesWhenObscured(true);
+            itemView.setOnTouchListener(
+                    (View v, MotionEvent ev) ->
+                            (ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0);
+        }
     }
 
     /**
