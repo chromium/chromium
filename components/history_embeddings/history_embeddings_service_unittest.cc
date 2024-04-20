@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -21,9 +22,11 @@
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/vector_database.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
+#include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_embeddings {
@@ -51,6 +54,21 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
+
+  void OverrideVisibilityScoresForTesting(
+      const base::flat_map<std::string, double>& visibility_scores_for_input) {
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        optimization_guide::TestModelInfoBuilder()
+            .SetModelFilePath(
+                base::FilePath(FILE_PATH_LITERAL("visibility_model")))
+            .SetVersion(123)
+            .Build();
+    CHECK(model_info);
+    page_content_annotator_.UseVisibilityScores(*model_info,
+                                                visibility_scores_for_input);
+    page_content_annotations_service_->OverridePageContentAnnotatorForTesting(
+        &page_content_annotator_);
+  }
 
   size_t CountEmbeddingsRows(HistoryEmbeddingsService* service) {
     size_t result = 0;
@@ -84,6 +102,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
       optimization_guide_model_provider_;
   std::unique_ptr<page_content_annotations::TestPageContentAnnotationsService>
       page_content_annotations_service_;
+  page_content_annotations::TestPageContentAnnotator page_content_annotator_;
 };
 
 TEST_F(HistoryEmbeddingsServiceTest, ConstructsAndInvalidatesWeakPtr) {
@@ -141,6 +160,24 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
       /*user_initiated=*/true, base::BindLambdaForTesting([] {}), &tracker);
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_EQ(CountEmbeddingsRows(service.get()), 0U);
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
+  base::HistogramTester histogram_tester;
+  auto service = std::make_unique<HistoryEmbeddingsService>(
+      history_service_.get(), page_content_annotations_service_.get());
+
+  base::test::TestFuture<SearchResult> future;
+  OverrideVisibilityScoresForTesting({{"", 0.99}});
+  service->Search("", {}, 1, future.GetCallback());
+  EXPECT_TRUE(future.Take().empty());
+
+  histogram_tester.ExpectUniqueSample("History.Embeddings.Search.Completed",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("History.Embeddings.Search.UrlCount", 0,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.Search.EmbeddingCount", 0, 1);
 }
 
 }  // namespace history_embeddings

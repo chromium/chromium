@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
@@ -226,7 +227,8 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
     Embedding query_embedding,
     std::optional<base::Time> time_range_start,
     size_t count) {
-  std::vector<ScoredUrl> scored_urls = sql_database.FindNearest(
+  base::ElapsedTimer timer;
+  SearchInfo search_info = sql_database.FindNearest(
       time_range_start, count, std::move(query_embedding),
       base::BindRepeating(
           [](base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
@@ -237,9 +239,17 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
             return !weak_latest_query_id || *weak_latest_query_id != query_id;
           },
           std::move(weak_latest_query_id), query_id));
+  base::UmaHistogramTimes("History.Embeddings.Search.Duration",
+                          timer.Elapsed());
+  base::UmaHistogramCounts1M("History.Embeddings.Search.UrlCount",
+                             search_info.searched_url_count);
+  base::UmaHistogramCounts10M("History.Embeddings.Search.EmbeddingCount",
+                              search_info.searched_embedding_count);
+  base::UmaHistogramBoolean("History.Embeddings.Search.Completed",
+                            search_info.completed);
 
   // Populate source passages.
-  for (ScoredUrl& scored_url : scored_urls) {
+  for (ScoredUrl& scored_url : search_info.scored_urls) {
     std::optional<proto::PassagesValue> value =
         sql_database.GetPassages(scored_url.url_id);
     if (value &&
@@ -248,7 +258,7 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
     }
   }
 
-  return scored_urls;
+  return std::move(search_info.scored_urls);
 }
 
 void HistoryEmbeddingsService::Storage::HandleHistoryDeletions(

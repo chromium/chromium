@@ -61,8 +61,11 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, SearchCanBeHaltedEarly) {
 
   // An ordinary search with full results:
   {
-    std::vector<ScoredUrl> scored_urls = database.FindNearest(
-        {}, 3, query, base::BindRepeating([]() { return false; }));
+    std::vector<ScoredUrl> scored_urls =
+        database
+            .FindNearest({}, 3, query,
+                         base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 3u);
   }
 
@@ -71,13 +74,15 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, SearchCanBeHaltedEarly) {
     std::atomic<size_t> counter(0u);
     base::WeakPtrFactory<std::atomic<size_t>> weak_factory(&counter);
     std::vector<ScoredUrl> scored_urls =
-        database.FindNearest({}, 3, query,
-                             base::BindRepeating(
-                                 [](auto weak_counter) {
-                                   (*weak_counter)++;
-                                   return *weak_counter > 2u;
-                                 },
-                                 weak_factory.GetWeakPtr()));
+        database
+            .FindNearest({}, 3, query,
+                         base::BindRepeating(
+                             [](auto weak_counter) {
+                               (*weak_counter)++;
+                               return *weak_counter > 2u;
+                             },
+                             weak_factory.GetWeakPtr()))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 2u);
   }
 }
@@ -96,39 +101,53 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, TimeRangeNarrowsSearchResult) {
 
   // An ordinary search with full results:
   {
-    std::vector<ScoredUrl> scored_urls = database.FindNearest(
-        {}, 3, query, base::BindRepeating([]() { return false; }));
+    std::vector<ScoredUrl> scored_urls =
+        database
+            .FindNearest({}, 3, query,
+                         base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 3u);
   }
 
   // Narrowed searches with time range.
   {
-    std::vector<ScoredUrl> scored_urls = database.FindNearest(
-        now, 3, query, base::BindRepeating([]() { return false; }));
+    std::vector<ScoredUrl> scored_urls =
+        database
+            .FindNearest(now, 3, query,
+                         base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 3u);
   }
   {
     std::vector<ScoredUrl> scored_urls =
-        database.FindNearest(now + base::Seconds(30), 3, query,
-                             base::BindRepeating([]() { return false; }));
+        database
+            .FindNearest(now + base::Seconds(30), 3, query,
+                         base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 2u);
   }
   {
     std::vector<ScoredUrl> scored_urls =
-        database.FindNearest(now + base::Seconds(90), 3, query,
-                             base::BindRepeating([]() { return false; }));
+        database
+            .FindNearest(now + base::Seconds(90), 3, query,
+                         base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 1u);
   }
   {
     std::vector<ScoredUrl> scored_urls =
-        database.FindNearest(now + base::Minutes(2), 3, query,
-                             base::BindRepeating([]() { return false; }));
+        database
+            .FindNearest(now + base::Minutes(2), 3, query,
+                         base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 1u);
   }
   {
     std::vector<ScoredUrl> scored_urls =
-        database.FindNearest(now + base::Seconds(121), 3, query,
-                             base::BindRepeating([]() { return false; }));
+        database
+            .FindNearest(now + base::Seconds(121), 3, query,
+                         base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 0u);
   }
 }

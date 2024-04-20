@@ -98,7 +98,13 @@ std::pair<float, size_t> UrlEmbeddings::BestScoreWith(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-std::vector<ScoredUrl> VectorDatabase::FindNearest(
+SearchInfo::SearchInfo() = default;
+SearchInfo::SearchInfo(SearchInfo&&) = default;
+SearchInfo::~SearchInfo() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+
+SearchInfo VectorDatabase::FindNearest(
     std::optional<base::Time> time_range_start,
     size_t count,
     const Embedding& query,
@@ -127,8 +133,11 @@ std::vector<ScoredUrl> VectorDatabase::FindNearest(
   };
   std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, Compare> q;
 
+  SearchInfo search_info;
+  search_info.completed = true;
   while (const UrlEmbeddings* item = iterator->Next()) {
     if (is_search_halted.Run()) {
+      search_info.completed = false;
       break;
     }
     while (q.size() > count) {
@@ -142,15 +151,16 @@ std::vector<ScoredUrl> VectorDatabase::FindNearest(
         .score = score,
         .index = score_index,
     });
+    search_info.searched_url_count++;
+    search_info.searched_embedding_count += item->embeddings.size();
   }
 
   // Empty queue into vector and return result.
-  std::vector<ScoredUrl> nearest;
   while (!q.empty()) {
-    nearest.push_back(q.top());
+    search_info.scored_urls.push_back(q.top());
     q.pop();
   }
-  return nearest;
+  return search_info;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -166,39 +166,53 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, TimeRangeNarrowsSearchResult) {
 
   // An ordinary search with full results:
   {
-    std::vector<ScoredUrl> scored_urls = sql_database->FindNearest(
-        {}, 3, query, base::BindRepeating([]() { return false; }));
+    std::vector<ScoredUrl> scored_urls =
+        sql_database
+            ->FindNearest({}, 3, query,
+                          base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 3u);
   }
 
   // Narrowed searches with time range.
   {
-    std::vector<ScoredUrl> scored_urls = sql_database->FindNearest(
-        now, 3, query, base::BindRepeating([]() { return false; }));
+    std::vector<ScoredUrl> scored_urls =
+        sql_database
+            ->FindNearest(now, 3, query,
+                          base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 3u);
   }
   {
     std::vector<ScoredUrl> scored_urls =
-        sql_database->FindNearest(now + base::Seconds(30), 3, query,
-                                  base::BindRepeating([]() { return false; }));
+        sql_database
+            ->FindNearest(now + base::Seconds(30), 3, query,
+                          base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 2u);
   }
   {
     std::vector<ScoredUrl> scored_urls =
-        sql_database->FindNearest(now + base::Seconds(90), 3, query,
-                                  base::BindRepeating([]() { return false; }));
+        sql_database
+            ->FindNearest(now + base::Seconds(90), 3, query,
+                          base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 1u);
   }
   {
     std::vector<ScoredUrl> scored_urls =
-        sql_database->FindNearest(now + base::Minutes(2), 3, query,
-                                  base::BindRepeating([]() { return false; }));
+        sql_database
+            ->FindNearest(now + base::Minutes(2), 3, query,
+                          base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 1u);
   }
   {
     std::vector<ScoredUrl> scored_urls =
-        sql_database->FindNearest(now + base::Seconds(121), 3, query,
-                                  base::BindRepeating([]() { return false; }));
+        sql_database
+            ->FindNearest(now + base::Seconds(121), 3, query,
+                          base::BindRepeating([]() { return false; }))
+            .scored_urls;
     CHECK_EQ(scored_urls.size(), 0u);
   }
 }

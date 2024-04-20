@@ -100,6 +100,25 @@ struct ScoredUrl {
   std::string passage;
 };
 
+struct SearchInfo {
+  SearchInfo();
+  SearchInfo(SearchInfo&&);
+  ~SearchInfo();
+
+  // Result of the search, the best scored URLs.
+  std::vector<ScoredUrl> scored_urls;
+
+  // The number of URLs searched to find this result.
+  size_t searched_url_count = 0u;
+
+  // The number of embeddings searched to find this result.
+  size_t searched_embedding_count = 0u;
+
+  // Whether the search completed without interruption. Starting a new search
+  // may cause a search to halt, and in that case this member will be false.
+  bool completed = false;
+};
+
 // This base class decouples storage classes and inverts the dependency so that
 // a vector database can work with a SQLite database, simple in-memory storage,
 // flat files, or whatever kinds of storage will work efficiently.
@@ -130,11 +149,10 @@ class VectorDatabase {
 
   // Searches the database for embeddings near given `query` and returns
   // information about where they were found and how nearly the query matched.
-  std::vector<ScoredUrl> FindNearest(
-      std::optional<base::Time> time_range_start,
-      size_t count,
-      const Embedding& query,
-      base::RepeatingCallback<bool()> is_search_halted);
+  SearchInfo FindNearest(std::optional<base::Time> time_range_start,
+                         size_t count,
+                         const Embedding& query,
+                         base::RepeatingCallback<bool()> is_search_halted);
 };
 
 // This is an in-memory vector store that supports searching and saving to

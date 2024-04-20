@@ -1809,6 +1809,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Search.Completed" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    Whether the search completed without interruption. Logged each time a vector
+    database search is performed.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Search.Duration" units="ms"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    The number of milliseconds spent searching. Logged each time a vector
+    database search is performed.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Search.EmbeddingCount" units="embeddings"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    The number of embeddings searched. Logged each time a vector database search
+    is performed.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Search.UrlCount" units="urls"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    The number of URLs searched. Logged each time a vector database search is
+    performed.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.VisibilityModelAvailableAtQuery"
     enum="Boolean" expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
