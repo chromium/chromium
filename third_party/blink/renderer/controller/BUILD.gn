@@ -55,6 +55,8 @@ component("controller") {
     "controller_export.h",
     "dev_tools_frontend_impl.cc",
     "dev_tools_frontend_impl.h",
+    "javascript_call_stack_collector.cc",
+    "javascript_call_stack_collector.h",
     "javascript_call_stack_generator.cc",
     "javascript_call_stack_generator.h",
     "memory_usage_monitor.cc",

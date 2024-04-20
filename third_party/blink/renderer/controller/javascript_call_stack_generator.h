@@ -7,10 +7,10 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/call_stack_generator/call_stack_generator.mojom-blink.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/controller/javascript_call_stack_collector.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -22,16 +22,15 @@ class CONTROLLER_EXPORT JavaScriptCallStackGenerator
       mojo::PendingReceiver<mojom::blink::CallStackGenerator> receiver);
   void CollectJavaScriptCallStack(
       CollectJavaScriptCallStackCallback callback) override;
-  void HandleCallStackCollected(
-      const String& call_stack,
-      const std::optional<LocalFrameToken> frame_token);
+  void OnCollectorFinished(JavaScriptCallStackCollector* collector);
 
  private:
   void InterruptIsolateAndCollectCallStack(v8::Isolate* isolate);
 
   mojo::Receiver<mojom::blink::CallStackGenerator> receiver_{this};
-  CollectJavaScriptCallStackCallback callback_;
-  bool call_stack_collected_ = false;
+  WTF::HashMap<JavaScriptCallStackCollector*,
+               std::unique_ptr<JavaScriptCallStackCollector>>
+      collectors_;
 };
 
 }  // namespace blink
