@@ -94,7 +94,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
 
   // ClientView:
   void AddedToWidget() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void ViewHierarchyChanged(

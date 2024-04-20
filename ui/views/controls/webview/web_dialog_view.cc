@@ -111,7 +111,8 @@ void WebDialogView::AddedToWidget() {
   SetWebViewCornersRadii(corner_radii);
 }
 
-gfx::Size WebDialogView::CalculatePreferredSize() const {
+gfx::Size WebDialogView::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
   gfx::Size out;
   if (delegate_)
     delegate_->GetDialogSize(&out);

@@ -64,7 +64,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   void SetButtonRowInsets(const gfx::Insets& insets);
 
   // View implementation:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
