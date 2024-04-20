@@ -586,9 +586,8 @@ _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS = PerfSuite([
 _FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS = \
     _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('power.desktop'),
-    _GetBenchmarkConfig('rendering.desktop'),
-    _GetBenchmarkConfig('system_health.common_desktop')
+    _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer2-nominorms')
 ])
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
