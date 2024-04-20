@@ -29,10 +29,6 @@ struct ProductGroup {
   // A set storing URLs of products that are currently in the group.
   std::set<GURL> member_products;
 
-  // A set storing URLs of products that are open and comparable to the
-  // product group, but is not currently in the group.
-  std::set<GURL> candidate_products;
-
   // Category infos of this group.
   std::vector<CategoryData> categories;
 };

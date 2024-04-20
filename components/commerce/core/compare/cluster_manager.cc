@@ -7,6 +7,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "components/commerce/core/compare/candidate_product.h"
@@ -172,10 +173,7 @@ void ClusterManager::OnProductInfoRetrieved(
     return;
   }
 
-  // TODO(qinmin): If a product is added to a product group, determine
-  // whether it should be removed from `candidate_product_map_`.
   AddCandidateProduct(url, product_info);
-  AddProductToProductGroupssIfNecessary(url, product_info);
 }
 
 void ClusterManager::OnAllCategoryDataRetrieved(
@@ -190,8 +188,6 @@ void ClusterManager::OnAllCategoryDataRetrieved(
   if (product_group_map_[uuid]->member_products == urls) {
     product_group_map_[uuid]->categories = category_data;
   }
-
-  PopulateCandidateProductsForGroup(uuid);
 }
 
 void ClusterManager::AddCandidateProduct(
@@ -211,25 +207,6 @@ void ClusterManager::AddCandidateProduct(
       similar_products;
 }
 
-void ClusterManager::AddProductToProductGroupssIfNecessary(
-    const GURL& url,
-    const std::optional<const ProductInfo>& product_info) {
-  for (const auto& group : product_group_map_) {
-    if (group.second->member_products.find(url) !=
-        group.second->member_products.end()) {
-      continue;
-    }
-    if (group.second->candidate_products.find(url) !=
-        group.second->candidate_products.end()) {
-      DCHECK(false);
-      continue;
-    }
-    if (IsProductSimilarToGroup(product_info->category_data,
-                                group.second->categories)) {
-      group.second->candidate_products.insert(url);
-    }
-  }
-}
 
 void ClusterManager::RemoveCandidateProductURLIfNotOpen(const GURL& url) {
   if (candidate_product_map_.find(url) != candidate_product_map_.end() &&
@@ -238,28 +215,24 @@ void ClusterManager::RemoveCandidateProductURLIfNotOpen(const GURL& url) {
     for (const auto& product : candidate_product_map_) {
       product.second->similar_candidate_products_urls.erase(url);
     }
-    RemoveProductFromProductGroupsIfNecessary(url);
   }
 }
 
-void ClusterManager::RemoveProductFromProductGroupsIfNecessary(
-    const GURL& url) {
-  for (const auto& group : product_group_map_) {
-    if (group.second->candidate_products.find(url) !=
-        group.second->candidate_products.end()) {
-      group.second->candidate_products.erase(url);
-    }
-  }
-}
-
-void ClusterManager::PopulateCandidateProductsForGroup(const base::Uuid& uuid) {
+std::vector<GURL> ClusterManager::FindSimilarCandidateProductsForProductGroup(
+    const base::Uuid& uuid) {
+  std::vector<GURL> candidate_products;
   ProductGroup* group = product_group_map_[uuid].get();
   for (const auto& candidate_product : candidate_product_map_) {
+    if (group->member_products.find(candidate_product.first) !=
+        group->member_products.end()) {
+      continue;
+    }
     if (IsProductSimilarToGroup(candidate_product.second->category_data,
                                 group->categories)) {
-      group->candidate_products.insert(candidate_product.first);
+      candidate_products.emplace_back(candidate_product.first);
     }
   }
+  return candidate_products;
 }
 
 }  // namespace commerce

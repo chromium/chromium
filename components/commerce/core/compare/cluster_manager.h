@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -54,8 +55,9 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
  private:
   friend class ClusterManagerTest;
 
-  // Updates the product group that has the given uuid.
-  void PopulateCandidateProductsForGroup(const base::Uuid& uuid);
+  // Find similar candidate products for a product group.
+  std::vector<GURL> FindSimilarCandidateProductsForProductGroup(
+      const base::Uuid& uuid);
 
   // Called when information about a product is retrieved.
   void OnProductInfoRetrieved(
@@ -73,16 +75,8 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
       const GURL& url,
       const std::optional<const ProductInfo>& product_info);
 
-  // Adds a new product to `product_group_map_` if necessary.
-  void AddProductToProductGroupssIfNecessary(
-      const GURL& url,
-      const std::optional<const ProductInfo>& product_info);
-
   // Removes a candidate product URL if it is not open in any tabs.
   void RemoveCandidateProductURLIfNotOpen(const GURL& url);
-
-  // Removes a product to `product_group_map_` if necessary.
-  void RemoveProductFromProductGroupsIfNecessary(const GURL& url);
 
   // Callback to get product info.
   GetProductInfoCallback get_product_info_cb_;
