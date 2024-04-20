@@ -297,7 +297,7 @@
           [UIView addKeyframeWithRelativeStartTime:0
                                   relativeDuration:1
                                         animations:^{
-                                          [self expansion:animated];
+                                          [self expansion];
                                         }];
           [UIView
               addKeyframeWithRelativeStartTime:0
@@ -312,7 +312,7 @@
         }];
 
   } else {
-    [self expansion:animated];
+    [self expansion];
     [self.toolbarAnimatee hideControlButtons];
   }
 }
@@ -333,7 +333,7 @@
           [UIView addKeyframeWithRelativeStartTime:0
                                   relativeDuration:relativeDurationAnimation1
                                         animations:^{
-                                          [self contraction:animated];
+                                          [self contraction];
                                         }];
           [UIView
               addKeyframeWithRelativeStartTime:relativeDurationAnimation1
@@ -347,7 +347,7 @@
           [self animationFinished];
         }];
   } else {
-    [self contraction:animated];
+    [self contraction];
     [self.toolbarAnimatee showControlButtons];
     [self.toolbarAnimatee hideCancelButton];
   }
@@ -392,8 +392,8 @@
 #pragma mark - Private animation helpers
 
 // Visually expands the location bar for focus.
-- (void)expansion:(BOOL)animated {
-  [self.toolbarAnimatee expandLocationBar:animated];
+- (void)expansion {
+  [self.toolbarAnimatee expandLocationBar];
   [self.toolbarAnimatee showCancelButton];
   switch (_trigger) {
     case OmniboxFocusTrigger::kPinnedLargeFakebox:
@@ -408,8 +408,8 @@
 }
 
 // Visually contracts the location bar for defocus.
-- (void)contraction:(BOOL)animated {
-  [self.toolbarAnimatee contractLocationBar:animated];
+- (void)contraction {
+  [self.toolbarAnimatee contractLocationBar];
   if (_trigger == OmniboxFocusTrigger::kPinnedLargeFakebox) {
     [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
   }

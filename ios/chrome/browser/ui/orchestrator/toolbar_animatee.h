@@ -10,8 +10,8 @@
 @protocol ToolbarAnimatee<NSObject>
 
 // Changes related to the Location Bar container.
-- (void)expandLocationBar:(BOOL)animated;
-- (void)contractLocationBar:(BOOL)animated;
+- (void)expandLocationBar;
+- (void)contractLocationBar;
 
 // Changes related to the cancel button.
 - (void)showCancelButton;
