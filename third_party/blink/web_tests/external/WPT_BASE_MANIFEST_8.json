@@ -69552,6 +69552,35 @@
         }
        ]
       ],
+      "mix-blend-mode-parent-element-overflow-hidden-and-border-radius-2.html": [
+       "0b12301c4d91e179a5c5431f8fffde90ee47b1a7",
+       [
+        null,
+        [
+         [
+          "/css/compositing/mix-blend-mode/reference/mix-blend-mode-parent-element-overflow-hidden-and-border-radius-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             128
+            ],
+            [
+             0,
+             400
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "mix-blend-mode-parent-element-overflow-hidden-and-border-radius.html": [
        "840d2626bc1d350a478369dff0626f2b78830099",
        [
@@ -133234,7 +133263,7 @@
        },
        "intrinsic-sizing": {
         "masonry-intrinsic-sizing-001.html": [
-         "2dc9f6de2e52066d322e425967d8898c1ee407a8",
+         "cc0608eafe7f3f983468205a5bdbeda645f2f411",
          [
           null,
           [
@@ -133247,7 +133276,7 @@
          ]
         ],
         "masonry-intrinsic-sizing-002.html": [
-         "b8228cea6e8250587285d0396d4eee6caace352e",
+         "3867bb13c8915dd992cd0081ab54a6dbdfd16d88",
          [
           null,
           [
@@ -133260,7 +133289,7 @@
          ]
         ],
         "masonry-intrinsic-sizing-003.html": [
-         "80bf5d5d23837861cccc8ab9076a1b77550b6df5",
+         "48489d3c86985fedb0635f25c82b129190148edb",
          [
           null,
           [
@@ -133273,7 +133302,7 @@
          ]
         ],
         "masonry-intrinsic-sizing-004.html": [
-         "70a52f37f46a9a438b2e70fa86d55123ebd5121f",
+         "c8bc671bb3b4f5981df78e8e21e0a50bf011fecc",
          [
           null,
           [
@@ -133299,7 +133328,7 @@
          ]
         ],
         "masonry-intrinsic-sizing-006.html": [
-         "fccc116d7d16a38fbe0a5c0e08dadc0b26994d4f",
+         "ad5480092162584589bbea3608f70688d7e6eb3c",
          [
           null,
           [
@@ -319837,32 +319866,32 @@
        },
        "intrinsic-sizing": {
         "masonry-intrinsic-sizing-001-ref.html": [
-         "bd1cddd9db0f22ea504a82ebec5e18c19b15c374",
+         "1a9f65aaf698b0b20b2c33b17420795972d6ff8d",
          []
         ],
         "masonry-intrinsic-sizing-002-ref.html": [
-         "37f65bace8c50dad1e82bd969d694299dfa20750",
+         "ddae8e7fe37f8873791cd56d8c6404eafa6fd703",
          []
         ],
         "masonry-intrinsic-sizing-003-ref.html": [
-         "886c147a90bef3c1cc64b6c1e5633de15b6f06ce",
+         "044750dc45183a50fb19153977081eb0e7b83eaa",
          []
         ],
         "masonry-intrinsic-sizing-004-ref.html": [
-         "166a467d4e83eecf31f8496b8f2c88ef96d7b606",
+         "302dcad11696895a9f3fb12ac5a38d0d721b2650",
          []
         ],
         "masonry-intrinsic-sizing-005-ref.html": [
-         "48225803963ec31c77ca85ea1b1dd5a06cba354c",
+         "725f646ebd9160f91dcba65fdbdbb77e0c20e370",
          []
         ],
         "masonry-intrinsic-sizing-006-ref.html": [
-         "a616fadb772eee5cf0fd051378e3aabf7e62e628",
+         "1a88c2b4cb665dd4586f662d280475dab3cd0ae6",
          []
         ],
         "support": {
          "masonry-intrinsic-sizing-visual.css": [
-          "50fff3ff96b516d1191a5e9cc2c68590428f93c9",
+          "150f0f2679a35a97fc0fb7de792c4473850b73d9",
           []
          ]
         }

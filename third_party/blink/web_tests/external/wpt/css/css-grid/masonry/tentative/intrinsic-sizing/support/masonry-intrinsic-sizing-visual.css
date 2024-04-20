@@ -1,8 +1,9 @@
 /* Basic Testing Setup */
 html,body {
-  color: black; background: white; font: 15px/1 Ahem;
+  color: black; background: white; font: 15px/1 Ahem, monospace;
   padding: 1em 0; margin: 0;
-  height: calc(600px - 2em); border-bottom: 1px solid orange; /* Do Not Cross */
+  max-width: 800px; height: calc(600px - 2em);
+  border-bottom: 1px solid orange; /* Do Not Cross */
 }
 
 
